@@ -1,0 +1,294 @@
+<?xml version="1.0"?>
+
+<game>
+
+
+
+   <!-- Section 0. Global Event Handlers and Scripts (optional) -->
+   <events>
+
+      <!-- identifies one or more scripts containing event handling functions -->
+      <script src="script/global1.lua"></script>
+
+      <!-- identifies a script function to call for a given event -->
+      <event name="beforeDropObject">sampleDropObject</event>
+
+   </events>
+
+
+
+   <!-- Section I. Player Configuration -->
+   <player>
+
+      <!-- configuration options related to the player's inventory -->
+      <inventory>
+
+         <!-- Determines the maximum weight of the inventory.  0 means the
+              inventory has unlimited size.  Any integer greater than 0
+              determines the inventory's maximum capacity (consider this the
+              sum total of all object weights.)  For example, if object "candle"
+              is defined with a weight of 2, and object "sword" is defined with
+              a weight of 10, and the inventory weight is defined to be 11, you
+              can then hold either the candle or the sword, but not both.  What
+              integers you choose to use are totally up to you and are
+              completely subjective.
+         -->
+         <weight>0</weight>
+
+      </inventory>
+
+      <!-- By default, player attributes are distributed evenly (10 given to
+           each attribute.)  Here, you can optionally set your own values, which
+           will be assigned by default to all new players. -->
+      <attributes>
+         <strength>10</strength>
+         <dexterity>10</dexterity>
+         <intelligence>10</intelligence>
+      </attributes>
+
+      <!-- whether or not creature starts out alive or dead (optional:
+           default is 1 for alive) -->
+      <alive>1</alive>
+
+      <!-- default starting health (optional: default is 0) -->
+      <health>10</health>
+
+      <!-- a max health of 0 means the creature is immortal (optional:
+           default is 0 for immortal) -->
+      <maxHealth>10</maxHealth>
+
+      <!-- default maximum probability of being hit during combat
+           (optional: default is 0.5) -->
+      <woundrate>0.5</woundrate>
+
+   </player>
+
+
+
+   <!-- Section II. Objects -->
+   <objects>
+
+      <!-- every object MUST HAVE a UNIQUE name -->
+      <object name="candle">
+         <!-- The user will see this description the first time they encounter the
+              object, or everytime they issue the command "look at candle."
+         -->
+         <description>
+It appears to be a firey cylinder of wax burning with the passion of a thousand suns.
+         </description>
+
+         <!-- specifies an object's weight; not specifying this will default to
+              0, which means it has no weight. -->
+         <weight>1</weight>
+
+         <!-- messages for various events are defined here (pre-defined for the
+              engine or custom for scripts)
+         -->
+         <messages>
+            <message name="take">The candle jumps up into the air, does a backflip and turns into a spoon.</message>
+            <message name="drop">You hesitate before dropping that awesome waxy goodness.</message>
+         </messages>
+
+         <!-- one or more scripts can be attached to an object, which define
+              functions that get triggered by the event handler -->
+         <script src="script/object/candle.lua"></script>
+
+         <!-- event handlers (make sure functions are defined in scripts specific
+              to this object -->
+         <event name="beforeTakeObject">beforeTakeCandle</event>
+         <event name="beforeDropObject">beforeDropCandle</event>
+
+         <synonym>fire</synonym>
+         <synonym>flame</synonym>
+      </object>
+
+      <!-- owned by Trogdor the Burninator -->
+      <object name="stick">
+         <description>It's long, narrow and definitely looks like a stick.</description>
+         <weight>1</weight>
+      </object>
+
+      <object name="rock">
+         <description>
+It's nothing special.  It's gray, bumpy and a little lopsided.
+         </description>
+
+         <!-- this optional tag allows you to turn off the ability for the
+              player to drop an object.  An object is droppable by default (you
+              can achieve the same effect manually by setting this to 1.) -->
+         <droppable>0</droppable>
+
+         <synonym>stone</synonym>
+      </object>
+
+      <object name="boulder">
+         <description>
+It's a huge rock.  You're not sure if you'll be able to lift it.
+         </description>
+         <weight>1</weight>
+
+         <!-- This optional tag allows you to turn off the player's ability to
+              take an object.  An object is takeable by default (you can
+              achieve the same effect manually by setting this to 1.)-->
+         <takeable>0</takeable>
+
+         <synonym>rock</synonym>
+         <synonym>stone</synonym>
+      </object>
+
+      <object name="sword">
+         <description>
+A smooth metallic sheen covers its surface, which looks to be of recent make and in good repair.
+         </description>
+
+         <!-- If set to 1, the object is a weapon (optional: default 0) -->
+         <weapon>1</weapon>
+
+         <!-- Amount of damage object does as a weapon (optional: default 1) -->
+         <damage>10</damage>
+
+      </object>
+
+   </objects>
+
+
+
+   <!-- Section III. Creatures -->
+
+   <creatures>
+
+      <creature name="trogdor">
+
+         <title>Trogdor the Burninator</title>
+
+         <description>
+            He stands 8 feet tall and breathes fire from his nostrils.
+         </description>
+
+         <allegiance>enemy</allegiance>
+
+         <!-- even if a creature is an enemy, we may or may not be allowed to
+              attack it (optional) -->
+         <attackable>1</attackable>
+
+         <!-- whether or not the creature will return each attack against it
+              with one of its own.  (optional: default is 1 for true) -->
+         <counterattack>1</counterattack>
+
+         <!-- creature's maximum probability of being hit during combat
+              (optional: default is 0.5) -->
+         <woundrate>0.35</woundrate>
+
+         <!-- whether or not creature starts out alive or dead (optional:
+              default is 1 for alive) -->
+         <alive>1</alive>
+
+         <!-- default starting health (optional: default is 0) -->
+         <health>20</health>
+
+         <!-- a max health of 0 means the creature is immortal (optional:
+              default is 0 for immortal) -->
+         <maxHealth>25</maxHealth>
+
+         <!-- Creatures can also be given attributes that affect their behavior
+              (by default, creatures are given an even spread of 10 points
+              each.)  This setting is optional. -->
+         <attributes>
+            <strength>10</strength>
+            <dexterity>10</dexterity>
+            <intelligence>10</intelligence>
+         </attributes>
+
+         <messages>
+            <message name="dead">Trogdor is very much dead.</message>
+         </messages>
+
+         <object>stick</object>
+
+      </creature>
+
+   </creatures>
+
+
+
+   <!-- Section IV. Rooms -->
+
+   <rooms>
+
+      <!-- every room MUST HAVE a UNIQUE name.  One room MUST have the name
+           "start," which is where the player will start when the game begins.
+       -->
+      <room name="start">
+
+         <!-- user will see the room's title above its description -->
+         <title>The Palace</title>
+
+         <!-- user will see the room's description when they enter -->
+         <description>
+You're standing in the middle of a sprawling white marble castle, the walls lined with portraits of long deceased ancestors of some forgotten king.  Servants are bustling about, rushing around with steaming plates of meats and cooked vegetables, rushing in and out of rooms to serve princes and heads of state.
+
+You peer off into the distance and notice a dark hole in the wall a little ways to the north.
+         </description>
+
+         <script src="script/room/start.lua"></script>
+         <event name="beforeRoomDisplay">beforeRoomSample</event>
+
+         <!-- name of the room north of this one -->
+         <north>cave</north>
+         <!-- we place the object "candle" in this room.  Note that an object cannot
+              be in more than one room.
+         -->
+
+         <object>sword</object>
+         <object>candle</object>
+
+         <!-- you can define transition messages when you come to or go from
+              specific directions (two possible messages for each direction) -->
+         <messages>
+            <message name="fromNorth">Back to start from the cave!</message>
+            <message name="goNorth">Transitioning to the cave!</message>
+         </messages>
+
+      </room>
+
+      <room name="cave">
+
+         <title>The Cave</title>
+
+         <description>
+You're in a dark musty cave.  You see a light some ways off to the south.  To the west, you spy a large dark chamber of some sort.
+         </description>
+
+         <!-- Since this room is north of "start," start is south of here.  You
+              can specify one way movements by not placing this line here (maybe,
+              for example, the user got shut behind a trap door?)
+         -->
+         <west>chamber</west>
+         <south>start</south>
+
+      </room>
+
+      <room name="chamber">
+
+         <title>Dark Chamber</title>
+
+         <description>
+You find yourself in a dark secluded chamber.  Be careful.  There may be nasty
+things waiting for you here!
+         </description>
+
+         <east>cave</east>
+
+         <!-- you can place creatures in rooms -->
+         <creature>trogdor</creature>
+
+         <object>rock</object>
+         <object>boulder</object>
+
+      </room>
+
+   </rooms>
+
+
+</game>
+
