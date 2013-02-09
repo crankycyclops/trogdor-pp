@@ -3,6 +3,7 @@
 
 
 #include "command.h"
+#include "game.h"
 
 using namespace std;
 
@@ -32,10 +33,10 @@ namespace core {
             Executes the action.  This mehod will be implemented by the specific
             action.
 
-            Input: command
+            Input: command (Command), Game in which command is made (Game *)
             Output: (none)
          */
-         virtual void execute(Command *command) = 0;
+         virtual void execute(Command *command, Game *game) = 0;
    };
 }
 

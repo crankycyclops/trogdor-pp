@@ -22,7 +22,7 @@ namespace core {
          */
          virtual bool checkSyntax(Command *command);
 
-         virtual void execute(Command *command);
+         virtual void execute(Command *command, Game *game);
    }; 
 }
 

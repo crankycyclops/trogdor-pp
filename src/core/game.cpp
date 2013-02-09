@@ -66,7 +66,7 @@ namespace core {
          }
 
          else {
-            action->execute(command);
+            action->execute(command, this);
             // TODO: consider setting lastCommand
          }
       }
