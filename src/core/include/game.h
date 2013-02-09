@@ -11,6 +11,8 @@ using namespace std;
 
 namespace core {
 
+   class ActionMap; // resolves circular dependency ActionMap <-> Game
+
    /*
       Each Game object represents a self contained game and contains all
       game-related data.  A standard lifecycle of a game object -- assuming it
@@ -34,8 +36,9 @@ namespace core {
 
       private:
 
-         bool    inGame;
-         Command *lastCommand;
+         bool       inGame;        // whether or not a game is in progress
+         ActionMap  *actions;      // maps verbs to actions
+         Command    *lastCommand;  // the last executed command
 
       public:
 

@@ -2,6 +2,7 @@
 #include <cstdlib>
 
 #include "include/game.h"
+#include "include/actionmap.h"
 
 using namespace std;
 
@@ -16,6 +17,7 @@ namespace core {
       trogin = &cin;
 
       inGame = false;
+      actions = new ActionMap(this);
       lastCommand = NULL;
    }
 

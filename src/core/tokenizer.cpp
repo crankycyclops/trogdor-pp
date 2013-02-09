@@ -1,6 +1,6 @@
-using namespace std;
-
 #include "include/tokenizer.h"
+
+using namespace std;
 
 namespace core {
 
