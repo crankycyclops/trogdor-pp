@@ -18,7 +18,7 @@ namespace core {
          /*
             Constructor for the tokenizer class
          */
-         Tokenizer(char *str);
+         Tokenizer(const char *str);
 
          /*
             Retrieve the current token.
@@ -34,7 +34,7 @@ namespace core {
             Input: (none)
             Output: bool
          */
-         inline bool isEnd() const {return !end;}
+         inline bool isEnd() const {return end;}
 
          /*
             Advances the current token.

@@ -5,11 +5,11 @@ using namespace std;
 namespace core {
 
 
-   Tokenizer::Tokenizer(char *str) {
+   Tokenizer::Tokenizer(const char *str) {
 
       end = false;
       wholeStr = str;
-      curToken = strtok(str, " \t");
+      curToken = strtok((char *)str, " \t");
    }
 
 

@@ -1,5 +1,6 @@
 using namespace std;
 
+#include <iostream>
 #include <cstdlib>
 
 #include "../core/include/game.h"
