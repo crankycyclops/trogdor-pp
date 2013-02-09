@@ -1,0 +1,56 @@
+#include <cstring>
+#include <string>
+
+using namespace std;
+
+namespace core {
+
+   class Tokenizer {
+
+      private:
+
+         bool   end;        // true if we've reached the end
+         string wholeStr;   // string that we're tokenizing
+         string curToken;   // the current token
+
+      public:
+
+         /*
+            Constructor for the tokenizer class
+         */
+         Tokenizer(char *str);
+
+         /*
+            Retrieve the current token.
+
+            Input: (none)
+            Output: current token (string)
+         */
+         inline string getCurToken() const {return curToken;}
+
+         /*
+            Returns true if we've reached the end of the string.
+
+            Input: (none)
+            Output: bool
+         */
+         inline bool isEnd() const {return !end;}
+
+         /*
+            Advances the current token.
+
+            Input: (none)
+            Output: (none)
+         */
+         void next();
+
+         /*
+            Rewinds the tokenizer to the beginning of the string.
+
+            Input: (none)
+            Output: (none)
+         */
+         void rewind();
+   };
+}
+
