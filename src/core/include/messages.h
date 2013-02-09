@@ -2,16 +2,16 @@
 #include <boost/unordered_map.hpp>
 
 using namespace std;
+using namespace boost;
 
 namespace core {
-
 
    class Messages {
 
       private:
 
          // Hash table mapping message names to messages
-         boost::unordered_map<string, string> messageTable;
+         unordered_map<string, string> messageTable;
 
       public:
 
