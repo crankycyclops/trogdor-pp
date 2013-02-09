@@ -40,6 +40,15 @@ namespace core {
          ActionMap  *actions;      // maps verbs to actions
          Command    *lastCommand;  // the last executed command
 
+         /*
+            Called by initialize().  This initializes game actions and maps
+            them to verbs.
+
+            Input: (none)
+            Output: (none)
+         */
+         void initActions();
+
       public:
 
          ostream *trogerr;  /* error output stream */

@@ -3,6 +3,7 @@
 
 #include "include/game.h"
 #include "include/actionmap.h"
+#include "include/actions.h"
 
 using namespace std;
 
@@ -30,9 +31,17 @@ namespace core {
    }
 
 
+   void Game::initActions() {
+
+      QuitAction *quit = new QuitAction;
+
+      actions->setAction("quit", quit);
+   }
+
+
    void Game::initialize(string gameXML) {
 
-      // TODO: game initialization stuff goes here
+      initActions();
       return;
    }
 
@@ -47,10 +56,19 @@ namespace core {
 
       Command *command = new Command();
       command->read(*trogin, *trogout);
-*trogout << *command;
+
       if (!command->isInvalid()) {
-         command->execute();
-         // TODO: consider setting lastCommand
+
+         Action *action = actions->getAction(command->getVerb());
+
+         if (0 == action || !action->checkSyntax(command)) {
+            *trogout << "Sorry, I don't understand you.\n";
+         }
+
+         else {
+            action->execute(command);
+            // TODO: consider setting lastCommand
+         }
       }
 
       else {

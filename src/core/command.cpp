@@ -1,4 +1,7 @@
 #include "include/command.h"
+#include "include/game.h"
+#include "include/actionmap.h"
+#include "include/action.h"
 
 using namespace std;
 
@@ -14,11 +17,6 @@ namespace core {
 
       // command is invalid until we successfully parse a command
       invalid = true;
-   }
-
-
-   void Command::execute() {
-      // TODO: print error message if error == true
    }
 
 

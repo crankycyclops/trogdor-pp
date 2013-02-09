@@ -16,24 +16,26 @@ namespace core {
    */
    class Action {
 
-      /*
-         Checks the syntax of a command.  Returns true if the syntax is valid
-         and false if it is not.  It's up to the specific action class to
-         implement this method.
+      public:
 
-         Input: command
-         Output: bool
-      */
-      virtual bool checkSyntax(Command command) = 0;
+         /*
+            Checks the syntax of a command.  Returns true if the syntax is valid
+            and false if it is not.  It's up to the specific action class to
+            implement this method.
 
-      /*
-         Executes the action.  This mehod will be implemented by the specific
-         action.
+            Input: command
+            Output: bool
+         */
+         virtual bool checkSyntax(Command *command) = 0;
 
-         Input: command
-         Output: (none)
-      */
-      virtual void execute(Command command) = 0;
+         /*
+            Executes the action.  This mehod will be implemented by the specific
+            action.
+
+            Input: command
+            Output: (none)
+         */
+         virtual void execute(Command *command) = 0;
    };
 }
 

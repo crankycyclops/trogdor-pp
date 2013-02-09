@@ -13,6 +13,8 @@ using namespace std;
 
 namespace core {
 
+   class Game; // resolves circular dependency Game <-> Command
+
    class Command {
 
       private:
@@ -65,14 +67,6 @@ namespace core {
             Output: (none)
          */
          void read(istream &in, ostream &out);
-
-         /*
-            Executes the command.
-
-            Input: (none)
-            Output: (none)
-         */
-         void execute();
 
          /*
             Makes Command object printable via trogout.
