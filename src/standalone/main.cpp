@@ -4,6 +4,7 @@ using namespace std;
 
 #include "../core/include/game.h"
 
+
 int main(int argc, char **argv) {
 
    core::Game *currentGame = new core::Game();
@@ -19,4 +20,3 @@ int main(int argc, char **argv) {
    delete currentGame;
    return EXIT_SUCCESS;
 }
-

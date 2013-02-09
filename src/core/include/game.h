@@ -62,4 +62,3 @@ namespace core {
          inline bool inProgress() {return inGame;}
    };
 }
-
