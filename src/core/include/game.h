@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 
 using namespace std;
@@ -31,6 +32,10 @@ namespace core {
 
       public:
 
+         ostream *terr;  /* error output stream */
+         ostream *tout;  /* console output stream */
+         istream *tin;   /* input stream */
+
          /*
             Constructor for the Game class.
          */
@@ -52,6 +57,30 @@ namespace core {
             Output: (none)
          */
          void start();
+
+         /*
+            Sets the game's error output stream.
+
+            Input: new output stream (ostream)
+            Output: (none)
+         */
+         inline void setTerr(ostream *newerr) {terr = newerr;}
+
+         /*
+            Sets the game's standard output stream.
+
+            Input: new output stream (ostream)
+            Output: (none)
+         */
+         inline void setTout(ostream *newout) {tout = newout;}
+
+         /*
+            Sets the game's input stream.
+
+            Input: new input stream (istream)
+            Output: (none)
+         */
+         inline void setTin(istream *newin) {tin = newin;}
 
          /*
             Returns the status of the game.

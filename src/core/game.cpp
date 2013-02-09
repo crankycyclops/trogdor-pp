@@ -6,6 +6,11 @@ namespace core {
 
    Game::Game() {
 
+      // default input and output streams
+      terr = &cerr;
+      tout = &cout;
+      tin = &cin;
+
       inGame = false;
    }
 
