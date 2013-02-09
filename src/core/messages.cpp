@@ -1,7 +1,9 @@
-using namespace std;
-
+#include <iostream>
 #include <iterator>
+
 #include "include/messages.h"
+
+using namespace std;
 
 namespace core {
 
@@ -23,13 +25,13 @@ namespace core {
    }
 
 
-   void Messages::display(string name) const {
+   void Messages::display(string name, ostream &out) const {
 
       string message = get(name);
 
-      cout << message;
+      out << message;
       if (message.length() > 0) {
-         cout << '\n';
+         out << '\n';
       }
 
       return;

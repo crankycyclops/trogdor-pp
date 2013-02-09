@@ -1,4 +1,6 @@
+#include <iostream>
 #include <cstdlib>
+
 #include "include/game.h"
 
 using namespace std;
@@ -9,9 +11,9 @@ namespace core {
    Game::Game() {
 
       // default input and output streams
-      terr = &cerr;
-      tout = &cout;
-      tin = &cin;
+      trogerr = &cerr;
+      trogout = &cout;
+      trogin = &cin;
 
       inGame = false;
       lastCommand = NULL;
@@ -40,8 +42,16 @@ namespace core {
 
 
    void Game::processCommand() {
-      // TODO
-      exit(1);
+
+      Command *command = Command::read(*trogin, *trogout);
+
+      if (!command->isInvalid()) {
+         command->execute();
+      }
+
+      else {
+         *trogout << "Sorry, I don't understand you.\n";
+      }
    }
 }
 

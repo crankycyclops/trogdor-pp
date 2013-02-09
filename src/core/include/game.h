@@ -35,9 +35,9 @@ namespace core {
 
       public:
 
-         ostream *terr;  /* error output stream */
-         ostream *tout;  /* console output stream */
-         istream *tin;   /* input stream */
+         ostream *trogerr;  /* error output stream */
+         ostream *trogout;  /* console output stream */
+         istream *trogin;   /* input stream */
 
          /*
             Constructor for the Game class.
@@ -55,7 +55,7 @@ namespace core {
             Input: new output stream (ostream)
             Output: (none)
          */
-         inline void setTerr(ostream *newerr) {terr = newerr;}
+         inline void setTrogerr(ostream *newerr) {trogerr = newerr;}
 
          /*
             Sets the game's standard output stream.
@@ -63,7 +63,7 @@ namespace core {
             Input: new output stream (ostream)
             Output: (none)
          */
-         inline void setTout(ostream *newout) {tout = newout;}
+         inline void setTrogout(ostream *newout) {trogout = newout;}
 
          /*
             Sets the game's input stream.
@@ -71,7 +71,7 @@ namespace core {
             Input: new input stream (istream)
             Output: (none)
          */
-         inline void setTin(istream *newin) {tin = newin;}
+         inline void setTrogin(istream *newin) {trogin = newin;}
 
          /*
             Initializes the game, including the event handler, timer and all game

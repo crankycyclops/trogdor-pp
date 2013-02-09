@@ -37,9 +37,9 @@ namespace core {
             Displays a message.  If it doesn't exist, an exception will be
             thrown.
 
-            Input: string (message name)
+            Input: string (message name), output stream (ostream)
             Output: (none)
          */
-         void display(string name) const;
+         void display(string name, ostream &out) const;
    };
 }
