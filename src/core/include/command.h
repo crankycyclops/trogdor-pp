@@ -8,7 +8,8 @@ namespace core {
 
       private:
 
-         bool error;
+         // Note that a command is presumed invalid until successfully parsed
+         bool invalid;
 
          string verb;
          string directObject;
@@ -17,9 +18,26 @@ namespace core {
 
       public:
 
+         /*
+            Constructor for the Command class.
+         */
          Command();
 
-         inline bool isError() const {return error;}
+         /*
+            Returns true if the command is invalid.
+
+            Input: (none)
+            Output: (none)
+         */
+         inline bool isInvalid() const {return invalid;}
+
+         /*
+            Executes the command.
+
+            Input: (none)
+            Output: (none)
+         */
+         void execute();
    };
 }
 

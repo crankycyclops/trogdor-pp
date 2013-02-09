@@ -4,10 +4,16 @@ using namespace std;
 
 namespace core {
 
+
    Command::Command() {
 
-      // command is in an error state until we finish parsing
-      error = false;
+      // command is invalid until we successfully parse a command
+      invalid = true;
+   }
+
+
+   void Command::execute() {
+      // TODO: print error message if error == true
    }
 }
 
