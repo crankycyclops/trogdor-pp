@@ -45,7 +45,7 @@ namespace core {
 
       Command *command = new Command();
       command->read(*trogin, *trogout);
-
+*trogout << *command;
       if (!command->isInvalid()) {
          command->execute();
          // TODO: consider setting lastCommand

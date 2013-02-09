@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
+#include <cstring>
 
 #include "tokenizer.h"
+#include "vocabulary.h"
 
 using namespace std;
 
@@ -49,7 +51,7 @@ namespace core {
          */
          inline string getVerb() const {return verb;}
          inline string getDirectObject() const {return directObject;}
-         inline string getindirectObject() const {return indirectObject;}
+         inline string getIndirectObject() const {return indirectObject;}
          inline string getPreposition() const {return preposition;}
 
          /*
@@ -67,6 +69,11 @@ namespace core {
             Output: (none)
          */
          void execute();
+
+         /*
+            Makes Command object printable via trogout.
+         */
+         friend ostream &operator<<(ostream &out, const Command &c);
    };
 }
 

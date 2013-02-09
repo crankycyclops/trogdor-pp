@@ -26,8 +26,11 @@ namespace core {
 
       string commandStr;
 
-      out << "> ";
-      in >> commandStr;
+      // prompt the user until we get a response
+      do {
+         out << "> ";
+         getline(in, commandStr);
+      } while (0 == commandStr.length());
 
       parse(commandStr);
    }
@@ -115,14 +118,14 @@ namespace core {
 
       // an indirect object must be preceded by a preposition
       if (tokenizer->isEnd() || !isPreposition(token)) {
-         // TODO: test to make sure pushback is unnecessary
          return 0;
       }
 
       // anything after the preposition will be counted as part of the IDO
       preposition = tokenizer->getCurToken();
-
       tokenizer->next();
+      token = tokenizer->getCurToken();
+
       while (!tokenizer->isEnd()) {
 
          // ignore filler words
@@ -156,20 +159,48 @@ namespace core {
 
       // we found a preposition + indirect object
       else {
+         indirectObject = idobj;
          return 1;
       }
    }
 
 
    bool Command::isPreposition(const string word) {
-      // TODO
-      return false;
+
+      // g_prepositions defined in vocabulary.cpp
+      for (int i = 0; g_prepositions[i] != 0; i++) {
+         if (0 == strcmp(word.c_str(), g_prepositions[i])) {
+            return 1;
+         }
+      }
+
+      return 0;
    }
 
 
    bool Command::isFillerWord(const string word) {
-      // TODO
-      return false;
+
+      // g_fillerWords defined in vocabulary.cpp
+      for (int i = 0; g_fillerWords[i] != 0; i++) {
+         if (0 == strcmp(word.c_str(), g_fillerWords[i])) {
+            return 1;
+         }
+      }
+
+      return 0;
+   }
+
+
+   // For debugging purposes; allows us to print a Command object
+   ostream &operator<<(ostream &out, const Command &c) {
+
+      cout << "Verb: " << c.verb << '\n';
+      cout << "Direct Object: " << c.directObject << '\n';
+      cout << "Preposition: " << c.preposition << '\n';
+      cout << "Indirect Object: " << c.indirectObject << '\n';
+      cout << "Invalid? " << c.invalid << '\n';
+
+      return out;
    }
 }
 
