@@ -1,10 +1,9 @@
-using namespace std;
-
 #include <iostream>
 #include <cstdlib>
 
 #include "../core/include/game.h"
 
+using namespace std;
 
 int main(int argc, char **argv) {
 

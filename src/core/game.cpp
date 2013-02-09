@@ -1,7 +1,7 @@
-using namespace std;
-
 #include <cstdlib>
 #include "include/game.h"
+
+using namespace std;
 
 namespace core {
 

@@ -1,6 +1,6 @@
-using namespace std;
-
 #include "include/command.h"
+
+using namespace std;
 
 namespace core {
 
