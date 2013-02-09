@@ -107,6 +107,14 @@ namespace core {
          void start();
 
          /*
+            Puts the game into a stopped state.
+
+            Input: (none)
+            Output: (none)
+         */
+         void stop();
+
+         /*
             Returns the status of the game.
 
             Input: (none)

@@ -16,6 +16,7 @@ int main(int argc, char **argv) {
       currentGame->processCommand();
    }
 
+   cout << "Goodbye!\n\n";
    delete currentGame;
    return EXIT_SUCCESS;
 }

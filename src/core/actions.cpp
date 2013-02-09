@@ -24,8 +24,7 @@ namespace core {
 
    void QuitAction::execute(Command *command, Game *game) {
 
-      // TODO
-      cout << "Quit action stub!\n";
+      game->stop();
    }
 }
 

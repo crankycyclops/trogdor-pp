@@ -52,6 +52,13 @@ namespace core {
    }
 
 
+   void Game::stop() {
+
+      // TODO: cleanup?
+      inGame = false;
+   }
+
+
    void Game::processCommand() {
 
       Command *command = new Command();
