@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 
+#include "tokenizer.h"
+
 using namespace std;
 
 namespace core {
@@ -16,6 +18,16 @@ namespace core {
          string directObject;
          string indirectObject;
          string preposition;
+
+         void parse(string commandStr);
+
+         int parseDirectObject(Tokenizer *tokenizer);
+
+         int parseIndirectObject(Tokenizer *tokenizer);
+
+         bool isPreposition(const string word);
+
+         bool isFillerWord(const string word);
 
       public:
 
@@ -41,20 +53,20 @@ namespace core {
          inline string getPreposition() const {return preposition;}
 
          /*
+            Reads a command from the user.
+
+            Input: input stream (istream) and output stream (ostream)
+            Output: (none)
+         */
+         void read(istream &in, ostream &out);
+
+         /*
             Executes the command.
 
             Input: (none)
             Output: (none)
          */
          void execute();
-
-         /*
-            Reads a command and returns a Command object to represent it.
-
-            Input: input stream (istream) and output stream (ostream)
-            Output: Command object
-         */
-         static Command *read(istream &in, ostream &out);
    };
 }
 

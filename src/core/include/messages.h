@@ -43,3 +43,4 @@ namespace core {
          void display(string name, ostream &out) const;
    };
 }
+

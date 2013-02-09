@@ -13,12 +13,21 @@ namespace core {
          string wholeStr;   // string that we're tokenizing
          string curToken;   // the current token
 
+         /*
+            Called by the constructors to initialize the tokenizer.
+
+            Input: C string (const char *)
+            Output: (none)
+         */
+         void init(const char *str);
+
       public:
 
          /*
-            Constructor for the tokenizer class
+            Constructors for the tokenizer class
          */
-         Tokenizer(const char *str);
+         inline Tokenizer(const char *str) {init(str);}
+         inline Tokenizer(string str) {init(str.c_str());}
 
          /*
             Retrieve the current token.

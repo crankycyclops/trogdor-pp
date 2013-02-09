@@ -43,10 +43,12 @@ namespace core {
 
    void Game::processCommand() {
 
-      Command *command = Command::read(*trogin, *trogout);
+      Command *command = new Command();
+      command->read(*trogin, *trogout);
 
       if (!command->isInvalid()) {
          command->execute();
+         // TODO: consider setting lastCommand
       }
 
       else {
