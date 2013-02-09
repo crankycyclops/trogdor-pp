@@ -1,3 +1,7 @@
+#ifndef COMMAND_H
+#define COMMAND_H
+
+
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -76,4 +80,7 @@ namespace core {
          friend ostream &operator<<(ostream &out, const Command &c);
    };
 }
+
+
+#endif
 

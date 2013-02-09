@@ -1,3 +1,7 @@
+#ifndef MESSAGES_H
+#define MESSAGES_H
+
+
 #include <string>
 #include <boost/unordered_map.hpp>
 
@@ -43,4 +47,7 @@ namespace core {
          void display(string name, ostream &out) const;
    };
 }
+
+
+#endif
 

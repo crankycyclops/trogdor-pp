@@ -1,3 +1,7 @@
+#ifndef TOKENIZER_H
+#define TOKENIZER_H
+
+
 #include <cstring>
 #include <string>
 
@@ -62,4 +66,7 @@ namespace core {
          void rewind();
    };
 }
+
+
+#endif
 
