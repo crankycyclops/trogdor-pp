@@ -14,10 +14,10 @@ int main(int argc, char **argv) {
 
    currentGame->start();
    while (currentGame->inProgress()) {
-      // TODO
-      return EXIT_SUCCESS;
+      currentGame->processCommand();
    }
 
    delete currentGame;
    return EXIT_SUCCESS;
 }
+

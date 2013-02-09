@@ -1,5 +1,6 @@
 using namespace std;
 
+#include <cstdlib>
 #include "include/game.h"
 
 namespace core {
@@ -31,5 +32,7 @@ namespace core {
 
    void Game::processCommand() {
       // TODO
+      exit(1);
    }
 }
+
