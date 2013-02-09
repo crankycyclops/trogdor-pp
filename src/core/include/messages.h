@@ -40,6 +40,6 @@ namespace core {
             Input: string (message name)
             Output: (none)
          */
-         void display(string name);
+         void display(string name) const;
    };
 }

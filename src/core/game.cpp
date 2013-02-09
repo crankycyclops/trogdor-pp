@@ -12,6 +12,7 @@ namespace core {
       tin = &cin;
 
       inGame = false;
+      lastCommand = NULL;
    }
 
 
@@ -25,5 +26,10 @@ namespace core {
    void Game::start() {
 
       inGame = true;
+   }
+
+
+   void Game::processCommand() {
+      // TODO
    }
 }

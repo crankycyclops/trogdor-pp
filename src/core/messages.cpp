@@ -23,7 +23,7 @@ namespace core {
    }
 
 
-   void Messages::display(string name) {
+   void Messages::display(string name) const {
 
       string message = get(name);
 

@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 
+#include "command.h"
+
 using namespace std;
 
 namespace core {
@@ -28,7 +30,8 @@ namespace core {
 
       private:
 
-         bool inGame;
+         bool    inGame;
+         Command *lastCommand;
 
       public:
 
@@ -40,23 +43,6 @@ namespace core {
             Constructor for the Game class.
          */
          Game();
-
-         /*
-            Initializes the game, including the event handler, timer and all game
-            entities.
-
-            Input: Game definition XML file (default is game.xml)
-            Output: (none)
-         */
-         void initialize(string gameXML = "game.xml");
-
-         /*
-            Puts the game into a running state.
-
-            Input: (none)
-            Output: (none)
-         */
-         void start();
 
          /*
             Sets the game's error output stream.
@@ -83,11 +69,37 @@ namespace core {
          inline void setTin(istream *newin) {tin = newin;}
 
          /*
+            Initializes the game, including the event handler, timer and all game
+            entities.
+
+            Input: Game definition XML file (default is game.xml)
+            Output: (none)
+         */
+         void initialize(string gameXML = "game.xml");
+
+         /*
+            Puts the game into a running state.
+
+            Input: (none)
+            Output: (none)
+         */
+         void start();
+
+         /*
             Returns the status of the game.
 
             Input: (none)
             Output: boolean true if the game is running and false if it's not.
          */
-         inline bool inProgress() {return inGame;}
+         inline bool inProgress() const {return inGame;}
+
+         /*
+            Reads a command from the user and executes it.
+
+            Input: (none)
+            Output: (none)
+         */
+         void processCommand();
    };
 }
+
