@@ -45,6 +45,11 @@ namespace core {
          Game();
 
          /*
+            Destructor for the Game class.
+         */
+         ~Game();
+
+         /*
             Sets the game's error output stream.
 
             Input: new output stream (ostream)

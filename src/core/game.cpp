@@ -5,6 +5,7 @@ using namespace std;
 
 namespace core {
 
+
    Game::Game() {
 
       // default input and output streams
@@ -14,6 +15,14 @@ namespace core {
 
       inGame = false;
       lastCommand = NULL;
+   }
+
+
+   Game::~Game() {
+
+      if (NULL != lastCommand) {
+         delete lastCommand;
+      }
    }
 
 
