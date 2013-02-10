@@ -80,6 +80,21 @@ namespace core {
 
       if (!command->isInvalid()) {
 
+         // player is attempting to re-execute his last command
+         if (0 == command->getVerb().compare("a") ||
+         0 == command->getVerb().compare("again")) {
+
+            if (NULL != lastCommand) {
+               delete command;
+               command = lastCommand;
+            }
+
+            else {
+               *trogout << "You haven't entered any commands yet!\n";
+               return;
+            }
+         }
+
          Action *action = actions->getAction(command->getVerb());
 
          if (0 == action || !action->checkSyntax(command)) {
@@ -91,14 +106,18 @@ namespace core {
             pthread_mutex_lock(&resourceMutex);
             action->execute(command, this);
             pthread_mutex_unlock(&resourceMutex);
-
-            lastCommand = command;
          }
       }
 
       else {
          *trogout << "Sorry, I don't understand you.\n";
       }
+
+      if (lastCommand != command) {
+         delete lastCommand;
+      }
+
+      lastCommand = command;
    }   
 }
 
