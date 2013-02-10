@@ -53,8 +53,11 @@ namespace core {
 
       public:
 
-         /* keeps data consistent between threads */
+         /* lock on this to keep data consistent between threads */
          pthread_mutex_t resourceMutex;
+
+         /* lock on this to synchronize timer actions */
+         pthread_mutex_t timerMutex;
 
          ostream *trogerr;  /* error output stream */
          ostream *trogout;  /* console output stream */
