@@ -1,6 +1,7 @@
 #include "include/game.h"
 #include "include/actionmap.h"
 #include "include/actions.h"
+#include "include/timer.h"
 
 using namespace std;
 
@@ -17,6 +18,12 @@ namespace core {
       inGame = false;
       actions = new ActionMap(this);
       lastCommand = NULL;
+
+      // initialize thread mutexes
+      pthread_mutex_init(&resourceMutex, 0);
+      pthread_mutex_init(&timerMutex, 0);
+
+      timer = new Timer(this);
    }
 
 
@@ -25,6 +32,8 @@ namespace core {
       if (NULL != lastCommand) {
          delete lastCommand;
       }
+
+      delete timer;
    }
 
 
@@ -46,13 +55,21 @@ namespace core {
    void Game::start() {
 
       inGame = true;
+      timer->start();
    }
 
 
    void Game::stop() {
 
       // TODO: cleanup?
+      timer->stop();
       inGame = false;
+   }
+
+
+   unsigned long Game::getTime() const {
+
+      return timer->getTime();
    }
 
 
@@ -80,6 +97,6 @@ namespace core {
       else {
          *trogout << "Sorry, I don't understand you.\n";
       }
-   }
+   }   
 }
 

@@ -13,7 +13,9 @@ using namespace std;
 
 namespace core {
 
+
    class ActionMap; // resolves circular dependency ActionMap <-> Game
+   class Timer;     // resolves circular dependency Timer <-> Game
 
    /*
       Each Game object represents a self contained game and contains all
@@ -41,6 +43,7 @@ namespace core {
          bool       inGame;        // whether or not a game is in progress
          ActionMap  *actions;      // maps verbs to actions
          Command    *lastCommand;  // the last executed command
+         Timer      *timer;
 
          /*
             Called by initialize().  This initializes game actions and maps
@@ -129,6 +132,15 @@ namespace core {
             Output: boolean true if the game is running and false if it's not.
          */
          inline bool inProgress() const {return inGame;}
+
+         /*
+            Gets the current game time (in seconds.)  Note that I can't inline
+            this due to forward declaration stuff.  F*#@ me!
+
+            Input: (none)
+            Output: time in seconds (unsigned long)
+         */
+         unsigned long getTime() const;
 
          /*
             Reads a command from the user and executes it.
