@@ -40,8 +40,19 @@ namespace core {
    void Game::initActions() {
 
       QuitAction *quit = new QuitAction;
-
       actions->setAction("quit", quit);
+
+      MoveAction *move = new MoveAction;
+      actions->setAction("move", move);
+      actions->setAction("go", move);
+      actions->setAction("north", move);
+      actions->setAction("south", move);
+      actions->setAction("east", move);
+      actions->setAction("west", move);
+      actions->setAction("up", move);
+      actions->setAction("down", move);
+      actions->setAction("in", move);
+      actions->setAction("out", move);
    }
 
 

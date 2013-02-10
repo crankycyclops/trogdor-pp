@@ -1,6 +1,18 @@
 #define VOCABULARY_CPP
 
 
+const char *g_directions[] = {
+   "north",
+   "south",
+   "east",
+   "west",
+   "up",
+   "down",
+   "in",
+   "out",
+   0
+};
+
 const char *g_fillerWords[] = {
    "the",
    0

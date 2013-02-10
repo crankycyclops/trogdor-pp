@@ -4,6 +4,9 @@
 
 #ifndef VOCABULARY_CPP
 
+/* list of valid directions */
+extern const char *g_directions[];
+
 /* list of English filler words that we should ignore */
 extern const char *g_fillerWords[];
 
