@@ -2,6 +2,7 @@
 #include "include/game.h"
 #include "include/actionmap.h"
 #include "include/action.h"
+#include "include/utility.h"
 
 using namespace std;
 
@@ -44,7 +45,7 @@ namespace core {
       }
 
       // the first token will always be considered the "verb"
-      verb = tokenizer->getCurToken();
+      verb = strToLower(tokenizer->getCurToken());
 
       // we may have a direct and/or indirect object to look at
       tokenizer->next();
@@ -102,7 +103,7 @@ namespace core {
       }
 
       // set the command's fully assembled direct object!
-      directObject = dobj;
+      directObject = strToLower(dobj);
 
       // return a non-zero status if a direct object was found
       return dobj.length() > 0 ? 1 : 0;
@@ -120,7 +121,7 @@ namespace core {
       }
 
       // anything after the preposition will be counted as part of the IDO
-      preposition = tokenizer->getCurToken();
+      preposition = strToLower(tokenizer->getCurToken());
       tokenizer->next();
       token = tokenizer->getCurToken();
 
@@ -157,7 +158,7 @@ namespace core {
 
       // we found a preposition + indirect object
       else {
-         indirectObject = idobj;
+         indirectObject = strToLower(idobj);
          return 1;
       }
    }
