@@ -13,12 +13,14 @@ namespace core {
       time = 0;
    }
 
+/******************************************************************************/
 
    Timer::~Timer() {
 
       clearJobs();
    }
 
+/******************************************************************************/
 
    void Timer::tick() {
 
@@ -27,6 +29,7 @@ namespace core {
       time++;
    }
 
+/******************************************************************************/
 
    void Timer::clearJobs() {
 
@@ -35,6 +38,7 @@ namespace core {
       }
    }
 
+/******************************************************************************/
 
    void Timer::start() {
 
@@ -53,6 +57,7 @@ namespace core {
       }
    }
 
+/******************************************************************************/
 
    void Timer::stop() {
 
@@ -63,6 +68,7 @@ namespace core {
       }
    }
 
+/******************************************************************************/
 
    void Timer::reset() {
 
@@ -72,34 +78,18 @@ namespace core {
       pthread_mutex_unlock(&(game->timerMutex));
    }
 
+/******************************************************************************/
 
-   unsigned long Timer::insertJob(TimerJob *job) {
+   void Timer::insertJob(TimerJob *job) {
 
-
-      job->id = lastId++;
       job->initTime = time;
 
       pthread_mutex_lock(&(game->timerMutex));
       queue.insert(queue.end(), job);
       pthread_mutex_unlock(&(game->timerMutex));
-
-      return job->id;
    }
 
-
-   bool Timer::removeJob(unsigned long id) {
-
-      for (std::list<TimerJob *>::iterator i = queue.begin(); i != queue.end();
-      ++i) {
-         if ((*i)->getId() == id) {
-            queue.remove(*i);
-            return true;
-         }
-      }
-
-      return false;
-   }
-
+/******************************************************************************/
 
    void *doTick(void *timerObj) {
 

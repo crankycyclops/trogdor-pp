@@ -20,9 +20,11 @@ namespace core {
    // tick() inside of our timer object
    void *doTick(void *timerObj);
 
+/******************************************************************************/
 
    class TimerJob; // full declaration occurs after Timer in this file
 
+/******************************************************************************/
 
    /*
       The timer keeps track of a game's time and handles the scheduling of jobs
@@ -115,28 +117,26 @@ namespace core {
 
          /*
             Inserts a job into the queue for executions every n ticks of the
-            clock.  Sets and returns the job's id, which identifies it in case
-            it later needs to be manually removed.
+            clock.
 
-            Input: pointer to TimerJob object
-            Output: job's queue id
+            Input: Pointer to TimerJob object
+            Output: (none)
          */
-         unsigned long insertJob(TimerJob *job);
+         void insertJob(TimerJob *job);
 
          /*
-            Removes the job with the specified id from the timer's work queue.
-            If the job exists, this function will return true.  Otherwise, it
-            will return false.
+            Removes the job from the timer's work queue.
 
-            Input: id of job to remove
-            Output: true if the job existed and was removed and false if not
+            Input: Pointer to TimerJob object to remove
+            Output: (none)
          */
-         bool removeJob(unsigned long id);
+         inline void removeJob(TimerJob *job) {queue.remove(job);}
 
          // thread function that bootstraps our timer object and calls tick()
          friend void *doTick(void *timerObj);
    };
 
+/******************************************************************************/
 
    /*
       TimerJob is an abstract class that represents a single job in a timer
@@ -167,7 +167,6 @@ namespace core {
       */
       private:
 
-         unsigned long id;       // job's numeric id
          unsigned long initTime; // time when the job was registered in the queue
          int startTime;          // how long to wait before job's first execution
          int interval;           // timer ticks between each job execution
@@ -189,7 +188,6 @@ namespace core {
          */
          inline TimerJob(Game *g, int i = 1, int e = 1, int s = 1) {
 
-            id = 0;       // will be set by insertJob()
             initTime = 0; // will be set by insertJob()
 
             game = g;
@@ -205,7 +203,6 @@ namespace core {
          */
          virtual void main(TimerJob &job) = 0;
 
-         inline unsigned long getId() const {return id;}
          inline unsigned long getInitTime() const {return initTime;}
          inline int getStartTime() const {return startTime;}
          inline int getInterval() const {return interval;}
@@ -216,7 +213,7 @@ namespace core {
          inline void setExecutions(int e) {executions = e;}
 
          // allows insertJob() to set the job's id and initTime
-         friend unsigned long Timer::insertJob(TimerJob *job);
+         friend void Timer::insertJob(TimerJob *job);
    };
 }
 
