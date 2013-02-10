@@ -1,9 +1,23 @@
+#include <cstdio>
 #include "include/timer.h"
 
 using namespace std;
 
 namespace core {
 
+
+   // For debugging purposes; allows us to print a TimerJob object
+   ostream &operator<<(ostream &out, const TimerJob &j) {
+
+      cout << "initTime: " << j.getInitTime() << endl;
+      cout << "startTime: " << j.getStartTime() << endl;
+      cout << "interval: " << j.getInterval() << endl;
+      cout << "executions: " << j.getExecutions() << endl;
+
+      return out;
+   }
+
+/******************************************************************************/
 
    Timer::Timer(Game *gameRef) {
 
@@ -25,8 +39,39 @@ namespace core {
    void Timer::tick() {
 
       sleep(1);
-      // TODO
+
+      // increment the current game time
+      pthread_mutex_lock(&(game->timerMutex));
       time++;
+      pthread_mutex_unlock(&(game->timerMutex));
+
+      for (list<TimerJob *>::iterator i = queue.begin(); i != queue.end(); ++i) {
+
+         if ((*i)->getExecutions() != 0) {
+
+            if (time - (*i)->getInitTime() >= (*i)->getStartTime() &&
+            (time - (*i)->getInitTime() - (*i)->getStartTime()) % (*i)->getInterval() == 0) {
+
+               // run the job
+               pthread_mutex_lock(&(game->timerMutex));
+               (*i)->main(**i);
+               pthread_mutex_unlock(&(game->timerMutex));
+
+               // decrement executions (unless it's -1, which means the job
+               // should execute indefinitely)
+               if ((*i)->getExecutions() > 0) {
+                  (*i)->decExecutions();
+               }
+            }
+         }
+
+         // job is expired, so remove it
+         else {
+            pthread_mutex_lock(&(game->timerMutex));
+            queue.remove(*i);
+            pthread_mutex_unlock(&(game->timerMutex));
+         }
+      }
    }
 
 /******************************************************************************/

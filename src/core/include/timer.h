@@ -148,9 +148,9 @@ namespace core {
       and that there's a class, Task, which inherits TimerJob and performs some
       specific job):
 
-      // by default, constructor sets startTime to 1 for immediate execution,
-      // interval to 1 and executions to 1.
-      Task *task = new Task(currentGame);
+      // NOTE: if inside a game object, you'll have to cast this to (Game *),
+      // because this is a Game * const, not just Game *
+      Task *task = new Task(currentGame, 1, 1, 1);
 
       // registerJob will set the job's id and return it in case you need it later
       unsigned long id = timer->insertJob(task);
@@ -186,7 +186,7 @@ namespace core {
          /*
             Constructor for the TimerJob abstract class.
          */
-         inline TimerJob(Game *g, int i = 1, int e = 1, int s = 1) {
+         inline TimerJob(Game *g, int i, int e, int s) {
 
             initTime = 0; // will be set by insertJob()
 
@@ -212,7 +212,10 @@ namespace core {
          inline void setInterval(int i) {interval = i;}
          inline void setExecutions(int e) {executions = e;}
 
-         // allows insertJob() to set the job's id and initTime
+         // decrement executions
+         inline void decExecutions() {executions--;}
+
+         // allows Timer to interact with the TimerJob object
          friend void Timer::insertJob(TimerJob *job);
    };
 }

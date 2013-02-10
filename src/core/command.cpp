@@ -193,11 +193,11 @@ namespace core {
    // For debugging purposes; allows us to print a Command object
    ostream &operator<<(ostream &out, const Command &c) {
 
-      cout << "Verb: " << c.verb << '\n';
-      cout << "Direct Object: " << c.directObject << '\n';
-      cout << "Preposition: " << c.preposition << '\n';
-      cout << "Indirect Object: " << c.indirectObject << '\n';
-      cout << "Invalid? " << c.invalid << '\n';
+      cout << "Verb: " << c.verb << endl;
+      cout << "Direct Object: " << c.directObject << endl;
+      cout << "Preposition: " << c.preposition << endl;
+      cout << "Indirect Object: " << c.indirectObject << endl;
+      cout << "Invalid? " << c.invalid << endl;
 
       return out;
    }

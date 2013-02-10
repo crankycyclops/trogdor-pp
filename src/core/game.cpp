@@ -90,7 +90,7 @@ namespace core {
             }
 
             else {
-               *trogout << "You haven't entered any commands yet!\n";
+               *trogout << "You haven't entered any commands yet!" << endl;
                return;
             }
          }
@@ -98,7 +98,7 @@ namespace core {
          Action *action = actions->getAction(command->getVerb());
 
          if (0 == action || !action->checkSyntax(command)) {
-            *trogout << "Sorry, I don't understand you.\n";
+            *trogout << "Sorry, I don't understand you." << endl;
          }
 
          else {
@@ -110,7 +110,7 @@ namespace core {
       }
 
       else {
-         *trogout << "Sorry, I don't understand you.\n";
+         *trogout << "Sorry, I don't understand you." << endl;
       }
 
       if (lastCommand != command) {
