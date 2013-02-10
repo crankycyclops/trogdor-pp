@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
       currentGame->processCommand();
    }
 
-   cout << "Game lasted for " << currentGame->getTime()
+   cout << "Game lasted for " << currentGame->getTime() + 1
       << " seconds.  Goodbye!\n\n";
    delete currentGame;
    return EXIT_SUCCESS;

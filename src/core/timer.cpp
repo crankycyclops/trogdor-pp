@@ -73,6 +73,34 @@ namespace core {
    }
 
 
+   unsigned long Timer::insertJob(TimerJob *job) {
+
+
+      job->id = lastId++;
+      job->initTime = time;
+
+      pthread_mutex_lock(&(game->timerMutex));
+      queue.insert(queue.end(), job);
+      pthread_mutex_unlock(&(game->timerMutex));
+
+      return job->id;
+   }
+
+
+   bool Timer::removeJob(unsigned long id) {
+
+      for (std::list<TimerJob *>::iterator i = queue.begin(); i != queue.end();
+      ++i) {
+         if ((*i)->getId() == id) {
+            queue.remove(*i);
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+
    void *doTick(void *timerObj) {
 
       while (((Timer *)timerObj)->active) {

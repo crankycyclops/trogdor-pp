@@ -16,15 +16,20 @@ using namespace std;
 namespace core {
 
 
-   // Thread function that executes tick() inside of our timer object
+   // Thread function that's accessible by pthread_create() and which executes
+   // tick() inside of our timer object
    void *doTick(void *timerObj);
 
 
-   class TimerJob {
-
-   };
+   class TimerJob; // full declaration occurs after Timer in this file
 
 
+   /*
+      The timer keeps track of a game's time and handles the scheduling of jobs
+      that should be executed every n ticks of the clock.  It should be
+      instantiated inside of a Game object, and maintains an internal reference
+      to the game in which it was instantiated.
+   */
    class Timer {
 
       private:
@@ -108,8 +113,110 @@ namespace core {
          */
          void reset();
 
+         /*
+            Inserts a job into the queue for executions every n ticks of the
+            clock.  Sets and returns the job's id, which identifies it in case
+            it later needs to be manually removed.
+
+            Input: pointer to TimerJob object
+            Output: job's queue id
+         */
+         unsigned long insertJob(TimerJob *job);
+
+         /*
+            Removes the job with the specified id from the timer's work queue.
+            If the job exists, this function will return true.  Otherwise, it
+            will return false.
+
+            Input: id of job to remove
+            Output: true if the job existed and was removed and false if not
+         */
+         bool removeJob(unsigned long id);
+
          // thread function that bootstraps our timer object and calls tick()
          friend void *doTick(void *timerObj);
+   };
+
+
+   /*
+      TimerJob is an abstract class that represents a single job in a timer
+      queue.  Each time the job is executed, main() is called.  This class is
+      meant to be inherited by a class written to accomplish a specific task.
+
+      In a normal workflow, a typical use would be as follows (we'll assume that
+      we're inside a method of Game that has direct access to the timer object
+      and that there's a class, Task, which inherits TimerJob and performs some
+      specific job):
+
+      // by default, constructor sets startTime to 1 for immediate execution,
+      // interval to 1 and executions to 1.
+      Task *task = new Task(currentGame);
+
+      // registerJob will set the job's id and return it in case you need it later
+      unsigned long id = timer->insertJob(task);
+
+      The job has free reign to change any of its public or protected parameters
+      at any time during execution.  For example, a job that was originally
+      supposed to execute 1 time might increment executions to make it run one
+      additional time.
+   */
+   class TimerJob {
+
+      /*
+         The following values are used by the job queue.
+      */
+      private:
+
+         unsigned long id;       // job's numeric id
+         unsigned long initTime; // time when the job was registered in the queue
+         int startTime;          // how long to wait before job's first execution
+         int interval;           // timer ticks between each job execution
+
+         // Number of times to execute the job before removing it from the queue.
+         // This value is decremented on every tick of the clock, and when it
+         // reaches 0, it's removed from the queue. If set to -1, it will
+         // continue to execute indefinitely until it's removed manually.
+         int executions;
+
+      protected:
+
+         Game *game; // pointer to the game in which the timer resides
+
+      public:
+
+         /*
+            Constructor for the TimerJob abstract class.
+         */
+         inline TimerJob(Game *g, int i = 1, int e = 1, int s = 1) {
+
+            id = 0;       // will be set by insertJob()
+            initTime = 0; // will be set by insertJob()
+
+            game = g;
+            startTime = s;
+            interval = i;
+            executions = e;
+         }
+
+         /*
+            This is the function that will be executed every time the job runs.
+            It should be implemented in another class designed for a specific
+            job.
+         */
+         virtual void main(TimerJob &job) = 0;
+
+         inline unsigned long getId() const {return id;}
+         inline unsigned long getInitTime() const {return initTime;}
+         inline int getStartTime() const {return startTime;}
+         inline int getInterval() const {return interval;}
+         inline int getExecutions() const {return executions;}
+
+         inline void setStartTime(int s) {startTime = s;}
+         inline void setInterval(int i) {interval = i;}
+         inline void setExecutions(int e) {executions = e;}
+
+         // allows insertJob() to set the job's id and initTime
+         friend unsigned long Timer::insertJob(TimerJob *job);
    };
 }
 
