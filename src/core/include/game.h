@@ -4,6 +4,8 @@
 
 #include <iostream>
 #include <string>
+#include <cstdlib>
+#include <pthread.h>
 
 #include "command.h"
 
@@ -50,6 +52,9 @@ namespace core {
          void initActions();
 
       public:
+
+         /* keeps data consistent between threads */
+         pthread_mutex_t resourceMutex;
 
          ostream *trogerr;  /* error output stream */
          ostream *trogout;  /* console output stream */

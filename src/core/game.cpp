@@ -1,6 +1,3 @@
-#include <iostream>
-#include <cstdlib>
-
 #include "include/game.h"
 #include "include/actionmap.h"
 #include "include/actions.h"
@@ -73,7 +70,9 @@ namespace core {
          }
 
          else {
+            pthread_mutex_lock(&resourceMutex);
             action->execute(command, this);
+            pthread_mutex_unlock(&resourceMutex);
             // TODO: consider setting lastCommand
          }
       }
