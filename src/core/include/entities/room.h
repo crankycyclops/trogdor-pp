@@ -9,7 +9,7 @@ namespace core { namespace entity {
 
    class Room: public Place {
 
-      private:
+      protected:
 
          // connections to other rooms
          Room *north;

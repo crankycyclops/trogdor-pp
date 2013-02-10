@@ -11,6 +11,8 @@ namespace core { namespace entity {
 
       private:
 
+      protected:
+
       public:
    };
 }}

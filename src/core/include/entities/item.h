@@ -10,7 +10,7 @@ namespace core { namespace entity {
 
    class Item: public Thing {
 
-      private:
+      protected:
 
          Being *owner;
 

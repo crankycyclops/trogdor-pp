@@ -9,7 +9,7 @@ namespace core { namespace entity {
 
    class Being: public Thing {
 
-      private:
+      protected:
 
          // TODO: attributes class
          // TODO: inventory class

@@ -23,7 +23,7 @@ namespace core { namespace entity {
 
    class Place: public Entity {
 
-      private:
+      protected:
 
          // sequential list of all entities in a place
          vector<Thing *>    things;

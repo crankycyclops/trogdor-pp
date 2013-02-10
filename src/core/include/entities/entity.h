@@ -10,7 +10,7 @@ namespace core { namespace entity {
 
    class Entity {
 
-      private:
+      protected:
 
          Game *game;
 

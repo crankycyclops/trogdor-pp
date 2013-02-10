@@ -12,7 +12,7 @@ namespace core { namespace entity {
 
    class Thing: public Entity {
 
-      private:
+      protected:
 
          Place          *location;  // where the thing is located
          vector<string>  synonyms;  // list of synonyms for the thing
