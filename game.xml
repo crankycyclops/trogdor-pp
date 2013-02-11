@@ -3,8 +3,38 @@
 <game>
 
 
+   <!-- This section MUST come first.  The manifest declares the names and types
+        of all entities in the game.  If a game entity is defined below but is
+        not declared here first, the engine will throw an error.  All entities
+        declared in the manifest must be defined below.  If an entity is
+        declared in this section and is not defined below, the engine will throw
+        an error. -->
+   <manifest>
 
-   <!-- Section 0. Global Event Handlers and Scripts (optional) -->
+      <!-- every game must include at least one room named "start" -->
+      <rooms>
+         <room name="start"></room>
+         <room name="cave"></room>
+         <room name="chamber"></room>
+      </rooms>
+
+      <creatures>
+         <creature name="trogdor"></creature>
+      </creatures>
+
+      <objects>
+         <object name="candle"></object>
+         <object name="stick"></object>
+         <object name="rock"></object>
+         <object name="boulder"></object>
+         <object name="sword"></object>
+      </objects>
+
+   </manifest>
+
+
+
+   <!-- Global Event Handlers and Scripts (optional) -->
    <events>
 
       <!-- identifies one or more scripts containing event handling functions -->
@@ -17,7 +47,7 @@
 
 
 
-   <!-- Section I. Player Configuration -->
+   <!-- Player Configuration -->
    <player>
 
       <!-- configuration options related to the player's inventory -->
@@ -46,7 +76,7 @@
          <intelligence>10</intelligence>
       </attributes>
 
-      <!-- whether or not creature starts out alive or dead (optional:
+      <!-- whether or not player starts out alive or dead (optional:
            default is 1 for alive) -->
       <alive>1</alive>
 
@@ -65,7 +95,7 @@
 
 
 
-   <!-- Section II. Objects -->
+   <!-- Game Objects -->
    <objects>
 
       <!-- every object MUST HAVE a UNIQUE name -->
@@ -153,8 +183,7 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
 
 
 
-   <!-- Section III. Creatures -->
-
+   <!-- Creatures -->
    <creatures>
 
       <creature name="trogdor">
@@ -211,8 +240,7 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
 
 
 
-   <!-- Section IV. Rooms -->
-
+   <!-- Rooms -->
    <rooms>
 
       <!-- every room MUST HAVE a UNIQUE name.  One room MUST have the name
