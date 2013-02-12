@@ -5,7 +5,7 @@ debug:
 	g++ -g src/core/*.cpp src/standalone/*.cpp -o trogdor -pthread -lxml2
 
 freebsd:
-	g++ -I/usr/local/include -g src/core/*.cpp src/standalone/*.cpp -o trogdor -pthread -lxml2
+	g++ -I/usr/local/include -I/usr/local/include/libxml2 -L/usr/local/lib -g src/core/*.cpp src/standalone/*.cpp -o trogdor -pthread -lxml2
 
 lcount:
 	wc -l */*/*.cpp */*/*/*.h */*/*/*/*.h
