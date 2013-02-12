@@ -56,10 +56,10 @@ namespace core {
    }
 
 
-   void Game::initialize(string gameXML) {
+   bool Game::initialize(string gameXML) {
 
       initActions();
-      return;
+      return true;
    }
 
 

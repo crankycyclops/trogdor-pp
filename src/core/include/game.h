@@ -105,9 +105,9 @@ namespace core {
             entities.
 
             Input: Game definition XML file (default is game.xml)
-            Output: (none)
+            Output: True if initialization was successful and false if not.
          */
-         void initialize(string gameXML = "game.xml");
+         bool initialize(string gameXML = "game.xml");
 
          /*
             Puts the game into a running state.
