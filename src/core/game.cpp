@@ -58,6 +58,17 @@ namespace core {
 
    bool Game::initialize(string gameXML) {
 
+      try {
+         parser = new Parser(gameXML);
+         parser->parse();
+         // TODO: copy constructed objects over from parser
+      }
+
+      catch (string error) {
+         (*trogout) << error << endl;
+         return false;
+      }
+
       initActions();
       return true;
    }

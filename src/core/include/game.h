@@ -8,6 +8,7 @@
 #include <pthread.h>
 
 #include "command.h"
+#include "parser.h"
 
 using namespace std;
 
@@ -41,6 +42,7 @@ namespace core {
       private:
 
          bool       inGame;        // whether or not a game is in progress
+         Parser     *parser;       // parses game.xml and constructs entities
          ActionMap  *actions;      // maps verbs to actions
          Command    *lastCommand;  // the last executed command
          Timer      *timer;
