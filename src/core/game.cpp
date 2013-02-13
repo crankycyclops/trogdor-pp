@@ -2,6 +2,18 @@
 #include "include/actionmap.h"
 #include "include/actions.h"
 #include "include/timer.h"
+#include "include/parser.h"
+
+#include "include/entities/entity.h"
+#include "include/entities/place.h"
+#include "include/entities/room.h"
+#include "include/entities/thing.h"
+#include "include/entities/being.h"
+#include "include/entities/player.h"
+#include "include/entities/creature.h"
+#include "include/entities/item.h"
+#include "include/entities/object.h"
+
 
 using namespace std;
 

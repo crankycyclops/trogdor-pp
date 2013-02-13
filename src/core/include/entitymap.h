@@ -5,22 +5,23 @@
 #include <string>
 #include <boost/unordered_map.hpp>
 
-#include "entities/entity.h"
-#include "entities/place.h"
-#include "entities/room.h"
-#include "entities/thing.h"
-#include "entities/item.h"
-#include "entities/object.h"
-#include "entities/being.h"
-#include "entities/player.h"
-#include "entities/creature.h"
-
 
 using namespace std;
 using namespace boost;
 
 
 namespace core { namespace entity {
+
+   // avoid circular dependencies in include files
+   class Entity;
+   class Place;
+   class Room;
+   class Thing;
+   class Being;
+   class Player;
+   class Creature;
+   class Item;
+   class Object;
 
    /*
       EntityMap wraps around the unordered_map type and maps names to entities.
@@ -93,7 +94,7 @@ namespace core { namespace entity {
 
       inline Place *get(const string name) {
 
-         return static_cast<Place *>(EntityMap::get(name));
+         return (Place *)EntityMap::get(name);
       }
    };
 
@@ -103,7 +104,7 @@ namespace core { namespace entity {
 
       inline Room *get(const string name) {
 
-         return static_cast<Room *>(EntityMap::get(name));
+         return (Room *)EntityMap::get(name);
       }
    };
 
@@ -113,7 +114,7 @@ namespace core { namespace entity {
 
       inline Thing *get(const string name) {
 
-         return static_cast<Thing *>(EntityMap::get(name));
+         return (Thing *)EntityMap::get(name);
       }
    };
 
@@ -123,7 +124,7 @@ namespace core { namespace entity {
 
       inline Being *get(const string name) {
 
-         return static_cast<Being *>(EntityMap::get(name));
+         return (Being *)EntityMap::get(name);
       }
    };
 
@@ -133,7 +134,7 @@ namespace core { namespace entity {
 
       inline Player *get(const string name) {
 
-         return static_cast<Player *>(EntityMap::get(name));
+         return (Player *)EntityMap::get(name);
       }
    };
 
@@ -143,7 +144,7 @@ namespace core { namespace entity {
 
       inline Creature *get(const string name) {
 
-         return static_cast<Creature *>(EntityMap::get(name));
+         return (Creature *)EntityMap::get(name);
       }
    };
 
@@ -153,7 +154,7 @@ namespace core { namespace entity {
 
       inline Item *get(const string name) {
 
-         return static_cast<Item *>(EntityMap::get(name));
+         return (Item *)EntityMap::get(name);
       }
    };
 
@@ -163,7 +164,7 @@ namespace core { namespace entity {
 
       inline Object *get(const string name) {
 
-         return static_cast<Object *>(EntityMap::get(name));
+         return (Object *)EntityMap::get(name);
       }
    };
 }}
