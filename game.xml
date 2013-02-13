@@ -8,7 +8,13 @@
         not declared here first, the engine will throw an error.  All entities
         declared in the manifest must be defined below.  If an entity is
         declared in this section and is not defined below, the engine will throw
-        an error. -->
+        an error.
+
+         Note that each item, regardless of type, must have a unique name.
+         A room and an object, as an example, cannot both be named the same
+         thing.  If two or more objects need to be identified by the same word,
+         you can define synonyms for them in the actual definitions.
+   -->
    <manifest>
 
       <!-- every game must include at least one room named "start" -->
@@ -119,17 +125,25 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
             <message name="drop">You hesitate before dropping that awesome waxy goodness.</message>
          </messages>
 
-         <!-- one or more scripts can be attached to an object, which define
-              functions that get triggered by the event handler -->
-         <script src="script/object/candle.lua"></script>
+         <!-- define object's event handlers and attached scripts here -->
+         <events>
+            <!-- one or more scripts can be attached to an object, which define
+                 functions that get triggered by the event handler -->
+            <script src="script/object/candle.lua"></script>
 
-         <!-- event handlers (make sure functions are defined in scripts specific
-              to this object -->
-         <event name="beforeTakeObject">beforeTakeCandle</event>
-         <event name="beforeDropObject">beforeDropCandle</event>
+            <!-- Specific events that trigger functions in the script files
+                 above. -->
+            <event name="beforeTakeObject">beforeTakeCandle</event>
+            <event name="beforeDropObject">beforeDropCandle</event>
+         </events>
 
-         <synonym>fire</synonym>
-         <synonym>flame</synonym>
+         <!-- If the object should be identifiable by words other than the name,
+              define those words here. -->
+         <synonyms>
+            <synonym>fire</synonym>
+            <synonym>flame</synonym>
+         </synonyms>
+
       </object>
 
       <!-- owned by Trogdor the Burninator -->
@@ -139,6 +153,7 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
       </object>
 
       <object name="rock">
+
          <description>
 It's nothing special.  It's gray, bumpy and a little lopsided.
          </description>
@@ -148,7 +163,10 @@ It's nothing special.  It's gray, bumpy and a little lopsided.
               can achieve the same effect manually by setting this to 1.) -->
          <droppable>0</droppable>
 
-         <synonym>stone</synonym>
+         <synonyms>
+            <synonym>stone</synonym>
+         </synonyms>
+
       </object>
 
       <object name="boulder">
@@ -162,8 +180,11 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
               achieve the same effect manually by setting this to 1.)-->
          <takeable>0</takeable>
 
-         <synonym>rock</synonym>
-         <synonym>stone</synonym>
+         <synonyms>
+            <synonym>rock</synonym>
+            <synonym>stone</synonym>
+         </synonyms>
+
       </object>
 
       <object name="sword">
