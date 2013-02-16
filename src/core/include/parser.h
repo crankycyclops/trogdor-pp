@@ -38,6 +38,11 @@ namespace core {
          // Player object representing default settings for all new players
          entity::Player *player;
 
+         // When nextTag() encounters a closing tag, it's stored here.  Later,
+         // if this has a value, checkClosingTag() will use it instead of
+         // walking the XML tree.
+         string lastClosedTag;
+
          // hash tables for various types of entities
          // Note: the logical conclusion of having a hierarchical mapping of
          // object types is that no object of any type can share the same name!
@@ -52,18 +57,6 @@ namespace core {
          entity::ObjectMap    objects;
 
          /*
-            Parses the <game> section of the XML file.  Throws an exception if
-            there's a parse error.
-
-            Input:
-               (none)
-
-            Output:
-               (none)
-         */
-         void parseGame();
-
-         /*
             Returns the name of the current XML tag.
 
             Input:
@@ -76,6 +69,17 @@ namespace core {
 
             return (const char *)xmlTextReaderConstName(reader);
          }
+
+         /*
+            Returns the current tag's depth in the XML tree.
+
+            Input:
+               (none)
+
+            Output:
+               current tag's depth -- i.e. how deeply nested it is (int)
+         */
+         inline int getDepth() {return xmlTextReaderDepth(reader);}
 
          /*
             Advances position in XML to the next opening tag.  If the next tag
@@ -197,6 +201,36 @@ namespace core {
                value for the current tag.
          */
          string parseString();
+
+         /*
+            Parses the <game> section of the XML file.  Throws an exception if
+            there's a parse error.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseGame();
+
+         /*
+            This group of functions parses the <manifest> section of the XML
+            file.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseManifest();
+         void parseManifestRooms();
+         bool parseManifestRoom();  // returns true if room's name is "start"
+         void parseManifestCreatures();
+         void parseManifestCreature();
+         void parseManifestObjects();
+         void parseManifestObject();
 
       public:
 

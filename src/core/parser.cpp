@@ -36,15 +36,167 @@ namespace core {
       }
 
       parseGame();
+
+      // ignore any extra stuff that may exist in the XML file
+      if (nextTag()) {
+         cerr << filename << ": warning: ignoring contents after </game>" << endl;
+      }
    }
 
    /***************************************************************************/
 
    void Parser::parseGame() {
 
-      while (nextTag()) {
-         // TODO
+      stringstream s;
+
+      // the manifest ALWAYS comes first!
+      nextTag();
+      if (0 != getTagName().compare("manifest")) {
+         s << filename << ": expected <manifest> (line " <<
+            xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
       }
+
+      parseManifest();
+
+      // parse the remaining sections
+      //while (nextTag() && depth) {
+         // TODO: parse rest of game sections
+      //}
+
+      checkClosingTag("game");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseManifest() {
+
+      stringstream s;
+
+      while (nextTag() && 2 == getDepth()) {
+
+         if (0 == getTagName().compare("rooms")) {
+            parseManifestRooms();
+         }
+
+         else if (0 == getTagName().compare("creatures")) {
+            parseManifestCreatures();
+         }
+
+         else if (0 == getTagName().compare("objects")) {
+            parseManifestObjects();
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "manifest (line " << xmlTextReaderGetParserLineNumber(reader)
+               << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("manifest");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseManifestRooms() {
+
+      stringstream s;
+      bool startExists = false;  // true if room "start" exists
+
+      while (nextTag() && 3 == getDepth()) {
+
+         if (0 == getTagName().compare("room")) {
+            if (parseManifestRoom()) {
+               startExists = true;
+            }
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "rooms section of the manifest (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      if (!startExists) {
+         throw filename + ": at least one room with name \"start\" is required";
+      }
+
+      checkClosingTag("rooms");
+   }
+
+   /***************************************************************************/
+
+   bool Parser::parseManifestRoom() {
+
+      // TODO: returns true if room name is start, and false otherwise
+      checkClosingTag("room");
+      return true;
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseManifestObjects() {
+
+      stringstream s;
+
+      while (nextTag() && 3 == getDepth()) {
+
+         if (0 == getTagName().compare("object")) {
+            parseManifestObject();
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "objects section of the manifest (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("objects");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseManifestObject() {
+
+      // TODO
+      checkClosingTag("object");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseManifestCreatures() {
+
+      stringstream s;
+
+      while (nextTag() && 3 == getDepth()) {
+
+         if (0 == getTagName().compare("creature")) {
+            parseManifestCreature();
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "creatures section of the manifest (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("creatures");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseManifestCreature() {
+
+      // TODO
+      checkClosingTag("creature");
    }
 
    /***************************************************************************/
@@ -130,8 +282,14 @@ namespace core {
          status = xmlTextReaderRead(reader);
       }
 
+      // we've reached a closing tag, so signal subsequent call to
+      // checkClosingTag()
+      if (XML_ELEMENT_DECL == xmlTextReaderNodeType(reader)) {
+         lastClosedTag = getTagName();
+      }
+
       // we're supposed to be getting an opening tag
-      if (XML_ELEMENT_NODE != xmlTextReaderNodeType(reader)) {
+      else if (XML_ELEMENT_NODE != xmlTextReaderNodeType(reader)) {
          s << filename << ": expected opening tag (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
@@ -181,6 +339,21 @@ namespace core {
    void Parser::checkClosingTag(string tag) {
 
       stringstream s;
+
+      // check to see if nextTag() encountered a closing tag
+      if (lastClosedTag.length() > 0) {
+
+         if (0 != lastClosedTag.compare(tag)) {
+            s << "expected closing </" << tag << "> (line " <<
+               xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+
+         lastClosedTag = "";
+         return;
+      }
+
+      // TODO: skip comments (right now, we'll get an error!)
 
       if (xmlTextReaderRead(reader) < 0) {
          s << "Unknown error reading " << filename << " (line "
