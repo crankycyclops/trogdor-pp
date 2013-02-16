@@ -51,6 +51,21 @@ namespace core {
          entity::CreatureMap  creatures;
          entity::ObjectMap    objects;
 
+         /*
+            Returns the raw value of an XML tag.  Should not be called directly,
+            but should instead be used by parseBool, parseInt, etc.  Throws an
+            exception if there's a parsing error or if there's no value.
+
+            Input:
+               Name of closing tag to check for
+
+            Output:
+               (none)
+
+            Exceptions:
+               Throws exception if there's a parsing error or if there's no
+               value.
+         */
          const char *getNodeValue();
 
          /*
@@ -71,12 +86,72 @@ namespace core {
          */
          void checkClosingTag(string tag);
 
+         /*
+            Parses a boolean value from the last encountered XML tag and leaves
+            the current position in the XML file just after the value.  Throws
+            an exception if there's an error.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+
+            Exceptions:
+               Throws exception if there's a parsing error or if the value
+               isn't 1 (for true) or 0 (for false.)
+         */
          bool parseBool();
 
+         /*
+            Parses an integer value from the last encountered XML tag and leaves
+            the current position in the XML file just after the value.  Throws
+            an exception if there's an error.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+
+            Exceptions:
+               Throws exception if there's a parsing error or if the value
+               isn't an integer.
+         */
          int parseInt();
 
+         /*
+            Parses a double from the last encountered XML tag and leaves the
+            current position in the XML file just after the value.  Throws an
+            exception if there's an error.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+
+            Exceptions:
+               Throws exception if there's a parsing error or if the value
+               isn't a valid number.
+         */
          double parseDouble();
 
+         /*
+            Parses a string from the last encountered XML tag and leaves the
+            current position in the XML file just after the value.  Throws an
+            exception if there's an error.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+
+            Exceptions:
+               Throws exception if there's a parsing error or if there's no
+               value for the current tag.
+         */
          string parseString();
 
       public:
