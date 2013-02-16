@@ -125,6 +125,18 @@ namespace core {
       stringstream s;
       int status = xmlTextReaderRead(reader);
 
+      // skip comments
+      while (XML_COMMENT_NODE == xmlTextReaderNodeType(reader) && status > 0) {
+         status = xmlTextReaderRead(reader);
+      }
+
+      // we're supposed to be getting an opening tag
+      if (XML_ELEMENT_NODE != xmlTextReaderNodeType(reader)) {
+         s << filename << ": expected opening tag (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
       if (status < 0) {
          s << filename << ": unknown error reading " << filename << " (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
