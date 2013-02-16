@@ -36,7 +36,7 @@ namespace core {
 
       stringstream s;
 
-      s << "Expecting boolean 1 for true or 0 for false (line "
+      s << filename << ": Expecting boolean 1 for true or 0 for false (line "
          << xmlTextReaderGetParserLineNumber(reader) << ")";
 
       try {
@@ -54,7 +54,7 @@ namespace core {
 
       stringstream s;
 
-      s << "Expecting integer value (line "
+      s << filename << ": Expecting integer value (line "
          << xmlTextReaderGetParserLineNumber(reader) << ")";
 
       try {
@@ -72,7 +72,7 @@ namespace core {
 
       stringstream s;
 
-      s << "Expecting floating point number (line "
+      s << filename << ": Expecting floating point number (line "
          << xmlTextReaderGetParserLineNumber(reader) << ")";
 
       try {
@@ -91,7 +91,7 @@ namespace core {
       stringstream s;
       string value = getNodeValue();
 
-      s << "Tag requires a value (line "
+      s << filename << ": Tag requires a value (line "
          << xmlTextReaderGetParserLineNumber(reader) << ")";
 
       if (value.length() > 0) {
