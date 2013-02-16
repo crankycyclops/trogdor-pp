@@ -132,7 +132,8 @@ namespace core {
 
    bool Parser::parseManifestRoom() {
 
-      // TODO: returns true if room name is start, and false otherwise
+      // TODO: returns true if room name is start, and false 
+      cout << "manifest room: " << getAttribute("name") << endl;
       checkClosingTag("room");
       return true;
    }
@@ -165,6 +166,7 @@ namespace core {
    void Parser::parseManifestObject() {
 
       // TODO
+      cout << "manifest object: " << getAttribute("name") << endl;
       checkClosingTag("object");
    }
 
@@ -196,6 +198,7 @@ namespace core {
    void Parser::parseManifestCreature() {
 
       // TODO
+      cout << "manifest creature: " << getAttribute("name") << endl;
       checkClosingTag("creature");
    }
 
@@ -310,6 +313,24 @@ namespace core {
       else {
          return true;
       }
+   }
+
+   /***************************************************************************/
+
+   string Parser::getAttribute(const char *name) {
+
+      const char *attr;
+      stringstream s;
+
+      attr = (const char *)xmlTextReaderGetAttribute(reader, (xmlChar *)name);
+
+      if (!attr) {
+         s << filename << ": missing attribute '" << name << "' (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      return attr;
    }
 
    /***************************************************************************/

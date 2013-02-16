@@ -99,6 +99,8 @@ namespace core {
          */
          bool nextTag();
 
+         string getAttribute(const char *name);
+
          /*
             Returns the raw value of an XML tag.  Should not be called directly,
             but should instead be used by parseBool, parseInt, etc.  Throws an
