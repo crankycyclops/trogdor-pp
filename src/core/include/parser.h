@@ -52,6 +52,18 @@ namespace core {
          entity::ObjectMap    objects;
 
          /*
+            Parses the <game> section of the XML file.  Throws an exception if
+            there's a parse error.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseGame();
+
+         /*
             Returns the name of the current XML tag.
 
             Input:
@@ -64,18 +76,6 @@ namespace core {
 
             return (const char *)xmlTextReaderConstName(reader);
          }
-
-         /*
-            Parses the <game> section of the XML file.  Throws an exception if
-            there's a parse error.
-
-            Input:
-               (none)
-
-            Output:
-               (none)
-         */
-         void parseGame();
 
          /*
             Advances position in XML to the next opening tag.  If the next tag
