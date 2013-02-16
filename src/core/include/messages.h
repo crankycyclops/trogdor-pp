@@ -20,6 +20,26 @@ namespace core {
       public:
 
          /*
+            Constructor is required because there's a copy constructor, but we
+            don't actually need it to do anything.
+         */
+         inline Messages() {}
+
+         /*
+            Copy constructor.
+         */
+         inline Messages (const Messages &m) {messageTable = m.messageTable;}
+
+         /*
+            Overloaded assignment operator.
+         */
+         inline Messages &operator=(const Messages &m) {
+
+            messageTable = m.messageTable;
+            return *this;
+         }
+
+         /*
             Gets a message by name.  If it doesn't exist, an exception will be
             thrown.
 

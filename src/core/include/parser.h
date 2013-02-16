@@ -234,6 +234,29 @@ namespace core {
          void parseManifestObjects();
          void parseManifestObject();
 
+         /*
+            Parse the contents of a Messages object from XML.
+
+            Input:
+               depth -- how deeply nested <message> tags will be (int)
+
+            Output:
+               Messages object containing the parsed messages
+         */
+         Messages *parseMessages(int depth);
+
+         /*
+            Called by parseMessages() to parse a single message from the XML.
+            Stores the result in the Message object pointed to by m.
+
+            Input:
+               Messages object that will contain the message
+
+            Output:
+               (none)
+         */
+         void parseMessage(Messages *m);
+
       public:
 
          /*

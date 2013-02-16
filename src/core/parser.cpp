@@ -204,6 +204,39 @@ namespace core {
 
    /***************************************************************************/
 
+   Messages *Parser::parseMessages(int depth) {
+
+      stringstream s;
+      Messages *m = new Messages;
+
+      while (nextTag() && depth == getDepth()) {
+
+         if (0 == getTagName().compare("message")) {
+            parseMessage(m);
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "messages section -- expected <message> (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("messages");
+      return m;
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseMessage(Messages *m) {
+
+      m->set(getAttribute("name"), getNodeValue());
+      checkClosingTag("message");
+   }
+
+   /***************************************************************************/
+
    bool Parser::parseBool() {
 
       stringstream s;
