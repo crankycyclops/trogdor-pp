@@ -1,5 +1,5 @@
 default:
-	g++ src/core/*.cpp src/standalone/*.cpp -o trogdor -pthread -lxml2
+	g++ -I/usr/include/libxml2 src/core/*.cpp src/standalone/*.cpp -o trogdor -pthread -lxml2
 
 debug:
 	g++ -g src/core/*.cpp src/standalone/*.cpp -o trogdor -pthread -lxml2
