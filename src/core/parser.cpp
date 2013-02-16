@@ -43,7 +43,7 @@ namespace core {
    void Parser::parseGame() {
 
       while (nextTag()) {
-
+         // TODO
       }
    }
 
