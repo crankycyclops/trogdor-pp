@@ -27,7 +27,24 @@ namespace core {
 
    void Parser::parse() {
 
-      // TODO
+      if (!nextTag()) {
+         throw filename + ": empty XML file";
+      }
+
+      if (0 != getTagName().compare("game")) {
+         throw filename + ": expecting <game>";
+      }
+
+      parseGame();
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseGame() {
+
+      while (nextTag()) {
+
+      }
    }
 
    /***************************************************************************/
@@ -99,6 +116,30 @@ namespace core {
       }
 
       throw s.str();
+   }
+
+   /***************************************************************************/
+
+   bool Parser::nextTag() {
+
+      stringstream s;
+      int status = xmlTextReaderRead(reader);
+
+      if (status < 0) {
+         s << filename << ": unknown error reading " << filename << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      // we've reached the end of the XML file
+      else if (0 == status) {
+         return false;
+      }
+
+      // we have a tag to parse
+      else {
+         return true;
+      }
    }
 
    /***************************************************************************/

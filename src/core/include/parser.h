@@ -52,6 +52,50 @@ namespace core {
          entity::ObjectMap    objects;
 
          /*
+            Returns the name of the current XML tag.
+
+            Input:
+               (none)
+
+            Output:
+               name of the tag
+         */
+         inline string getTagName() {
+
+            return (const char *)xmlTextReaderConstName(reader);
+         }
+
+         /*
+            Parses the <game> section of the XML file.  Throws an exception if
+            there's a parse error.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseGame();
+
+         /*
+            Advances position in XML to the next opening tag.  If the next tag
+            is an unbalanced closing tag, or if there's a parse error, an
+            exception will be thrown.
+
+            Input:
+               (none)
+
+            Output:
+               True if another tag was parsed and false if there was nothing
+               left to parse.
+
+            Exceptions:
+               Exception is thrown if the next tag isn't opening or there's a
+               parse error.
+         */
+         bool nextTag();
+
+         /*
             Returns the raw value of an XML tag.  Should not be called directly,
             but should instead be used by parseBool, parseInt, etc.  Throws an
             exception if there's a parsing error or if there's no value.
