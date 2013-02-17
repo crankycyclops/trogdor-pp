@@ -4,9 +4,11 @@
 
 #include <string>
 
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
+extern "C" {
+   #include <lua.h>
+   #include <lualib.h>
+   #include <lauxlib.h>
+}
 
 using namespace std;
 
@@ -16,6 +18,9 @@ namespace core {
    class LuaState {
 
       private:
+
+         // number of function arguments pushed onto the Lua stack
+         int nArgs;
 
          // Lua state
          lua_State *L;
@@ -30,6 +35,7 @@ namespace core {
          */
          inline LuaState() {
 
+            nArgs = 0;
             lastErrorMsg = "";
             L = luaL_newstate();
 
@@ -83,11 +89,56 @@ namespace core {
             Output:
                (none)
          */
-         inline void pushNilArgument() {lua_pushnil(L);}
-         inline void pushArgument(bool arg) {lua_pushboolean(L, (int)arg);}
-         inline void pushArgument(string arg) {lua_pushstring(L, arg.c_str());}
-         inline void pushArgument(int arg) {lua_pushnumber(L, (lua_Number)arg);}
-         inline void pushArgument(double arg) {lua_pushnumber(L, (lua_Number)arg);}
+         inline void pushNilArgument() {
+
+            lua_pushnil(L);
+            nArgs++;
+         }
+
+         inline void pushArgument(bool arg) {
+
+            lua_pushboolean(L, (int)arg);
+            nArgs++;
+         }
+
+         inline void pushArgument(string arg) {
+
+            lua_pushstring(L, arg.c_str());
+            nArgs++;
+         }
+
+         inline void pushArgument(int arg) {
+
+            lua_pushnumber(L, (lua_Number)arg);
+            nArgs++;
+         }
+
+         inline void pushArgument(double arg) {
+
+            lua_pushnumber(L, (lua_Number)arg);
+            nArgs++;
+         }
+
+         /*
+            Primes the Lua state by parsing it so that recently added scripts,
+            global variables, etc. will be seen by the interpreter.  This gets
+            called automatically by loadScriptFromFile() and
+            loadScriptFromString(), but may also be called manually if desired.
+            Throws an exception with a message (string) if there's an error.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline void prime() {
+
+            if (lua_pcall(L, 0, 0, 0)) {
+               string s = "error: " + string(lua_tostring(L, -1));
+               throw s;
+            }
+         }
 
          /*
             Executes the specified function.  If there's an error, lastErrorMsg
@@ -96,11 +147,12 @@ namespace core {
 
             Input:
                function (string)
+               number of return values (default is 0)
 
             Output:
                True if execution was successful and false if not
          */
-         bool execute(string function);
+         bool execute(string function, int nReturnVals = 0);
    };
 
 }
