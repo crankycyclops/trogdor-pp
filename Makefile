@@ -1,8 +1,8 @@
 default:
-	g++ -I/usr/include/libxml2 src/core/*.cpp src/standalone/*.cpp -o trogdor -pthread -lxml2
+	g++ -I/usr/include/libxml2 -I/usr/include/lua5.1 src/core/*.cpp src/standalone/*.cpp -o trogdor -pthread -lxml2 -llua5.1
 
 debug:
-	g++ -I/usr/include/libxml2 -g src/core/*.cpp src/standalone/*.cpp -o trogdor -pthread -lxml2
+	g++ -I/usr/include/libxml2 -I/usr/include/lua5.1 -g src/core/*.cpp src/standalone/*.cpp -o trogdor -pthread -lxml2 -llua5.1
 
 freebsd:
 	g++ -I/usr/local/include -I/usr/local/include/libxml2 -L/usr/local/lib -g src/core/*.cpp src/standalone/*.cpp -o trogdor -pthread -lxml2
