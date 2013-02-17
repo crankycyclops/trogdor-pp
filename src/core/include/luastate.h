@@ -15,6 +15,26 @@ using namespace std;
 
 namespace core {
 
+   /*
+      LuaState wraps around a (aptly named) lua state variable and allows us to
+      perform basic operations on it, specifically loading scripts and calling
+      functions.  A typical workflow might look something like this:
+
+      LuaState L;
+
+      try {
+         L.loadScriptFromFile("script.lua");
+         L.call("functionName");
+         L.pushArgument("string arg");
+         L.execute();
+      }
+
+      // handle errors
+      catch (string error) {
+         cout << error << endl;
+      }
+
+   */
    class LuaState {
 
       private:
@@ -101,6 +121,12 @@ namespace core {
             nArgs++;
          }
 
+         inline void pushArgument(const char *arg) {
+
+            lua_pushstring(L, arg);
+            nArgs++;
+         }
+
          inline void pushArgument(string arg) {
 
             lua_pushstring(L, arg.c_str());
@@ -141,18 +167,30 @@ namespace core {
          }
 
          /*
-            Executes the specified function.  If there's an error, lastErrorMsg
-            will be set and false will be returned.  Otherwise, true will be
-            returned to signal a successful execution.
+            Gets us ready to execute the specified function.  This should always
+            be called BEFORE running passArgument() and friends.  And exception
+            with an error message will be thrown if the function doesn't exist
+            or if there's an error.
 
             Input:
-               function (string)
+               function name (string)
+
+            Output:
+               (none)
+         */
+         void call(string function);
+
+         /*
+            Executes the function set up by LuaState::call().  If there's an
+            error, lastErrorMsg will be set and an exception will be thrown.
+
+            Input:
                number of return values (default is 0)
 
             Output:
-               True if execution was successful and false if not
+               (none)
          */
-         bool execute(string function, int nReturnVals = 0);
+         void execute(int nReturnVals = 0);
    };
 
 }

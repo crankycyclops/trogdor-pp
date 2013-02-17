@@ -68,21 +68,29 @@ namespace core {
 
    /***************************************************************************/
 
-   bool LuaState::execute(string function, int nReturnVals) {
+   void LuaState::call(string function) {
 
       lua_getglobal(L, function.c_str());
 
-      // only call function if it exists
+      // only get ready to execute function if it exists
       if (!lua_isfunction(L, lua_gettop(L))) {
          lastErrorMsg = "function '" + function + "' does not exist";
-         return false;
+         throw lastErrorMsg;
       }
+   }
+
+   /***************************************************************************/
+
+   void LuaState::execute(int nReturnVals) {
 
       if (lua_pcall(L, nArgs, nReturnVals, 0)) {
          lastErrorMsg = "Script error: ";
          lastErrorMsg += lua_tostring(L, -1);
-         return false;
+         nArgs = 0;
+         throw lastErrorMsg;
       }
+
+      nArgs = 0;
    }
 }
 
