@@ -103,7 +103,11 @@ namespace core {
       }
 
       if (tables.size() > 0) {
-         // TODO
+         for (LuaTable::LuaTableTable::iterator i = tables.begin();
+         i != tables.end(); i++) {
+            pushArgument(i->second);
+            lua_setfield(L, lua_gettop(L), i->first.c_str());
+         }
       }
    }
 
