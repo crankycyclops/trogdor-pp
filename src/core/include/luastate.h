@@ -51,7 +51,7 @@ namespace core {
       public:
 
          /*
-            Constructor for the ScriptState object.
+            Constructor for the LuaState object.
          */
          inline LuaState() {
 
@@ -115,12 +115,6 @@ namespace core {
             nArgs++;
          }
 
-         inline void pushArgument(bool arg) {
-
-            lua_pushboolean(L, (int)arg);
-            nArgs++;
-         }
-
          inline void pushArgument(const char *arg) {
 
             lua_pushstring(L, arg);
@@ -142,6 +136,12 @@ namespace core {
          inline void pushArgument(double arg) {
 
             lua_pushnumber(L, (lua_Number)arg);
+            nArgs++;
+         }
+
+         inline void pushArgument(bool arg) {
+
+            lua_pushboolean(L, (int)arg);
             nArgs++;
          }
 
