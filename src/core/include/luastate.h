@@ -10,6 +10,9 @@ extern "C" {
    #include <lauxlib.h>
 }
 
+#include "luatable.h"
+
+
 using namespace std;
 
 
@@ -127,12 +130,6 @@ namespace core {
             nArgs++;
          }
 
-         inline void pushArgument(int arg) {
-
-            lua_pushnumber(L, (lua_Number)arg);
-            nArgs++;
-         }
-
          inline void pushArgument(double arg) {
 
             lua_pushnumber(L, (lua_Number)arg);
@@ -144,6 +141,8 @@ namespace core {
             lua_pushboolean(L, (int)arg);
             nArgs++;
          }
+
+         void pushArgument(LuaTable arg);
 
          /*
             Primes the Lua state by parsing it so that recently added scripts,
