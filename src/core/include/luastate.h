@@ -19,7 +19,7 @@ using namespace std;
 namespace core {
 
    /*
-      LuaState wraps around a (aptly named) lua state variable and allows us to
+      LuaState wraps around an (aptly named) lua state variable and allows us to
       perform basic operations on it, specifically loading scripts and calling
       functions.  A typical workflow might look something like this:
 
@@ -28,7 +28,7 @@ namespace core {
       try {
          L.loadScriptFromFile("script.lua");
          L.call("functionName");
-         L.pushArgument("string arg");
+         L.pushArgument("this is a string");
          L.execute();
       }
 
@@ -50,6 +50,19 @@ namespace core {
 
          // error message that resulted from the last operation
          string lastErrorMsg;
+
+         /*
+            Called by pushArgument(LuaTable arg) and by pushTable recursively
+            (for nested tables) to do the actual work of pushing a table onto
+            the Lua stack for passing to a function.
+
+            Input:
+               LuaTable object
+
+            Output:
+               (none)
+         */
+         void pushTable(LuaTable arg);
 
       public:
 
@@ -142,7 +155,11 @@ namespace core {
             nArgs++;
          }
 
-         void pushArgument(LuaTable arg);
+         inline void pushArgument(LuaTable arg) {
+
+            nArgs++;
+            pushTable(arg);
+         }
 
          /*
             Primes the Lua state by parsing it so that recently added scripts,

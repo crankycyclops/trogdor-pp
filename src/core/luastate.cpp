@@ -6,6 +6,50 @@ using namespace std;
 namespace core {
 
 
+   void LuaState::pushTable(LuaTable arg) {
+
+      LuaTable::StringTable strings = arg.getStrings();
+      LuaTable::NumberTable numbers = arg.getNumbers();
+      LuaTable::BoolTable bools = arg.getBools();
+      LuaTable::LuaTableTable tables = arg.getTables();
+
+      lua_newtable(L);
+
+      if (strings.size() > 0) {
+         for (LuaTable::StringTable::iterator i = strings.begin();
+         i != strings.end(); i++) {
+            lua_pushstring(L, i->second.c_str());
+            lua_setfield(L, -2, i->first.c_str());
+         }
+      }
+
+      if (numbers.size() > 0) {
+         for (LuaTable::NumberTable::iterator i = numbers.begin();
+         i != numbers.end(); i++) {
+            lua_pushnumber(L, i->second);
+            lua_setfield(L, -2, i->first.c_str());
+         }
+      }
+
+      if (bools.size() > 0) {
+         for (LuaTable::BoolTable::iterator i = bools.begin();
+         i != bools.end(); i++) {
+            lua_pushboolean(L, i->second);
+            lua_setfield(L, -2, i->first.c_str());
+         }
+      }
+
+      if (tables.size() > 0) {
+         for (LuaTable::LuaTableTable::iterator i = tables.begin();
+         i != tables.end(); i++) {
+            pushTable(i->second);
+            lua_setfield(L, -2, i->first.c_str());
+         }
+      }
+   }
+
+   /***************************************************************************/
+
    void LuaState::loadScriptFromFile(string filename) {
 
       int status;
@@ -68,51 +112,6 @@ namespace core {
 
    /***************************************************************************/
 
-   void LuaState::pushArgument(LuaTable arg) {
-
-      LuaTable::StringTable strings = arg.getStrings();
-      LuaTable::NumberTable numbers = arg.getNumbers();
-      LuaTable::BoolTable bools = arg.getBools();
-      LuaTable::LuaTableTable tables = arg.getTables();
-
-      lua_newtable(L);
-
-      if (strings.size() > 0) {
-
-         for (LuaTable::StringTable::iterator i = strings.begin();
-         i != strings.end(); i++) {
-            lua_pushstring(L, i->second.c_str());
-            lua_setfield(L, lua_gettop(L), i->first.c_str());
-         }
-      }
-
-      if (numbers.size() > 0) {
-         for (LuaTable::NumberTable::iterator i = numbers.begin();
-         i != numbers.end(); i++) {
-            lua_pushnumber(L, i->second);
-            lua_setfield(L, lua_gettop(L), i->first.c_str());
-         }
-      }
-
-      if (bools.size() > 0) {
-         for (LuaTable::BoolTable::iterator i = bools.begin();
-         i != bools.end(); i++) {
-            lua_pushboolean(L, i->second);
-            lua_setfield(L, lua_gettop(L), i->first.c_str());
-         }
-      }
-
-      if (tables.size() > 0) {
-         for (LuaTable::LuaTableTable::iterator i = tables.begin();
-         i != tables.end(); i++) {
-            pushArgument(i->second);
-            lua_setfield(L, lua_gettop(L), i->first.c_str());
-         }
-      }
-   }
-
-   /***************************************************************************/
-
    void LuaState::call(string function) {
 
       lua_getglobal(L, function.c_str());
@@ -129,7 +128,7 @@ namespace core {
    void LuaState::execute(int nReturnVals) {
 
       if (lua_pcall(L, nArgs, nReturnVals, 0)) {
-         lastErrorMsg = "Script error: ";
+         lastErrorMsg = "script error: ";
          lastErrorMsg += lua_tostring(L, -1);
          nArgs = 0;
          throw lastErrorMsg;

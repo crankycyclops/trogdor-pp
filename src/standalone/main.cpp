@@ -2,7 +2,6 @@
 #include <cstdlib>
 
 #include "../core/include/game.h"
-#include "../core/include/luastate.h"
 
 using namespace std;
 

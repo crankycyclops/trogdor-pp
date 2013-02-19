@@ -53,6 +53,7 @@ namespace core {
          */
          inline void setField(string key, const char *value) {strings[key] = value;}
          inline void setField(string key, string value) {strings[key] = value;}
+         inline void setField(string key, int value) {numbers[key] = value;}
          inline void setField(string key, double value) {numbers[key] = value;}
          inline void setField(string key, bool value) {bools[key] = value;}
          inline void setField(string key, LuaTable value) {tables[key] = value;}
@@ -65,7 +66,7 @@ namespace core {
                (none)
 
             Output:
-               Iterators over all set key => value pairs
+               Const references to our hash tables
          */
          inline const StringTable   &getStrings() const {return strings;}
          inline const NumberTable   &getNumbers() const {return numbers;}
