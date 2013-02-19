@@ -5,12 +5,35 @@
 #include <string>
 #include <iterator>
 #include <boost/unordered_map.hpp>
+#include <boost/variant.hpp>
 
 using namespace std;
 using namespace boost;
 
 
 namespace core {
+
+
+   class LuaTable;   // forward declaration for LuaTableValue
+
+
+   /*
+      Represents a single value, which gets mapped to a key.  Value can be of
+      more than one type.
+   */
+   typedef struct {
+
+      enum {
+         LUATABLE_VALUE_STRING,
+         LUATABLE_VALUE_NUMBER,
+         LUATABLE_VALUE_BOOLEAN,
+         LUATABLE_VALUE_TABLE,
+         LUATABLE_VALUE_FUNCTION
+      } type;
+
+      boost::variant<string, double, bool, LuaTable *> value;
+
+   } LuaTableValue;
 
 
    /*
@@ -23,55 +46,105 @@ namespace core {
 
       public:
 
-         typedef unordered_map<string, string> StringTable;
-         typedef unordered_map<string, double> NumberTable;
-         typedef unordered_map<string, bool> BoolTable;
-         typedef unordered_map<string, LuaTable> LuaTableTable;
+         typedef unordered_map<string, LuaTableValue> TableValues;
 
       private:
 
-         // Hash tables mapping field names to values (one for each type)
-         StringTable    strings;
-         NumberTable    numbers;
-         BoolTable      bools;
-         LuaTableTable  tables;
+         TableValues values;
 
       public:
 
          /*
-            setField() sets a value for the specified key.  Each overloaded
-            method will populate the appropriate hash table.  Note: there's no
-            implemented way to check for setting different value types with the
-            same key name (for example, a string and a double, both under the
-            key "value".  If such a thing occurs, one will ultimately be
-            overwritten by the other when it's pushed onto the Lua stack, and
-            which one happens to overwrite the other is undefined.
+            setField() sets a value for the specified key.
 
             Input:
                key (name of the field -- string)
                value (value to be paired with the key -- varied type)
          */
-         inline void setField(string key, const char *value) {strings[key] = value;}
-         inline void setField(string key, string value) {strings[key] = value;}
-         inline void setField(string key, int value) {numbers[key] = value;}
-         inline void setField(string key, double value) {numbers[key] = value;}
-         inline void setField(string key, bool value) {bools[key] = value;}
-         inline void setField(string key, LuaTable value) {tables[key] = value;}
+         inline void setField(string key, const char *value) {
+
+            LuaTableValue v;
+            v.type = LuaTableValue::LUATABLE_VALUE_STRING;
+            string s = value;
+            v.value = s;
+
+            values[key] = v;
+         }
+
+         inline void setField(string key, string value) {
+
+            LuaTableValue v;
+            v.type = LuaTableValue::LUATABLE_VALUE_STRING;
+            v.value = value;
+
+            values[key] = v;
+         }
+
+         inline void setField(string key, int value) {
+
+            LuaTableValue v;
+            v.type = LuaTableValue::LUATABLE_VALUE_NUMBER;
+            v.value = (double)value;
+
+            values[key] = v;
+         }
+
+         inline void setField(string key, double value) {
+
+            LuaTableValue v;
+            v.type = LuaTableValue::LUATABLE_VALUE_NUMBER;
+            v.value = value;
+
+            values[key] = v;
+         }
+
+         inline void setField(string key, bool value) {
+
+            LuaTableValue v;
+            v.type = LuaTableValue::LUATABLE_VALUE_BOOLEAN;
+            v.value = value;
+
+            values[key] = v;
+         }
+
+         inline void setField(string key, LuaTable &value) {
+
+            LuaTableValue v;
+            v.type = LuaTableValue::LUATABLE_VALUE_TABLE;
+            v.value = &value;
+
+            values[key] = v;
+         }
+
+         inline void setFieldFunction(string key, const char *func) {
+
+            LuaTableValue v;
+            v.type = LuaTableValue::LUATABLE_VALUE_FUNCTION;
+            v.value = func;
+
+            values[key] = v;
+         }
+
+         inline void setFieldFunction(string key, string func) {
+
+            LuaTableValue v;
+            v.type = LuaTableValue::LUATABLE_VALUE_FUNCTION;
+            v.value = func;
+
+            values[key] = v;
+         }
 
          /*
-            Returns const references for each hash table.  This is used by
-            LuaState when it retrieves and sets these values on the Lua stack.
+            Returns const reference to our hash table of values.  This is used
+            by LuaState when it retrieves and sets these values on the Lua stack.
 
             Input:
                (none)
 
             Output:
-               Const references to our hash tables
+               Const references to hash table
          */
-         inline const StringTable   &getStrings() const {return strings;}
-         inline const NumberTable   &getNumbers() const {return numbers;}
-         inline const BoolTable     &getBools()   const {return bools;}
-         inline const LuaTableTable &getTables()  const {return tables;}
+         inline const TableValues   &getValues()  const {return values;}
    };
 }
 

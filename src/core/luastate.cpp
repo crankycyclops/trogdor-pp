@@ -8,43 +8,41 @@ namespace core {
 
    void LuaState::pushTable(LuaTable arg) {
 
-      LuaTable::StringTable strings = arg.getStrings();
-      LuaTable::NumberTable numbers = arg.getNumbers();
-      LuaTable::BoolTable bools = arg.getBools();
-      LuaTable::LuaTableTable tables = arg.getTables();
+      LuaTable::TableValues values = arg.getValues();
 
       lua_newtable(L);
 
-      if (strings.size() > 0) {
-         for (LuaTable::StringTable::iterator i = strings.begin();
-         i != strings.end(); i++) {
-            lua_pushstring(L, i->second.c_str());
-            lua_setfield(L, -2, i->first.c_str());
-         }
-      }
+      for (LuaTable::TableValues::iterator i = values.begin();
+      i != values.end(); i++) {
 
-      if (numbers.size() > 0) {
-         for (LuaTable::NumberTable::iterator i = numbers.begin();
-         i != numbers.end(); i++) {
-            lua_pushnumber(L, i->second);
-            lua_setfield(L, -2, i->first.c_str());
-         }
-      }
+         string key = i->first;
+         LuaTableValue v = i->second;
 
-      if (bools.size() > 0) {
-         for (LuaTable::BoolTable::iterator i = bools.begin();
-         i != bools.end(); i++) {
-            lua_pushboolean(L, i->second);
-            lua_setfield(L, -2, i->first.c_str());
-         }
-      }
+         switch (v.type) {
 
-      if (tables.size() > 0) {
-         for (LuaTable::LuaTableTable::iterator i = tables.begin();
-         i != tables.end(); i++) {
-            pushTable(i->second);
-            lua_setfield(L, -2, i->first.c_str());
+            case LuaTableValue::LUATABLE_VALUE_STRING:
+               lua_pushstring(L, boost::get<std::string>(v.value).c_str());
+               break;
+
+            case LuaTableValue::LUATABLE_VALUE_NUMBER:
+               lua_pushnumber(L, boost::get<double>(v.value));
+               break;
+
+            case LuaTableValue::LUATABLE_VALUE_BOOLEAN:
+               lua_pushboolean(L, boost::get<bool>(v.value));
+               break;
+
+            case LuaTableValue::LUATABLE_VALUE_TABLE:
+               pushTable(*boost::get<LuaTable *>(v.value));
+               break;
+
+            // TODO: add support for function type
+
+            default:
+               throw "LuaState::pushTable: invalid type: wtf happened...?";
          }
+
+         lua_setfield(L, -2, key.c_str());
       }
    }
 
