@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include "eventarg.h"
+
 
 using namespace std;
 

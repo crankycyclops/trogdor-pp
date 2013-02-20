@@ -2,11 +2,13 @@
 #define ENTITY_H
 
 
-#include "../game.h"
 #include "../messages.h"
 
 
 namespace core { namespace entity {
+
+
+   class Game; // forward declaration for Entity
 
    class Entity {
 

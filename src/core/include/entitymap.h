@@ -5,6 +5,15 @@
 #include <string>
 #include <boost/unordered_map.hpp>
 
+#include "entities/entity.h"
+#include "entities/place.h"
+#include "entities/thing.h"
+#include "entities/room.h"
+#include "entities/being.h"
+#include "entities/item.h"
+#include "entities/player.h"
+#include "entities/creature.h"
+#include "entities/object.h"
 
 using namespace std;
 using namespace boost;
@@ -12,16 +21,6 @@ using namespace boost;
 
 namespace core { namespace entity {
 
-   // avoid circular dependencies in include files
-   class Entity;
-   class Place;
-   class Room;
-   class Thing;
-   class Being;
-   class Player;
-   class Creature;
-   class Item;
-   class Object;
 
    /*
       EntityMap wraps around the unordered_map type and maps names to entities.

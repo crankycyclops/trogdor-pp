@@ -21,19 +21,6 @@ namespace core {
    class Timer;     // resolves circular dependency Timer <-> Game
    class Parser;    // resolves circular dependency Parser <-> Game
 
-   // avoid circular dependencies for entity definitions, which include game.h
-   namespace entity {
-      class Entity;
-      class Place;
-      class Room;
-      class Thing;
-      class Being;
-      class Player;
-      class Creature;
-      class Item;
-      class Object;
-   }
-
 
    /*
       Each Game object represents a self contained game and contains all
