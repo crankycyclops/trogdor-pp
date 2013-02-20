@@ -8,6 +8,7 @@
 #include <pthread.h>
 
 #include "command.h"
+#include "eventhandler.h"
 #include "entitymap.h"
 
 
@@ -57,11 +58,12 @@ namespace core {
 
       private:
 
-         bool       inGame;        // whether or not a game is in progress
-         Parser     *parser;       // parses game.xml and constructs entities
-         ActionMap  *actions;      // maps verbs to actions
-         Command    *lastCommand;  // the last executed command
-         Timer      *timer;
+         bool         inGame;        // whether or not a game is in progress
+         Parser       *parser;       // parses game.xml and constructs entities
+         ActionMap    *actions;      // maps verbs to actions
+         Command      *lastCommand;  // the last executed command
+         Timer        *timer;
+         EventHandler *events;
 
          // Hash table of all entities in the game
          entity::EntityMap    entities;

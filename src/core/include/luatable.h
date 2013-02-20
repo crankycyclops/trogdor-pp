@@ -144,7 +144,7 @@ namespace core {
             Output:
                Const references to hash table
          */
-         inline const TableValues   &getValues()  const {return values;}
+         inline const TableValues &getValues() const {return values;}
    };
 }
 
