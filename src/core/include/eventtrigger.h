@@ -7,12 +7,13 @@
 
 using namespace std;
 
-namespace core {
+namespace core { namespace event {
+
 
    class EventTrigger {
 
    };
-}
+}}
 
 
 #endif

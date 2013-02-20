@@ -58,12 +58,13 @@ namespace core {
 
       private:
 
-         bool         inGame;        // whether or not a game is in progress
-         Parser       *parser;       // parses game.xml and constructs entities
-         ActionMap    *actions;      // maps verbs to actions
-         Command      *lastCommand;  // the last executed command
-         Timer        *timer;
-         EventHandler *events;
+         bool       inGame;        // whether or not a game is in progress
+         Parser     *parser;       // parses game.xml and constructs entities
+         ActionMap  *actions;      // maps verbs to actions
+         Command    *lastCommand;  // the last executed command
+         Timer      *timer;
+
+         event::EventHandler *events;
 
          // Hash table of all entities in the game
          entity::EntityMap    entities;

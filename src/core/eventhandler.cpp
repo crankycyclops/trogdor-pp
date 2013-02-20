@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace core {
+namespace core { namespace event {
 
 
    bool EventHandler::event(const char *event, int nArgs, ...) {
@@ -13,11 +13,23 @@ namespace core {
 
       for (EventListenerList::iterator i = listeners.begin();
       i != listeners.end(); i++) {
-         // TODO
+
+         // TODO: pass args
+         (*i)->execute(event);
+         // TODO: rewind arg list
+
+         // if we turn off allowAction, make sure it stays off
+         if (allowAction) {
+            allowAction = (*i)->allowAction();
+         }
+
+         if (!(*i)->continueExecution()) {
+            break;
+         }
       }
 
       listeners.clear();
       return allowAction;
    }
-}
+}}
 

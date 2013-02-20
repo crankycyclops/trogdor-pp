@@ -10,7 +10,7 @@
 
 using namespace std;
 
-namespace core {
+namespace core { namespace event {
 
    class EventHandler {
 
@@ -59,7 +59,7 @@ namespace core {
          */
          bool event(const char *event, int nArgs, ...);
    };
-}
+}}
 
 
 #endif
