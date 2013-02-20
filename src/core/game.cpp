@@ -36,6 +36,7 @@ namespace core {
       pthread_mutex_init(&timerMutex, 0);
 
       timer = new Timer(this);
+      events = new EventHandler;
    }
 
 
@@ -46,6 +47,7 @@ namespace core {
       }
 
       delete timer;
+      delete events;
    }
 
 
