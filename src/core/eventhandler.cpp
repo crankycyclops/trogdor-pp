@@ -1,3 +1,4 @@
+#include <cstdarg>
 #include "include/eventhandler.h"
 
 using namespace std;
@@ -5,7 +6,7 @@ using namespace std;
 namespace core { namespace event {
 
 
-   bool EventHandler::event(const char *event, int nArgs, ...) {
+   bool EventHandler::event(const char *event, EventArgumentList args) {
 
       // false if we should not allow the action that triggered the event to
       // continue
@@ -14,9 +15,7 @@ namespace core { namespace event {
       for (EventListenerList::iterator i = listeners.begin();
       i != listeners.end(); i++) {
 
-         // TODO: pass args
-         (*i)->execute(event);
-         // TODO: rewind arg list
+         (*i)->execute(event, args);
 
          // if we turn off allowAction, make sure it stays off
          if (allowAction) {

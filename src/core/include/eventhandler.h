@@ -12,6 +12,7 @@ using namespace std;
 
 namespace core { namespace event {
 
+
    class EventHandler {
 
       public:
@@ -50,14 +51,13 @@ namespace core { namespace event {
 
             Input:
                Event name (C string)
-               Number of arguments (int)
-               Arguments (variadic)
+               Arguments (vector of EventArguments)
 
             Output:
                True if the action that triggered the event should continue and
                false if it should be suppressed.
          */
-         bool event(const char *event, int nArgs, ...);
+         bool event(const char *event, EventArgumentList args = 0);
    };
 }}
 
