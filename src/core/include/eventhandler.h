@@ -14,10 +14,14 @@ namespace core {
 
    class EventHandler {
 
+      public:
+
+         typedef list<EventListener *> EventListenerList;
+
       private:
 
          // list of EventListener objects
-         list<EventListener *> listeners;
+         EventListenerList listeners;
 
       public:
 

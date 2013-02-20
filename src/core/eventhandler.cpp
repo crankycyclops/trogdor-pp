@@ -7,9 +7,17 @@ namespace core {
 
    bool EventHandler::event(const char *event, int nArgs, ...) {
 
-      // TODO
+      // false if we should not allow the action that triggered the event to
+      // continue
+      bool allowAction = true;
+
+      for (EventListenerList::iterator i = listeners.begin();
+      i != listeners.end(); i++) {
+         // TODO
+      }
+
       listeners.clear();
-      return true;
+      return allowAction;
    }
 }
 
