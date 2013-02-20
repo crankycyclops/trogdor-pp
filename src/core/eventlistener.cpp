@@ -15,7 +15,18 @@ namespace core { namespace event {
       }
 
       for (EventTriggerList::iterator j = i->second.begin(); j != i->second.end(); j++) {
-         // TODO: call j->execute();
+
+         (*j)->execute(args);
+
+         // if we already disabled the action, make sure it stays disabled
+         if (allowActionFlag) {
+            allowActionFlag = (*j)->allowAction();
+         }
+
+         if (!(*j)->continueExecution()) {
+            continueExecutionFlag = false;
+            break;
+         }
       }
    }
 }}
