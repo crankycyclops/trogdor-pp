@@ -6,6 +6,7 @@
 #include <boost/unordered_map.hpp>
 
 #include "eventtrigger.h"
+#include "luaeventtrigger.h"
 
 
 using namespace std;
