@@ -51,6 +51,7 @@ namespace core {
          Command    *lastCommand;  // the last executed command
          Timer      *timer;
 
+         // TODO: going to need an event listener here too
          event::EventHandler *events;
 
          // Hash table of all entities in the game

@@ -3,12 +3,23 @@
 
 
 #include "../messages.h"
+#include "../luastate.h"
+
+namespace core {
+
+   class Game;
+
+   namespace event {
+
+      class EventListener;
+   }
+}
+
+using namespace core::event;
 
 
 namespace core { namespace entity {
 
-
-   class Game; // forward declaration for Entity
 
    class Entity {
 
@@ -23,8 +34,8 @@ namespace core { namespace entity {
 
          Messages msgs;
 
-         //TODO: lua_State *L;
-         // TODO: event handlers
+         LuaState *L;
+         EventListener *triggers;
 
       public:
 

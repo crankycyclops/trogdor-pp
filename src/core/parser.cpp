@@ -13,14 +13,18 @@ namespace core {
       if (NULL == reader) {
          throw "failed to open " + gameFile + "!\n";
       }
+
+      gameL = new LuaState();
+      eventListener = new EventListener();
    }
 
    /***************************************************************************/
 
    Parser::~Parser() {
 
-      // TODO: do I free entity objects inside?
+      // TODO: do I free entity objects inside, or let Game do it?
       xmlFreeTextReader(reader);
+      // TODO: do I free gameL and eventListener, or let Game do it?
    }
 
    /***************************************************************************/

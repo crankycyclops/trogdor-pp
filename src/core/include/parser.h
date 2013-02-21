@@ -14,6 +14,8 @@
 #include "utility.h"
 #include "entitymap.h"
 #include "entities/player.h"
+#include "luastate.h"
+#include "eventlistener.h"
 
 
 using namespace std;
@@ -46,7 +48,7 @@ namespace core {
          // hash tables for various types of entities
          // Note: the logical conclusion of having a hierarchical mapping of
          // object types is that no object of any type can share the same name!
-         // This can be worked around via synonyms :)
+         // This can be worked around via aliases :)
          entity::EntityMap    entities;
          entity::PlaceMap     places;
          entity::ThingMap     things;
@@ -55,6 +57,12 @@ namespace core {
          entity::ItemMap      items;
          entity::CreatureMap  creatures;
          entity::ObjectMap    objects;
+
+         // Global Lua state for the entire game
+         LuaState *gameL;
+
+         // Global EventListener for the entire game
+         event::EventListener *eventListener;
 
          /*
             Returns the name of the current XML tag.

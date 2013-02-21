@@ -39,7 +39,7 @@ namespace core { namespace event {
          */
          inline void addListener(EventListener *l) {
 
-            listeners.insert(listeners.begin(), l);
+            listeners.insert(listeners.end(), l);
          }
 
          /*
