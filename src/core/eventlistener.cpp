@@ -5,11 +5,31 @@ using namespace std;
 namespace core { namespace event {
 
 
+   void EventListener::add(const char *event, EventTrigger *trigger) {
+
+      EventTriggerList *triggerList;
+
+      EventTriggersMap::iterator i = triggers.find(event);
+
+      if (i == triggers.end()) {
+         triggerList = new EventTriggerList();
+         triggers[event] = triggerList;
+      }
+
+      else {
+         triggerList = i->second;
+      }
+
+      triggerList->insert(triggerList->end(), trigger);
+   }
+
+   /***************************************************************************/
+
    void EventListener::execute(const char *event, EventArgumentList args) {
 
       EventTriggersMap::iterator i = triggers.find(event);
 
-      for (EventTriggerList::iterator j = i->second.begin(); j != i->second.end(); j++) {
+      for (EventTriggerList::iterator j = i->second->begin(); j != i->second->end(); j++) {
 
          (*j)->execute(args);
 

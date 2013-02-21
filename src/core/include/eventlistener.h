@@ -19,7 +19,7 @@ namespace core { namespace event {
       public:
 
          typedef list<EventTrigger *> EventTriggerList;
-         typedef unordered_map<const char *, EventTriggerList> EventTriggersMap;
+         typedef unordered_map<const char *, EventTriggerList *> EventTriggersMap;
 
       private:
 
@@ -53,10 +53,12 @@ namespace core { namespace event {
             for (EventTriggersMap::iterator i = triggers.begin();
             i != triggers.end(); i++) {
 
-               for (EventTriggerList::iterator j = i->second.begin();
-               j != i->second.end(); j++) {
+               for (EventTriggerList::iterator j = i->second->begin();
+               j != i->second->end(); j++) {
                   delete *j;
                }
+
+               delete i->second;
             }
          }
 
@@ -67,7 +69,27 @@ namespace core { namespace event {
          inline bool continueExecution() const {return continueExecutionFlag;}
 
          /*
+            Adds an EventTrigger to the list of things to execute when the
+            specified event is triggered.
+
+            Input:
+               event name (C string)
+               Pointer to EventTrigger-derived object
+
+            Output:
+               (none)
+         */
+         void add(const char *event, EventTrigger *trigger);
+
+         /*
             Executes all EventTriggers for a given event.  
+
+            Input:
+               event name (C string)
+               arguments (EventArgumentList)
+
+            Output:
+               (none)
          */
          void execute(const char *event, EventArgumentList args);
    };
