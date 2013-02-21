@@ -265,6 +265,24 @@ namespace core {
          */
          void parseMessage(Messages *m);
 
+         /*
+            Parses an <events> section and populates the given LuaState and
+            EventListener objects.  Throws an exception if there's an error.
+
+            Input:
+               Pointer to LuaState
+               Pointer to EventListener
+               Depth in XML tree (int)
+
+            Output:
+               (none)
+         */
+         void parseEvents(LuaState *L, EventListener *triggers, int depth);
+
+         void parseScript(LuaState *L, int depth);
+
+         void parseEvent(EventListener *triggers, int depth);
+
       public:
 
          /*

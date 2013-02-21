@@ -64,8 +64,8 @@ namespace core {
       parseManifest();
 
       // parse the remaining sections
-      //while (nextTag() && depth) {
-         // TODO: parse rest of game sections
+      //while (nextTag() && depth >= 1) {
+         // TODO
       //}
 
       checkClosingTag("game");
@@ -237,6 +237,49 @@ namespace core {
 
       m->set(getAttribute("name"), getNodeValue());
       checkClosingTag("message");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseEvents(LuaState *L, EventListener *triggers, int depth) {
+
+      stringstream s;
+
+      while (nextTag() && depth == getDepth()) {
+
+         if (0 == getTagName().compare("script")) {
+            parseScript(L, depth + 1);
+         }
+
+         else if (0 == getTagName().compare("event")) {
+            parseEvent(triggers, depth + 1);
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "<events> (line " << xmlTextReaderGetParserLineNumber(reader)
+               << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("events");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseScript(LuaState *L, int depth) {
+      // TODO
+      cout << "<script>" << endl;
+      checkClosingTag("script");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseEvent(EventListener *triggers, int depth) {
+      // TODO
+      cout << "<event>" << endl;
+      checkClosingTag("event");
    }
 
    /***************************************************************************/
