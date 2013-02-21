@@ -30,5 +30,13 @@ namespace core { namespace event {
       listeners.clear();
       return allowAction;
    }
+
+   /***************************************************************************/
+
+   bool EventHandler::event(const char *event) {
+
+      EventArgumentList empty;
+      return EventHandler::event(event, empty);
+   }
 }}
 

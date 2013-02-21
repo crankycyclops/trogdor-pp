@@ -57,7 +57,13 @@ namespace core { namespace event {
                True if the action that triggered the event should continue and
                false if it should be suppressed.
          */
-         bool event(const char *event, EventArgumentList args = 0);
+         bool event(const char *event, EventArgumentList args);
+
+         /*
+            Wrapper around the event() function above with no arguments.  Same
+            input and output as mentioned above, minus the EventArgumentList.
+         */
+         bool event(const char *event);
    };
 }}
 
