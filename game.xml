@@ -139,10 +139,10 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
 
          <!-- If the object should be identifiable by words other than the name,
               define those words here. -->
-         <synonyms>
-            <synonym>fire</synonym>
-            <synonym>flame</synonym>
-         </synonyms>
+         <aliases>
+            <alias>fire</alias>
+            <alias>flame</alias>
+         </aliases>
 
       </object>
 
@@ -163,9 +163,9 @@ It's nothing special.  It's gray, bumpy and a little lopsided.
               can achieve the same effect manually by setting this to 1.) -->
          <droppable>0</droppable>
 
-         <synonyms>
-            <synonym>stone</synonym>
-         </synonyms>
+         <aliases>
+            <alias>stone</alias>
+         </aliases>
 
       </object>
 
@@ -180,10 +180,10 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
               achieve the same effect manually by setting this to 1.)-->
          <takeable>0</takeable>
 
-         <synonyms>
-            <synonym>rock</synonym>
-            <synonym>stone</synonym>
-         </synonyms>
+         <aliases>
+            <alias>rock</alias>
+            <alias>stone</alias>
+         </aliases>
 
       </object>
 
