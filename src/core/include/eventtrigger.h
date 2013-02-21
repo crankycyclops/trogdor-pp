@@ -12,7 +12,7 @@ namespace core { namespace event {
 
    class EventTrigger {
 
-      private:
+      protected:
 
          // set to false if we wish to suppress the action that originally
          // triggered the event
