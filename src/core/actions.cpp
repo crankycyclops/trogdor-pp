@@ -23,8 +23,12 @@ namespace core {
    }
 
 
-   void QuitAction::execute(Command *command, Game *game) {
+   void QuitAction::execute(Player *player, Command *command, Game *game) {
 
+      // TODO: this isn't multi-player safe
+      // this should instead remove player from game and destroy player object
+      // then, in standalone (and in multi-player client later), we would
+      // continue while game is running AND player is still in game
       game->stop();
    }
 
@@ -70,7 +74,7 @@ namespace core {
    }
 
 
-   void MoveAction::execute(Command *command, Game *game) {
+   void MoveAction::execute(Player *player, Command *command, Game *game) {
 
       string direction = "";
 

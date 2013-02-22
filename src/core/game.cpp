@@ -109,7 +109,7 @@ namespace core {
    }
 
 
-   void Game::processCommand() {
+   void Game::processCommand(Player *player) {
 
       Command *command = new Command();
       command->read(*trogin, *trogout);
@@ -140,7 +140,7 @@ namespace core {
          else {
 
             pthread_mutex_lock(&resourceMutex);
-            action->execute(command, this);
+            action->execute(player, command, this);
             pthread_mutex_unlock(&resourceMutex);
          }
       }

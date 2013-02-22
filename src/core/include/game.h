@@ -3,6 +3,7 @@
 
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <cstdlib>
 #include <pthread.h>
@@ -121,6 +122,38 @@ namespace core {
          inline void setTrogin(istream *newin) {trogin = newin;}
 
          /*
+            Creates a new player and inserts it into the game.  Throws an
+            exception if an entity with the given name already exists.
+
+            Input:
+               Player name (string)
+
+            Output:
+               Pointer to Player object
+         */
+         inline Player *createPlayer(string name) {
+
+            if (entities.isset(name)) {
+               stringstream s;
+               s << "Entity with name '" << name << "' already exists";
+               throw s.str();
+            }
+
+            // TODO: implement Player::copy constructor and use that with default
+            // (and then set the name after)
+            // OR: maybe have a copy method that copies just properties and
+            // stuff after construction?
+            Player *player = new Player(this, name);
+
+            entities.set(name, player);
+            things.set(name, player);
+            beings.set(name, player);
+            players.set(name, player);
+
+            return player;
+         }
+
+         /*
             Initializes the game, including the event handler, timer and all game
             entities.
 
@@ -165,10 +198,10 @@ namespace core {
          /*
             Reads a command from the user and executes it.
 
-            Input: (none)
+            Input: Player executing command
             Output: (none)
          */
-         void processCommand();
+         void processCommand(Player *player);
    };
 }
 

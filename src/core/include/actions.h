@@ -23,7 +23,7 @@ namespace core {
          */
          virtual bool checkSyntax(Command *command);
 
-         virtual void execute(Command *command, Game *game);
+         virtual void execute(Player *player, Command *command, Game *game);
    };
 
 /******************************************************************************/
@@ -43,7 +43,7 @@ namespace core {
          */
          virtual bool checkSyntax(Command *command);
 
-         virtual void execute(Command *command, Game *game);
+         virtual void execute(Player *player, Command *command, Game *game);
    }; 
 }
 

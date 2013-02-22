@@ -9,6 +9,7 @@ using namespace std;
 
 namespace core {
 
+
    /*
       This abstract class models a specific action in the game.  The verb in
       a user's command determines which action is executed.  All actions
@@ -24,8 +25,10 @@ namespace core {
             and false if it is not.  It's up to the specific action class to
             implement this method.
 
-            Input: command
-            Output: bool
+            Input:
+               Command
+            Output:
+               bool
          */
          virtual bool checkSyntax(Command *command) = 0;
 
@@ -33,10 +36,14 @@ namespace core {
             Executes the action.  This mehod will be implemented by the specific
             action.
 
-            Input: command (Command), Game in which command is made (Game *)
-            Output: (none)
+            Input:
+               Player executing command
+               Command
+               Game in which command is made (Game *)
+            Output:
+               (none)
          */
-         virtual void execute(Command *command, Game *game) = 0;
+         virtual void execute(Player *player, Command *command, Game *game) = 0;
    };
 }
 
