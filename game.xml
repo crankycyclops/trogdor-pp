@@ -56,46 +56,51 @@
    <!-- Player Configuration -->
    <player>
 
-      <!-- configuration options related to the player's inventory -->
-      <inventory>
+      <!-- configuration for the default player -->
+      <default>
 
-         <!-- Determines the maximum weight of the inventory.  0 means the
-              inventory has unlimited size.  Any integer greater than 0
-              determines the inventory's maximum capacity (consider this the
-              sum total of all object weights.)  For example, if object "candle"
-              is defined with a weight of 2, and object "sword" is defined with
-              a weight of 10, and the inventory weight is defined to be 11, you
-              can then hold either the candle or the sword, but not both.  What
-              integers you choose to use are totally up to you and are
-              completely subjective.
-         -->
-         <weight>0</weight>
+         <!-- configuration options related to the player's inventory -->
+         <inventory>
 
-      </inventory>
+            <!-- Determines the maximum weight of the inventory.  0 means the
+                 inventory has unlimited size.  Any integer greater than 0
+                 determines the inventory's maximum capacity (consider this the
+                 sum total of all object weights.)  For example, if object
+                 "candle" is defined with a weight of 2, and object "sword" is
+                 defined with a weight of 10, and the inventory weight is
+                 defined to be 11, you can then hold either the candle or the
+                 sword, but not both.  What integers you choose to use are
+                 totally up to you and are completely subjective.
+            -->
+            <weight>0</weight>
 
-      <!-- By default, player attributes are distributed evenly (10 given to
-           each attribute.)  Here, you can optionally set your own values, which
-           will be assigned by default to all new players. -->
-      <attributes>
-         <strength>10</strength>
-         <dexterity>10</dexterity>
-         <intelligence>10</intelligence>
-      </attributes>
+         </inventory>
 
-      <!-- whether or not player starts out alive or dead (optional:
-           default is 1 for alive) -->
-      <alive>1</alive>
+         <!-- By default, player attributes are distributed evenly (10 given to
+              each attribute.)  Here, you can optionally set your own values, which
+              will be assigned by default to all new players. -->
+         <attributes>
+            <strength>10</strength>
+            <dexterity>10</dexterity>
+            <intelligence>10</intelligence>
+         </attributes>
 
-      <!-- default starting health (optional: default is 0) -->
-      <health>10</health>
+         <!-- whether or not player starts out alive or dead (optional:
+              default is 1 for alive) -->
+         <alive>1</alive>
 
-      <!-- a max health of 0 means the creature is immortal (optional:
-           default is 0 for immortal) -->
-      <maxHealth>10</maxHealth>
+         <!-- default starting health (optional: default is 0) -->
+         <health>10</health>
 
-      <!-- default maximum probability of being hit during combat
-           (optional: default is 0.5) -->
-      <woundrate>0.5</woundrate>
+         <!-- a max health of 0 means the creature is immortal (optional:
+              default is 0 for immortal) -->
+         <maxHealth>10</maxHealth>
+
+         <!-- default maximum probability of being hit during combat
+              (optional: default is 0.5) -->
+         <woundrate>0.5</woundrate>
+
+      </default>
 
    </player>
 

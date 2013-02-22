@@ -213,6 +213,73 @@ namespace core {
          string parseString();
 
          /*
+            Parses a Being's inventory settings.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseBeingInventory();
+
+         /*
+            Parses a Being's Attributes.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseBeingAttributes();
+
+         /*
+            Parses whether or not a Being starts out being alive.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         bool parseBeingAlive();
+
+         /*
+            Parses a Being's initial health.
+
+            Input:
+               (none)
+
+            Output:
+               boolean (alive or dead)
+         */
+         int parseBeingHealth();
+
+         /*
+            Parses a Being's maximum health (0 for immortal.)
+
+            Input:
+               (none)
+
+            Output:
+               Being's health (int)
+         */
+         int parseBeingMaxHealth();
+
+         /*
+            Parses a Being's woundRate setting, which is a factor that influences how
+            likely a Being is to be hit during an attack.
+
+            Input:
+               (none)
+
+            Output:
+               Being's max health (int)
+         */
+         double parseBeingWoundRate();
+
+         /*
             Parses the <game> section of the XML file.  Throws an exception if
             there's a parse error.
 
@@ -220,7 +287,7 @@ namespace core {
                (none)
 
             Output:
-               (none)
+               Being's woundRate (double)
          */
          void parseGame();
 
@@ -280,6 +347,30 @@ namespace core {
          void parseEvents(LuaState *L, EventListener *triggers, int depth);
          void parseScript(LuaState *L, int depth);
          void parseEvent(EventListener *triggers, int depth);
+
+         /*
+            Parse the Player section.  Throws an exception with an error message
+            if there's a problem.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parsePlayer();
+
+         /*
+            Parses settings for the default player.  As always, throws an
+            exception with an error message if there's a problem.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseDefaultPlayer();
 
       public:
 

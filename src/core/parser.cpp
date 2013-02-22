@@ -70,6 +70,10 @@ namespace core {
             parseEvents(gameL, eventListener, 2);
          }
 
+         else if (0 == getTagName().compare("player")) {
+            parsePlayer();
+         }
+
          else {
             s << filename << ": invalid section <" << getTagName() <<
                "> (line " << xmlTextReaderGetParserLineNumber(reader) << ")";
@@ -293,6 +297,78 @@ namespace core {
       string function = parseString();
       cout << "<event name=\"" << name << "\">" << function << "</event>" << endl;
       checkClosingTag("event");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parsePlayer() {
+
+      stringstream s;
+
+      while (nextTag() && 2 == getDepth()) {
+
+         if (0 == getTagName().compare("default")) {
+            parseDefaultPlayer();
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "player section (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("player");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseDefaultPlayer() {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseBeingInventory() {
+
+      // TODO: will return some sort of struct
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseBeingAttributes() {
+
+      // TODO: will return some sort of struct
+   }
+
+   /***************************************************************************/
+
+   bool Parser::parseBeingAlive() {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   int Parser::parseBeingHealth() {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   int Parser::parseBeingMaxHealth() {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   double Parser::parseBeingWoundRate() {
+
+      // TODO
    }
 
    /***************************************************************************/
