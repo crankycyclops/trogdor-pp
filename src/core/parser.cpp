@@ -15,7 +15,8 @@ namespace core {
       }
 
       gameL = new LuaState();
-      eventListener = new EventListener();
+      eventListener = new event::EventListener();
+      player = new entity::Player();
    }
 
    /***************************************************************************/
@@ -25,6 +26,7 @@ namespace core {
       // TODO: do I free entity objects inside, or let Game do it?
       xmlFreeTextReader(reader);
       // TODO: do I free gameL and eventListener, or let Game do it?
+      // TODO: do I need to free default player object, or let Game do it?
    }
 
    /***************************************************************************/
@@ -326,14 +328,56 @@ namespace core {
 
    void Parser::parseDefaultPlayer() {
 
-      // TODO
+      stringstream s;
+
+      while (nextTag() && 3 == getDepth()) {
+
+         if (0 == getTagName().compare("inventory")) {
+            // TODO: will need to pass pointer to struct
+            parseBeingInventory();
+         }
+
+         else if (0 == getTagName().compare("attributes")) {
+            // TODO: will need to pass pointer to struct
+            parseBeingAttributes();
+         }
+
+         else if (0 == getTagName().compare("alive")) {
+            // TODO: this returns bool, which we should then use
+            parseBeingAlive();
+         }
+
+         else if (0 == getTagName().compare("health")) {
+            // TODO: this returns int, which we should then use
+            parseBeingHealth();
+         }
+
+         else if (0 == getTagName().compare("maxHealth")) {
+            // TODO: this returns int, which we should then use
+            parseBeingMaxHealth();
+         }
+
+         else if (0 == getTagName().compare("woundRate")) {
+            // TODO: this returns int, which we should then use
+            parseBeingWoundRate();
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "default player settings (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("default");
    }
 
    /***************************************************************************/
 
    void Parser::parseBeingInventory() {
 
-      // TODO: will return some sort of struct
+      // TODO: will take as argument pointer to fields in struct/class
    }
 
    /***************************************************************************/
