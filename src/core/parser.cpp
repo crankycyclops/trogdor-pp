@@ -5,8 +5,9 @@ using namespace std;
 namespace core {
 
 
-   Parser::Parser(string gameFile) {
+   Parser::Parser(Game *g, string gameFile) {
 
+      game = g;
       filename = gameFile;
 
       reader = xmlReaderForFile(gameFile.c_str(), NULL, XML_PARSE_NOBLANKS);

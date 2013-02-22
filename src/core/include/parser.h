@@ -17,6 +17,8 @@
 #include "luastate.h"
 #include "eventlistener.h"
 
+class Game;
+
 
 using namespace std;
 
@@ -36,6 +38,9 @@ namespace core {
 
          // name of the file we're parsing
          string filename;
+
+         // Entities must be instantiated with a reference to their Game
+         Game *game;
 
          // Player object representing default settings for all new players
          entity::Player *player;
@@ -379,7 +384,7 @@ namespace core {
             the game XML file and opens the file for reading.  If the specified
             file cannot be opened, an exception is thrown with an error message.
          */
-         Parser(string gameFile);
+         Parser(Game *g, string gameFile);
 
          /*
             Destructor for the Parser class.
