@@ -44,6 +44,17 @@ namespace core { namespace entity {
             containing Game object and a name.
          */
          Entity(Game *g, string n);
+
+         /*
+            Returns the Entity's name.
+
+            Input:
+               (none)
+
+            Output:
+               Entity name (string)
+         */
+         inline string getName() const {return name;}
    };
 }}
 

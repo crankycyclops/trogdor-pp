@@ -154,6 +154,49 @@ namespace core {
          }
 
          /*
+            Removes a player from the game.  Throws an exception if the player
+            given by the specified name doesn't exist.
+
+            Input:
+               Name of player (string)
+
+            Output:
+               (none)
+         */
+         inline void removePlayer(const string name) {
+
+            if (!players.isset(name)) {
+               stringstream s;
+               s << "Player with name '" << name << "' doesn't exist";
+               throw s.str();
+            }
+
+            Player *player = players.get(name);
+
+            entities.erase(name);
+            things.erase(name);
+            beings.erase(name);
+            players.erase(name);
+
+            delete player;
+         }
+
+         /*
+            Returns whether or not a player by the specified name is in the
+            game.
+
+            Input:
+               Player name (string)
+
+            Output:
+               True if the player is in the game and false if not
+         */
+         inline bool playerIsInGame(const string name) const {
+
+            return players.isset(name);
+         }
+
+         /*
             Initializes the game, including the event handler, timer and all game
             entities.
 

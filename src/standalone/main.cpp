@@ -14,9 +14,11 @@ int main(int argc, char **argv) {
       Player *player = currentGame->createPlayer("player");
 
       currentGame->start();
-      while (currentGame->inProgress()) {
+      while (currentGame->inProgress() && currentGame->playerIsInGame("player")) {
          currentGame->processCommand(player);
       }
+
+      currentGame->stop();
 
       cout << "Game lasted for " << currentGame->getTime() + 1
          << " seconds.  Goodbye!\n\n";

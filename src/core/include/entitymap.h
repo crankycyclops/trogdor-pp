@@ -78,6 +78,14 @@ namespace core { namespace entity {
          inline void set(string name, Entity *entity) {entities[name] = entity;}
 
          /*
+            Removes an entity from the hash table.
+
+            Input: Name of Entity
+            Output: (none)
+         */
+         inline void erase(string name) {entities.erase(name);}
+
+         /*
             Removes all entities from the EntityMap.  The entities themselves
             are not destroyed!
 
@@ -91,80 +99,96 @@ namespace core { namespace entity {
 
    class PlaceMap: public EntityMap {
 
-      inline Place *get(const string name) {
+      public:
 
-         return (Place *)EntityMap::get(name);
-      }
+         inline Place *get(const string name) {
+
+            return (Place *)EntityMap::get(name);
+         }
    };
 
    /***************************************************************************/
 
    class RoomMap: public PlaceMap {
 
-      inline Room *get(const string name) {
+      public:
 
-         return (Room *)EntityMap::get(name);
-      }
+         inline Room *get(const string name) {
+
+            return (Room *)EntityMap::get(name);
+         }
    };
 
    /***************************************************************************/
 
    class ThingMap: public EntityMap {
 
-      inline Thing *get(const string name) {
+      public:
 
-         return (Thing *)EntityMap::get(name);
-      }
+         inline Thing *get(const string name) {
+
+            return (Thing *)EntityMap::get(name);
+         }
    };
 
    /***************************************************************************/
 
    class BeingMap: public ThingMap {
 
-      inline Being *get(const string name) {
+      public:
 
-         return (Being *)EntityMap::get(name);
-      }
+         inline Being *get(const string name) {
+
+            return (Being *)EntityMap::get(name);
+         }
    };
 
    /***************************************************************************/
 
    class PlayerMap: public BeingMap {
 
-      inline Player *get(const string name) {
+      public:
 
-         return (Player *)EntityMap::get(name);
-      }
+         inline Player *get(const string name) {
+
+            return (Player *)EntityMap::get(name);
+         }
    };
 
    /***************************************************************************/
 
    class CreatureMap: public BeingMap {
 
-      inline Creature *get(const string name) {
+      public:
 
-         return (Creature *)EntityMap::get(name);
-      }
+         inline Creature *get(const string name) {
+
+            return (Creature *)EntityMap::get(name);
+         }
    };
 
    /***************************************************************************/
 
    class ItemMap: public ThingMap {
 
-      inline Item *get(const string name) {
+      public:
 
-         return (Item *)EntityMap::get(name);
-      }
+         inline Item *get(const string name) {
+
+            return (Item *)EntityMap::get(name);
+         }
    };
 
    /***************************************************************************/
 
    class ObjectMap: public ItemMap {
 
-      inline Object *get(const string name) {
+      public:
 
-         return (Object *)EntityMap::get(name);
-      }
+         inline Object *get(const string name) {
+
+            return (Object *)EntityMap::get(name);
+         }
    };
 }}
 
