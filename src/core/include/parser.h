@@ -278,9 +278,7 @@ namespace core {
                (none)
          */
          void parseEvents(LuaState *L, EventListener *triggers, int depth);
-
          void parseScript(LuaState *L, int depth);
-
          void parseEvent(EventListener *triggers, int depth);
 
       public:
