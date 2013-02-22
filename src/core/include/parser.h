@@ -43,7 +43,7 @@ namespace core {
          Game *game;
 
          // Player object representing default settings for all new players
-         entity::Player *player;
+         entity::Player *defaultPlayer;
 
          // When nextTag() encounters a closing tag, it's stored here.  Later,
          // if this has a value, checkClosingTag() will use it instead of

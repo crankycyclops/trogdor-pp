@@ -17,7 +17,7 @@ namespace core {
 
       gameL = new LuaState();
       eventListener = new event::EventListener();
-      player = new entity::Player(game, "default");
+      defaultPlayer = new entity::Player(game, "default");
    }
 
    /***************************************************************************/
@@ -344,23 +344,19 @@ namespace core {
          }
 
          else if (0 == getTagName().compare("alive")) {
-            // TODO: this returns bool, which we should then use
-            parseBeingAlive();
+            defaultPlayer->setAlive(parseBeingAlive());
          }
 
          else if (0 == getTagName().compare("health")) {
-            // TODO: this returns int, which we should then use
-            parseBeingHealth();
+            defaultPlayer->setHealth(parseBeingHealth());
          }
 
          else if (0 == getTagName().compare("maxHealth")) {
-            // TODO: this returns int, which we should then use
-            parseBeingMaxHealth();
+            defaultPlayer->setMaxHealth(parseBeingMaxHealth());
          }
 
          else if (0 == getTagName().compare("woundRate")) {
-            // TODO: this returns int, which we should then use
-            parseBeingWoundRate();
+            defaultPlayer->setWoundRate(parseBeingWoundRate());
          }
 
          else {
