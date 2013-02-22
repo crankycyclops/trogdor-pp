@@ -42,6 +42,10 @@ namespace core { namespace entity {
          /*
             Constructor for creating a new Entity.  Requires reference to the
             containing Game object and a name.
+
+            Input:
+               Reference to containing Game (Game *)
+               Name (string)
          */
          Entity(Game *g, string n);
 
@@ -52,9 +56,75 @@ namespace core { namespace entity {
                (none)
 
             Output:
-               Entity name (string)
+               Entity's name (string)
          */
          inline string getName() const {return name;}
+
+         /*
+            Returns the Entity's title.
+
+            Input:
+               (none)
+
+            Output:
+               Entity's title (string)
+         */
+         inline string getTitle() const {return title;}
+
+         /*
+            Returns the Entity's long description.
+
+            Input:
+               (none)
+
+            Output:
+               Entity's long description (string)
+         */
+         inline string getLongDescription() const {return longDesc;}
+
+         /*
+            Returns the Entity's short description.
+
+            Input:
+               (none)
+
+            Output:
+               Entity's short description (string)
+         */
+         inline string getShortDescription() const {return shortDesc;}
+
+         /*
+            Sets the Entity's title.
+
+            Input:
+               New title (string)
+
+            Output:
+               (none)
+         */
+         inline void setTitle(string t) {title = t;}
+
+         /*
+            Sets the Entity's long description.
+
+            Input:
+               New long description (string)
+
+            Output:
+               (none)
+         */
+         inline void setLongDescription(string d) {longDesc = d;}
+
+         /*
+            Sets the Entity's short description.
+
+            Input:
+               New description (string)
+
+            Output:
+               (none)
+         */
+         inline string setShortDescription(string d) {shortDesc = d;}
    };
 }}
 
