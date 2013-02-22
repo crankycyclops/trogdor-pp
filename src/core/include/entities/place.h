@@ -2,7 +2,7 @@
 #define PLACE_H
 
 
-#include <vector>
+#include <list>
 #include <boost/unordered_map.hpp>
 
 #include "entity.h"
@@ -26,20 +26,20 @@ namespace core { namespace entity {
       protected:
 
          // sequential list of all entities in a place
-         vector<Thing *>    things;
-         vector<Being *>    beings;
-         vector<Item *>     items;
-         vector<Player *>   players;
-         vector<Creature *> creatures;
-         vector<Object *>   objects;
+         list<Thing *>    things;
+         list<Being *>    beings;
+         list<Item *>     items;
+         list<Player *>   players;
+         list<Creature *> creatures;
+         list<Object *>   objects;
 
          // name -> entity list mappings (accomodates synonyms)
-         unordered_map<string, vector<Thing *> >    thingsByName;
-         unordered_map<string, vector<Being *> >    beingsByName;
-         unordered_map<string, vector<Item *> >     itemsByName;
-         unordered_map<string, vector<Player *> >   playersByName;
-         unordered_map<string, vector<Creature *> > creaturesByName;
-         unordered_map<string, vector<Object *> >   objectsByName;
+         unordered_map<string, list<Thing *> >    thingsByName;
+         unordered_map<string, list<Being *> >    beingsByName;
+         unordered_map<string, list<Item *> >     itemsByName;
+         unordered_map<string, list<Player *> >   playersByName;
+         unordered_map<string, list<Creature *> > creaturesByName;
+         unordered_map<string, list<Object *> >   objectsByName;
 
       public:
    };
