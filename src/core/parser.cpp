@@ -17,7 +17,7 @@ namespace core {
 
       gameL = new LuaState();
       eventListener = new event::EventListener();
-      player = new entity::Player();
+      player = new entity::Player(game, "default");
    }
 
    /***************************************************************************/

@@ -14,6 +14,12 @@ namespace core { namespace entity {
       protected:
 
       public:
+
+         /*
+            Constructor for creating a new Player.  Requires reference to the
+            containing Game object and a name.
+         */
+         inline Player(Game *g, string n): Being(g, n) {}
    };
 }}
 

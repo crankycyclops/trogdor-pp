@@ -15,6 +15,12 @@ namespace core { namespace entity {
          bool counterAttack; // whether or not creature will fight back when attacked
 
       public:
+
+         /*
+            Constructor for creating a new Creature.  Requires reference to the
+            containing Game object and a name.
+         */
+         inline Creature(Game *g, string n): Being(g, n) {}
    };
 }}
 

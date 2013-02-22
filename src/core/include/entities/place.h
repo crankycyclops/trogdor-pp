@@ -42,6 +42,12 @@ namespace core { namespace entity {
          unordered_map<string, list<Object *> >   objectsByName;
 
       public:
+
+         /*
+            Constructor for creating a new Place.  Requires reference to the
+            containing Game object and a name.
+         */
+         inline Place(Game *g, string n): Entity(g, n) {}
    };
 }}
 

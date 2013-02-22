@@ -22,6 +22,12 @@ namespace core { namespace entity {
          double woundRate; // max probability of being hit when attacked
 
       public:
+
+         /*
+            Constructor for creating a new Being.  Requires reference to the
+            containing Game object and a name.
+         */
+         inline Being(Game *g, string n): Thing(g, n) {}
    };
 }}
 

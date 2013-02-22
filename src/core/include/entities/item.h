@@ -15,6 +15,12 @@ namespace core { namespace entity {
          Being *owner;
 
       public:
+
+         /*
+            Constructor for creating a new Item.  Requires reference to the
+            containing Game object and a name.
+         */
+         inline Item(Game *g, string n): Thing(g, n) {}
    };
 }}
 

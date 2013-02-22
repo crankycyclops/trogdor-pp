@@ -18,6 +18,12 @@ namespace core { namespace entity {
          vector<string>  synonyms;  // list of synonyms for the thing
 
       public:
+
+         /*
+            Constructor for creating a new Thing.  Requires reference to the
+            containing Game object and a name.
+         */
+         inline Thing(Game *g, string n): Entity(g, n) {}
    };
 }}
 

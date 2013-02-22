@@ -39,6 +39,11 @@ namespace core { namespace entity {
 
       public:
 
+         /*
+            Constructor for creating a new Entity.  Requires reference to the
+            containing Game object and a name.
+         */
+         Entity(Game *g, string n);
    };
 }}
 
