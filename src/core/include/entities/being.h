@@ -11,13 +11,13 @@ namespace core { namespace entity {
 
       public:
 
-         static const int DEFAULT_STRENGTH     = 10;
-         static const int DEFAULT_DEXTERITY    = 10;
-         static const int DEFAULT_INTELLIGENCE = 10;
+         static const int DEFAULT_ATTRIBUTE_STRENGTH     = 10;
+         static const int DEFAULT_ATTRIBUTE_DEXTERITY    = 10;
+         static const int DEFAULT_ATTRIBUTE_INTELLIGENCE = 10;
+
+         static const int DEFAULT_INVENTORY_WEIGHT = 0;
 
       protected:
-
-         // TODO: inventory class
 
          int health;    // number of health points the being currently has
          int maxHealth; // maximum number of health points (0 for immortal)
@@ -32,6 +32,10 @@ namespace core { namespace entity {
             int intelligence;
          } attributes;
 
+         struct {
+            int weight;
+         } inventory;
+
       public:
 
          /*
@@ -40,9 +44,11 @@ namespace core { namespace entity {
          */
          inline Being(Game *g, string n): Thing(g, n) {
 
-            attributes.strength = DEFAULT_STRENGTH;
-            attributes.dexterity = DEFAULT_DEXTERITY;
-            attributes.intelligence = DEFAULT_INTELLIGENCE;
+            attributes.strength = DEFAULT_ATTRIBUTE_STRENGTH;
+            attributes.dexterity = DEFAULT_ATTRIBUTE_DEXTERITY;
+            attributes.intelligence = DEFAULT_ATTRIBUTE_INTELLIGENCE;
+
+            inventory.weight = DEFAULT_INVENTORY_WEIGHT;
          }
 
          /*
@@ -117,6 +123,18 @@ namespace core { namespace entity {
          inline void setStrength(int s) {attributes.strength = s;}
          inline void setDexterity(int d) {attributes.dexterity = d;}
          inline void setIntelligence(int i) {attributes.intelligence = i;}
+
+         /*
+            Sets the inventory's weight.  0 means the Being  can carry an
+            unlimited number of items.
+
+            Input:
+               Weight (int)
+
+            Output:
+               (none)
+         */
+         inline void setInventoryWeight(int w) {inventory.weight = w;}
    };
 }}
 

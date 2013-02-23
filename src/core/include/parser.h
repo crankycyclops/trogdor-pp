@@ -221,19 +221,19 @@ namespace core {
             Parses a Being's inventory settings.
 
             Input:
-               (none)
+               Reference to the being whose inventory is being configured
 
             Output:
                (none)
          */
-         void parseBeingInventory();
-         void parseBeingInventoryWeight();
+         void parseBeingInventory(entity::Being *being);
+         int parseBeingInventoryWeight();
 
          /*
             Parses a Being's Attributes.
 
             Input:
-               (none)
+               Pointer to being whose attributes are being set
 
             Output:
                (none)

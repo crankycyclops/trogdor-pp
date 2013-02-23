@@ -375,12 +375,10 @@ namespace core {
       while (nextTag() && 3 == getDepth()) {
 
          if (0 == getTagName().compare("inventory")) {
-            // TODO: will need to pass pointer to struct
-            parseBeingInventory();
+            parseBeingInventory(defaultPlayer);
          }
 
          else if (0 == getTagName().compare("attributes")) {
-            // TODO: will need to pass pointer to struct
             parseBeingAttributes(defaultPlayer);
          }
 
@@ -413,17 +411,14 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseBeingInventory() {
-
-      // TODO: will take as argument pointer to fields in struct/class
+   void Parser::parseBeingInventory(entity::Being *being) {
 
       stringstream s;
 
       while (nextTag() && 4 == getDepth()) {
 
          if (0 == getTagName().compare("weight")) {
-            // TODO: will need to pass pointer to struct member
-            parseBeingInventoryWeight();
+            being->setInventoryWeight(parseBeingInventoryWeight());
          }
 
          else {
@@ -439,19 +434,17 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseBeingInventoryWeight() {
+   int Parser::parseBeingInventoryWeight() {
 
-      // TODO: set weight
       int weight = parseInt();
-      cout << "Being's inventory weight: " << weight << endl;
       checkClosingTag("weight");
+      return weight;
    }
 
    /***************************************************************************/
 
    void Parser::parseBeingAttributes(entity::Being *being) {
 
-      // TODO: will return some sort of struct
       stringstream s;
 
       while (nextTag() && 4 == getDepth()) {
