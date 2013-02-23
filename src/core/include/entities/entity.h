@@ -8,6 +8,7 @@
 namespace core {
 
    class Game;
+   class Parser;
 
    namespace event {
 
@@ -38,6 +39,10 @@ namespace core { namespace entity {
          EventListener *triggers;
 
       public:
+
+         // This is annoying, but due to unforseen design problems, this is now
+         // my only option (grrr...)
+         friend class core::Parser;
 
          /*
             Constructor for creating a new Entity.  Requires reference to the
@@ -92,6 +97,18 @@ namespace core { namespace entity {
                Entity's short description (string)
          */
          inline string getShortDescription() const {return shortDesc;}
+
+         /*
+            Copies another Messages object into our own, replacing all previous
+            content.  This should only ever be used by the Parser.
+
+            Input:
+               Reference to Messages object
+
+            Output:
+               (none)
+         */
+         inline void setMessages(Messages &m) {msgs = m;}
 
          /*
             Sets the Entity's title.

@@ -70,7 +70,8 @@ namespace core {
          event::EventListener *eventListener;
 
          /*
-            Returns the name of the current XML tag.
+            Returns the name of the current XML tag.  Characters in the tag name
+            are all converted to lowercase.
 
             Input:
                (none)
@@ -80,7 +81,7 @@ namespace core {
          */
          inline string getTagName() {
 
-            return (const char *)xmlTextReaderConstName(reader);
+            return strToLower((const char *)xmlTextReaderConstName(reader));
          }
 
          /*
@@ -368,6 +369,22 @@ namespace core {
                (none)
          */
          void parsePlayer();
+
+         void parseObjects();
+
+         void parseObject();
+
+         string parseEntityTitle();
+
+         string parseEntityLongDescription();
+
+         string parseEntityShortDescription();
+
+         bool parseItemTakeable();
+
+         bool parseItemDroppable();
+
+         int parseItemWeight();
 
          /*
             Parses settings for the default player.  As always, throws an

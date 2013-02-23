@@ -77,6 +77,10 @@ namespace core {
             parsePlayer();
          }
 
+         else if (0 == getTagName().compare("objects")) {
+            parseObjects();
+         }
+
          else {
             s << filename << ": invalid section <" << getTagName() <<
                "> (line " << xmlTextReaderGetParserLineNumber(reader) << ")";
@@ -292,7 +296,8 @@ namespace core {
 
    void Parser::parseMessage(Messages *m) {
 
-      m->set(getAttribute("name"), getNodeValue());
+      string name = getAttribute("name");
+      m->set(name, getNodeValue());
       checkClosingTag("message");
    }
 
@@ -345,6 +350,145 @@ namespace core {
 
    /***************************************************************************/
 
+   void Parser::parseObjects() {
+
+      stringstream s;
+
+      while (nextTag() && 2 == getDepth()) {
+
+         if (0 == getTagName().compare("object")) {
+            parseObject();
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "objects section (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("objects");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseObject() {
+
+      stringstream s;
+
+      Object *object = objects.get(getAttribute("name"));
+
+      if (0 == object) {
+         s << filename << ": object '" << getAttribute("name") << "' was not "
+            << "declared in the manifest (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      while (nextTag() && 3 == getDepth()) {
+
+         if (0 == getTagName().compare("title")) {
+            object->setTitle(parseEntityTitle());
+         }
+
+         else if (0 == getTagName().compare("description")) {
+            object->setLongDescription(parseEntityLongDescription());
+         }
+
+         else if (0 == getTagName().compare("short")) {
+            object->setShortDescription(parseEntityShortDescription());
+         }
+
+         else if (0 == getTagName().compare("weight")) {
+            object->setWeight(parseItemWeight());
+         }
+
+         else if (0 == getTagName().compare("takeable")) {
+            object->setTakeable(parseItemTakeable());
+         }
+
+         else if (0 == getTagName().compare("droppable")) {
+            object->setDroppable(parseItemDroppable());
+         }
+
+         else if (0 == getTagName().compare("events")) {
+            parseEvents(object->L, object->triggers, 4);
+         }
+
+         else if (0 == getTagName().compare("messages")) {
+            Messages *m = parseMessages(4);
+            object->setMessages(*m);
+            delete m;
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "object definition (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("object");
+   }
+
+   /***************************************************************************/
+
+   string Parser::parseEntityTitle() {
+
+      string title = parseString();
+      checkClosingTag("title");
+      return title;
+   }
+
+   /***************************************************************************/
+
+   string Parser::parseEntityLongDescription() {
+
+      string longdesc = parseString();
+      checkClosingTag("description");
+      return longdesc;
+   }
+
+   /***************************************************************************/
+
+   string Parser::parseEntityShortDescription() {
+
+      string shortdesc = parseString();
+      checkClosingTag("short");
+      return shortdesc;
+   }
+
+   /***************************************************************************/
+
+   bool Parser::parseItemTakeable() {
+
+      bool takeable = parseBool();
+      checkClosingTag("takeable");
+      return takeable;
+   }
+
+   /***************************************************************************/
+
+   bool Parser::parseItemDroppable() {
+
+      bool droppable = parseBool();
+      checkClosingTag("droppable");
+      return droppable;
+   }
+
+   /***************************************************************************/
+
+   int Parser::parseItemWeight() {
+
+      int weight = parseInt();
+      checkClosingTag("weight");
+      return weight;
+   }
+
+   /***************************************************************************/
+
    void Parser::parsePlayer() {
 
       stringstream s;
@@ -390,7 +534,7 @@ namespace core {
             defaultPlayer->setHealth(parseBeingHealth());
          }
 
-         else if (0 == getTagName().compare("maxHealth")) {
+         else if (0 == getTagName().compare("maxhealth")) {
             defaultPlayer->setMaxHealth(parseBeingMaxHealth());
          }
 
