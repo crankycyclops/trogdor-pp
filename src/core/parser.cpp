@@ -152,10 +152,23 @@ namespace core {
 
    bool Parser::parseManifestRoom() {
 
-      // TODO: returns true if room name is start, and false 
-      cout << "manifest room: " << getAttribute("name") << endl;
+      string name = getAttribute("name");
+
+      if (entities.isset(name)) {
+         stringstream s;
+         s << "Cannot define room with name '" << name << ": an entity with " <<
+            "that name already exists";
+         throw s.str();
+      }
+
+      Room *room = new Room(game, name);
+
+      entities.set(name, room);
+      places.set(name, room);
+      rooms.set(name, room);
+
       checkClosingTag("room");
-      return true;
+      return 0 == name.compare("start") ? true : false;
    }
 
    /***************************************************************************/
@@ -185,8 +198,22 @@ namespace core {
 
    void Parser::parseManifestObject() {
 
-      // TODO
-      cout << "manifest object: " << getAttribute("name") << endl;
+      string name = getAttribute("name");
+
+      if (entities.isset(name)) {
+         stringstream s;
+         s << "Cannot define object with name '" << name << ": an entity with "
+            << "that name already exists";
+         throw s.str();
+      }
+
+      Object *object = new Object(game, name);
+
+      entities.set(name, object);
+      things.set(name, object);
+      items.set(name, object);
+      objects.set(name, object);
+
       checkClosingTag("object");
    }
 
@@ -217,8 +244,22 @@ namespace core {
 
    void Parser::parseManifestCreature() {
 
-      // TODO
-      cout << "manifest creature: " << getAttribute("name") << endl;
+      string name = getAttribute("name");
+
+      if (entities.isset(name)) {
+         stringstream s;
+         s << "Cannot define creature with name '" << name << ": an entity "
+            << "with that name already exists";
+         throw s.str();
+      }
+
+      Creature *creature = new Creature(game, name);
+
+      entities.set(name, creature);
+      things.set(name, creature);
+      beings.set(name, creature);
+      creatures.set(name, creature);
+
       checkClosingTag("creature");
    }
 
@@ -471,40 +512,36 @@ namespace core {
 
    bool Parser::parseBeingAlive() {
 
-      // TODO
       bool alive = parseBool();
-      cout << "Being is alive? " << alive << endl;
       checkClosingTag("alive");
+      return alive;
    }
 
    /***************************************************************************/
 
    int Parser::parseBeingHealth() {
 
-      // TODO
       int health = parseInt();
-      cout << "Being's initial health: " << health << endl;
       checkClosingTag("health");
+      return health;
    }
 
    /***************************************************************************/
 
    int Parser::parseBeingMaxHealth() {
 
-      // TODO
       int maxHealth = parseInt();
-      cout << "Being's max health: " << maxHealth << endl;
       checkClosingTag("maxHealth");
+      return maxHealth;
    }
 
    /***************************************************************************/
 
    double Parser::parseBeingWoundRate() {
 
-      // TODO
       double woundRate = parseDouble();
-      cout << "Being's wound rate: " << woundRate << endl;
       checkClosingTag("woundrate");
+      return woundRate;
    }
 
    /***************************************************************************/
