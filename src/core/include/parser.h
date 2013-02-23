@@ -386,6 +386,14 @@ namespace core {
 
          int parseItemWeight();
 
+         void parseThingAliases(Thing *thing);
+
+         string parseThingAlias();
+
+         bool parseItemWeapon();
+
+         int parseItemDamage();
+
          /*
             Parses settings for the default player.  As always, throws an
             exception with an error message if there's a problem.

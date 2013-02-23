@@ -14,8 +14,8 @@ namespace core { namespace entity {
 
       protected:
 
-         Place          *location;  // where the thing is located
-         vector<string>  synonyms;  // list of synonyms for the thing
+         Place          *location;  // where the Thing is located
+         vector<string>  aliases;   // list of aliases
 
       public:
 
@@ -24,6 +24,18 @@ namespace core { namespace entity {
             containing Game object and a name.
          */
          inline Thing(Game *g, string n): Entity(g, n) {}
+
+         /*
+            Adds an alias to the Thing, which is another name that the Thing can
+            be called.
+
+            Input:
+               New alias (string)
+
+            Output:
+               (none)
+         */
+         inline void addAlias(string alias) {aliases.insert(aliases.end(), alias);}
    };
 }}
 

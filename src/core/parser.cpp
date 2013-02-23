@@ -413,8 +413,20 @@ namespace core {
             object->setDroppable(parseItemDroppable());
          }
 
+         else if (0 == getTagName().compare("weapon")) {
+            object->setIsWeapon(parseItemWeapon());
+         }
+
+         else if (0 == getTagName().compare("damage")) {
+            object->setDamage(parseItemDamage());
+         }
+
          else if (0 == getTagName().compare("events")) {
             parseEvents(object->L, object->triggers, 4);
+         }
+
+         else if (0 == getTagName().compare("aliases")) {
+            parseThingAliases(object);
          }
 
          else if (0 == getTagName().compare("messages")) {
@@ -486,6 +498,56 @@ namespace core {
       int weight = parseInt();
       checkClosingTag("weight");
       return weight;
+   }
+
+   /***************************************************************************/
+
+   bool Parser::parseItemWeapon() {
+
+      bool isWeapon = parseBool();
+      checkClosingTag("weapon");
+      return isWeapon;
+   }
+
+   /***************************************************************************/
+
+   int Parser::parseItemDamage() {
+
+      int damage = parseInt();
+      checkClosingTag("damage");
+      return damage;
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseThingAliases(Thing *thing) {
+
+      stringstream s;
+
+      while (nextTag() && 4 == getDepth()) {
+
+         if (0 == getTagName().compare("alias")) {
+            thing->addAlias(parseThingAlias());
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "aliases (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("aliases");
+   }
+
+   /***************************************************************************/
+
+   string Parser::parseThingAlias() {
+
+      string alias = parseString();
+      checkClosingTag("alias");
+      return alias;
    }
 
    /***************************************************************************/
