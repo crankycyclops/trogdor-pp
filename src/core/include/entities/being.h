@@ -9,9 +9,14 @@ namespace core { namespace entity {
 
    class Being: public Thing {
 
+      public:
+
+         static const int DEFAULT_STRENGTH     = 10;
+         static const int DEFAULT_DEXTERITY    = 10;
+         static const int DEFAULT_INTELLIGENCE = 10;
+
       protected:
 
-         // TODO: attributes class
          // TODO: inventory class
 
          int health;    // number of health points the being currently has
@@ -21,13 +26,24 @@ namespace core { namespace entity {
          bool attackable;  // whether or not being can be attacked
          double woundRate; // max probability of being hit when attacked
 
+         struct {
+            int strength;
+            int dexterity;
+            int intelligence;
+         } attributes;
+
       public:
 
          /*
             Constructor for creating a new Being.  Requires reference to the
             containing Game object and a name.
          */
-         inline Being(Game *g, string n): Thing(g, n) {}
+         inline Being(Game *g, string n): Thing(g, n) {
+
+            attributes.strength = DEFAULT_STRENGTH;
+            attributes.dexterity = DEFAULT_DEXTERITY;
+            attributes.intelligence = DEFAULT_INTELLIGENCE;
+         }
 
          /*
             Puts the Being in either an alive (true) or a dead (false) state.
@@ -88,6 +104,19 @@ namespace core { namespace entity {
                (none)
          */
          inline void setWoundRate(double rate) {woundRate = rate;}
+
+         /*
+            Sets the Being's attributes.
+
+            Input:
+               Attribute value (int)
+
+            Output:
+               (none)
+         */
+         inline void setStrength(int s) {attributes.strength = s;}
+         inline void setDexterity(int d) {attributes.dexterity = d;}
+         inline void setIntelligence(int i) {attributes.intelligence = i;}
    };
 }}
 

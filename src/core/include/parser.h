@@ -39,16 +39,16 @@ namespace core {
          // name of the file we're parsing
          string filename;
 
+         // When nextTag() encounters a closing tag, it's stored here.  Later,
+         // if this has a value, checkClosingTag() will use it instead of
+         // walking the XML tree.
+         string lastClosedTag;
+
          // Entities must be instantiated with a reference to their Game
          Game *game;
 
          // Player object representing default settings for all new players
          entity::Player *defaultPlayer;
-
-         // When nextTag() encounters a closing tag, it's stored here.  Later,
-         // if this has a value, checkClosingTag() will use it instead of
-         // walking the XML tree.
-         string lastClosedTag;
 
          // hash tables for various types of entities
          // Note: the logical conclusion of having a hierarchical mapping of
@@ -238,10 +238,10 @@ namespace core {
             Output:
                (none)
          */
-         void parseBeingAttributes();
-         void parseBeingAttributesStrength();
-         void parseBeingAttributesDexterity();
-         void parseBeingAttributesIntelligence();
+         void parseBeingAttributes(entity::Being *being);
+         int parseBeingAttributesStrength();
+         int parseBeingAttributesDexterity();
+         int parseBeingAttributesIntelligence();
 
          /*
             Parses whether or not a Being starts out being alive.

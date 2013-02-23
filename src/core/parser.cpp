@@ -381,7 +381,7 @@ namespace core {
 
          else if (0 == getTagName().compare("attributes")) {
             // TODO: will need to pass pointer to struct
-            parseBeingAttributes();
+            parseBeingAttributes(defaultPlayer);
          }
 
          else if (0 == getTagName().compare("alive")) {
@@ -449,7 +449,7 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseBeingAttributes() {
+   void Parser::parseBeingAttributes(entity::Being *being) {
 
       // TODO: will return some sort of struct
       stringstream s;
@@ -457,16 +457,15 @@ namespace core {
       while (nextTag() && 4 == getDepth()) {
 
          if (0 == getTagName().compare("strength")) {
-            // TODO: will need to pass pointer to struct member
-            parseBeingAttributesStrength();
+            being->setStrength(parseBeingAttributesStrength());
          }
 
          else if (0 == getTagName().compare("dexterity")) {
-            parseBeingAttributesDexterity();
+            being->setDexterity(parseBeingAttributesDexterity());
          }
 
          else if (0 == getTagName().compare("intelligence")) {
-            parseBeingAttributesIntelligence();
+            being->setIntelligence(parseBeingAttributesIntelligence());
          }
 
          else {
@@ -482,30 +481,29 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseBeingAttributesStrength() {
+   int Parser::parseBeingAttributesStrength() {
 
-      // TODO
       int strength = parseInt();
-      cout << "Being strength: " << strength << endl;
       checkClosingTag("strength");
+      return strength;
    }
 
    /***************************************************************************/
 
-   void Parser::parseBeingAttributesDexterity() {
+   int Parser::parseBeingAttributesDexterity() {
 
       int dexterity = parseInt();
-      cout << "Being dexterity: " << dexterity << endl;
       checkClosingTag("dexterity");
+      return dexterity;
    }
 
    /***************************************************************************/
 
-   void Parser::parseBeingAttributesIntelligence() {
+   int Parser::parseBeingAttributesIntelligence() {
 
       int intelligence = parseInt();
-      cout << "Being intelligence: " << intelligence << endl;
       checkClosingTag("intelligence");
+      return intelligence;
    }
 
    /***************************************************************************/
