@@ -227,6 +227,7 @@ namespace core {
                (none)
          */
          void parseBeingInventory();
+         void parseBeingInventoryWeight();
 
          /*
             Parses a Being's Attributes.
@@ -238,6 +239,9 @@ namespace core {
                (none)
          */
          void parseBeingAttributes();
+         void parseBeingAttributesStrength();
+         void parseBeingAttributesDexterity();
+         void parseBeingAttributesIntelligence();
 
          /*
             Parses whether or not a Being starts out being alive.

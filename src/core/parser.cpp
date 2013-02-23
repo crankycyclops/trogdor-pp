@@ -355,7 +355,7 @@ namespace core {
             defaultPlayer->setMaxHealth(parseBeingMaxHealth());
          }
 
-         else if (0 == getTagName().compare("woundRate")) {
+         else if (0 == getTagName().compare("woundrate")) {
             defaultPlayer->setWoundRate(parseBeingWoundRate());
          }
 
@@ -375,6 +375,35 @@ namespace core {
    void Parser::parseBeingInventory() {
 
       // TODO: will take as argument pointer to fields in struct/class
+
+      stringstream s;
+
+      while (nextTag() && 4 == getDepth()) {
+
+         if (0 == getTagName().compare("weight")) {
+            // TODO: will need to pass pointer to struct member
+            parseBeingInventoryWeight();
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "default player's inventory settings (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("inventory");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseBeingInventoryWeight() {
+
+      // TODO: set weight
+      int weight = parseInt();
+      cout << "Being's inventory weight: " << weight << endl;
+      checkClosingTag("weight");
    }
 
    /***************************************************************************/
@@ -382,6 +411,60 @@ namespace core {
    void Parser::parseBeingAttributes() {
 
       // TODO: will return some sort of struct
+      stringstream s;
+
+      while (nextTag() && 4 == getDepth()) {
+
+         if (0 == getTagName().compare("strength")) {
+            // TODO: will need to pass pointer to struct member
+            parseBeingAttributesStrength();
+         }
+
+         else if (0 == getTagName().compare("dexterity")) {
+            parseBeingAttributesDexterity();
+         }
+
+         else if (0 == getTagName().compare("intelligence")) {
+            parseBeingAttributesIntelligence();
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "default player's inventory settings (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("attributes");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseBeingAttributesStrength() {
+
+      // TODO
+      int strength = parseInt();
+      cout << "Being strength: " << strength << endl;
+      checkClosingTag("strength");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseBeingAttributesDexterity() {
+
+      int dexterity = parseInt();
+      cout << "Being dexterity: " << dexterity << endl;
+      checkClosingTag("dexterity");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseBeingAttributesIntelligence() {
+
+      int intelligence = parseInt();
+      cout << "Being intelligence: " << intelligence << endl;
+      checkClosingTag("intelligence");
    }
 
    /***************************************************************************/
@@ -389,6 +472,9 @@ namespace core {
    bool Parser::parseBeingAlive() {
 
       // TODO
+      bool alive = parseBool();
+      cout << "Being is alive? " << alive << endl;
+      checkClosingTag("alive");
    }
 
    /***************************************************************************/
@@ -396,6 +482,9 @@ namespace core {
    int Parser::parseBeingHealth() {
 
       // TODO
+      int health = parseInt();
+      cout << "Being's initial health: " << health << endl;
+      checkClosingTag("health");
    }
 
    /***************************************************************************/
@@ -403,6 +492,9 @@ namespace core {
    int Parser::parseBeingMaxHealth() {
 
       // TODO
+      int maxHealth = parseInt();
+      cout << "Being's max health: " << maxHealth << endl;
+      checkClosingTag("maxHealth");
    }
 
    /***************************************************************************/
@@ -410,6 +502,9 @@ namespace core {
    double Parser::parseBeingWoundRate() {
 
       // TODO
+      double woundRate = parseDouble();
+      cout << "Being's wound rate: " << woundRate << endl;
+      checkClosingTag("woundrate");
    }
 
    /***************************************************************************/
