@@ -310,11 +310,11 @@ namespace core {
       while (nextTag() && depth == getDepth()) {
 
          if (0 == getTagName().compare("script")) {
-            parseScript(L, depth + 1);
+            parseScript(L);
          }
 
          else if (0 == getTagName().compare("event")) {
-            parseEvent(triggers, depth + 1);
+            parseEvent(L, triggers);
          }
 
          else {
@@ -330,21 +330,22 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseScript(LuaState *L, int depth) {
+   void Parser::parseScript(LuaState *L) {
 
-      // TODO
-      cout << "<script>: " << getAttribute("src") << endl;
+      L->loadScriptFromFile(getAttribute("src"));
       checkClosingTag("script");
    }
 
    /***************************************************************************/
 
-   void Parser::parseEvent(EventListener *triggers, int depth) {
+   void Parser::parseEvent(LuaState *L, EventListener *triggers) {
 
-      // TODO
       string name = getAttribute("name");
       string function = parseString();
-      cout << "<event name=\"" << name << "\">" << function << "</event>" << endl;
+
+      LuaEventTrigger *trigger = new LuaEventTrigger(function, L);
+      triggers->add(name.c_str(), trigger);
+
       checkClosingTag("event");
    }
 

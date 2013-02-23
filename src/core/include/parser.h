@@ -355,8 +355,8 @@ namespace core {
                (none)
          */
          void parseEvents(LuaState *L, EventListener *triggers, int depth);
-         void parseScript(LuaState *L, int depth);
-         void parseEvent(EventListener *triggers, int depth);
+         void parseScript(LuaState *L);
+         void parseEvent(LuaState *L, EventListener *triggers);
 
          /*
             Parse the Player section.  Throws an exception with an error message
