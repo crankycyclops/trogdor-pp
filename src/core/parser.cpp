@@ -81,6 +81,10 @@ namespace core {
             parseObjects();
          }
 
+         else if (0 == getTagName().compare("creatures")) {
+            parseCreatures();
+         }
+
          else {
             s << filename << ": invalid section <" << getTagName() <<
                "> (line " << xmlTextReaderGetParserLineNumber(reader) << ")";
@@ -753,6 +757,125 @@ namespace core {
       bool attackable = parseBool();
       checkClosingTag("attackable");
       return attackable;
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseCreatures() {
+
+      stringstream s;
+
+      while (nextTag() && 2 == getDepth()) {
+
+         if (0 == getTagName().compare("creature")) {
+            parseCreature();
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "creatures section (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("creatures");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseCreature() {
+
+      stringstream s;
+
+      Creature *creature = creatures.get(getAttribute("name"));
+
+      if (0 == creature) {
+         s << filename << ": creature '" << getAttribute("name") << "' was not "
+            << "declared in the manifest (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      while (nextTag() && 3 == getDepth()) {
+
+         if (0 == getTagName().compare("title")) {
+            creature->setTitle(parseEntityTitle());
+         }
+
+         else if (0 == getTagName().compare("description")) {
+            creature->setLongDescription(parseEntityLongDescription());
+         }
+
+         else if (0 == getTagName().compare("short")) {
+            creature->setShortDescription(parseEntityShortDescription());
+         }
+
+         else if (0 == getTagName().compare("alive")) {
+            creature->setAlive(parseBeingAlive());
+         }
+
+         else if (0 == getTagName().compare("health")) {
+            creature->setHealth(parseBeingHealth());
+         }
+
+         else if (0 == getTagName().compare("maxhealth")) {
+            creature->setMaxHealth(parseBeingMaxHealth());
+         }
+
+         else if (0 == getTagName().compare("attackable")) {
+            creature->setAttackable(parseBeingAttackable());
+         }
+
+         else if (0 == getTagName().compare("woundrate")) {
+            creature->setWoundRate(parseBeingWoundRate());
+         }
+
+         else if (0 == getTagName().compare("counterattack")) {
+            // TODO
+            cout << "Counterattack stub!" << endl;
+            parseBool();
+            checkClosingTag("counterattack");
+         }
+
+         else if (0 == getTagName().compare("allegiance")) {
+            // TODO
+            cout << "Allegiance stub!" << endl;
+            parseString();
+            checkClosingTag("allegiance");
+         }
+
+         else if (0 == getTagName().compare("inventory")) {
+            parseBeingInventory(creature);
+         }
+
+         else if (0 == getTagName().compare("attributes")) {
+            parseBeingAttributes(creature);
+         }
+
+         else if (0 == getTagName().compare("events")) {
+            parseEvents(creature->L, creature->triggers, 4);
+         }
+
+         else if (0 == getTagName().compare("aliases")) {
+            parseThingAliases(creature);
+         }
+
+         else if (0 == getTagName().compare("messages")) {
+            Messages *m = parseMessages(4);
+            creature->setMessages(*m);
+            delete m;
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "creature definition (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("creature");
    }
 
    /***************************************************************************/

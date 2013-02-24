@@ -405,6 +405,10 @@ namespace core {
 
          int parseItemDamage();
 
+         void parseCreatures();
+
+         void parseCreature();
+
          /*
             Parses settings for the default player.  As always, throws an
             exception with an error message if there's a problem.
