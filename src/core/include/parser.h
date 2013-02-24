@@ -219,6 +219,41 @@ namespace core {
          string parseString();
 
          /*
+            Parses an Entity's title.
+
+            Input:
+               (none)
+
+            Output:
+               The title (string)
+         */
+         string parseEntityTitle();
+
+         /*
+            Parses an Entity's long and short descriptions.
+
+            Input:
+               (none)
+
+            Output:
+               description (string)
+         */
+         string parseEntityLongDescription();
+         string parseEntityShortDescription();
+
+         /*
+            Parses a list of aliases, alternate identifiers for Things.
+
+            Input:
+               Pointer to Thing
+
+            Output:
+               (none)
+         */
+         void parseThingAliases(Thing *thing);
+         string parseThingAlias();  // returns a single alias
+
+         /*
             Parses a Being's inventory settings.
 
             Input:
@@ -302,20 +337,32 @@ namespace core {
          bool parseBeingAttackable();
 
          /*
-            Parses the <game> section of the XML file.  Throws an exception if
-            there's a parse error.
+            Parses an Item's definition to see if it's takeable or droppable by
+            a Being.
 
             Input:
                (none)
 
             Output:
-               Being's woundRate (double)
+               Bool
          */
-         void parseGame();
+         bool parseItemTakeable();
+         bool parseItemDroppable();
 
          /*
-            This group of functions parses the <manifest> section of the XML
-            file.
+            Parses an Item's weight (how much space it takes up in a Being's
+            inventory.
+
+            Input:
+               (none)
+
+            Output:
+               weight (int)
+         */
+         int parseItemWeight();
+
+         /*
+            Parses whether or not an Item is a weapon.
 
             Input:
                (none)
@@ -323,13 +370,19 @@ namespace core {
             Output:
                (none)
          */
-         void parseManifest();
-         void parseManifestRooms();
-         bool parseManifestRoom();  // returns true if room's name is "start"
-         void parseManifestCreatures();
-         void parseManifestCreature();
-         void parseManifestObjects();
-         void parseManifestObject();
+         bool parseItemWeapon();
+
+         /*
+            Parses how much damage an object does (hit points taken) if it's a
+            weapon.
+
+            Input:
+               (none)
+
+            Output:
+               damage (int)
+         */
+         int parseItemDamage();
 
          /*
             Parse the contents of a Messages object from XML.
@@ -371,6 +424,24 @@ namespace core {
          void parseEvent(LuaState *L, EventListener *triggers);
 
          /*
+            This group of functions parses the <manifest> section of the XML
+            file.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseManifest();
+         void parseManifestRooms();
+         bool parseManifestRoom();  // returns true if room's name is "start"
+         void parseManifestCreatures();
+         void parseManifestCreature();
+         void parseManifestObjects();
+         void parseManifestObject();
+
+         /*
             Parse the Player section.  Throws an exception with an error message
             if there's a problem.
 
@@ -381,6 +452,18 @@ namespace core {
                (none)
          */
          void parsePlayer();
+
+         /*
+            Parses settings for the default player.  As always, throws an
+            exception with an error message if there's a problem.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseDefaultPlayer();
 
          /*
             Parses objects in the objects section of game.xml.  Throws an
@@ -396,89 +479,6 @@ namespace core {
          void parseObject();
 
          /*
-            Parses an Entity's title.
-
-            Input:
-               (none)
-
-            Output:
-               The title (string)
-         */
-         string parseEntityTitle();
-
-         /*
-            Parses an Entity's long and short descriptions.
-
-            Input:
-               (none)
-
-            Output:
-               description (string)
-         */
-         string parseEntityLongDescription();
-         string parseEntityShortDescription();
-
-         /*
-            Parses an Item's definition to see if it's takeable or droppable by
-            a Being.
-
-            Input:
-               (none)
-
-            Output:
-               Bool
-         */
-         bool parseItemTakeable();
-         bool parseItemDroppable();
-
-         /*
-            Parses an Item's weight (how much space it takes up in a Being's
-            inventory.
-
-            Input:
-               (none)
-
-            Output:
-               weight (int)
-         */
-         int parseItemWeight();
-
-         /*
-            Parses a list of aliases, alternate identifiers for Things.
-
-            Input:
-               Pointer to Thing
-
-            Output:
-               (none)
-         */
-         void parseThingAliases(Thing *thing);
-         string parseThingAlias();  // returns a single alias
-
-         /*
-            Parses whether or not an Item is a weapon.
-
-            Input:
-               (none)
-
-            Output:
-               (none)
-         */
-         bool parseItemWeapon();
-
-         /*
-            Parses how much damage an object does (hit points taken) if it's a
-            weapon.
-
-            Input:
-               (none)
-
-            Output:
-               damage (int)
-         */
-         int parseItemDamage();
-
-         /*
             Parses the creatures section of game.xml.
 
             Input:
@@ -491,16 +491,16 @@ namespace core {
          void parseCreature();
 
          /*
-            Parses settings for the default player.  As always, throws an
-            exception with an error message if there's a problem.
+            Parses the <game> section of the XML file.  Throws an exception if
+            there's a parse error.
 
             Input:
                (none)
 
             Output:
-               (none)
+               Being's woundRate (double)
          */
-         void parseDefaultPlayer();
+         void parseGame();
 
       public:
 
