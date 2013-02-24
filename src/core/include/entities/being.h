@@ -17,6 +17,8 @@ namespace core { namespace entity {
 
          static const int DEFAULT_INVENTORY_WEIGHT = 0;
 
+         static const bool DEFAULT_ATTACKABLE = true;
+
       protected:
 
          int health;    // number of health points the being currently has
@@ -43,6 +45,8 @@ namespace core { namespace entity {
             containing Game object and a name.
          */
          inline Being(Game *g, string n): Thing(g, n) {
+
+            attackable = DEFAULT_ATTACKABLE;
 
             attributes.strength = DEFAULT_ATTRIBUTE_STRENGTH;
             attributes.dexterity = DEFAULT_ATTRIBUTE_DEXTERITY;

@@ -290,6 +290,17 @@ namespace core {
          double parseBeingWoundRate();
 
          /*
+            Parses whether or not players, by default, are attackable.
+
+            Input:
+               (none)
+
+            Output:
+               bool
+         */
+         bool parseBeingAttackable();
+
+         /*
             Parses the <game> section of the XML file.  Throws an exception if
             there's a parse error.
 

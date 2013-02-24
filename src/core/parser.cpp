@@ -605,6 +605,10 @@ namespace core {
             defaultPlayer->setWoundRate(parseBeingWoundRate());
          }
 
+         else if (0 == getTagName().compare("attackable")) {
+            defaultPlayer->setAttackable(parseBeingAttackable());
+         }
+
          else {
             s << filename << ": invalid tag <" << getTagName() << "> in "
                << "default player settings (line "
@@ -740,6 +744,15 @@ namespace core {
       double woundRate = parseDouble();
       checkClosingTag("woundrate");
       return woundRate;
+   }
+
+   /***************************************************************************/
+
+   bool Parser::parseBeingAttackable() {
+
+      bool attackable = parseBool();
+      checkClosingTag("attackable");
+      return attackable;
    }
 
    /***************************************************************************/
