@@ -757,19 +757,19 @@ namespace core {
 
       stringstream s;
 
-      string allegiance = parseString();
+      string allegiance = strToLower(parseString());
 
       checkClosingTag("allegiance");
 
-      if (0 == strToLower(allegiance).compare("friend")) {
+      if (0 == allegiance.compare("friend")) {
          return entity::Creature::FRIEND;
       }
 
-      if (0 == strToLower(allegiance).compare("neutral")) {
+      if (0 == allegiance.compare("neutral")) {
          return entity::Creature::NEUTRAL;
       }
 
-      if (0 == strToLower(allegiance).compare("enemy")) {
+      if (0 == allegiance.compare("enemy")) {
          return entity::Creature::ENEMY;
       }
 
