@@ -683,6 +683,36 @@ namespace core {
 
    /***************************************************************************/
 
+   enum entity::Creature::AllegianceType Parser::parseCreatureAllegiance() {
+
+      stringstream s;
+
+      string allegiance = strToLower(parseString());
+
+      checkClosingTag("allegiance");
+
+      if (0 == allegiance.compare("friend")) {
+         return entity::Creature::FRIEND;
+      }
+
+      if (0 == allegiance.compare("neutral")) {
+         return entity::Creature::NEUTRAL;
+      }
+
+      if (0 == allegiance.compare("enemy")) {
+         return entity::Creature::ENEMY;
+      }
+
+      else {
+         s << "Expecting one of 'friend', 'neutral' or 'enemy' in creature "
+            << "allegiance setting (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+   }
+
+   /***************************************************************************/
+
    void Parser::parseBeingInventory(entity::Being *being, bool allowObjects) {
 
       stringstream s;
@@ -749,36 +779,6 @@ namespace core {
       }
 
       checkClosingTag("attributes");
-   }
-
-   /***************************************************************************/
-
-   enum entity::Creature::AllegianceType Parser::parseCreatureAllegiance() {
-
-      stringstream s;
-
-      string allegiance = strToLower(parseString());
-
-      checkClosingTag("allegiance");
-
-      if (0 == allegiance.compare("friend")) {
-         return entity::Creature::FRIEND;
-      }
-
-      if (0 == allegiance.compare("neutral")) {
-         return entity::Creature::NEUTRAL;
-      }
-
-      if (0 == allegiance.compare("enemy")) {
-         return entity::Creature::ENEMY;
-      }
-
-      else {
-         s << "Expecting one of 'friend', 'neutral' or 'enemy' in creature "
-            << "allegiance setting (line "
-            << xmlTextReaderGetParserLineNumber(reader) << ")";
-         throw s.str();
-      }
    }
 
    /***************************************************************************/
