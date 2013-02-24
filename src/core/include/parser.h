@@ -337,6 +337,17 @@ namespace core {
          bool parseBeingAttackable();
 
          /*
+            Parses a Creature's allegiance.
+
+            Input:
+               (none)
+
+            Output:
+               enum entity::Creature::AllegianceType
+         */
+         enum entity::Creature::AllegianceType parseCreatureAllegiance();
+
+         /*
             Parses an Item's definition to see if it's takeable or droppable by
             a Being.
 

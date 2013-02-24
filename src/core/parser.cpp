@@ -600,10 +600,7 @@ namespace core {
          }
 
          else if (0 == getTagName().compare("allegiance")) {
-            // TODO
-            cout << "Allegiance stub!" << endl;
-            parseString();
-            checkClosingTag("allegiance");
+            creature->setAllegiance(parseCreatureAllegiance());
          }
 
          else if (0 == getTagName().compare("inventory")) {
@@ -752,6 +749,36 @@ namespace core {
       }
 
       checkClosingTag("attributes");
+   }
+
+   /***************************************************************************/
+
+   enum entity::Creature::AllegianceType Parser::parseCreatureAllegiance() {
+
+      stringstream s;
+
+      string allegiance = parseString();
+
+      checkClosingTag("allegiance");
+
+      if (0 == strToLower(allegiance).compare("friend")) {
+         return entity::Creature::FRIEND;
+      }
+
+      if (0 == strToLower(allegiance).compare("neutral")) {
+         return entity::Creature::NEUTRAL;
+      }
+
+      if (0 == strToLower(allegiance).compare("enemy")) {
+         return entity::Creature::ENEMY;
+      }
+
+      else {
+         s << "Expecting one of 'friend', 'neutral' or 'enemy' in creature "
+            << "allegiance setting (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
    }
 
    /***************************************************************************/
