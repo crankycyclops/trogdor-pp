@@ -382,32 +382,112 @@ namespace core {
          */
          void parsePlayer();
 
-         void parseObjects();
+         /*
+            Parses objects in the objects section of game.xml.  Throws an
+            exception with an error message if there's a problem.
 
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseObjects();
          void parseObject();
 
+         /*
+            Parses an Entity's title.
+
+            Input:
+               (none)
+
+            Output:
+               The title (string)
+         */
          string parseEntityTitle();
 
-         string parseEntityLongDescription();
+         /*
+            Parses an Entity's long and short descriptions.
 
+            Input:
+               (none)
+
+            Output:
+               description (string)
+         */
+         string parseEntityLongDescription();
          string parseEntityShortDescription();
 
-         bool parseItemTakeable();
+         /*
+            Parses an Item's definition to see if it's takeable or droppable by
+            a Being.
 
+            Input:
+               (none)
+
+            Output:
+               Bool
+         */
+         bool parseItemTakeable();
          bool parseItemDroppable();
 
+         /*
+            Parses an Item's weight (how much space it takes up in a Being's
+            inventory.
+
+            Input:
+               (none)
+
+            Output:
+               weight (int)
+         */
          int parseItemWeight();
 
+         /*
+            Parses a list of aliases, alternate identifiers for Things.
+
+            Input:
+               Pointer to Thing
+
+            Output:
+               (none)
+         */
          void parseThingAliases(Thing *thing);
+         string parseThingAlias();  // returns a single alias
 
-         string parseThingAlias();
+         /*
+            Parses whether or not an Item is a weapon.
 
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
          bool parseItemWeapon();
 
+         /*
+            Parses how much damage an object does (hit points taken) if it's a
+            weapon.
+
+            Input:
+               (none)
+
+            Output:
+               damage (int)
+         */
          int parseItemDamage();
 
-         void parseCreatures();
+         /*
+            Parses the creatures section of game.xml.
 
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseCreatures();
          void parseCreature();
 
          /*
