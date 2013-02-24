@@ -36,6 +36,7 @@ namespace core { namespace entity {
 
          struct {
             int weight;
+            list<Object *> items;
          } inventory;
 
       public:

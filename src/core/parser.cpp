@@ -586,7 +586,7 @@ namespace core {
       while (nextTag() && 3 == getDepth()) {
 
          if (0 == getTagName().compare("inventory")) {
-            parseBeingInventory(defaultPlayer);
+            parseBeingInventory(defaultPlayer, false);
          }
 
          else if (0 == getTagName().compare("attributes")) {
@@ -626,7 +626,7 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseBeingInventory(entity::Being *being) {
+   void Parser::parseBeingInventory(entity::Being *being, bool allowObjects) {
 
       stringstream s;
 
@@ -634,6 +634,13 @@ namespace core {
 
          if (0 == getTagName().compare("weight")) {
             being->setInventoryWeight(parseBeingInventoryWeight());
+         }
+
+         else if (true == allowObjects && 0 == getTagName().compare("object")) {
+            // TODO: check to make sure object hasn't already been placed
+            // (hint: set owner and make sure owner isn't set)
+            cout << "Inventory object stub: " << parseString() << endl;
+            checkClosingTag("object");
          }
 
          else {
@@ -846,7 +853,7 @@ namespace core {
          }
 
          else if (0 == getTagName().compare("inventory")) {
-            parseBeingInventory(creature);
+            parseBeingInventory(creature, true);
          }
 
          else if (0 == getTagName().compare("attributes")) {

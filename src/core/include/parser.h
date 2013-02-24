@@ -223,11 +223,12 @@ namespace core {
 
             Input:
                Reference to the being whose inventory is being configured
+               Whether or not to allow a set of objects initialized in game.xml
 
             Output:
                (none)
          */
-         void parseBeingInventory(entity::Being *being);
+         void parseBeingInventory(entity::Being *being, bool allowObjects);
          int parseBeingInventoryWeight();
 
          /*

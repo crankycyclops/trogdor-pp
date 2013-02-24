@@ -259,11 +259,20 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
             <intelligence>10</intelligence>
          </attributes>
 
+         <inventory>
+
+            <!-- Like the player configuration, a creature can have an inventory
+                 of a predefined size. 0 means an inventory of unlimited size. -->
+            <weight>0</weight>
+
+            <!-- objects can be placed in a creature's inventory -->
+            <object>stick</object>
+
+         </inventory>
+
          <messages>
             <message name="dead">Trogdor is very much dead.</message>
          </messages>
-
-         <object>stick</object>
 
       </creature>
 
