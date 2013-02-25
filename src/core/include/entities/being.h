@@ -140,6 +140,23 @@ namespace core { namespace entity {
                (none)
          */
          inline void setInventoryWeight(int w) {inventory.weight = w;}
+
+         /*
+            Inserts the given object into the Being's inventory.  Returns true
+            if the Object fits (there's enough free weight.)  Otherwise, nothing
+            happens and false is returned.  By default, we check the inventory's
+            available weight before inserting, but passing false to the second
+            argument will bypass this check (should only be used during the
+            parsing of game.xml.)
+
+            Input:
+               Object *
+               Whether or not to check the inventory's weight before inserting
+
+            Output:
+               bool (true on success and false on failure)
+         */
+         bool insertIntoInventory(Object *object, bool considerWeight = true);
    };
 }}
 

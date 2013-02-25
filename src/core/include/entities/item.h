@@ -51,6 +51,29 @@ namespace core { namespace entity {
          }
 
          /*
+            Returns the owner of the object (0 if there is no owner.)
+
+            Input:
+               (none)
+
+            Output:
+               Being *
+         */
+         inline Being *getOwner() const {return owner;}
+
+         /*
+            Returns the object's current location (0 if it isn't placed
+            anywhere.)
+
+            Input:
+               (none)
+
+            Output:
+               Place *
+         */
+         inline Place *getLocation() const {return location;}
+
+         /*
             Returns the Item's weight.
 
             Input:
@@ -104,6 +127,28 @@ namespace core { namespace entity {
                Damage in hit points (int)
          */
          inline int getDamage() {return damage;}
+
+         /*
+            Sets the owner.
+
+            Input:
+               Being that should now own the object
+
+            Output:
+               (none)
+         */
+         inline void setOwner(Being *being) {owner = being;}
+
+         /*
+            Sets the Object's location.
+
+            Input:
+               Place that should now contain the object
+
+            Output:
+               (none)
+         */
+         inline void setLocation(Place *place) {location = place;}
 
          /*
             Sets the Item's weight (how much space it uses in a Being's

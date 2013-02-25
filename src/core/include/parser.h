@@ -265,6 +265,7 @@ namespace core {
                (none)
          */
          void parseBeingInventory(entity::Being *being, bool allowObjects);
+         void parseBeingInventoryObject(Being *being);
          int parseBeingInventoryWeight();
 
          /*

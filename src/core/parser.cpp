@@ -868,10 +868,7 @@ namespace core {
          }
 
          else if (true == allowObjects && 0 == getTagName().compare("object")) {
-            // TODO: check to make sure object hasn't already been placed
-            // (hint: set owner and make sure owner isn't set)
-            cout << "Inventory object stub: " << parseString() << endl;
-            checkClosingTag("object");
+            parseBeingInventoryObject(being);
          }
 
          else {
@@ -883,6 +880,39 @@ namespace core {
       }
 
       checkClosingTag("inventory");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseBeingInventoryObject(Being *being) {
+
+      stringstream s;
+      string objectName = parseString();
+
+      Object *object = objects.get(objectName);
+
+      if (0 == object) {
+         s << filename << ": object '" << objectName << "' doesn't exist (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      else if (0 != object->getOwner()) {
+         s << filename << ": object '" << objectName << "' is already owned by '"
+            << object->getOwner()->getName() << "' (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      else if (0 != object->getLocation()) {
+         s << filename << ": object '" << objectName << "' was already placed "
+            << "in room '" << object->getLocation()->getName() << "' (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      being->insertIntoInventory(object, false);
+      checkClosingTag("object");
    }
 
    /***************************************************************************/
