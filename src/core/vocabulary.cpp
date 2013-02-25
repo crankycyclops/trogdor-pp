@@ -1,6 +1,7 @@
 #define VOCABULARY_CPP
 
 
+#include <cstring>
 #include <string>
 
 using namespace std;
