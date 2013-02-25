@@ -23,7 +23,8 @@ namespace core { namespace entity {
 
       protected:
 
-         Being *owner;
+         Being *owner;     // a Being might own the object
+         Place *location;  // the object may be placed in a location
 
          bool takeable;    // whether or not a Being can take the Item
          bool droppable;   // whether or not a Being can drop the Item
@@ -41,6 +42,7 @@ namespace core { namespace entity {
          inline Item(Game *g, string n): Thing(g, n) {
 
             owner = 0;
+            location = 0;
             weight = DEFAULT_WEIGHT;
             takeable = DEFAULT_TAKEABLE;
             droppable = DEFAULT_DROPPABLE;
