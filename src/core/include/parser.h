@@ -12,6 +12,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "utility.h"
+#include "vocabulary.h"
 #include "entitymap.h"
 #include "entities/player.h"
 #include "luastate.h"
@@ -396,6 +397,20 @@ namespace core {
          int parseItemDamage();
 
          /*
+            Takes tags such as <north>, <south>, etc. in a room definition and
+            forges that connection.
+
+            Input:
+               direction (string)
+               Pointer to room where connection should be made (Room *)
+               Name of room that we want to connect to (string)
+
+            Output:
+               (none)
+         */
+         void parseRoomConnection(string direction, Room *room, string connectTo);
+
+         /*
             Parse the contents of a Messages object from XML.
 
             Input:
@@ -500,6 +515,18 @@ namespace core {
          */
          void parseCreatures();
          void parseCreature();
+
+         /*
+            Parses room definitions in game.xml.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseRooms();
+         void parseRoom();
 
          /*
             Parses the <game> section of the XML file.  Throws an exception if

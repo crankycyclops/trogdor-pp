@@ -1,6 +1,11 @@
 #define VOCABULARY_CPP
 
 
+#include <string>
+
+using namespace std;
+
+
 const char *g_directions[] = {
    "north",
    "south",
@@ -66,4 +71,17 @@ const char *g_prepositions[] = {
    "without",
    0
 };
+
+/******************************************************************************/
+
+bool isDirection(string str) {
+
+   for (int i = 0; g_directions[i] != 0; i++) {
+      if (0 == strcmp(str.c_str(), g_directions[i])) {
+         return true;
+      }
+   }
+
+   return false;
+}
 

@@ -85,6 +85,10 @@ namespace core {
             parseCreatures();
          }
 
+         else if (0 == getTagName().compare("rooms")) {
+            parseRooms();
+         }
+
          else {
             s << filename << ": invalid section <" << getTagName() <<
                "> (line " << xmlTextReaderGetParserLineNumber(reader) << ")";
@@ -634,6 +638,103 @@ namespace core {
       }
 
       checkClosingTag("creature");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseRooms() {
+
+      stringstream s;
+
+      while (nextTag() && 2 == getDepth()) {
+
+         if (0 == getTagName().compare("room")) {
+            parseRoom();
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "rooms section (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("rooms");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseRoom() {
+
+      stringstream s;
+
+      Room *room = rooms.get(getAttribute("name"));
+
+      if (0 == room) {
+         s << filename << ": room '" << getAttribute("name") << "' was not "
+            << "declared in the manifest (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      while (nextTag() && 3 == getDepth()) {
+
+         if (0 == getTagName().compare("title")) {
+            room->setTitle(parseEntityTitle());
+         }
+
+         else if (0 == getTagName().compare("description")) {
+            room->setLongDescription(parseEntityLongDescription());
+         }
+
+         else if (0 == getTagName().compare("short")) {
+            room->setShortDescription(parseEntityShortDescription());
+         }
+
+         else if (isDirection(getTagName())) {
+            string direction = getTagName();
+            string connection = parseString();
+            parseRoomConnection(direction, room, connection);
+         }
+
+         else if (0 == getTagName().compare("events")) {
+            parseEvents(room->L, room->triggers, 4);
+         }
+
+         else if (0 == getTagName().compare("messages")) {
+            Messages *m = parseMessages(4);
+            room->setMessages(*m);
+            delete m;
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "room definition (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("room");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseRoomConnection(string direction, Room *room, string connectTo) {
+
+      stringstream s;
+
+      Room *connectToRoom = rooms.get(connectTo);
+
+      if (0 == connectToRoom) {
+         s << filename << ": room '" << connectTo << "' does not exist (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      room->setConnection(direction, connectToRoom);
+      checkClosingTag(direction);
    }
 
    /***************************************************************************/

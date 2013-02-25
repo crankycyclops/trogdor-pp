@@ -13,6 +13,17 @@ extern const char *g_fillerWords[];
 /* list of one-word English prepositions recognized by Trogdor */
 extern const char *g_prepositions[];
 
+/*
+   Returns true if the specified word is a valid direction and false if it's not.
+
+   Input:
+      string
+
+   Output:
+      bool
+*/
+extern bool isDirection(string str);
+
 #endif
 
 

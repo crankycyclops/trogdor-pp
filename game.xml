@@ -298,17 +298,13 @@ You're standing in the middle of a sprawling white marble castle, the walls line
 You peer off into the distance and notice a dark hole in the wall a little ways to the north.
          </description>
 
-         <script src="script/room/start.lua"></script>
-         <event name="beforeRoomDisplay">beforeRoomSample</event>
-
          <!-- name of the room north of this one -->
          <north>cave</north>
-         <!-- we place the object "candle" in this room.  Note that an object cannot
-              be in more than one room.
-         -->
 
-         <object>sword</object>
-         <object>candle</object>
+         <events>
+            <script src="script/room/start.lua"></script>
+            <event name="beforeRoomDisplay">beforeRoomSample</event>
+         </events>
 
          <!-- you can define transition messages when you come to or go from
               specific directions (two possible messages for each direction) -->
@@ -316,6 +312,14 @@ You peer off into the distance and notice a dark hole in the wall a little ways 
             <message name="fromNorth">Back to start from the cave!</message>
             <message name="goNorth">Transitioning to the cave!</message>
          </messages>
+
+         <!-- Creatures and objects that are contained inside a room should be
+              referenced here. -->
+         <contains>
+            <!-- Note that an object cannot be in more than one room. -->
+            <object>candle</object>
+            <object>sword</object>
+         </contains>
 
       </room>
 
@@ -347,11 +351,11 @@ things waiting for you here!
 
          <east>cave</east>
 
-         <!-- you can place creatures in rooms -->
-         <creature>trogdor</creature>
-
-         <object>rock</object>
-         <object>boulder</object>
+         <contains>
+            <creature>trogdor</creature>
+            <object>rock</object>
+            <object>boulder</object>
+         </contains>
 
       </room>
 
