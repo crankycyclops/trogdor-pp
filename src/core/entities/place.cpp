@@ -33,9 +33,6 @@ namespace core { namespace entity {
             // TODO: insert by name, including synonyms
             break;
 
-         ENTITY_ROOM:
-            throw "Place::insertThing: attempt to insert disallowed Thing type 'room'";
-
          default:
             break;
       }
