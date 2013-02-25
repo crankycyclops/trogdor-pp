@@ -36,6 +36,8 @@ namespace core { namespace entity {
          */
          inline Creature(Game *g, string n): Being(g, n) {
 
+            type = ENTITY_CREATURE;
+
             allegiance = DEFAULT_ALLEGIANCE;
             counterAttack = DEFAULT_COUNTER_ATTACK;
          }

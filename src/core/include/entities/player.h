@@ -21,6 +21,8 @@ namespace core { namespace entity {
          */
          inline Player(Game *g, string n): Being(g, n) {
 
+            type = ENTITY_PLAYER;
+
             attackable = true;
          }
    };

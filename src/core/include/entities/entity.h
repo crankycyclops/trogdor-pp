@@ -22,9 +22,20 @@ using namespace core::event;
 namespace core { namespace entity {
 
 
+   // used for run-time check of an Entity's type
+   enum EntityType {
+      ENTITY_UNDEFINED,
+      ENTITY_ROOM,
+      ENTITY_PLAYER,
+      ENTITY_CREATURE,
+      ENTITY_OBJECT
+   };
+
    class Entity {
 
       protected:
+
+         enum EntityType type;
 
          Game *game;
 
@@ -53,6 +64,17 @@ namespace core { namespace entity {
                Name (string)
          */
          Entity(Game *g, string n);
+
+         /*
+            Returns the Entity's type.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline enum EntityType getType() const {return type;}
 
          /*
             Returns the Entity's name.

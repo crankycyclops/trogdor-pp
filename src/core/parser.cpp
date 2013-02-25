@@ -43,11 +43,6 @@ namespace core {
       }
 
       parseGame();
-
-      // ignore any extra stuff that may exist in the XML file
-      if (nextTag()) {
-         cerr << filename << ": warning: ignoring contents after </game>" << endl;
-      }
    }
 
    /***************************************************************************/
@@ -698,6 +693,10 @@ namespace core {
             parseRoomConnection(direction, room, connection);
          }
 
+         else if (0 == getTagName().compare("contains")) {
+            parseRoomContains(room);
+         }
+
          else if (0 == getTagName().compare("events")) {
             parseEvents(room->L, room->triggers, 4);
          }
@@ -735,6 +734,50 @@ namespace core {
 
       room->setConnection(direction, connectToRoom);
       checkClosingTag(direction);
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseRoomContains(Room *room) {
+
+      stringstream s;
+
+      while (nextTag() && 4 == getDepth()) {
+
+         string tag = getTagName();
+
+         if (0 == tag.compare("object") || 0 == tag.compare("creature")) {
+            room->insertThing(parseRoomContainsThing(tag));
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "rooms section (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("contains");
+   }
+
+   /***************************************************************************/
+
+   Thing *Parser::parseRoomContainsThing(string tag) {
+
+      stringstream s;
+
+      string thingName = parseString();
+      Thing *thing = things.get(thingName);
+
+      if (0 == thing) {
+         s << filename << ": Thing '" << tag << "' doesn't exist (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      checkClosingTag(tag);
+      return thing;
    }
 
    /***************************************************************************/

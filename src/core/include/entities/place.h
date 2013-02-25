@@ -2,8 +2,11 @@
 #define PLACE_H
 
 
+#include <typeinfo>
 #include <list>
+#include <cstring>
 #include <boost/unordered_map.hpp>
+#include <boost/type_traits.hpp>
 
 #include "entity.h"
 
@@ -48,6 +51,18 @@ namespace core { namespace entity {
             containing Game object and a name.
          */
          inline Place(Game *g, string n): Entity(g, n) {}
+
+         /*
+            Inserts a Thing that resides inside the Place.  An example would
+            be an Object inside a Room.
+
+            Input:
+               Pointer to Thing
+
+            Output:
+               (none)
+         */
+         void insertThing(Thing *thing);
    };
 }}
 

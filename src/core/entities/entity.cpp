@@ -11,6 +11,9 @@ namespace core { namespace entity {
 
    Entity::Entity(Game *g, string n) {
 
+      // not sure if this will ever actually be used, but meh...
+      type = ENTITY_UNDEFINED;
+
       game = g;
       name = n;
 

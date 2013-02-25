@@ -411,6 +411,28 @@ namespace core {
          void parseRoomConnection(string direction, Room *room, string connectTo);
 
          /*
+            Parses a Room's version of the <contains> section.
+
+            Input:
+               Pointer to Room in which we're inserting the object
+
+            Output:
+               (none)
+         */
+         void parseRoomContains(Room *room);
+
+         /*
+            Parses a single item in a Room's <contains> section.
+
+            Input:
+               Tag name (right now, could be "creature" or "object")
+
+            Output:
+               (none)
+         */
+         Thing *parseRoomContainsThing(string tag);
+
+         /*
             Parse the contents of a Messages object from XML.
 
             Input:
