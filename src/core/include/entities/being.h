@@ -40,7 +40,8 @@ namespace core { namespace entity {
          } attributes;
 
          struct {
-            int weight;
+            int weight;         // how much weight inventory can hold
+            int currentWeight;  // how much weight is currently used
             set<Object *, EntityAlphaComparator> objects;
             unordered_map<string, list<Object *> >   objectsByName;
          } inventory;
@@ -60,6 +61,7 @@ namespace core { namespace entity {
             attributes.intelligence = DEFAULT_ATTRIBUTE_INTELLIGENCE;
 
             inventory.weight = DEFAULT_INVENTORY_WEIGHT;
+            inventory.currentWeight = 0;
          }
 
          /*

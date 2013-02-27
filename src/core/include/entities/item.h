@@ -12,8 +12,6 @@ namespace core { namespace entity {
 
       public:
 
-         static const int DEFAULT_WEIGHT = 0;
-
          static const bool DEFAULT_IS_WEAPON = false;
          static const int DEFAULT_DAMAGE = 0;
 
@@ -30,7 +28,6 @@ namespace core { namespace entity {
          bool droppable;   // whether or not a Being can drop the Item
          bool weapon;      // whether or not Item is a weapon
 
-         int weight;       // how much weight Item uses in a Being's inventory
          int damage;       // how much damage Item does if it's a weapon
 
       public:
@@ -43,7 +40,6 @@ namespace core { namespace entity {
 
             owner = 0;
             location = 0;
-            weight = DEFAULT_WEIGHT;
             takeable = DEFAULT_TAKEABLE;
             droppable = DEFAULT_DROPPABLE;
             weapon = DEFAULT_IS_WEAPON;
@@ -72,17 +68,6 @@ namespace core { namespace entity {
                Place *
          */
          inline Place *getLocation() const {return location;}
-
-         /*
-            Returns the Item's weight.
-
-            Input:
-               (none)
-
-            Output:
-               The weight (int)
-         */
-         inline int getWeight() {return weight;}
 
          /*
             Returns whether or not the Item can be taken.
@@ -149,18 +134,6 @@ namespace core { namespace entity {
                (none)
          */
          inline void setLocation(Place *place) {location = place;}
-
-         /*
-            Sets the Item's weight (how much space it uses in a Being's
-            inventory.)
-
-            Input:
-               New weight (int)
-
-            Output:
-               (none)
-         */
-         inline void setWeight(int w) {weight = w;}
 
          /*
             Sets whether or not a Being can take the object.
