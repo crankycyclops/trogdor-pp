@@ -405,7 +405,7 @@ namespace core {
          }
 
          else if (0 == getTagName().compare("weight")) {
-            object->setWeight(parseItemWeight());
+            object->setWeight(parseObjectWeight());
          }
 
          else if (0 == getTagName().compare("takeable")) {
@@ -800,7 +800,7 @@ namespace core {
 
    /***************************************************************************/
 
-   int Parser::parseItemWeight() {
+   int Parser::parseObjectWeight() {
 
       int weight = parseInt();
       checkClosingTag("weight");

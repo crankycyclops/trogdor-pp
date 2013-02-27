@@ -363,7 +363,7 @@ namespace core {
          bool parseItemDroppable();
 
          /*
-            Parses an Item's weight (how much space it takes up in a Being's
+            Parses an Object's weight (how much space it takes up in a Being's
             inventory.
 
             Input:
@@ -372,7 +372,7 @@ namespace core {
             Output:
                weight (int)
          */
-         int parseItemWeight();
+         int parseObjectWeight();
 
          /*
             Parses whether or not an Item is a weapon.
