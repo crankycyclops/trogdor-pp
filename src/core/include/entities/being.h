@@ -2,6 +2,7 @@
 #define BEING_H
 
 
+#include <set>
 #include "thing.h"
 
 
@@ -36,7 +37,7 @@ namespace core { namespace entity {
 
          struct {
             int weight;
-            list<Object *> items;
+            set<Object *, EntityAlphaComparator> items;
          } inventory;
 
       public:

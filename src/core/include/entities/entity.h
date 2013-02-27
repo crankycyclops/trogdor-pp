@@ -31,6 +31,8 @@ namespace core { namespace entity {
       ENTITY_OBJECT
    };
 
+   /***************************************************************************/
+
    class Entity {
 
       protected:
@@ -164,6 +166,17 @@ namespace core { namespace entity {
                (none)
          */
          inline string setShortDescription(string d) {shortDesc = d;}
+   };
+
+   /***************************************************************************/
+
+   // used by std::set to order Entities (referenced by pointers) alphabetically
+   class EntityAlphaComparator {
+
+      inline bool operator()(const Entity* &lhs, const Entity* &rhs) {
+
+         return lhs->getName() < rhs->getName();
+      }
    };
 }}
 
