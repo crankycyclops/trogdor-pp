@@ -16,4 +16,3 @@ namespace core { namespace entity {
       return true;
    }
 }}
-

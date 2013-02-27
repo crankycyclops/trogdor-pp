@@ -3,7 +3,11 @@
 
 
 #include <set>
+#include <boost/unordered_map.hpp>
+
 #include "thing.h"
+
+using namespace boost;
 
 
 namespace core { namespace entity {
@@ -37,7 +41,8 @@ namespace core { namespace entity {
 
          struct {
             int weight;
-            set<Object *, EntityAlphaComparator> items;
+            set<Object *, EntityAlphaComparator> objects;
+            unordered_map<string, list<Object *> >   objectsByName;
          } inventory;
 
       public:
