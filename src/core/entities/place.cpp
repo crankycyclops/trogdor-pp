@@ -83,24 +83,31 @@ namespace core { namespace entity {
       switch (thing->getType()) {
 
          case ENTITY_PLAYER:
+
             beings.insert(beings.end(), static_cast<Being *>(thing));
             players.insert(players.end(), static_cast<Player *>(thing));
             insertThingByName(static_cast<Player *>(thing));
             break;
 
          case ENTITY_CREATURE:
+
             beings.insert(beings.end(), static_cast<Being *>(thing));
             creatures.insert(creatures.end(), static_cast<Creature *>(thing));
             insertThingByName(static_cast<Creature *>(thing));
             break;
 
          case ENTITY_OBJECT:
+
             items.insert(items.end(), static_cast<Item *>(thing));
             objects.insert(objects.end(), static_cast<Object *>(thing));
             insertThingByName(static_cast<Object *>(thing));
+
+            // objects require a reference to the containing Place
+            (static_cast<Object *>(thing))->setLocation(this);
             break;
 
          default:
+
             stringstream s;
             s << "Place::insertThing(): attempting to insert unsupported type "
                << thing->getType();

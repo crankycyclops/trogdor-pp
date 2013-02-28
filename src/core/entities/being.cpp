@@ -30,8 +30,6 @@ namespace core { namespace entity {
       }
 
       object->setOwner(this);
-      object->setLocation(0);
-
       return true;
    }
 
