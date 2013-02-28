@@ -165,6 +165,18 @@ namespace core { namespace entity {
                bool (true on success and false on failure)
          */
          bool insertIntoInventory(Object *object, bool considerWeight = true);
+
+         /*
+            Removes an object from a Being's inventory.  If the Object isn't in
+            the Being's inventory, then nothing happens.
+
+            Input:
+               Pointer to Object to remove
+
+            Output:
+               (none)
+         */
+         void removeFromInventory(Object *object);
    };
 }}
 

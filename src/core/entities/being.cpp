@@ -18,14 +18,15 @@ namespace core { namespace entity {
       inventory.objects.insert(object);
 
       // allow referencing of inventory Objects by name and aliases
-      for (int i = aliases.size() - 1; i >= 0; i--) {
+      vector<string> objAliases = object->getAliases();
+      for (int i = objAliases.size() - 1; i >= 0; i--) {
 
-         if (inventory.objectsByName.find(aliases[i]) == inventory.objectsByName.end()) {
+         if (inventory.objectsByName.find(objAliases[i]) == inventory.objectsByName.end()) {
             ObjectList newList;
-            inventory.objectsByName[aliases[i]] = newList;
+            inventory.objectsByName[objAliases[i]] = newList;
          }
 
-         inventory.objectsByName.find(aliases[i])->second.push_back(object);
+         inventory.objectsByName.find(objAliases[i])->second.push_back(object);
       }
 
       object->setOwner(this);
@@ -33,4 +34,19 @@ namespace core { namespace entity {
 
       return true;
    }
+
+   /***************************************************************************/
+
+   void Being::removeFromInventory(Object *object) {
+
+      inventory.objects.erase(object);
+
+      vector<string> objAliases = object->getAliases();
+      for (int i = objAliases.size() - 1; i >= 0; i--) {
+         inventory.objectsByName.find(objAliases[i])->second.remove(object);
+      }
+
+      object->setOwner(0);
+   }
 }}
+
