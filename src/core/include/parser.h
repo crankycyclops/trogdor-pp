@@ -255,6 +255,18 @@ namespace core {
          string parseThingAlias();  // returns a single alias
 
          /*
+            Parses whether or not creature should automatically retaliate against
+            an attack.
+
+            Input:
+               (none)
+
+            Output:
+               bool
+         */
+         bool parseCreatureCounterAttack();
+
+         /*
             Parses a Being's inventory settings.
 
             Input:

@@ -592,10 +592,7 @@ namespace core {
          }
 
          else if (0 == getTagName().compare("counterattack")) {
-            // TODO
-            cout << "Counterattack stub!" << endl;
-            parseBool();
-            checkClosingTag("counterattack");
+            creature->setCounterAttack(parseCreatureCounterAttack());
          }
 
          else if (0 == getTagName().compare("allegiance")) {
@@ -823,6 +820,15 @@ namespace core {
       int damage = parseInt();
       checkClosingTag("damage");
       return damage;
+   }
+
+   /***************************************************************************/
+
+   bool Parser::parseCreatureCounterAttack() {
+
+      bool counterAttack = parseBool();
+      checkClosingTag("counterattack");
+      return counterAttack;
    }
 
    /***************************************************************************/

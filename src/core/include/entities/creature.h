@@ -52,9 +52,20 @@ namespace core { namespace entity {
                (none)
          */
          inline void setAllegiance(enum AllegianceType a) {allegiance = a;}
+
+         /*
+            Sets whether or not Creature should automatically fight back when
+            attacked.
+
+            Input:
+               bool
+
+            Output:
+               (none)
+         */
+         inline void setCounterAttack(bool b) {counterAttack = b;}
    };
 }}
 
 
 #endif
-
