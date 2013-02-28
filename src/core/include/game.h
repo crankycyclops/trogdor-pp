@@ -150,6 +150,9 @@ namespace core {
             beings.set(name, player);
             players.set(name, player);
 
+            // set Player's initial location
+            player->setLocation(places.get("start"));
+
             return player;
          }
 
