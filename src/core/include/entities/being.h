@@ -16,8 +16,6 @@ namespace core { namespace entity {
 
       public:
 
-         typedef set<Object *, EntityAlphaComparator> InventoryObjectSet;
-
          static const int DEFAULT_ATTRIBUTE_STRENGTH     = 10;
          static const int DEFAULT_ATTRIBUTE_DEXTERITY    = 10;
          static const int DEFAULT_ATTRIBUTE_INTELLIGENCE = 10;
@@ -44,7 +42,7 @@ namespace core { namespace entity {
          struct {
             int weight;         // how much weight inventory can hold
             int currentWeight;  // how much weight is currently used
-            InventoryObjectSet objects;
+            ObjectSet objects;
             ObjectsByNameMap objectsByName;
          } inventory;
 
@@ -161,7 +159,7 @@ namespace core { namespace entity {
 
             Input:
                Object *
-               Whether or not to check the inventory's weight before inserting
+               Whether or not to check the inventory's weight before inserting (default = true)
 
             Output:
                bool (true on success and false on failure)

@@ -10,35 +10,104 @@ using namespace std;
 namespace core { namespace entity {
 
 
-   void Place::insertThing(Thing *thing) {
+   void Place::insertThingByName(Thing *thing) {
 
+      vector<string> aliases = thing->getAliases();
+
+      for (int i = aliases.size() - 1; i >= 0; i--) {
+
+         if (thingsByName.find(aliases[i]) == thingsByName.end()) {
+            ThingList newList;
+            thingsByName[aliases[i]] = newList;
+         }
+
+         thingsByName.find(aliases[i])->second.push_back(thing);
+      }
+   }
+
+   /****************************************************************************/
+
+   void Place::insertThingByName(Player *player) {
+
+      vector<string> aliases = player->getAliases();
+
+      for (int i = aliases.size() - 1; i >= 0; i--) {
+
+         if (playersByName.find(aliases[i]) == playersByName.end()) {
+            PlayerList newList;
+            playersByName[aliases[i]] = newList;
+         }
+
+         playersByName.find(aliases[i])->second.push_back(player);
+      }
+   }
+
+   /****************************************************************************/
+
+   void Place::insertThingByName(Creature *creature) {
+
+      vector<string> aliases = creature->getAliases();
+
+      for (int i = aliases.size() - 1; i >= 0; i--) {
+
+         if (creaturesByName.find(aliases[i]) == creaturesByName.end()) {
+            CreatureList newList;
+            creaturesByName[aliases[i]] = newList;
+         }
+
+         creaturesByName.find(aliases[i])->second.push_back(creature);
+      }
+   }
+
+   /****************************************************************************/
+
+   void Place::insertThingByName(Object *object) {
+
+      vector<string> aliases = object->getAliases();
+
+      for (int i = aliases.size() - 1; i >= 0; i--) {
+
+         if (objectsByName.find(aliases[i]) == objectsByName.end()) {
+            ObjectList newList;
+            objectsByName[aliases[i]] = newList;
+         }
+
+         objectsByName.find(aliases[i])->second.push_back(object);
+      }
+   }
+
+   /****************************************************************************/
+
+   void Place::insertThing(Thing *thing) {
 
       switch (thing->getType()) {
 
-         ENTITY_PLAYER:
+         case ENTITY_PLAYER:
             beings.insert(beings.end(), static_cast<Being *>(thing));
             players.insert(players.end(), static_cast<Player *>(thing));
-            // TODO: insert by name, including synonyms
+            insertThingByName(static_cast<Player *>(thing));
             break;
 
-         ENTITY_CREATURE:
+         case ENTITY_CREATURE:
             beings.insert(beings.end(), static_cast<Being *>(thing));
             creatures.insert(creatures.end(), static_cast<Creature *>(thing));
-            // TODO: insert by name, including synonyms
+            insertThingByName(static_cast<Creature *>(thing));
             break;
 
-         ENTITY_OBJECT:
+         case ENTITY_OBJECT:
             items.insert(items.end(), static_cast<Item *>(thing));
             objects.insert(objects.end(), static_cast<Object *>(thing));
-            // TODO: insert by name, including synonyms
+            insertThingByName(static_cast<Object *>(thing));
             break;
 
          default:
-            break;
+            stringstream s;
+            s << "Place::insertThing(): attempting to insert unsupported type "
+               << thing->getType();
+            throw s.str();
       }
 
       things.insert(things.end(), thing);
-      // TODO: insert by name, including synonyms
+      insertThingByName(thing);
    }
 }}
-

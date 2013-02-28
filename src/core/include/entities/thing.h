@@ -30,6 +30,17 @@ namespace core { namespace entity {
          }
 
          /*
+            Returns list of Thing's aliases.
+
+            Input:
+               (none)
+
+            Output:
+               vector<string>
+         */
+         inline vector<string> const getAliases() const {return aliases;}
+
+         /*
             Adds an alias to the Thing, which is another name that the Thing can
             be called.
 

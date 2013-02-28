@@ -2,9 +2,9 @@
 #define PLACE_H
 
 
-#include <typeinfo>
 #include <list>
 #include <cstring>
+#include <sstream>
 #include <boost/unordered_map.hpp>
 #include <boost/type_traits.hpp>
 
@@ -25,6 +25,23 @@ namespace core { namespace entity {
 
 
    class Place: public Entity {
+
+      private:
+
+         /*
+            Processes the insertion of indexes by alias.
+
+            Input:
+               Thing pointer
+
+            Output:
+               (none)
+         */
+         // TODO: try to templatize these?
+         void insertThingByName(Thing *thing);
+         void insertThingByName(Player *thing);
+         void insertThingByName(Creature *thing);
+         void insertThingByName(Object *thing);
 
       protected:
 

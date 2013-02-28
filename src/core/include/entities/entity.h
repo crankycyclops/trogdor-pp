@@ -29,33 +29,16 @@ namespace core { namespace entity {
    class Object;
    class Being;
    class Player;
-   class Creature;
-
-
-   typedef list<Place *> PlaceList;
-   typedef list<Room *>  RoomList;
-   typedef list<Thing *> ThingList;
-   typedef list<Being *> BeingList;
-   typedef list<Item *> ItemList;
-   typedef list<Player *> PlayerList;
-   typedef list<Creature *> CreatureList;
-   typedef list<Object *> ObjectList;
-
-   typedef unordered_map<string, ThingList>    ThingsByNameMap;
-   typedef unordered_map<string, BeingList>    BeingsByNameMap;
-   typedef unordered_map<string, ItemList>     ItemsByNameMap;
-   typedef unordered_map<string, PlayerList>   PlayersByNameMap;
-   typedef unordered_map<string, CreatureList> CreaturesByNameMap;
-   typedef unordered_map<string, ObjectList>   ObjectsByNameMap;
+   class Creature;   
 
 
    // used for run-time check of an Entity's type
    enum EntityType {
-      ENTITY_UNDEFINED,
-      ENTITY_ROOM,
-      ENTITY_PLAYER,
-      ENTITY_CREATURE,
-      ENTITY_OBJECT
+      ENTITY_UNDEFINED = 1,
+      ENTITY_ROOM = 2,
+      ENTITY_PLAYER = 3,
+      ENTITY_CREATURE = 4,
+      ENTITY_OBJECT = 5
    };
 
    /***************************************************************************/
@@ -206,6 +189,33 @@ namespace core { namespace entity {
             return lhs->getName() < rhs->getName();
          }
    };
+
+   /***************************************************************************/
+
+   typedef list<Place *>    PlaceList;
+   typedef list<Room *>     RoomList;
+   typedef list<Thing *>    ThingList;
+   typedef list<Being *>    BeingList;
+   typedef list<Item *>     ItemList;
+   typedef list<Player *>   PlayerList;
+   typedef list<Creature *> CreatureList;
+   typedef list<Object *>   ObjectList;
+
+   typedef set<Place *, EntityAlphaComparator>    PlaceSet;
+   typedef set<Room *, EntityAlphaComparator>     RoomSet;
+   typedef set<Thing *, EntityAlphaComparator>    ThingSet;
+   typedef set<Being *, EntityAlphaComparator>    BeingSet;
+   typedef set<Item *, EntityAlphaComparator>     ItemSet;
+   typedef set<Player *, EntityAlphaComparator>   PlayerSet;
+   typedef set<Creature *, EntityAlphaComparator> CreatureSet;
+   typedef set<Object *, EntityAlphaComparator>   ObjectSet;
+
+   typedef unordered_map<string, ThingList>    ThingsByNameMap;
+   typedef unordered_map<string, BeingList>    BeingsByNameMap;
+   typedef unordered_map<string, ItemList>     ItemsByNameMap;
+   typedef unordered_map<string, PlayerList>   PlayersByNameMap;
+   typedef unordered_map<string, CreatureList> CreaturesByNameMap;
+   typedef unordered_map<string, ObjectList>   ObjectsByNameMap;
 }}
 
 
