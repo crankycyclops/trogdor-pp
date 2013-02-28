@@ -6,6 +6,7 @@
 #include <boost/unordered_map.hpp>
 
 #include "thing.h"
+#include "place.h"
 
 using namespace boost;
 
@@ -26,9 +27,9 @@ namespace core { namespace entity {
 
       protected:
 
-         int health;    // number of health points the being currently has
-         int maxHealth; // maximum number of health points (0 for immortal)
-         bool alive;    // whether or not the being is alive
+         int health;       // number of health points the being currently has
+         int maxHealth;    // maximum number of health points (0 for immortal)
+         bool alive;       // whether or not the being is alive
 
          bool attackable;  // whether or not being can be attacked
          double woundRate; // max probability of being hit when attacked

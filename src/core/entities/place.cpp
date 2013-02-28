@@ -101,9 +101,6 @@ namespace core { namespace entity {
             items.insert(items.end(), static_cast<Item *>(thing));
             objects.insert(objects.end(), static_cast<Object *>(thing));
             insertThingByName(static_cast<Object *>(thing));
-
-            // objects require a reference to the containing Place
-            (static_cast<Object *>(thing))->setLocation(this);
             break;
 
          default:
@@ -113,6 +110,10 @@ namespace core { namespace entity {
                << thing->getType();
             throw s.str();
       }
+
+
+      // Things require a reference to the containing Place
+      thing->setLocation(this);
 
       things.insert(things.end(), thing);
       insertThingByName(thing);

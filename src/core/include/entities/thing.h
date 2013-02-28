@@ -25,9 +25,23 @@ namespace core { namespace entity {
          */
          inline Thing(Game *g, string n): Entity(g, n) {
 
+            location = 0;
+
             // Name is also an alias that we can reference a Thing by
             aliases.push_back(n);
          }
+
+         /*
+            Returns the Being's current location in the game.  If the Being
+            hasn't been placed anywhere, 0 will be returned.
+
+            Input:
+               (none)
+
+            Output:
+               Place *
+         */
+         inline Place *getLocation() {return location;}
 
          /*
             Returns list of Thing's aliases.
@@ -39,6 +53,17 @@ namespace core { namespace entity {
                vector<string>
          */
          inline vector<string> const getAliases() const {return aliases;}
+
+         /*
+            Set's the Being's current location in the game.
+
+            Input:
+               Pointer to Place
+
+            Output:
+               (none)
+         */
+         inline void setLocation(Place *l) {location = l;}
 
          /*
             Adds an alias to the Thing, which is another name that the Thing can
