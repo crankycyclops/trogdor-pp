@@ -176,6 +176,43 @@ namespace core { namespace entity {
                (none)
          */
          inline string setShortDescription(string d) {shortDesc = d;}
+
+         /*
+            Gives a Being the ability to observe an Entity.  If the Being is a
+            Player, a description of what is seen (Entity's long description)
+            will be printed to the output stream.
+
+            Input:
+               Being doing the observing
+               Whether or not to trigger a before and after event
+
+            Output:
+               (none)
+
+            Events Triggered:
+               beforeObserve
+               afterObserve
+         */
+         virtual void observe(Being *observer, bool triggerEvents = true);
+
+         /*
+            Gives a Being the ability to partially observe an Entity without
+            looking straight at it (what you might see during a cursory glance
+            of a room, for example.)  If the Being is a Player, the Entity's
+            short description will be printed to the output stream.
+
+            Input:
+               Being doing the observing
+               Whether or not to trigger a before and after event
+
+            Output:
+               (none)
+
+            Events Triggered:
+               beforeGlance
+               afterGlance
+         */
+         virtual void glance(Being *observer, bool triggerEvents = true);
    };
 
    /***************************************************************************/

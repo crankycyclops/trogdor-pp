@@ -83,6 +83,7 @@ namespace core {
          return false;
       }
 
+      // TODO: copy data structures from Parser into Game
       initActions();
       return true;
    }

@@ -20,5 +20,21 @@ namespace core { namespace entity {
       L = new LuaState();
       triggers = new event::EventListener();
    }
+
+   /***************************************************************************/
+
+   void Entity::observe(Being *observer, bool triggerEvents) {
+
+      // TODO
+      cout << "Observe stub!" << endl;
+   }
+
+   /***************************************************************************/
+
+   void Entity::glance(Being *observer, bool triggerEvents) {
+
+      // TODO
+      cout << "Glance stub!" << endl;
+   }
 }}
 
