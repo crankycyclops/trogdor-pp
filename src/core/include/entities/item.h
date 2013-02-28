@@ -22,7 +22,6 @@ namespace core { namespace entity {
       protected:
 
          Being *owner;     // a Being might own the object
-         Place *location;  // the object may be placed in a location
 
          bool takeable;    // whether or not a Being can take the Item
          bool droppable;   // whether or not a Being can drop the Item
@@ -39,7 +38,6 @@ namespace core { namespace entity {
          inline Item(Game *g, string n): Thing(g, n) {
 
             owner = 0;
-            location = 0;
             takeable = DEFAULT_TAKEABLE;
             droppable = DEFAULT_DROPPABLE;
             weapon = DEFAULT_IS_WEAPON;
@@ -56,18 +54,6 @@ namespace core { namespace entity {
                Being *
          */
          inline Being *getOwner() const {return owner;}
-
-         /*
-            Returns the object's current location (0 if it isn't placed
-            anywhere.)
-
-            Input:
-               (none)
-
-            Output:
-               Place *
-         */
-         inline Place *getLocation() const {return location;}
 
          /*
             Returns whether or not the Item can be taken.
@@ -123,17 +109,6 @@ namespace core { namespace entity {
                (none)
          */
          inline void setOwner(Being *being) {owner = being;}
-
-         /*
-            Sets the Object's location.
-
-            Input:
-               Place that should now contain the object
-
-            Output:
-               (none)
-         */
-         inline void setLocation(Place *place) {location = place;}
 
          /*
             Sets whether or not a Being can take the object.

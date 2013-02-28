@@ -111,11 +111,10 @@ namespace core { namespace entity {
             throw s.str();
       }
 
+      things.insert(things.end(), thing);
+      insertThingByName(thing);
 
       // Things require a reference to the containing Place
       thing->setLocation(this);
-
-      things.insert(things.end(), thing);
-      insertThingByName(thing);
    }
 }}
