@@ -7,9 +7,6 @@ using namespace std;
 namespace core { namespace entity {
 
    bool Being::insertIntoInventory(Object *object, bool considerWeight) {
-      // TODO
-      // TODO: Make sure to update Object's owner field!
-      cout << "STUB: Being::insertIntoInventory!" << endl;
 
       // make sure the Object will fit
       if (considerWeight &&
@@ -17,8 +14,23 @@ namespace core { namespace entity {
          return false;
       }
 
+      // insert the object into the Being's inventory
+      inventory.objects.insert(object);
+
+      // allow referencing of inventory Objects by name and aliases
+      for (int i = aliases.size() - 1; i >= 0; i--) {
+
+         if (inventory.objectsByName.find(aliases[i]) == inventory.objectsByName.end()) {
+            ObjectList newList;
+            inventory.objectsByName[aliases[i]] = newList;
+         }
+
+         inventory.objectsByName.find(aliases[i])->second.push_back(object);
+      }
+
       object->setOwner(this);
       object->setLocation(0);
+
       return true;
    }
 }}

@@ -29,20 +29,20 @@ namespace core { namespace entity {
       protected:
 
          // sequential list of all entities in a place
-         list<Thing *>    things;
-         list<Being *>    beings;
-         list<Item *>     items;
-         list<Player *>   players;
-         list<Creature *> creatures;
-         list<Object *>   objects;
+         ThingList    things;
+         BeingList    beings;
+         ItemList     items;
+         PlayerList   players;
+         CreatureList creatures;
+         ObjectList   objects;
 
          // name -> entity list mappings (accomodates synonyms)
-         unordered_map<string, list<Thing *> >    thingsByName;
-         unordered_map<string, list<Being *> >    beingsByName;
-         unordered_map<string, list<Item *> >     itemsByName;
-         unordered_map<string, list<Player *> >   playersByName;
-         unordered_map<string, list<Creature *> > creaturesByName;
-         unordered_map<string, list<Object *> >   objectsByName;
+         ThingsByNameMap    thingsByName;
+         BeingsByNameMap    beingsByName;
+         ItemsByNameMap     itemsByName;
+         PlayersByNameMap   playersByName;
+         CreaturesByNameMap creaturesByName;
+         ObjectsByNameMap   objectsByName;
 
       public:
 

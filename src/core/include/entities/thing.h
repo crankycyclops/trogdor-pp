@@ -23,7 +23,11 @@ namespace core { namespace entity {
             Constructor for creating a new Thing.  Requires reference to the
             containing Game object and a name.
          */
-         inline Thing(Game *g, string n): Entity(g, n) {}
+         inline Thing(Game *g, string n): Entity(g, n) {
+
+            // Name is also an alias that we can reference a Thing by
+            aliases.push_back(n);
+         }
 
          /*
             Adds an alias to the Thing, which is another name that the Thing can

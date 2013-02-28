@@ -22,6 +22,33 @@ using namespace core::event;
 namespace core { namespace entity {
 
 
+   class Place;
+   class Room;
+   class Thing;
+   class Item;
+   class Object;
+   class Being;
+   class Player;
+   class Creature;
+
+
+   typedef list<Place *> PlaceList;
+   typedef list<Room *>  RoomList;
+   typedef list<Thing *> ThingList;
+   typedef list<Being *> BeingList;
+   typedef list<Item *> ItemList;
+   typedef list<Player *> PlayerList;
+   typedef list<Creature *> CreatureList;
+   typedef list<Object *> ObjectList;
+
+   typedef unordered_map<string, ThingList>    ThingsByNameMap;
+   typedef unordered_map<string, BeingList>    BeingsByNameMap;
+   typedef unordered_map<string, ItemList>     ItemsByNameMap;
+   typedef unordered_map<string, PlayerList>   PlayersByNameMap;
+   typedef unordered_map<string, CreatureList> CreaturesByNameMap;
+   typedef unordered_map<string, ObjectList>   ObjectsByNameMap;
+
+
    // used for run-time check of an Entity's type
    enum EntityType {
       ENTITY_UNDEFINED,
@@ -173,10 +200,11 @@ namespace core { namespace entity {
    // used by std::set to order Entities (referenced by pointers) alphabetically
    class EntityAlphaComparator {
 
-      inline bool operator()(const Entity* &lhs, const Entity* &rhs) {
+      public:
 
-         return lhs->getName() < rhs->getName();
-      }
+         inline bool operator()(const Entity* const &lhs, const Entity* const &rhs) {
+            return lhs->getName() < rhs->getName();
+         }
    };
 }}
 
