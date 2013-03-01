@@ -52,8 +52,17 @@ namespace core {
          Command    *lastCommand;  // the last executed command
          Timer      *timer;
 
-         // TODO: going to need an event listener here too
+         // used to call subscribed event listeners
          event::EventHandler *events;
+
+         // Global Lua state for the entire game
+         LuaState *L;
+
+         // Global EventListener for the entire game
+         event::EventListener *eventListener;
+
+         // default player configuration
+         entity::Player *defaultPlayer;
 
          // Hash table of all entities in the game
          entity::EntityMap    entities;
@@ -65,6 +74,17 @@ namespace core {
          entity::CreatureMap  creatures;
          entity::ItemMap      items;
          entity::ObjectMap    objects;
+
+         /*
+            Initializes Entities from what was parsed.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void initEntities();
 
          /*
             Called by initialize().  This initializes game actions and maps

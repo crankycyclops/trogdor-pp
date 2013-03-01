@@ -51,6 +51,19 @@ namespace core {
    }
 
 
+   void Game::initEntities() {
+
+      entities = parser->getEntities();
+      places = parser->getPlaces();
+      things = parser->getThings();
+      rooms = parser->getRooms();
+      beings = parser->getBeings();
+      creatures = parser->getCreatures();
+      items = parser->getItems();
+      objects = parser->getObjects();
+   }
+
+
    void Game::initActions() {
 
       QuitAction *quit = new QuitAction;
@@ -75,7 +88,6 @@ namespace core {
       try {
          parser = new Parser(this, gameXML);
          parser->parse();
-         // TODO: copy constructed objects over from parser
       }
 
       catch (string error) {
@@ -83,8 +95,13 @@ namespace core {
          return false;
       }
 
-      // TODO: copy data structures from Parser into Game
+      initEntities();
       initActions();
+
+      defaultPlayer = parser->getDefaultPlayer();
+      L = parser->getLuaState();
+      eventListener = parser->getEventListener();
+
       return true;
    }
 

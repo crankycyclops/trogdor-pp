@@ -598,6 +598,21 @@ namespace core {
             Output: (none)
          */
          void parse();
+
+         // TODO: should the copy go deeper?
+         inline entity::EntityMap getEntities() {return entities;}
+         inline entity::PlaceMap getPlaces() {return places;}
+         inline entity::ThingMap getThings() {return things;}
+         inline entity::RoomMap getRooms() {return rooms;}
+         inline entity::BeingMap getBeings() {return beings;}
+         inline entity::CreatureMap getCreatures() {return creatures;}
+         inline entity::ItemMap getItems() {return items;}
+         inline entity::ObjectMap getObjects() {return objects;}
+
+         inline entity::Player *getDefaultPlayer() {return defaultPlayer;}
+
+         inline LuaState *getLuaState() {return gameL;}
+         inline event::EventListener *getEventListener() {return eventListener;}
    };
 }
 
