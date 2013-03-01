@@ -26,7 +26,7 @@ namespace core { namespace entity {
    void Entity::observe(Being *observer, bool triggerEvents) {
 
       // TODO
-      cout << "Observe stub!" << endl;
+      *game->trogout << "Observe stub!" << endl;
    }
 
    /***************************************************************************/
@@ -34,7 +34,7 @@ namespace core { namespace entity {
    void Entity::glance(Being *observer, bool triggerEvents) {
 
       // TODO
-      cout << "Glance stub!" << endl;
+      *game->trogout << "Glance stub!" << endl;
    }
 }}
 

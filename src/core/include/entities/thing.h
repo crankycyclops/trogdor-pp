@@ -41,7 +41,7 @@ namespace core { namespace entity {
             Output:
                Place *
          */
-         inline Place *getLocation() {return location;}
+         inline Place *getLocation() const {return location;}
 
          /*
             Returns list of Thing's aliases.
