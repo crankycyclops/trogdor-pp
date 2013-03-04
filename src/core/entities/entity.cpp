@@ -26,6 +26,7 @@ namespace core { namespace entity {
    void Entity::observe(Being *observer, bool triggerEvents) {
 
       // TODO
+      observedByMap[observer] = true;
       *game->trogout << "Observe stub!" << endl;
    }
 
@@ -34,6 +35,7 @@ namespace core { namespace entity {
    void Entity::glance(Being *observer, bool triggerEvents) {
 
       // TODO
+      glancedByMap[observer] = true;
       *game->trogout << "Glance stub!" << endl;
    }
 }}

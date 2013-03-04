@@ -61,6 +61,13 @@ namespace core { namespace entity {
          LuaState *L;
          EventListener *triggers;
 
+         // maintains a list of all Beings that have glanced at but not fully
+         // observed the Entity
+         unordered_map<Being *, bool> glancedByMap;
+
+         // maintains a list of all Beings that have observed the Entity
+         unordered_map<Being *, bool> observedByMap;
+
       public:
 
          // This is annoying, but due to unforseen design problems, this is now
@@ -131,6 +138,45 @@ namespace core { namespace entity {
                Entity's short description (string)
          */
          inline string getShortDescription() const {return shortDesc;}
+
+         /*
+            Returns whether or not a given Being has observed the Entity.
+
+            Input:
+               Being that may have observed the Entity
+
+            Output:
+               bool
+         */
+         inline bool observedBy(Being *b) {
+
+            if (observedByMap.find(b) == observedByMap.end()) {
+               return false;
+            }
+
+            return true;
+         }
+
+         /*
+            Returns whether or not a given Being has glanced at the Entity.  If
+            a Being has fully observed an Entity, it stands to reason that the
+            Being has also glanced at it, so both will be checked.
+
+            Input:
+               Being that may have glanced at the Entity
+
+            Output:
+               bool
+         */
+         inline bool glancedBy(Being *b) {
+
+            if (observedByMap.find(b) == observedByMap.end() &&
+            glancedByMap.find(b) == glancedByMap.end()) {
+               return false;
+            }
+
+            return true;
+         }
 
          /*
             Copies another Messages object into our own, replacing all previous
