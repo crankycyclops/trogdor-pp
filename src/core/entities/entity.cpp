@@ -25,8 +25,6 @@ namespace core { namespace entity {
 
    void Entity::display(Being *observer) {
 
-      *game->trogout << "You see a " << getName() << "." << endl;
-
       if (!observedBy(observer)) {
 
          if (ENTITY_PLAYER == observer->getType()) {
@@ -38,8 +36,9 @@ namespace core { namespace entity {
 
       else {
 
-         if (ENTITY_PLAYER == observer->getType()) {
-            *game->trogout << "  " << getShortDescription() << endl;
+         if (ENTITY_PLAYER == observer->getType()
+         && getShortDescription().length() > 0) {
+            *game->trogout << getShortDescription() << endl;
          }
       }
    }

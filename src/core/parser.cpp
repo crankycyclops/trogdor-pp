@@ -390,6 +390,10 @@ namespace core {
          throw s.str();
       }
 
+      // set the object's default title
+      s << "a " << getAttribute("name");
+      object->setTitle(s.str());
+
       while (nextTag() && 3 == getDepth()) {
 
          if (0 == getTagName().compare("title")) {
@@ -557,6 +561,9 @@ namespace core {
          throw s.str();
       }
 
+      // set the creature's default title
+      creature->setTitle(getAttribute("name"));
+
       while (nextTag() && 3 == getDepth()) {
 
          if (0 == getTagName().compare("title")) {
@@ -669,6 +676,9 @@ namespace core {
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
       }
+
+      // set Room's default title
+      room->setTitle(getAttribute("name"));
 
       while (nextTag() && 3 == getDepth()) {
 

@@ -4,6 +4,8 @@
 #include "../include/entities/creature.h"
 #include "../include/entities/object.h"
 
+#include "../include/game.h"
+
 
 using namespace std;
 
@@ -117,4 +119,13 @@ namespace core { namespace entity {
       // Things require a reference to the containing Place
       thing->setLocation(this);
    }
+
+   /****************************************************************************/
+
+   void Place::display(Being *observer) {
+
+      *game->trogout << getTitle() << endl;
+      Entity::display(observer);
+   }
 }}
+

@@ -17,6 +17,18 @@ namespace core { namespace entity {
          Place          *location;  // where the Thing is located
          vector<string>  aliases;   // list of aliases
 
+         /*
+            Overrides Entity::display() and shows a Thing's description in the
+            proper format.
+
+            Input:
+               Being observing the Place
+
+            Output:
+               (none)
+         */
+         virtual void display(Being *observer);
+
       public:
 
          /*

@@ -61,6 +61,18 @@ namespace core { namespace entity {
          CreaturesByNameMap creaturesByName;
          ObjectsByNameMap   objectsByName;
 
+         /*
+            Overrides Entity::display() and shows a Place's description in the
+            proper format.
+
+            Input:
+               Being observing the Place
+
+            Output:
+               (none)
+         */
+         virtual void display(Being *observer);
+
       public:
 
          /*

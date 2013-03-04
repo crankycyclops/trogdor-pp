@@ -198,6 +198,13 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
       </object>
 
       <object name="sword">
+
+         <!-- By default, an object's title is "a <object name>", and is shown
+              whenever a player sees an object.  This title can be overridden
+              with a <title> tag.  When a player sees the object, they will
+              read "You see <object's title>. -->
+         <title>the Sword of Hope</title>
+
          <description>
 A smooth metallic sheen covers its surface, which looks to be of recent make and in good repair.
          </description>
