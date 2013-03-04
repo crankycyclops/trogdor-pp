@@ -23,11 +23,36 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
+   void Entity::display(Being *observer) {
+
+      *game->trogout << "You see a " << getName() << "." << endl;
+
+      if (!observedBy(observer)) {
+
+         if (ENTITY_PLAYER == observer->getType()) {
+            *game->trogout << getLongDescription() << endl;
+         }
+
+         observedByMap[observer] = true;
+      }
+
+      else {
+
+         if (ENTITY_PLAYER == observer->getType()) {
+            *game->trogout << "  " << getShortDescription() << endl;
+         }
+      }
+   }
+
+   /***************************************************************************/
+
    void Entity::observe(Being *observer, bool triggerEvents) {
 
-      // TODO
-      observedByMap[observer] = true;
-      *game->trogout << "Observe stub!" << endl;
+      // TODO: trigger before event
+
+      display(observer);
+
+      // TODO: trigger after event
    }
 
    /***************************************************************************/
