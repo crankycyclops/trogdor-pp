@@ -46,5 +46,17 @@ namespace core { namespace entity {
 
       object->setOwner(0);
    }
+
+   /***************************************************************************/
+
+   void Being::gotoLocation(Place *location) {
+
+      // TODO: fire before action
+
+      setLocation(location);
+      location->observe(this);
+
+      // TODO: fire after action
+   }
 }}
 

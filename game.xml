@@ -352,9 +352,12 @@ You're in a dark musty cave.  You see a light some ways off to the south.  To th
          <title>Dark Chamber</title>
 
          <description>
-You find yourself in a dark secluded chamber.  Be careful.  There may be nasty
-things waiting for you here!
+You find yourself in a dark secluded chamber.  It's dank, musty and generally icky poo-pooos.  Be careful.  There may be nasty things waiting for you here!
          </description>
+
+         <!-- The room's short description, which the player sees everytime
+              they enter the room after the first time -->
+         <short>It's dark.  Careful!</short>
 
          <east>cave</east>
 

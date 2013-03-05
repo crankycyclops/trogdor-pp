@@ -233,7 +233,7 @@ namespace core { namespace entity {
             Output:
                (none)
          */
-         inline string setShortDescription(string d) {shortDesc = d;}
+         inline void setShortDescription(string d) {shortDesc = d;}
 
          /*
             Gives a Being the ability to observe an Entity.  If the Being is a

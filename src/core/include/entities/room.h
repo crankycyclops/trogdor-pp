@@ -34,6 +34,25 @@ namespace core { namespace entity {
          }
 
          /*
+            Returns room connected by the specified direction.  Returns 0 if
+            the connection does not exist.
+
+            Input:
+               Direction (string)
+
+            Output:
+               Room *
+         */
+         inline Room *getConnection(string direction) const {
+
+            if (connections.find(direction) == connections.end()) {
+               return 0;
+            }
+
+            return connections.find(direction)->second;
+         }
+
+         /*
             Connects Room to another Room at the specified direction.
          */
          inline void setConnection(string direction, Room *connectTo) {

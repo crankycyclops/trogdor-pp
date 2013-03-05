@@ -27,7 +27,7 @@ namespace core {
 
       // prompt the user until we get a response
       do {
-         out << "> ";
+         out << "\n> ";
          getline(in, commandStr);
       } while (0 == commandStr.length());
 

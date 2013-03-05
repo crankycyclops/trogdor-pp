@@ -178,6 +178,19 @@ namespace core { namespace entity {
                (none)
          */
          void removeFromInventory(Object *object);
+
+         /*
+            Make the Being move to the specified Place.  This both sets the
+            Being's location and has the Being observe the Place.  Events are
+            triggered for both actions.
+
+            Input:
+               Place where Being should go
+
+            Output:
+               (none)
+         */
+         void gotoLocation(Place *location);
    };
 }}
 

@@ -88,8 +88,22 @@ namespace core {
             command->getDirectObject() : command->getIndirectObject();
       }
 
-      // TODO
-      cout << "Stub: going " << direction << "!" << endl;
+      // only Rooms have connections to eachother
+      if (ENTITY_ROOM != player->getLocation()->getType()) {
+         *game->trogout << "You can't go that way." << endl;
+         // TODO: fire can't go that way event?
+         return;
+      }
+
+      Room *next = (dynamic_cast<Room *>(player->getLocation()))->getConnection(direction);
+
+      if (0 == next) {
+         *game->trogout << "You can't go that way." << endl;
+         // TODO: fire can't go that way event?
+         return;
+      }
+
+      player->gotoLocation(next);
    }
 }
 
