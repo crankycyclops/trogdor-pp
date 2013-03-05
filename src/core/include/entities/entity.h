@@ -152,6 +152,17 @@ namespace core { namespace entity {
          inline string getShortDescription() const {return shortDesc;}
 
          /*
+            Returns Entity's EventListener.
+
+            Input:
+               (none)
+
+            Output:
+               Pointer to EventListener
+         */
+         inline EventListener *getEventListener() const {return triggers;}
+
+         /*
             Returns whether or not a given Being has observed the Entity.
 
             Input:

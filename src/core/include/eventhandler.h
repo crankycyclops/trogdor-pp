@@ -51,13 +51,13 @@ namespace core { namespace event {
 
             Input:
                Event name (C string)
-               Arguments (vector of EventArguments)
+               Arguments (reference to vector of EventArguments)
 
             Output:
                True if the action that triggered the event should continue and
                false if it should be suppressed.
          */
-         bool event(const char *event, EventArgumentList args);
+         bool event(const char *event, EventArgumentList &args);
 
          /*
             Wrapper around the event() function above with no arguments.  Same

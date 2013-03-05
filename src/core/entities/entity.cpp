@@ -47,18 +47,34 @@ namespace core { namespace entity {
 
    void Entity::observe(Being *observer, bool triggerEvents) {
 
-      // TODO: trigger before event
+      EventArgumentList eventArgs;
+
+      if (triggerEvents) {
+
+         eventArgs.push_back(this);
+         eventArgs.push_back(observer);
+
+         game->addEventListener(triggers);
+         game->addEventListener(observer->getEventListener());
+
+         if (!game->event("beforeObserve", eventArgs)) {
+            return;
+         }
+      }
 
       display(observer);
+      observedByMap[observer] = true;
 
-      // TODO: trigger after event
+      if (triggerEvents) {
+         game->event("afterObserve", eventArgs);
+      }
    }
 
    /***************************************************************************/
 
    void Entity::glance(Being *observer, bool triggerEvents) {
 
-      // TODO
+      // TODO: trigger event, displayShort, etc.
       glancedByMap[observer] = true;
       *game->trogout << "Glance stub!" << endl;
    }

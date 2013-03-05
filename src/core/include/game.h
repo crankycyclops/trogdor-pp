@@ -271,6 +271,31 @@ namespace core {
             Output: (none)
          */
          void processCommand(Player *player);
+
+
+         /*
+            Wraps around EventHandler API.  See eventhandler.h for documentation.
+         */
+         inline void addEventListener(event::EventListener *l) {
+
+            events->addListener(l);
+         }
+
+         /*
+            Wraps around EventHandler API.  See eventhandler.h for documentation.
+         */
+         inline bool event(const char *event, event::EventArgumentList &args) {
+
+            return events->event(event, args);
+         }
+
+         /*
+            Wraps around EventHandler API.  See eventhandler.h for documentation.
+         */
+         inline bool event(const char *event) {
+
+            return events->event(event);
+         }
    };
 }
 

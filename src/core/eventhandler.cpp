@@ -6,7 +6,7 @@ using namespace std;
 namespace core { namespace event {
 
 
-   bool EventHandler::event(const char *event, EventArgumentList args) {
+   bool EventHandler::event(const char *event, EventArgumentList &args) {
 
       // false if we should not allow the action that triggered the event to
       // continue
