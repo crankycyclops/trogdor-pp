@@ -1,6 +1,8 @@
 #include "../include/entities/being.h"
 #include "../include/entities/object.h"
 
+#include "../include/game.h"
+
 
 using namespace std;
 
@@ -49,14 +51,25 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
-   void Being::gotoLocation(Place *location) {
+   void Being::gotoLocation(Place *l) {
 
-      // TODO: fire before action
+      EventArgumentList eventArgs;
 
-      setLocation(location);
-      location->observe(this);
+      eventArgs.push_back(this);
+      eventArgs.push_back(location);
+      eventArgs.push_back(l);
 
-      // TODO: fire after action
+      game->addEventListener(l->getEventListener());
+      game->addEventListener(triggers);
+
+      if (!game->event("beforeGotoLocation", eventArgs)) {
+         return;
+      }
+
+      setLocation(l);
+      l->observe(this);
+
+      game->event("afterGotoLocation", eventArgs);
    }
 }}
 

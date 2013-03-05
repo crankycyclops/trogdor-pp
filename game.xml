@@ -310,7 +310,7 @@ You peer off into the distance and notice a dark hole in the wall a little ways 
 
          <events>
             <script src="script/room/start.lua"></script>
-            <event name="beforeRoomDisplay">beforeRoomSample</event>
+            <event name="beforeObserve">beforeRoomSample</event>
          </events>
 
          <!-- you can define transition messages when you come to or go from
