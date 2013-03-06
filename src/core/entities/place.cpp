@@ -126,6 +126,11 @@ namespace core { namespace entity {
 
       *game->trogout << getTitle() << endl;
       Entity::display(observer);
+
+      for (ThingList::iterator i = things.begin(); i != things.end(); i++) {
+         (*i)->glance(observer);
+         *game->trogout << endl;
+      }
    }
 }}
 

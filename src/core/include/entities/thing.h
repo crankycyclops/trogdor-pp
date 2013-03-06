@@ -22,12 +22,24 @@ namespace core { namespace entity {
             proper format.
 
             Input:
-               Being observing the Place
+               Being observing the Thing
 
             Output:
                (none)
          */
          virtual void display(Being *observer);
+
+         /*
+            Overrides Entity::displayShort() and shows a Thing's short
+            description in the proper format.
+
+            Input:
+               Being observing the Thing
+
+            Output:
+               (none)
+         */
+         virtual void displayShort(Being *observer);
 
       public:
 

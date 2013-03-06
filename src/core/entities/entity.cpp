@@ -45,6 +45,16 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
+   void Entity::displayShort(Being *observer) {
+
+      if (ENTITY_PLAYER == observer->getType()
+      && getShortDescription().length() > 0) {
+         *game->trogout << getShortDescription() << endl;
+      }
+   }
+
+   /***************************************************************************/
+
    void Entity::observe(Being *observer, bool triggerEvents) {
 
       EventArgumentList eventArgs;
@@ -74,9 +84,27 @@ namespace core { namespace entity {
 
    void Entity::glance(Being *observer, bool triggerEvents) {
 
-      // TODO: trigger event, displayShort, etc.
+      EventArgumentList eventArgs;
+
+      if (triggerEvents) {
+
+         eventArgs.push_back(this);
+         eventArgs.push_back(observer);
+
+         game->addEventListener(triggers);
+         game->addEventListener(observer->getEventListener());
+
+         if (!game->event("beforeGlance", eventArgs)) {
+            return;
+         }
+      }
+
+      displayShort(observer);
       glancedByMap[observer] = true;
-      *game->trogout << "Glance stub!" << endl;
+
+      if (triggerEvents) {
+         game->event("afterGlance", eventArgs);
+      }
    }
 }}
 

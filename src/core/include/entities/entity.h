@@ -80,6 +80,18 @@ namespace core { namespace entity {
          */
          virtual void display(Being *observer);
 
+         /*
+            Displays the short description of an Entity.  This may be
+            overridden by Entity types that have a different display format.
+
+            Input:
+               Being doing the observing
+
+            Output:
+               (none)
+         */
+         virtual void displayShort(Being *observer);
+
       public:
 
          // This is annoying, but due to unforseen design problems, this is now

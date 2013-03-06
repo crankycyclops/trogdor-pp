@@ -11,5 +11,13 @@ namespace core { namespace entity {
       *game->trogout << "You see " << getTitle() << endl;
       Entity::display(observer);
    }
+
+   /***************************************************************************/
+
+   void Thing::displayShort(Being *observer) {
+
+      *game->trogout << "You see " << getTitle() << '.' << endl;
+      Entity::displayShort(observer);
+   }
 }}
 
