@@ -70,7 +70,7 @@ namespace core { namespace entity {
          }
       }
 
-      display(observer);
+      display(observer, displayFull);
       observedByMap[observer] = true;
 
       if (triggerEvents) {
