@@ -1,8 +1,10 @@
 #include <iostream>
 #include <cstring>
+
 #include "include/actions.h"
 
 using namespace std;
+using namespace core::entity;
 
 namespace core {
 
@@ -58,11 +60,21 @@ namespace core {
       }
 
       else {
-         // TODO: get list (Place::thingsByName)
-         // TODO: thing = clarifyObject
+
          // TODO: also search player's inventory
-         // TODO: remember, object could be specified in do or ido!
-         cout << "Look at object action stub!" << endl;
+         // TODO: do inventory FIRST!
+
+         Place *location = player->getLocation();
+
+         ThingList *roomItems = location->getThingsByName(object);
+
+         if (0 == roomItems) {
+            *game->trogout << "There is no " << object << " here!" << endl;
+            return;
+         }
+
+         Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(*roomItems);
+         thing->observe(player, true, true);
       }
    }
 

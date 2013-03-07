@@ -8,7 +8,7 @@ namespace core { namespace entity {
 
    void Thing::display(Being *observer, bool displayFull) {
 
-      *game->trogout << "You see " << getTitle() << endl;
+      *game->trogout << "You see " << getTitle() << '.' << endl;
       Entity::display(observer, displayFull);
    }
 

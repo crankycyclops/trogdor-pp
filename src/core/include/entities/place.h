@@ -93,6 +93,29 @@ namespace core { namespace entity {
                (none)
          */
          void insertThing(Thing *thing);
+
+         /*
+            Returns pointer to a list of all things that match the given name,
+            or a NULL pointer if there are no matches.
+
+            Input:
+               name (string)
+
+            Output:
+               ThingList * (NULL if no matches)
+         */
+         inline ThingList *getThingsByName(string name) {
+
+            ThingsByNameMap::iterator i = thingsByName.find(name);
+
+            if (i == thingsByName.end()) {
+               return 0;
+            }
+
+            else {
+               return &(i->second);
+            }
+         }
    };
 }}
 
