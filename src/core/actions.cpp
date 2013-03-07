@@ -31,6 +31,44 @@ namespace core {
 /******************************************************************************/
 
    /*
+      Methods for the Look action.
+   */
+
+   bool LookAction::checkSyntax(Command *command) {
+
+      // we can only have one of either
+      if (command->getDirectObject().length() > 0 &&
+      command->getIndirectObject().length() > 0) {
+         return false;
+      }
+
+      return true;
+   }
+
+   void LookAction::execute(Player *player, Command *command, Game *game) {
+
+      string object = command->getDirectObject();
+
+      if (object.length() == 0) {
+         object = command->getIndirectObject();
+      }
+
+      if (object.length() == 0) {
+         player->getLocation()->observe(player, true, true);
+      }
+
+      else {
+         // TODO: get list (Place::thingsByName)
+         // TODO: thing = clarifyObject
+         // TODO: also search player's inventory
+         // TODO: remember, object could be specified in do or ido!
+         cout << "Look at object action stub!" << endl;
+      }
+   }
+
+/******************************************************************************/
+
+   /*
       Methods for the Move action.
    */
 

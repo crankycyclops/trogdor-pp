@@ -67,11 +67,12 @@ namespace core { namespace entity {
 
             Input:
                Being observing the Place
+               Whether or not to always show the long description
 
             Output:
                (none)
          */
-         virtual void display(Being *observer);
+         virtual void display(Being *observer, bool displayFull = false);
 
       public:
 

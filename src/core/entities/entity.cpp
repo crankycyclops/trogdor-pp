@@ -23,24 +23,22 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
-   void Entity::display(Being *observer) {
+   void Entity::display(Being *observer, bool displayFull) {
 
-      if (!observedBy(observer)) {
-
+      if (!observedBy(observer) || displayFull) {
          if (ENTITY_PLAYER == observer->getType()) {
             *game->trogout << getLongDescription() << endl;
          }
-
-         observedByMap[observer] = true;
       }
 
       else {
-
          if (ENTITY_PLAYER == observer->getType()
          && getShortDescription().length() > 0) {
             *game->trogout << getShortDescription() << endl;
          }
       }
+
+      observedByMap[observer] = true;
    }
 
    /***************************************************************************/
@@ -55,7 +53,7 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
-   void Entity::observe(Being *observer, bool triggerEvents) {
+   void Entity::observe(Being *observer, bool triggerEvents, bool displayFull) {
 
       EventArgumentList eventArgs;
 

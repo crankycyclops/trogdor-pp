@@ -23,11 +23,12 @@ namespace core { namespace entity {
 
             Input:
                Being observing the Thing
+               Whether or not to always display the long description
 
             Output:
                (none)
          */
-         virtual void display(Being *observer);
+         virtual void display(Being *observer, bool displayFull = false);
 
          /*
             Overrides Entity::displayShort() and shows a Thing's short

@@ -48,6 +48,8 @@ namespace core {
 
       delete timer;
       delete events;
+
+      // TODO: delete all action objects initialized in initActions()
    }
 
 
@@ -80,6 +82,10 @@ namespace core {
       actions->setAction("down", move);
       actions->setAction("in", move);
       actions->setAction("out", move);
+
+      LookAction *look = new LookAction;
+      actions->setAction("look", look);
+      actions->setAction("observe", look);
    }
 
 

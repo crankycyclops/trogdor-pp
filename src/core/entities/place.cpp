@@ -122,10 +122,10 @@ namespace core { namespace entity {
 
    /****************************************************************************/
 
-   void Place::display(Being *observer) {
+   void Place::display(Being *observer, bool displayFull) {
 
       *game->trogout << getTitle() << endl;
-      Entity::display(observer);
+      Entity::display(observer, displayFull);
 
       for (ThingList::iterator i = things.begin(); i != things.end(); i++) {
          (*i)->glance(observer);

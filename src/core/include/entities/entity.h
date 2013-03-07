@@ -74,11 +74,12 @@ namespace core { namespace entity {
 
             Input:
                Being doing the observing
+               Whether or not to always display the full description
 
             Output:
                (none)
          */
-         virtual void display(Being *observer);
+         virtual void display(Being *observer, bool displayFull = false);
 
          /*
             Displays the short description of an Entity.  This may be
@@ -266,6 +267,7 @@ namespace core { namespace entity {
             Input:
                Being doing the observing
                Whether or not to trigger a before and after event
+               Whether or not to always display the long description
 
             Output:
                (none)
@@ -274,7 +276,8 @@ namespace core { namespace entity {
                beforeObserve
                afterObserve
          */
-         virtual void observe(Being *observer, bool triggerEvents = true);
+         virtual void observe(Being *observer, bool triggerEvents = true,
+         bool displayFull = false);
 
          /*
             Gives a Being the ability to partially observe an Entity without
@@ -294,6 +297,24 @@ namespace core { namespace entity {
                afterGlance
          */
          virtual void glance(Being *observer, bool triggerEvents = true);
+
+         /*
+            Static method that takes as input a list of Entities that match a
+            given word, asks the Player for clarification and returns the chosen
+            Entity.
+
+            Template Arguments:
+               ListType   -- one of EntityList, ThingList, BeingList, etc.
+               ResultType -- one of Entity, Thing, Being, etc.
+
+            Input:
+               List of objects to choose from
+
+            Output:
+               The chosen object
+         */
+         template <typename ListType, typename ResultType>
+         static ResultType clarifyEntity(ListType items);
    };
 
    /***************************************************************************/
@@ -334,6 +355,28 @@ namespace core { namespace entity {
    typedef unordered_map<string, PlayerList>   PlayersByNameMap;
    typedef unordered_map<string, CreatureList> CreaturesByNameMap;
    typedef unordered_map<string, ObjectList>   ObjectsByNameMap;
+
+   /***************************************************************************/
+
+   // static method
+   template <typename ListType, typename ResultType>
+   ResultType Entity::clarifyEntity(ListType items) {
+
+      int count = items.size();
+
+      if (0 == count) {
+         return 0;
+      }
+
+      else if (1 == count) {
+         return items.front();
+      }
+
+      else {
+         // TODO: do clarification instead of just returning first object
+         return items.front();
+      }
+   }
 }}
 
 

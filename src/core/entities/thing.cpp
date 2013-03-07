@@ -6,10 +6,10 @@ using namespace std;
 
 namespace core { namespace entity {
 
-   void Thing::display(Being *observer) {
+   void Thing::display(Being *observer, bool displayFull) {
 
       *game->trogout << "You see " << getTitle() << endl;
-      Entity::display(observer);
+      Entity::display(observer, displayFull);
    }
 
    /***************************************************************************/
