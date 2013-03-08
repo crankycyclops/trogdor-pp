@@ -95,7 +95,7 @@ namespace core { namespace entity {
          void insertThing(Thing *thing);
 
          /*
-            Returns pointer to a list of all things that match the given name,
+            Returns pointer to a list of all Things that match the given name,
             or a NULL pointer if there are no matches.
 
             Input:

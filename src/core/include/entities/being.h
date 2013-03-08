@@ -191,6 +191,29 @@ namespace core { namespace entity {
                (none)
          */
          void gotoLocation(Place *location);
+
+         /*
+            Returns pointer to a list of all Objects that match the given name
+            in the Being's inventory, or a NULL pointer if there are no matches.
+
+            Input:
+               name (string)
+
+            Output:
+               ObjectList * (NULL if no matches)
+         */
+         inline ObjectList *getInventoryObjectsByName(string name) {
+
+            ObjectsByNameMap::iterator i = inventory.objectsByName.find(name);
+
+            if (i == inventory.objectsByName.end()) {
+               return 0;
+            }
+
+            else {
+               return &(i->second);
+            }
+         }
    };
 }}
 

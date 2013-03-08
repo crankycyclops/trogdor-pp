@@ -61,19 +61,33 @@ namespace core {
 
       else {
 
-         // TODO: also search player's inventory
-         // TODO: do inventory FIRST!
-
          Place *location = player->getLocation();
+         ThingList items;
 
+         // consider matching inventory items, if there are any
+         ObjectList *invItems = player->getInventoryObjectsByName(object);
+         if (0 != invItems) {
+            for (ObjectList::iterator i = invItems->begin(); i != invItems->end();
+            i++) {
+               items.push_front(*i);
+            }
+         }
+
+         // also consider matching items in the room, if there are any
          ThingList *roomItems = location->getThingsByName(object);
+         if (0 != roomItems) {
+            for (ThingList::iterator i = roomItems->begin(); i != roomItems->end();
+            i++) {
+               items.push_front(*i);
+            }
+         }
 
-         if (0 == roomItems) {
+         if (0 == items.size()) {
             *game->trogout << "There is no " << object << " here!" << endl;
             return;
          }
 
-         Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(*roomItems);
+         Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(items);
          thing->observe(player, true, true);
       }
    }
