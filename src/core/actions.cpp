@@ -62,6 +62,9 @@ namespace core {
       else {
 
          Place *location = player->getLocation();
+
+         // Note: I can't use list.merge(), because ObjectList and ThingList are
+         // of different types :'(
          ThingList items;
 
          // consider matching inventory items, if there are any
