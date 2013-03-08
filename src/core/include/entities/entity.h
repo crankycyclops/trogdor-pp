@@ -309,12 +309,15 @@ namespace core { namespace entity {
 
             Input:
                List of objects to choose from
+               Input stream
+               Output stream
 
             Output:
                The chosen object
          */
          template <typename ListType, typename ResultType>
-         static ResultType clarifyEntity(ListType items);
+         static ResultType clarifyEntity(ListType items, istream *trogin,
+            ostream *trogout);
    };
 
    /***************************************************************************/
@@ -360,7 +363,8 @@ namespace core { namespace entity {
 
    // static method
    template <typename ListType, typename ResultType>
-   ResultType Entity::clarifyEntity(ListType items) {
+   ResultType Entity::clarifyEntity(ListType items, istream *trogin,
+   ostream *trogout) {
 
       int count = items.size();
 
@@ -373,7 +377,27 @@ namespace core { namespace entity {
       }
 
       else {
-         // TODO: do clarification instead of just returning first object
+
+         *trogout << "Do you mean the ";
+
+         int c = 0;
+         for (typename ListType::iterator i = items.begin(); i != items.end();
+         i++, c++) {
+
+            *trogout << (*i)->getName();
+
+            if (c < items.size() - 2) {
+               *trogout << ", ";
+            }
+
+            else if (c < items.size() - 1) {
+               *trogout << " or the ";
+            }
+         }
+
+         *trogout << "? ";
+
+         // TODO
          return items.front();
       }
    }

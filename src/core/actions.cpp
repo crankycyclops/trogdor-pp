@@ -90,7 +90,8 @@ namespace core {
             return;
          }
 
-         Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(items);
+         Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(items,
+            game->trogin, game->trogout);
          thing->observe(player, true, true);
       }
    }
