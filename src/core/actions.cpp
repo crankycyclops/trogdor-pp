@@ -120,8 +120,32 @@ namespace core {
 
    void TakeAction::execute(Player *player, Command *command, Game *game) {
 
-      // TODO
-      cout << "TAKE ACTION STUB!" << endl;
+      Place     *location  = player->getLocation();
+      ThingList *roomItems = location->getThingsByName(command->getDirectObject());
+
+      if (0 == roomItems || 0 == roomItems->size()) {
+         *game->trogout << "There is no " << command->getDirectObject()
+            << " here!" << endl;
+         return;
+      }
+
+      try {
+
+         Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(*roomItems,
+            game->trogin, game->trogout);
+
+         if (ENTITY_OBJECT != thing->getType()) {
+            *game->trogout << "You can't take that!" << endl;
+         }
+
+         else {
+            player->take(static_cast<Object *>(thing));
+         }
+      }
+
+      catch (string name) {
+         *game->trogout << "There is no " << name << " here!" << endl;
+      }
    }
 
 /******************************************************************************/
