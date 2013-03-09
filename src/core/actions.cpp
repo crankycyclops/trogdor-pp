@@ -142,6 +142,7 @@ namespace core {
 
             try {
                player->take(static_cast<Object *>(thing));
+               *game->trogout << "You take the " << thing->getName() << "." << endl;
             }
 
             catch (enum Being::takeError error) {

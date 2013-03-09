@@ -124,8 +124,38 @@ namespace core { namespace entity {
 
    void Place::removeThing(Thing *thing) {
 
-      // TODO
-      cout << "Place::removeThing stub!" << endl;
+      switch (thing->getType()) {
+
+         case ENTITY_PLAYER:
+
+            beings.remove(static_cast<Being *>(thing));
+            players.remove(static_cast<Player *>(thing));
+            break;
+
+         case ENTITY_CREATURE:
+
+            beings.remove(static_cast<Being *>(thing));
+            creatures.remove(static_cast<Creature *>(thing));
+            break;
+
+         case ENTITY_OBJECT:
+
+            items.remove(static_cast<Item *>(thing));
+            objects.remove(static_cast<Object *>(thing));
+            break;
+
+         default:
+
+            stringstream s;
+            s << "Place::removeThing(): attempting to remove unsupported type "
+               << thing->getType();
+            throw s.str();
+      }
+
+      things.remove(thing);
+
+      // TODO: removeByName
+      thing->setLocation(0);
    }
 
    /****************************************************************************/
