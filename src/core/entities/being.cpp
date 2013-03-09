@@ -71,5 +71,21 @@ namespace core { namespace entity {
 
       game->event("afterGotoLocation", eventArgs);
    }
+
+   /***************************************************************************/
+
+   void Being::take(Object *object) {
+
+      // TODO
+      cout << "TAKE STUB!" << endl;
+   }
+
+   /***************************************************************************/
+
+   void Being::drop(Object *object) {
+
+      // TODO
+      cout << "DROP STUB!" << endl;
+   }
 }}
 

@@ -66,6 +66,29 @@ namespace core { namespace entity {
          }
 
          /*
+            Returns pointer to a list of all Objects that match the given name
+            in the Being's inventory, or a NULL pointer if there are no matches.
+
+            Input:
+               name (string)
+
+            Output:
+               ObjectList * (NULL if no matches)
+         */
+         inline ObjectList *getInventoryObjectsByName(string name) {
+
+            ObjectsByNameMap::iterator i = inventory.objectsByName.find(name);
+
+            if (i == inventory.objectsByName.end()) {
+               return 0;
+            }
+
+            else {
+               return &(i->second);
+            }
+         }
+
+         /*
             Puts the Being in either an alive (true) or a dead (false) state.
 
             Input:
@@ -193,27 +216,28 @@ namespace core { namespace entity {
          void gotoLocation(Place *location);
 
          /*
-            Returns pointer to a list of all Objects that match the given name
-            in the Being's inventory, or a NULL pointer if there are no matches.
+            Allows a Being to take an object.  Calls insertIntoInventory() and
+            triggers the appropriate events.
 
             Input:
-               name (string)
+               Object to take
 
             Output:
-               ObjectList * (NULL if no matches)
+               (none)
          */
-         inline ObjectList *getInventoryObjectsByName(string name) {
+         void take(Object *object);
 
-            ObjectsByNameMap::iterator i = inventory.objectsByName.find(name);
+         /*
+            Allows a Being to drop an object.  Calls removeIntoInventory() and
+            triggers the appropriate events.
 
-            if (i == inventory.objectsByName.end()) {
-               return 0;
-            }
+            Input:
+               Object to drop
 
-            else {
-               return &(i->second);
-            }
-         }
+            Output:
+               (none)
+         */
+         void drop(Object *object);
    };
 }}
 

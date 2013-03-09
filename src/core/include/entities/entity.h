@@ -314,6 +314,10 @@ namespace core { namespace entity {
 
             Output:
                The chosen object
+
+            Exceptions:
+               If the user types a name that isn't presented as a choice, the
+               name the user provided is thrown as an exception.
          */
          template <typename ListType, typename ResultType>
          static ResultType clarifyEntity(ListType items, istream *trogin,

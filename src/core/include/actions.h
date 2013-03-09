@@ -45,6 +45,35 @@ namespace core {
 
 /******************************************************************************/
 
+   class TakeAction: public Action {
+
+         /*
+            See documentation in action.h.  A valid syntax for the Take action
+            is to have a verb + direct object.  The result is for the Object
+            to be taken into the Being's inventory, if possible.
+         */
+         virtual bool checkSyntax(Command *command);
+
+         virtual void execute(Player *player, Command *command, Game *game); 
+   };
+
+/******************************************************************************/
+
+   class DropAction: public Action {
+
+         /*
+            See documentation in action.h.  A valid syntax for the Drop action
+            is to have a verb + direct object.  The result is for the Object
+            to be removed from the Being's inventory and dropped into the Being's
+            current location, if possible.
+         */
+         virtual bool checkSyntax(Command *command);
+
+         virtual void execute(Player *player, Command *command, Game *game); 
+   };
+
+/******************************************************************************/
+
    /*
       The Move action allows a player to move from one room to another.
    */

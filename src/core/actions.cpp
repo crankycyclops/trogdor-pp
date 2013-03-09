@@ -105,6 +105,42 @@ namespace core {
 /******************************************************************************/
 
    /*
+      Methods for the Take action.
+   */
+
+   bool TakeAction::checkSyntax(Command *command) {
+
+      // TODO
+      return true;
+   }
+
+   void TakeAction::execute(Player *player, Command *command, Game *game) {
+
+      // TODO
+      cout << "TAKE ACTION STUB!" << endl;
+   }
+
+/******************************************************************************/
+
+   /*
+      Methods for the Drop action.
+   */
+
+   bool DropAction::checkSyntax(Command *command) {
+
+      // TODO
+      return true;
+   }
+
+   void DropAction::execute(Player *player, Command *command, Game *game) {
+
+      // TODO
+      cout << "DROP ACTION STUB!" << endl;
+   }
+
+/******************************************************************************/
+
+   /*
       Methods for the Move action.
    */
 

@@ -86,6 +86,22 @@ namespace core {
       LookAction *look = new LookAction;
       actions->setAction("look", look);
       actions->setAction("observe", look);
+      actions->setAction("see", look);
+      actions->setAction("show", look);
+      actions->setAction("describe", look);
+      actions->setAction("examine", look);
+
+      TakeAction *take = new TakeAction;
+      actions->setAction("take", take);
+      actions->setAction("acquire", take);
+      actions->setAction("get", take);
+      actions->setAction("grab", take);
+      actions->setAction("own", take);
+      actions->setAction("claim", take);
+      actions->setAction("carry", take);
+
+      DropAction *drop = new DropAction;
+      actions->setAction("drop", drop);
    }
 
 
