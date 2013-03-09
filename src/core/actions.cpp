@@ -110,7 +110,11 @@ namespace core {
 
    bool TakeAction::checkSyntax(Command *command) {
 
-      // TODO
+      if (command->getIndirectObject().length() > 0 ||
+      command->getDirectObject().length() == 0) {
+         return false;
+      }
+
       return true;
    }
 
@@ -128,7 +132,11 @@ namespace core {
 
    bool DropAction::checkSyntax(Command *command) {
 
-      // TODO
+      if (command->getIndirectObject().length() > 0 ||
+      command->getDirectObject().length() == 0) {
+         return false;
+      }
+
       return true;
    }
 
