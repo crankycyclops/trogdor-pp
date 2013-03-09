@@ -122,6 +122,14 @@ namespace core { namespace entity {
 
    /****************************************************************************/
 
+   void Place::removeThing(Thing *thing) {
+
+      // TODO
+      cout << "Place::removeThing stub!" << endl;
+   }
+
+   /****************************************************************************/
+
    void Place::display(Being *observer, bool displayFull) {
 
       *game->trogout << getTitle() << endl;

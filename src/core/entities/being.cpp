@@ -76,8 +76,30 @@ namespace core { namespace entity {
 
    void Being::take(Object *object) {
 
-      // TODO
-      cout << "TAKE STUB!" << endl;
+      EventArgumentList eventArgs;
+
+      eventArgs.push_back(this);
+      eventArgs.push_back(object);
+
+      if (!game->event("beforeTake", eventArgs)) {
+         return;
+      }
+
+      if (!object->getTakeable()) {
+         game->event("takeUntakeable", eventArgs);
+         throw TAKE_UNTAKEABLE;
+      }
+
+      if (!insertIntoInventory(object)) {
+         game->event("takeTooHeavy", eventArgs);
+         throw TAKE_TOO_HEAVY;
+      }
+
+      else {
+         object->getLocation()->removeThing(object);
+      }
+
+      game->event("afterTake", eventArgs);
    }
 
    /***************************************************************************/

@@ -25,6 +25,15 @@ namespace core { namespace entity {
 
          static const bool DEFAULT_ATTACKABLE = true;
 
+         enum takeError {
+            TAKE_TOO_HEAVY,
+            TAKE_UNTAKEABLE
+         };
+
+         enum dropError {
+            DROP_UNDROPPABLE
+         };
+
       protected:
 
          int health;       // number of health points the being currently has
@@ -224,6 +233,11 @@ namespace core { namespace entity {
 
             Output:
                (none)
+
+            Exceptions:
+               Throws the following errors:
+                  TAKE_TOO_HEAVY - object is too heavy
+                  TAKE_UNTAKEABLE - attempted to take an untakeable object
          */
          void take(Object *object);
 
@@ -236,6 +250,10 @@ namespace core { namespace entity {
 
             Output:
                (none)
+
+            Exceptions:
+               Throws the following errors:
+                  DROP_UNDROPPABLE - attempt to drop an undroppable object
          */
          void drop(Object *object);
    };

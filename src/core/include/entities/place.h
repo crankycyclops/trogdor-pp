@@ -95,6 +95,17 @@ namespace core { namespace entity {
          void insertThing(Thing *thing);
 
          /*
+            Removes a Thing from the Place.
+
+            Input:
+               Pointer to Thing
+
+            Output:
+               (none)
+         */
+         void removeThing(Thing *thing);
+
+         /*
             Returns pointer to a list of all Things that match the given name,
             or a NULL pointer if there are no matches.
 

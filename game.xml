@@ -47,7 +47,7 @@
       <script src="script/global1.lua"></script>
 
       <!-- identifies a script function to call for a given event -->
-      <event name="beforeDropObject">sampleDropObject</event>
+      <event name="beforeDrop">sampleDropObject</event>
 
    </events>
 
@@ -142,8 +142,8 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
 
             <!-- Specific events that trigger functions in the script files
                  above. -->
-            <event name="beforeTakeObject">beforeTakeCandle</event>
-            <event name="beforeDropObject">beforeDropCandle</event>
+            <event name="beforeTake">beforeTakeCandle</event>
+            <event name="beforeDrop">beforeDropCandle</event>
          </events>
 
          <!-- If the object should be identifiable by words other than the name,

@@ -139,7 +139,32 @@ namespace core {
          }
 
          else {
-            player->take(static_cast<Object *>(thing));
+
+            try {
+               player->take(static_cast<Object *>(thing));
+            }
+
+            catch (enum Being::takeError error) {
+
+               // TODO: consider custom messages
+               switch (error) {
+
+                  case Being::TAKE_TOO_HEAVY:
+                     *game->trogout << command->getDirectObject()
+                        << " is too heavy.  Try dropping something first."
+                        << endl;
+                     break;
+
+                  case Being::TAKE_UNTAKEABLE:
+                     *game->trogout << "You can't take that!" << endl;
+                     break;
+
+                  default:
+                     *game->trogerr << "Unknown error taking object.  "
+                        << "This is a bug." << endl;
+                     break;
+               }
+            }
          }
       }
 
