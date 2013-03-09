@@ -237,6 +237,7 @@ namespace core {
    }
 
 
+   // TODO: consider custom messages for transitions
    void MoveAction::execute(Player *player, Command *command, Game *game) {
 
       string direction = "";
