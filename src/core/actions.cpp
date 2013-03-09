@@ -90,9 +90,15 @@ namespace core {
             return;
          }
 
-         Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(items,
-            game->trogin, game->trogout);
-         thing->observe(player, true, true);
+         try {
+            Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(items,
+               game->trogin, game->trogout);
+            thing->observe(player, true, true);
+         }
+
+         catch (string name) {
+            *game->trogout << "There is no " << name << " here!" << endl;
+         }
       }
    }
 

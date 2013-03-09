@@ -395,10 +395,19 @@ namespace core { namespace entity {
             }
          }
 
-         *trogout << "? ";
+         *trogout << "? \n\n> ";
 
-         // TODO
-         return items.front();
+         string answer;
+         getline(*trogin, answer);
+
+         for (typename ListType::iterator i = items.begin(); i != items.end(); i++) {
+            if (0 == answer.compare((*i)->getName())) {
+               return *i;
+            }
+         }
+
+         // user typed a name that wasn't in the list
+         throw answer;
       }
    }
 }}
