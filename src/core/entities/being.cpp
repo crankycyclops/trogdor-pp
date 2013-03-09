@@ -11,7 +11,7 @@ namespace core { namespace entity {
    bool Being::insertIntoInventory(Object *object, bool considerWeight) {
 
       // make sure the Object will fit
-      if (considerWeight &&
+      if (considerWeight && inventory.weight > 0 &&
       inventory.currentWeight + object->getWeight() > inventory.weight) {
          return false;
       }
