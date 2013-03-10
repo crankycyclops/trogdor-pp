@@ -39,9 +39,13 @@ namespace core { namespace entity {
          */
          // TODO: try to templatize these?
          void insertThingByName(Thing *thing);
+         void insertThingByName(Item *thing);
+         void insertThingByName(Being *thing);
          void insertThingByName(Player *thing);
          void insertThingByName(Creature *thing);
          void insertThingByName(Object *thing);
+
+         void removeThingByName(Thing *thing);
 
       protected:
 

@@ -29,6 +29,40 @@ namespace core { namespace entity {
 
    /****************************************************************************/
 
+   void Place::insertThingByName(Being *being) {
+
+      vector<string> aliases = being->getAliases();
+
+      for (int i = aliases.size() - 1; i >= 0; i--) {
+
+         if (beingsByName.find(aliases[i]) == beingsByName.end()) {
+            BeingList newList;
+            beingsByName[aliases[i]] = newList;
+         }
+
+         beingsByName.find(aliases[i])->second.push_back(being);
+      }
+   }
+
+   /****************************************************************************/
+
+   void Place::insertThingByName(Item *item) {
+
+      vector<string> aliases = item->getAliases();
+
+      for (int i = aliases.size() - 1; i >= 0; i--) {
+
+         if (itemsByName.find(aliases[i]) == itemsByName.end()) {
+            ItemList newList;
+            itemsByName[aliases[i]] = newList;
+         }
+
+         itemsByName.find(aliases[i])->second.push_back(item);
+      }
+   }
+
+   /****************************************************************************/
+
    void Place::insertThingByName(Player *player) {
 
       vector<string> aliases = player->getAliases();
@@ -88,6 +122,7 @@ namespace core { namespace entity {
 
             beings.insert(beings.end(), static_cast<Being *>(thing));
             players.insert(players.end(), static_cast<Player *>(thing));
+            insertThingByName(static_cast<Being *>(thing));
             insertThingByName(static_cast<Player *>(thing));
             break;
 
@@ -95,6 +130,7 @@ namespace core { namespace entity {
 
             beings.insert(beings.end(), static_cast<Being *>(thing));
             creatures.insert(creatures.end(), static_cast<Creature *>(thing));
+            insertThingByName(static_cast<Being *>(thing));
             insertThingByName(static_cast<Creature *>(thing));
             break;
 
@@ -102,6 +138,7 @@ namespace core { namespace entity {
 
             items.insert(items.end(), static_cast<Item *>(thing));
             objects.insert(objects.end(), static_cast<Object *>(thing));
+            insertThingByName(static_cast<Item *>(thing));
             insertThingByName(static_cast<Object *>(thing));
             break;
 
@@ -118,6 +155,36 @@ namespace core { namespace entity {
 
       // Things require a reference to the containing Place
       thing->setLocation(this);
+   }
+
+   /****************************************************************************/
+
+   void Place::removeThingByName(Thing *thing) {
+
+      vector<string> aliases = thing->getAliases();
+
+      for (unsigned i = 0; i < aliases.size(); i++) {
+
+         switch (thing->getType()) {
+
+            case ENTITY_PLAYER:
+               beingsByName.find(aliases[i])->second.remove(static_cast<Being *>(thing));
+               playersByName.find(aliases[i])->second.remove(static_cast<Player *>(thing));
+               break;
+
+            case ENTITY_CREATURE:
+               beingsByName.find(aliases[i])->second.remove(static_cast<Being *>(thing));
+               creaturesByName.find(aliases[i])->second.remove(static_cast<Creature *>(thing));
+               break;
+
+            case ENTITY_OBJECT:
+               itemsByName.find(aliases[i])->second.remove(static_cast<Item *>(thing));
+               objectsByName.find(aliases[i])->second.remove(static_cast<Object *>(thing));
+               break;
+         }
+
+         thingsByName.find(aliases[i])->second.remove(thing);
+      }
    }
 
    /****************************************************************************/
@@ -153,8 +220,8 @@ namespace core { namespace entity {
       }
 
       things.remove(thing);
+      removeThingByName(thing);
 
-      // TODO: removeByName
       thing->setLocation(0);
    }
 
