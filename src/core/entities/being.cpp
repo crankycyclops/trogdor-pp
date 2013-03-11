@@ -18,6 +18,7 @@ namespace core { namespace entity {
 
       // insert the object into the Being's inventory
       inventory.objects.insert(object);
+      inventory.currentWeight += object->getWeight();
 
       // allow referencing of inventory Objects by name and aliases
       vector<string> objAliases = object->getAliases();
@@ -46,6 +47,7 @@ namespace core { namespace entity {
          inventory.objectsByName.find(objAliases[i])->second.remove(object);
       }
 
+      inventory.currentWeight -= object->getWeight();
       object->setOwner(0);
    }
 
@@ -106,8 +108,24 @@ namespace core { namespace entity {
 
    void Being::drop(Object *object) {
 
-      // TODO
-      cout << "DROP STUB!" << endl;
+      EventArgumentList eventArgs;
+
+      eventArgs.push_back(this);
+      eventArgs.push_back(object);
+
+      if (!game->event("beforeDrop", eventArgs)) {
+         return;
+      }
+
+      if (!object->getDroppable()) {
+         game->event("dropUndroppable", eventArgs);
+         throw DROP_UNDROPPABLE;
+      }
+
+      location->insertThing(object);
+      removeFromInventory(object);
+
+      game->event("afterDrop", eventArgs);
    }
 }}
 
