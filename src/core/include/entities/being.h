@@ -52,6 +52,7 @@ namespace core { namespace entity {
          struct {
             int weight;         // how much weight inventory can hold
             int currentWeight;  // how much weight is currently used
+            unsigned count;     // number of items in the inventory
             ObjectSet objects;
             ObjectsByNameMap objectsByName;
          } inventory;
@@ -70,6 +71,7 @@ namespace core { namespace entity {
             attributes.dexterity = DEFAULT_ATTRIBUTE_DEXTERITY;
             attributes.intelligence = DEFAULT_ATTRIBUTE_INTELLIGENCE;
 
+            inventory.count = 0;
             inventory.weight = DEFAULT_INVENTORY_WEIGHT;
             inventory.currentWeight = 0;
          }
@@ -96,6 +98,17 @@ namespace core { namespace entity {
                return &(i->second);
             }
          }
+
+         /*
+            Returns the number of items in the Being's inventory.
+
+            Input:
+               (none)
+
+            Output:
+               Number of items (unsigned int)
+         */
+         inline unsigned const getInventoryCount() const {return inventory.count;}
 
          /*
             Puts the Being in either an alive (true) or a dead (false) state.

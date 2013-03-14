@@ -32,6 +32,7 @@ namespace core { namespace entity {
          inventory.objectsByName.find(objAliases[i])->second.push_back(object);
       }
 
+      inventory.count++;
       object->setOwner(this);
       return true;
    }
@@ -47,6 +48,7 @@ namespace core { namespace entity {
          inventory.objectsByName.find(objAliases[i])->second.remove(object);
       }
 
+      inventory.count--;
       inventory.currentWeight -= object->getWeight();
       object->setOwner(0);
    }

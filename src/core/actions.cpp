@@ -190,10 +190,47 @@ namespace core {
       return true;
    }
 
+   // TODO: consider custom messages
    void DropAction::execute(Player *player, Command *command, Game *game) {
 
-      // TODO
-      cout << "DROP ACTION STUB!" << endl;
+      Place      *location = player->getLocation();
+      ObjectList *invItems = player->getInventoryObjectsByName(command->getDirectObject());
+
+      if (0 == invItems || 0 == invItems->size()) {
+         *game->trogout << "You don't have a " << command->getDirectObject()
+            << "!" << endl;
+         return;
+      }
+
+      try {
+
+         Object *object = Entity::clarifyEntity<ObjectList, Object *>(*invItems,
+            game->trogin, game->trogout);
+
+         try {
+            player->drop(object);
+            *game->trogout << "You drop the " << object->getName() << "." << endl;
+         }
+
+         catch (enum Being::dropError error) {
+
+            switch (error) {
+
+               case Being::DROP_UNDROPPABLE:
+                  *game->trogout << "You can't drop that!" << endl;
+                  break;
+
+               default:
+                  *game->trogerr << "Unknown error dropping object.  This is a "
+                     << "bug." << endl;
+                  break;
+            }
+         }
+      }
+
+      catch (string name) {
+         *game->trogout << "You don't have a " << name << "!" << endl;
+      }
    }
 
 /******************************************************************************/
