@@ -33,6 +33,55 @@ namespace core {
 /******************************************************************************/
 
    /*
+      Methods for the Inventory action.
+   */
+
+   bool InventoryAction::checkSyntax(Command *command) {
+
+      // A valid quit command should only be one word, a verb
+      if (command->getDirectObject().length() > 0 ||
+      command->getIndirectObject().length() > 0) {
+         return false;
+      }
+
+      return true;
+   }
+
+
+   void InventoryAction::execute(Player *player, Command *command, Game *game) {
+
+      if (0 == player->getInventoryCount()) {
+         *game->trogout << "You don't have anything!" << endl;
+      }
+
+      else {
+
+         *game->trogout << "Items in your inventory:" << endl;
+
+         for (ObjectSet::iterator i = player->getInventoryIterator();
+         !player->isInventoryEnd(i); i++) {
+
+            *game->trogout << (*i)->getTitle();
+
+            if (player->getInventoryMaxWeight() > 0) {
+
+               if ((*i)->getWeight() > 0) {
+                  *game->trogout << " (TODO: percentage of inv max weight)";
+               }
+
+               else {
+                  *game->trogout << " (weighs nothing)";
+               }
+            }
+
+            *game->trogout << endl;
+         }
+      }
+   }
+
+/******************************************************************************/
+
+   /*
       Methods for the Look action.
    */
 

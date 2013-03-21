@@ -100,6 +100,28 @@ namespace core { namespace entity {
          }
 
          /*
+            Returns the maximum weight of the Being's inventory.
+
+            Input:
+               (none)
+
+            Output:
+               max weight (int)
+         */
+         inline int const getInventoryMaxWeight() const {return inventory.weight;}
+
+         /*
+            Returns the current weight of the Being's inventory.
+
+            Input:
+               (none)
+
+            Output:
+               current weight (int)
+         */
+         inline int const getInventoryCurWeight() const {return inventory.currentWeight;}
+
+         /*
             Returns the number of items in the Being's inventory.
 
             Input:
@@ -109,6 +131,36 @@ namespace core { namespace entity {
                Number of items (unsigned int)
          */
          inline unsigned const getInventoryCount() const {return inventory.count;}
+
+         /*
+            Returns an iterator which will iterate through all items in the
+            Being's inventory.
+
+            Input:
+               (none)
+
+            Output:
+               ObjectSet::const_iterator
+         */
+         inline ObjectSet::iterator getInventoryIterator() const {
+
+            return inventory.objects.begin();
+         }
+
+         /*
+            Returns whether or not we've iterated past the end of our set of
+            items in the Player's inventory.
+
+            Input:
+               Current iterator
+
+            Output:
+               true if we've reached the end and false if not
+         */
+         inline bool isInventoryEnd(ObjectSet::iterator i) const {
+
+            return (i == inventory.objects.end());
+         }
 
          /*
             Puts the Being in either an alive (true) or a dead (false) state.

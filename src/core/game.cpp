@@ -71,6 +71,11 @@ namespace core {
       QuitAction *quit = new QuitAction;
       actions->setAction("quit", quit);
 
+      InventoryAction *inv = new InventoryAction;
+      actions->setAction("inv", inv);
+      actions->setAction("inventory", inv);
+      actions->setAction("list", inv);
+
       MoveAction *move = new MoveAction;
       actions->setAction("move", move);
       actions->setAction("go", move);
