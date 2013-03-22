@@ -50,13 +50,16 @@ namespace core {
 
    void InventoryAction::execute(Player *player, Command *command, Game *game) {
 
+      // percentage of available space used
+      double totalPercent = 0.0;
+
       if (0 == player->getInventoryCount()) {
          *game->trogout << "You don't have anything!" << endl;
       }
 
       else {
 
-         *game->trogout << "Items in your inventory:" << endl;
+         *game->trogout << "Items in your inventory:" << endl << endl;
 
          for (ObjectSet::iterator i = player->getInventoryIterator();
          !player->isInventoryEnd(i); i++) {
@@ -66,7 +69,10 @@ namespace core {
             if (player->getInventoryMaxWeight() > 0) {
 
                if ((*i)->getWeight() > 0) {
-                  *game->trogout << " (TODO: percentage of inv max weight)";
+                  double percent = 100 * ((double)(*i)->getWeight() /
+                     (double)player->getInventoryMaxWeight());
+                  totalPercent += percent;
+                  *game->trogout << " (" << percent << "%)";
                }
 
                else {
@@ -75,6 +81,11 @@ namespace core {
             }
 
             *game->trogout << endl;
+         }
+
+         if (player->getInventoryMaxWeight() > 0) {
+            cout << endl << "You are currently using " << totalPercent
+               << "% of your inventory." << endl;
          }
       }
    }

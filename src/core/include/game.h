@@ -164,6 +164,8 @@ namespace core {
             // OR: maybe have a copy method that copies just properties and
             // stuff after construction?
             Player *player = new Player(this, name);
+            player->setInventoryWeight(defaultPlayer->getInventoryMaxWeight());
+            // TODO: set other attributes from default
 
             entities.set(name, player);
             things.set(name, player);
