@@ -316,8 +316,10 @@ You peer off into the distance and notice a dark hole in the wall a little ways 
          <!-- you can define transition messages when you come to or go from
               specific directions (two possible messages for each direction) -->
          <messages>
-            <message name="fromNorth">Back to start from the cave!</message>
-            <message name="goNorth">Transitioning to the cave!</message>
+            <!-- we're LEAVING this room by going north -->
+            <message name="gonorth">Transitioning to the cave!</message>
+            <!-- we're ENTERING this room by going south from another room -->
+            <message name="entersouth">Back to start from the cave!</message>
          </messages>
 
          <!-- Creatures and objects that are contained inside a room should be

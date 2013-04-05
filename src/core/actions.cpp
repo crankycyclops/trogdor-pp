@@ -201,8 +201,17 @@ namespace core {
          else {
 
             try {
+
                player->take(static_cast<Object *>(thing));
-               *game->trogout << "You take the " << thing->getName() << "." << endl;
+
+               string message = thing->getMessage("take");
+               if (message.length() > 0) {
+                  *game->trogout << message << endl;
+               }
+
+               else {
+                  *game->trogout << "You take the " << thing->getName() << "." << endl;
+               }
             }
 
             catch (enum Being::takeError error) {
@@ -268,8 +277,17 @@ namespace core {
             game->trogin, game->trogout);
 
          try {
+ 
             player->drop(object);
-            *game->trogout << "You drop the " << object->getName() << "." << endl;
+
+            string message = object->getMessage("drop");
+            if (message.length() > 0) {
+               *game->trogout << message << endl;
+            }
+
+            else {
+               *game->trogout << "You drop the " << object->getName() << "." << endl;
+            }
          }
 
          catch (enum Being::dropError error) {
@@ -277,6 +295,7 @@ namespace core {
             switch (error) {
 
                case Being::DROP_UNDROPPABLE:
+                  // TODO: add message for this (named undroppable)
                   *game->trogout << "You can't drop that!" << endl;
                   break;
 
@@ -368,8 +387,18 @@ namespace core {
          // TODO: fire can't go that way event?
          return;
       }
+      
+      string enterMessage = next->getMessage("enter" + direction);
+      string goMessage = player->getLocation()->getMessage("go" + direction);
+
+      if (goMessage.length() > 0) {
+         *game->trogout << goMessage << endl << endl;
+      }
+
+      if (enterMessage.length() > 0) {
+         *game->trogout << enterMessage << endl << endl;
+      }
 
       player->gotoLocation(next);
    }
 }
-

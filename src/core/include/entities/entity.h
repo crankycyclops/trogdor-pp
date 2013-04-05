@@ -227,6 +227,18 @@ namespace core { namespace entity {
          inline void setMessages(Messages &m) {msgs = m;}
 
          /*
+            Returns the specified message.  If it doesn't exist, an empty string
+            is returned.
+
+            Input:
+               Message name (string)
+
+            Output:
+               Message (string)
+         */
+         inline string getMessage(string message) {return msgs.get(message.c_str());}
+
+         /*
             Sets the Entity's title.
 
             Input:
