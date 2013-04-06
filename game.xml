@@ -13,7 +13,7 @@
          Note that each item, regardless of type, must have a unique name.
          A room and an object, as an example, cannot both be named the same
          thing.  If two or more objects need to be identified by the same word,
-         you can define synonyms for them in the actual definitions.
+         you can define aliases for them in the entity definitions.
    -->
    <manifest>
 
@@ -113,7 +113,6 @@
    <!-- Game Objects -->
    <objects>
 
-      <!-- every object MUST HAVE a UNIQUE name -->
       <object name="candle">
          <!-- The user will see this description the first time they encounter the
               object, or everytime they issue the command "look at candle."
