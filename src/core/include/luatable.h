@@ -14,7 +14,7 @@ using namespace boost;
 namespace core {
 
 
-   class LuaTable;   // forward declaration for LuaTableValue
+   class LuaTable;
 
 
    /*

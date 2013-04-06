@@ -3,6 +3,7 @@
 
 
 #include "../messages.h"
+#include "../luatable.h"
 #include "../luastate.h"
 
 namespace core {
@@ -110,6 +111,20 @@ namespace core { namespace entity {
          Entity(Game *g, string n);
 
          /*
+            Returns a LuaTable object representing the Entity.  Note that each
+            child class should get the value of the parent class's version of
+            this method and then fill that object in further with its own
+            values.
+
+            Input:
+               (none)
+
+            Output:
+               LuaTable object
+         */
+         virtual LuaTable *getLuaTable() const;
+
+         /*
             Returns the Entity's type.
 
             Input:
@@ -119,6 +134,36 @@ namespace core { namespace entity {
                (none)
          */
          inline enum EntityType getType() const {return type;}
+
+         /*
+            Returns a string representation of the Entity's type.
+
+            Input:
+               (none)
+
+            Output:
+               Type name (string)
+         */
+         inline string getTypeName() const {
+
+            switch (type) {
+
+               case ENTITY_ROOM:
+                  return "room";
+
+               case ENTITY_OBJECT:
+                  return "object";
+
+               case ENTITY_CREATURE:
+                  return "creature";
+
+               case ENTITY_PLAYER:
+                  return "player";
+
+               default:
+                  return "undefined";
+            }
+         }
 
          /*
             Returns the Entity's name.
