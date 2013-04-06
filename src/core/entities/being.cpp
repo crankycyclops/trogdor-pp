@@ -129,5 +129,74 @@ namespace core { namespace entity {
 
       game->event("afterDrop", eventArgs);
    }
+
+   /***************************************************************************/
+
+   void Being::addHealth(int up, bool allowOverflow) {
+
+      EventArgumentList eventArgs;
+
+      eventArgs.push_back(this);
+      eventArgs.push_back(health);
+      eventArgs.push_back(up);
+
+      if (!game->event("beforeAddHealth", eventArgs)) {
+         return;
+      }
+
+      health += up;
+
+      if (!allowOverflow && health > maxHealth) {
+         health = maxHealth;
+      }
+
+      game->event("afterAddHealth", eventArgs);
+   }
+
+   /***************************************************************************/
+
+   void Being::removeHealth(int down, bool allowDeath) {
+
+      EventArgumentList eventArgs;
+
+      eventArgs.push_back(this);
+      eventArgs.push_back(health);
+      eventArgs.push_back(down);
+
+      if (!game->event("beforeRemoveHealth", eventArgs)) {
+         return;
+      }
+
+      health -= down;
+
+      if (health <= 0) {
+
+         health = 0; // just in case it's a negative number, we clip at 0
+
+         if (allowDeath) {
+            die();
+         }
+      }
+
+
+      game->event("afterRemoveHealth", eventArgs);
+   }
+
+   /***************************************************************************/
+
+   void Being::die() {
+
+      EventArgumentList eventArgs;
+
+      eventArgs.push_back(this);
+
+      if (!game->event("beforeDie", eventArgs)) {
+         return;
+      }
+
+      alive = false;
+
+      game->event("afterDie", eventArgs);
+   }
 }}
 

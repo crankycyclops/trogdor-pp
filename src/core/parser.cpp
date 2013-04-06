@@ -968,6 +968,7 @@ namespace core {
          }
       }
 
+      being->setAttributesInitialTotal();
       checkClosingTag("attributes");
    }
 

@@ -47,6 +47,7 @@ namespace core { namespace entity {
             int strength;
             int dexterity;
             int intelligence;
+            int initialTotal;   // total attributes that the Being started with
          } attributes;
 
          struct {
@@ -70,6 +71,8 @@ namespace core { namespace entity {
             attributes.strength = DEFAULT_ATTRIBUTE_STRENGTH;
             attributes.dexterity = DEFAULT_ATTRIBUTE_DEXTERITY;
             attributes.intelligence = DEFAULT_ATTRIBUTE_INTELLIGENCE;
+            attributes.initialTotal = DEFAULT_ATTRIBUTE_STRENGTH +
+               DEFAULT_ATTRIBUTE_DEXTERITY + DEFAULT_ATTRIBUTE_INTELLIGENCE;
 
             inventory.count = 0;
             inventory.weight = DEFAULT_INVENTORY_WEIGHT;
@@ -98,6 +101,17 @@ namespace core { namespace entity {
                return &(i->second);
             }
          }
+
+         /*
+            Returns whether or not the Being is alive.
+
+            Input:
+               (none)
+
+            Output:
+               bool
+         */
+         inline bool isAlive() {return alive;}
 
          /*
             Returns the maximum weight of the Being's inventory.
@@ -160,6 +174,43 @@ namespace core { namespace entity {
          inline bool isInventoryEnd(ObjectSet::iterator i) const {
 
             return (i == inventory.objects.end());
+         }
+
+         /*
+            Return raw point values for each attribute.
+
+            Input:
+               (none)
+
+            Output:
+               Attribute value in points (int)
+         */
+         inline int getStrength() {return attributes.strength;}
+         inline int getDexterity() {return attributes.dexterity;}
+         inline int getIntelligence() {return attributes.intelligence;}
+
+         /*
+            Return the relative factors of each attribute.
+
+            Input:
+               (none)
+
+            Ouput:
+               Attribute factor (double)
+         */
+         inline double getStrengthFactor() {
+
+            return (double)attributes.strength / (double)attributes.initialTotal;
+         }
+
+         inline double getDexterityFactor() {
+
+            return (double)attributes.dexterity / (double)attributes.initialTotal;
+         }
+
+         inline double getIntelligenceFactor() {
+
+            return (double)attributes.intelligence / (double)attributes.initialTotal;
          }
 
          /*
@@ -234,6 +285,25 @@ namespace core { namespace entity {
          inline void setStrength(int s) {attributes.strength = s;}
          inline void setDexterity(int d) {attributes.dexterity = d;}
          inline void setIntelligence(int i) {attributes.intelligence = i;}
+
+         /*
+            This should only be called when the Being is first initialized, and
+            sets the value of attributes.initialTotal to the sum of all the
+            currently set attributes.  This value is used to calculate factors
+            for each attribute, which are relative to the Being's total initial
+            number of attributes.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline void setAttributesInitialTotal() {
+
+            attributes.initialTotal = attributes.strength + attributes.dexterity
+               + attributes.intelligence;
+         }
 
          /*
             Sets the inventory's weight.  0 means the Being  can carry an
@@ -321,6 +391,41 @@ namespace core { namespace entity {
                   DROP_UNDROPPABLE - attempt to drop an undroppable object
          */
          void drop(Object *object);
+
+         /*
+            Adds health to the Being.
+
+            Input:
+               How many health points to add (int)
+               Whether or not to allow health to exceed maxHealth (bool)
+
+            Output:
+               (none)
+         */
+         void addHealth(int up, bool allowOverflow = false);
+
+         /*
+            Removes health from the Being.
+
+            Input:
+               How many health points to remove (int)
+               Whether or not to let the Being die if health is <= 0 (bool)
+
+            Output:
+               (none)
+         */
+         void removeHealth(int down, bool allowDeath = true);
+
+         /*
+            Make the Being die.  Triggers an event.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void die();
    };
 }}
 
