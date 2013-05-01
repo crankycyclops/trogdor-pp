@@ -65,7 +65,6 @@ namespace core { namespace entity {
 
       game->addEventListener(l->getEventListener());
       game->addEventListener(triggers);
-
       if (!game->event("beforeGotoLocation", eventArgs)) {
          return;
       }
@@ -73,6 +72,8 @@ namespace core { namespace entity {
       setLocation(l);
       l->observe(this);
 
+      game->addEventListener(l->getEventListener());
+      game->addEventListener(triggers);
       game->event("afterGotoLocation", eventArgs);
    }
 
@@ -85,16 +86,22 @@ namespace core { namespace entity {
       eventArgs.push_back(this);
       eventArgs.push_back(object);
 
+      game->addEventListener(triggers);
+      game->addEventListener(object->getEventListener());
       if (!game->event("beforeTake", eventArgs)) {
          return;
       }
 
       if (!object->getTakeable()) {
+         game->addEventListener(triggers);
+         game->addEventListener(object->getEventListener());
          game->event("takeUntakeable", eventArgs);
          throw TAKE_UNTAKEABLE;
       }
 
       if (!insertIntoInventory(object)) {
+         game->addEventListener(triggers);
+         game->addEventListener(object->getEventListener());
          game->event("takeTooHeavy", eventArgs);
          throw TAKE_TOO_HEAVY;
       }
@@ -103,6 +110,8 @@ namespace core { namespace entity {
          object->getLocation()->removeThing(object);
       }
 
+      game->addEventListener(triggers);
+      game->addEventListener(object->getEventListener());
       game->event("afterTake", eventArgs);
    }
 
@@ -115,11 +124,15 @@ namespace core { namespace entity {
       eventArgs.push_back(this);
       eventArgs.push_back(object);
 
+      game->addEventListener(triggers);
+      game->addEventListener(object->getEventListener());
       if (!game->event("beforeDrop", eventArgs)) {
          return;
       }
 
       if (!object->getDroppable()) {
+         game->addEventListener(triggers);
+         game->addEventListener(object->getEventListener());
          game->event("dropUndroppable", eventArgs);
          throw DROP_UNDROPPABLE;
       }
@@ -127,6 +140,8 @@ namespace core { namespace entity {
       location->insertThing(object);
       removeFromInventory(object);
 
+      game->addEventListener(triggers);
+      game->addEventListener(object->getEventListener());
       game->event("afterDrop", eventArgs);
    }
 
@@ -140,6 +155,7 @@ namespace core { namespace entity {
       eventArgs.push_back(health);
       eventArgs.push_back(up);
 
+      game->addEventListener(triggers);
       if (!game->event("beforeAddHealth", eventArgs)) {
          return;
       }
@@ -150,6 +166,7 @@ namespace core { namespace entity {
          health = maxHealth;
       }
 
+      game->addEventListener(triggers);
       game->event("afterAddHealth", eventArgs);
    }
 
@@ -163,6 +180,7 @@ namespace core { namespace entity {
       eventArgs.push_back(health);
       eventArgs.push_back(down);
 
+      game->addEventListener(triggers);
       if (!game->event("beforeRemoveHealth", eventArgs)) {
          return;
       }
@@ -179,6 +197,7 @@ namespace core { namespace entity {
       }
 
 
+      game->addEventListener(triggers);
       game->event("afterRemoveHealth", eventArgs);
    }
 
@@ -190,13 +209,14 @@ namespace core { namespace entity {
 
       eventArgs.push_back(this);
 
+      game->addEventListener(triggers);
       if (!game->event("beforeDie", eventArgs)) {
          return;
       }
 
       alive = false;
 
+      game->addEventListener(triggers);
       game->event("afterDie", eventArgs);
    }
 }}
-
