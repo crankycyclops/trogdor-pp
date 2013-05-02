@@ -5,6 +5,9 @@
 #include <set>
 #include <boost/unordered_map.hpp>
 
+#include "../utility.h"
+#include "../dice.h"
+
 #include "thing.h"
 #include "place.h"
 
@@ -24,6 +27,7 @@ namespace core { namespace entity {
          static const int DEFAULT_INVENTORY_WEIGHT = 0;
 
          static const bool DEFAULT_ATTACKABLE = true;
+         static const int DEFAULT_DAMAGE_BARE_HANDS = 5;
 
          enum takeError {
             TAKE_TOO_HEAVY,
@@ -36,12 +40,13 @@ namespace core { namespace entity {
 
       protected:
 
-         int health;       // number of health points the being currently has
-         int maxHealth;    // maximum number of health points (0 for immortal)
-         bool alive;       // whether or not the being is alive
+         int health;            // number of health points the being currently has
+         int maxHealth;         // maximum number of health points (0 for immortal)
+         bool alive;            // whether or not the being is alive
 
-         bool attackable;  // whether or not being can be attacked
-         double woundRate; // max probability of being hit when attacked
+         bool attackable;       // whether or not being can be attacked
+         double woundRate;      // max probability of being hit when attacked
+         int damageBareHands;   // damage done during combat without a weapon
 
          struct {
             int strength;
@@ -58,6 +63,32 @@ namespace core { namespace entity {
             ObjectsByNameMap objectsByName;
          } inventory;
 
+         /*
+            Calculates whether or not an attack will be successful.
+
+            Input:
+               defender (Being)
+
+            Output:
+               true if successful and false if not
+         */
+         inline bool isAttackSuccessful(Being *defender) {
+
+            Dice d;
+
+            // probability that the attack will be successful
+            double p = CLAMP(getStrengthFactor() * (defender->woundRate / 2) +
+               (defender->woundRate / 2), 0.0, defender->woundRate);
+
+            if (d.get() < p) {
+               return true;
+            }
+
+            else {
+               return false;
+            }
+         }
+
       public:
 
          /*
@@ -67,6 +98,7 @@ namespace core { namespace entity {
          inline Being(Game *g, string n): Thing(g, n) {
 
             attackable = DEFAULT_ATTACKABLE;
+            damageBareHands = DEFAULT_DAMAGE_BARE_HANDS;
 
             attributes.strength = DEFAULT_ATTRIBUTE_STRENGTH;
             attributes.dexterity = DEFAULT_ATTRIBUTE_DEXTERITY;

@@ -5,6 +5,9 @@
 #include <string>
 #include <cctype>
 
+/* macro to clip a value within a given range */
+#define CLAMP(V, MIN, MAX)  (((V) > (MAX)) ? (MAX) : (((V) < (MIN)) ? (MIN) : (V)))
+
 using namespace std;
 
 
