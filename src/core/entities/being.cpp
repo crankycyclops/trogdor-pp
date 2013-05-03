@@ -147,6 +147,32 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
+   int Being::calcDamage(Being *defender, Object *weapon) {
+
+      int damage;
+
+      damage = damageBareHands * getStrengthFactor();
+
+      if (0 != weapon && weapon->isWeapon()) {
+         damage += weapon->getDamage();
+      }
+
+      damage *= defender->getDamageRatio();
+      return damage;
+   }
+
+   /***************************************************************************/
+
+   double Being::getDamageRatio() {
+
+      // TODO: this doesn't actually do anything yet...
+      return 1;
+   }
+
+   /***************************************************************************/
+
+   /***************************************************************************/
+
    void Being::addHealth(int up, bool allowOverflow) {
 
       EventArgumentList eventArgs;

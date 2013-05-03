@@ -64,6 +64,43 @@ namespace core { namespace entity {
          } inventory;
 
          /*
+            Calculates amount of damage (in hit points) that we do when we
+            attack another Being.
+
+            Input:
+               defender (Being)
+
+            Output:
+               true if successful and false if not
+         */
+         int calcDamage(Being *defender, Object *weapon = 0);
+
+         /*
+            When a Being is attacked, Being::calcDamage() is used to calculate
+            how many points to subtract from the defender's health based on
+            that Being's attributes and the weapon used.  This ratio, multiplied
+            by that value, will determine how many points are actually
+            subtracted.  This allows us to take things like armor into account.
+            If there is no buffer against the attack, then we will return 1, and
+            the defender will suffer all the damage.  If the defender has some
+            protection, then this value will be less than 1, and so the total
+            number of points subtracted will be less than the initially
+            calculated value.
+
+            NOTE: we can also return values > 1 for effects like double damage,
+            etc.
+
+            Input:
+               (none)
+
+            Output:
+               A ratio that determines how much of the damage calculated in a
+               successful attack against the Being is actually subtracted from
+               the Being's health (double.)
+         */
+         double getDamageRatio();
+
+         /*
             Calculates whether or not an attack will be successful.
 
             Input:
