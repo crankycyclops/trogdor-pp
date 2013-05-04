@@ -107,6 +107,15 @@ namespace core {
 
       DropAction *drop = new DropAction;
       actions->setAction("drop", drop);
+
+      AttackAction *attack = new AttackAction;
+      actions->setAction("attack", attack);
+      actions->setAction("hit", attack);
+      actions->setAction("harm", attack);
+      actions->setAction("kill", attack);
+      actions->setAction("injure", attack);
+      actions->setAction("maim", attack);
+      actions->setAction("fight", attack);
    }
 
 

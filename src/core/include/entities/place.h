@@ -131,6 +131,29 @@ namespace core { namespace entity {
                return &(i->second);
             }
          }
+
+         /*
+            Returns pointer to a list of all Beings that match the given name,
+            or a NULL pointer if there are no matches.
+
+            Input:
+               name (string)
+
+            Output:
+               BeingList * (NULL if no matches)
+         */
+         inline BeingList *getBeingsByName(string name) {
+
+            BeingsByNameMap::iterator i = beingsByName.find(name);
+
+            if (i == beingsByName.end()) {
+               return 0;
+            }
+
+            else {
+               return &(i->second);
+            }
+         }
    };
 }}
 

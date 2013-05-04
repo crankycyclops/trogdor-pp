@@ -401,4 +401,78 @@ namespace core {
 
       player->gotoLocation(next);
    }
+
+/******************************************************************************/
+
+   /*
+      Methods for the Attack action.
+   */
+
+   bool AttackAction::checkSyntax(Command *command) {
+
+      string verb = command->getVerb();
+      string dobj = command->getDirectObject();
+      string iobj = command->getIndirectObject();
+
+      if (dobj.length() == 0) {
+         return false;
+      }
+
+      return true;
+   }
+
+
+   void AttackAction::execute(Player *player, Command *command, Game *game) {
+
+      Place *location = player->getLocation();
+      BeingList *beings = location->getBeingsByName(command->getDirectObject());
+
+      if (0 == beings || 0 == beings->size()) {
+         *game->trogout << "There is no " << command->getDirectObject()
+            << " here!" << endl;
+         return;
+      }
+
+      try {
+
+         string weaponName = command->getIndirectObject();
+         Object *weapon = 0;
+
+         Being *defender = Entity::clarifyEntity<BeingList, Being *>(*beings,
+            game->trogin, game->trogout);
+
+         if (weaponName.length() > 0) {
+
+            ObjectList *items = player->getInventoryObjectsByName(weaponName);
+
+            if (0 == items || 0 == items->size()) {
+               *game->trogout << "You don't have a " << weaponName << "!" << endl;
+               return;
+            }
+
+            try {
+
+               weapon = Entity::clarifyEntity<ObjectList, Object *>(*items,
+                  game->trogin, game->trogout);
+
+               if (!weapon->isWeapon()) {
+                  *game->trogout << "The " << weaponName << " isn't a weapon!" << endl;
+                  return;
+               }
+            }
+
+            catch (string name) {
+               *game->trogout << "You don't have a " << weaponName << "!" << endl;
+               return;
+            }
+         }
+
+         player->attack(defender, weapon);
+      }
+
+      catch (string name) {
+         *game->trogout << "There is no " << name << " here!" << endl;
+      }
+   }
 }
+
