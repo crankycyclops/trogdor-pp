@@ -462,6 +462,20 @@ namespace core { namespace entity {
          void drop(Object *object);
 
          /*
+            Initiate an attack against defender, possibly using an optional
+            weapon.
+
+            Input:
+               Being to attack (Being *)
+               Optional weapon (Object *) - 0 if none
+               Allow defender to counter-attack? (default = true)
+
+            Output:
+               (none)
+         */
+         void attack(Being *defender, Object *weapon, bool counterAttack = true);
+
+         /*
             Adds health to the Being.
 
             Input:

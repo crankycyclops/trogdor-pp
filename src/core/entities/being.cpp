@@ -171,6 +171,28 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
+   void Being::attack(Being *defender, Object *weapon, bool counterAttack) {
+
+      EventArgumentList eventArgs;
+
+      eventArgs.push_back(this);
+      eventArgs.push_back(defender);
+      eventArgs.push_back(weapon);
+
+      game->addEventListener(triggers);
+      game->addEventListener(defender->getEventListener());
+      if (0 != weapon) {
+         game->addEventListener(weapon->getEventListener());
+      }
+
+      if (!game->event("beforeAttack", eventArgs)) {
+         return;
+      }
+
+      // TODO
+      return;
+   }
+
    /***************************************************************************/
 
    void Being::addHealth(int up, bool allowOverflow) {

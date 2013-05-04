@@ -32,7 +32,17 @@ namespace core { namespace event {
                break;
 
             default: // it's some kind of Entity
-               L->pushArgument(boost::get<Entity *>(args[i])->getLuaTable());
+
+               Entity *arg = boost::get<Entity *>(args[i]);
+
+               if (0 == arg) {
+                  L->pushNilArgument();
+               }
+
+               else {
+                  L->pushArgument(arg->getLuaTable());
+               }
+
                break;
          }
       }
