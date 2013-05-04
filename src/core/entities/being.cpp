@@ -189,8 +189,58 @@ namespace core { namespace entity {
          return;
       }
 
-      // TODO
-      return;
+      if (!defender->isAlive()) {
+
+         game->addEventListener(triggers);
+         game->addEventListener(defender->getEventListener());
+         if (0 != weapon) {
+            game->addEventListener(weapon->getEventListener());
+         }
+
+         if (!game->event("attackAlreadyDead", eventArgs)) {
+            return;
+         }
+
+         // TODO: print "is dead message"
+
+         return;
+      }
+
+      if (isAttackSuccessful(defender)) {
+
+      }
+
+      else {
+
+         game->addEventListener(triggers);
+         game->addEventListener(defender->getEventListener());
+         if (0 != weapon) {
+            game->addEventListener(weapon->getEventListener());
+         }
+
+         if (!game->event("attackFailure", eventArgs)) {
+            return;
+         }
+
+         // TODO: print failure message
+      }
+
+      if (counterAttack) {
+
+         if (ENTITY_PLAYER != defender->getType()) {
+            // TODO: message: %s fights back!
+            // TODO: how will defender's weapon selection occur...?  Argh...
+            defender->attack(this, 0, false);
+         }
+      }
+
+      game->addEventListener(triggers);
+      game->addEventListener(defender->getEventListener());
+      if (0 != weapon) {
+         game->addEventListener(weapon->getEventListener());
+      }
+
+      game->event("afterAttack", eventArgs);
    }
 
    /***************************************************************************/
