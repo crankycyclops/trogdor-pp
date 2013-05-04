@@ -11,9 +11,9 @@
         an error.
 
          Note that each item, regardless of type, must have a unique name.
-         A room and an object, as an example, cannot both be named the same
-         thing.  If two or more objects need to be identified by the same word,
-         you can define aliases for them in the entity definitions.
+         A room and an object, for example, cannot both be named the same thing.
+         If two or more objects need to be identified by the same word, you can
+         define aliases for them in the entity definitions.
    -->
    <manifest>
 

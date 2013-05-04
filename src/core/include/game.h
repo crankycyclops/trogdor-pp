@@ -165,6 +165,7 @@ namespace core {
             // stuff after construction?
             Player *player = new Player(this, name);
             player->setInventoryWeight(defaultPlayer->getInventoryMaxWeight());
+            player->setAlive(defaultPlayer->isAlive());
             // TODO: set other attributes from default
 
             entities.set(name, player);

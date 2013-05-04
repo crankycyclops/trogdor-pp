@@ -17,6 +17,9 @@ namespace core { namespace entity {
       game = g;
       name = n;
 
+      // this will usually be set again later
+      title = n;
+
       L = new LuaState();
       triggers = new event::EventListener();
    }

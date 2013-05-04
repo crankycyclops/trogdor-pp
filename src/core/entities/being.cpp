@@ -189,6 +189,23 @@ namespace core { namespace entity {
          return;
       }
 
+      if (!isAlive()) {
+
+         game->addEventListener(triggers);
+         game->addEventListener(defender->getEventListener());
+         if (0 != weapon) {
+            game->addEventListener(weapon->getEventListener());
+         }
+
+         if (!game->event("attackPlayerAlreadyDead", eventArgs)) {
+            return;
+         }
+
+         *game->trogout << getTitle() << " is already dead and cannot fight."
+            << endl;
+         return;
+      }
+
       if (!defender->isAlive()) {
 
          game->addEventListener(triggers);
@@ -197,38 +214,55 @@ namespace core { namespace entity {
             game->addEventListener(weapon->getEventListener());
          }
 
-         if (!game->event("attackAlreadyDead", eventArgs)) {
+         if (!game->event("attackDefenderAlreadyDead", eventArgs)) {
             return;
          }
 
-         // TODO: print "is dead message"
-
+         *game->trogout << defender->getTitle() << " is already dead." << endl;
          return;
+      }
+
+      // used either if the attack is successful or if it fails
+      game->addEventListener(triggers);
+      game->addEventListener(defender->getEventListener());
+      if (0 != weapon) {
+         game->addEventListener(weapon->getEventListener());
       }
 
       if (isAttackSuccessful(defender)) {
 
+         if (!game->event("attackSuccess", eventArgs)) {
+            return;
+         }
+
+         int damage = calcDamage(defender, weapon);
+
+         defender->removeHealth(damage);
+
+         *game->trogout << getTitle() << " dealt a blow to "
+            << defender->getTitle() << "!" << endl;
+         *game->trogout << defender->getTitle() << " loses " << damage <<
+            " health points." << endl;
+
+         if (!defender->isAlive()) {
+            *game->trogout << defender->getTitle() << " dies." << endl;
+            return;
+         }
       }
 
       else {
-
-         game->addEventListener(triggers);
-         game->addEventListener(defender->getEventListener());
-         if (0 != weapon) {
-            game->addEventListener(weapon->getEventListener());
-         }
 
          if (!game->event("attackFailure", eventArgs)) {
             return;
          }
 
-         // TODO: print failure message
+         *game->trogout << "Attack failed!" << endl;
       }
 
       if (counterAttack) {
 
          if (ENTITY_PLAYER != defender->getType()) {
-            // TODO: message: %s fights back!
+            *game->trogout << defender->getTitle() << " fights back." << endl;
             // TODO: how will defender's weapon selection occur...?  Argh...
             defender->attack(this, 0, false);
          }

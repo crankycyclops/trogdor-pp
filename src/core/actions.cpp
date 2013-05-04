@@ -455,6 +455,8 @@ namespace core {
                weapon = Entity::clarifyEntity<ObjectList, Object *>(*items,
                   game->trogin, game->trogout);
 
+               // TODO: this check should be made inside Being (we'd have an
+               // exception to catch)
                if (!weapon->isWeapon()) {
                   *game->trogout << "The " << weaponName << " isn't a weapon!" << endl;
                   return;
