@@ -229,9 +229,10 @@ namespace core { namespace entity {
 
    void Place::display(Being *observer, bool displayFull) {
 
-      *game->trogout << getTitle() << endl;
+      *game->trogout << getTitle() << endl << endl;
       Entity::display(observer, displayFull);
 
+      // TODO: solve extra newline at the end of the last item, which is annoying...
       for (ThingList::iterator i = things.begin(); i != things.end(); i++) {
          (*i)->glance(observer);
          *game->trogout << endl;

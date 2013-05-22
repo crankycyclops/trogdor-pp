@@ -1073,7 +1073,7 @@ namespace core {
 
       string alias = parseString();
       checkClosingTag("alias");
-      return alias;
+      return trim(alias);
    }
 
    /***************************************************************************/
@@ -1082,7 +1082,7 @@ namespace core {
 
       string title = parseString();
       checkClosingTag("title");
-      return title;
+      return trim(title);
    }
 
    /***************************************************************************/
@@ -1091,7 +1091,7 @@ namespace core {
 
       string longdesc = parseString();
       checkClosingTag("description");
-      return longdesc;
+      return trim(longdesc);
    }
 
    /***************************************************************************/
@@ -1100,7 +1100,7 @@ namespace core {
 
       string shortdesc = parseString();
       checkClosingTag("short");
-      return shortdesc;
+      return trim(shortdesc);
    }
 
    /***************************************************************************/
