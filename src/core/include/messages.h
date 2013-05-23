@@ -40,8 +40,8 @@ namespace core {
          }
 
          /*
-            Gets a message by name.  If it doesn't exist, an exception will be
-            thrown.
+            Gets a message by name.  If it doesn't exist, an empty string is
+            returned.
 
             Input: string (name)
             Output: string (message)
@@ -58,8 +58,7 @@ namespace core {
          void set(string name, string message);
 
          /*
-            Displays a message.  If it doesn't exist, an exception will be
-            thrown.
+            Displays a message.  If it doesn't exist, nothing is displayed.
 
             Input: string (message name), output stream (ostream)
             Output: (none)

@@ -64,6 +64,31 @@ namespace core { namespace entity {
          } inventory;
 
          /*
+            Overrides Entity::display() in order to handle the description of
+            living vs. deceased Beings.
+
+            Input:
+               Being observing the Place
+               Whether or not to always show the long description
+
+            Output:
+               (none)
+         */
+         virtual void display(Being *observer, bool displayFull = false);
+
+         /*
+            Overrides Entity::displayShort in order to handle the short
+            description of living vs. deceased Beings.
+
+            Input:
+               Being doing the observing
+
+            Output:
+               (none)
+         */
+         //virtual void displayShort(Being *observer);
+
+         /*
             Calculates amount of damage (in hit points) that we do when we
             attack another Being.
 

@@ -289,7 +289,8 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
          </inventory>
 
          <messages>
-            <message name="dead">Trogdor is very much dead.</message>
+            <message name="descshort_dead">Trogdor is very much dead.</message>
+            <message name="description_dead">The body of Trogdor lies crumbled on the floor, lifeless and very much dead, in the fullest sense.  This is a long and wordy description of Trogdor's body, isn't it!</message>
          </messages>
 
       </creature>

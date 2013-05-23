@@ -10,6 +10,57 @@ using namespace std;
 
 namespace core { namespace entity {
 
+
+   void Being::display(Being *observer, bool displayFull) {
+
+      if (ENTITY_PLAYER == observer->getType()) {
+
+         if (!alive) {
+
+            string descDead = msgs.get("description_dead");
+
+            if (descDead.length() > 0) {
+               *game->trogout << descDead << endl;
+            }
+
+            else {
+               Entity::display(observer, displayFull);
+            }
+         }
+
+         else {
+            Entity::display(observer, displayFull);
+         }
+      }
+   }
+
+   /***************************************************************************/
+/*
+   void Being::displayShort(Being *observer) {
+
+      if (ENTITY_PLAYER == observer->getType()) {
+
+         if (!alive) {
+
+            string descDead = msgs.get("descshort_dead");
+
+            if (descDead.length() > 0) {
+               *game->trogout << descDead << endl;
+            }
+
+            else {
+               Entity::displayShort(observer);
+            }
+         }
+
+         else {
+            Entity::displayShort(observer);
+         }
+      }
+   }
+*/
+   /***************************************************************************/
+
    bool Being::insertIntoInventory(Object *object, bool considerWeight) {
 
       // make sure the Object will fit
