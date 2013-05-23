@@ -149,6 +149,34 @@ namespace core { namespace entity {
          }
 
          /*
+            Constructor that clones a Being into another separate and unique
+            Being with identical properties.  Requires a unique name, which
+            won't be copied.
+
+            NOTE: inventory objects will NOT be copied, in order to maintain
+            sanity -- it doesn't make sense for two Beings to simultaneously
+            carry the same object, right? ;)
+         */
+         inline Being(const Being &b, string n): Thing(b, n) {
+
+            health = b.health;
+            maxHealth = b.maxHealth;
+            alive = b.alive;
+            attackable = b.attackable;
+            woundRate = b.woundRate;
+            damageBareHands = b.damageBareHands;
+
+            attributes.strength = b.attributes.strength;
+            attributes.dexterity = b.attributes.dexterity;
+            attributes.intelligence = b.attributes.intelligence;
+            attributes.initialTotal = b.attributes.initialTotal;
+
+            inventory.count = 0;
+            inventory.weight = b.inventory.weight;
+            inventory.currentWeight = 0;
+         }
+
+         /*
             Returns pointer to a list of all Objects that match the given name
             in the Being's inventory, or a NULL pointer if there are no matches.
 

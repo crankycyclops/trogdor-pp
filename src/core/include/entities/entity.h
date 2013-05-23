@@ -111,6 +111,15 @@ namespace core { namespace entity {
          Entity(Game *g, string n);
 
          /*
+            Constructor for cloning an Entity into another (with a unique name.)
+
+            Input:
+               Reference to entity to copy
+               Name of copy (string)
+         */
+         Entity(const Entity &e, string n);
+
+         /*
             Returns a LuaTable object representing the Entity.  Note that each
             child class should get the value of the parent class's version of
             this method and then fill that object in further with its own

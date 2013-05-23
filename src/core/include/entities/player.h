@@ -25,6 +25,14 @@ namespace core { namespace entity {
 
             attackable = true;
          }
+
+         /*
+            Constructor for cloning an existing player.  Requires a unique name.
+         */
+         inline Player(const Player &p, string n): Being(p, n) {
+
+            title = n;
+         }
    };
 }}
 

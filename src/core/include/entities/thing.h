@@ -57,6 +57,18 @@ namespace core { namespace entity {
          }
 
          /*
+            Constructor for cloning a Thing.  Requires a unique name.
+         */
+         inline Thing(const Thing &t, string n): Entity(t, n) {
+
+            // copy over existing aliases, minus the original Thing's name, and
+            // then add the new name to our list of aliases
+            aliases = t.aliases;
+            aliases.erase(find(aliases.begin(), aliases.end(), t.name));
+            aliases.push_back(n);
+         }
+
+         /*
             Returns the Being's current location in the game.  If the Being
             hasn't been placed anywhere, 0 will be returned.
 

@@ -26,6 +26,25 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
+   Entity::Entity(const Entity &e, string n) {
+
+      name = n;
+
+      type = e.type;
+      game = e.game;
+      title = e.title;
+      longDesc = e.longDesc;
+      shortDesc = e.shortDesc;
+      msgs = e.msgs;
+
+      // TODO: we need to do some kind of intelligent copying here, so that we
+      // can retain all parsed scripts, event handlers, etc.
+      L = new LuaState();
+      triggers = new event::EventListener();
+   }
+
+   /***************************************************************************/
+
    LuaTable *Entity::getLuaTable() const {
 
       LuaTable *table = new LuaTable();

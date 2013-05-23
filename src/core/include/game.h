@@ -159,14 +159,8 @@ namespace core {
                throw s.str();
             }
 
-            // TODO: implement Player::copy constructor and use that with default
-            // (and then set the name after)
-            // OR: maybe have a copy method that copies just properties and
-            // stuff after construction?
-            Player *player = new Player(this, name);
-            player->setInventoryWeight(defaultPlayer->getInventoryMaxWeight());
-            player->setAlive(defaultPlayer->isAlive());
-            player->setDamageBareHands(defaultPlayer->getDamageBareHands());
+            // clone the default player, giving it the specified name
+            Player *player = new Player(*defaultPlayer, name);
 
             // TODO: set other attributes from default
 
