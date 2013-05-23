@@ -69,10 +69,7 @@ namespace core { namespace entity {
       }
 
       else {
-         if (ENTITY_PLAYER == observer->getType()
-         && getShortDescription().length() > 0) {
-            *game->trogout << getShortDescription() << endl;
-         }
+         displayShort(observer);
       }
 
       observedByMap[observer] = true;
