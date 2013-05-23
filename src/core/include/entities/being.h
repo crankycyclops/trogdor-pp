@@ -172,6 +172,17 @@ namespace core { namespace entity {
          }
 
          /*
+            Returns amount of damage Being does with its bare hands.
+
+            Input:
+               (none)
+
+            Output:
+               int
+         */
+         inline int getDamageBareHands() {return damageBareHands;}
+
+         /*
             Returns whether or not the Being is alive.
 
             Input:
@@ -341,6 +352,17 @@ namespace core { namespace entity {
                (none)
          */
          inline void setWoundRate(double rate) {woundRate = rate;}
+
+         /*
+            Sets the amount of damage done by the Being's bare hands.
+
+            Input:
+               Int
+
+            Output:
+               (none)
+         */
+         inline void setDamageBareHands(int d) {damageBareHands = d;}
 
          /*
             Sets the Being's attributes.

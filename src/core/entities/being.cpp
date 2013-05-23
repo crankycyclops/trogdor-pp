@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "../include/entities/being.h"
 #include "../include/entities/object.h"
 
@@ -151,7 +153,10 @@ namespace core { namespace entity {
 
       int damage;
 
-      damage = damageBareHands * getStrengthFactor();
+      damage = round(damageBareHands * getStrengthFactor());
+
+      // make sure we always do at least 1 point damage
+      damage = damage > 0 ? damage : 1;
 
       if (0 != weapon && weapon->isWeapon()) {
          damage += weapon->getDamage();
@@ -163,6 +168,7 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
+   // TODO: I *think* I used this in order to account for defense, like armor...
    double Being::getDamageRatio() {
 
       // TODO: this doesn't actually do anything yet...

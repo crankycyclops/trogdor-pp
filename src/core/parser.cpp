@@ -512,6 +512,10 @@ namespace core {
             defaultPlayer->setAttackable(parseBeingAttackable());
          }
 
+         else if (0 == getTagName().compare("damagebarehands")) {
+            defaultPlayer->setDamageBareHands(parseBeingDamageBareHands());
+         }
+
          else {
             s << filename << ": invalid tag <" << getTagName() << "> in "
                << "default player settings (line "
@@ -596,6 +600,10 @@ namespace core {
 
          else if (0 == getTagName().compare("woundrate")) {
             creature->setWoundRate(parseBeingWoundRate());
+         }
+
+         else if (0 == getTagName().compare("damagebarehands")) {
+            creature->setDamageBareHands(parseBeingDamageBareHands());
          }
 
          else if (0 == getTagName().compare("counterattack")) {
@@ -1042,6 +1050,15 @@ namespace core {
       bool attackable = parseBool();
       checkClosingTag("attackable");
       return attackable;
+   }
+
+   /***************************************************************************/
+
+   int Parser::parseBeingDamageBareHands() {
+
+      int damage = parseInt();
+      checkClosingTag("damagebarehands");
+      return damage;
    }
 
    /***************************************************************************/

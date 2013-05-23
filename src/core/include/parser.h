@@ -351,6 +351,17 @@ namespace core {
          bool parseBeingAttackable();
 
          /*
+            Parses amount of damage a Being does with its bare hands.
+
+            Input:
+               (none)
+
+            Output:
+               int (damage points)
+         */
+         int parseBeingDamageBareHands();
+
+         /*
             Parses a Creature's allegiance.
 
             Input:
