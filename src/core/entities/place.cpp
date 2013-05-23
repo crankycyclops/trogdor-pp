@@ -234,8 +234,8 @@ namespace core { namespace entity {
 
       // TODO: solve extra newline at the end of the last item, which is annoying...
       for (ThingList::iterator i = things.begin(); i != things.end(); i++) {
-         (*i)->glance(observer);
          *game->trogout << endl;
+         (*i)->glance(observer);
       }
    }
 }}
