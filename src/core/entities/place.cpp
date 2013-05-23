@@ -232,7 +232,6 @@ namespace core { namespace entity {
       *game->trogout << getTitle() << endl << endl;
       Entity::display(observer, displayFull);
 
-      // TODO: solve extra newline at the end of the last item, which is annoying...
       for (ThingList::iterator i = things.begin(); i != things.end(); i++) {
          *game->trogout << endl;
          (*i)->glance(observer);
