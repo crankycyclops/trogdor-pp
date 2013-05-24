@@ -43,6 +43,57 @@ namespace core { namespace entity {
          }
 
          /*
+            Returns a LuaTable object representing the Creature.  Note that each
+            child class should get the value of the parent class's version of
+            this method and then fill that object in further with its own
+            values.
+
+            Input:
+               (none)
+
+            Output:
+               LuaTable object
+         */
+         virtual LuaTable *getLuaTable() const;
+
+         /*
+            Returns the Creature's allegiance.
+
+            Input:
+               (none)
+
+            Output:
+               enum AllegianceType
+         */
+         inline enum AllegianceType getAllegiance() const {return allegiance;}
+
+         /*
+            Returns a string representation of the Creature's allegiance.
+
+            Input:
+               (none)
+
+            Output:
+               std::string
+         */
+         inline string getAllegianceStr() const {
+
+            switch (allegiance) {
+
+               case FRIEND:
+                  return "friend";
+
+               case NEUTRAL:
+                  return "neutral";
+
+               case ENEMY:
+                  return "enemy";
+            }
+
+            return "undefined";
+         }
+
+         /*
             Sets a Creature's allegiance.
 
             Input:
