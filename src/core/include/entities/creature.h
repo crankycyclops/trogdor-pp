@@ -109,6 +109,21 @@ namespace core { namespace entity {
          }
 
          /*
+            Return auto attack parameters.
+
+            Input:
+               (none)
+
+            Output:
+               enabled:  bool
+               repeat:   bool
+               interval: int
+         */
+         inline bool getAutoAttackEnabled()  const {return autoAttack.enabled;}
+         inline bool getAutoAttackRepeat()   const {return autoAttack.repeat;}
+         inline int  getAutoAttackInterval() const {return autoAttack.interval;}
+
+         /*
             Sets a Creature's allegiance.
 
             Input:

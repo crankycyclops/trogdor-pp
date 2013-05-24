@@ -168,6 +168,36 @@ namespace core { namespace entity {
                return &(i->second);
             }
          }
+
+         /*
+            Returns const_iterator to creatures.begin(), so something outside
+            can iterate over all Creatures in a Place without modifying them.
+
+            Input:
+               name (string)
+
+            Output:
+               creatures.begin() (CreatureList::const_iterator)
+         */
+         inline CreatureListCIt getCreaturesBegin() const {
+
+            return creatures.begin();
+         }
+
+         /*
+            Returns const_iterator to creatures.end(), so something outside
+            can iterate over all Creatures in a Place without modifying them.
+
+            Input:
+               name (string)
+
+            Output:
+               creatures.end() (CreatureList::const_iterator)
+         */
+         inline CreatureListCIt getCreaturesEnd() const {
+
+            return creatures.end();
+         }
    };
 }}
 

@@ -413,6 +413,24 @@ namespace core { namespace entity {
    typedef list<Creature *> CreatureList;
    typedef list<Object *>   ObjectList;
 
+   typedef PlaceList::const_iterator    PlaceListCIt;
+   typedef RoomList::const_iterator     RoomListCIt;
+   typedef ThingList::const_iterator    ThingListCIt;
+   typedef BeingList::const_iterator    BeingListCIt;
+   typedef ItemList::const_iterator     ItemListCIt;
+   typedef PlayerList::const_iterator   PlayerListCIt;
+   typedef CreatureList::const_iterator CreatureListCIt;
+   typedef ObjectList::const_iterator   ObjectListCIt;
+
+   typedef PlaceList::iterator    PlaceListIt;
+   typedef RoomList::iterator     RoomListIt;
+   typedef ThingList::iterator    ThingListIt;
+   typedef BeingList::iterator    BeingListIt;
+   typedef ItemList::iterator     ItemListIt;
+   typedef PlayerList::iterator   PlayerListIt;
+   typedef CreatureList::iterator CreatureListIt;
+   typedef ObjectList::iterator   ObjectListIt;
+
    typedef set<Place *, EntityAlphaComparator>    PlaceSet;
    typedef set<Room *, EntityAlphaComparator>     RoomSet;
    typedef set<Thing *, EntityAlphaComparator>    ThingSet;
