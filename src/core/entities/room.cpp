@@ -18,7 +18,7 @@ namespace core { namespace entity {
          connectionsArr->setField(i->first, i->second->getName());
       }
 
-      table->setField("connections", connectionsArr);
+      table->setField("connections", *connectionsArr);
 
       return table;
    }

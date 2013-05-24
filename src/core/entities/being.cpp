@@ -81,7 +81,7 @@ namespace core { namespace entity {
       attrs->setField("dexterity", getDexterityFactor());
       attrs->setField("intelligence", getIntelligenceFactor());
 
-      table->setField("attributes", attrs);
+      table->setField("attributes", *attrs);
 
       LuaTable *inv = new LuaTable();
 
@@ -96,11 +96,11 @@ namespace core { namespace entity {
       for (ObjectSet::iterator i = inventory.objects.begin();
       i != inventory.objects.end(); i++) {
          s.str(std::string()), s << ipos++;
-         invItems->setField(s.str(), *i);
+         invItems->setField(s.str(), (*i)->getName());
       }
 
-      inv->setField("items", invItems);
-      table->setField("inventory", inv);
+      inv->setField("items", *invItems);
+      table->setField("inventory", *inv);
 
       return table;
    }

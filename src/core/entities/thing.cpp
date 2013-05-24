@@ -29,7 +29,7 @@ namespace core { namespace entity {
          aliasArr->setField(s.str(), aliases[i]);
       }
 
-      table->setField("aliases", aliasArr);
+      table->setField("aliases", *aliasArr);
 
       return table;
    }
