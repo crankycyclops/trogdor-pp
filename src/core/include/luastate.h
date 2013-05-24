@@ -51,7 +51,7 @@ namespace core {
          int nArgs;
 
          // set everytime we run execute(), and used to retrieve return values
-         int nReturnVals;
+         int nReturnValues;
 
          // Lua state
          lua_State *L;
@@ -80,7 +80,7 @@ namespace core {
          inline LuaState() {
 
             nArgs = 0;
-            nReturnVals = 0;
+            nReturnValues = 0;
             lastErrorMsg = "";
             L = luaL_newstate();
 
@@ -183,17 +183,17 @@ namespace core {
          */
          inline bool getBoolean(int i) const {
 
-            return lua_toboolean(L, i - nReturnVals);
+            return lua_toboolean(L, i - nReturnValues);
          }
 
          inline double getNumber(int i) const {
 
-            return lua_tonumber(L, i - nReturnVals);
+            return lua_tonumber(L, i - nReturnValues);
          }
 
          inline string getString(int i) const {
 
-            return lua_tostring(L, i - nReturnVals);
+            return lua_tostring(L, i - nReturnValues);
          }
 
          /*

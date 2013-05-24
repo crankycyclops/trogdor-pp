@@ -22,6 +22,8 @@ namespace core { namespace event {
             allowAction = (*i)->allowAction();
          }
 
+         (*i)->reset();
+
          if (!(*i)->continueExecution()) {
             break;
          }

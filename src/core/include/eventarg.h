@@ -23,8 +23,7 @@ namespace core { namespace event {
 
    // Allows us to pass a variable number of unknown type arguments to an
    // EventTrigger via EventHandler::event().
-   typedef boost::variant<int, double, bool, string, Entity *, Place *, Thing *,
-      Room *, Being *, Item *, Player *, Creature *, Object *> EventArgument;
+   typedef boost::variant<int, double, bool, string, Entity *> EventArgument;
    typedef vector<EventArgument> EventArgumentList;
 
 }}

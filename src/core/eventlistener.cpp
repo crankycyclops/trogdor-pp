@@ -5,7 +5,7 @@ using namespace std;
 namespace core { namespace event {
 
 
-   void EventListener::add(const char *event, EventTrigger *trigger) {
+   void EventListener::add(string event, EventTrigger *trigger) {
 
       EventTriggerList *triggerList;
 
@@ -25,7 +25,7 @@ namespace core { namespace event {
 
    /***************************************************************************/
 
-   void EventListener::execute(const char *event, EventArgumentList args) {
+   void EventListener::execute(string event, EventArgumentList args) {
 
       EventTriggersMap::iterator i = triggers.find(event);
 

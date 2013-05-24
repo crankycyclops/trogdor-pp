@@ -20,17 +20,17 @@ namespace core { namespace event {
       public:
 
          typedef list<EventTrigger *> EventTriggerList;
-         typedef unordered_map<const char *, EventTriggerList *> EventTriggersMap;
+         typedef unordered_map<string, EventTriggerList *> EventTriggersMap;
 
       private:
 
          // set to false if we wish to suppress the action that originally
          // triggered the event
-         int allowActionFlag;
+         bool allowActionFlag;
 
          // set to false if we wish to stop executing any remaining event
          // triggers
-         int continueExecutionFlag;
+         bool continueExecutionFlag;
 
          // Hash table mapping event name => list of EventTriggers
          EventTriggersMap triggers;
@@ -42,8 +42,7 @@ namespace core { namespace event {
          */
          inline EventListener() {
 
-            allowActionFlag = true;
-            continueExecutionFlag = true;
+            reset();
          }
 
          /*
@@ -63,6 +62,12 @@ namespace core { namespace event {
             }
          }
 
+         inline void reset() {
+
+            allowActionFlag = true;
+            continueExecutionFlag = true;
+         }
+
          /*
             Returns the state of the allowAction and continueExecution flags.
          */
@@ -74,25 +79,25 @@ namespace core { namespace event {
             specified event is triggered.
 
             Input:
-               event name (C string)
+               event name (string)
                Pointer to EventTrigger-derived object
 
             Output:
                (none)
          */
-         void add(const char *event, EventTrigger *trigger);
+         void add(string event, EventTrigger *trigger);
 
          /*
             Executes all EventTriggers for a given event.  
 
             Input:
-               event name (C string)
+               event name (string)
                arguments (EventArgumentList)
 
             Output:
                (none)
          */
-         void execute(const char *event, EventArgumentList args);
+         void execute(string event, EventArgumentList args);
    };
 }}
 

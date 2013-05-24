@@ -47,10 +47,10 @@ namespace core { namespace event {
          }
       }
 
-      L->execute();
+      L->execute(2);
 
-      allowActionFlag = L->getBoolean(0);
-      continueExecutionFlag = L->getBoolean(1);
+      continueExecutionFlag = L->getBoolean(0);
+      allowActionFlag = L->getBoolean(1);
    }
 }}
 

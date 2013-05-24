@@ -133,6 +133,7 @@ namespace core {
       }
 
       nArgs = 0;
+      nReturnValues = nReturnVals;
    }
 }
 
