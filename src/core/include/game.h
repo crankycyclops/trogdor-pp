@@ -95,6 +95,14 @@ namespace core {
          */
          void initActions();
 
+         /*
+            Called by initialize().  This initializes event handling in the game.
+
+            Input: (none)
+            Output: (none)
+         */
+         void initEvents();
+
       public:
 
          /* lock on this to keep data consistent between threads */

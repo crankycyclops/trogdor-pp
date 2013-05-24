@@ -14,6 +14,8 @@
 #include "include/entities/item.h"
 #include "include/entities/object.h"
 
+#include "include/event/triggers/autoattack.h"
+
 
 using namespace std;
 
@@ -118,6 +120,11 @@ namespace core {
       actions->setAction("fight", attack);
    }
 
+   void Game::initEvents() {
+
+      eventListener->add("afterGotoLocation", new AutoAttackEventTrigger());
+   }
+
 
    bool Game::initialize(string gameXML) {
 
@@ -137,6 +144,8 @@ namespace core {
       defaultPlayer = parser->getDefaultPlayer();
       L = parser->getLuaState();
       eventListener = parser->getEventListener();
+
+      initEvents();
 
       return true;
    }
