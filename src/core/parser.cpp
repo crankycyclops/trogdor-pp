@@ -616,6 +616,10 @@ namespace core {
             creature->setCounterAttack(parseCreatureCounterAttack());
          }
 
+         else if (0 == getTagName().compare("autoattack")) {
+            parseCreatureAutoAttack(creature, 4);
+         }
+
          else if (0 == getTagName().compare("inventory")) {
             parseBeingInventory(creature, true);
          }
@@ -864,6 +868,64 @@ namespace core {
       bool counterAttack = parseBool();
       checkClosingTag("counterattack");
       return counterAttack;
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseCreatureAutoAttack(Creature *creature, int depth) {
+
+      stringstream s;
+
+      while (nextTag() && depth == getDepth()) {
+
+         if (0 == getTagName().compare("enabled")) {
+            creature->setAutoAttackEnabled(parseCreatureAutoAttackEnabled());
+         }
+
+         else if (0 == getTagName().compare("interval")) {
+            creature->setAutoAttackInterval(parseCreatureAutoAttackInterval());
+         }
+
+         else if (0 == getTagName().compare("repeat")) {
+            creature->setAutoAttackRepeat(parseCreatureAutoAttackRepeat());
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "creature autoattack section (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("autoattack");
+   }
+
+   /***************************************************************************/
+
+   bool Parser::parseCreatureAutoAttackEnabled() {
+
+      bool enabled = parseBool();
+      checkClosingTag("enabled");
+      return enabled;
+   }
+
+   /***************************************************************************/
+
+   int Parser::parseCreatureAutoAttackInterval() {
+
+      int interval = parseInt();
+      checkClosingTag("interval");
+      return interval;
+   }
+
+   /***************************************************************************/
+
+   bool Parser::parseCreatureAutoAttackRepeat() {
+
+      bool repeat = parseBool();
+      checkClosingTag("repeat");
+      return repeat;
    }
 
    /***************************************************************************/

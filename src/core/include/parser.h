@@ -267,6 +267,52 @@ namespace core {
          bool parseCreatureCounterAttack();
 
          /*
+            Parses auto-attack settings for a Creature.
+
+            Input:
+               Pointer to Creature
+               depth in the XML tree (int)
+
+            Output:
+               (none)
+         */
+         void parseCreatureAutoAttack(Creature *creature, int depth);
+
+         /*
+            Parses whether or not auto-attack is enabled.
+
+            Input:
+               (none)
+
+            Output:
+               boolean
+         */
+         bool parseCreatureAutoAttackEnabled();
+
+         /*
+            Parses auto-attack interval.
+
+            Input:
+               (none)
+
+            Output:
+               number of clock ticks (int)
+         */
+         int parseCreatureAutoAttackInterval();
+
+         /*
+            Parses whether or not auto-attack should repeat as long as both
+            Beings are alive and are in the same room.
+
+            Input:
+               (none)
+
+            Output:
+               boolean
+         */
+         bool parseCreatureAutoAttackRepeat();
+
+         /*
             Parses a Being's inventory settings.
 
             Input:

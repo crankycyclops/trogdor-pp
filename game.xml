@@ -247,6 +247,32 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
               with one of its own.  (optional: default is 1 for true) -->
          <counterattack>1</counterattack>
 
+         <!-- This section is completely optional.  If this section is present,
+              and enabled is set to 1, then the creature will automatically
+              attack players and other creatures when they enter the room.
+              The default setting is for autoattack to be completely disabled. -->
+         <autoattack>
+
+            <!-- determines whether or not autoattack should be enabled for this
+                 creature (default: 0 for false) -->
+            <enabled>1</enabled>
+
+            <!-- how many ticks of the clock (currently seconds) to wait before
+                 the creature makes its first attack, and how many ticks of the
+                 clock should pass between each attack.  (optional: default 5) -->
+            <interval>5</interval>
+
+            <!-- If set to 0 for false, then the creature will only attack once.
+                 If set to 1 for true, then the creature will continue attacking
+                 with interval number of clock ticks between (specified above)
+                 until either one of the creatures or players is dead, or until
+                 the two are no longer in the same room. (optional: default 0) -->
+            <repeat>1</repeat>
+
+         </autoattack>
+
+         
+
          <!-- creature's maximum probability of being hit during combat
               (optional: default is 0.5) -->
          <woundrate>0.35</woundrate>

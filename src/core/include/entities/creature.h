@@ -21,9 +21,20 @@ namespace core { namespace entity {
          static const bool DEFAULT_COUNTER_ATTACK = true;
          static const enum AllegianceType DEFAULT_ALLEGIANCE = NEUTRAL;
 
+         // default auto-attack settings
+         static const bool DEFAULT_AUTO_ATTACK_ENABLED = false;
+         static const bool DEFAULT_AUTO_ATTACK_REPEAT = false;
+         static const int  DEFAULT_AUTO_ATTACK_INTERVAL = 5;
+
       protected:
 
          bool counterAttack; // whether creature will fight back when attacked
+
+         struct {
+            bool enabled;
+            bool interval;
+            bool repeat;
+         } autoAttack;
 
          // whether creature is friendly, neutral or aggressive toward others
          enum AllegianceType allegiance;
@@ -40,6 +51,10 @@ namespace core { namespace entity {
 
             allegiance = DEFAULT_ALLEGIANCE;
             counterAttack = DEFAULT_COUNTER_ATTACK;
+
+            autoAttack.enabled = DEFAULT_AUTO_ATTACK_ENABLED;
+            autoAttack.interval = DEFAULT_AUTO_ATTACK_INTERVAL;
+            autoAttack.repeat = DEFAULT_AUTO_ATTACK_REPEAT;
          }
 
          /*
@@ -115,8 +130,43 @@ namespace core { namespace entity {
                (none)
          */
          inline void setCounterAttack(bool b) {counterAttack = b;}
+
+         /*
+            Sets whether or not auto-attack is enabled.
+
+            Input:
+               bool
+
+            Output:
+               (none)
+         */
+         inline void setAutoAttackEnabled(bool b) {autoAttack.enabled = b;}
+
+         /*
+            Sets auto-attack interval.
+
+            Input:
+               int
+
+            Output:
+               (none)
+         */
+         inline void setAutoAttackInterval(int i) {autoAttack.interval = i;}
+
+         /*
+            Sets whether or not auto-attack should continue indefinitely (until
+            one of the Beings dies, or until one or both leave the Place.)
+
+            Input:
+               bool
+
+            Output:
+               (none)
+         */
+         inline void setAutoAttackRepeat(bool b) {autoAttack.repeat = b;}
    };
 }}
 
 
 #endif
+
