@@ -202,6 +202,20 @@ namespace core { namespace entity {
          }
 
          /*
+            Returns a LuaTable object representing the Being.  Note that each
+            child class should get the value of the parent class's version of
+            this method and then fill that object in further with its own
+            values.
+
+            Input:
+               (none)
+
+            Output:
+               LuaTable object
+         */
+         virtual LuaTable *getLuaTable() const;
+
+         /*
             Returns pointer to a list of all Objects that match the given name
             in the Being's inventory, or a NULL pointer if there are no matches.
 
@@ -233,7 +247,7 @@ namespace core { namespace entity {
             Output:
                int
          */
-         inline int getDamageBareHands() {return damageBareHands;}
+         inline int getDamageBareHands() const {return damageBareHands;}
 
          /*
             Returns whether or not the Being is alive.
@@ -244,7 +258,7 @@ namespace core { namespace entity {
             Output:
                bool
          */
-         inline bool isAlive() {return alive;}
+         inline bool isAlive() const {return alive;}
 
          /*
             Returns the maximum weight of the Being's inventory.
@@ -318,9 +332,9 @@ namespace core { namespace entity {
             Output:
                Attribute value in points (int)
          */
-         inline int getStrength() {return attributes.strength;}
-         inline int getDexterity() {return attributes.dexterity;}
-         inline int getIntelligence() {return attributes.intelligence;}
+         inline int getStrength() const {return attributes.strength;}
+         inline int getDexterity() const {return attributes.dexterity;}
+         inline int getIntelligence() const {return attributes.intelligence;}
 
          /*
             Return the relative factors of each attribute.
@@ -331,17 +345,17 @@ namespace core { namespace entity {
             Ouput:
                Attribute factor (double)
          */
-         inline double getStrengthFactor() {
+         inline double getStrengthFactor() const {
 
             return (double)attributes.strength / (double)attributes.initialTotal;
          }
 
-         inline double getDexterityFactor() {
+         inline double getDexterityFactor() const {
 
             return (double)attributes.dexterity / (double)attributes.initialTotal;
          }
 
-         inline double getIntelligenceFactor() {
+         inline double getIntelligenceFactor() const {
 
             return (double)attributes.intelligence / (double)attributes.initialTotal;
          }

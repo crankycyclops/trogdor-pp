@@ -61,6 +61,52 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
+   LuaTable *Being::getLuaTable() const {
+
+      LuaTable *table = Thing::getLuaTable();
+
+      table->setField("health", health);
+      table->setField("maxhealth", maxHealth);
+      table->setField("alive", alive);
+
+      table->setField("attackable", attackable);
+      table->setField("woundrate", woundRate);
+      table->setField("damagebarehands", damageBareHands);
+
+      LuaTable *attrs = new LuaTable();
+      attrs->setField("strengthraw", attributes.strength);
+      attrs->setField("dexterityraw", attributes.dexterity);
+      attrs->setField("intelligenceraw", attributes.intelligence);
+      attrs->setField("strength", getStrengthFactor());
+      attrs->setField("dexterity", getDexterityFactor());
+      attrs->setField("intelligence", getIntelligenceFactor());
+
+      table->setField("attributes", attrs);
+
+      LuaTable *inv = new LuaTable();
+
+      inv->setField("maxweight", inventory.weight);
+      inv->setField("weight", inventory.currentWeight);
+      inv->setField("itemcount", (int)inventory.count);
+
+      int ipos = 0;
+      stringstream s;
+      LuaTable *invItems = new LuaTable();
+
+      for (ObjectSet::iterator i = inventory.objects.begin();
+      i != inventory.objects.end(); i++) {
+         s.str(std::string()), s << ipos++;
+         invItems->setField(s.str(), *i);
+      }
+
+      inv->setField("items", invItems);
+      table->setField("inventory", inv);
+
+      return table;
+   }
+
+   /***************************************************************************/
+
    bool Being::insertIntoInventory(Object *object, bool considerWeight) {
 
       // make sure the Object will fit
