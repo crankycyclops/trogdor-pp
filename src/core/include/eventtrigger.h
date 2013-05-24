@@ -16,11 +16,11 @@ namespace core { namespace event {
 
          // set to false if we wish to suppress the action that originally
          // triggered the event
-         int allowActionFlag;
+         bool allowActionFlag;
 
          // set to false if we wish to stop executing any remaining event
          // triggers
-         int continueExecutionFlag;
+         bool continueExecutionFlag;
 
       public:
 

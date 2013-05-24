@@ -30,6 +30,11 @@ namespace core {
          L.call("functionName");
          L.pushArgument("this is a string");
          L.execute();
+
+         // examples of retrieving return values (0 based from first to last)
+         // calling these before L.execute() results in undefined behavior
+         double retVal1 = L.getNumber(0); // 1st return value
+         string retVal2 = L.getString(1); // 2nd return value
       }
 
       // handle errors
@@ -44,6 +49,9 @@ namespace core {
 
          // number of function arguments pushed onto the Lua stack
          int nArgs;
+
+         // set everytime we run execute(), and used to retrieve return values
+         int nReturnVals;
 
          // Lua state
          lua_State *L;
@@ -72,6 +80,7 @@ namespace core {
          inline LuaState() {
 
             nArgs = 0;
+            nReturnVals = 0;
             lastErrorMsg = "";
             L = luaL_newstate();
 
@@ -162,6 +171,32 @@ namespace core {
          }
 
          /*
+            Get return values at the specified index.  Calling this before
+            calling execute() results in undefined behavior.
+
+            Input:
+               index (normalized, so that 0 is the index of the first return
+               value, 1 is the index of the next, and so on and so forth...)
+
+            Output:
+               value of the appropriate type
+         */
+         inline bool getBoolean(int i) const {
+
+            return lua_toboolean(L, i - nReturnVals);
+         }
+
+         inline double getNumber(int i) const {
+
+            return lua_tonumber(L, i - nReturnVals);
+         }
+
+         inline string getString(int i) const {
+
+            return lua_tostring(L, i - nReturnVals);
+         }
+
+         /*
             Primes the Lua state by parsing it so that recently added scripts,
             global variables, etc. will be seen by the interpreter.  This gets
             called automatically by loadScriptFromFile() and
@@ -208,7 +243,6 @@ namespace core {
          */
          void execute(int nReturnVals = 0);
    };
-
 }
 
 
