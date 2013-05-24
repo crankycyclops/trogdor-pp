@@ -30,6 +30,20 @@ namespace core { namespace entity {
          }
 
          /*
+            Returns a LuaTable object representing the Object.  Note that each
+            child class should get the value of the parent class's version of
+            this method and then fill that object in further with its own
+            values.
+
+            Input:
+               (none)
+
+            Output:
+               LuaTable object
+         */
+         virtual LuaTable *getLuaTable() const;
+
+         /*
             Returns the Item's weight.
 
             Input:
