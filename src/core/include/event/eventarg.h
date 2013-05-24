@@ -6,15 +6,15 @@
 #include <vector>
 #include <boost/variant.hpp>
 
-#include "entities/entity.h"
-#include "entities/place.h"
-#include "entities/thing.h"
-#include "entities/room.h"
-#include "entities/being.h"
-#include "entities/item.h"
-#include "entities/player.h"
-#include "entities/object.h"
-#include "entities/creature.h"
+#include "../entities/entity.h"
+#include "../entities/place.h"
+#include "../entities/thing.h"
+#include "../entities/room.h"
+#include "../entities/being.h"
+#include "../entities/item.h"
+#include "../entities/player.h"
+#include "../entities/object.h"
+#include "../entities/creature.h"
 
 using namespace std;
 using namespace core::entity;

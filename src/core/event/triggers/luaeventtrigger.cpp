@@ -1,4 +1,4 @@
-#include "include/luaeventtrigger.h"
+#include "../../include/event/triggers/luaeventtrigger.h"
 
 using namespace std;
 

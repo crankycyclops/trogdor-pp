@@ -9,7 +9,7 @@
 #include <pthread.h>
 
 #include "command.h"
-#include "eventhandler.h"
+#include "event/eventhandler.h"
 #include "entitymap.h"
 
 

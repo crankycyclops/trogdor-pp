@@ -2,8 +2,8 @@
 #define LUAEVENTTRIGGER_H
 
 
-#include "luastate.h"
-#include "eventtrigger.h"
+#include "../../luastate.h"
+#include "../eventtrigger.h"
 
 
 using namespace std;

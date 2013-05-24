@@ -1,7 +1,7 @@
 #include "../include/entities/entity.h"
 
 #include "../include/game.h"
-#include "../include/eventlistener.h"
+#include "../include/event/eventlistener.h"
 
 
 using namespace std;

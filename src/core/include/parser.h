@@ -16,7 +16,7 @@
 #include "entitymap.h"
 #include "entities/player.h"
 #include "luastate.h"
-#include "eventlistener.h"
+#include "event/eventlistener.h"
 
 class Game;
 
