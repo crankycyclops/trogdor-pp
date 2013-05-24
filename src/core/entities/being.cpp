@@ -35,30 +35,30 @@ namespace core { namespace entity {
    }
 
    /***************************************************************************/
-/*
+
    void Being::displayShort(Being *observer) {
 
       if (ENTITY_PLAYER == observer->getType()) {
 
          if (!alive) {
 
+            *game->trogout << "You see the corpse of " << getTitle() << '.';
+
             string descDead = msgs.get("descshort_dead");
 
             if (descDead.length() > 0) {
-               *game->trogout << descDead << endl;
+               *game->trogout << ' ' << descDead;
             }
 
-            else {
-               Entity::displayShort(observer);
-            }
+            *game->trogout << endl;
          }
 
          else {
-            Entity::displayShort(observer);
+            Thing::displayShort(observer);
          }
       }
    }
-*/
+
    /***************************************************************************/
 
    bool Being::insertIntoInventory(Object *object, bool considerWeight) {

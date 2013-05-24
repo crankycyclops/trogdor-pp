@@ -86,7 +86,7 @@ namespace core { namespace entity {
             Output:
                (none)
          */
-         //virtual void displayShort(Being *observer);
+         virtual void displayShort(Being *observer);
 
          /*
             Calculates amount of damage (in hit points) that we do when we
