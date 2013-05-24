@@ -49,8 +49,8 @@ namespace core { namespace event {
 
       L->execute();
 
-      // TODO: get return values (have to implement this in LuaState first) and
-      // set allowActionFlag and continueHandlersFlag.
+      allowActionFlag = L->getBoolean(0);
+      continueExecutionFlag = L->getBoolean(1);
    }
 }}
 
