@@ -555,6 +555,7 @@ namespace core {
    void Parser::parseCreature() {
 
       stringstream s;
+      bool counterAttackParsed = false;
 
       Creature *creature = creatures.get(getAttribute("name"));
 
@@ -606,12 +607,13 @@ namespace core {
             creature->setDamageBareHands(parseBeingDamageBareHands());
          }
 
-         else if (0 == getTagName().compare("counterattack")) {
-            creature->setCounterAttack(parseCreatureCounterAttack());
-         }
-
          else if (0 == getTagName().compare("allegiance")) {
             creature->setAllegiance(parseCreatureAllegiance());
+         }
+
+         else if (0 == getTagName().compare("counterattack")) {
+            counterAttackParsed = true;
+            creature->setCounterAttack(parseCreatureCounterAttack());
          }
 
          else if (0 == getTagName().compare("inventory")) {
@@ -641,6 +643,21 @@ namespace core {
                << "creature definition (line "
                << xmlTextReaderGetParserLineNumber(reader) << ")";
             throw s.str();
+         }
+      }
+
+      // verify default counter-attack rules
+      if (!counterAttackParsed) {
+
+         switch (creature->getAllegiance()) {
+
+            case entity::Creature::FRIEND:
+               creature->setCounterAttack(false);
+               break;
+
+            default:
+               creature->setCounterAttack(true);
+               break;
          }
       }
 
