@@ -6,7 +6,7 @@ using namespace std;
 namespace core {
 
 
-   void LuaState::pushTable(LuaTable arg) {
+   void LuaState::pushTable(LuaTable &arg) {
 
       LuaTable::TableValues values = arg.getValues();
 

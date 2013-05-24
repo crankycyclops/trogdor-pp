@@ -65,12 +65,12 @@ namespace core {
             the Lua stack for passing to a function.
 
             Input:
-               LuaTable object
+               Reference to LuaTable object
 
             Output:
                (none)
          */
-         void pushTable(LuaTable arg);
+         void pushTable(LuaTable &arg);
 
       public:
 
@@ -164,7 +164,7 @@ namespace core {
             nArgs++;
          }
 
-         inline void pushArgument(LuaTable arg) {
+         inline void pushArgument(LuaTable &arg) {
 
             nArgs++;
             pushTable(arg);

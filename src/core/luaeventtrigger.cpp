@@ -9,9 +9,7 @@ namespace core { namespace event {
 
       L->call(function);
 
-      // TODO: check the order we push and make sure the order we add args is
-      // the order in which they appear in the Lua argument list
-      for (int i = args.size() - 1; i >= 0; i--) {
+      for (int i = 0; i < args.size(); i++) {
 
          switch (args[i].which()) {
 
@@ -40,7 +38,7 @@ namespace core { namespace event {
                }
 
                else {
-                  L->pushArgument(arg->getLuaTable());
+                  L->pushArgument(*(arg->getLuaTable()));
                }
 
                break;
