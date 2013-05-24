@@ -107,7 +107,7 @@
          <!-- this number, when multiplied by the player's strength factor
               (strength points / total attribute points) and rounded to the
               nearest whole number, represents the amount of damage the player
-              does with his bare hands.  The default is 3. -->
+              does with his bare hands (optional: default is 3) -->
          <damagebarehands>5</damagebarehands>
 
       </default>
@@ -254,7 +254,7 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
          <!-- this number, when multiplied by the creature's strength factor
               (strength points / total attribute points) and rounded to the
               nearest whole number, represents the amount of damage the player
-              does with his bare hands.  The default is 3. -->
+              does with his bare hands (optional: default is 3) -->
          <damagebarehands>10</damagebarehands>
 
          <!-- whether or not creature starts out alive or dead (optional:
