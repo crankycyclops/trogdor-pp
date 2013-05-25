@@ -166,6 +166,18 @@ namespace core {
    }
 
 
+   void Game::insertTimerJob(TimerJob *j) {
+
+      timer->insertJob(j);
+   }
+
+
+   void Game::removeTimerJob(TimerJob *j) {
+
+      timer->removeJob(j);
+   }
+
+
    unsigned long Game::getTime() const {
 
       return timer->getTime();

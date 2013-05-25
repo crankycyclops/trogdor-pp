@@ -22,6 +22,8 @@ namespace core {
    class Timer;     // resolves circular dependency Timer <-> Game
    class Parser;    // resolves circular dependency Parser <-> Game
 
+   class TimerJob;
+
 
    /*
       Each Game object represents a self contained game and contains all
@@ -261,6 +263,12 @@ namespace core {
             Output: boolean true if the game is running and false if it's not.
          */
          inline bool inProgress() const {return inGame;}
+
+         /*
+            Wraps around Timer API.  See timer.h for documentation.
+         */
+         void insertTimerJob(TimerJob *j);
+         void removeTimerJob(TimerJob *j);
 
          /*
             Gets the current game time (in seconds.)  Note that I can't inline

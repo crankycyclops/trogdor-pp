@@ -32,7 +32,7 @@ namespace core { namespace entity {
 
          struct {
             bool enabled;
-            bool interval;
+            int  interval;
             bool repeat;
          } autoAttack;
 

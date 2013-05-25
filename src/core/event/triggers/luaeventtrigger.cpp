@@ -29,6 +29,9 @@ namespace core { namespace event {
                L->pushArgument(boost::get<string>(args[i]));
                break;
 
+            case 4: // we ignore Game *
+               break;
+
             default: // it's some kind of Entity
 
                Entity *arg = boost::get<Entity *>(args[i]);

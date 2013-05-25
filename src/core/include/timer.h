@@ -125,12 +125,21 @@ namespace core {
          void insertJob(TimerJob *job);
 
          /*
-            Removes the job from the timer's work queue.
+            Removes the job from the timer's work queue.  DO NOT call this from
+            inside a TimerJob, as it will deadlock on timerMutex.  Instead, just
+            set the TimerJob's number of executions to 0.  It will be reaped by
+            the timer the next time it's encountered in the queue and will not
+            be executed.
 
             Input: Pointer to TimerJob object to remove
             Output: (none)
          */
-         inline void removeJob(TimerJob *job) {queue.remove(job);}
+         inline void removeJob(TimerJob *job) {
+
+            pthread_mutex_lock(&(game->timerMutex));
+            queue.remove(job);
+            pthread_mutex_unlock(&(game->timerMutex));
+         }
 
          // thread function that bootstraps our timer object and calls tick()
          friend void *doTick(void *timerObj);
@@ -140,7 +149,7 @@ namespace core {
 
    /*
       TimerJob is an abstract class that represents a single job in a timer
-      queue.  Each time the job is executed, main() is called.  This class is
+      queue.  Each time the job is executed, execute() is called.  This class is
       meant to be inherited by a class written to accomplish a specific task.
 
       In a normal workflow, a typical use would be as follows (we'll assume that
@@ -152,7 +161,7 @@ namespace core {
       // because this is a Game * const, not just Game *
       Task *task = new Task(currentGame, 1, 1, 1);
 
-      // registerJob will set the job's id and return it in case you need it later
+      // insertJob will set the job's id and return it in case you need it later
       unsigned long id = timer->insertJob(task);
 
       The job has free reign to change any of its public or protected parameters
@@ -201,7 +210,7 @@ namespace core {
             It should be implemented in another class designed for a specific
             job.
          */
-         virtual void main(TimerJob &job) = 0;
+         virtual void execute(TimerJob &job) = 0;
 
          inline unsigned long getInitTime() const {return initTime;}
          inline int getStartTime() const {return startTime;}

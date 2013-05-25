@@ -162,6 +162,9 @@ namespace core { namespace entity {
       eventArgs.push_back(location);
       eventArgs.push_back(l);
 
+      // this last argument will be ignored by Lua events
+      eventArgs.push_back(game);
+
       game->addEventListener(l->getEventListener());
       game->addEventListener(triggers);
       if (!game->event("beforeGotoLocation", eventArgs)) {

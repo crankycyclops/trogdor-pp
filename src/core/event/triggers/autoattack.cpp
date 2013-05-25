@@ -1,4 +1,5 @@
 #include "../../include/event/triggers/autoattack.h"
+#include "../../include/timer/jobs/autoattack.h"
 
 using namespace std;
 
@@ -7,6 +8,7 @@ namespace core { namespace event {
 
    void AutoAttackEventTrigger::execute(EventArgumentList args) {
 
+      Game  *game  = boost::get<Game *>(args[3]);
       Being *being = static_cast<Being *>(boost::get<Entity *>(args[0]));
       Place *place = static_cast<Place *>(boost::get<Entity *>(args[2]));
 
@@ -15,8 +17,13 @@ namespace core { namespace event {
       i != place->getCreaturesEnd(); i++) {
 
          if ((*i)->getAutoAttackEnabled()) {
-            // TODO
-            cout << "STUB: " << (*i)->getName() << " auto attack commence!" << endl;
+
+            int in = (*i)->getAutoAttackInterval();
+            int e  = (*i)->getAutoAttackRepeat() ? -1 : 1;
+            int s  = (*i)->getAutoAttackInterval();
+
+            AutoAttackTimerJob *j = new AutoAttackTimerJob(game, in, e, s, *i, being);
+            game->insertTimerJob(j);
          }
       }
 

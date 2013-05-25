@@ -54,7 +54,7 @@ namespace core {
 
                // run the job
                pthread_mutex_lock(&(game->timerMutex));
-               (*i)->main(**i);
+               (*i)->execute(**i);
                pthread_mutex_unlock(&(game->timerMutex));
 
                // decrement executions (unless it's -1, which means the job
@@ -68,7 +68,8 @@ namespace core {
          // job is expired, so remove it
          else {
             pthread_mutex_lock(&(game->timerMutex));
-            queue.remove(*i);
+            list<TimerJob *>::iterator iprev = i++;
+            queue.remove(*iprev);
             pthread_mutex_unlock(&(game->timerMutex));
          }
       }
