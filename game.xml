@@ -260,7 +260,7 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
             <!-- how many ticks of the clock (currently seconds) to wait before
                  the creature makes its first attack, and how many ticks of the
                  clock should pass between each attack.  (optional: default 5) -->
-            <interval>5</interval>
+            <interval>3</interval>
 
             <!-- If set to 0 for false, then the creature will only attack once.
                  If set to 1 for true, then the creature will continue attacking
