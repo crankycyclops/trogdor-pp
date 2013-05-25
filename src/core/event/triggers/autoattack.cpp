@@ -12,9 +12,10 @@ namespace core { namespace event {
       Being *being = static_cast<Being *>(boost::get<Entity *>(args[0]));
       Place *place = static_cast<Place *>(boost::get<Entity *>(args[2]));
 
+      entity::CreatureListCItPair creatures = place->getCreatures();
+
       // each Creature that has auto-attack enabled should be setup to attack
-      for (entity::CreatureListCIt i = place->getCreaturesBegin();
-      i != place->getCreaturesEnd(); i++) {
+      for (entity::CreatureListCIt i = creatures.begin; i != creatures.end; i++) {
 
          if ((*i)->getAutoAttackEnabled()) {
 

@@ -296,6 +296,7 @@ namespace core { namespace entity {
          /*
             Returns an iterator which will iterate through all items in the
             Being's inventory.
+            TODO: make this a const_iterator
 
             Input:
                (none)
@@ -311,6 +312,7 @@ namespace core { namespace entity {
          /*
             Returns whether or not we've iterated past the end of our set of
             items in the Player's inventory.
+            // TODO: use struct to bundle begin and end instead
 
             Input:
                Current iterator

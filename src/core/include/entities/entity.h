@@ -422,6 +422,46 @@ namespace core { namespace entity {
    typedef CreatureList::const_iterator CreatureListCIt;
    typedef ObjectList::const_iterator   ObjectListCIt;
 
+   typedef struct {
+      PlaceListCIt begin;
+      PlaceListCIt end;
+   } PlaceListCItPair;
+
+   typedef struct {
+      RoomListCIt begin;
+      RoomListCIt end;
+   } RoomListCItPair;
+
+   typedef struct {
+      ThingListCIt begin;
+      ThingListCIt end;
+   } ThingListCItPair;
+
+   typedef struct {
+      BeingListCIt begin;
+      BeingListCIt end;
+   } BeingListCItPair;
+
+   typedef struct {
+      ItemListCIt begin;
+      ItemListCIt end;
+   } ItemListCItPair;
+
+   typedef struct {
+      PlayerListCIt begin;
+      PlayerListCIt end;
+   } PlayerListCItPair;
+
+   typedef struct {
+      CreatureListCIt begin;
+      CreatureListCIt end;
+   } CreatureListCItPair;
+
+   typedef struct {
+      ObjectListCIt begin;
+      ObjectListCIt end;
+   } ObjectListCItPair;
+
    typedef PlaceList::iterator    PlaceListIt;
    typedef RoomList::iterator     RoomListIt;
    typedef ThingList::iterator    ThingListIt;
