@@ -1,7 +1,7 @@
 #include "include/game.h"
 #include "include/actionmap.h"
 #include "include/actions.h"
-#include "include/timer.h"
+#include "include/timer/timer.h"
 #include "include/parser.h"
 
 #include "include/entities/entity.h"

@@ -2,7 +2,7 @@
 #define AUTOATTACKTIMERJOB_H
 
 
-#include "../../timer.h"
+#include "../timer.h"
 
 
 using namespace std;
