@@ -137,12 +137,9 @@ namespace core {
          }
 
          // also consider matching items in the room, if there are any
-         ThingList *roomItems = location->getThingsByName(object);
-         if (0 != roomItems) {
-            for (ThingList::iterator i = roomItems->begin(); i != roomItems->end();
-            i++) {
-               items.push_front(*i);
-            }
+         ThingListCItPair roomItems = location->getThingsByName(object);
+         for (ThingListCIt i = roomItems.begin; i != roomItems.end; i++) {
+            items.push_front(*i);
          }
 
          if (0 == items.size()) {
@@ -181,9 +178,9 @@ namespace core {
    void TakeAction::execute(Player *player, Command *command, Game *game) {
 
       Place     *location  = player->getLocation();
-      ThingList *roomItems = location->getThingsByName(command->getDirectObject());
+      ThingListCItPair roomItems = location->getThingsByName(command->getDirectObject());
 
-      if (0 == roomItems || 0 == roomItems->size()) {
+      if (roomItems.begin == roomItems.end) {
          *game->trogout << "There is no " << command->getDirectObject()
             << " here!" << endl;
          return;
@@ -191,7 +188,8 @@ namespace core {
 
       try {
 
-         Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(*roomItems,
+         Thing *thing =
+            Entity::clarifyEntity2<ThingListCItPair, ThingListCIt, Thing *>(roomItems,
             game->trogin, game->trogout);
 
          if (ENTITY_OBJECT != thing->getType()) {

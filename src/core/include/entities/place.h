@@ -124,26 +124,24 @@ namespace core { namespace entity {
          void removeThing(Thing *thing);
 
          /*
-            Returns pointer to a list of all Things that match the given name,
-            or a NULL pointer if there are no matches.
+            Returns iterators over a list of all Things that match the given
+            name.  If there are no matches, iterators.begin == iterators.end.
 
             Input:
                name (string)
 
             Output:
-               ThingList * (NULL if no matches)
+               begin and end iterators over list of Things (ThingListCItPair)
          */
-         inline ThingList *getThingsByName(string name) {
+         inline ThingListCItPair getThingsByName(string name) const {
 
-            ThingsByNameMap::iterator i = thingsByName.find(name);
+            ThingListCItPair things;
+            ThingsByNameMap::const_iterator i = thingsByName.find(name);
 
-            if (i == thingsByName.end()) {
-               return 0;
-            }
+            things.begin = i->second.begin();
+            things.end   = i->second.end();
 
-            else {
-               return &(i->second);
-            }
+            return things;
          }
 
          /*

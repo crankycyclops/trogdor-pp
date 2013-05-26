@@ -593,18 +593,28 @@ namespace core { namespace entity {
 
          *trogout << "Do you mean the ";
 
-         for (i = items.begin; i != items.end; i++) {
+         // This loop is a little nasty.  The logic was A LOT nicer when I was
+         // using a list and could get its size, but I had to hack and clobber
+         // the existing loop to make it work with bi-directional iterators
+         // where i don't know the number of elements.  I apologize in advance
+         // to whoever is forced to read it...
+         for (i = items.begin; i != items.end; ) {
 
-            *trogout << (*i)->getName();
-
-            // temporary lookahead on a bi-directional const_iterator
+            *trogout << (*i)->getName();            
             i++;
 
+            // hackety hack
             if (i == items.end) {
-               *trogout << " or the ";
+               break;
             }
 
-            // i is decremented again here, inside the if condition
+            // temporary lookahead on a bi-directional const_iterator
+            else if (++i == items.end) {
+               *trogout << " or the ";
+               i--;
+            }
+
+            // pre-decrement to undo temporary lookahead
             else if (--i != items.begin) {
                *trogout << ", ";
             }
