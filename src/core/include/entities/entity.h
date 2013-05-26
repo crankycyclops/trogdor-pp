@@ -508,6 +508,20 @@ namespace core { namespace entity {
    typedef set<Creature *, EntityAlphaComparator> CreatureSet;
    typedef set<Object *, EntityAlphaComparator>   ObjectSet;
 
+   typedef PlaceSet::const_iterator    PlaceSetCIt;
+   typedef RoomSet::const_iterator     RoomSetCIt;
+   typedef ThingSet::const_iterator    ThingSetCIt;
+   typedef BeingSet::const_iterator    BeingSetCIt;
+   typedef ItemSet::const_iterator     ItemSetCIt;
+   typedef PlayerSet::const_iterator   PlayerSetCIt;
+   typedef CreatureSet::const_iterator CreatureSetCIt;
+   typedef ObjectSet::const_iterator   ObjectSetCIt;
+
+   typedef struct {
+      ObjectSetCIt begin;
+      ObjectSetCIt end;
+   } ObjectSetCItPair;
+
    typedef unordered_map<string, ThingList>    ThingsByNameMap;
    typedef unordered_map<string, BeingList>    BeingsByNameMap;
    typedef unordered_map<string, ItemList>     ItemsByNameMap;

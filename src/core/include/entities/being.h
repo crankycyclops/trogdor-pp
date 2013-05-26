@@ -294,35 +294,23 @@ namespace core { namespace entity {
          inline unsigned const getInventoryCount() const {return inventory.count;}
 
          /*
-            Returns an iterator which will iterate through all items in the
-            Being's inventory.
-            TODO: make this a const_iterator
+            Returns pair of const_iterators over the Objects in the Being's
+            inventory.
 
             Input:
                (none)
 
             Output:
-               ObjectSet::const_iterator
+               inventory.objects.begin() and end() (ObjectSetCItPair)
          */
-         inline ObjectSet::iterator getInventoryIterator() const {
+         inline ObjectSetCItPair getInventoryObjects() const {
 
-            return inventory.objects.begin();
-         }
+            ObjectSetCItPair objects;
 
-         /*
-            Returns whether or not we've iterated past the end of our set of
-            items in the Player's inventory.
-            // TODO: use struct to bundle begin and end instead
+            objects.begin = inventory.objects.begin();
+            objects.end   = inventory.objects.end();
 
-            Input:
-               Current iterator
-
-            Output:
-               true if we've reached the end and false if not
-         */
-         inline bool isInventoryEnd(ObjectSet::iterator i) const {
-
-            return (i == inventory.objects.end());
+            return objects;
          }
 
          /*

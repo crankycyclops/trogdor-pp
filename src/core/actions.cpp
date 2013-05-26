@@ -59,10 +59,12 @@ namespace core {
 
       else {
 
+         ObjectSetCItPair invItems = player->getInventoryObjects();
+
          *game->trogout << "Items in your inventory:" << endl << endl;
 
-         for (ObjectSet::iterator i = player->getInventoryIterator();
-         !player->isInventoryEnd(i); i++) {
+         for (ObjectSet::const_iterator i = invItems.begin;
+         i != invItems.end; i++) {
 
             *game->trogout << (*i)->getTitle();
 
