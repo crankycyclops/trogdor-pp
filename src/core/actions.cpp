@@ -425,9 +425,9 @@ namespace core {
    void AttackAction::execute(Player *player, Command *command, Game *game) {
 
       Place *location = player->getLocation();
-      BeingList *beings = location->getBeingsByName(command->getDirectObject());
+      BeingListCItPair beings = location->getBeingsByName(command->getDirectObject());
 
-      if (0 == beings || 0 == beings->size()) {
+      if (beings.begin == beings.end) {
          *game->trogout << "There is no " << command->getDirectObject()
             << " here!" << endl;
          return;
@@ -438,7 +438,8 @@ namespace core {
          string weaponName = command->getIndirectObject();
          Object *weapon = 0;
 
-         Being *defender = Entity::clarifyEntity<BeingList, Being *>(*beings,
+         Being *defender =
+            Entity::clarifyEntity2<BeingListCItPair, BeingListCIt, Being *>(beings,
             game->trogin, game->trogout);
 
          if (weaponName.length() > 0) {

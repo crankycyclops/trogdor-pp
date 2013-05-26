@@ -147,26 +147,24 @@ namespace core { namespace entity {
          }
 
          /*
-            Returns pointer to a list of all Beings that match the given name,
-            or a NULL pointer if there are no matches.
+            Returns iterators over a list of all Beings that match the given
+            name.  If there are no matches, iterators.begin == iterators.end.
 
             Input:
                name (string)
 
             Output:
-               BeingList * (NULL if no matches)
+               begin and end iterators over list of Beings (BeingListCItPair)
          */
-         inline BeingList *getBeingsByName(string name) {
+         inline BeingListCItPair getBeingsByName(string name) const {
 
-            BeingsByNameMap::iterator i = beingsByName.find(name);
+            BeingListCItPair beings;
+            BeingsByNameMap::const_iterator i = beingsByName.find(name);
 
-            if (i == beingsByName.end()) {
-               return 0;
-            }
+            beings.begin = i->second.begin();
+            beings.end   = i->second.end();
 
-            else {
-               return &(i->second);
-            }
+            return beings;
          }
 
          /*

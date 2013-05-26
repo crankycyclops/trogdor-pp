@@ -388,6 +388,34 @@ namespace core { namespace entity {
          template <typename ListType, typename ResultType>
          static ResultType clarifyEntity(ListType items, istream *trogin,
             ostream *trogout);
+
+         /*
+            Static method that takes as input iterators over a list of Entities
+            that match a given name or alias, asks the Player for clarification
+            if there's more than one and returns the chosen Entity.
+
+            Template Arguments:
+               CItStruct  -- struct containing begin and end iterators (one of
+                             ThingListCItPair, etc.)
+               CItType    -- constant iterator type (one of ThingListCIt, etc.)
+               ResultType -- one of Entity, Thing, Being, etc.
+
+            Input:
+               Iterators over entities to choose from
+               Input stream
+               Output stream
+
+            Output:
+               The chosen entity
+
+            Exceptions:
+               If the user types a name that isn't presented as a choice, the
+               name the user provided is thrown as an exception.
+         */
+         // TODO: rename to clarifyEntity and remove old function above
+         template <typename CItStruct, typename CItType, typename ResultType>
+         static ResultType clarifyEntity2(CItStruct items, istream *trogin,
+            ostream *trogout);
    };
 
    /***************************************************************************/
@@ -489,7 +517,7 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
-   // static method
+   // static method of Entity
    template <typename ListType, typename ResultType>
    ResultType Entity::clarifyEntity(ListType items, istream *trogin,
    ostream *trogout) {
@@ -529,6 +557,65 @@ namespace core { namespace entity {
          getline(*trogin, answer);
 
          for (typename ListType::iterator i = items.begin(); i != items.end(); i++) {
+            if (0 == answer.compare((*i)->getName())) {
+               return *i;
+            }
+         }
+
+         // user typed a name that wasn't in the list
+         throw answer;
+      }
+   }
+
+   /***************************************************************************/
+
+   // TODO: remove original function and rename this one when migration is done
+   // static method of Entity
+   template <typename CItStruct, typename CItType, typename ResultType>
+   ResultType Entity::clarifyEntity2(CItStruct items, istream *trogin,
+   ostream *trogout) {
+
+      CItType i = items.begin;
+
+      if (i == items.end) {
+         return 0;
+      }
+
+      // pre-increment for looking ahead by one
+      else if (++i == items.end) {
+         return *(--i);
+      }
+
+      else {
+
+         // undo lookahead from above
+         i--;
+
+         *trogout << "Do you mean the ";
+
+         for (i = items.begin; i != items.end; i++) {
+
+            *trogout << (*i)->getName();
+
+            // temporary lookahead on a bi-directional const_iterator
+            i++;
+
+            if (i == items.end) {
+               *trogout << " or the ";
+            }
+
+            // i is decremented again here, inside the if condition
+            else if (--i != items.begin) {
+               *trogout << ", ";
+            }
+         }
+
+         *trogout << "? \n\n> ";
+
+         string answer;
+         getline(*trogin, answer);
+
+         for (i = items.begin; i != items.end; i++) {
             if (0 == answer.compare((*i)->getName())) {
                return *i;
             }
