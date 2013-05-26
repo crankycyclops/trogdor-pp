@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include <cstdlib>
 
 #include "include/actions.h"
 
@@ -28,6 +29,40 @@ namespace core {
    void QuitAction::execute(Player *player, Command *command, Game *game) {
 
       game->removePlayer(player->getName());
+   }
+
+/******************************************************************************/
+
+   /*
+      Methods for the Cuss action.
+   */
+
+   bool CussAction::checkSyntax(Command *command) {
+
+      return true;
+   }
+
+
+   void CussAction::execute(Player *player, Command *command, Game *game) {
+
+      static const char *responses[] = {
+         "Such language!",
+         "You, sir, have a foul mouth!",
+         "Well, ?&*@! to you too!",
+         "Do you kiss your mother with that mouth?",
+         "Classy."
+      };
+
+      static int arrSize = sizeof(responses) / sizeof (const char *);
+
+      int i = (rand() % arrSize) - 1;
+
+      if (i < 0) {
+         i = 0;
+      }
+
+      srand(time(NULL));
+      *game->trogout << responses[i] << endl;
    }
 
 /******************************************************************************/

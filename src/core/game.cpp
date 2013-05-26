@@ -73,6 +73,15 @@ namespace core {
       QuitAction *quit = new QuitAction;
       actions->setAction("quit", quit);
 
+      CussAction *cuss = new CussAction;
+      actions->setAction("fuck", cuss);
+      actions->setAction("shit", cuss);
+      actions->setAction("bitch", cuss);
+      actions->setAction("damn", cuss);
+      actions->setAction("damnit", cuss);
+      actions->setAction("asshole", cuss);
+      actions->setAction("asshat", cuss);
+
       InventoryAction *inv = new InventoryAction;
       actions->setAction("inv", inv);
       actions->setAction("inventory", inv);

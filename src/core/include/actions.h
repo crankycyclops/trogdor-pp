@@ -29,6 +29,20 @@ namespace core {
 /******************************************************************************/
 
    /*
+      The Cuss action responds to players when they cuss ;)
+   */
+   class CussAction: public Action {
+
+      public:
+
+         virtual bool checkSyntax(Command *command);
+
+         virtual void execute(Player *player, Command *command, Game *game);
+   };
+
+/******************************************************************************/
+
+   /*
       The Inventory action lists the items in a Player's inventory.
    */
    class InventoryAction: public Action {
