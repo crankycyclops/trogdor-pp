@@ -313,10 +313,25 @@ namespace core {
          bool parseCreatureAutoAttackRepeat();
 
          /*
+            Parses a Being's respawn settings.
+
+            Input:
+               Pointer to the being whose respawn settings are being configured
+               Depth in the XML tree
+
+            Output:
+               (none)
+         */
+         void parseBeingRespawn(entity::Being *being, int depth);
+         bool parseBeingRespawnEnabled();
+         int parseBeingRespawnInterval();
+         int parseBeingRespawnLives();
+
+         /*
             Parses a Being's inventory settings.
 
             Input:
-               Reference to the being whose inventory is being configured
+               Pointer to the being whose inventory is being configured
                Whether or not to allow a set of objects initialized in game.xml
 
             Output:

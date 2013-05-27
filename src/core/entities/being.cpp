@@ -479,4 +479,12 @@ namespace core { namespace entity {
       game->addEventListener(triggers);
       game->event("afterDie", eventArgs);
    }
+
+   /***************************************************************************/
+
+   void Being::respawn() {
+
+      cout << name << ": Respawn stub!" << endl;
+   }
 }}
+

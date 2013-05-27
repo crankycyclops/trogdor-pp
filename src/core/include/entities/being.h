@@ -24,6 +24,10 @@ namespace core { namespace entity {
          static const int DEFAULT_ATTRIBUTE_DEXTERITY    = 10;
          static const int DEFAULT_ATTRIBUTE_INTELLIGENCE = 10;
 
+         static const bool DEFAULT_RESPAWN_ENABLED = false;
+         static const int DEFAULT_RESPAWN_INTERVAL = 0;
+         static const int DEFAULT_RESPAWN_LIVES = -1;
+
          static const int DEFAULT_INVENTORY_WEIGHT = 0;
 
          static const bool DEFAULT_ATTACKABLE = true;
@@ -47,6 +51,12 @@ namespace core { namespace entity {
          bool attackable;       // whether or not being can be attacked
          double woundRate;      // max probability of being hit when attacked
          int damageBareHands;   // damage done during combat without a weapon
+
+         struct {
+            bool enabled;
+            int  interval;
+            int  lives;
+         } respawnSettings;
 
          struct {
             int strength;
@@ -162,6 +172,10 @@ namespace core { namespace entity {
             attackable = DEFAULT_ATTACKABLE;
             damageBareHands = DEFAULT_DAMAGE_BARE_HANDS;
 
+            respawnSettings.enabled = DEFAULT_RESPAWN_ENABLED;
+            respawnSettings.interval = DEFAULT_RESPAWN_INTERVAL;
+            respawnSettings.lives = DEFAULT_RESPAWN_LIVES;
+
             attributes.strength = DEFAULT_ATTRIBUTE_STRENGTH;
             attributes.dexterity = DEFAULT_ATTRIBUTE_DEXTERITY;
             attributes.intelligence = DEFAULT_ATTRIBUTE_INTELLIGENCE;
@@ -190,6 +204,10 @@ namespace core { namespace entity {
             attackable = b.attackable;
             woundRate = b.woundRate;
             damageBareHands = b.damageBareHands;
+
+            respawnSettings.enabled = b.respawnSettings.enabled;
+            respawnSettings.interval = b.respawnSettings.interval;
+            respawnSettings.lives = b.respawnSettings.lives;
 
             attributes.strength = b.attributes.strength;
             attributes.dexterity = b.attributes.dexterity;
@@ -264,6 +282,41 @@ namespace core { namespace entity {
                bool
          */
          inline bool isAlive() const {return alive;}
+
+         /*
+            Indicates whether or not respawning is enabled for this Being.
+
+            Input:
+               (none)
+
+            Output:
+               true or false (bool)
+         */
+         inline bool getRespawnEnabled() const {return respawnSettings.enabled;}
+
+         /*
+            Returns the number of clock ticks that should pass before Being
+            respawns after dying.
+
+            Input:
+               (none)
+
+            Output:
+               number of clock ticks (int)
+         */
+         inline int getRespawnInterval() const {return respawnSettings.interval;}
+
+         /*
+            Returns the number of times a Being can respawn before dying
+            permanently.
+
+            Input:
+               (none)
+
+            Output:
+               number of lives left; -1 indicates unlimited lives (int)
+         */
+         inline int getRespawnLives() const {return respawnSettings.lives;}
 
          /*
             Returns the maximum weight of the Being's inventory.
@@ -427,6 +480,36 @@ namespace core { namespace entity {
          inline void setDamageBareHands(int d) {damageBareHands = d;}
 
          /*
+            Setters for respawn settings.
+
+            Input:
+               values (bool or int)
+
+            Output:
+               (none)
+         */
+         inline void setRespawnEnabled(bool b) {respawnSettings.enabled = b;}
+         inline void setRespawnInterval(int i) {respawnSettings.interval = i;}
+         inline void setRespawnLives(int i) {respawnSettings.lives = i;}
+
+         /*
+            Increments the Being's number of lives.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline void incRespawnLives() {
+
+            // only increment number of lives if not unlimited
+            if (respawnSettings.lives > -1) {
+               respawnSettings.lives++;
+            }
+         }
+
+         /*
             Sets the Being's attributes.
 
             Input:
@@ -588,7 +671,7 @@ namespace core { namespace entity {
          void removeHealth(int down, bool allowDeath = true);
 
          /*
-            Make the Being die.  Triggers an event.
+            Make the Being die.  Triggers beforeDie and afterDie events.
 
             Input:
                (none)
@@ -597,6 +680,18 @@ namespace core { namespace entity {
                (none)
          */
          void die();
+
+         /*
+            The opposite of die :)  Triggers beforeRespawn and afterRespawn
+            events.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void respawn();
    };
 }}
 

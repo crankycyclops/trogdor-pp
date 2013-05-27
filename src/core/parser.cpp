@@ -488,6 +488,10 @@ namespace core {
             parseBeingInventory(defaultPlayer, false);
          }
 
+         else if (0 == getTagName().compare("respawn")) {
+            Parser::parseBeingRespawn(defaultPlayer, 4);
+         }
+
          else if (0 == getTagName().compare("attributes")) {
             parseBeingAttributes(defaultPlayer);
          }
@@ -614,6 +618,10 @@ namespace core {
          else if (0 == getTagName().compare("counterattack")) {
             counterAttackParsed = true;
             creature->setCounterAttack(parseCreatureCounterAttack());
+         }
+
+         else if (0 == getTagName().compare("respawn")) {
+            Parser::parseBeingRespawn(creature, 4);
          }
 
          else if (0 == getTagName().compare("autoattack")) {
@@ -956,6 +964,64 @@ namespace core {
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
       }
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseBeingRespawn(Being *being, int depth) {
+
+      stringstream s;
+
+      while (nextTag() && depth == getDepth()) {
+
+         if (0 == getTagName().compare("enabled")) {
+            being->setRespawnEnabled(parseBeingRespawnEnabled());
+         }
+
+         else if (0 == getTagName().compare("interval")) {
+            being->setRespawnInterval(parseBeingRespawnInterval());
+         }
+
+         else if (0 == getTagName().compare("lives")) {
+            being->setRespawnLives(parseBeingRespawnLives());
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "being respawn section (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("respawn");
+   }
+
+   /***************************************************************************/
+
+   bool Parser::parseBeingRespawnEnabled() {
+
+      bool enabled = parseBool();
+      checkClosingTag("enabled");
+      return enabled;
+   }
+
+   /***************************************************************************/
+
+   int Parser::parseBeingRespawnInterval() {
+
+      int interval = parseInt();
+      checkClosingTag("interval");
+      return interval;
+   }
+
+   /***************************************************************************/
+
+   int Parser::parseBeingRespawnLives() {
+
+      int lives = parseInt();
+      checkClosingTag("lives");
+      return lives;
    }
 
    /***************************************************************************/

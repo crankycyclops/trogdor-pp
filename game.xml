@@ -85,6 +85,27 @@
             <intelligence>10</intelligence>
          </attributes>
 
+         <!-- settings governing player's ability to respawn when killed.  This
+              section is optional, and if it doesn't exist, default behavior is
+              for respawn to be disabled. -->
+         <respawn>
+
+            <!-- 0 = false and 1 = true.  If enabled, the player will come back
+                 to life after being killed.  Default is 0 for false.  -->
+            <enabled>1</enabled>
+
+            <!-- Number of clock ticks (seconds) to wait before player respawns.
+                 If set to 0, player will respawn immediately. (optional:
+                 default = 0.) -->
+            <interval>0</interval>
+
+            <!-- Number of times the player can respawn before dying
+                 permanently.  If set to -1, player can respawn an unlimited
+                 number of times.  (optional: default = -1.) -->
+            <lives>-1</lives>
+
+         </respawn>
+
          <!-- whether or not player starts out alive or dead (optional:
               default is 1 for alive) -->
          <alive>1</alive>
@@ -229,6 +250,10 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
    <!-- Creatures -->
    <creatures>
 
+      <!-- NOTE: a respawn section can also go here if you want your creature
+           to respawn.  This section is identical to the one in the default
+           player configuration, so you would do well to look there for an
+           example ;) -->
       <creature name="trogdor">
 
          <title>Trogdor the Burninator</title>
