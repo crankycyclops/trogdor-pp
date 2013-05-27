@@ -365,31 +365,6 @@ namespace core { namespace entity {
          virtual void glance(Being *observer, bool triggerEvents = true);
 
          /*
-            Static method that takes as input a list of Entities that match a
-            given word, asks the Player for clarification and returns the chosen
-            Entity.
-
-            Template Arguments:
-               ListType   -- one of EntityList, ThingList, BeingList, etc.
-               ResultType -- one of Entity, Thing, Being, etc.
-
-            Input:
-               List of objects to choose from
-               Input stream
-               Output stream
-
-            Output:
-               The chosen object
-
-            Exceptions:
-               If the user types a name that isn't presented as a choice, the
-               name the user provided is thrown as an exception.
-         */
-         template <typename ListType, typename ResultType>
-         static ResultType clarifyEntity(ListType items, istream *trogin,
-            ostream *trogout);
-
-         /*
             Static method that takes as input iterators over a list of Entities
             that match a given name or alias, asks the Player for clarification
             if there's more than one and returns the chosen Entity.
@@ -412,9 +387,8 @@ namespace core { namespace entity {
                If the user types a name that isn't presented as a choice, the
                name the user provided is thrown as an exception.
          */
-         // TODO: rename to clarifyEntity and remove old function above
          template <typename CItStruct, typename CItType, typename ResultType>
-         static ResultType clarifyEntity2(CItStruct items, istream *trogin,
+         static ResultType clarifyEntity(CItStruct items, istream *trogin,
             ostream *trogout);
    };
 
@@ -544,62 +518,8 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
-   // static method of Entity
-   template <typename ListType, typename ResultType>
-   ResultType Entity::clarifyEntity(ListType items, istream *trogin,
-   ostream *trogout) {
-
-      int count = items.size();
-
-      if (0 == count) {
-         return 0;
-      }
-
-      else if (1 == count) {
-         return items.front();
-      }
-
-      else {
-
-         *trogout << "Do you mean the ";
-
-         int c = 0;
-         for (typename ListType::iterator i = items.begin(); i != items.end();
-         i++, c++) {
-
-            *trogout << (*i)->getName();
-
-            if (c < items.size() - 2) {
-               *trogout << ", ";
-            }
-
-            else if (c < items.size() - 1) {
-               *trogout << " or the ";
-            }
-         }
-
-         *trogout << "? \n\n> ";
-
-         string answer;
-         getline(*trogin, answer);
-
-         for (typename ListType::iterator i = items.begin(); i != items.end(); i++) {
-            if (0 == answer.compare((*i)->getName())) {
-               return *i;
-            }
-         }
-
-         // user typed a name that wasn't in the list
-         throw answer;
-      }
-   }
-
-   /***************************************************************************/
-
-   // TODO: remove original function and rename this one when migration is done
-   // static method of Entity
    template <typename CItStruct, typename CItType, typename ResultType>
-   ResultType Entity::clarifyEntity2(CItStruct items, istream *trogin,
+   ResultType Entity::clarifyEntity(CItStruct items, istream *trogin,
    ostream *trogout) {
 
       CItType i = items.begin;

@@ -187,7 +187,7 @@ namespace core {
 
          try {
             Thing *thing =
-               Entity::clarifyEntity2<ThingListCItPair, ThingListCIt, Thing *>(itemsIt,
+               Entity::clarifyEntity<ThingListCItPair, ThingListCIt, Thing *>(itemsIt,
                game->trogin, game->trogout);
             thing->observe(player, true, true);
          }
@@ -228,7 +228,7 @@ namespace core {
       try {
 
          Thing *thing =
-            Entity::clarifyEntity2<ThingListCItPair, ThingListCIt, Thing *>(roomItems,
+            Entity::clarifyEntity<ThingListCItPair, ThingListCIt, Thing *>(roomItems,
             game->trogin, game->trogout);
 
          if (ENTITY_OBJECT != thing->getType()) {
@@ -313,7 +313,7 @@ namespace core {
       try {
 
          Object *object =
-            Entity::clarifyEntity2<ObjectListCItPair, ObjectListCIt, Object *>(invItems,
+            Entity::clarifyEntity<ObjectListCItPair, ObjectListCIt, Object *>(invItems,
             game->trogin, game->trogout);
 
          try {
@@ -479,7 +479,7 @@ namespace core {
          Object *weapon = 0;
 
          Being *defender =
-            Entity::clarifyEntity2<BeingListCItPair, BeingListCIt, Being *>(beings,
+            Entity::clarifyEntity<BeingListCItPair, BeingListCIt, Being *>(beings,
             game->trogin, game->trogout);
 
          if (weaponName.length() > 0) {
@@ -494,7 +494,7 @@ namespace core {
             try {
 
                weapon =
-                  Entity::clarifyEntity2<ObjectListCItPair, ObjectListCIt, Object *>(items,
+                  Entity::clarifyEntity<ObjectListCItPair, ObjectListCIt, Object *>(items,
                   game->trogin, game->trogout);
 
                // TODO: this check should be made inside Being (we'd have an
