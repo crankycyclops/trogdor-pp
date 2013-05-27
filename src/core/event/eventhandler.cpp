@@ -7,7 +7,7 @@ namespace core { namespace event {
 
 
    bool EventHandler::event(const char *event, EventArgumentList &args) {
-cout << sessions.size() << endl;
+
       EventListenerList *listeners = sessions.back();
 
       // false if we should not allow the action that triggered the event to
