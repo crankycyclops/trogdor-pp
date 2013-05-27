@@ -242,6 +242,7 @@ namespace core { namespace entity {
       EventArgumentList eventArgs;
 
       if (doEvents) {
+
          eventArgs.push_back(this);
          eventArgs.push_back(object);
 
