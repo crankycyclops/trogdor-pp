@@ -8,9 +8,9 @@ namespace core { namespace event {
 
    void AutoAttackEventTrigger::execute(EventArgumentList args) {
 
-      Game  *game  = boost::get<Game *>(args[3]);
-      Being *being = static_cast<Being *>(boost::get<Entity *>(args[0]));
-      Place *place = static_cast<Place *>(boost::get<Entity *>(args[2]));
+      Game  *game  = boost::get<Game *>(args[0]);
+      Being *being = static_cast<Being *>(boost::get<Entity *>(args[1]));
+      Place *place = static_cast<Place *>(boost::get<Entity *>(args[3]));
 
       entity::CreatureListCItPair creatures = place->getCreatures();
 

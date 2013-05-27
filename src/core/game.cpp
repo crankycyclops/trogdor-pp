@@ -15,6 +15,7 @@
 #include "include/entities/object.h"
 
 #include "include/event/triggers/autoattack.h"
+#include "include/event/triggers/deathdrop.h"
 
 
 using namespace std;
@@ -132,6 +133,7 @@ namespace core {
    void Game::initEvents() {
 
       eventListener->add("afterGotoLocation", new AutoAttackEventTrigger());
+      eventListener->add("afterDie", new DeathDropEventTrigger());
    }
 
 

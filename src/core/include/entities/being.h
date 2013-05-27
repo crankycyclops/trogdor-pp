@@ -530,6 +530,7 @@ namespace core { namespace entity {
 
             Input:
                Object to drop
+               Whether or not to check for the dropping of "undroppable objects"
 
             Output:
                (none)
@@ -538,7 +539,7 @@ namespace core { namespace entity {
                Throws the following errors:
                   DROP_UNDROPPABLE - attempt to drop an undroppable object
          */
-         void drop(Object *object);
+         void drop(Object *object, bool checkUndroppable = true);
 
          /*
             Initiate an attack against defender, possibly using an optional

@@ -158,12 +158,12 @@ namespace core { namespace entity {
 
       EventArgumentList eventArgs;
 
+      // this argument will be ignored by Lua events
+      eventArgs.push_back(game);
+
       eventArgs.push_back(this);
       eventArgs.push_back(location);
       eventArgs.push_back(l);
-
-      // this last argument will be ignored by Lua events
-      eventArgs.push_back(game);
 
       game->addEventListener(l->getEventListener());
       game->addEventListener(triggers);
@@ -219,7 +219,7 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
-   void Being::drop(Object *object) {
+   void Being::drop(Object *object, bool checkUndroppable) {
 
       EventArgumentList eventArgs;
 
@@ -232,7 +232,7 @@ namespace core { namespace entity {
          return;
       }
 
-      if (!object->getDroppable()) {
+      if (checkUndroppable && !object->getDroppable()) {
          game->addEventListener(triggers);
          game->addEventListener(object->getEventListener());
          game->event("dropUndroppable", eventArgs);
@@ -445,6 +445,8 @@ namespace core { namespace entity {
 
       EventArgumentList eventArgs;
 
+      // the game argument will be ignored by Lua events
+      eventArgs.push_back(game);
       eventArgs.push_back(this);
 
       game->addEventListener(triggers);
