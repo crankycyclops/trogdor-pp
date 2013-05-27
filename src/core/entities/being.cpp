@@ -181,30 +181,40 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
-   void Being::take(Object *object) {
+   void Being::take(Object *object, bool checkUntakeable, bool doEvents) {
 
       EventArgumentList eventArgs;
 
-      eventArgs.push_back(this);
-      eventArgs.push_back(object);
+      if (doEvents) {
+         eventArgs.push_back(this);
+         eventArgs.push_back(object);
 
-      game->addEventListener(triggers);
-      game->addEventListener(object->getEventListener());
-      if (!game->event("beforeTake", eventArgs)) {
-         return;
-      }
-
-      if (!object->getTakeable()) {
          game->addEventListener(triggers);
          game->addEventListener(object->getEventListener());
-         game->event("takeUntakeable", eventArgs);
+         if (!game->event("beforeTake", eventArgs)) {
+            return;
+         }
+      }
+
+      if (checkUntakeable && !object->getTakeable()) {
+
+         if (doEvents) {
+            game->addEventListener(triggers);
+            game->addEventListener(object->getEventListener());
+            game->event("takeUntakeable", eventArgs);
+         }
+
          throw TAKE_UNTAKEABLE;
       }
 
       if (!insertIntoInventory(object)) {
-         game->addEventListener(triggers);
-         game->addEventListener(object->getEventListener());
-         game->event("takeTooHeavy", eventArgs);
+
+         if (doEvents) {
+            game->addEventListener(triggers);
+            game->addEventListener(object->getEventListener());
+            game->event("takeTooHeavy", eventArgs);
+         }
+
          throw TAKE_TOO_HEAVY;
       }
 
@@ -212,39 +222,49 @@ namespace core { namespace entity {
          object->getLocation()->removeThing(object);
       }
 
-      game->addEventListener(triggers);
-      game->addEventListener(object->getEventListener());
-      game->event("afterTake", eventArgs);
+      if (doEvents) {
+         game->addEventListener(triggers);
+         game->addEventListener(object->getEventListener());
+         game->event("afterTake", eventArgs);
+      }
    }
 
    /***************************************************************************/
 
-   void Being::drop(Object *object, bool checkUndroppable) {
+   void Being::drop(Object *object, bool checkUndroppable, bool doEvents) {
 
       EventArgumentList eventArgs;
 
-      eventArgs.push_back(this);
-      eventArgs.push_back(object);
+      if (doEvents) {
+         eventArgs.push_back(this);
+         eventArgs.push_back(object);
 
-      game->addEventListener(triggers);
-      game->addEventListener(object->getEventListener());
-      if (!game->event("beforeDrop", eventArgs)) {
-         return;
+         game->addEventListener(triggers);
+         game->addEventListener(object->getEventListener());
+         if (!game->event("beforeDrop", eventArgs)) {
+            return;
+         }
       }
 
       if (checkUndroppable && !object->getDroppable()) {
-         game->addEventListener(triggers);
-         game->addEventListener(object->getEventListener());
-         game->event("dropUndroppable", eventArgs);
+
+         if (doEvents) {
+            game->addEventListener(triggers);
+            game->addEventListener(object->getEventListener());
+            game->event("dropUndroppable", eventArgs);
+         }
+
          throw DROP_UNDROPPABLE;
       }
 
       location->insertThing(object);
       removeFromInventory(object);
 
-      game->addEventListener(triggers);
-      game->addEventListener(object->getEventListener());
-      game->event("afterDrop", eventArgs);
+      if (doEvents) {
+         game->addEventListener(triggers);
+         game->addEventListener(object->getEventListener());
+         game->event("afterDrop", eventArgs);
+      }
    }
 
    /***************************************************************************/

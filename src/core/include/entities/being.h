@@ -513,6 +513,8 @@ namespace core { namespace entity {
 
             Input:
                Object to take
+               Whether or not to check for the taking of "untakeable objects"
+               Whether or not to trigger before and after take events
 
             Output:
                (none)
@@ -522,7 +524,7 @@ namespace core { namespace entity {
                   TAKE_TOO_HEAVY - object is too heavy
                   TAKE_UNTAKEABLE - attempted to take an untakeable object
          */
-         void take(Object *object);
+         void take(Object *object, bool checkUntakeable = true, bool doEvents = true);
 
          /*
             Allows a Being to drop an object.  Calls removeIntoInventory() and
@@ -531,6 +533,7 @@ namespace core { namespace entity {
             Input:
                Object to drop
                Whether or not to check for the dropping of "undroppable objects"
+               Whether or not to trigger before and after drop events
 
             Output:
                (none)
@@ -539,7 +542,7 @@ namespace core { namespace entity {
                Throws the following errors:
                   DROP_UNDROPPABLE - attempt to drop an undroppable object
          */
-         void drop(Object *object, bool checkUndroppable = true);
+         void drop(Object *object, bool checkUndroppable = true, bool doEvents = true);
 
          /*
             Initiate an attack against defender, possibly using an optional
