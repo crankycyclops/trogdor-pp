@@ -531,6 +531,19 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
+   // Special empty lists used for returning .end() iterator pairs in the case
+   // of a non-existent list
+   extern PlaceList     emptyPlaceList;
+   extern RoomList      emptyRoomList;
+   extern ThingList     emptyThingList;
+   extern BeingList     emptyBeingList;
+   extern ItemList      emptyItemList;
+   extern PlayerList    emptyPlayerList;
+   extern CreatureList  emptyCreatureList;
+   extern ObjectList    emptyObjectList;
+
+   /***************************************************************************/
+
    // static method of Entity
    template <typename ListType, typename ResultType>
    ResultType Entity::clarifyEntity(ListType items, istream *trogin,

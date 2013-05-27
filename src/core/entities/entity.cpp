@@ -9,6 +9,18 @@ using namespace std;
 namespace core { namespace entity {
 
 
+   // Special empty lists used for returning .end() iterator pairs in the case
+   // of a non-existent list
+   PlaceList     emptyPlaceList;
+   RoomList      emptyRoomList;
+   ThingList     emptyThingList;
+   BeingList     emptyBeingList;
+   ItemList      emptyItemList;
+   PlayerList    emptyPlayerList;
+   CreatureList  emptyCreatureList;
+   ObjectList    emptyObjectList;
+
+
    Entity::Entity(Game *g, string n) {
 
       // not sure if this will ever actually be used, but meh...

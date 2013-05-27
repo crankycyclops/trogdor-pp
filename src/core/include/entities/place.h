@@ -138,8 +138,15 @@ namespace core { namespace entity {
             ThingListCItPair things;
             ThingsByNameMap::const_iterator i = thingsByName.find(name);
 
-            things.begin = i->second.begin();
-            things.end   = i->second.end();
+            if (i == thingsByName.end()) {
+               things.begin = emptyThingList.begin();
+               things.end   = emptyThingList.end();
+            }
+
+            else {
+               things.begin = i->second.begin();
+               things.end   = i->second.end();
+            }
 
             return things;
          }
@@ -159,8 +166,15 @@ namespace core { namespace entity {
             BeingListCItPair beings;
             BeingsByNameMap::const_iterator i = beingsByName.find(name);
 
-            beings.begin = i->second.begin();
-            beings.end   = i->second.end();
+            if (i == beingsByName.end()) {
+               beings.begin = emptyBeingList.begin();
+               beings.end   = emptyBeingList.end();
+            }
+
+            else {
+               beings.begin = i->second.begin();
+               beings.end   = i->second.end();
+            }
 
             return beings;
          }
