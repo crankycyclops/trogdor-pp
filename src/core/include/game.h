@@ -287,6 +287,13 @@ namespace core {
          */
          void processCommand(Player *player);
 
+         /*
+            Wraps around EventHandler API.  See eventhandler.h for documentation.
+         */
+         inline void setupEventHandler() {
+
+            events->setup();
+         }
 
          /*
             Wraps around EventHandler API.  See eventhandler.h for documentation.

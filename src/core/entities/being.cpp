@@ -165,6 +165,7 @@ namespace core { namespace entity {
       eventArgs.push_back(location);
       eventArgs.push_back(l);
 
+      game->setupEventHandler();
       game->addEventListener(l->getEventListener());
       game->addEventListener(triggers);
       if (!game->event("beforeGotoLocation", eventArgs)) {
@@ -174,6 +175,7 @@ namespace core { namespace entity {
       setLocation(l);
       l->observe(this);
 
+      game->setupEventHandler();
       game->addEventListener(l->getEventListener());
       game->addEventListener(triggers);
       game->event("afterGotoLocation", eventArgs);
@@ -189,6 +191,7 @@ namespace core { namespace entity {
          eventArgs.push_back(this);
          eventArgs.push_back(object);
 
+         game->setupEventHandler();
          game->addEventListener(triggers);
          game->addEventListener(object->getEventListener());
          if (!game->event("beforeTake", eventArgs)) {
@@ -199,6 +202,7 @@ namespace core { namespace entity {
       if (checkUntakeable && !object->getTakeable()) {
 
          if (doEvents) {
+            game->setupEventHandler();
             game->addEventListener(triggers);
             game->addEventListener(object->getEventListener());
             game->event("takeUntakeable", eventArgs);
@@ -210,6 +214,7 @@ namespace core { namespace entity {
       if (!insertIntoInventory(object)) {
 
          if (doEvents) {
+            game->setupEventHandler();
             game->addEventListener(triggers);
             game->addEventListener(object->getEventListener());
             game->event("takeTooHeavy", eventArgs);
@@ -223,6 +228,7 @@ namespace core { namespace entity {
       }
 
       if (doEvents) {
+         game->setupEventHandler();
          game->addEventListener(triggers);
          game->addEventListener(object->getEventListener());
          game->event("afterTake", eventArgs);
@@ -239,6 +245,7 @@ namespace core { namespace entity {
          eventArgs.push_back(this);
          eventArgs.push_back(object);
 
+         game->setupEventHandler();
          game->addEventListener(triggers);
          game->addEventListener(object->getEventListener());
          if (!game->event("beforeDrop", eventArgs)) {
@@ -249,6 +256,7 @@ namespace core { namespace entity {
       if (checkUndroppable && !object->getDroppable()) {
 
          if (doEvents) {
+            game->setupEventHandler();
             game->addEventListener(triggers);
             game->addEventListener(object->getEventListener());
             game->event("dropUndroppable", eventArgs);
@@ -261,6 +269,7 @@ namespace core { namespace entity {
       removeFromInventory(object);
 
       if (doEvents) {
+         game->setupEventHandler();
          game->addEventListener(triggers);
          game->addEventListener(object->getEventListener());
          game->event("afterDrop", eventArgs);
@@ -305,6 +314,7 @@ namespace core { namespace entity {
       eventArgs.push_back(defender);
       eventArgs.push_back(weapon);
 
+      game->setupEventHandler();
       game->addEventListener(triggers);
       game->addEventListener(defender->getEventListener());
       if (0 != weapon) {
@@ -317,6 +327,7 @@ namespace core { namespace entity {
 
       if (!isAlive()) {
 
+         game->setupEventHandler();
          game->addEventListener(triggers);
          game->addEventListener(defender->getEventListener());
          if (0 != weapon) {
@@ -334,6 +345,7 @@ namespace core { namespace entity {
 
       if (!defender->isAlive()) {
 
+         game->setupEventHandler();
          game->addEventListener(triggers);
          game->addEventListener(defender->getEventListener());
          if (0 != weapon) {
@@ -349,6 +361,7 @@ namespace core { namespace entity {
       }
 
       // used either if the attack is successful or if it fails
+      game->setupEventHandler();
       game->addEventListener(triggers);
       game->addEventListener(defender->getEventListener());
       if (0 != weapon) {
@@ -394,6 +407,7 @@ namespace core { namespace entity {
          }
       }
 
+      game->setupEventHandler();
       game->addEventListener(triggers);
       game->addEventListener(defender->getEventListener());
       if (0 != weapon) {
@@ -413,6 +427,7 @@ namespace core { namespace entity {
       eventArgs.push_back(health);
       eventArgs.push_back(up);
 
+      game->setupEventHandler();
       game->addEventListener(triggers);
       if (!game->event("beforeAddHealth", eventArgs)) {
          return;
@@ -424,6 +439,7 @@ namespace core { namespace entity {
          health = maxHealth;
       }
 
+      game->setupEventHandler();
       game->addEventListener(triggers);
       game->event("afterAddHealth", eventArgs);
    }
@@ -438,6 +454,7 @@ namespace core { namespace entity {
       eventArgs.push_back(health);
       eventArgs.push_back(down);
 
+      game->setupEventHandler();
       game->addEventListener(triggers);
       if (!game->event("beforeRemoveHealth", eventArgs)) {
          return;
@@ -454,7 +471,7 @@ namespace core { namespace entity {
          }
       }
 
-
+      game->setupEventHandler();
       game->addEventListener(triggers);
       game->event("afterRemoveHealth", eventArgs);
    }
@@ -469,6 +486,7 @@ namespace core { namespace entity {
       eventArgs.push_back(game);
       eventArgs.push_back(this);
 
+      game->setupEventHandler();
       game->addEventListener(triggers);
       if (!game->event("beforeDie", eventArgs)) {
          return;
@@ -476,6 +494,7 @@ namespace core { namespace entity {
 
       alive = false;
 
+      game->setupEventHandler();
       game->addEventListener(triggers);
       game->event("afterDie", eventArgs);
    }

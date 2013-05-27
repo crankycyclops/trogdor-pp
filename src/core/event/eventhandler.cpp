@@ -7,13 +7,15 @@ namespace core { namespace event {
 
 
    bool EventHandler::event(const char *event, EventArgumentList &args) {
+cout << sessions.size() << endl;
+      EventListenerList *listeners = sessions.back();
 
       // false if we should not allow the action that triggered the event to
       // continue
       bool allowAction = true;
 
-      for (EventListenerList::const_iterator i = listeners.begin();
-      i != listeners.end(); i++) {
+      for (EventListenerList::const_iterator i = listeners->begin();
+      i != listeners->end(); i++) {
 
          (*i)->execute(event, args);
 
@@ -29,7 +31,10 @@ namespace core { namespace event {
          }
       }
 
-      listeners.clear();
+      // restore previous event handling session
+      delete listeners;
+      sessions.pop_back();
+
       return allowAction;
    }
 

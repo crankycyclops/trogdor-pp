@@ -108,6 +108,7 @@ namespace core { namespace entity {
          eventArgs.push_back(this);
          eventArgs.push_back(observer);
 
+         game->setupEventHandler();
          game->addEventListener(triggers);
          game->addEventListener(observer->getEventListener());
          if (!game->event("beforeObserve", eventArgs)) {
@@ -119,6 +120,7 @@ namespace core { namespace entity {
       observedByMap[observer] = true;
 
       if (triggerEvents) {
+         game->setupEventHandler();
          game->addEventListener(triggers);
          game->addEventListener(observer->getEventListener());
          game->event("afterObserve", eventArgs);
@@ -136,6 +138,7 @@ namespace core { namespace entity {
          eventArgs.push_back(this);
          eventArgs.push_back(observer);
 
+         game->setupEventHandler();
          game->addEventListener(triggers);
          game->addEventListener(observer->getEventListener());
          if (!game->event("beforeGlance", eventArgs)) {
@@ -147,6 +150,7 @@ namespace core { namespace entity {
       glancedByMap[observer] = true;
 
       if (triggerEvents) {
+         game->setupEventHandler();
          game->addEventListener(triggers);
          game->addEventListener(observer->getEventListener());
          game->event("afterGlance", eventArgs);

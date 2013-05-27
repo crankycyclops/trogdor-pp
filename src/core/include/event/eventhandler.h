@@ -3,6 +3,7 @@
 
 
 #include <string>
+#include <stack>
 #include <list>
 
 #include "eventlistener.h"
@@ -17,14 +18,29 @@ namespace core { namespace event {
 
       public:
 
-         typedef list<EventListener *> EventListenerList;
+         typedef list<EventListener *>        EventListenerList;
+         typedef vector<EventListenerList *>  EventListStack;
 
       private:
 
-         // list of EventListener objects
-         EventListenerList listeners;
+         // stack of EventListenerLists, which allows us to call nested events
+         EventListStack sessions;
 
       public:
+
+         /*
+            Pushes current event handling session onto the stack and sets up a
+            new one.  The new session will be automatically destroyed, and the
+            old will be automatically restored, when the next call to event()
+            completes.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline void setup() {sessions.push_back(new EventListenerList());}
 
          /*
             Adds an EventListener, which will listen for the next executed
@@ -39,7 +55,8 @@ namespace core { namespace event {
          */
          inline void addListener(EventListener *l) {
 
-            listeners.insert(listeners.end(), l);
+            EventListenerList *listeners = sessions.back();
+            listeners->insert(listeners->end(), l);
          }
 
          /*
