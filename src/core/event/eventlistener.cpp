@@ -9,7 +9,7 @@ namespace core { namespace event {
 
       EventTriggerList *triggerList;
 
-      EventTriggersMap::iterator i = triggers.find(event);
+      EventTriggersMap::const_iterator i = triggers.find(event);
 
       if (i == triggers.end()) {
          triggerList = new EventTriggerList();
@@ -27,13 +27,14 @@ namespace core { namespace event {
 
    void EventListener::execute(string event, EventArgumentList args) {
 
-      EventTriggersMap::iterator i = triggers.find(event);
+      EventTriggersMap::const_iterator i = triggers.find(event);
 
       if (i == triggers.end()) {
          return;
       }
 
-      for (EventTriggerList::iterator j = i->second->begin(); j != i->second->end(); j++) {
+      for (EventTriggerList::const_iterator j = i->second->begin();
+      j != i->second->end(); j++) {
 
          (*j)->execute(args);
 

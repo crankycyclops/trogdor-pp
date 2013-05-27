@@ -12,7 +12,7 @@ namespace core { namespace event {
       // continue
       bool allowAction = true;
 
-      for (EventListenerList::iterator i = listeners.begin();
+      for (EventListenerList::const_iterator i = listeners.begin();
       i != listeners.end(); i++) {
 
          (*i)->execute(event, args);
