@@ -216,26 +216,31 @@ namespace core { namespace entity {
          virtual LuaTable *getLuaTable() const;
 
          /*
-            Returns pointer to a list of all Objects that match the given name
-            in the Being's inventory, or a NULL pointer if there are no matches.
+            Returns iterators over all Objects that match the given name in the
+            Being's inventory.
 
             Input:
                name (string)
 
             Output:
-               ObjectList * (NULL if no matches)
+               Pair of begin and end iterators (ObjectListCItPair)
          */
-         inline ObjectList *getInventoryObjectsByName(string name) {
+         inline ObjectListCItPair getInventoryObjectsByName(string name) const {
 
-            ObjectsByNameMap::iterator i = inventory.objectsByName.find(name);
+            ObjectListCItPair objects;
+            ObjectsByNameMap::const_iterator i = inventory.objectsByName.find(name);
 
             if (i == inventory.objectsByName.end()) {
-               return 0;
+               objects.begin = emptyObjectList.begin();
+               objects.end   = emptyObjectList.end();
             }
 
             else {
-               return &(i->second);
+               objects.begin = i->second.begin();
+               objects.end   = i->second.end();
             }
+
+            return objects;
          }
 
          /*

@@ -165,12 +165,9 @@ namespace core {
          ThingList items;
 
          // consider matching inventory items, if there are any
-         ObjectList *invItems = player->getInventoryObjectsByName(object);
-         if (0 != invItems) {
-            for (ObjectList::iterator i = invItems->begin(); i != invItems->end();
-            i++) {
+         ObjectListCItPair invItems = player->getInventoryObjectsByName(object);
+         for (ObjectListCIt i = invItems.begin; i != invItems.end; i++) {
                items.push_front(*i);
-            }
          }
 
          // also consider matching items in the room, if there are any
@@ -184,8 +181,13 @@ namespace core {
             return;
          }
 
+         ThingListCItPair itemsIt;
+         itemsIt.begin = items.begin();
+         itemsIt.end   = items.end();
+
          try {
-            Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(items,
+            Thing *thing =
+               Entity::clarifyEntity2<ThingListCItPair, ThingListCIt, Thing *>(itemsIt,
                game->trogin, game->trogout);
             thing->observe(player, true, true);
          }
@@ -298,9 +300,11 @@ namespace core {
    void DropAction::execute(Player *player, Command *command, Game *game) {
 
       Place      *location = player->getLocation();
-      ObjectList *invItems = player->getInventoryObjectsByName(command->getDirectObject());
+      ObjectListCItPair invItems;
 
-      if (0 == invItems || 0 == invItems->size()) {
+      invItems = player->getInventoryObjectsByName(command->getDirectObject());
+
+      if (invItems.begin == invItems.end) {
          *game->trogout << "You don't have a " << command->getDirectObject()
             << "!" << endl;
          return;
@@ -308,7 +312,8 @@ namespace core {
 
       try {
 
-         Object *object = Entity::clarifyEntity<ObjectList, Object *>(*invItems,
+         Object *object =
+            Entity::clarifyEntity2<ObjectListCItPair, ObjectListCIt, Object *>(invItems,
             game->trogin, game->trogout);
 
          try {
@@ -479,16 +484,17 @@ namespace core {
 
          if (weaponName.length() > 0) {
 
-            ObjectList *items = player->getInventoryObjectsByName(weaponName);
+            ObjectListCItPair items = player->getInventoryObjectsByName(weaponName);
 
-            if (0 == items || 0 == items->size()) {
+            if (items.begin == items.end) {
                *game->trogout << "You don't have a " << weaponName << "!" << endl;
                return;
             }
 
             try {
 
-               weapon = Entity::clarifyEntity<ObjectList, Object *>(*items,
+               weapon =
+                  Entity::clarifyEntity2<ObjectListCItPair, ObjectListCIt, Object *>(items,
                   game->trogin, game->trogout);
 
                // TODO: this check should be made inside Being (we'd have an
