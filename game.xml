@@ -76,6 +76,13 @@
 
          </inventory>
 
+         <!-- messages for various events are defined here (pre-defined for the
+              engine or custom for scripts)
+         -->
+         <messages>
+            <message name="respawn">A bolt of lightening claps, and your dead body bursts to life in a brilliant flash.</message>
+         </messages>
+
          <!-- By default, player attributes are distributed evenly (10 given to
               each attribute.)  Here, you can optionally set your own values, which
               will be assigned by default to all new players. -->
@@ -152,9 +159,6 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
               0, which means it has no weight. -->
          <weight>1</weight>
 
-         <!-- messages for various events are defined here (pre-defined for the
-              engine or custom for scripts)
-         -->
          <messages>
             <message name="take">The candle jumps up into the air, does a backflip and turns into a spoon.</message>
             <message name="drop">You hesitate before dropping that awesome waxy goodness.</message>

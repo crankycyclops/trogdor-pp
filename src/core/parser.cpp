@@ -484,7 +484,13 @@ namespace core {
 
       while (nextTag() && 3 == getDepth()) {
 
-         if (0 == getTagName().compare("inventory")) {
+         if (0 == getTagName().compare("messages")) {
+            Messages *m = parseMessages(4);
+            defaultPlayer->setMessages(*m);
+            delete m;
+         }
+
+         else if (0 == getTagName().compare("inventory")) {
             parseBeingInventory(defaultPlayer, false);
          }
 
