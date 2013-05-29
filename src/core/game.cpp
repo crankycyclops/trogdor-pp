@@ -16,6 +16,7 @@
 
 #include "include/event/triggers/autoattack.h"
 #include "include/event/triggers/deathdrop.h"
+#include "include/event/triggers/respawn.h"
 
 
 using namespace std;
@@ -130,10 +131,13 @@ namespace core {
       actions->setAction("fight", attack);
    }
 
+   // NOTE: order is important!
    void Game::initEvents() {
 
       eventListener->add("afterGotoLocation", new AutoAttackEventTrigger());
+
       eventListener->add("afterDie", new DeathDropEventTrigger());
+      eventListener->add("afterDie", new RespawnEventTrigger());
    }
 
 
