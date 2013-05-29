@@ -682,6 +682,19 @@ namespace core { namespace entity {
          void die();
 
          /*
+            Since there's a lot of code that would otherwise have to be cut and
+            pasted to actually do the respawn() and send a message to the
+            terminal, I'm putting it here in a common function.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void doRespawn();
+
+         /*
             The opposite of die :)  Triggers beforeRespawn and afterRespawn
             events.
 

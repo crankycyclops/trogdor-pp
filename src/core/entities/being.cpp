@@ -502,9 +502,49 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
+   void Being::doRespawn() {
+
+      if (!isAlive()) {
+
+         respawn();
+
+         // it's possible that a respawn event prevented the Being from coming
+         // back to life, so make sure it did before we send out the message
+         if (isAlive()) {
+
+            string msg = getMessage("respawn");
+
+            if (0 == msg.length()) {
+               msg = name + " comes back to life.";
+            }
+
+            *game->trogout << endl << msg << endl;
+         }
+      }
+   }
+
+   /***************************************************************************/
+
    void Being::respawn() {
 
-      cout << name << ": Respawn stub!" << endl;
+      EventArgumentList eventArgs;
+
+      // the game argument will be ignored by Lua events
+      eventArgs.push_back(game);
+      eventArgs.push_back(this);
+
+      game->setupEventHandler();
+      game->addEventListener(triggers);
+      if (!game->event("beforeRespawn", eventArgs)) {
+         return;
+      }
+
+      alive = true;
+      health = maxHealth;
+
+      game->setupEventHandler();
+      game->addEventListener(triggers);
+      game->event("afterRespawn", eventArgs);
    }
 }}
 
