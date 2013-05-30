@@ -28,13 +28,20 @@ namespace core { namespace entity {
 
       protected:
 
-         bool counterAttack; // whether creature will fight back when attacked
-
          struct {
             bool enabled;
             int  interval;
             bool repeat;
          } autoAttack;
+
+         struct {
+            bool   enabled;
+            int    interval;
+            double wanderlust;
+         } wanderSettings;
+
+         // whether creature will fight back when attacked
+         bool counterAttack;
 
          // whether creature is friendly, neutral or aggressive toward others
          enum AllegianceType allegiance;
@@ -124,6 +131,21 @@ namespace core { namespace entity {
          inline int  getAutoAttackInterval() const {return autoAttack.interval;}
 
          /*
+            Returns Creature wander settings.
+
+            Input:
+               (none)
+
+            Output:
+               enabled:    bool
+               interval:   int
+               wanderlust: double
+         */
+         inline bool   getWanderEnabled()  const {return wanderSettings.enabled;}
+         inline int    getWanderInterval() const {return wanderSettings.interval;}
+         inline double getWanderLust()     const {return wanderSettings.wanderlust;}
+
+         /*
             Sets a Creature's allegiance.
 
             Input:
@@ -179,6 +201,58 @@ namespace core { namespace entity {
                (none)
          */
          inline void setAutoAttackRepeat(bool b) {autoAttack.repeat = b;}
+
+         /*
+            Sets whether or not automatic wandering is enabled.
+
+            Input:
+               bool
+
+            Output:
+               (none)
+         */
+         inline void setWanderEnabled(bool b) {wanderSettings.enabled = b;}
+
+         /*
+            Sets how often (in clock ticks) the Creature considers wandering to
+            another location.
+
+            Input:
+               int
+
+            Output:
+               (none)
+
+            Throws exception if input is invalid (less than 1.)
+         */
+         inline void setWanderInterval(int i) {
+
+            if (i < 1) {
+               throw "Wander interval must greater than or equal to 1.";
+            }
+
+            wanderSettings.interval = i;
+         }
+
+         /*
+            Sets probability that Creature will wander on each interval.
+
+            Input:
+               double
+
+            Output:
+               (none)
+
+            Throws exception if input is invalid (not a valid probability.)
+         */
+         inline void setWanderLust(double d) {
+
+            if (d < 0.0 || d  > 1.0) {
+               throw "Probability must be between 0 and 1.";
+            }
+
+            wanderSettings.wanderlust = d;
+         }
    };
 }}
 
