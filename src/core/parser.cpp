@@ -335,7 +335,16 @@ namespace core {
 
    void Parser::parseScript(LuaState *L) {
 
-      L->loadScriptFromFile(getAttribute("src"));
+      // external script
+      try {
+         L->loadScriptFromFile(getAttribute("src"));
+      }
+
+      // inline script
+      catch (string error) {
+         L->loadScriptFromString(parseString());
+      }
+
       checkClosingTag("script");
    }
 

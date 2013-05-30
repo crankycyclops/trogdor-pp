@@ -43,11 +43,28 @@
    <!-- Global Event Handlers and Scripts (optional) -->
    <events>
 
-      <!-- identifies one or more scripts containing event handling functions -->
+      <!-- identifies one or more external scripts containing event handling
+           functions -->
       <script src="script/global1.lua"></script>
+
+      <!-- you can also place scripts inline -->
+      <script>
+
+         -- just a placeholder for demo purposes
+         function testFunctionDrop(player, entity)
+
+            -- first value decides if we should continue executing event handlers
+            -- second value decides if we should execute the action that
+            -- triggered the event
+            return true, true
+
+         end
+
+      </script>
 
       <!-- identifies a script function to call for a given event -->
       <event name="beforeDrop">sampleDropObject</event>
+      <event name="beforeDrop">testFunctionDrop</event>
 
    </events>
 
