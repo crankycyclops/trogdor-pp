@@ -674,12 +674,12 @@ namespace core { namespace entity {
             Make the Being die.  Triggers beforeDie and afterDie events.
 
             Input:
-               (none)
+               Whether or not to send a message to the console
 
             Output:
                (none)
          */
-         void die();
+         void die(bool showMessage = false);
 
          /*
             Since there's a lot of code that would otherwise have to be cut and

@@ -385,7 +385,6 @@ namespace core { namespace entity {
             " health points." << endl;
 
          if (!defender->isAlive()) {
-            *game->trogout << defender->getTitle() << " dies." << endl;
             return;
          }
       }
@@ -468,7 +467,7 @@ namespace core { namespace entity {
          health = 0; // just in case it's a negative number, we clip at 0
 
          if (allowDeath) {
-            die();
+            die(true);
          }
       }
 
@@ -479,7 +478,7 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
-   void Being::die() {
+   void Being::die(bool showMessage) {
 
       EventArgumentList eventArgs;
 
@@ -494,6 +493,13 @@ namespace core { namespace entity {
       }
 
       alive = false;
+
+      if (showMessage) {
+         // TODO: this will fail in multi-player environment, where the aggressor
+         // and defender BOTH need to receive this message; maybe send it to the
+         // room's outout stream (when we have such things)?
+         *game->trogout << title << " dies." << endl;
+      }
 
       game->setupEventHandler();
       game->addEventListener(triggers);
