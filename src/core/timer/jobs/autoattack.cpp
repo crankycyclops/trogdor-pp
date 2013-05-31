@@ -19,7 +19,9 @@ namespace core {
       }
 
       // TODO: intelligent weapon selection?
-      *game->trogout << endl << aggressor->getTitle() << " attacks " <<
+      *aggressor << endl << aggressor->getTitle() << " attacks " <<
+         defender->getTitle() << '.' << endl;
+      *defender << endl << aggressor->getTitle() << " attacks " <<
          defender->getTitle() << '.' << endl;
       aggressor->attack(defender, 0);
    }

@@ -62,7 +62,7 @@ namespace core {
       }
 
       srand(time(NULL));
-      *game->trogout << responses[i] << endl;
+      *player << responses[i] << endl;
    }
 
 /******************************************************************************/
@@ -89,19 +89,19 @@ namespace core {
       double totalPercent = 0.0;
 
       if (0 == player->getInventoryCount()) {
-         *game->trogout << "You don't have anything!" << endl;
+         *player << "You don't have anything!" << endl;
       }
 
       else {
 
          ObjectSetCItPair invItems = player->getInventoryObjects();
 
-         *game->trogout << "Items in your inventory:" << endl << endl;
+         *player << "Items in your inventory:" << endl << endl;
 
          for (ObjectSet::const_iterator i = invItems.begin;
          i != invItems.end; i++) {
 
-            *game->trogout << (*i)->getTitle();
+            *player << (*i)->getTitle();
 
             if (player->getInventoryMaxWeight() > 0) {
 
@@ -109,19 +109,19 @@ namespace core {
                   double percent = 100 * ((double)(*i)->getWeight() /
                      (double)player->getInventoryMaxWeight());
                   totalPercent += percent;
-                  *game->trogout << " (" << percent << "%)";
+                  *player << " (" << percent << "%)";
                }
 
                else {
-                  *game->trogout << " (weighs nothing)";
+                  *player << " (weighs nothing)";
                }
             }
 
-            *game->trogout << endl;
+            *player << endl;
          }
 
          if (player->getInventoryMaxWeight() > 0) {
-            cout << endl << "You are currently using " << totalPercent
+            *player << endl << "You are currently using " << totalPercent
                << "% of your inventory." << endl;
          }
       }
@@ -177,7 +177,7 @@ namespace core {
          }
 
          if (0 == items.size()) {
-            *game->trogout << "There is no " << object << " here!" << endl;
+            *player << "There is no " << object << " here!" << endl;
             return;
          }
 
@@ -193,7 +193,7 @@ namespace core {
          }
 
          catch (string name) {
-            *game->trogout << "There is no " << name << " here!" << endl;
+            *player << "There is no " << name << " here!" << endl;
          }
       }
    }
@@ -220,7 +220,7 @@ namespace core {
       ThingListCItPair roomItems = location->getThingsByName(command->getDirectObject());
 
       if (roomItems.begin == roomItems.end) {
-         *game->trogout << "There is no " << command->getDirectObject()
+         *player << "There is no " << command->getDirectObject()
             << " here!" << endl;
          return;
       }
@@ -232,7 +232,7 @@ namespace core {
             game->trogin, game->trogout);
 
          if (ENTITY_OBJECT != thing->getType()) {
-            *game->trogout << "You can't take that!" << endl;
+            *player << "You can't take that!" << endl;
          }
 
          else {
@@ -243,11 +243,11 @@ namespace core {
 
                string message = thing->getMessage("take");
                if (message.length() > 0) {
-                  *game->trogout << message << endl;
+                  *player << message << endl;
                }
 
                else {
-                  *game->trogout << "You take the " << thing->getName() << "." << endl;
+                  *player << "You take the " << thing->getName() << "." << endl;
                }
             }
 
@@ -257,13 +257,13 @@ namespace core {
                switch (error) {
 
                   case Being::TAKE_TOO_HEAVY:
-                     *game->trogout << command->getDirectObject()
+                     *player << command->getDirectObject()
                         << " is too heavy.  Try dropping something first."
                         << endl;
                      break;
 
                   case Being::TAKE_UNTAKEABLE:
-                     *game->trogout << "You can't take that!" << endl;
+                     *player << "You can't take that!" << endl;
                      break;
 
                   default:
@@ -276,7 +276,7 @@ namespace core {
       }
 
       catch (string name) {
-         *game->trogout << "There is no " << name << " here!" << endl;
+         *player << "There is no " << name << " here!" << endl;
       }
    }
 
@@ -305,7 +305,7 @@ namespace core {
       invItems = player->getInventoryObjectsByName(command->getDirectObject());
 
       if (invItems.begin == invItems.end) {
-         *game->trogout << "You don't have a " << command->getDirectObject()
+         *player << "You don't have a " << command->getDirectObject()
             << "!" << endl;
          return;
       }
@@ -322,11 +322,11 @@ namespace core {
 
             string message = object->getMessage("drop");
             if (message.length() > 0) {
-               *game->trogout << message << endl;
+               *player << message << endl;
             }
 
             else {
-               *game->trogout << "You drop the " << object->getName() << "." << endl;
+               *player << "You drop the " << object->getName() << "." << endl;
             }
          }
 
@@ -336,7 +336,7 @@ namespace core {
 
                case Being::DROP_UNDROPPABLE:
                   // TODO: add message for this (named undroppable)
-                  *game->trogout << "You can't drop that!" << endl;
+                  *player << "You can't drop that!" << endl;
                   break;
 
                default:
@@ -348,7 +348,7 @@ namespace core {
       }
 
       catch (string name) {
-         *game->trogout << "You don't have a " << name << "!" << endl;
+         *player << "You don't have a " << name << "!" << endl;
       }
    }
 
@@ -415,7 +415,7 @@ namespace core {
 
       // only Rooms have connections to eachother
       if (ENTITY_ROOM != player->getLocation()->getType()) {
-         *game->trogout << "You can't go that way." << endl;
+         *player << "You can't go that way." << endl;
          // TODO: fire can't go that way event?
          return;
       }
@@ -423,7 +423,7 @@ namespace core {
       Room *next = (dynamic_cast<Room *>(player->getLocation()))->getConnection(direction);
 
       if (0 == next) {
-         *game->trogout << "You can't go that way." << endl;
+         *player << "You can't go that way." << endl;
          // TODO: fire can't go that way event?
          return;
       }
@@ -432,11 +432,11 @@ namespace core {
       string goMessage = player->getLocation()->getMessage("go" + direction);
 
       if (goMessage.length() > 0) {
-         *game->trogout << goMessage << endl << endl;
+         *player << goMessage << endl << endl;
       }
 
       if (enterMessage.length() > 0) {
-         *game->trogout << enterMessage << endl << endl;
+         *player << enterMessage << endl << endl;
       }
 
       player->gotoLocation(next);
@@ -468,7 +468,7 @@ namespace core {
       BeingListCItPair beings = location->getBeingsByName(command->getDirectObject());
 
       if (beings.begin == beings.end) {
-         *game->trogout << "There is no " << command->getDirectObject()
+         *player << "There is no " << command->getDirectObject()
             << " here!" << endl;
          return;
       }
@@ -487,7 +487,7 @@ namespace core {
             ObjectListCItPair items = player->getInventoryObjectsByName(weaponName);
 
             if (items.begin == items.end) {
-               *game->trogout << "You don't have a " << weaponName << "!" << endl;
+               *player << "You don't have a " << weaponName << "!" << endl;
                return;
             }
 
@@ -500,13 +500,13 @@ namespace core {
                // TODO: this check should be made inside Being (we'd have an
                // exception to catch)
                if (!weapon->isWeapon()) {
-                  *game->trogout << "The " << weaponName << " isn't a weapon!" << endl;
+                  *player << "The " << weaponName << " isn't a weapon!" << endl;
                   return;
                }
             }
 
             catch (string name) {
-               *game->trogout << "You don't have a " << weaponName << "!" << endl;
+               *player << "You don't have a " << weaponName << "!" << endl;
                return;
             }
          }
@@ -515,7 +515,7 @@ namespace core {
       }
 
       catch (string name) {
-         *game->trogout << "There is no " << name << " here!" << endl;
+         *player << "There is no " << name << " here!" << endl;
       }
    }
 }

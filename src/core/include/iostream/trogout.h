@@ -72,28 +72,32 @@ namespace core {
          */
          virtual Trogout *clone() = 0;
 
-         // string output operators
-         inline Trogout& operator<< (string val) {buffer << val;}
-         inline Trogout& operator<< (char const *val) {buffer << val;}
+         // character and string output operators
+         inline Trogout& operator<< (string val) {buffer << val; return *this;}
+         inline Trogout& operator<< (char const *val) {buffer << val; return *this;}
+         inline Trogout& operator<< (char val) {buffer << val; return *this;}
 
          // arithmetic output operators
-         inline Trogout& operator<< (bool val) {buffer << val;}
-         inline Trogout& operator<< (short val) {buffer << val;}
-         inline Trogout& operator<< (unsigned short val) {buffer << val;}
-         inline Trogout& operator<< (int val) {buffer << val;}
-         inline Trogout& operator<< (unsigned int val) {buffer << val;}
-         inline Trogout& operator<< (long val) {buffer << val;}
-         inline Trogout& operator<< (unsigned long val) {buffer << val;}
-         inline Trogout& operator<< (float val) {buffer << val;}
-         inline Trogout& operator<< (double val) {buffer << val;}
-         inline Trogout& operator<< (void* val) {buffer << val;}
+         inline Trogout& operator<< (bool val) {buffer << val; return *this;}
+         inline Trogout& operator<< (short val) {buffer << val; return *this;}
+         inline Trogout& operator<< (unsigned short val) {buffer << val; return *this;}
+         inline Trogout& operator<< (int val) {buffer << val; return *this;}
+         inline Trogout& operator<< (unsigned int val) {buffer << val; return *this;}
+         inline Trogout& operator<< (long val) {buffer << val; return *this;}
+         inline Trogout& operator<< (unsigned long val) {buffer << val; return *this;}
+         inline Trogout& operator<< (float val) {buffer << val; return *this;}
+         inline Trogout& operator<< (double val) {buffer << val; return *this;}
+         inline Trogout& operator<< (void* val) {buffer << val; return *this;}
 
          // special endl output operator
          inline Trogout& operator<< (ostream& (*pf)(ostream&)) {
 
-            buffer << endl;
+            buffer << "\n";
+
             flush();
             clear();
+
+            return *this;
          }
    };
 }

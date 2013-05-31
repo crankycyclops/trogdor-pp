@@ -132,6 +132,30 @@ namespace core { namespace entity {
          */
          ~Entity();
 
+         // string output operators
+         inline Entity& operator<< (string val) {*outStream << val; return *this;}
+         inline Entity& operator<< (char const *val) {*outStream << val; return *this;}
+         inline Entity& operator<< (char val) {*outStream << val; return *this;}
+
+         // arithmetic output operators
+         inline Entity& operator<< (bool val) {*outStream << val; return *this;}
+         inline Entity& operator<< (short val) {*outStream << val; return *this;}
+         inline Entity& operator<< (unsigned short val) {*outStream << val; return *this;}
+         inline Entity& operator<< (int val) {*outStream << val; return *this;}
+         inline Entity& operator<< (unsigned int val) {*outStream << val; return *this;}
+         inline Entity& operator<< (long val) {*outStream << val; return *this;}
+         inline Entity& operator<< (unsigned long val) {*outStream << val; return *this;}
+         inline Entity& operator<< (float val) {*outStream << val; return *this;}
+         inline Entity& operator<< (double val) {*outStream << val; return *this;}
+         inline Entity& operator<< (void* val) {*outStream << val; return *this;}
+
+         // special endl output operator
+         inline Entity& operator<< (ostream& (*pf)(ostream&)) {
+
+            *outStream << pf;
+            return *this;
+         }
+
          /*
             Returns a LuaTable object representing the Entity.  Note that each
             child class should get the value of the parent class's version of
