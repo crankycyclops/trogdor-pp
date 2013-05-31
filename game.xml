@@ -437,7 +437,6 @@ You peer off into the distance and notice a dark hole in the wall a little ways 
             <!-- Note that an object cannot be in more than one room. -->
             <object>candle</object>
             <object>sword</object>
-            <creature>casper</creature>
          </contains>
 
       </room>
@@ -456,6 +455,10 @@ You're in a dark musty cave.  You see a light some ways off to the south.  To th
          -->
          <west>chamber</west>
          <south>start</south>
+
+         <contains>
+            <creature>casper</creature>
+         </contains>
 
       </room>
 
