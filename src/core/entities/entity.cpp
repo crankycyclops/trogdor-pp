@@ -21,13 +21,14 @@ namespace core { namespace entity {
    ObjectList    emptyObjectList;
 
 
-   Entity::Entity(Game *g, string n) {
+   Entity::Entity(Game *g, Trogout *o, string n) {
 
       // not sure if this will ever actually be used, but meh...
       type = ENTITY_UNDEFINED;
 
       game = g;
       name = n;
+      outStream = o;
 
       // this will usually be set again later
       title = n;
@@ -48,11 +49,21 @@ namespace core { namespace entity {
       longDesc = e.longDesc;
       shortDesc = e.shortDesc;
       msgs = e.msgs;
+      outStream = e.outStream->clone();
 
       // TODO: we need to do some kind of intelligent copying here, so that we
       // can retain all parsed scripts, event handlers, etc.
       L = new LuaState();
       triggers = new event::EventListener();
+   }
+
+   /***************************************************************************/
+
+   Entity::~Entity() {
+
+      delete L;
+      delete triggers;
+      delete outStream;
    }
 
    /***************************************************************************/

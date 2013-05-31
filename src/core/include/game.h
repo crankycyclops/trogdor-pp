@@ -11,6 +11,7 @@
 #include "command.h"
 #include "event/eventhandler.h"
 #include "entitymap.h"
+#include "iostream/trogout.h"
 
 
 using namespace std;
@@ -157,11 +158,12 @@ namespace core {
 
             Input:
                Player name (string)
+               Pointer to an output stream (Trogout *)
 
             Output:
                Pointer to Player object
          */
-         inline Player *createPlayer(string name) {
+         inline Player *createPlayer(string name, Trogout *outStream) {
 
             if (entities.isset(name)) {
                stringstream s;
@@ -170,7 +172,7 @@ namespace core {
             }
 
             // clone the default player, giving it the specified name
-            Player *player = new Player(*defaultPlayer, name);
+            Player *player = new Player(*defaultPlayer, outStream, name);
 
             // TODO: set other attributes from default
 

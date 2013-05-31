@@ -35,7 +35,7 @@ namespace core { namespace entity {
             Constructor for creating a new Item.  Requires reference to the
             containing Game object and a name.
          */
-         inline Item(Game *g, string n): Thing(g, n) {
+         inline Item(Game *g, Trogout *o, string n): Thing(g, o, n) {
 
             owner = 0;
             takeable = DEFAULT_TAKEABLE;

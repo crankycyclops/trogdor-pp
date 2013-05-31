@@ -28,7 +28,7 @@ namespace core { namespace entity {
             Constructor for creating a new Room.  Requires reference to the
             containing Game object and a name.
          */
-         inline Room(Game *g, string n): Place(g, n) {
+         inline Room(Game *g, Trogout *o, string n): Place(g, o, n) {
 
             type = ENTITY_ROOM;
          }

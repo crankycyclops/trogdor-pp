@@ -5,6 +5,8 @@
 #include "../messages.h"
 #include "../luatable.h"
 #include "../luastate.h"
+#include "../iostream/trogout.h"
+
 
 namespace core {
 
@@ -51,6 +53,8 @@ namespace core { namespace entity {
          enum EntityType type;
 
          Game *game;
+
+         Trogout *outStream;
 
          string name;
          string title;
@@ -106,9 +110,10 @@ namespace core { namespace entity {
 
             Input:
                Reference to containing Game (Game *)
+               Pointer to output stream object (Trogout *)
                Name (string)
          */
-         Entity(Game *g, string n);
+         Entity(Game *g, Trogout *o, string n);
 
          /*
             Constructor for cloning an Entity into another (with a unique name.)
@@ -118,6 +123,14 @@ namespace core { namespace entity {
                Name of copy (string)
          */
          Entity(const Entity &e, string n);
+
+         /*
+            Entity Destructor.
+
+            Input:
+               (none)
+         */
+         ~Entity();
 
          /*
             Returns a LuaTable object representing the Entity.  Note that each

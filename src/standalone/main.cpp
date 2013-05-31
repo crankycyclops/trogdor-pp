@@ -2,6 +2,8 @@
 #include <cstdlib>
 
 #include "../core/include/game.h"
+#include "../core/include/iostream/consoleout.h"
+
 
 using namespace std;
 
@@ -11,7 +13,7 @@ int main(int argc, char **argv) {
 
    if (currentGame->initialize()) {
 
-      Player *player = currentGame->createPlayer("player");
+      Player *player = currentGame->createPlayer("player", new core::ConsoleOut());
 
       currentGame->start();
       while (currentGame->inProgress() && currentGame->playerIsInGame("player")) {
