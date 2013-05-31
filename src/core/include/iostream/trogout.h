@@ -60,6 +60,18 @@ namespace core {
 
       public:
 
+         /*
+            Returns a new instance of the output stream.  This is so that Entity
+            clone constructors will work properly.
+
+            Input:
+               (none)
+
+            Output:
+               Pointer to new Trogout (actual type is of child class)
+         */
+         virtual Trogout *clone() = 0;
+
          // string output operators
          inline Trogout& operator<< (string val) {buffer << val;}
          inline Trogout& operator<< (char const *val) {buffer << val;}

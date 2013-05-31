@@ -6,10 +6,15 @@ using namespace std;
 namespace core {
 
 
-   virtual void ConsoleOut::flush() {
+   void ConsoleOut::flush() {
 
       cout << getBufferStr();
       cout.flush();
+   }
+
+   Trogout *ConsoleOut::clone() {
+
+      return new ConsoleOut();
    }
 }
 

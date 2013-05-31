@@ -21,6 +21,13 @@ namespace core {
             See include/iostream/trogout.h for details.
          */
          virtual void flush();
+
+      public:
+
+         /*
+            See include/iostream/trogout.h for details.
+         */
+         virtual Trogout *clone();
    };
 }
 
