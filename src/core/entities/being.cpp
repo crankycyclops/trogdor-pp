@@ -20,7 +20,7 @@ namespace core { namespace entity {
             string descDead = msgs.get("description_dead");
 
             if (descDead.length() > 0) {
-               *game->trogout << descDead << endl;
+               *observer << descDead << endl;
             }
 
             else {
@@ -42,15 +42,15 @@ namespace core { namespace entity {
 
          if (!alive) {
 
-            *game->trogout << "You see the corpse of " << getTitle() << '.';
+            *observer << "You see the corpse of " << getTitle() << '.';
 
             string descDead = msgs.get("descshort_dead");
 
             if (descDead.length() > 0) {
-               *game->trogout << ' ' << descDead;
+               *observer << ' ' << descDead;
             }
 
-            *game->trogout << endl;
+            *observer << endl;
          }
 
          else {
@@ -340,7 +340,7 @@ namespace core { namespace entity {
          }
 
          // TODO: custom message?
-         *game->trogout << getTitle() << " is already dead and cannot fight."
+         *this << "You're already dead and cannot fight."
             << endl;
          return;
       }
@@ -359,7 +359,7 @@ namespace core { namespace entity {
          }
 
          // TODO: custom message
-         *game->trogout << defender->getTitle() << " is already dead." << endl;
+         *this << defender->getTitle() << " is already dead." << endl;
          return;
       }
 
@@ -378,7 +378,7 @@ namespace core { namespace entity {
          }
 
          // TODO: custom message
-         *game->trogout << defender->getTitle() << " is immortal and cannot die."
+         *this << defender->getTitle() << " is immortal and cannot die."
             << endl;
          return;
       }
@@ -391,6 +391,9 @@ namespace core { namespace entity {
          game->addEventListener(weapon->getEventListener());
       }
 
+      *this << "You attack " << defender->getTitle() << '.' << endl;
+      *defender << "You're attacked by " << getTitle() << '!' << endl;
+
       if (isAttackSuccessful(defender)) {
 
          if (!game->event("attackSuccess", eventArgs)) {
@@ -401,10 +404,11 @@ namespace core { namespace entity {
 
          defender->removeHealth(damage);
 
-         *game->trogout << getTitle() << " dealt a blow to "
-            << defender->getTitle() << "!" << endl;
-         *game->trogout << defender->getTitle() << " loses " << damage <<
+         *this << "You dealt a blow to " << defender->getTitle() << "!" << endl;
+         *defender << getTitle() << " dealt you a blow!" << endl;
+         *this << defender->getTitle() << " loses " << damage <<
             " health points." << endl;
+         *defender << "You lose " << damage << " health points." << endl;
 
          if (!defender->isAlive()) {
             return;
@@ -417,12 +421,12 @@ namespace core { namespace entity {
             return;
          }
 
-         *game->trogout << "Attack failed!" << endl;
+         *this << "Your attack failed." << endl;
+         *defender << getTitle() << "'s attack failed." << endl;
       }
 
       if (ENTITY_CREATURE == defender->getType() &&
       static_cast<Creature *>(defender)->getCounterAttack() && allowCounterAttack) {
-         *game->trogout << defender->getTitle() << " fights back." << endl;
          // TODO: how will defender's weapon selection occur...?  Argh...
          defender->attack(this, 0, false);
       }
@@ -515,9 +519,7 @@ namespace core { namespace entity {
       alive = false;
 
       if (showMessage) {
-         // TODO: this will fail in multi-player environment, where the aggressor
-         // and defender BOTH need to receive this message; maybe send it to the
-         // room's outout stream (when we have such things)?
+         // TODO: this will go to getLocation()'s output stream
          *game->trogout << title << " dies." << endl;
       }
 
@@ -544,6 +546,7 @@ namespace core { namespace entity {
                msg = name + " comes back to life.";
             }
 
+            // TODO: this will go to getLocation()'s output stream
             *game->trogout << endl << msg << endl;
          }
       }

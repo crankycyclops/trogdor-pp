@@ -19,11 +19,6 @@ namespace core {
       }
 
       // TODO: intelligent weapon selection?
-      *aggressor << endl << aggressor->getTitle() << " attacks " <<
-         defender->getTitle() << '.' << endl;
-      *defender << endl << aggressor->getTitle() << " attacks " <<
-         defender->getTitle() << '.' << endl;
       aggressor->attack(defender, 0);
    }
 }
-
