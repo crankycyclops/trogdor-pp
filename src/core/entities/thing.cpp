@@ -38,7 +38,7 @@ namespace core { namespace entity {
 
    void Thing::display(Being *observer, bool displayFull) {
 
-      *game->trogout << "You see " << getTitle() << '.' << endl;
+      *observer << "You see " << getTitle() << '.' << endl;
       Entity::display(observer, displayFull);
    }
 
@@ -46,7 +46,7 @@ namespace core { namespace entity {
 
    void Thing::displayShort(Being *observer) {
 
-      *game->trogout << "You see " << getTitle() << '.' << endl;
+      *observer << "You see " << getTitle() << '.' << endl;
       Entity::displayShort(observer);
    }
 }}

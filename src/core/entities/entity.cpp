@@ -87,7 +87,7 @@ namespace core { namespace entity {
 
       if (!observedBy(observer) || displayFull) {
          if (ENTITY_PLAYER == observer->getType()) {
-            *game->trogout << getLongDescription() << endl;
+            *observer << getLongDescription() << endl;
          }
       }
 
@@ -104,7 +104,7 @@ namespace core { namespace entity {
 
       if (ENTITY_PLAYER == observer->getType()
       && getShortDescription().length() > 0) {
-         *game->trogout << getShortDescription() << endl;
+         *observer << getShortDescription() << endl;
       }
    }
 
