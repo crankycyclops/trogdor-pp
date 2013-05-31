@@ -335,10 +335,11 @@ namespace core { namespace entity {
             game->addEventListener(weapon->getEventListener());
          }
 
-         if (!game->event("attackPlayerAlreadyDead", eventArgs)) {
+         if (!game->event("attackAggressorAlreadyDead", eventArgs)) {
             return;
          }
 
+         // TODO: custom message?
          *game->trogout << getTitle() << " is already dead and cannot fight."
             << endl;
          return;
@@ -357,7 +358,28 @@ namespace core { namespace entity {
             return;
          }
 
+         // TODO: custom message
          *game->trogout << defender->getTitle() << " is already dead." << endl;
+         return;
+      }
+
+      // if defender is immortal, then there's really no point...
+      if (defender->isImmortal()) {
+
+         game->setupEventHandler();
+         game->addEventListener(triggers);
+         game->addEventListener(defender->getEventListener());
+         if (0 != weapon) {
+            game->addEventListener(weapon->getEventListener());
+         }
+
+         if (!game->event("attackDefenderImmortal", eventArgs)) {
+            return;
+         }
+
+         // TODO: custom message
+         *game->trogout << defender->getTitle() << " is immortal and cannot die."
+            << endl;
          return;
       }
 

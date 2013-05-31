@@ -284,6 +284,17 @@ namespace core { namespace entity {
          inline bool isAlive() const {return alive;}
 
          /*
+            Returns true if the Being is immortal and false if it's not.
+
+            Input:
+               (none)
+
+            Output:
+               bool
+         */
+         inline bool isImmortal() const {return maxHealth == 0 ? true : false;}
+
+         /*
             Indicates whether or not respawning is enabled for this Being.
 
             Input:
