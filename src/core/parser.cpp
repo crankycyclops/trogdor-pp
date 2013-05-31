@@ -975,7 +975,7 @@ namespace core {
                creature->setWanderInterval(parseCreatureWanderingInterval());
             }
 
-            catch (string error) {
+            catch (char const *error) {
                s << filename << ": "
                   << error << " in creature wander interval setting (line "
                   << xmlTextReaderGetParserLineNumber(reader) << ")";
@@ -989,7 +989,7 @@ namespace core {
                creature->setWanderLust(parseCreatureWanderLust());
             }
 
-            catch (string error) {
+            catch (char const *error) {
                s << filename << ": "
                   << error << " in creature wanderlust setting (line "
                   << xmlTextReaderGetParserLineNumber(reader) << ")";
@@ -1030,7 +1030,7 @@ namespace core {
 
    double Parser::parseCreatureWanderLust() {
 
-      bool wanderlust = parseDouble();
+      double wanderlust = parseDouble();
       checkClosingTag("wanderlust");
       return wanderlust;
    }

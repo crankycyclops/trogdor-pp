@@ -239,7 +239,7 @@ namespace core { namespace entity {
          inline void setWanderInterval(int i) {
 
             if (i < 1) {
-               throw "Wander interval must greater than or equal to 1.";
+               throw "Wander interval must be greater than or equal to 1";
             }
 
             wanderSettings.interval = i;
@@ -259,7 +259,7 @@ namespace core { namespace entity {
          inline void setWanderLust(double d) {
 
             if (d < 0.0 || d  > 1.0) {
-               throw "Probability must be between 0 and 1.";
+               throw "Probability must be between 0 and 1";
             }
 
             wanderSettings.wanderlust = d;
