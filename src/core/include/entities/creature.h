@@ -116,6 +116,17 @@ namespace core { namespace entity {
          }
 
          /*
+            Returns whether or not counterAttack is enabled.
+
+            Input:
+               (none)
+
+            Output:
+               bool
+         */
+         inline bool getCounterAttack() {return counterAttack;}
+
+         /*
             Return auto attack parameters.
 
             Input:

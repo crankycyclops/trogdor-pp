@@ -26,6 +26,7 @@
 
       <creatures>
          <creature name="trogdor"></creature>
+         <creature name="casper"></creature>
       </creatures>
 
       <objects>
@@ -367,6 +368,30 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
 
       </creature>
 
+
+      <creature name="casper">
+
+         <title>Casper the Friendly Ghost</title>
+
+         <description>
+He's white, transparent and floating six or seven feet off the ground.  He smiles and winks when you look up at him, clearly letting you know he means no harm.
+         </description>
+
+         <alive>1</alive>
+
+         <allegiance>friend</allegiance>
+
+         <aliases>
+            <alias>ghost</alias>
+            <alias>spirit</alias>
+            <alias>specter</alias>
+            <alias>spectre</alias>
+            <alias>phantom</alias>
+         </aliases>
+
+      </creature>
+
+
    </creatures>
 
 
@@ -412,6 +437,7 @@ You peer off into the distance and notice a dark hole in the wall a little ways 
             <!-- Note that an object cannot be in more than one room. -->
             <object>candle</object>
             <object>sword</object>
+            <creature>casper</creature>
          </contains>
 
       </room>

@@ -307,7 +307,7 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
-   void Being::attack(Being *defender, Object *weapon, bool counterAttack) {
+   void Being::attack(Being *defender, Object *weapon, bool allowCounterAttack) {
 
       EventArgumentList eventArgs;
 
@@ -398,13 +398,11 @@ namespace core { namespace entity {
          *game->trogout << "Attack failed!" << endl;
       }
 
-      if (counterAttack) {
-
-         if (ENTITY_PLAYER != defender->getType()) {
-            *game->trogout << defender->getTitle() << " fights back." << endl;
-            // TODO: how will defender's weapon selection occur...?  Argh...
-            defender->attack(this, 0, false);
-         }
+      if (ENTITY_CREATURE == defender->getType() &&
+      static_cast<Creature *>(defender)->getCounterAttack() && allowCounterAttack) {
+         *game->trogout << defender->getTitle() << " fights back." << endl;
+         // TODO: how will defender's weapon selection occur...?  Argh...
+         defender->attack(this, 0, false);
       }
 
       game->setupEventHandler();

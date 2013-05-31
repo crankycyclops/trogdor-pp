@@ -639,12 +639,13 @@ namespace core { namespace entity {
             Input:
                Being to attack (Being *)
                Optional weapon (Object *) - 0 if none
-               Allow defender to counter-attack? (default = true)
+               Allow defender to counter-attack? This prevents infinite loops
+                  when two Creature's with counterAttack enabled attack eachother.
 
             Output:
                (none)
          */
-         void attack(Being *defender, Object *weapon, bool counterAttack = true);
+         void attack(Being *defender, Object *weapon, bool allowCounterAttack = true);
 
          /*
             Adds health to the Being.
