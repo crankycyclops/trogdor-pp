@@ -313,6 +313,20 @@ namespace core {
          bool parseCreatureAutoAttackRepeat();
 
          /*
+            Parses a Creature's wandering settings.
+
+            Input:
+               Pointer to the Creature whose wandering settings are being configured
+
+            Output:
+               (none)
+         */
+         void parseCreatureWandering(entity::Creature *creature);
+         bool parseCreatureWanderingEnabled();
+         int parseCreatureWanderingInterval();
+         double parseCreatureWanderLust();
+
+         /*
             Parses a Being's respawn settings.
 
             Input:

@@ -381,6 +381,28 @@ He's white, transparent and floating six or seven feet off the ground.  He smile
 
          <allegiance>friend</allegiance>
 
+         <!-- optional settings to configure a creature's ability to wander from
+              room to room.  This is disabled by default. -->
+         <wandering>
+
+            <!-- Whether or not to enable wandering.  0 for false by default. -->
+            <enabled>1</enabled>
+
+            <!-- how many clock ticks should pass before the creature considers
+                 wandering to another room.  Default is 10. Note that the
+                 creature may or may not actually move.  This will be determined
+                 by the next setting, wanderlust. -->
+            <interval>10</interval>
+
+            <!-- Wanderlust is the probability that a creature will actually
+                 move when it considers wandering to another room.  This value
+                 must be a valid probability between 0 (never moves) and 1
+                 (always moves.)  Default is 0.5, which means the creature
+                 should choose to actually move roughly half the time. -->
+            <wanderlust>0.5</wanderlust>
+
+         </wandering>
+
          <aliases>
             <alias>ghost</alias>
             <alias>spirit</alias>
@@ -432,7 +454,8 @@ You peer off into the distance and notice a dark hole in the wall a little ways 
          </messages>
 
          <!-- Creatures and objects that are contained inside a room should be
-              referenced here. -->
+              referenced here. Note that the order in which they are placed will
+              determine the order in which they are displayed. -->
          <contains>
             <!-- Note that an object cannot be in more than one room. -->
             <object>candle</object>

@@ -643,6 +643,10 @@ namespace core {
             parseCreatureAutoAttack(creature, 4);
          }
 
+         else if (0 == getTagName().compare("wandering")) {
+            parseCreatureWandering(creature);
+         }
+
          else if (0 == getTagName().compare("inventory")) {
             parseBeingInventory(creature, true);
          }
@@ -949,6 +953,86 @@ namespace core {
       bool repeat = parseBool();
       checkClosingTag("repeat");
       return repeat;
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseCreatureWandering(Creature *creature) {
+
+      stringstream s;
+
+      while (nextTag() && 4 == getDepth()) {
+
+         string tag = getTagName();
+
+         if (0 == tag.compare("enabled")) {
+            creature->setWanderEnabled(parseCreatureWanderingEnabled());
+         }
+
+         else if (0 == tag.compare("interval")) {
+
+            try {
+               creature->setWanderInterval(parseCreatureWanderingInterval());
+            }
+
+            catch (string error) {
+               s << filename << ": "
+                  << error << " in creature wander interval setting (line "
+                  << xmlTextReaderGetParserLineNumber(reader) << ")";
+               throw s.str();
+            }
+         }
+
+         else if (0 == tag.compare("wanderlust")) {
+
+            try {
+               creature->setWanderLust(parseCreatureWanderLust());
+            }
+
+            catch (string error) {
+               s << filename << ": "
+                  << error << " in creature wanderlust setting (line "
+                  << xmlTextReaderGetParserLineNumber(reader) << ")";
+               throw s.str();
+            }
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "creature wandering settings (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("wandering");
+   }
+
+   /***************************************************************************/
+
+   bool Parser::parseCreatureWanderingEnabled() {
+
+      bool enabled = parseBool();
+      checkClosingTag("enabled");
+      return enabled;
+   }
+
+   /***************************************************************************/
+
+   int Parser::parseCreatureWanderingInterval() {
+
+      int interval = parseInt();
+      checkClosingTag("interval");
+      return interval;
+   }
+
+   /***************************************************************************/
+
+   double Parser::parseCreatureWanderLust() {
+
+      bool wanderlust = parseDouble();
+      checkClosingTag("wanderlust");
+      return wanderlust;
    }
 
    /***************************************************************************/
