@@ -180,6 +180,27 @@ namespace core { namespace entity {
          }
 
          /*
+            Returns const_iterator to things.begin() and things.end(), so
+            that something outside can iterate over all Things in a Place
+            without modifying them.
+
+            Input:
+               name (string)
+
+            Output:
+               things.begin() and things.end() (ThingListCItPair)
+         */
+         inline ThingListCItPair getThings() const {
+
+            ThingListCItPair iterators;
+
+            iterators.begin = things.begin();
+            iterators.end   = things.end();
+
+            return iterators;
+         }
+
+         /*
             Returns const_iterator to creatures.begin() and creatures.end(), so
             that something outside can iterate over all Creatures in a Place
             without modifying them.

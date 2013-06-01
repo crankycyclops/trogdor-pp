@@ -133,24 +133,24 @@ namespace core { namespace entity {
          ~Entity();
 
          // string output operators
-         inline Entity& operator<< (string val) {*outStream << val; return *this;}
-         inline Entity& operator<< (char const *val) {*outStream << val; return *this;}
-         inline Entity& operator<< (char val) {*outStream << val; return *this;}
+         inline const Entity& operator<< (string val) const {*outStream << val; return *this;}
+         inline const Entity& operator<< (char const *val) const {*outStream << val; return *this;}
+         inline const Entity& operator<< (char val) const {*outStream << val; return *this;}
 
          // arithmetic output operators
-         inline Entity& operator<< (bool val) {*outStream << val; return *this;}
-         inline Entity& operator<< (short val) {*outStream << val; return *this;}
-         inline Entity& operator<< (unsigned short val) {*outStream << val; return *this;}
-         inline Entity& operator<< (int val) {*outStream << val; return *this;}
-         inline Entity& operator<< (unsigned int val) {*outStream << val; return *this;}
-         inline Entity& operator<< (long val) {*outStream << val; return *this;}
-         inline Entity& operator<< (unsigned long val) {*outStream << val; return *this;}
-         inline Entity& operator<< (float val) {*outStream << val; return *this;}
-         inline Entity& operator<< (double val) {*outStream << val; return *this;}
-         inline Entity& operator<< (void* val) {*outStream << val; return *this;}
+         inline const Entity& operator<< (bool val) const {*outStream << val; return *this;}
+         inline const Entity& operator<< (short val) const {*outStream << val; return *this;}
+         inline const Entity& operator<< (unsigned short val) const {*outStream << val; return *this;}
+         inline const Entity& operator<< (int val) const {*outStream << val; return *this;}
+         inline const Entity& operator<< (unsigned int val) const {*outStream << val; return *this;}
+         inline const Entity& operator<< (long val) const {*outStream << val; return *this;}
+         inline const Entity& operator<< (unsigned long val) const {*outStream << val; return *this;}
+         inline const Entity& operator<< (float val) const {*outStream << val; return *this;}
+         inline const Entity& operator<< (double val) const {*outStream << val; return *this;}
+         inline const Entity& operator<< (void* val) const {*outStream << val; return *this;}
 
          // special endl output operator
-         inline Entity& operator<< (ostream& (*pf)(ostream&)) {
+         inline const Entity& operator<< (ostream& (*pf)(ostream&)) const {
 
             *outStream << pf;
             return *this;
