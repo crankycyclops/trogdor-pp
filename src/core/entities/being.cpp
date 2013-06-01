@@ -172,6 +172,11 @@ namespace core { namespace entity {
          return;
       }
 
+      if (0 != location) {
+         location->removeThing(this);
+      }
+
+      l->insertThing(this);
       setLocation(l);
       l->observe(this);
 
@@ -519,8 +524,7 @@ namespace core { namespace entity {
       alive = false;
 
       if (showMessage) {
-         // TODO: this will go to getLocation()'s output stream
-         *game->trogout << title << " dies." << endl;
+         *getLocation() << title << " dies." << endl;
       }
 
       game->setupEventHandler();
@@ -546,8 +550,7 @@ namespace core { namespace entity {
                msg = name + " comes back to life.";
             }
 
-            // TODO: this will go to getLocation()'s output stream
-            *game->trogout << endl << msg << endl;
+            *getLocation() << endl << msg << endl;
          }
       }
    }

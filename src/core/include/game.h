@@ -183,6 +183,7 @@ namespace core {
 
             // set Player's initial location
             player->setLocation(places.get("start"));
+            places.get("start")->insertThing(player);
 
             // Player must see an initial description of where they are
             player->getLocation()->observe(player, false);
