@@ -5,11 +5,19 @@
 #include "../include/entities/object.h"
 
 #include "../include/game.h"
+#include "../include/iostream/placeout.h"
 
 
 using namespace std;
 
 namespace core { namespace entity {
+
+   Place::Place(Game *g, Trogout *o, string n): Entity(g, o, n) {
+
+      static_cast<PlaceOut *>(o)->setPlace(this);
+   }
+
+   /***************************************************************************/
 
 
    LuaTable *Place::getLuaTable() const {

@@ -1,5 +1,6 @@
 #include "include/parser.h"
 #include "include/iostream/nullout.h"
+#include "include/iostream/placeout.h"
 
 using namespace std;
 
@@ -169,7 +170,7 @@ namespace core {
          throw s.str();
       }
 
-      Room *room = new Room(game, new NullOut(), name);
+      Room *room = new Room(game, new PlaceOut(), name);
 
       entities.set(name, room);
       places.set(name, room);

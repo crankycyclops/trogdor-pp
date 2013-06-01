@@ -10,6 +10,7 @@
 
 #include "entity.h"
 
+
 using namespace boost;
 
 
@@ -84,7 +85,7 @@ namespace core { namespace entity {
             Constructor for creating a new Place.  Requires reference to the
             containing Game object and a name.
          */
-         inline Place(Game *g, Trogout *o, string n): Entity(g, o, n) {}
+         Place(Game *g, Trogout *o, string n);
 
          /*
             Returns a LuaTable object representing the Place.  Note that each

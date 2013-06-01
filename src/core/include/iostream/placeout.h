@@ -45,6 +45,17 @@ namespace core {
          inline PlaceOut(Place *p) {place = p;}
 
          /*
+            Allows us to set the Place after construction.
+
+            Input:
+               Place *
+
+            Output:
+               (none)
+         */
+         inline void setPlace(Place *p) {place = p;}
+
+         /*
             See include/iostream/trogout.h for details.
          */
          virtual Trogout *clone();
