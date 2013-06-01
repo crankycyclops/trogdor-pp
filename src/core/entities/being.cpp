@@ -344,7 +344,6 @@ namespace core { namespace entity {
             return;
          }
 
-         // TODO: custom message?
          *this << "You're already dead and cannot fight."
             << endl;
          return;
@@ -363,7 +362,6 @@ namespace core { namespace entity {
             return;
          }
 
-         // TODO: custom message
          *this << defender->getTitle() << " is already dead." << endl;
          return;
       }
@@ -382,7 +380,6 @@ namespace core { namespace entity {
             return;
          }
 
-         // TODO: custom message
          *this << defender->getTitle() << " is immortal and cannot die."
             << endl;
          return;
