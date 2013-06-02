@@ -13,6 +13,11 @@ namespace core {
          return;
       }
 
+      else if (!defender->isAttackable()) {
+         job.setExecutions(0);
+         return;
+      }
+
       else if (aggressor->getLocation() != defender->getLocation()) {
          job.setExecutions(0);
          return;

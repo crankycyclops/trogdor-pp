@@ -20,6 +20,17 @@ namespace core {
    // tick() inside of our timer object
    void *doTick(void *timerObj);
 
+   // thread function that handles the insertion of a timer job so that
+   // Timer::insertJob() can be asynchronous (avoids deadlocks when a job is
+   // inserted somewhere inside of another job, which happens...)
+   typedef struct {
+      Game *game;
+      Timer *timer;
+      TimerJob *job;
+   } DoInsertJobArg;
+
+   void *doInsertJob(void *arg);
+
 /******************************************************************************/
 
    class TimerJob; // full declaration occurs after Timer in this file
@@ -143,6 +154,11 @@ namespace core {
 
          // thread function that bootstraps our timer object and calls tick()
          friend void *doTick(void *timerObj);
+
+         // thread function that handles the insertion of a timer job so that
+         // Timer::insertJob() can be asynchronous (avoids deadlocks when a job
+         // is inserted somewhere inside of another job, which happens...)
+         friend void *doInsertJob(void *arg);
    };
 
 /******************************************************************************/
@@ -226,6 +242,9 @@ namespace core {
 
          // allows Timer to interact with the TimerJob object
          friend void Timer::insertJob(TimerJob *job);
+
+         // allows us to insert a job asynchronously
+         friend void *doInsertJob(void *arg);
    };
 }
 

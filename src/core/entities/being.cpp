@@ -172,13 +172,23 @@ namespace core { namespace entity {
          return;
       }
 
-      if (0 != location) {
-         location->removeThing(this);
+      Place *oldLoc = location;
+
+      if (0 != oldLoc) {
+         oldLoc->removeThing(this);
       }
+
+      // TODO: custom messaging
+      // I do this first, and the other message second so that the Being that's
+      // leaving won't see messages about its own departure and arrival ;)
+      *l << getTitle() << " arrives." << endl;
 
       l->insertThing(this);
       setLocation(l);
       l->observe(this);
+
+      // TODO: custom messaging
+      *oldLoc << getTitle() << " leaves." << endl;
 
       game->setupEventHandler();
       game->addEventListener(l->getEventListener());

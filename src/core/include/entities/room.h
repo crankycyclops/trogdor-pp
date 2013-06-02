@@ -67,6 +67,58 @@ namespace core { namespace entity {
          }
 
          /*
+            Returns the number of connections.
+
+            Input:
+               (none)
+
+            Output:
+               Number of connections (size_t)
+         */
+         inline size_t getNumConnections() const {return connections.size();}
+
+         /*
+            Returns a connected room by numeric index (in so far as we iterate
+            through all values until we've counted index iterations and then
+            return the result.)  This, in conjunction with getNumConnections(),
+            is used primarily for the random selection of a connection.
+
+            If index > getNumConnections() - 1, then the first connection will
+            be returned (arbitrary decision.)
+
+            Returns a null pointer if there are no connections.
+
+            This is very hokey...
+
+            Input:
+               index (int)
+
+            Output:
+               connected Room (Room *)
+         */
+         inline Room *getConnectionByIndex(int i) const {
+
+            if (0 == getNumConnections()) {
+               return 0;
+            }
+
+            else if (i > getNumConnections() - 1) {
+               return connections.begin()->second;
+            }
+
+            else {
+
+               unordered_map<string, Room *>::const_iterator c = connections.begin();
+
+               for (; i > 0; i--) {
+                  c++;
+               }
+
+               return c->second;
+            }
+         }
+
+         /*
             Connects Room to another Room at the specified direction.
          */
          inline void setConnection(string direction, Room *connectTo) {

@@ -1,6 +1,9 @@
 #include "include/parser.h"
+
 #include "include/iostream/nullout.h"
 #include "include/iostream/placeout.h"
+
+#include "include/timer/jobs/wander.h"
 
 using namespace std;
 
@@ -692,6 +695,12 @@ namespace core {
                creature->setCounterAttack(true);
                break;
          }
+      }
+
+      // if wandering was enabled, insert a timer job for it
+      if (creature->getWanderEnabled()) {
+         game->insertTimerJob(new WanderTimerJob(game, creature->getWanderInterval(),
+            -1, creature->getWanderInterval(), creature));
       }
 
       checkClosingTag("creature");

@@ -47,7 +47,22 @@ namespace core {
             Output:
                Dice's current value (double)
          */
-         inline double get() {return value;}
+         inline double get() const {return value;}
+
+         /*
+            Returns a random integer between 0 and maxVal.  This number is
+            derived from the dice's current value, which remains unchanged.
+
+            Input:
+               maximum value (int)
+
+            Output:
+               number between 0 and maxVal, not including maxVal (int)
+         */
+         inline int getNormalized(int maxVal) const {
+
+            return ((int)(value * RAND_MAX)) % maxVal;
+         }
    };
 }
 

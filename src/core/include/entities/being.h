@@ -295,6 +295,17 @@ namespace core { namespace entity {
          inline bool isImmortal() const {return maxHealth == 0 ? true : false;}
 
          /*
+            Returns true if the Being can be attacked and false if it can't.
+
+            Input:
+               (none)
+
+            Output:
+               bool
+         */
+         inline bool isAttackable() const {return attackable;}
+
+         /*
             Indicates whether or not respawning is enabled for this Being.
 
             Input:

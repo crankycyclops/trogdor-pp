@@ -128,11 +128,19 @@ namespace core {
 
    void Timer::insertJob(TimerJob *job) {
 
-      job->initTime = time;
+      DoInsertJobArg *arg = new DoInsertJobArg();
 
-      pthread_mutex_lock(&(game->timerMutex));
-      queue.insert(queue.end(), job);
-      pthread_mutex_unlock(&(game->timerMutex));
+      arg->game = game;
+      arg->timer = this;
+      arg->job = job;
+      
+      // insert job asynchronously to avoid deadlock when a function called by
+      // a job inserts another job
+      if (pthread_create(&thread, 0, &doInsertJob, arg)) {
+         *(game->trogerr) << "Failed to insert timer job!\n";
+         exit(EXIT_FAILURE);
+      }
+      
    }
 
 /******************************************************************************/
@@ -142,6 +150,22 @@ namespace core {
       while (((Timer *)timerObj)->active) {
          ((Timer *)timerObj)->tick();
       }
+   }
+
+/******************************************************************************/
+
+   void *doInsertJob(void *arg) {
+
+      Game *g = ((DoInsertJobArg *)arg)->game;
+      Timer *t = ((DoInsertJobArg *)arg)->timer;
+      TimerJob *j = ((DoInsertJobArg *)arg)->job;
+
+      pthread_mutex_lock(&(g->timerMutex));
+      j->initTime = t->time;
+      t->queue.insert(t->queue.end(), j);
+      pthread_mutex_unlock(&(g->timerMutex));
+
+      delete (DoInsertJobArg *)arg;
    }
 }
 
