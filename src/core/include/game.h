@@ -47,6 +47,11 @@ namespace core {
    */
    class Game {
 
+      public:
+
+         // used for storing game meta data
+         typedef unordered_map<string, string> MetaMap;
+
       private:
 
          bool       inGame;        // whether or not a game is in progress
@@ -54,6 +59,8 @@ namespace core {
          ActionMap  *actions;      // maps verbs to actions
          Command    *lastCommand;  // the last executed command
          Timer      *timer;
+
+         MetaMap    meta;          // meta data
 
          // used to call subscribed event listeners
          event::EventHandler *events;
@@ -114,6 +121,7 @@ namespace core {
          /* lock on this to synchronize timer actions */
          pthread_mutex_t timerMutex;
 
+         // TODO: get rid of these
          ostream *trogerr;  /* error output stream */
          ostream *trogout;  /* console output stream */
          istream *trogin;   /* input stream */
@@ -129,10 +137,42 @@ namespace core {
          ~Game();
 
          /*
+            Gets a meta data value.  If the value isn't set, an empty string is
+            returned.
+
+            Input:
+               meta key (string)
+
+            Output:
+               meta value (string)
+         */
+         inline string getMeta(string key) const {
+
+            if (meta.find(key) == meta.end()) {
+               return "";
+            }
+
+            return meta.find(key)->second;
+         }
+
+         /*
+            Sets a meta data value.
+
+            Input:
+               meta key (string)
+               value (string)
+
+            Output:
+               (none)
+         */
+         inline void setMeta(string key, string value) {meta[key] = value;}
+
+         /*
             Sets the game's error output stream.
 
             Input: new output stream (ostream)
             Output: (none)
+            // TODO: get rid of this
          */
          inline void setTrogerr(ostream *newerr) {trogerr = newerr;}
 
@@ -141,6 +181,7 @@ namespace core {
 
             Input: new output stream (ostream)
             Output: (none)
+            // TODO: get rid of this
          */
          inline void setTrogout(ostream *newout) {trogout = newout;}
 
@@ -149,6 +190,7 @@ namespace core {
 
             Input: new input stream (istream)
             Output: (none)
+            // TODO: get rid of this
          */
          inline void setTrogin(istream *newin) {trogin = newin;}
 
