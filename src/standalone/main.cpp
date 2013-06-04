@@ -13,6 +13,17 @@ int main(int argc, char **argv) {
 
    if (currentGame->initialize()) {
 
+      string title = currentGame->getMeta("title");
+      string author = currentGame->getMeta("author");
+
+      if (title.length() > 0) {
+         cout << "Title: " << title << endl;
+      }
+
+      if (author.length() > 0) {
+         cout << "Author: " << author << endl;
+      }
+
       Player *player = currentGame->createPlayer("player", new core::ConsoleOut());
 
       currentGame->start();
