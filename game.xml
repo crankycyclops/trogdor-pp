@@ -41,6 +41,20 @@
 
 
 
+   <!-- The meta section is optional and defines any meta data variables you
+        want to set in the game.  All values are stored internally as
+        strings. -->
+   <meta>
+
+      <!-- Meta data is represented by key/value pairs.  The tag name can be
+           anything as long as it's properly terminated. -->
+      <title>Super Funtime Sample Game</title>
+      <author>James Colannino</author>
+
+   </meta>
+
+
+
    <!-- Global Event Handlers and Scripts (optional) -->
    <events>
 

@@ -589,6 +589,18 @@ namespace core {
          void parseManifestObject();
 
          /*
+            Parses meta data for the game.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseMeta();
+         void parseMetaValue(string key);
+
+         /*
             Parse the Player section.  Throws an exception with an error message
             if there's a problem.
 

@@ -73,6 +73,10 @@ namespace core {
             parseEvents(gameL, eventListener, 2);
          }
 
+         else if (0 == getTagName().compare("meta")) {
+            parseMeta();
+         }
+
          else if (0 == getTagName().compare("player")) {
             parsePlayer();
          }
@@ -97,6 +101,28 @@ namespace core {
       }
 
       checkClosingTag("game");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseMeta() {
+
+      while (nextTag() && 2 == getDepth()) {
+         parseMetaValue(getTagName());
+      }
+
+      checkClosingTag("meta");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseMetaValue(string key) {
+
+      string value = parseString();
+
+      game->setMeta(key, value);
+
+      checkClosingTag(key);
    }
 
    /***************************************************************************/
