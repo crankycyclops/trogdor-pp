@@ -74,12 +74,12 @@ namespace core { namespace entity {
       table->setField("damagebarehands", damageBareHands);
 
       LuaTable *attrs = new LuaTable();
-      attrs->setField("strengthraw", getStrength());
-      attrs->setField("dexterityraw", getDexterity());
-      attrs->setField("intelligenceraw", getIntelligence());
-      attrs->setField("strength", getStrengthFactor());
-      attrs->setField("dexterity", getDexterityFactor());
-      attrs->setField("intelligence", getIntelligenceFactor());
+      attrs->setField("strengthraw", getAttribute("strength"));
+      attrs->setField("dexterityraw", getAttribute("dexterity"));
+      attrs->setField("intelligenceraw", getAttribute("intelligence"));
+      attrs->setField("strength", getAttributeFactor("strength"));
+      attrs->setField("dexterity", getAttributeFactor("dexterity"));
+      attrs->setField("intelligence", getAttributeFactor("intelligence"));
 
       table->setField("attributes", *attrs);
 
@@ -298,7 +298,7 @@ namespace core { namespace entity {
 
       int damage;
 
-      damage = round(damageBareHands * getStrengthFactor());
+      damage = round(damageBareHands * getAttributeFactor("strength"));
 
       // make sure we always do at least 1 point damage
       damage = damage > 0 ? damage : 1;

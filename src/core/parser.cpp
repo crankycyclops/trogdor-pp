@@ -1240,15 +1240,15 @@ namespace core {
       while (nextTag() && 4 == getDepth()) {
 
          if (0 == getTagName().compare("strength")) {
-            being->setStrength(parseBeingAttributesStrength());
+            being->setAttribute("strength", parseBeingAttributesStrength());
          }
 
          else if (0 == getTagName().compare("dexterity")) {
-            being->setDexterity(parseBeingAttributesDexterity());
+            being->setAttribute("dexterity", parseBeingAttributesDexterity());
          }
 
          else if (0 == getTagName().compare("intelligence")) {
-            being->setIntelligence(parseBeingAttributesIntelligence());
+            being->setAttribute("intelligence", parseBeingAttributesIntelligence());
          }
 
          else {
