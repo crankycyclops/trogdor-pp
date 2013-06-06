@@ -58,8 +58,10 @@ namespace core { namespace entity {
             int  lives;
          } respawnSettings;
 
+         typedef unordered_map<string, int> AttributesMap;
+
          struct {
-            unordered_map<string, int> values;
+            AttributesMap values;
             int initialTotal;   // total attributes that the Being started with
          } attributes;
 
@@ -177,8 +179,7 @@ namespace core { namespace entity {
             setAttribute("strength", DEFAULT_ATTRIBUTE_STRENGTH);
             setAttribute("dexterity", DEFAULT_ATTRIBUTE_DEXTERITY);
             setAttribute("intelligence", DEFAULT_ATTRIBUTE_INTELLIGENCE);
-            attributes.initialTotal = DEFAULT_ATTRIBUTE_STRENGTH +
-               DEFAULT_ATTRIBUTE_DEXTERITY + DEFAULT_ATTRIBUTE_INTELLIGENCE;
+            setAttributesInitialTotal();
 
             inventory.count = 0;
             inventory.weight = DEFAULT_INVENTORY_WEIGHT;
@@ -551,9 +552,16 @@ namespace core { namespace entity {
          */
          inline void setAttributesInitialTotal() {
 
+            attributes.initialTotal = 0;
+
+            for (AttributesMap::iterator i = attributes.values.begin();
+            i != attributes.values.end(); i++) {
+               attributes.initialTotal += i->second;
+            }
+
             // TODO: replace this with iteration through all values set in map
-            attributes.initialTotal = getAttribute("strength") +
-               getAttribute("dexterity") + getAttribute("intelligence");
+            //attributes.initialTotal = getAttribute("strength") +
+            //   getAttribute("dexterity") + getAttribute("intelligence");
          }
 
          /*
