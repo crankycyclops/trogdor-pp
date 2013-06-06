@@ -188,7 +188,7 @@ namespace core {
          try {
             Thing *thing =
                Entity::clarifyEntity<ThingListCItPair, ThingListCIt, Thing *>(itemsIt,
-               game->trogin, game->trogout);
+               player);
             thing->observe(player, true, true);
          }
 
@@ -229,7 +229,7 @@ namespace core {
 
          Thing *thing =
             Entity::clarifyEntity<ThingListCItPair, ThingListCIt, Thing *>(roomItems,
-            game->trogin, game->trogout);
+            player);
 
          if (ENTITY_OBJECT != thing->getType()) {
             *player << "You can't take that!" << endl;
@@ -314,7 +314,7 @@ namespace core {
 
          Object *object =
             Entity::clarifyEntity<ObjectListCItPair, ObjectListCIt, Object *>(invItems,
-            game->trogin, game->trogout);
+            player);
 
          try {
  
@@ -480,7 +480,7 @@ namespace core {
 
          Being *defender =
             Entity::clarifyEntity<BeingListCItPair, BeingListCIt, Being *>(beings,
-            game->trogin, game->trogout);
+            player);
 
          if (weaponName.length() > 0) {
 
@@ -495,7 +495,7 @@ namespace core {
 
                weapon =
                   Entity::clarifyEntity<ObjectListCItPair, ObjectListCIt, Object *>(items,
-                  game->trogin, game->trogout);
+                  player);
 
                // TODO: this check should be made inside Being (we'd have an
                // exception to catch)

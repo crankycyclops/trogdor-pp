@@ -121,10 +121,8 @@ namespace core {
          /* lock on this to synchronize timer actions */
          pthread_mutex_t timerMutex;
 
-         // TODO: get rid of these
+         // TODO: get rid of this
          ostream *trogerr;  /* error output stream */
-         ostream *trogout;  /* console output stream */
-         istream *trogin;   /* input stream */
 
          /*
             Constructor for the Game class.
@@ -175,24 +173,6 @@ namespace core {
             // TODO: get rid of this
          */
          inline void setTrogerr(ostream *newerr) {trogerr = newerr;}
-
-         /*
-            Sets the game's standard output stream.
-
-            Input: new output stream (ostream)
-            Output: (none)
-            // TODO: get rid of this
-         */
-         inline void setTrogout(ostream *newout) {trogout = newout;}
-
-         /*
-            Sets the game's input stream.
-
-            Input: new input stream (istream)
-            Output: (none)
-            // TODO: get rid of this
-         */
-         inline void setTrogin(istream *newin) {trogin = newin;}
 
          /*
             Creates a new player and inserts it into the game.  Throws an

@@ -430,8 +430,7 @@ namespace core { namespace entity {
 
             Input:
                Iterators over entities to choose from
-               Input stream
-               Output stream
+               Pointer to Entity representing the user (probably a Player)
 
             Output:
                The chosen entity
@@ -441,8 +440,7 @@ namespace core { namespace entity {
                name the user provided is thrown as an exception.
          */
          template <typename CItStruct, typename CItType, typename ResultType>
-         static ResultType clarifyEntity(CItStruct items, istream *trogin,
-            ostream *trogout);
+         static ResultType clarifyEntity(CItStruct items, Entity *user);
    };
 
    /***************************************************************************/
@@ -572,8 +570,7 @@ namespace core { namespace entity {
    /***************************************************************************/
 
    template <typename CItStruct, typename CItType, typename ResultType>
-   ResultType Entity::clarifyEntity(CItStruct items, istream *trogin,
-   ostream *trogout) {
+   ResultType Entity::clarifyEntity(CItStruct items, Entity *user) {
 
       CItType i = items.begin;
 
@@ -591,7 +588,7 @@ namespace core { namespace entity {
          // undo lookahead from above
          i--;
 
-         *trogout << "Do you mean the ";
+         *user << "Do you mean the ";
 
          // This loop is a little nasty.  The logic was A LOT nicer when I was
          // using a list and could get its size, but I had to hack and clobber
@@ -600,7 +597,7 @@ namespace core { namespace entity {
          // to whoever is forced to read it...
          for (i = items.begin; i != items.end; ) {
 
-            *trogout << (*i)->getName();
+            *user << (*i)->getName();
             i++;
 
             // hackety hack
@@ -610,20 +607,21 @@ namespace core { namespace entity {
 
             // temporary lookahead on a bi-directional const_iterator
             else if (++i == items.end) {
-               *trogout << " or the ";
+               *user << " or the ";
                i--;
             }
 
             // pre-decrement to undo temporary lookahead
             else if (--i != items.begin) {
-               *trogout << ", ";
+               *user << ", ";
             }
          }
 
-         *trogout << "? \n\n> ";
+         *user << "? \n\n> ";
+         user->flushOutput();
 
          string answer;
-         getline(*trogin, answer);
+         *user >> answer;
 
          for (i = items.begin; i != items.end; i++) {
             if (0 == answer.compare((*i)->getName())) {

@@ -22,15 +22,15 @@ namespace core {
    }
 
 
-   void Command::read(Entity *entity) {
+   void Command::read(Entity *user) {
 
       string commandStr;
 
       // prompt the user until we get a response
       do {
-         *entity << "\n> ";
-         entity->flushOutput();
-         *entity >> commandStr;
+         *user << "\n> ";
+         user->flushOutput();
+         *user >> commandStr;
       } while (0 == commandStr.length());
 
       parse(commandStr);

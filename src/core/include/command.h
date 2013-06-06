@@ -69,7 +69,7 @@ namespace core {
             Input: Entity to read input from
             Output: (none)
          */
-         void read(Entity *entity);
+         void read(Entity *user);
 
          /*
             Makes Command object printable via trogout.

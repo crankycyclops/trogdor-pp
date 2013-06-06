@@ -28,8 +28,6 @@ namespace core {
 
       // default input and output streams
       trogerr = &cerr;
-      trogout = &cout;
-      trogin = &cin;
 
       inGame = false;
       actions = new ActionMap(this);
@@ -149,7 +147,7 @@ namespace core {
       }
 
       catch (string error) {
-         (*trogout) << error << endl;
+         *trogerr << error << endl;
          return false;
       }
 
@@ -216,7 +214,7 @@ namespace core {
             }
 
             else {
-               *trogout << "You haven't entered any commands yet!" << endl;
+               *player << "You haven't entered any commands yet!" << endl;
                return;
             }
          }
@@ -224,7 +222,7 @@ namespace core {
          Action *action = actions->getAction(command->getVerb());
 
          if (0 == action || !action->checkSyntax(command)) {
-            *trogout << "Sorry, I don't understand you." << endl;
+            *player << "Sorry, I don't understand you." << endl;
          }
 
          else {
@@ -236,7 +234,7 @@ namespace core {
       }
 
       else {
-         *trogout << "Sorry, I don't understand you." << endl;
+         *player << "Sorry, I don't understand you." << endl;
       }
 
       if (lastCommand != command) {
