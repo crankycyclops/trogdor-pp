@@ -2,6 +2,7 @@
 
 #include "include/iostream/nullout.h"
 #include "include/iostream/placeout.h"
+#include "include/iostream/consolein.h"
 
 #include "include/timer/jobs/wander.h"
 
@@ -22,7 +23,7 @@ namespace core {
 
       gameL = new LuaState();
       eventListener = new event::EventListener();
-      defaultPlayer = new entity::Player(game, new NullOut(), "default");
+      defaultPlayer = new entity::Player(game, new NullOut(), new ConsoleIn(), "default");
    }
 
    /***************************************************************************/
@@ -199,7 +200,7 @@ namespace core {
          throw s.str();
       }
 
-      Room *room = new Room(game, new PlaceOut(), name);
+      Room *room = new Room(game, new PlaceOut(), new ConsoleIn(), name);
 
       entities.set(name, room);
       places.set(name, room);
@@ -245,7 +246,7 @@ namespace core {
          throw s.str();
       }
 
-      Object *object = new Object(game, new NullOut(), name);
+      Object *object = new Object(game, new NullOut(), new ConsoleIn(), name);
 
       entities.set(name, object);
       things.set(name, object);
@@ -291,7 +292,7 @@ namespace core {
          throw s.str();
       }
 
-      Creature *creature = new Creature(game, new NullOut(), name);
+      Creature *creature = new Creature(game, new NullOut(), new ConsoleIn(), name);
 
       entities.set(name, creature);
       things.set(name, creature);
@@ -350,6 +351,7 @@ namespace core {
          else if (0 == getTagName().compare("event")) {
             parseEvent(L, triggers);
          }
+
 
          else {
             s << filename << ": invalid tag <" << getTagName() << "> in "

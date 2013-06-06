@@ -205,7 +205,7 @@ namespace core {
             Output:
                Pointer to Player object
          */
-         inline Player *createPlayer(string name, Trogout *outStream) {
+         inline Player *createPlayer(string name, Trogout *outStream, Trogin *inStream) {
 
             if (entities.isset(name)) {
                stringstream s;
@@ -214,7 +214,7 @@ namespace core {
             }
 
             // clone the default player, giving it the specified name
-            Player *player = new Player(*defaultPlayer, outStream, name);
+            Player *player = new Player(*defaultPlayer, outStream, inStream, name);
 
             // TODO: set other attributes from default
 

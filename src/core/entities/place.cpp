@@ -12,7 +12,7 @@ using namespace std;
 
 namespace core { namespace entity {
 
-   Place::Place(Game *g, Trogout *o, string n): Entity(g, o, n) {
+   Place::Place(Game *g, Trogout *o, Trogin *i, string n): Entity(g, o, i, n) {
 
       static_cast<PlaceOut *>(o)->setPlace(this);
    }

@@ -21,7 +21,7 @@ namespace core { namespace entity {
    ObjectList    emptyObjectList;
 
 
-   Entity::Entity(Game *g, Trogout *o, string n) {
+   Entity::Entity(Game *g, Trogout *o, Trogin *i, string n) {
 
       // not sure if this will ever actually be used, but meh...
       type = ENTITY_UNDEFINED;
@@ -29,6 +29,7 @@ namespace core { namespace entity {
       game = g;
       name = n;
       outStream = o;
+      inStream = i;
 
       // this will usually be set again later
       title = n;
@@ -50,6 +51,7 @@ namespace core { namespace entity {
       shortDesc = e.shortDesc;
       msgs = e.msgs;
       outStream = e.outStream->clone();
+      inStream = e.inStream->clone();
 
       // TODO: we need to do some kind of intelligent copying here, so that we
       // can retain all parsed scripts, event handlers, etc.
@@ -64,6 +66,7 @@ namespace core { namespace entity {
       delete L;
       delete triggers;
       delete outStream;
+      delete inStream;
    }
 
    /***************************************************************************/

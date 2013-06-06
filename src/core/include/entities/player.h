@@ -19,7 +19,7 @@ namespace core { namespace entity {
             Constructor for creating a new Player.  Requires reference to the
             containing Game object and a name.
          */
-         inline Player(Game *g, Trogout *o, string n): Being(g, o, n) {
+         inline Player(Game *g, Trogout *o, Trogin *i, string n): Being(g, o, i, n) {
 
             type = ENTITY_PLAYER;
 
@@ -29,13 +29,15 @@ namespace core { namespace entity {
          /*
             Constructor for cloning an existing player.  Requires a unique name.
          */
-         inline Player(const Player &p, Trogout *o, string n): Being(p, n) {
+         inline Player(const Player &p, Trogout *o, Trogin *i, string n): Being(p, n) {
 
             title = n;
 
             // hackety hack
             delete outStream;
+            delete inStream;
             outStream = o;
+            inStream = i;
          }
 
          /*

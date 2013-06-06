@@ -3,6 +3,7 @@
 
 #include "../core/include/game.h"
 #include "../core/include/iostream/consoleout.h"
+#include "../core/include/iostream/consolein.h"
 
 
 using namespace std;
@@ -26,7 +27,8 @@ int main(int argc, char **argv) {
          cout << "Author: " << author << endl << endl;
       }
 
-      Player *player = currentGame->createPlayer("player", new core::ConsoleOut());
+      Player *player = currentGame->createPlayer("player", new core::ConsoleOut(),
+         new core::ConsoleIn());
 
       currentGame->start();
       while (currentGame->inProgress() && currentGame->playerIsInGame("player")) {

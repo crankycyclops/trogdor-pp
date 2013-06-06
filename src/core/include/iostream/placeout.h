@@ -22,14 +22,12 @@ namespace core {
 
          Place *place;
 
-      protected:
+      public:
 
          /*
             See include/iostream/trogout.h for details.
          */
          virtual void flush();
-
-      public:
 
          /*
             Constructor for PlaceOut that leaves the Place uninitialized.  This

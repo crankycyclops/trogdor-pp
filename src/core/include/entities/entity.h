@@ -6,6 +6,7 @@
 #include "../luatable.h"
 #include "../luastate.h"
 #include "../iostream/trogout.h"
+#include "../iostream/trogin.h"
 
 
 namespace core {
@@ -55,6 +56,7 @@ namespace core { namespace entity {
          Game *game;
 
          Trogout *outStream;
+         Trogin  *inStream;
 
          string name;
          string title;
@@ -113,7 +115,7 @@ namespace core { namespace entity {
                Pointer to output stream object (Trogout *)
                Name (string)
          */
-         Entity(Game *g, Trogout *o, string n);
+         Entity(Game *g, Trogout *o, Trogin *i, string n);
 
          /*
             Constructor for cloning an Entity into another (with a unique name.)
@@ -131,6 +133,9 @@ namespace core { namespace entity {
                (none)
          */
          ~Entity();
+
+         // string input operator
+         inline const Entity& operator>> (string &val) const {*inStream >> val; return *this;}
 
          // string output operators
          inline const Entity& operator<< (string val) const {*outStream << val; return *this;}
@@ -155,6 +160,17 @@ namespace core { namespace entity {
             *outStream << pf;
             return *this;
          }
+
+         /*
+            Flushes the output stream without sending a newline.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline void flushOutput() const {outStream->flush();}
 
          /*
             Returns a LuaTable object representing the Entity.  Note that each
@@ -584,7 +600,7 @@ namespace core { namespace entity {
          // to whoever is forced to read it...
          for (i = items.begin; i != items.end; ) {
 
-            *trogout << (*i)->getName();            
+            *trogout << (*i)->getName();
             i++;
 
             // hackety hack

@@ -202,7 +202,7 @@ namespace core {
    void Game::processCommand(Player *player) {
 
       Command *command = new Command();
-      command->read(*trogin, *trogout);
+      command->read(player);
 
       if (!command->isInvalid()) {
 

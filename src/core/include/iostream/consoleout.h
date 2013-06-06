@@ -15,14 +15,12 @@ namespace core {
    */
    class ConsoleOut: public Trogout {
 
-      protected:
+      public:
 
          /*
             See include/iostream/trogout.h for details.
          */
          virtual void flush();
-
-      public:
 
          /*
             See include/iostream/trogout.h for details.

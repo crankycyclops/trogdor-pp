@@ -9,7 +9,10 @@
 #include "tokenizer.h"
 #include "vocabulary.h"
 
+#include "entities/entity.h"
+
 using namespace std;
+using namespace core::entity;
 
 namespace core {
 
@@ -63,10 +66,10 @@ namespace core {
          /*
             Reads a command from the user.
 
-            Input: input stream (istream) and output stream (ostream)
+            Input: Entity to read input from
             Output: (none)
          */
-         void read(istream &in, ostream &out);
+         void read(Entity *entity);
 
          /*
             Makes Command object printable via trogout.

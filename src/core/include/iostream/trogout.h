@@ -47,17 +47,6 @@ namespace core {
          */
          inline void clear() {buffer.str("");}
 
-         /*
-            Flushes the "buffer" to the real output stream.
-
-            Input:
-               (none)
-
-            Output:
-               (none)
-         */
-         virtual void flush() = 0;
-
       public:
 
          /*
@@ -71,6 +60,17 @@ namespace core {
                Pointer to new Trogout (actual type is of child class)
          */
          virtual Trogout *clone() = 0;
+
+         /*
+            Flushes the "buffer" to the real output stream.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         virtual void flush() = 0;
 
          // character and string output operators
          inline Trogout& operator<< (string val) {buffer << val; return *this;}

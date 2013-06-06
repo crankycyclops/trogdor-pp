@@ -5,6 +5,7 @@
 #include "include/utility.h"
 
 using namespace std;
+using namespace core::entity;
 
 namespace core {
 
@@ -21,14 +22,15 @@ namespace core {
    }
 
 
-   void Command::read(istream &in, ostream &out) {
+   void Command::read(Entity *entity) {
 
       string commandStr;
 
       // prompt the user until we get a response
       do {
-         out << "\n> ";
-         getline(in, commandStr);
+         *entity << "\n> ";
+         entity->flushOutput();
+         *entity >> commandStr;
       } while (0 == commandStr.length());
 
       parse(commandStr);
