@@ -74,9 +74,9 @@ namespace core { namespace entity {
       table->setField("damagebarehands", damageBareHands);
 
       LuaTable *attrs = new LuaTable();
-      attrs->setField("strengthraw", attributes.strength);
-      attrs->setField("dexterityraw", attributes.dexterity);
-      attrs->setField("intelligenceraw", attributes.intelligence);
+      attrs->setField("strengthraw", getStrength());
+      attrs->setField("dexterityraw", getDexterity());
+      attrs->setField("intelligenceraw", getIntelligence());
       attrs->setField("strength", getStrengthFactor());
       attrs->setField("dexterity", getDexterityFactor());
       attrs->setField("intelligence", getIntelligenceFactor());

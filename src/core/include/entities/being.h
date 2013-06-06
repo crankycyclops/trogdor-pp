@@ -59,9 +59,7 @@ namespace core { namespace entity {
          } respawnSettings;
 
          struct {
-            int strength;
-            int dexterity;
-            int intelligence;
+            unordered_map<string, int> values;
             int initialTotal;   // total attributes that the Being started with
          } attributes;
 
@@ -176,9 +174,9 @@ namespace core { namespace entity {
             respawnSettings.interval = DEFAULT_RESPAWN_INTERVAL;
             respawnSettings.lives = DEFAULT_RESPAWN_LIVES;
 
-            attributes.strength = DEFAULT_ATTRIBUTE_STRENGTH;
-            attributes.dexterity = DEFAULT_ATTRIBUTE_DEXTERITY;
-            attributes.intelligence = DEFAULT_ATTRIBUTE_INTELLIGENCE;
+            setStrength(DEFAULT_ATTRIBUTE_STRENGTH);
+            setDexterity(DEFAULT_ATTRIBUTE_DEXTERITY);
+            setIntelligence(DEFAULT_ATTRIBUTE_INTELLIGENCE);
             attributes.initialTotal = DEFAULT_ATTRIBUTE_STRENGTH +
                DEFAULT_ATTRIBUTE_DEXTERITY + DEFAULT_ATTRIBUTE_INTELLIGENCE;
 
@@ -209,9 +207,9 @@ namespace core { namespace entity {
             respawnSettings.interval = b.respawnSettings.interval;
             respawnSettings.lives = b.respawnSettings.lives;
 
-            attributes.strength = b.attributes.strength;
-            attributes.dexterity = b.attributes.dexterity;
-            attributes.intelligence = b.attributes.intelligence;
+            setStrength(b.getStrength());
+            setDexterity(b.getDexterity());
+            setIntelligence(b.getIntelligence());
             attributes.initialTotal = b.attributes.initialTotal;
 
             inventory.count = 0;
@@ -402,9 +400,32 @@ namespace core { namespace entity {
             Output:
                Attribute value in points (int)
          */
-         inline int getStrength() const {return attributes.strength;}
-         inline int getDexterity() const {return attributes.dexterity;}
-         inline int getIntelligence() const {return attributes.intelligence;}
+         inline int getStrength() const {
+
+            if (attributes.values.find("strength") == attributes.values.end()) {
+               throw "attribute 'strength' not set!";
+            }
+
+            return attributes.values.find("strength")->second;
+         }
+
+         inline int getDexterity() const {
+
+            if (attributes.values.find("dexterity") == attributes.values.end()) {
+               throw "attribute 'dexterity' not set!";
+            }
+
+            return attributes.values.find("dexterity")->second;
+         }
+
+         inline int getIntelligence() const {
+
+            if (attributes.values.find("intelligence") == attributes.values.end()) {
+               throw "attribute 'intelligence' not set!";
+            }
+
+            return attributes.values.find("intelligence")->second;
+         }
 
          /*
             Return the relative factors of each attribute.
@@ -417,17 +438,17 @@ namespace core { namespace entity {
          */
          inline double getStrengthFactor() const {
 
-            return (double)attributes.strength / (double)attributes.initialTotal;
+            return (double)getStrength() / (double)attributes.initialTotal;
          }
 
          inline double getDexterityFactor() const {
 
-            return (double)attributes.dexterity / (double)attributes.initialTotal;
+            return (double)getDexterity() / (double)attributes.initialTotal;
          }
 
          inline double getIntelligenceFactor() const {
 
-            return (double)attributes.intelligence / (double)attributes.initialTotal;
+            return (double)getIntelligence() / (double)attributes.initialTotal;
          }
 
          /*
@@ -540,9 +561,9 @@ namespace core { namespace entity {
             Output:
                (none)
          */
-         inline void setStrength(int s) {attributes.strength = s;}
-         inline void setDexterity(int d) {attributes.dexterity = d;}
-         inline void setIntelligence(int i) {attributes.intelligence = i;}
+         inline void setStrength(int s) {attributes.values["strength"] = s;}
+         inline void setDexterity(int d) {attributes.values["dexterity"] = d;}
+         inline void setIntelligence(int i) {attributes.values["intelligence"] = i;}
 
          /*
             This should only be called when the Being is first initialized, and
@@ -559,8 +580,8 @@ namespace core { namespace entity {
          */
          inline void setAttributesInitialTotal() {
 
-            attributes.initialTotal = attributes.strength + attributes.dexterity
-               + attributes.intelligence;
+            attributes.initialTotal = getStrength() + getDexterity()
+               + getIntelligence();
          }
 
          /*
