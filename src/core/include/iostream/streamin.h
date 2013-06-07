@@ -1,5 +1,5 @@
-#ifndef CONSOLEIN_H
-#define CONSOLEIN_H
+#ifndef STREAMIN_H
+#define STREAMIN_H
 
 
 #include "trogin.h"
@@ -11,11 +11,17 @@ namespace core {
 
 
    /*
-      Input "stream" that reads from stdin.
+      Input "stream" that reads from the specified istream.
    */
-   class ConsoleIn: public Trogin {
+   class StreamIn: public Trogin {
+
+      private:
+
+         istream *stream;
 
       public:
+
+         inline StreamIn(istream *s) {stream = s;}
 
          /*
             See include/iostream/trogin.h for details.

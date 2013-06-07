@@ -2,8 +2,8 @@
 #include <cstdlib>
 
 #include "../core/include/game.h"
-#include "../core/include/iostream/consoleout.h"
-#include "../core/include/iostream/consolein.h"
+#include "../core/include/iostream/streamout.h"
+#include "../core/include/iostream/streamin.h"
 
 
 using namespace std;
@@ -27,8 +27,8 @@ int main(int argc, char **argv) {
          cout << "Author: " << author << endl << endl;
       }
 
-      Player *player = currentGame->createPlayer("player", new core::ConsoleOut(),
-         new core::ConsoleIn());
+      Player *player = currentGame->createPlayer("player", new core::StreamOut(&cout),
+         new core::StreamIn(&cin));
 
       currentGame->start();
       while (currentGame->inProgress() && currentGame->playerIsInGame("player")) {

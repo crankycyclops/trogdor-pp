@@ -1,5 +1,5 @@
-#ifndef CONSOLEOUT_H
-#define CONSOLEOUT_H
+#ifndef STREAMOUT_H
+#define STREAMOUT_H
 
 
 #include "trogout.h"
@@ -11,11 +11,17 @@ namespace core {
 
 
    /*
-      Output "stream" that writes to stdout via cout.
+      Output "stream" that wraps around the specified ostream object.
    */
-   class ConsoleOut: public Trogout {
+   class StreamOut: public Trogout {
+
+      private:
+
+         ostream *stream; // output stream where flush() sends data
 
       public:
+
+         inline StreamOut(ostream *s) {stream = s;}
 
          /*
             See include/iostream/trogout.h for details.
