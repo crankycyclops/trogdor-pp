@@ -23,7 +23,7 @@ namespace core {
 
       gameL = new LuaState();
       eventListener = new event::EventListener();
-      defaultPlayer = new entity::Player(game, new NullOut(), new ConsoleIn(), "default");
+      defaultPlayer = new entity::Player(game, "default", new NullOut(), new ConsoleIn());
    }
 
    /***************************************************************************/
@@ -200,7 +200,7 @@ namespace core {
          throw s.str();
       }
 
-      Room *room = new Room(game, new PlaceOut(), new ConsoleIn(), name);
+      Room *room = new Room(game, name, new PlaceOut(), new ConsoleIn());
 
       entities.set(name, room);
       places.set(name, room);
@@ -246,7 +246,7 @@ namespace core {
          throw s.str();
       }
 
-      Object *object = new Object(game, new NullOut(), new ConsoleIn(), name);
+      Object *object = new Object(game, name, new NullOut(), new ConsoleIn());
 
       entities.set(name, object);
       things.set(name, object);
@@ -292,7 +292,7 @@ namespace core {
          throw s.str();
       }
 
-      Creature *creature = new Creature(game, new NullOut(), new ConsoleIn(), name);
+      Creature *creature = new Creature(game, name, new NullOut(), new ConsoleIn());
 
       entities.set(name, creature);
       things.set(name, creature);

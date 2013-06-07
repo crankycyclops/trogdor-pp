@@ -167,7 +167,7 @@ namespace core { namespace entity {
             Constructor for creating a new Being.  Requires reference to the
             containing Game object and a name.
          */
-         inline Being(Game *g, Trogout *o, Trogin *i, string n): Thing(g, o, i, n) {
+         inline Being(Game *g, string n, Trogout *o, Trogin *i): Thing(g, n, o, i) {
 
             attackable = DEFAULT_ATTACKABLE;
             damageBareHands = DEFAULT_DAMAGE_BARE_HANDS;

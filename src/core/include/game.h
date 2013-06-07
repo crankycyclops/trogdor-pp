@@ -194,7 +194,7 @@ namespace core {
             }
 
             // clone the default player, giving it the specified name
-            Player *player = new Player(*defaultPlayer, outStream, inStream, name);
+            Player *player = new Player(*defaultPlayer, name, outStream, inStream);
 
             // TODO: set other attributes from default
 

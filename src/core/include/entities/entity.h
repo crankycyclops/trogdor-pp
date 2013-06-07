@@ -115,7 +115,7 @@ namespace core { namespace entity {
                Pointer to output stream object (Trogout *)
                Name (string)
          */
-         Entity(Game *g, Trogout *o, Trogin *i, string n);
+         Entity(Game *g, string n, Trogout *o, Trogin *i);
 
          /*
             Constructor for cloning an Entity into another (with a unique name.)

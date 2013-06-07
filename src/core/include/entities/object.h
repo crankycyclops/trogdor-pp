@@ -23,7 +23,7 @@ namespace core { namespace entity {
             Constructor for creating a new Object.  Requires reference to the
             containing Game object and a name.
          */
-         inline Object(Game *g, Trogout *o, Trogin *i, string n): Item(g, o, i, n) {
+         inline Object(Game *g, string n, Trogout *o, Trogin *i): Item(g, n, o, i) {
 
             type = ENTITY_OBJECT;
             weight = DEFAULT_WEIGHT;

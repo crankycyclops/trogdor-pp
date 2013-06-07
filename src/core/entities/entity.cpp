@@ -21,7 +21,7 @@ namespace core { namespace entity {
    ObjectList    emptyObjectList;
 
 
-   Entity::Entity(Game *g, Trogout *o, Trogin *i, string n) {
+   Entity::Entity(Game *g, string n, Trogout *o, Trogin *i) {
 
       // not sure if this will ever actually be used, but meh...
       type = ENTITY_UNDEFINED;
