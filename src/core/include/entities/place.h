@@ -85,7 +85,7 @@ namespace core { namespace entity {
             Constructor for creating a new Place.  Requires reference to the
             containing Game object and a name.
          */
-         Place(Game *g, string n, Trogout *o, Trogin *i);
+         Place(Game *g, string n, Trogout *o, Trogin *i, Trogout *e);
 
          /*
             Returns a LuaTable object representing the Place.  Note that each

@@ -48,7 +48,8 @@ namespace core { namespace entity {
             Constructor for creating a new Thing.  Requires reference to the
             containing Game object and a name.
          */
-         inline Thing(Game *g, string n, Trogout *o, Trogin *i): Entity(g, n, o, i) {
+         inline Thing(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
+         Entity(g, n, o, i, e) {
 
             location = 0;
 

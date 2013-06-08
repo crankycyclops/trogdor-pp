@@ -56,6 +56,7 @@ namespace core { namespace entity {
          Game *game;
 
          Trogout *outStream;
+         Trogout *errStream;
          Trogin  *inStream;
 
          string name;
@@ -112,10 +113,12 @@ namespace core { namespace entity {
 
             Input:
                Reference to containing Game (Game *)
-               Pointer to output stream object (Trogout *)
                Name (string)
+               Pointer to output stream object (Trogout *)
+               Pointer to input stream object (Trogin *)
+               Pointer to error stream object (Trogout *)
          */
-         Entity(Game *g, string n, Trogout *o, Trogin *i);
+         Entity(Game *g, string n, Trogout *o, Trogin *i, Trogout *e);
 
          /*
             Constructor for cloning an Entity into another (with a unique name.)
@@ -153,6 +156,20 @@ namespace core { namespace entity {
                Trogout &
          */
          Trogout &out() {return *outStream;}
+
+         /*
+            Returns a reference to the Entity's error stream.  A typical use
+            would look something like this:
+
+            entityPtr->err() << "I'm a value!" << endl;
+
+            Input:
+               (none)
+
+            Output:
+               Trogout &
+         */
+         Trogout &err() {return *errStream;}
 
          /*
             Entity Destructor.

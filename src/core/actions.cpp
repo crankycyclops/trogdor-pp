@@ -267,7 +267,7 @@ namespace core {
                      break;
 
                   default:
-                     *game->trogerr << "Unknown error taking object.  "
+                     player->err() << "Unknown error taking object.  "
                         << "This is a bug." << endl;
                      break;
                }
@@ -340,7 +340,7 @@ namespace core {
                   break;
 
                default:
-                  *game->trogerr << "Unknown error dropping object.  This is a "
+                  player->err() << "Unknown error dropping object.  This is a "
                      << "bug." << endl;
                   break;
             }

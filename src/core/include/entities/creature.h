@@ -52,7 +52,8 @@ namespace core { namespace entity {
             Constructor for creating a new Creature.  Requires reference to the
             containing Game object and a name.
          */
-         inline Creature(Game *g, string n, Trogout *o, Trogin *i): Being(g, n, o, i) {
+         inline Creature(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
+         Being(g, n, o, i, e) {
 
             type = ENTITY_CREATURE;
 

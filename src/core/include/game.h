@@ -85,6 +85,9 @@ namespace core {
          entity::ItemMap      items;
          entity::ObjectMap    objects;
 
+         /* global error stream */
+         Trogout *errStream;
+
          /*
             Initializes Entities from what was parsed.
 
@@ -121,9 +124,6 @@ namespace core {
          /* lock on this to synchronize timer actions */
          pthread_mutex_t timerMutex;
 
-         // TODO: get rid of this
-         ostream *trogerr;  /* error output stream */
-
          /*
             Constructor for the Game class.
          */
@@ -133,6 +133,20 @@ namespace core {
             Destructor for the Game class.
          */
          ~Game();
+
+         /*
+            Returns a reference to the Game's error stream.  A typical use
+            would look something like this:
+
+            gamePtr->err() << "I'm an error message!" << endl;
+
+            Input:
+               (none)
+
+            Output:
+               Trogout &
+         */
+         Trogout &err() {return *errStream;}
 
          /*
             Gets a meta data value.  If the value isn't set, an empty string is
@@ -166,15 +180,6 @@ namespace core {
          inline void setMeta(string key, string value) {meta[key] = value;}
 
          /*
-            Sets the game's error output stream.
-
-            Input: new output stream (ostream)
-            Output: (none)
-            // TODO: get rid of this
-         */
-         inline void setTrogerr(ostream *newerr) {trogerr = newerr;}
-
-         /*
             Creates a new player and inserts it into the game.  Throws an
             exception if an entity with the given name already exists.
 
@@ -185,7 +190,8 @@ namespace core {
             Output:
                Pointer to Player object
          */
-         inline Player *createPlayer(string name, Trogout *outStream, Trogin *inStream) {
+         inline Player *createPlayer(string name, Trogout *outStream,
+         Trogin *inStream, Trogout *errStream) {
 
             if (entities.isset(name)) {
                stringstream s;
@@ -194,7 +200,8 @@ namespace core {
             }
 
             // clone the default player, giving it the specified name
-            Player *player = new Player(*defaultPlayer, name, outStream, inStream);
+            Player *player = new Player(*defaultPlayer, name, outStream,
+               inStream, errStream);
 
             // TODO: set other attributes from default
 

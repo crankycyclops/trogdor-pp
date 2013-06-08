@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
       }
 
       Player *player = currentGame->createPlayer("player", new core::StreamOut(&cout),
-         new core::StreamIn(&cin));
+         new core::StreamIn(&cin), new core::StreamOut(&cerr));
 
       currentGame->start();
       while (currentGame->inProgress() && currentGame->playerIsInGame("player")) {

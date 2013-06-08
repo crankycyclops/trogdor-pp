@@ -95,7 +95,7 @@ namespace core {
 
          // start the timer thread
          if (pthread_create(&thread, 0, &doTick, this)) {
-            *(game->trogerr) << "Failed to start the timer!\n";
+            game->err() << "Failed to start the timer!\n";
             exit(EXIT_FAILURE);
          }
 
@@ -137,7 +137,7 @@ namespace core {
       // insert job asynchronously to avoid deadlock when a function called by
       // a job inserts another job
       if (pthread_create(&thread, 0, &doInsertJob, arg)) {
-         *(game->trogerr) << "Failed to insert timer job!\n";
+         game->err() << "Failed to insert timer job!\n";
          exit(EXIT_FAILURE);
       }
       

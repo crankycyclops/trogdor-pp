@@ -21,7 +21,7 @@ namespace core { namespace entity {
    ObjectList    emptyObjectList;
 
 
-   Entity::Entity(Game *g, string n, Trogout *o, Trogin *i) {
+   Entity::Entity(Game *g, string n, Trogout *o, Trogin *i, Trogout *e) {
 
       // not sure if this will ever actually be used, but meh...
       type = ENTITY_UNDEFINED;
@@ -29,6 +29,7 @@ namespace core { namespace entity {
       game = g;
       name = n;
       outStream = o;
+      errStream = e;
       inStream = i;
 
       // this will usually be set again later
@@ -51,6 +52,7 @@ namespace core { namespace entity {
       shortDesc = e.shortDesc;
       msgs = e.msgs;
       outStream = e.outStream->clone();
+      errStream = e.errStream->clone();
       inStream = e.inStream->clone();
 
       // TODO: we need to do some kind of intelligent copying here, so that we

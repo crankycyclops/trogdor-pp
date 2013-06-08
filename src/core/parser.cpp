@@ -3,6 +3,7 @@
 #include "include/iostream/nullout.h"
 #include "include/iostream/placeout.h"
 #include "include/iostream/streamin.h"
+#include "include/iostream/streamout.h"
 
 #include "include/timer/jobs/wander.h"
 
@@ -23,7 +24,8 @@ namespace core {
 
       gameL = new LuaState();
       eventListener = new event::EventListener();
-      defaultPlayer = new entity::Player(game, "default", new NullOut(), new StreamIn(&cin));
+      defaultPlayer = new entity::Player(game, "default", new NullOut(),
+         new StreamIn(&cin), new StreamOut(&cerr));
    }
 
    /***************************************************************************/
@@ -200,7 +202,8 @@ namespace core {
          throw s.str();
       }
 
-      Room *room = new Room(game, name, new PlaceOut(), new StreamIn(&cin));
+      Room *room = new Room(game, name, new PlaceOut(), new StreamIn(&cin),
+         new StreamOut(&cerr));
 
       entities.set(name, room);
       places.set(name, room);
@@ -246,7 +249,8 @@ namespace core {
          throw s.str();
       }
 
-      Object *object = new Object(game, name, new NullOut(), new StreamIn(&cin));
+      Object *object = new Object(game, name, new NullOut(), new StreamIn(&cin),
+         new StreamOut(&cerr));
 
       entities.set(name, object);
       things.set(name, object);
@@ -292,7 +296,8 @@ namespace core {
          throw s.str();
       }
 
-      Creature *creature = new Creature(game, name, new NullOut(), new StreamIn(&cin));
+      Creature *creature = new Creature(game, name, new NullOut(),
+         new StreamIn(&cin), new StreamOut(&cerr));
 
       entities.set(name, creature);
       things.set(name, creature);

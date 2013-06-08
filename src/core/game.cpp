@@ -18,6 +18,8 @@
 #include "include/event/triggers/deathdrop.h"
 #include "include/event/triggers/respawn.h"
 
+#include "include/iostream/streamout.h"
+
 
 using namespace std;
 
@@ -26,8 +28,7 @@ namespace core {
 
    Game::Game() {
 
-      // default input and output streams
-      trogerr = &cerr;
+      errStream = new StreamOut(&cerr);
 
       inGame = false;
       actions = new ActionMap(this);
@@ -147,7 +148,7 @@ namespace core {
       }
 
       catch (string error) {
-         *trogerr << error << endl;
+         *errStream << error << endl;
          return false;
       }
 
