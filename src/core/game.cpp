@@ -214,7 +214,7 @@ namespace core {
             }
 
             else {
-               *player << "You haven't entered any commands yet!" << endl;
+               player->out() << "You haven't entered any commands yet!" << endl;
                return;
             }
          }
@@ -222,7 +222,7 @@ namespace core {
          Action *action = actions->getAction(command->getVerb());
 
          if (0 == action || !action->checkSyntax(command)) {
-            *player << "Sorry, I don't understand you." << endl;
+            player->out() << "Sorry, I don't understand you." << endl;
          }
 
          else {
@@ -234,7 +234,7 @@ namespace core {
       }
 
       else {
-         *player << "Sorry, I don't understand you." << endl;
+         player->out() << "Sorry, I don't understand you." << endl;
       }
 
       if (lastCommand != command) {

@@ -28,8 +28,8 @@ namespace core {
 
       // prompt the user until we get a response
       do {
-         *user << "\n> ";
-         user->flushOutput();
+         user->out() << "\n> ";
+         user->out().flush();
          user->in() >> commandStr;
       } while (0 == commandStr.length());
 

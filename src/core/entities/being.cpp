@@ -20,7 +20,7 @@ namespace core { namespace entity {
             string descDead = msgs.get("description_dead");
 
             if (descDead.length() > 0) {
-               *observer << descDead << endl;
+               observer->out() << descDead << endl;
             }
 
             else {
@@ -42,15 +42,15 @@ namespace core { namespace entity {
 
          if (!alive) {
 
-            *observer << "You see the corpse of " << getTitle() << '.';
+            observer->out() << "You see the corpse of " << getTitle() << '.';
 
             string descDead = msgs.get("descshort_dead");
 
             if (descDead.length() > 0) {
-               *observer << ' ' << descDead;
+               observer->out() << ' ' << descDead;
             }
 
-            *observer << endl;
+            observer->out() << endl;
          }
 
          else {
@@ -181,14 +181,14 @@ namespace core { namespace entity {
       // TODO: custom messaging
       // I do this first, and the other message second so that the Being that's
       // leaving won't see messages about its own departure and arrival ;)
-      *l << getTitle() << " arrives." << endl;
+      l->out() << getTitle() << " arrives." << endl;
 
       l->insertThing(this);
       setLocation(l);
       l->observe(this);
 
       // TODO: custom messaging
-      *oldLoc << getTitle() << " leaves." << endl;
+      oldLoc->out() << getTitle() << " leaves." << endl;
 
       game->setupEventHandler();
       game->addEventListener(l->getEventListener());
@@ -354,8 +354,7 @@ namespace core { namespace entity {
             return;
          }
 
-         *this << "You're already dead and cannot fight."
-            << endl;
+         out() << "You're already dead and cannot fight." << endl;
          return;
       }
 
@@ -372,7 +371,7 @@ namespace core { namespace entity {
             return;
          }
 
-         *this << defender->getTitle() << " is already dead." << endl;
+         out() << defender->getTitle() << " is already dead." << endl;
          return;
       }
 
@@ -390,8 +389,7 @@ namespace core { namespace entity {
             return;
          }
 
-         *this << defender->getTitle() << " is immortal and cannot die."
-            << endl;
+         out() << defender->getTitle() << " is immortal and cannot die." << endl;
          return;
       }
 
@@ -403,8 +401,8 @@ namespace core { namespace entity {
          game->addEventListener(weapon->getEventListener());
       }
 
-      *this << "You attack " << defender->getTitle() << '.' << endl;
-      *defender << "You're attacked by " << getTitle() << '!' << endl;
+      out() << "You attack " << defender->getTitle() << '.' << endl;
+      defender->out() << "You're attacked by " << getTitle() << '!' << endl;
 
       if (isAttackSuccessful(defender)) {
 
@@ -416,11 +414,11 @@ namespace core { namespace entity {
 
          defender->removeHealth(damage);
 
-         *this << "You dealt a blow to " << defender->getTitle() << "!" << endl;
-         *defender << getTitle() << " dealt you a blow!" << endl;
-         *this << defender->getTitle() << " loses " << damage <<
+         out() << "You dealt a blow to " << defender->getTitle() << "!" << endl;
+         defender->out() << getTitle() << " dealt you a blow!" << endl;
+         out() << defender->getTitle() << " loses " << damage <<
             " health points." << endl;
-         *defender << "You lose " << damage << " health points." << endl;
+         defender->out() << "You lose " << damage << " health points." << endl;
 
          if (!defender->isAlive()) {
             return;
@@ -433,8 +431,8 @@ namespace core { namespace entity {
             return;
          }
 
-         *this << "Your attack failed." << endl;
-         *defender << getTitle() << "'s attack failed." << endl;
+         out() << "Your attack failed." << endl;
+         defender->out() << getTitle() << "'s attack failed." << endl;
       }
 
       if (ENTITY_CREATURE == defender->getType() &&
@@ -531,7 +529,7 @@ namespace core { namespace entity {
       alive = false;
 
       if (showMessage) {
-         *getLocation() << title << " dies." << endl;
+         getLocation()->out() << title << " dies." << endl;
       }
 
       game->setupEventHandler();
@@ -557,7 +555,7 @@ namespace core { namespace entity {
                msg = name + " comes back to life.";
             }
 
-            *getLocation() << endl << msg << endl;
+            getLocation()->out() << endl << msg << endl;
          }
       }
    }

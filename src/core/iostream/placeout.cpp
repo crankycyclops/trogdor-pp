@@ -15,7 +15,7 @@ namespace core {
          ThingListCItPair things = place->getThings();
 
          for (ThingListCIt i = things.begin; i != things.end; i++) {
-            **i << getBufferStr() << endl;
+            (*i)->out() << getBufferStr() << endl;
          }
       }
    }

@@ -141,47 +141,26 @@ namespace core { namespace entity {
          Trogin &in() {return *inStream;}
 
          /*
+            Returns a reference to the Entity's output stream.  A typical use
+            would look something like this:
+
+            entityPtr->out() << "I'm a value!" << endl;
+
+            Input:
+               (none)
+
+            Output:
+               Trogout &
+         */
+         Trogout &out() {return *outStream;}
+
+         /*
             Entity Destructor.
 
             Input:
                (none)
          */
          ~Entity();
-
-         // string output operators
-         inline const Entity& operator<< (string val) const {*outStream << val; return *this;}
-         inline const Entity& operator<< (char const *val) const {*outStream << val; return *this;}
-         inline const Entity& operator<< (char val) const {*outStream << val; return *this;}
-
-         // arithmetic output operators
-         inline const Entity& operator<< (bool val) const {*outStream << val; return *this;}
-         inline const Entity& operator<< (short val) const {*outStream << val; return *this;}
-         inline const Entity& operator<< (unsigned short val) const {*outStream << val; return *this;}
-         inline const Entity& operator<< (int val) const {*outStream << val; return *this;}
-         inline const Entity& operator<< (unsigned int val) const {*outStream << val; return *this;}
-         inline const Entity& operator<< (long val) const {*outStream << val; return *this;}
-         inline const Entity& operator<< (unsigned long val) const {*outStream << val; return *this;}
-         inline const Entity& operator<< (float val) const {*outStream << val; return *this;}
-         inline const Entity& operator<< (double val) const {*outStream << val; return *this;}
-         inline const Entity& operator<< (void* val) const {*outStream << val; return *this;}
-
-         // special endl output operator
-         inline const Entity& operator<< (ostream& (*pf)(ostream&)) const {
-
-            *outStream << pf;
-            return *this;
-         }
-
-         /*
-            Flushes the output stream without sending a newline.
-
-            Input:
-               (none)
-
-            Output:
-               (none)
-         */
-         inline void flushOutput() const {outStream->flush();}
 
          /*
             Returns a LuaTable object representing the Entity.  Note that each
@@ -599,7 +578,7 @@ namespace core { namespace entity {
          // undo lookahead from above
          i--;
 
-         *user << "Do you mean the ";
+         user->out() << "Do you mean the ";
 
          // This loop is a little nasty.  The logic was A LOT nicer when I was
          // using a list and could get its size, but I had to hack and clobber
@@ -608,7 +587,7 @@ namespace core { namespace entity {
          // to whoever is forced to read it...
          for (i = items.begin; i != items.end; ) {
 
-            *user << (*i)->getName();
+            user->out() << (*i)->getName();
             i++;
 
             // hackety hack
@@ -618,18 +597,18 @@ namespace core { namespace entity {
 
             // temporary lookahead on a bi-directional const_iterator
             else if (++i == items.end) {
-               *user << " or the ";
+               user->out() << " or the ";
                i--;
             }
 
             // pre-decrement to undo temporary lookahead
             else if (--i != items.begin) {
-               *user << ", ";
+               user->out() << ", ";
             }
          }
 
-         *user << "? \n\n> ";
-         user->flushOutput();
+         user->out() << "? \n\n> ";
+         user->out().flush();
 
          string answer;
          user->in() >> answer;
