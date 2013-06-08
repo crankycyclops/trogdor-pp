@@ -10,6 +10,7 @@ namespace core {
 
       *stream << getBufferStr();
       stream->flush();
+      clear();
    }
 
    Trogout *StreamOut::clone() {
