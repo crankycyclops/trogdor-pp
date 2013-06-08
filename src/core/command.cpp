@@ -30,7 +30,7 @@ namespace core {
       do {
          *user << "\n> ";
          user->flushOutput();
-         *user >> commandStr;
+         user->in() >> commandStr;
       } while (0 == commandStr.length());
 
       parse(commandStr);

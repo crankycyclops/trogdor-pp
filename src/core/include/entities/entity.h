@@ -127,15 +127,26 @@ namespace core { namespace entity {
          Entity(const Entity &e, string n);
 
          /*
+            Returns a reference to the Entity's input stream.  A typical use
+            would look something like this:
+
+            entityPtr->in() >> stringVal;
+
+            Input:
+               (none)
+
+            Output:
+               Trogin &
+         */
+         Trogin &in() {return *inStream;}
+
+         /*
             Entity Destructor.
 
             Input:
                (none)
          */
          ~Entity();
-
-         // string input operator
-         inline const Entity& operator>> (string &val) const {*inStream >> val; return *this;}
 
          // string output operators
          inline const Entity& operator<< (string val) const {*outStream << val; return *this;}
@@ -621,7 +632,7 @@ namespace core { namespace entity {
          user->flushOutput();
 
          string answer;
-         *user >> answer;
+         user->in() >> answer;
 
          for (i = items.begin; i != items.end; i++) {
             if (0 == answer.compare((*i)->getName())) {
