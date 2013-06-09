@@ -1,3 +1,10 @@
+/*
+   This is a sample single player client whose sole purpose is to demo what the
+   Trogdor engine (in src/core) can do.  The engine itself supports multiple
+   players, and will soon have code that will allow input and output streams
+   to function over a network.
+*/
+
 #include <iostream>
 #include <cstdlib>
 
