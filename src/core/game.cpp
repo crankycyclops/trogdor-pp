@@ -71,26 +71,26 @@ namespace core {
 
    void Game::initActions() {
 
-      QuitAction *quit = new QuitAction;
-      actions->setAction("quit", quit);
+      actions->setAction("quit", new QuitAction);
 
-      CussAction *cuss = new CussAction;
-      actions->setAction("fuck", cuss);
-      actions->setAction("shit", cuss);
-      actions->setAction("bitch", cuss);
-      actions->setAction("damn", cuss);
-      actions->setAction("damnit", cuss);
-      actions->setAction("asshole", cuss);
-      actions->setAction("asshat", cuss);
+      actions->setAction("fuck", new CussAction);
+      setSynonym("shit", "fuck");
+      setSynonym("bitch", "fuck");
+      setSynonym("damn", "fuck");
+      setSynonym("damnit", "fuck");
+      setSynonym("asshole", "fuck");
+      setSynonym("asshat", "fuck");
 
-      InventoryAction *inv = new InventoryAction;
-      actions->setAction("inv", inv);
-      actions->setAction("inventory", inv);
-      actions->setAction("list", inv);
+      actions->setAction("inv", new InventoryAction);
+      setSynonym("inventory", "inv");
+      setSynonym("list", "inv");
 
       MoveAction *move = new MoveAction;
       actions->setAction("move", move);
-      actions->setAction("go", move);
+      setSynonym("go", "move");
+
+      // checkSyntax for MoveAction relies on direction names being mapped
+      // directly to the action object instead of just being a synonym.
       actions->setAction("north", move);
       actions->setAction("south", move);
       actions->setAction("east", move);
@@ -100,34 +100,30 @@ namespace core {
       actions->setAction("in", move);
       actions->setAction("out", move);
 
-      LookAction *look = new LookAction;
-      actions->setAction("look", look);
-      actions->setAction("observe", look);
-      actions->setAction("see", look);
-      actions->setAction("show", look);
-      actions->setAction("describe", look);
-      actions->setAction("examine", look);
+      actions->setAction("look", new LookAction);
+      setSynonym("observe", "look");
+      setSynonym("see", "look");
+      setSynonym("show", "look");
+      setSynonym("describe", "look");
+      setSynonym("examine", "look");
 
-      TakeAction *take = new TakeAction;
-      actions->setAction("take", take);
-      actions->setAction("acquire", take);
-      actions->setAction("get", take);
-      actions->setAction("grab", take);
-      actions->setAction("own", take);
-      actions->setAction("claim", take);
-      actions->setAction("carry", take);
+      actions->setAction("take", new TakeAction);
+      setSynonym("acquire", "take");
+      setSynonym("get", "take");
+      setSynonym("grab", "take");
+      setSynonym("own", "take");
+      setSynonym("claim", "take");
+      setSynonym("carry", "take");
 
-      DropAction *drop = new DropAction;
-      actions->setAction("drop", drop);
+      actions->setAction("drop", new DropAction);
 
-      AttackAction *attack = new AttackAction;
-      actions->setAction("attack", attack);
-      actions->setAction("hit", attack);
-      actions->setAction("harm", attack);
-      actions->setAction("kill", attack);
-      actions->setAction("injure", attack);
-      actions->setAction("maim", attack);
-      actions->setAction("fight", attack);
+      actions->setAction("attack", new AttackAction);
+      setSynonym("hit", "attack");
+      setSynonym("harm", "attack");
+      setSynonym("kill", "attack");
+      setSynonym("injure", "attack");
+      setSynonym("maim", "attack");
+      setSynonym("fight", "attack");
    }
 
    // NOTE: order is important!
@@ -220,7 +216,15 @@ namespace core {
             }
          }
 
-         Action *action = actions->getAction(command->getVerb());
+         string verb = command->getVerb();
+
+         Action *action = actions->getAction(verb);
+
+         // if the action doesn't exist, check if the verb is a synonym
+         if (0 == action) {
+            verb = getSynonym(verb);
+            action = actions->getAction(verb);
+         }
 
          if (0 == action || !action->checkSyntax(command)) {
             player->out() << "Sorry, I don't understand you." << endl;

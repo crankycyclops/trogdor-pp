@@ -49,8 +49,7 @@ namespace core {
 
       public:
 
-         // used for storing game meta data
-         typedef unordered_map<string, string> MetaMap;
+         typedef unordered_map<string, string> StringMap;
 
       private:
 
@@ -60,7 +59,8 @@ namespace core {
          Command    *lastCommand;  // the last executed command
          Timer      *timer;
 
-         MetaMap    meta;          // meta data
+         StringMap    meta;          // meta data
+         StringMap    synonyms;      // verb synonyms
 
          // used to call subscribed event listeners
          event::EventHandler *events;
@@ -178,6 +178,36 @@ namespace core {
                (none)
          */
          inline void setMeta(string key, string value) {meta[key] = value;}
+
+         /*
+            Gets a synonym.  If the value isn't set, an empty string is returned.
+
+            Input:
+               synonym (string)
+
+            Output:
+               associated verb (string)
+         */
+         inline string getSynonym(string synonym) const {
+
+            if (synonyms.find(synonym) == synonyms.end()) {
+               return "";
+            }
+
+            return synonyms.find(synonym)->second;
+         }
+
+         /*
+            Sets a synonym => verb association.
+
+            Input:
+               synonym (string)
+               verb (string)
+
+            Output:
+               (none)
+         */
+         inline void setSynonym(string synonym, string verb) {synonyms[synonym] = verb;}
 
          /*
             Creates a new player and inserts it into the game.  Throws an
