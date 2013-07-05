@@ -600,6 +600,9 @@ namespace core {
          void parseMeta();
          void parseMetaValue(string key);
 
+         void parseSynonyms();
+         void parseSynonymVerb(string action);
+
          /*
             Parse the Player section.  Throws an exception with an error message
             if there's a problem.

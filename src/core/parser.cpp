@@ -72,7 +72,11 @@ namespace core {
       // parse the remaining sections
       while (nextTag() && 1 == getDepth()) {
 
-         if (0 == getTagName().compare("events")) {
+         if (0 == getTagName().compare("synonyms")) {
+            parseSynonyms();
+         }
+
+         else if (0 == getTagName().compare("events")) {
             parseEvents(gameL, eventListener, 2);
          }
 
@@ -126,6 +130,37 @@ namespace core {
       game->setMeta(key, value);
 
       checkClosingTag(key);
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseSynonyms() {
+
+      stringstream s;
+
+      while (nextTag() && 2 == getDepth()) {
+
+         if (0 == getTagName().compare("verb")) {
+            parseSynonymVerb(getAttribute("action"));
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() <<
+               "> in <synonyms> section (line " <<
+               xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("synonyms");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseSynonymVerb(string action) {
+
+      game->setSynonym(parseString(), action);
+      checkClosingTag("verb");
    }
 
    /***************************************************************************/

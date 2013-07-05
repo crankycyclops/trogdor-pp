@@ -55,6 +55,20 @@
 
 
 
+   <!-- Optional section that allows you to map new words to existing verbs.
+        Verbs take precedence over synonyms, so if you specify, for example,
+        "take" as a synonym of "drop," since "take" is already defined as a
+        verb, that action will be executed instead of "drop." -->
+   <synonyms>
+
+      <!-- this example maps the new word "shutdown" to the existing verb
+           "quit." -->
+      <verb action="quit">shutdown</verb>
+
+   </synonyms>
+
+
+
    <!-- Global Event Handlers and Scripts (optional) -->
    <events>
 
