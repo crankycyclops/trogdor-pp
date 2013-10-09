@@ -2,6 +2,9 @@
 #define ENTITY_H
 
 
+#include <list>
+#include <set>
+
 #include "../messages.h"
 #include "../luatable.h"
 #include "../luastate.h"
