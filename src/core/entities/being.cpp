@@ -437,8 +437,7 @@ namespace core { namespace entity {
 
       if (ENTITY_CREATURE == defender->getType() &&
       static_cast<Creature *>(defender)->getCounterAttack() && allowCounterAttack) {
-         Object *defenderWeapon = static_cast<Creature *>(defender)->selectWeapon();
-         defender->attack(this, defenderWeapon, false);
+         defender->attack(this, static_cast<Creature *>(defender)->selectWeapon(), false);
       }
 
       game->setupEventHandler();
