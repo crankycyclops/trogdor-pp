@@ -49,7 +49,6 @@ namespace core {
 
          Game *game;             // the game in which the timer is running
          bool active;            // whether or not the timer is active
-         unsigned long lastId;   // last assigned job id
          unsigned long time;     // current time
          list<TimerJob *> queue; // queue of jobs to execute every n ticks
          pthread_t thread;       // thread id for timer thread

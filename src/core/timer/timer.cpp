@@ -23,7 +23,6 @@ namespace core {
 
       game = gameRef;
       active = false;
-      lastId = 0;
       time = 0;
    }
 
