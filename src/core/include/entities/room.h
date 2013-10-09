@@ -89,7 +89,8 @@ namespace core { namespace entity {
 
             Returns a null pointer if there are no connections.
 
-            This is very hokey...
+            This is very hokey, but ultimately allows us to get a random
+            connection, which is useful specifically for Creatures that wander.
 
             Input:
                index (int)

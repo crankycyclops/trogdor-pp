@@ -265,6 +265,22 @@ namespace core { namespace entity {
 
             wanderSettings.wanderlust = d;
          }
+
+         /*
+            Selects a weapon from the Creature's inventory, if one is available.
+            If no weapon is available, return 0.
+
+            Input:
+               (none)
+
+            Output:
+               Object* (weapon, or 0 if none)
+         */
+         inline Object *selectWeapon() {
+
+            // TODO: stub
+            return 0;
+         }
    };
 }}
 

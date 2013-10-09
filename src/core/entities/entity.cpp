@@ -68,6 +68,7 @@ namespace core { namespace entity {
       delete L;
       delete triggers;
       delete outStream;
+      delete errStream;
       delete inStream;
    }
 

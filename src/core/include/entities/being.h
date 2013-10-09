@@ -668,6 +668,9 @@ namespace core { namespace entity {
 
             Output:
                (none)
+
+            // TODO: Items are weapons, not Objects. Fix this, but make sure to
+            // investigate all logical consequences, including EventArgs...
          */
          void attack(Being *defender, Object *weapon, bool allowCounterAttack = true);
 

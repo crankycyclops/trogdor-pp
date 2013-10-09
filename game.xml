@@ -47,7 +47,7 @@
    <meta>
 
       <!-- Meta data is represented by key/value pairs.  The tag name can be
-           anything as long as it's properly terminated. -->
+           anything as long as it's valid XML and properly terminated. -->
       <title>Super Funtime Sample Game</title>
       <author>James Colannino</author>
 
