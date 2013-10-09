@@ -2,6 +2,7 @@
 #include <cstring>
 #include <cstdlib>
 
+#include "include/vocabulary.h"
 #include "include/actions.h"
 
 using namespace std;
@@ -50,7 +51,8 @@ namespace core {
          "You, sir, have a foul mouth!",
          "Well, ?&*@! to you too!",
          "Do you kiss your mother with that mouth?",
-         "Classy."
+         "Classy.",
+         "Swear much?"
       };
 
       static int arrSize = sizeof(responses) / sizeof (const char *);
@@ -73,7 +75,7 @@ namespace core {
 
    bool InventoryAction::checkSyntax(Command *command) {
 
-      // A valid quit command should only be one word, a verb
+      // A valid inventory command should only be one word, a verb
       if (command->getDirectObject().length() > 0 ||
       command->getIndirectObject().length() > 0) {
          return false;
@@ -383,14 +385,7 @@ namespace core {
       }
 
       // make sure the direction specified by the object was valid
-      string direction = dobj.length() > 0 ? dobj : iobj;
-      for (int i = 0; g_directions[i] != 0; i++) {
-         if (0 == strcmp(direction.c_str(), g_directions[i])) {
-            return true;
-         }
-      }
-
-      return false;
+      return isDirection(dobj.length() > 0 ? dobj : iobj);
    }
 
 
@@ -400,10 +395,8 @@ namespace core {
       string direction = "";
 
       // direction is implied in the verb
-      for (int i = 0; g_directions[i] != 0; i++) {
-         if (0 == strcmp(command->getVerb().c_str(), g_directions[i])) {
-            direction = g_directions[i];
-         }
+      if (isDirection(command->getVerb())) {
+         direction = command->getVerb();
       }
 
       // direction was supplied as the direct or indirect object of another

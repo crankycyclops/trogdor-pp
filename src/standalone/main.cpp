@@ -38,6 +38,7 @@ int main(int argc, char **argv) {
          new core::StreamIn(&cin), new core::StreamOut(&cerr));
 
       currentGame->start();
+
       while (currentGame->inProgress() && currentGame->playerIsInGame("player")) {
          currentGame->processCommand(player);
       }

@@ -4,6 +4,9 @@
 
 #ifndef VOCABULARY_CPP
 
+using namespace std;
+
+
 /* list of valid directions */
 extern const char *g_directions[];
 
