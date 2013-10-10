@@ -209,51 +209,17 @@ namespace core { namespace entity {
          virtual LuaTable *getLuaTable() const;
 
          /*
-            Returns the Entity's most specific type.
+            Returns a string representation of the given Entity type.
 
             Input:
-               (none)
-
-            Output:
-               (none)
-         */
-         inline enum EntityType getType() const {return types.back();}
-
-         /*
-            Returns true if the Entity is of the given type. Examines the whole
-            inheritance hierarchy, and can, for example, tell you if a Creature
-            is a Being, Thing, etc.
-
-            Input:
-               Entity type (enum EntityType)
-
-            Output:
-               true if the Entity is of the given type and false if not
-         */
-         inline bool isType(enum EntityType type) const {
-
-            for (list<enum EntityType>::const_iterator i = types.begin();
-            i != types.end(); i++) {
-               if (type == *i) {
-                  return true;
-               }
-            }
-
-            return false;
-         }
-
-         /*
-            Returns a string representation of the Entity's most specific type.
-
-            Input:
-               (none)
+               enum EntityType
 
             Output:
                Type name (string)
          */
-         inline string getTypeName() const {
+         inline string typeToStr(enum EntityType e) const {
 
-            switch (types.back()) {
+            switch (e) {
 
                case ENTITY_PLACE:
                   return "place";
@@ -282,6 +248,51 @@ namespace core { namespace entity {
                default:
                   return "undefined";
             }
+         }
+
+         /*
+            Returns the Entity's most specific type.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline enum EntityType getType() const {return types.back();}
+
+         /*
+            Returns a string representation of the Entity's most specific type.
+
+            Input:
+               (none)
+
+            Output:
+               Type name (string)
+         */
+         inline string getTypeName() const {return typeToStr(types.back());}
+
+         /*
+            Returns true if the Entity is of the given type. Examines the whole
+            inheritance hierarchy, and can, for example, tell you if a Creature
+            is a Being, Thing, etc.
+
+            Input:
+               Entity type (enum EntityType)
+
+            Output:
+               true if the Entity is of the given type and false if not
+         */
+         inline bool isType(enum EntityType type) const {
+
+            for (list<enum EntityType>::const_iterator i = types.begin();
+            i != types.end(); i++) {
+               if (type == *i) {
+                  return true;
+               }
+            }
+
+            return false;
          }
 
          /*
