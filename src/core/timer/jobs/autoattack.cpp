@@ -23,7 +23,7 @@ namespace core {
          return;
       }
 
-      // TODO: intelligent weapon selection?
-      aggressor->attack(defender, 0);
+      aggressor->attack(defender, aggressor->selectWeapon());
    }
 }
+

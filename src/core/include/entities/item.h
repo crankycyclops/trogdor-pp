@@ -13,7 +13,7 @@ namespace core { namespace entity {
       public:
 
          static const bool DEFAULT_IS_WEAPON = false;
-         static const int DEFAULT_DAMAGE = 0;
+         static const int  DEFAULT_DAMAGE = 1;
 
          // by default, a Being can take and drop the Item
          static const bool DEFAULT_TAKEABLE = true;

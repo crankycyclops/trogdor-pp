@@ -2,6 +2,7 @@
 #define CREATURE_H
 
 
+#include "../dice.h"
 #include "being.h"
 
 
@@ -270,17 +271,17 @@ namespace core { namespace entity {
             Selects a weapon from the Creature's inventory, if one is available.
             If no weapon is available, return 0.
 
+            This function will use the Creature's dexterity to determine how
+            likely it is that the Creature will be able to grab a weapon from
+            its inventory for an attack instead of using its bare hands.
+
             Input:
                (none)
 
             Output:
                Object* (weapon, or 0 if none)
          */
-         inline Object *selectWeapon() {
-
-            // TODO: stub
-            return 0;
-         }
+         Object *selectWeapon();
    };
 }}
 

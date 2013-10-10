@@ -559,10 +559,6 @@ namespace core { namespace entity {
             i != attributes.values.end(); i++) {
                attributes.initialTotal += i->second;
             }
-
-            // TODO: replace this with iteration through all values set in map
-            //attributes.initialTotal = getAttribute("strength") +
-            //   getAttribute("dexterity") + getAttribute("intelligence");
          }
 
          /*
