@@ -23,8 +23,8 @@ namespace core { namespace entity {
 
    Entity::Entity(Game *g, string n, Trogout *o, Trogin *i, Trogout *e) {
 
-      // not sure if this will ever actually be used, but meh...
-      type = ENTITY_UNDEFINED;
+      // lame, but...legacy code, ya know?
+      types.push_back(ENTITY_UNDEFINED);
 
       game = g;
       name = n;
@@ -45,7 +45,7 @@ namespace core { namespace entity {
 
       name = n;
 
-      type = e.type;
+      types = e.types;
       game = e.game;
       title = e.title;
       longDesc = e.longDesc;

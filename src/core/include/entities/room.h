@@ -31,7 +31,7 @@ namespace core { namespace entity {
          inline Room(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
          Place(g, n, o, i, e) {
 
-            type = ENTITY_ROOM;
+            types.push_back(ENTITY_ROOM);
          }
 
          /*

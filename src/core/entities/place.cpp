@@ -15,6 +15,7 @@ namespace core { namespace entity {
    Place::Place(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
    Entity(g, n, o, i, e) {
 
+      types.push_back(ENTITY_PLACE);
       static_cast<PlaceOut *>(o)->setPlace(this);
    }
 

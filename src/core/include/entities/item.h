@@ -43,6 +43,8 @@ namespace core { namespace entity {
             droppable = DEFAULT_DROPPABLE;
             weapon = DEFAULT_IS_WEAPON;
             damage = DEFAULT_DAMAGE;
+
+            types.push_back(ENTITY_ITEM);
          }
 
          /*

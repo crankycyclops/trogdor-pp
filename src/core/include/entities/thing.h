@@ -52,6 +52,7 @@ namespace core { namespace entity {
          Entity(g, n, o, i, e) {
 
             location = 0;
+            types.push_back(ENTITY_THING);
 
             // Name is also an alias that we can reference a Thing by
             aliases.push_back(n);

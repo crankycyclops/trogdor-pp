@@ -22,7 +22,7 @@ namespace core { namespace entity {
          inline Player(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
          Being(g, n, o, i, e) {
 
-            type = ENTITY_PLAYER;
+            types.push_back(ENTITY_PLAYER);
 
             attackable = true;
          }

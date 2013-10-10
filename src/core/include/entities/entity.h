@@ -42,10 +42,14 @@ namespace core { namespace entity {
    // used for run-time check of an Entity's type
    enum EntityType {
       ENTITY_UNDEFINED = 1,
-      ENTITY_ROOM = 2,
-      ENTITY_PLAYER = 3,
-      ENTITY_CREATURE = 4,
-      ENTITY_OBJECT = 5
+      ENTITY_PLACE = 2,
+      ENTITY_ROOM = 3,
+      ENTITY_THING = 4,
+      ENTITY_ITEM = 5,
+      ENTITY_OBJECT = 6,
+      ENTITY_BEING = 7,
+      ENTITY_PLAYER = 8,
+      ENTITY_CREATURE = 9
    };
 
    /***************************************************************************/
@@ -54,7 +58,8 @@ namespace core { namespace entity {
 
       protected:
 
-         enum EntityType type;
+         // every kind of Entity that we are by virtue of inheritance
+         list<enum EntityType> types;
 
          Game *game;
 
@@ -204,7 +209,7 @@ namespace core { namespace entity {
          virtual LuaTable *getLuaTable() const;
 
          /*
-            Returns the Entity's type.
+            Returns the Entity's most specific type.
 
             Input:
                (none)
@@ -212,10 +217,33 @@ namespace core { namespace entity {
             Output:
                (none)
          */
-         inline enum EntityType getType() const {return type;}
+         inline enum EntityType getType() const {return types.back();}
 
          /*
-            Returns a string representation of the Entity's type.
+            Returns true if the Entity is of the given type. Examines the whole
+            inheritance hierarchy, and can, for example, tell you if a Creature
+            is a Being, Thing, etc.
+
+            Input:
+               Entity type (enum EntityType)
+
+            Output:
+               true if the Entity is of the given type and false if not
+         */
+         inline bool isType(enum EntityType type) const {
+
+            for (list<enum EntityType>::const_iterator i = types.begin();
+            i != types.end(); i++) {
+               if (type == *i) {
+                  return true;
+               }
+            }
+
+            return false;
+         }
+
+         /*
+            Returns a string representation of the Entity's most specific type.
 
             Input:
                (none)
@@ -225,10 +253,22 @@ namespace core { namespace entity {
          */
          inline string getTypeName() const {
 
-            switch (type) {
+            switch (types.back()) {
+
+               case ENTITY_PLACE:
+                  return "place";
 
                case ENTITY_ROOM:
                   return "room";
+
+               case ENTITY_THING:
+                  return "thing";
+
+               case ENTITY_ITEM:
+                  return "item";
+
+               case ENTITY_BEING:
+                  return "being";
 
                case ENTITY_OBJECT:
                   return "object";

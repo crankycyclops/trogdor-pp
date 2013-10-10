@@ -26,7 +26,7 @@ namespace core { namespace entity {
          inline Object(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
          Item(g, n, o, i, e) {
 
-            type = ENTITY_OBJECT;
+            types.push_back(ENTITY_OBJECT);
             weight = DEFAULT_WEIGHT;
          }
 

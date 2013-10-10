@@ -56,7 +56,7 @@ namespace core { namespace entity {
          inline Creature(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
          Being(g, n, o, i, e) {
 
-            type = ENTITY_CREATURE;
+            types.push_back(ENTITY_CREATURE);
 
             allegiance = DEFAULT_ALLEGIANCE;
             counterAttack = DEFAULT_COUNTER_ATTACK;

@@ -185,6 +185,8 @@ namespace core { namespace entity {
             inventory.count = 0;
             inventory.weight = DEFAULT_INVENTORY_WEIGHT;
             inventory.currentWeight = 0;
+
+            types.push_back(ENTITY_BEING);
          }
 
          /*
