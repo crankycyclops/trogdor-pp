@@ -81,7 +81,7 @@ namespace core {
          }
 
          else if (0 == getTagName().compare("meta")) {
-            parseMeta();
+            parseGameMeta();
          }
 
          else if (0 == getTagName().compare("player")) {
@@ -112,10 +112,10 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseMeta() {
+   void Parser::parseGameMeta() {
 
       while (nextTag() && 2 == getDepth()) {
-         parseMetaValue(getTagName());
+         parseGameMetaValue(getTagName());
       }
 
       checkClosingTag("meta");
@@ -123,12 +123,30 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseMetaValue(string key) {
+   void Parser::parseGameMetaValue(string key) {
 
       string value = parseString();
-
       game->setMeta(key, value);
+      checkClosingTag(key);
+   }
 
+   /***************************************************************************/
+
+   void Parser::parseEntityMeta(Entity *entity) {
+
+      while (nextTag() && 4 == getDepth()) {
+         parseEntityMetaValue(getTagName(), entity);
+      }
+
+      checkClosingTag("meta");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseEntityMetaValue(string key, Entity *entity) {
+
+      string value = parseString();
+      entity->setMeta(key, value);
       checkClosingTag(key);
    }
 
@@ -518,6 +536,10 @@ namespace core {
             parseThingAliases(object);
          }
 
+         else if (0 == getTagName().compare("meta")) {
+            parseEntityMeta(object);
+         }
+
          else if (0 == getTagName().compare("messages")) {
             Messages *m = parseMessages(4);
             object->setMessages(*m);
@@ -736,6 +758,10 @@ namespace core {
             parseThingAliases(creature);
          }
 
+         else if (0 == getTagName().compare("meta")) {
+            parseEntityMeta(creature);
+         }
+
          else if (0 == getTagName().compare("messages")) {
             Messages *m = parseMessages(4);
             creature->setMessages(*m);
@@ -841,6 +867,10 @@ namespace core {
 
          else if (0 == getTagName().compare("events")) {
             parseEvents(room->L, room->triggers, 4);
+         }
+
+         else if (0 == getTagName().compare("meta")) {
+            parseEntityMeta(room);
          }
 
          else if (0 == getTagName().compare("messages")) {

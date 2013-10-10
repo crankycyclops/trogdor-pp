@@ -589,7 +589,7 @@ namespace core {
          void parseManifestObject();
 
          /*
-            Parses meta data for the game.
+            Parses meta data for entities or for the game.
 
             Input:
                (none)
@@ -597,8 +597,10 @@ namespace core {
             Output:
                (none)
          */
-         void parseMeta();
-         void parseMetaValue(string key);
+         void parseGameMeta();
+         void parseGameMetaValue(string key);
+         void parseEntityMeta(Entity *entity);
+         void parseEntityMetaValue(string key, Entity *entity);
 
          void parseSynonyms();
          void parseSynonymVerb(string action);

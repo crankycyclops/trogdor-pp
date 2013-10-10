@@ -79,6 +79,9 @@ namespace core { namespace entity {
          // maintains a list of all Beings that have observed the Entity
          unordered_map<Being *, bool> observedByMap;
 
+         // meta data associated with the entity
+         unordered_map<string, string> meta;
+
          /*
             Displays an Entity.  This may be overridden by Entity types that
             have a different display format.
@@ -238,6 +241,25 @@ namespace core { namespace entity {
          }
 
          /*
+            Gets a meta data value.  If the value isn't set, an empty string is
+            returned.
+
+            Input:
+               meta key (string)
+
+            Output:
+               meta value (string)
+         */
+         inline string getMeta(string key) const {
+
+            if (meta.find(key) == meta.end()) {
+               return "";
+            }
+
+            return meta.find(key)->second;
+         }
+
+         /*
             Returns the Entity's name.
 
             Input:
@@ -354,6 +376,18 @@ namespace core { namespace entity {
                Message (string)
          */
          inline string getMessage(string message) {return msgs.get(message.c_str());}
+
+         /*
+            Sets a meta data value.
+
+            Input:
+               meta key (string)
+               value (string)
+
+            Output:
+               (none)
+         */
+         inline void setMeta(string key, string value) {meta[key] = value;}
 
          /*
             Sets the Entity's title.

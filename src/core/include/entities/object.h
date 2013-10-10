@@ -15,7 +15,7 @@ namespace core { namespace entity {
 
       protected:
 
-         int weight;       // how much weight Item uses in a Being's inventory
+         int weight;       // how much weight Object uses in a Being's inventory
 
       public:
 

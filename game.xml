@@ -229,12 +229,15 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
             <alias>flame</alias>
          </aliases>
 
-      </object>
+         <!-- Arbitrary meta data can be set on individual entities, just like
+              game meta data. This can be useful when you need to associate
+              extra values with an object, perhaps for a script to make use of.
+              The same section is also valid for rooms and creatures, and follows
+              the same format. -->
+         <meta>
+            <somekey>This is a meta value assigned to key somekey</somekey>
+         </meta>
 
-      <!-- owned by Trogdor the Burninator -->
-      <object name="stick">
-         <description>It's long, narrow and definitely looks like a stick.</description>
-         <weight>1</weight>
       </object>
 
       <object name="rock">
@@ -291,6 +294,13 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
          <!-- Amount of damage object does as a weapon (optional: default 1) -->
          <damage>10</damage>
 
+      </object>
+
+      <!-- owned by Trogdor the Burninator -->
+      <object name="stick">
+         <description>It's long, narrow and definitely looks like a stick.</description>
+         <weight>1</weight>
+         <weapon>1</weapon>
       </object>
 
    </objects>
