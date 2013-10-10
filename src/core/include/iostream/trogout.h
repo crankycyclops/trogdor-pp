@@ -21,7 +21,11 @@ namespace core {
 
       private:
 
-         stringstream buffer;
+         // where we want to route our output
+         string        channel;
+
+         // the string we're going to output
+         stringstream  buffer;
 
       protected:
 
@@ -48,6 +52,30 @@ namespace core {
          inline void clear() {buffer.str("");}
 
       public:
+
+         /*
+            Returns the currently set channel, which tells the stream where to
+            route its output.
+
+            Input:
+               (none)
+
+            Output:
+               A string naming the channel
+         */
+         inline string getChannel() {return channel;}
+
+         /*
+            Tells the stream where to route the output. The child class is free
+            to ignore this if it so wishes.
+
+            Input:
+               A string naming the channel
+
+            Output:
+               (none)
+         */
+         inline void setChannel(string c) {channel = c;}
 
          /*
             Returns a new instance of the output stream.  This is so that Entity

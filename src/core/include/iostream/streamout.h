@@ -11,7 +11,8 @@ namespace core {
 
 
    /*
-      Output "stream" that wraps around the specified ostream object.
+      Output "stream" that wraps around the specified ostream object. This
+      particular object happens to ignore channels.
    */
    class StreamOut: public Trogout {
 

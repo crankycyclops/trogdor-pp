@@ -156,12 +156,16 @@ namespace core { namespace entity {
             entityPtr->out() << "I'm a value!" << endl;
 
             Input:
-               (none)
+               Output stream channel (default: notifications)
 
             Output:
                Trogout &
          */
-         Trogout &out() {return *outStream;}
+         Trogout &out(string channel = "notifications") {
+
+            outStream->setChannel(channel);
+            return *outStream;
+         }
 
          /*
             Returns a reference to the Entity's error stream.  A typical use
