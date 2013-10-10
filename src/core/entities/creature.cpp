@@ -57,8 +57,8 @@ namespace core { namespace entity {
       Dice d;
 
       // calculate probability that Creature will use a weapon
-      double p = getAttributeFactor("dexterity") * 0.7;
-      p = p > 0.0 ? p + 0.3 : 0.0;
+      double p = getAttributeFactor("dexterity") * 0.8;
+      p = p > 0.0 ? p + 0.2 : 0.0;
 
       // creature was able to use a weapon
       if (d.get() < p) {
@@ -67,8 +67,19 @@ namespace core { namespace entity {
             buildWeaponCache();
          }
 
-         // TODO: choose weapon with some probability
-         return *weaponCache.begin();
+         double pSelectWeapon = getAttributeFactor("intelligence") * 0.8;
+         pSelectWeapon = pSelectWeapon > 0.0 ? pSelectWeapon + 0.2 : 0.0;
+
+         // select the next strongest weapon with some probability determined by
+         // intelligence
+         for (ObjectListCIt i = weaponCache.begin(); i != weaponCache.end(); i++) {
+            if (d.roll() < pSelectWeapon) {
+               return *i;
+            }
+         }
+
+         // we got all the way to the end, so return the weakest weapon
+         return weaponCache.back();
       }
 
       // creature either didn't have a weapon or couldn't use one
