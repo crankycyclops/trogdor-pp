@@ -249,6 +249,8 @@ namespace core { namespace entity {
       }
 
       else {
+         object->getLocation()->out("notifications") << getTitle() << " takes "
+            << object->getTitle() << "." << endl;
          object->getLocation()->removeThing(object);
       }
 
@@ -291,6 +293,8 @@ namespace core { namespace entity {
          throw DROP_UNDROPPABLE;
       }
 
+      location->out("notifications") << getTitle() << " drops "
+         << object->getTitle() << "." << endl;
       location->insertThing(object);
       removeFromInventory(object);
 
