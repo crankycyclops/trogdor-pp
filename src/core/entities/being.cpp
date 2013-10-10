@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include "../include/entities/being.h"
+#include "../include/entities/creature.h"
 #include "../include/entities/object.h"
 
 #include "../include/game.h"
@@ -133,6 +134,11 @@ namespace core { namespace entity {
 
       inventory.count++;
       object->setOwner(this);
+
+      if (isType(ENTITY_CREATURE) && object->isWeapon()) {
+         static_cast<Creature *>(this)->clearWeaponCache();
+      }
+
       return true;
    }
 
@@ -150,6 +156,10 @@ namespace core { namespace entity {
       inventory.count--;
       inventory.currentWeight -= object->getWeight();
       object->setOwner(0);
+
+      if (isType(ENTITY_CREATURE) && object->isWeapon()) {
+         static_cast<Creature *>(this)->clearWeaponCache();
+      }
    }
 
    /***************************************************************************/

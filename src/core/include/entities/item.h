@@ -158,7 +158,7 @@ namespace core { namespace entity {
             Output:
                (none)
          */
-         inline void setIsWeapon(bool w) {weapon = w;}
+         void setIsWeapon(bool w);
 
          /*
             Sets amount of damage Item does if it's a weapon (measured in hit

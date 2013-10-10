@@ -27,6 +27,13 @@ namespace core { namespace entity {
          static const bool DEFAULT_AUTO_ATTACK_REPEAT = false;
          static const int  DEFAULT_AUTO_ATTACK_INTERVAL = 5;
 
+      private:
+
+         // Cached list of weapons in the Creature's inventory, sorted from
+         // greatest to least amount of damage done. Used to speed up
+         // intelligent weapon selection during combat.
+         ObjectList weaponCache;
+
       protected:
 
          struct {
@@ -79,6 +86,34 @@ namespace core { namespace entity {
                LuaTable object
          */
          virtual LuaTable *getLuaTable() const;
+
+         /*
+            Clears the cached sorted list of weapons in the Creature's inventory.
+            The interface needs to be public so that if an Object in the
+            Creature's inventory has its weapon attribute turned off, perhaps by
+            a script, then Object::setWeapon() can signal the Creature that its
+            cache needs to be rebuilt.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline void clearWeaponCache() {weaponCache.clear();}
+
+         /*
+            Builds cached sorted list of weapons in the Creature's inventory.
+            This is used to speed up weapon selection during combat, so we don't
+            have to constantly build this list on the fly.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void buildWeaponCache();
 
          /*
             Returns the Creature's allegiance.

@@ -25,6 +25,33 @@ namespace core { namespace entity {
       return table;
    }
 
+   void Creature::buildWeaponCache() {
+
+      ObjectSetCItPair objs = getInventoryObjects();
+
+      for (ObjectSetCIt o = objs.begin; o != objs.end; o++) {
+
+         if ((*o)->isWeapon()) {
+
+            bool inserted = false;
+
+            // insert weapon into the cache in sorted order
+            for (ObjectListIt i = weaponCache.begin(); i != weaponCache.end(); i++) {
+               if ((*o)->getDamage() >= (*i)->getDamage()) {
+                  weaponCache.insert(i, *o);
+                  inserted = true;
+                  break;
+               }
+            }
+
+            // item belongs at the very back
+            if (!inserted) {
+               weaponCache.push_back(*o);
+            }
+         }
+      }
+   }
+
    Object *Creature::selectWeapon() {
 
       Dice d;
@@ -36,18 +63,12 @@ namespace core { namespace entity {
       // creature was able to use a weapon
       if (d.get() < p) {
 
-         // TODO: order weapons according to strength, in descending
-         // order, then loop through them and select next strongest
-         // weapon with some probability determined by intelligence
-
-         ObjectSetCItPair objs = getInventoryObjects();
-
-         // for now, just grab the first weapon we can find...
-         for (ObjectSetCIt o = objs.begin; o != objs.end; o++) {
-            if ((*o)->isWeapon()) {
-               return *o;
-            }
+         if (0 == weaponCache.size()) {
+            buildWeaponCache();
          }
+
+         // TODO: choose weapon with some probability
+         return *weaponCache.begin();
       }
 
       // creature either didn't have a weapon or couldn't use one
