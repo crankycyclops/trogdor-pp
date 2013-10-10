@@ -401,8 +401,23 @@ namespace core { namespace entity {
          game->addEventListener(weapon->getEventListener());
       }
 
-      out() << "You attack " << defender->getTitle() << '.' << endl;
-      defender->out() << "You're attacked by " << getTitle() << '!' << endl;
+      // send notification to the aggressor
+      out() << "You attack " << defender->getTitle();
+
+      if (0 != weapon) {
+         out() << " with " << weapon->getTitle();
+      }
+
+      out() << '.' << endl;
+
+      // send notification to the defender
+      defender->out() << "You're attacked by " << getTitle();
+
+      if (0 != weapon) {
+         defender->out() << " with " << weapon->getTitle();
+      }
+
+      defender->out() << '!' << endl;
 
       if (isAttackSuccessful(defender)) {
 
