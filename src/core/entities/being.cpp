@@ -21,7 +21,7 @@ namespace core { namespace entity {
             string descDead = msgs.get("description_dead");
 
             if (descDead.length() > 0) {
-               observer->out() << descDead << endl;
+               observer->out("display") << descDead << endl;
             }
 
             else {
@@ -43,15 +43,15 @@ namespace core { namespace entity {
 
          if (!alive) {
 
-            observer->out() << "You see the corpse of " << getTitle() << '.';
+            observer->out("display") << "You see the corpse of " << getTitle() << '.';
 
             string descDead = msgs.get("descshort_dead");
 
             if (descDead.length() > 0) {
-               observer->out() << ' ' << descDead;
+               observer->out("display") << ' ' << descDead;
             }
 
-            observer->out() << endl;
+            observer->out("display") << endl;
          }
 
          else {
@@ -191,14 +191,14 @@ namespace core { namespace entity {
       // TODO: custom messaging
       // I do this first, and the other message second so that the Being that's
       // leaving won't see messages about its own departure and arrival ;)
-      l->out() << getTitle() << " arrives." << endl;
+      l->out("notifications") << getTitle() << " arrives." << endl;
 
       l->insertThing(this);
       setLocation(l);
       l->observe(this);
 
       // TODO: custom messaging
-      oldLoc->out() << getTitle() << " leaves." << endl;
+      oldLoc->out("notifications") << getTitle() << " leaves." << endl;
 
       game->setupEventHandler();
       game->addEventListener(l->getEventListener());
@@ -364,7 +364,7 @@ namespace core { namespace entity {
             return;
          }
 
-         out() << "You're already dead and cannot fight." << endl;
+         out("combat") << "You're already dead and cannot fight." << endl;
          return;
       }
 
@@ -381,7 +381,7 @@ namespace core { namespace entity {
             return;
          }
 
-         out() << defender->getTitle() << " is already dead." << endl;
+         out("combat") << defender->getTitle() << " is already dead." << endl;
          return;
       }
 
@@ -399,7 +399,8 @@ namespace core { namespace entity {
             return;
          }
 
-         out() << defender->getTitle() << " is immortal and cannot die." << endl;
+         out("combat") << defender->getTitle()
+            << " is immortal and cannot die." << endl;
          return;
       }
 
@@ -412,22 +413,22 @@ namespace core { namespace entity {
       }
 
       // send notification to the aggressor
-      out() << "You attack " << defender->getTitle();
+      out("combat") << "You attack " << defender->getTitle();
 
       if (0 != weapon) {
-         out() << " with " << weapon->getTitle();
+         out("combat") << " with " << weapon->getTitle();
       }
 
-      out() << '.' << endl;
+      out("combat") << '.' << endl;
 
       // send notification to the defender
-      defender->out() << "You're attacked by " << getTitle();
+      defender->out("combat") << "You're attacked by " << getTitle();
 
       if (0 != weapon) {
-         defender->out() << " with " << weapon->getTitle();
+         defender->out("combat") << " with " << weapon->getTitle();
       }
 
-      defender->out() << '!' << endl;
+      defender->out("combat") << '!' << endl;
 
       if (isAttackSuccessful(defender)) {
 
@@ -439,11 +440,11 @@ namespace core { namespace entity {
 
          defender->removeHealth(damage);
 
-         out() << "You dealt a blow to " << defender->getTitle() << "!" << endl;
-         defender->out() << getTitle() << " dealt you a blow!" << endl;
-         out() << defender->getTitle() << " loses " << damage <<
+         out("combat") << "You dealt a blow to " << defender->getTitle() << "!" << endl;
+         defender->out("combat") << getTitle() << " dealt you a blow!" << endl;
+         out("combat") << defender->getTitle() << " loses " << damage <<
             " health points." << endl;
-         defender->out() << "You lose " << damage << " health points." << endl;
+         defender->out("combat") << "You lose " << damage << " health points." << endl;
 
          if (!defender->isAlive()) {
             return;
@@ -456,8 +457,8 @@ namespace core { namespace entity {
             return;
          }
 
-         out() << "Your attack failed." << endl;
-         defender->out() << getTitle() << "'s attack failed." << endl;
+         out("combat") << "Your attack failed." << endl;
+         defender->out("combat") << getTitle() << "'s attack failed." << endl;
       }
 
       if (ENTITY_CREATURE == defender->getType() &&
@@ -553,7 +554,7 @@ namespace core { namespace entity {
       alive = false;
 
       if (showMessage) {
-         getLocation()->out() << title << " dies." << endl;
+         getLocation()->out("notifications") << title << " dies." << endl;
       }
 
       game->setupEventHandler();
@@ -579,7 +580,7 @@ namespace core { namespace entity {
                msg = name + " comes back to life.";
             }
 
-            getLocation()->out() << endl << msg << endl;
+            getLocation()->out("notifications") << endl << msg << endl;
          }
       }
    }

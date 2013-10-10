@@ -251,12 +251,12 @@ namespace core { namespace entity {
 
    void Place::display(Being *observer, bool displayFull) {
 
-      observer->out() << getTitle() << endl << endl;
+      observer->out("display") << getTitle() << endl << endl;
       Entity::display(observer, displayFull);
 
       for (ThingList::iterator i = things.begin(); i != things.end(); i++) {
          if (observer != static_cast<Being *>(*i)) { // dirty, but it works
-            observer->out() << endl;
+            observer->out("display") << endl;
             (*i)->glance(observer);
          }
       }

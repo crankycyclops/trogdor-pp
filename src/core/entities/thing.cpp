@@ -38,7 +38,7 @@ namespace core { namespace entity {
 
    void Thing::display(Being *observer, bool displayFull) {
 
-      observer->out() << "You see " << getTitle() << '.' << endl;
+      observer->out("display") << "You see " << getTitle() << '.' << endl;
       Entity::display(observer, displayFull);
    }
 
@@ -46,7 +46,7 @@ namespace core { namespace entity {
 
    void Thing::displayShort(Being *observer) {
 
-      observer->out() << "You see " << getTitle() << '.' << endl;
+      observer->out("display") << "You see " << getTitle() << '.' << endl;
       Entity::displayShort(observer);
    }
 }}

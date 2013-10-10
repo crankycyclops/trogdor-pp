@@ -93,7 +93,7 @@ namespace core { namespace entity {
 
       if (!observedBy(observer) || displayFull) {
          if (ENTITY_PLAYER == observer->getType()) {
-            observer->out() << getLongDescription() << endl;
+            observer->out("display") << getLongDescription() << endl;
          }
       }
 
@@ -110,7 +110,7 @@ namespace core { namespace entity {
 
       if (ENTITY_PLAYER == observer->getType()
       && getShortDescription().length() > 0) {
-         observer->out() << getShortDescription() << endl;
+         observer->out("display") << getShortDescription() << endl;
       }
    }
 

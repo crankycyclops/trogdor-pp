@@ -64,7 +64,7 @@ namespace core {
       }
 
       srand(time(NULL));
-      player->out() << responses[i] << endl;
+      player->out("display") << responses[i] << endl;
    }
 
 /******************************************************************************/
@@ -91,19 +91,19 @@ namespace core {
       double totalPercent = 0.0;
 
       if (0 == player->getInventoryCount()) {
-         player->out() << "You don't have anything!" << endl;
+         player->out("display") << "You don't have anything!" << endl;
       }
 
       else {
 
          ObjectSetCItPair invItems = player->getInventoryObjects();
 
-         player->out() << "Items in your inventory:" << endl << endl;
+         player->out("display") << "Items in your inventory:" << endl << endl;
 
          for (ObjectSet::const_iterator i = invItems.begin;
          i != invItems.end; i++) {
 
-            player->out() << (*i)->getTitle();
+            player->out("display") << (*i)->getTitle();
 
             if (player->getInventoryMaxWeight() > 0) {
 
@@ -111,20 +111,20 @@ namespace core {
                   double percent = 100 * ((double)(*i)->getWeight() /
                      (double)player->getInventoryMaxWeight());
                   totalPercent += percent;
-                  player->out() << " (" << percent << "%)";
+                  player->out("display") << " (" << percent << "%)";
                }
 
                else {
-                  player->out() << " (weighs nothing)";
+                  player->out("display") << " (weighs nothing)";
                }
             }
 
-            player->out() << endl;
+            player->out("display") << endl;
          }
 
          if (player->getInventoryMaxWeight() > 0) {
-            player->out() << endl << "You are currently using " << totalPercent
-               << "% of your inventory." << endl;
+            player->out("display") << endl << "You are currently using "
+               << totalPercent << "% of your inventory." << endl;
          }
       }
    }
@@ -179,7 +179,7 @@ namespace core {
          }
 
          if (0 == items.size()) {
-            player->out() << "There is no " << object << " here!" << endl;
+            player->out("display") << "There is no " << object << " here!" << endl;
             return;
          }
 
@@ -195,7 +195,7 @@ namespace core {
          }
 
          catch (string name) {
-            player->out() << "There is no " << name << " here!" << endl;
+            player->out("display") << "There is no " << name << " here!" << endl;
          }
       }
    }
@@ -222,7 +222,7 @@ namespace core {
       ThingListCItPair roomItems = location->getThingsByName(command->getDirectObject());
 
       if (roomItems.begin == roomItems.end) {
-         player->out() << "There is no " << command->getDirectObject()
+         player->out("display") << "There is no " << command->getDirectObject()
             << " here!" << endl;
          return;
       }
@@ -234,7 +234,7 @@ namespace core {
             player);
 
          if (ENTITY_OBJECT != thing->getType()) {
-            player->out() << "You can't take that!" << endl;
+            player->out("display") << "You can't take that!" << endl;
          }
 
          else {
@@ -245,11 +245,12 @@ namespace core {
 
                string message = thing->getMessage("take");
                if (message.length() > 0) {
-                  player->out() << message << endl;
+                  player->out("display") << message << endl;
                }
 
                else {
-                  player->out() << "You take the " << thing->getName() << "." << endl;
+                  player->out("display") << "You take the " << thing->getName()
+                     << "." << endl;
                }
             }
 
@@ -259,13 +260,13 @@ namespace core {
                switch (error) {
 
                   case Being::TAKE_TOO_HEAVY:
-                     player->out() << command->getDirectObject()
+                     player->out("display") << command->getDirectObject()
                         << " is too heavy.  Try dropping something first."
                         << endl;
                      break;
 
                   case Being::TAKE_UNTAKEABLE:
-                     player->out() << "You can't take that!" << endl;
+                     player->out("display") << "You can't take that!" << endl;
                      break;
 
                   default:
@@ -278,7 +279,7 @@ namespace core {
       }
 
       catch (string name) {
-         player->out() << "There is no " << name << " here!" << endl;
+         player->out("display") << "There is no " << name << " here!" << endl;
       }
    }
 
@@ -307,7 +308,7 @@ namespace core {
       invItems = player->getInventoryObjectsByName(command->getDirectObject());
 
       if (invItems.begin == invItems.end) {
-         player->out() << "You don't have a " << command->getDirectObject()
+         player->out("display") << "You don't have a " << command->getDirectObject()
             << "!" << endl;
          return;
       }
@@ -324,11 +325,12 @@ namespace core {
 
             string message = object->getMessage("drop");
             if (message.length() > 0) {
-               player->out() << message << endl;
+               player->out("display") << message << endl;
             }
 
             else {
-               player->out() << "You drop the " << object->getName() << "." << endl;
+               player->out("display") << "You drop the " << object->getName()
+                  << "." << endl;
             }
          }
 
@@ -338,7 +340,7 @@ namespace core {
 
                case Being::DROP_UNDROPPABLE:
                   // TODO: add message for this (named undroppable)
-                  player->out() << "You can't drop that!" << endl;
+                  player->out("display") << "You can't drop that!" << endl;
                   break;
 
                default:
@@ -350,7 +352,7 @@ namespace core {
       }
 
       catch (string name) {
-         player->out() << "You don't have a " << name << "!" << endl;
+         player->out("display") << "You don't have a " << name << "!" << endl;
       }
    }
 
@@ -408,7 +410,7 @@ namespace core {
 
       // only Rooms have connections to eachother
       if (ENTITY_ROOM != player->getLocation()->getType()) {
-         player->out() << "You can't go that way." << endl;
+         player->out("display") << "You can't go that way." << endl;
          // TODO: fire can't go that way event?
          return;
       }
@@ -416,7 +418,7 @@ namespace core {
       Room *next = (dynamic_cast<Room *>(player->getLocation()))->getConnection(direction);
 
       if (0 == next) {
-         player->out() << "You can't go that way." << endl;
+         player->out("display") << "You can't go that way." << endl;
          // TODO: fire can't go that way event?
          return;
       }
@@ -425,11 +427,11 @@ namespace core {
       string goMessage = player->getLocation()->getMessage("go" + direction);
 
       if (goMessage.length() > 0) {
-         player->out() << goMessage << endl << endl;
+         player->out("display") << goMessage << endl << endl;
       }
 
       if (enterMessage.length() > 0) {
-         player->out() << enterMessage << endl << endl;
+         player->out("display") << enterMessage << endl << endl;
       }
 
       player->gotoLocation(next);
@@ -461,7 +463,7 @@ namespace core {
       BeingListCItPair beings = location->getBeingsByName(command->getDirectObject());
 
       if (beings.begin == beings.end) {
-         player->out() << "There is no " << command->getDirectObject()
+         player->out("display") << "There is no " << command->getDirectObject()
             << " here!" << endl;
          return;
       }
@@ -480,7 +482,7 @@ namespace core {
             ObjectListCItPair items = player->getInventoryObjectsByName(weaponName);
 
             if (items.begin == items.end) {
-               player->out() << "You don't have a " << weaponName << "!" << endl;
+               player->out("display") << "You don't have a " << weaponName << "!" << endl;
                return;
             }
 
@@ -493,13 +495,13 @@ namespace core {
                // TODO: this check should be made inside Being (we'd have an
                // exception to catch)
                if (!weapon->isWeapon()) {
-                  player->out() << "The " << weaponName << " isn't a weapon!" << endl;
+                  player->out("display") << "The " << weaponName << " isn't a weapon!" << endl;
                   return;
                }
             }
 
             catch (string name) {
-               player->out() << "You don't have a " << weaponName << "!" << endl;
+               player->out("display") << "You don't have a " << weaponName << "!" << endl;
                return;
             }
          }
@@ -508,7 +510,7 @@ namespace core {
       }
 
       catch (string name) {
-         player->out() << "There is no " << name << " here!" << endl;
+         player->out("display") << "There is no " << name << " here!" << endl;
       }
    }
 }
