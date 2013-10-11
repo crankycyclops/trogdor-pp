@@ -163,16 +163,19 @@ namespace core {
 
    void Game::start() {
 
+      pthread_mutex_lock(&resourceMutex);
       inGame = true;
       timer->start();
+      pthread_mutex_unlock(&resourceMutex);
    }
 
 
    void Game::stop() {
 
-      // TODO: cleanup?
+      pthread_mutex_lock(&resourceMutex);
       timer->stop();
       inGame = false;
+      pthread_mutex_unlock(&resourceMutex);
    }
 
 
@@ -198,6 +201,11 @@ namespace core {
 
       Command *command = new Command();
       command->read(player);
+
+      // do nothing if we're not in a running state
+      if (!inGame) {
+         return;
+      }
 
       if (!command->isInvalid()) {
 

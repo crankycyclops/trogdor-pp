@@ -148,6 +148,7 @@ namespace core {
          */
          Trogout &err() {return *errStream;}
 
+
          /*
             Gets a meta data value.  If the value isn't set, an empty string is
             returned.
@@ -303,7 +304,10 @@ namespace core {
          bool initialize(string gameXML = "game.xml");
 
          /*
-            Puts the game into a running state.
+            Puts the game into a running state. In a running state, the timer is
+            ticking, and player commands are executed.
+
+            To pause and resume a game, simply stop and start it.
 
             Input: (none)
             Output: (none)
@@ -311,7 +315,11 @@ namespace core {
          void start();
 
          /*
-            Puts the game into a stopped state.
+            Puts the game into a stopped state. In a stopped state, the timer is
+            not running (though it retains the current time), and player commands
+            are not executed.
+
+            To pause and resume a game, simply stop and start it.
 
             Input: (none)
             Output: (none)
