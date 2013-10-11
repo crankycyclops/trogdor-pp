@@ -283,7 +283,7 @@ namespace core {
 
             // if new player introduction is enabled, show it before inserting
             // the new player into the game
-            if (introduction.enabled) {
+            if (introduction.enabled && introduction.text.length() > 0) {
 
                if (introduction.pauseWhileReading) {
                   stop();

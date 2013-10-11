@@ -45,13 +45,13 @@
    <introduction>
 
       <!-- Whether or not new players should see an introduction before being
-           inserted into the game. -->
+           inserted into the game. By default, this setting is disabled. -->
       <enabled>1</enabled>
 
       <!-- Whether or not to pause the game while the player reads the
            introduction, should it be enabled. This makes sense primarily for
            single player games. If you're writing a MUD, you probably don't want
-           to enable this ;) -->
+           to enable this ;) By default, this setting is disabled. -->
       <pause>1</pause>
 
       <!-- If an introduction is enabled, this is the text that the new player
