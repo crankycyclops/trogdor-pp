@@ -17,9 +17,22 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
+   // default game filename
+   string gameXML = "game.xml";
+
+   if (argc > 2) {
+      cerr << "Usage: trogdor [game_filename.xml]\n" << endl;
+      return EXIT_FAILURE;
+   }
+
+   // user passed in a custom game filename
+   if (argc > 1) {
+      gameXML = argv[1];
+   }
+
    core::Game *currentGame = new core::Game();
 
-   if (currentGame->initialize()) {
+   if (currentGame->initialize(gameXML)) {
 
       string title = currentGame->getMeta("title");
       string author = currentGame->getMeta("author");
