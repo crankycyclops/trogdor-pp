@@ -15,7 +15,7 @@
 #include "vocabulary.h"
 #include "entitymap.h"
 #include "entities/player.h"
-#include "luastate.h"
+#include "lua/luastate.h"
 #include "event/eventlistener.h"
 
 class Game;

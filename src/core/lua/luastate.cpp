@@ -1,5 +1,5 @@
 #include <string>
-#include "include/luastate.h"
+#include "../include/lua/luastate.h"
 
 using namespace std;
 

@@ -6,8 +6,8 @@
 #include <set>
 
 #include "../messages.h"
-#include "../luatable.h"
-#include "../luastate.h"
+#include "../lua/luatable.h"
+#include "../lua/luastate.h"
 #include "../iostream/trogout.h"
 #include "../iostream/trogin.h"
 

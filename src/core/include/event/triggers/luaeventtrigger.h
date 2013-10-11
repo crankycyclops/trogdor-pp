@@ -2,7 +2,7 @@
 #define LUAEVENTTRIGGER_H
 
 
-#include "../../luastate.h"
+#include "../../lua/luastate.h"
 #include "../eventtrigger.h"
 
 
