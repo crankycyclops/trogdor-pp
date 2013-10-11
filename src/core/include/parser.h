@@ -571,6 +571,21 @@ namespace core {
          void parseEvent(LuaState *L, EventListener *triggers);
 
          /*
+            This group of functions parses the <introduction> section of the XML
+            file, should it exist.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseIntroduction();
+         void parseIntroductionEnabled();
+         void parseIntroductionPause();
+         void parseIntroductionText();
+
+         /*
             This group of functions parses the <manifest> section of the XML
             file.
 

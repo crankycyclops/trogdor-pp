@@ -40,6 +40,10 @@ namespace core {
 
       timer = new Timer(this);
       events = new event::EventHandler;
+
+      introduction.enabled           = DEFAULT_INTRODUCTION_ENABLED;
+      introduction.pauseWhileReading = DEFAULT_INTRODUCTION_PAUSE;
+      introduction.text              = "";
    }
 
 
@@ -204,6 +208,7 @@ namespace core {
 
       // do nothing if we're not in a running state
       if (!inGame) {
+         player->out() << "Game is stopped and not accepting commands." << endl;
          return;
       }
 

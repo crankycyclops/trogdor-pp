@@ -40,6 +40,29 @@
    </manifest>
 
 
+   <!-- This section is optional, and defines whether or not new players should
+        have to read an introduction before starting the game. -->
+   <introduction>
+
+      <!-- Whether or not new players should see an introduction before being
+           inserted into the game. -->
+      <enabled>1</enabled>
+
+      <!-- Whether or not to pause the game while the player reads the
+           introduction, should it be enabled. This makes sense primarily for
+           single player games. If you're writing a MUD, you probably don't want
+           to enable this ;) -->
+      <pause>1</pause>
+
+      <!-- If an introduction is enabled, this is the text that the new player
+           will have to read before starting the game. -->
+      <text>
+This is an introduction. If introductions are enabled, new players will have to read this before being placed into the game.
+      </text>
+
+   </introduction>
+
+
 
    <!-- The meta section is optional and defines any meta data variables you
         want to set in the game.  All values are stored internally as

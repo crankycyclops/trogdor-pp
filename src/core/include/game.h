@@ -51,6 +51,9 @@ namespace core {
 
          typedef unordered_map<string, string> StringMap;
 
+         static const bool DEFAULT_INTRODUCTION_ENABLED = false;
+         static const bool DEFAULT_INTRODUCTION_PAUSE   = false;
+
       private:
 
          bool       inGame;        // whether or not a game is in progress
@@ -84,6 +87,14 @@ namespace core {
          entity::CreatureMap  creatures;
          entity::ItemMap      items;
          entity::ObjectMap    objects;
+
+         // defines if and how a player is presented with an introduction when
+         // they're first added to the game
+         struct {
+            bool enabled;            // whether to show new players an intro
+            bool pauseWhileReading;  // whether to pause the game during the intro
+            string text;             // introduction's content
+         } introduction;
 
          /* global error stream */
          Trogout *errStream;
@@ -211,6 +222,42 @@ namespace core {
          inline void setSynonym(string synonym, string verb) {synonyms[synonym] = verb;}
 
          /*
+            Sets whether or not new player introductions are enabled.
+
+            Input:
+               Whether or not to enable intros (bool)
+
+            Output:
+               (none)
+         */
+         inline void setIntroductionEnabled(bool e) {introduction.enabled = e;}
+
+         /*
+            Sets whether or not to pause the game while a new player reads the
+            introduction. This is primarily for single player games.
+
+            Input:
+               Whether or not to pause while reading (bool)
+
+            Output:
+               (none)
+         */
+         inline void setIntroductionPause(bool p) {introduction.pauseWhileReading = p;}
+
+         /*
+            Sets the content for the new player introduction. Won't be displayed
+            when a player is added to the game unless introduction.enabled is
+            set to true.
+
+            Input:
+               Content for new player introductions (string)
+
+            Output:
+               (none)
+         */
+         inline void setIntroductionText(string t) {introduction.text = t;}
+
+         /*
             Creates a new player and inserts it into the game.  Throws an
             exception if an entity with the given name already exists.
 
@@ -233,6 +280,27 @@ namespace core {
             // clone the default player, giving it the specified name
             Player *player = new Player(*defaultPlayer, name, outStream,
                inStream, errStream);
+
+            // if new player introduction is enabled, show it before inserting
+            // the new player into the game
+            if (introduction.enabled) {
+
+               if (introduction.pauseWhileReading) {
+                  stop();
+               }
+
+               // we really only need this to give player->in() something to do
+               string blah;
+
+               player->out() << introduction.text << endl << endl;
+               player->out() << "Press enter to start the game." << endl;
+               player->in() >> blah;
+               player->out() << endl;
+
+               if (introduction.pauseWhileReading) {
+                  start();
+               }
+            }
 
             // TODO: set other attributes from default
 

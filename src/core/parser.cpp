@@ -80,6 +80,10 @@ namespace core {
             parseEvents(gameL, eventListener, 2);
          }
 
+         else if (0 == getTagName().compare("introduction")) {
+            parseIntroduction();
+         }
+
          else if (0 == getTagName().compare("meta")) {
             parseGameMeta();
          }
@@ -108,6 +112,61 @@ namespace core {
       }
 
       checkClosingTag("game");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseIntroduction() {
+
+      stringstream s;
+
+      while (nextTag() && 2 == getDepth()) {
+
+         if (0 == getTagName().compare("enabled")) {
+            parseIntroductionEnabled();
+         }
+
+         else if (0 == getTagName().compare("pause")) {
+            parseIntroductionPause();
+         }
+
+         else if (0 == getTagName().compare("text")) {
+            parseIntroductionText();
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() <<
+               "> in <introduction> section (line " <<
+               xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("introduction");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseIntroductionEnabled() {
+
+      game->setIntroductionEnabled(parseBool());
+      checkClosingTag("enabled");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseIntroductionPause() {
+
+      game->setIntroductionPause(parseBool());
+      checkClosingTag("pause");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseIntroductionText() {
+
+      game->setIntroductionText(parseString());
+      checkClosingTag("text");
    }
 
    /***************************************************************************/
