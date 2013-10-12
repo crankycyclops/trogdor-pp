@@ -17,9 +17,7 @@ namespace core { namespace entity {
    class LuaEntity {
 
 
-      public:
-
-         static void registerLuaType(lua_State *L);
+      protected:
 
          /*
             Checks that an Entity exists at the specified location on the Lua
@@ -33,6 +31,10 @@ namespace core { namespace entity {
                Entity * (or 0 if type doesn't match or doesn't exist)
          */
          static Entity *checkEntity(lua_State *L, int i);
+
+      public:
+
+         static void registerLuaType(lua_State *L);
 
          /*
             Lua binding to Entity->getType().

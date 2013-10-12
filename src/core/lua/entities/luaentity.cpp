@@ -34,11 +34,8 @@ namespace core { namespace entity {
 
    Entity *LuaEntity::checkEntity(lua_State *L, int i) {
 
-      Entity *e = 0;
-
       luaL_checktype(L, i, LUA_TUSERDATA);
-      e = (Entity *)luaL_checkudata(L, i, "Entity");
-      return e;
+      return *(Entity **)luaL_checkudata(L, i, "Entity");
    }
 
 
@@ -46,7 +43,7 @@ namespace core { namespace entity {
 
       int n = lua_gettop(L);
 
-      if (0 != n) {
+      if (1 != n) {
          return luaL_error(L, "getType takes no arguments");
       }
 

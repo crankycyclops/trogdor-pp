@@ -1,5 +1,5 @@
 -- just a placeholder for demo purposes
-function beforeTakeCandle(player, entity)
+function beforeTakeCandle(being, entity)
 
    -- first value decides if we should continue executing event handlers
    -- second value decides if we should execute the action that triggered event
@@ -8,7 +8,7 @@ function beforeTakeCandle(player, entity)
 end
 
 -- just a placeholder for demo purposes
-function beforeDropCandle(player, entity)
+function beforeDropCandle(being, entity)
 
    -- first value decides if we should continue executing event handlers
    -- second value decides if we should execute the action that triggered event
