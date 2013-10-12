@@ -11,12 +11,17 @@ extern "C" {
 }
 
 #include "luatable.h"
+#include "entities/luaentity.h"
 
 
 using namespace std;
 
 
 namespace core {
+
+   namespace entity {
+      class Entity;
+   }
 
    /*
       LuaState wraps around an (aptly named) lua state variable and allows us to
@@ -86,6 +91,9 @@ namespace core {
 
             // load standard library
             luaL_openlibs(L);
+
+            // register global types
+            entity::LuaEntity::registerLuaType(L);
          }
 
          /*
@@ -169,6 +177,8 @@ namespace core {
             nArgs++;
             pushTable(arg);
          }
+
+         void pushArgument(entity::Entity *e);
 
          /*
             Get return values at the specified index.  Calling this before

@@ -1,5 +1,7 @@
 #include <string>
+
 #include "../include/lua/luastate.h"
+#include "../include/entities/entity.h"
 
 using namespace std;
 
@@ -44,6 +46,21 @@ namespace core {
 
          lua_setfield(L, -2, key.c_str());
       }
+   }
+
+   /***************************************************************************/
+
+   void LuaState::pushArgument(entity::Entity *e) {
+
+      entity::Entity **eLocation = (entity::Entity **)lua_newuserdata(L, sizeof(entity::Entity *));
+      *eLocation = e;
+
+      // set the argument's type
+      // TODO: base this on e->getType() instead of hardcoding it
+      luaL_getmetatable(L, "Entity");
+      lua_setmetatable(L, -2);
+
+      nArgs++;
    }
 
    /***************************************************************************/

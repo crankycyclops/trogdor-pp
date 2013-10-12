@@ -5,16 +5,39 @@
 #include "../luatable.h"
 #include "../luastate.h"
 
-#include "../../entities/entity.h"
-
 
 using namespace std;
 
 namespace core { namespace entity {
 
 
+   class Entity;
+
+
    class LuaEntity {
 
+
+      public:
+
+         static void registerLuaType(lua_State *L);
+
+         /*
+            Checks that an Entity exists at the specified location on the Lua
+            stack, and returns it if it does.
+
+            Input:
+               Lua State
+               Index on stack
+
+            Output:
+               Entity * (or 0 if type doesn't match or doesn't exist)
+         */
+         static Entity *checkEntity(lua_State *L, int i);
+
+         /*
+            Lua binding to Entity->getType().
+         */
+         static int getType(lua_State *L);
    };
 }}
 
