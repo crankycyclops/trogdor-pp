@@ -67,6 +67,19 @@ namespace core { namespace entity {
          static int out(lua_State *L);
 
          /*
+            Takes as input a string Entity type, maps it to an Entity type and
+            calls Entity->isType(). Returns true if Entity is of that type and
+            false if it's not.
+
+            Lua input:
+               string representation of an Entity type
+
+            Lua output:
+               true if Entity is of that type and false if it's not
+         */
+         static int isType(lua_State *L);
+
+         /*
             Lua binding to Entity->getType().
 
             Lua input:

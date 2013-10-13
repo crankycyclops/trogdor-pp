@@ -11,6 +11,7 @@ namespace core { namespace entity {
    static const luaL_reg methodsEntity[] = {
       {"input",        LuaEntity::in},
       {"out",          LuaEntity::out},
+      {"isType",       LuaEntity::isType},
       {"getType",      LuaEntity::getType},
       {"getName",      LuaEntity::getName},
       {"getTitle",     LuaEntity::getTitle},
@@ -83,13 +84,13 @@ namespace core { namespace entity {
       if (n < 2) {
          message = "\n";
       } else {
-         message = lua_tostring(L, 1 - n);
+         message = luaL_checkstring(L, 1 - n);
       }
 
       if (n < 3) {
          channel = "notifications";
       } else {
-         channel = lua_tostring(L, -1);
+         channel = luaL_checkstring(L, -1);
       }
 
       Entity *e = checkEntity(L, -n);
@@ -101,6 +102,71 @@ namespace core { namespace entity {
       e->out(channel) << message;
       e->out(channel).flush();
 
+      return 1;
+   }
+
+
+   int LuaEntity::isType(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (2 != n) {
+         return luaL_error(L, "takes only one input, an entity type");
+      }
+
+      Entity *e = checkEntity(L, -2);
+
+      if (0 == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      enum EntityType type;
+      string typeStr = luaL_checkstring(L, -1);
+
+      // TODO: move all of this into Entity::strToType()
+      if (0 == typeStr.compare("entity")) {
+         type = ENTITY_UNDEFINED;
+      }
+
+      else if (0 == typeStr.compare("place")) {
+         type = ENTITY_PLACE;
+      }
+
+      else if (0 == typeStr.compare("room")) {
+         type = ENTITY_ROOM;
+      }
+
+      else if (0 == typeStr.compare("thing")) {
+         type = ENTITY_THING;
+      }
+
+      else if (0 == typeStr.compare("item")) {
+         type = ENTITY_ITEM;
+      }
+
+      else if (0 == typeStr.compare("object")) {
+         type = ENTITY_OBJECT;
+      }
+
+      else if (0 == typeStr.compare("being")) {
+         type = ENTITY_BEING;
+      }
+
+      else if (0 == typeStr.compare("player")) {
+         type = ENTITY_PLAYER;
+      }
+
+      else if (0 == typeStr.compare("creature")) {
+         type = ENTITY_CREATURE;
+      }
+
+      // string doesn't match any type (script writer is stupid)
+      else {
+         lua_pushboolean(L, 0);
+         return 1;
+      }
+
+      lua_pushboolean(L, e->isType(type));
       return 1;
    }
 
