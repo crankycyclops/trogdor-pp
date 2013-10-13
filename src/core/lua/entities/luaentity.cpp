@@ -9,6 +9,7 @@ namespace core { namespace entity {
    // Lua Entity methods that bind to C++ Entity methods
    // also includes meta methods
    static const luaL_reg methodsEntity[] = {
+      {"input",      LuaEntity::in},
       {"out",        LuaEntity::out},
       {"getType",    LuaEntity::getType},
       {"getName",    LuaEntity::getName},
@@ -39,6 +40,29 @@ namespace core { namespace entity {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Entity **)luaL_checkudata(L, i, "Entity");
+   }
+
+
+   int LuaEntity::in(lua_State *L) {
+
+      string str;
+
+      int n = lua_gettop(L);
+
+      if (n != 1) {
+         return luaL_error(L, "takes no arguments");
+      }
+
+      Entity *e = checkEntity(L, -n);
+
+      if (0 == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      e->in() >> str;
+
+      lua_pushstring(L, str.c_str());
+      return 1;
    }
 
 

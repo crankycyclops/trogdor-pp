@@ -40,6 +40,18 @@ namespace core { namespace entity {
          static void registerLuaType(lua_State *L);
 
          /*
+            Wraps around an Entity's input stream to read a string, and returns
+            that string.
+
+            Lua input:
+               (none)
+
+            Lua output:
+               string read from the Entity's input stream
+         */
+         static int in(lua_State *L);
+
+         /*
             Pushes a string to the Entity's output stream at the specified
             channel (defaults to "notifications.") If no string is passed, a
             newline is printed to the default channel.
@@ -50,7 +62,7 @@ namespace core { namespace entity {
                   "notifications")
 
             Lua output:
-               a string describing the Entity's type
+               (none)
          */
          static int out(lua_State *L);
 
