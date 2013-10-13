@@ -11,5 +11,5 @@ freebsd-debug:
 	g++ -I/usr/local/include -I/usr/local/include/lua51 -I/usr/local/include/libxml2 -L/usr/local/lib -g src/core/*.cpp src/core/lua/*.cpp src/core/lua/api/entities/*.cpp src/core/iostream/*.cpp src/core/event/*.cpp src/core/event/triggers/*.cpp src/core/timer/*.cpp src/core/timer/jobs/*.cpp src/core/entities/*.cpp -llua-5.1 src/standalone/*.cpp -o trogdor -pthread -lxml2
 
 lcount:
-	wc -l */*/*.cpp */*/*/*.cpp */*/*/*/*.cpp */*/*/*.h */*/*/*/*.h */*/*/*/*/*.h
+	wc -l */*/*.cpp */*/*/*.cpp */*/*/*/*.cpp */*/*/*/*/*.cpp */*/*/*.h */*/*/*/*.h */*/*/*/*/*.h */*/*/*/*/*/*.h
 

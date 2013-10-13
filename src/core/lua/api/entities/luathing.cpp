@@ -15,6 +15,7 @@ namespace core { namespace entity {
    // Lua Thing methods that bind to C++ Thing methods
    // also includes meta methods
    static const luaL_reg methods[] = {
+      {"addAlias", LuaThing::addAlias},
       {0, 0}
    };
 
@@ -31,7 +32,7 @@ namespace core { namespace entity {
 
    void LuaThing::registerLuaType(lua_State *L) {
 
-      luaL_newmetatable(L, "Entity");
+      luaL_newmetatable(L, "Thing");
 
       // Entity.__index = Entity
       lua_pushvalue(L, -1);
@@ -41,6 +42,32 @@ namespace core { namespace entity {
       luaL_register(L, 0, methods);
       luaL_register(L, "Thing", LuaEntity::getFunctions());
       luaL_register(L, "Thing", functions);
+   }
+
+   Thing *LuaThing::checkThing(lua_State *L, int i) {
+
+      luaL_checktype(L, i, LUA_TUSERDATA);
+      return *(Thing **)luaL_checkudata(L, i, "Thing");
+   }
+
+   int LuaThing::addAlias(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (2 != n) {
+         return luaL_error(L, "takes one string argument");
+      }
+
+      Thing *t = checkThing(L, -2);
+
+      if (0 == t) {
+         return luaL_error(L, "not a Thing!");
+      }
+
+      string alias = luaL_checkstring(L, -1);
+      t->addAlias(alias);
+
+      return 1;
    }
 }}
 

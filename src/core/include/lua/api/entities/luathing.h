@@ -32,7 +32,7 @@ namespace core { namespace entity {
             Output:
                Entity * (or 0 if type doesn't match or doesn't exist)
          */
-         static Entity *checkThing(lua_State *L, int i);
+         static Thing *checkThing(lua_State *L, int i);
 
          /*
             Returns all functions to be registered to our Lua wrapper around
@@ -64,6 +64,18 @@ namespace core { namespace entity {
             Registers the Thing type and its associated operations in Lua.
          */
          static void registerLuaType(lua_State *L);
+
+         /*
+            Wraps around Thing::addAlias, and allows a script to add an alias to
+            a Thing.
+
+            Input:
+               New alias (string)
+
+            Output:
+               (none)
+         */
+         static int addAlias(lua_State *L);
    };
 }}
 
