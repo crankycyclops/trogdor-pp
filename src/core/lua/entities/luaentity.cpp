@@ -11,6 +11,8 @@ namespace core { namespace entity {
    static const luaL_reg methodsEntity[] = {
       {"input",        LuaEntity::in},
       {"out",          LuaEntity::out},
+      {"getMeta",      LuaEntity::getMeta},
+      {"setMeta",      LuaEntity::setMeta},
       {"isType",       LuaEntity::isType},
       {"getType",      LuaEntity::getType},
       {"getName",      LuaEntity::getName},
@@ -102,6 +104,44 @@ namespace core { namespace entity {
       e->out(channel) << message;
       e->out(channel).flush();
 
+      return 1;
+   }
+
+
+   int LuaEntity::getMeta(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (2 != n) {
+         return luaL_error(L, "takes one string argument");
+      }
+
+      Entity *e = checkEntity(L, -2);
+
+      if (0 == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      lua_pushstring(L, e->getMeta(luaL_checkstring(L, -1)).c_str());
+      return 1;
+   }
+
+
+   int LuaEntity::setMeta(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (3 != n) {
+         return luaL_error(L, "takes two string arguments");
+      }
+
+      Entity *e = checkEntity(L, -3);
+
+      if (0 == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      e->setMeta(luaL_checkstring(L, -2), luaL_checkstring(L, -1));
       return 1;
    }
 
