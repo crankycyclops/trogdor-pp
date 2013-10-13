@@ -104,7 +104,7 @@ This is an introduction. If introductions are enabled, new players will have to 
 
          -- just a placeholder for demo purposes
          function testFunctionDrop(player, entity)
-
+player:out(entity:getName())
             -- first value decides if we should continue executing event handlers
             -- second value decides if we should execute the action that
             -- triggered the event

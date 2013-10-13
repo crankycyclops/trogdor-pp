@@ -64,6 +64,17 @@ namespace core { namespace entity {
                a string describing the Entity's type
          */
          static int getType(lua_State *L);
+
+         /*
+            Lua binding to Entity->getName().
+
+            Lua input:
+               (none)
+
+            Lua output:
+               a string containing the Entity's name
+         */
+         static int getName(lua_State *L);
    };
 }}
 
