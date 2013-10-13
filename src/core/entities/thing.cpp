@@ -9,33 +9,6 @@ using namespace std;
 namespace core { namespace entity {
 
 
-   LuaTable *Thing::getLuaTable() const {
-
-      LuaTable *table = Entity::getLuaTable();
-
-      if (0 == location) {
-         table->setField("location", false);
-      }
-
-      else {
-         table->setField("location", location->getName());
-      }
-
-      stringstream s;
-      LuaTable *aliasArr = new LuaTable();
-
-      for (int i = 0; i < aliases.size(); i++) {
-         s.str(std::string()), s << i;
-         aliasArr->setField(s.str(), aliases[i]);
-      }
-
-      table->setField("aliases", *aliasArr);
-
-      return table;
-   }
-
-   /***************************************************************************/
-
    void Thing::display(Being *observer, bool displayFull) {
 
       observer->out("display") << "You see " << getTitle() << '.' << endl;

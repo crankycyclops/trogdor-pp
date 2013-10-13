@@ -7,15 +7,6 @@ using namespace boost;
 
 namespace core { namespace entity {
 
-
-   LuaTable *Player::getLuaTable() const {
-
-      LuaTable *table = Being::getLuaTable();
-
-      // There's nothing here right now, but this is a placeholder in case
-      // Players ever do get properties that will need to be added later.
-
-      return table;
-   }
+   // TODO: keeping this around just in case I ever need it again...
 }}
 

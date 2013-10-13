@@ -195,20 +195,6 @@ namespace core { namespace entity {
          ~Entity();
 
          /*
-            Returns a LuaTable object representing the Entity.  Note that each
-            child class should get the value of the parent class's version of
-            this method and then fill that object in further with its own
-            values.
-
-            Input:
-               (none)
-
-            Output:
-               LuaTable object
-         */
-         virtual LuaTable *getLuaTable() const;
-
-         /*
             Returns a string representation of the given Entity type.
 
             Input:

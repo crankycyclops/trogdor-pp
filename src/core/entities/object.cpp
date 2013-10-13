@@ -7,14 +7,6 @@ using namespace boost;
 
 namespace core { namespace entity {
 
-
-   LuaTable *Object::getLuaTable() const {
-
-      LuaTable *table = Item::getLuaTable();
-
-      table->setField("weight", weight);
-
-      return table;
-   }
+   // TODO: keeping this file around just in case I ever need it again...
 }}
 

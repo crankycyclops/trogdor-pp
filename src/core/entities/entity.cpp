@@ -74,21 +74,6 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
-   LuaTable *Entity::getLuaTable() const {
-
-      LuaTable *table = new LuaTable();
-
-      table->setField("type", getTypeName());
-      table->setField("name", name);
-      table->setField("title", title);
-      table->setField("longdesc", longDesc);
-      table->setField("shortdesc", shortDesc);
-
-      return table;
-   }
-
-   /***************************************************************************/
-
    void Entity::display(Being *observer, bool displayFull) {
 
       if (!observedBy(observer) || displayFull) {

@@ -74,20 +74,6 @@ namespace core { namespace entity {
          }
 
          /*
-            Returns a LuaTable object representing the Creature.  Note that each
-            child class should get the value of the parent class's version of
-            this method and then fill that object in further with its own
-            values.
-
-            Input:
-               (none)
-
-            Output:
-               LuaTable object
-         */
-         virtual LuaTable *getLuaTable() const;
-
-         /*
             Clears the cached sorted list of weapons in the Creature's inventory.
             The interface needs to be public so that if an Object in the
             Creature's inventory has its weapon attribute turned off, perhaps by

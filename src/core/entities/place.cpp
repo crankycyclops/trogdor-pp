@@ -21,19 +21,6 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
-
-   LuaTable *Place::getLuaTable() const {
-
-      LuaTable *table = Entity::getLuaTable();
-
-      // There's nothing here, but this is a placeholder in case Places ever
-      // have extra members that need to be represented in the table.
-
-      return table;
-   }
-
-   /***************************************************************************/
-
    void Place::insertThingByName(Thing *thing) {
 
       vector<string> aliases = thing->getAliases();
