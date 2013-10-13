@@ -42,7 +42,6 @@ namespace core { namespace event {
 
                else {
                   L->pushArgument(arg);
-                  //L->pushArgument(*(arg->getLuaTable()));
                }
 
                break;

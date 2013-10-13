@@ -34,10 +34,34 @@ namespace core { namespace entity {
 
       public:
 
+         /*
+            Registers the Entity type and its associated operations in Lua.
+         */
          static void registerLuaType(lua_State *L);
 
          /*
+            Pushes a string to the Entity's output stream at the specified
+            channel (defaults to "notifications.") If no string is passed, a
+            newline is printed to the default channel.
+
+            Lua input:
+               Message to push to Entity's output stream
+               Channel the message should be routed to (optional: defaults to
+                  "notifications")
+
+            Lua output:
+               a string describing the Entity's type
+         */
+         static int out(lua_State *L);
+
+         /*
             Lua binding to Entity->getType().
+
+            Lua input:
+               (none)
+
+            Lua output:
+               a string describing the Entity's type
          */
          static int getType(lua_State *L);
    };
