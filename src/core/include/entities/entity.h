@@ -419,6 +419,18 @@ namespace core { namespace entity {
          inline string getMessage(string message) {return msgs.get(message.c_str());}
 
          /*
+            Passes through to msgs.set()
+
+            Input:
+               Message name (string)
+               Message (string)
+
+            Output:
+               (none)
+         */
+         inline void setMessage(string name, string message) {msgs.set(name, message);}
+
+         /*
             Sets a meta data value.
 
             Input:

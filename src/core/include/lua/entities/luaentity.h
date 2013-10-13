@@ -90,6 +90,29 @@ namespace core { namespace entity {
          static int setMeta(lua_State *L);
 
          /*
+            Lua binding to Entity->getMeta(key).
+
+            Lua input:
+               Message key
+
+            Lua output:
+               Message (string)
+         */
+         static int getMessage(lua_State *L);
+
+         /*
+            Lua binding to Entity->setMessage(key, message).
+
+            Lua input:
+               Message key
+               Message value
+
+            Lua output:
+               (none)
+         */
+         static int setMessage(lua_State *L);
+
+         /*
             Takes as input a string Entity type, maps it to an Entity type and
             calls Entity->isType(). Returns true if Entity is of that type and
             false if it's not.

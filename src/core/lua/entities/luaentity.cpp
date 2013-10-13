@@ -13,6 +13,8 @@ namespace core { namespace entity {
       {"out",          LuaEntity::out},
       {"getMeta",      LuaEntity::getMeta},
       {"setMeta",      LuaEntity::setMeta},
+      {"getMessage",   LuaEntity::getMessage},
+      {"setMessage",   LuaEntity::setMessage},
       {"isType",       LuaEntity::isType},
       {"getType",      LuaEntity::getType},
       {"getName",      LuaEntity::getName},
@@ -142,6 +144,44 @@ namespace core { namespace entity {
       }
 
       e->setMeta(luaL_checkstring(L, -2), luaL_checkstring(L, -1));
+      return 1;
+   }
+
+
+   int LuaEntity::getMessage(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (2 != n) {
+         return luaL_error(L, "takes one string argument");
+      }
+
+      Entity *e = checkEntity(L, -2);
+
+      if (0 == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      lua_pushstring(L, e->getMessage(luaL_checkstring(L, -1)).c_str());
+      return 1;
+   }
+
+
+   int LuaEntity::setMessage(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (3 != n) {
+         return luaL_error(L, "takes two string arguments");
+      }
+
+      Entity *e = checkEntity(L, -3);
+
+      if (0 == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      e->setMessage(luaL_checkstring(L, -2), luaL_checkstring(L, -1));
       return 1;
    }
 
