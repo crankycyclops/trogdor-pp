@@ -33,18 +33,6 @@ namespace core { namespace entity {
          static Entity *checkEntity(lua_State *L, int i);
 
          /*
-            Returns the number of methods registered to our Lua wrapper around
-            Entity.
-
-            Input:
-               (none)
-
-            Output:
-               Method count
-         */
-         static int getMethodCount();
-
-         /*
             Returns all functions to be registered to our Lua wrapper around
             Entity.
 

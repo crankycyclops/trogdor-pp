@@ -6,60 +6,46 @@ using namespace std;
 namespace core { namespace entity {
 
 
-   const luaL_reg *LuaEntity::getFunctions() {
+   // functions that take an Entity as an input (new, get, etc.)
+   // format of call: Entity.new(e), where e is an Entity
+   static const luaL_reg functions[] = {
+      {0, 0}
+   };
 
-      // functions that take an Entity as an input (new, get, etc.)
-      // format of call: Entity.new(e), where e is an Entity
-      static const luaL_reg functions[] = {
-         {0, 0}
-      };
+   // Lua Entity methods that bind to C++ Entity methods
+   // also includes meta methods
+   static const luaL_reg methods[] = {
+      {"input",        LuaEntity::in},
+      {"out",          LuaEntity::out},
+      {"getMeta",      LuaEntity::getMeta},
+      {"setMeta",      LuaEntity::setMeta},
+      {"getMessage",   LuaEntity::getMessage},
+      {"setMessage",   LuaEntity::setMessage},
+      {"isType",       LuaEntity::isType},
+      {"getType",      LuaEntity::getType},
+      {"getName",      LuaEntity::getName},
+      {"getTitle",     LuaEntity::getTitle},
+      {"setTitle",     LuaEntity::setTitle},
+      {"getLongDesc",  LuaEntity::getLongDesc},
+      {"setLongDesc",  LuaEntity::setLongDesc},
+      {"getShortDesc", LuaEntity::getShortDesc},
+      {"setShortDesc", LuaEntity::setShortDesc},
+      {"__tostring",   LuaEntity::getName},
+      {0, 0}
+   };
+
+
+   const luaL_reg *LuaEntity::getFunctions() {
 
       return functions;
    }
 
    const luaL_reg *LuaEntity::getMethods() {
 
-      // Lua Entity methods that bind to C++ Entity methods
-      // also includes meta methods
-      static const luaL_reg methods[] = {
-         {"input",        LuaEntity::in},
-         {"out",          LuaEntity::out},
-         {"getMeta",      LuaEntity::getMeta},
-         {"setMeta",      LuaEntity::setMeta},
-         {"getMessage",   LuaEntity::getMessage},
-         {"setMessage",   LuaEntity::setMessage},
-         {"isType",       LuaEntity::isType},
-         {"getType",      LuaEntity::getType},
-         {"getName",      LuaEntity::getName},
-         {"getTitle",     LuaEntity::getTitle},
-         {"setTitle",     LuaEntity::setTitle},
-         {"getLongDesc",  LuaEntity::getLongDesc},
-         {"setLongDesc",  LuaEntity::setLongDesc},
-         {"getShortDesc", LuaEntity::getShortDesc},
-         {"setShortDesc", LuaEntity::setShortDesc},
-         {"__tostring",   LuaEntity::getName},
-         {0, 0}
-      };
-
       return methods;
    }
 
-   int LuaEntity::getMethodCount() {
-
-      const luaL_reg *methods = getMethods();
-      int count = 0;
-
-      for (luaL_reg func = methods[0]; func.name != 0; func = methods[count]) {
-         count++;
-      }
-
-      return count;
-   }
-
    void LuaEntity::registerLuaType(lua_State *L) {
-
-      const luaL_reg *functions = getFunctions();
-      const luaL_reg *methods = getMethods();
 
       luaL_newmetatable(L, "Entity");
 
