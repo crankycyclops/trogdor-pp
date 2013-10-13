@@ -3,7 +3,7 @@
 
 
 #include "../../lua/luastate.h"
-#include "../../lua/entities/luaentity.h"
+#include "../../lua/api/entities/luaentity.h"
 
 #include "../eventtrigger.h"
 

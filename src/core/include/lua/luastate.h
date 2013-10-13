@@ -11,7 +11,8 @@ extern "C" {
 }
 
 #include "luatable.h"
-#include "entities/luaentity.h"
+#include "api/entities/luaentity.h"
+#include "api/entities/luathing.h"
 
 
 using namespace std;

@@ -2,8 +2,8 @@
 #define LUATHING_H
 
 
-#include "../luatable.h"
-#include "../luastate.h"
+#include "../../luatable.h"
+#include "../../luastate.h"
 
 #include "luaentity.h"
 

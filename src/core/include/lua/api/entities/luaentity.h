@@ -2,8 +2,8 @@
 #define LUAENTITY_H
 
 
-#include "../luatable.h"
-#include "../luastate.h"
+#include "../../luatable.h"
+#include "../../luastate.h"
 
 
 using namespace std;

@@ -1,5 +1,5 @@
-#include "../../include/entities/entity.h"
-#include "../../include/lua/entities/luaentity.h"
+#include "../../../include/entities/entity.h"
+#include "../../../include/lua/api/entities/luaentity.h"
 
 using namespace std;
 
