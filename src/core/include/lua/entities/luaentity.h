@@ -159,6 +159,17 @@ namespace core { namespace entity {
          static int getTitle(lua_State *L);
 
          /*
+            Lua binding to Entity->setTitle().
+
+            Lua input:
+               New title (string)
+
+            Lua output:
+               (none)
+         */
+         static int setTitle(lua_State *L);
+
+         /*
             Lua binding to Entity->getLongDescription().
 
             Lua input:
@@ -170,6 +181,17 @@ namespace core { namespace entity {
          static int getLongDesc(lua_State *L);
 
          /*
+            Lua binding to Entity->setLongDescription().
+
+            Lua input:
+               New description (string)
+
+            Lua output:
+               (none)
+         */
+         static int setLongDesc(lua_State *L);
+
+         /*
             Lua binding to Entity->getShortDescription().
 
             Lua input:
@@ -179,6 +201,17 @@ namespace core { namespace entity {
                a string containing the Entity's short description
          */
          static int getShortDesc(lua_State *L);
+
+         /*
+            Lua binding to Entity->setShortDescription().
+
+            Lua input:
+               New description (string)
+
+            Lua output:
+               (none)
+         */
+         static int setShortDesc(lua_State *L);
    };
 }}
 

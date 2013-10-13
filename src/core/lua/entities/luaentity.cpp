@@ -19,8 +19,11 @@ namespace core { namespace entity {
       {"getType",      LuaEntity::getType},
       {"getName",      LuaEntity::getName},
       {"getTitle",     LuaEntity::getTitle},
+      {"setTitle",     LuaEntity::setTitle},
       {"getLongDesc",  LuaEntity::getLongDesc},
+      {"setLongDesc",  LuaEntity::setLongDesc},
       {"getShortDesc", LuaEntity::getShortDesc},
+      {"setShortDesc", LuaEntity::setShortDesc},
       {"__tostring",   LuaEntity::getName},
       {0, 0}
    };
@@ -308,6 +311,27 @@ namespace core { namespace entity {
    }
 
 
+   int LuaEntity::setTitle(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (3 != n) {
+         return luaL_error(L, "takes one string argument");
+      }
+
+      Entity *e = checkEntity(L, -2);
+
+      if (0 == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      string title = luaL_checkstring(L, -1);
+      e->setTitle(title);
+
+      return 1;
+   }
+
+
    int LuaEntity::getLongDesc(lua_State *L) {
 
       int n = lua_gettop(L);
@@ -327,6 +351,27 @@ namespace core { namespace entity {
    }
 
 
+   int LuaEntity::setLongDesc(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (3 != n) {
+         return luaL_error(L, "takes one string argument");
+      }
+
+      Entity *e = checkEntity(L, -2);
+
+      if (0 == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      string desc = luaL_checkstring(L, -1);
+      e->setLongDescription(desc);
+
+      return 1;
+   }
+
+
    int LuaEntity::getShortDesc(lua_State *L) {
 
       int n = lua_gettop(L);
@@ -342,6 +387,27 @@ namespace core { namespace entity {
       }
 
       lua_pushstring(L, e->getShortDescription().c_str());
+      return 1;
+   }
+
+
+   int LuaEntity::setShortDesc(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (3 != n) {
+         return luaL_error(L, "takes one string argument");
+      }
+
+      Entity *e = checkEntity(L, -2);
+
+      if (0 == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      string desc = luaL_checkstring(L, -1);
+      e->setShortDescription(desc);
+
       return 1;
    }
 }}
