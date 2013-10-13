@@ -9,11 +9,14 @@ namespace core { namespace entity {
    // Lua Entity methods that bind to C++ Entity methods
    // also includes meta methods
    static const luaL_reg methodsEntity[] = {
-      {"input",      LuaEntity::in},
-      {"out",        LuaEntity::out},
-      {"getType",    LuaEntity::getType},
-      {"getName",    LuaEntity::getName},
-      {"__tostring", LuaEntity::getName},
+      {"input",        LuaEntity::in},
+      {"out",          LuaEntity::out},
+      {"getType",      LuaEntity::getType},
+      {"getName",      LuaEntity::getName},
+      {"getTitle",     LuaEntity::getTitle},
+      {"getLongDesc",  LuaEntity::getLongDesc},
+      {"getShortDesc", LuaEntity::getShortDesc},
+      {"__tostring",   LuaEntity::getName},
       {0, 0}
    };
 
@@ -136,6 +139,63 @@ namespace core { namespace entity {
       }
 
       lua_pushstring(L, e->getName().c_str());
+      return 1;
+   }
+
+
+   int LuaEntity::getTitle(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (1 != n) {
+         return luaL_error(L, "getTitle takes no arguments");
+      }
+
+      Entity *e = checkEntity(L, 1);
+
+      if (0 == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      lua_pushstring(L, e->getTitle().c_str());
+      return 1;
+   }
+
+
+   int LuaEntity::getLongDesc(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (1 != n) {
+         return luaL_error(L, "getLongDesc takes no arguments");
+      }
+
+      Entity *e = checkEntity(L, 1);
+
+      if (0 == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      lua_pushstring(L, e->getLongDescription().c_str());
+      return 1;
+   }
+
+
+   int LuaEntity::getShortDesc(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (1 != n) {
+         return luaL_error(L, "getShortDesc takes no arguments");
+      }
+
+      Entity *e = checkEntity(L, 1);
+
+      if (0 == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      lua_pushstring(L, e->getShortDescription().c_str());
       return 1;
    }
 }}
