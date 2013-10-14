@@ -1,5 +1,5 @@
-#ifndef LUATHING_H
-#define LUATHING_H
+#ifndef LUAPLACE_H
+#define LUAPLACE_H
 
 
 #include "../../luatable.h"
@@ -13,16 +13,16 @@ using namespace std;
 namespace core { namespace entity {
 
 
-   class Thing;
+   class Place;
 
 
-   class LuaThing: public LuaEntity {
+   class LuaPlace: public LuaEntity {
 
 
       protected:
 
          /*
-            Checks that a Thing exists at the specified location on the Lua
+            Checks that a Place exists at the specified location on the Lua
             stack, and returns it if it does.
 
             Input:
@@ -30,9 +30,9 @@ namespace core { namespace entity {
                Index on stack
 
             Output:
-               Thing * (or 0 if type doesn't match or doesn't exist)
+               Place * (or 0 if type doesn't match or doesn't exist)
          */
-         static Thing *checkThing(lua_State *L, int i);
+         static Place *checkPlace(lua_State *L, int i);
 
          /*
             Returns all functions to be registered to our Lua wrapper around
@@ -64,18 +64,6 @@ namespace core { namespace entity {
             Registers the Thing type and its associated operations in Lua.
          */
          static void registerLuaType(lua_State *L);
-
-         /*
-            Wraps around Thing::addAlias, and allows a script to add an alias to
-            a Thing.
-
-            Input:
-               New alias (string)
-
-            Output:
-               (none)
-         */
-         static int addAlias(lua_State *L);
    };
 }}
 
