@@ -1,11 +1,11 @@
-#ifndef LUAROOM_H
-#define LUAROOM_H
+#ifndef LUAITEM_H
+#define LUAITEM_H
 
 
 #include "../../luatable.h"
 #include "../../luastate.h"
 
-#include "luaplace.h"
+#include "luathing.h"
 
 
 using namespace std;
@@ -13,16 +13,16 @@ using namespace std;
 namespace core { namespace entity {
 
 
-   class Room;
+   class Item;
 
 
-   class LuaRoom: public LuaPlace {
+   class LuaItem: public LuaThing {
 
 
       protected:
 
          /*
-            Checks that a Room exists at the specified location on the Lua
+            Checks that an Item exists at the specified location on the Lua
             stack, and returns it if it does.
 
             Input:
@@ -30,13 +30,13 @@ namespace core { namespace entity {
                Index on stack
 
             Output:
-               Room * (or 0 if type doesn't match or doesn't exist)
+               Item * (or 0 if type doesn't match or doesn't exist)
          */
-         static Room *checkRoom(lua_State *L, int i);
+         static Item *checkItem(lua_State *L, int i);
 
          /*
             Returns all functions to be registered to our Lua wrapper around
-            Room.
+            Item.
 
             Input:
                (none)
@@ -48,7 +48,7 @@ namespace core { namespace entity {
 
          /*
             Returns all methods to be registered to our Lua wrapper around
-            Room.
+            Item.
 
             Input:
                (none)
@@ -61,7 +61,7 @@ namespace core { namespace entity {
       public:
 
          /*
-            Registers the Room type and its associated operations in Lua.
+            Registers the Item type and its associated operations in Lua.
          */
          static void registerLuaType(lua_State *L);
    };
