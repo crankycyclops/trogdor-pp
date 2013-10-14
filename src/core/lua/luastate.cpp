@@ -55,9 +55,30 @@ namespace core {
       entity::Entity **eLocation = (entity::Entity **)lua_newuserdata(L, sizeof(entity::Entity *));
       *eLocation = e;
 
+      switch (e->getType()) {
+
+         case entity::ENTITY_ROOM:
+            luaL_getmetatable(L, "Room");
+            break;
+
+         case entity::ENTITY_OBJECT:
+            luaL_getmetatable(L, "Object");
+            break;
+
+         case entity::ENTITY_CREATURE:
+            luaL_getmetatable(L, "Creature");
+            break;
+
+         case entity::ENTITY_PLAYER:
+            luaL_getmetatable(L, "Player");
+            break;
+
+         default:
+            luaL_getmetatable(L, "Entity");
+            break;
+      }
+
       // set the argument's type
-      // TODO: base this on e->getType() instead of hardcoding it
-      luaL_getmetatable(L, "Entity");
       lua_setmetatable(L, -2);
 
       nArgs++;

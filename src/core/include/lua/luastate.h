@@ -11,8 +11,16 @@ extern "C" {
 }
 
 #include "luatable.h"
+
 #include "api/entities/luaentity.h"
+#include "api/entities/luaplace.h"
+#include "api/entities/luaroom.h"
 #include "api/entities/luathing.h"
+#include "api/entities/luaitem.h"
+#include "api/entities/luaobject.h"
+#include "api/entities/luabeing.h"
+#include "api/entities/luacreature.h"
+#include "api/entities/luaplayer.h"
 
 
 using namespace std;
@@ -109,8 +117,8 @@ namespace core {
 
             // compose error message that mentions all typenames
             {
-               /* separate scope to avoid default stack of > LUAL_BUFFERSIZE
-                  assuming it even makes a difference ... */
+               /* separate scope to avoid default stack of > LUAL_BUFFERSIZE,
+                  assuming it even makes a difference... */
                luaL_Buffer B;
 
                luaL_buffinit(L, &B);
@@ -139,8 +147,16 @@ namespace core {
             // load standard library
             luaL_openlibs(L);
 
-            // register global types
+            // register global entity types
             entity::LuaEntity::registerLuaType(L);
+            entity::LuaPlace::registerLuaType(L);
+            entity::LuaRoom::registerLuaType(L);
+            entity::LuaThing::registerLuaType(L);
+            entity::LuaItem::registerLuaType(L);
+            entity::LuaObject::registerLuaType(L);
+            entity::LuaBeing::registerLuaType(L);
+            entity::LuaCreature::registerLuaType(L);
+            entity::LuaPlayer::registerLuaType(L);
          }
 
          /*
