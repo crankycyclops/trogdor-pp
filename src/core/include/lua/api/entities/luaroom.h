@@ -1,11 +1,12 @@
-#ifndef LUAPLACE_H
-#define LUAPLACE_H
+#ifndef LUAROOM_H
+#define LUAROOM_H
 
 
 #include "../../luatable.h"
 #include "../../luastate.h"
 
 #include "luaentity.h"
+#include "luaplace.h"
 
 
 using namespace std;
@@ -13,16 +14,16 @@ using namespace std;
 namespace core { namespace entity {
 
 
-   class Place;
+   class Room;
 
 
-   class LuaPlace: public LuaEntity {
+   class LuaRoom: public LuaPlace {
 
 
       protected:
 
          /*
-            Checks that a Place exists at the specified location on the Lua
+            Checks that a Room exists at the specified location on the Lua
             stack, and returns it if it does.
 
             Input:
@@ -30,13 +31,13 @@ namespace core { namespace entity {
                Index on stack
 
             Output:
-               Place * (or 0 if type doesn't match or doesn't exist)
+               Room * (or 0 if type doesn't match or doesn't exist)
          */
-         static Place *checkPlace(lua_State *L, int i);
+         static Room *checkRoom(lua_State *L, int i);
 
          /*
             Returns all functions to be registered to our Lua wrapper around
-            Place.
+            Room.
 
             Input:
                (none)
@@ -48,7 +49,7 @@ namespace core { namespace entity {
 
          /*
             Returns all methods to be registered to our Lua wrapper around
-            Place.
+            Room.
 
             Input:
                (none)
@@ -61,7 +62,7 @@ namespace core { namespace entity {
       public:
 
          /*
-            Registers the Place type and its associated operations in Lua.
+            Registers the Room type and its associated operations in Lua.
          */
          static void registerLuaType(lua_State *L);
    };
