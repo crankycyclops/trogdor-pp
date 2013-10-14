@@ -6,6 +6,17 @@ using namespace std;
 namespace core { namespace entity {
 
 
+   // Types which are considered valid by checkThing()
+   static const char *thingTypes[] = {
+      "Thing",
+      "Item",
+      "Object",
+      "Being",
+      "Player",
+      "Creature",
+      0
+   };
+
    // functions that take an Thing as an input (new, get, etc.)
    // format of call: Thing.new(e), where e is an Thing
    static const luaL_reg functions[] = {
@@ -47,7 +58,7 @@ namespace core { namespace entity {
    Thing *LuaThing::checkThing(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Thing **)luaL_checkudata(L, i, "Thing");
+      return *(Thing **)LuaState::luaL_checkudata_ex(L, i, thingTypes);
    }
 
    int LuaThing::addAlias(lua_State *L) {

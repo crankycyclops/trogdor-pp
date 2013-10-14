@@ -9,7 +9,14 @@ namespace core { namespace entity {
    // Types which are considered valid by checkEntity()
    static const char *entityTypes[] = {
       "Entity",
+      "Place",
+      "Room",
       "Thing",
+      "Item",
+      "Object",
+      "Being",
+      "Player",
+      "Creature",
       0
    };
 
