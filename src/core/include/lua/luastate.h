@@ -81,6 +81,52 @@ namespace core {
       public:
 
          /*
+            Like luaL_checkudata, except that it accepts an array of possible
+            types instead of just one. Shamelessly stolen from:
+            http://lua-users.org/lists/lua-l/2007-04/msg00324.html
+
+            Input:
+               Lua state
+               index of user data on the stack
+               array of C-style strings naming valid types
+         */
+         inline static void *luaL_checkudata_ex(lua_State *L, int ud, const char **tnames) {
+
+            int i;
+            void *p = lua_touserdata(L, ud);
+
+            if (p != NULL) {                                         // value is a userdata?
+               if (lua_getmetatable(L, ud)) {                        // does it have a metatable?
+                  for (i = 0; tnames[i] != NULL; i++) {              // compare to each tname given
+                     lua_getfield(L, LUA_REGISTRYINDEX, tnames[i]);  // get correct mt */
+                     if (lua_rawequal(L, -1, -2)) {                  // does it have the correct mt?
+                        lua_pop(L, 2);                               // remove both metatables
+                        return p;
+                     }
+                  }
+               }
+            }
+
+            // compose error message that mentions all typenames
+            {
+               /* separate scope to avoid default stack of > LUAL_BUFFERSIZE
+                  assuming it even makes a difference ... */
+               luaL_Buffer B;
+
+               luaL_buffinit(L, &B);
+
+               for (i = 0; tnames[i] != NULL; i++) {
+                  luaL_addstring(&B, tnames[i]);
+                     if (tnames[i+1] != NULL) luaL_addlstring(&B, " or ", 4);
+               }
+
+               luaL_pushresult(&B);
+               luaL_typerror(L, ud, lua_tostring(L, -1));
+               return NULL; /* to avoid warnings */
+            }
+         }
+
+         /*
             Constructor for the LuaState object.
          */
          inline LuaState() {
