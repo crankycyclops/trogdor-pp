@@ -8,7 +8,7 @@ using namespace std;
 namespace core {
 
 
-   void LuaState::pushLuaValue(LuaValue v) {
+   void LuaState::pushLuaValue(LuaValue v, lua_State *L) {
 
       switch (v.type) {
 
@@ -25,11 +25,11 @@ namespace core {
             break;
 
          case LUA_TYPE_ARRAY:
-            pushArray(*boost::get<LuaArray *>(v.value));
+            pushArray(L, *boost::get<LuaArray *>(v.value));
             break;
 
          case LUA_TYPE_TABLE:
-            pushTable(*boost::get<LuaTable *>(v.value));
+            pushTable(L, *boost::get<LuaTable *>(v.value));
             break;
 
          case LUA_TYPE_FUNCTION:
@@ -43,20 +43,20 @@ namespace core {
 
    /***************************************************************************/
 
-   void LuaState::pushArray(LuaArray &arg) {
+   void LuaState::pushArray(lua_State *L, LuaArray &arg) {
 
       lua_newtable(L);
 
       for (int i = 0; i < arg.size(); i++) {
          LuaValue v = arg[i];
-         pushLuaValue(v);
+         pushLuaValue(v, L);
          lua_rawseti(L, -2, i + 1);
       }
    }
 
    /***************************************************************************/
 
-   void LuaState::pushTable(LuaTable &arg) {
+   void LuaState::pushTable(lua_State *L, LuaTable &arg) {
 
       LuaTable::TableValues values = arg.getValues();
 
@@ -68,7 +68,7 @@ namespace core {
          string key = i->first;
          LuaValue v = i->second;
 
-         pushLuaValue(v);
+         pushLuaValue(v, L);
 
          lua_setfield(L, -2, key.c_str());
       }

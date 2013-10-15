@@ -80,37 +80,12 @@ namespace core {
 
             Input:
                Reference to LuaValue
+               Lua state
 
             Output:
                (none)
          */
-         void pushLuaValue(LuaValue v);
-
-         /*
-            Called by pushArgument(LuaArray arg) and by pushArray recursively
-            (for nested arrays) to do the actual work of pushing an array onto
-            the Lua stack for passing to a function.
-
-            Input:
-               Reference to LuaArray
-
-            Output:
-               (none)
-         */
-         void pushArray(LuaArray &arg);
-
-         /*
-            Called by pushArgument(LuaTable arg) and by pushTable recursively
-            (for nested tables) to do the actual work of pushing a table onto
-            the Lua stack for passing to a function.
-
-            Input:
-               Reference to LuaTable
-
-            Output:
-               (none)
-         */
-         void pushTable(LuaTable &arg);
+         static void pushLuaValue(LuaValue v, lua_State *L);
 
       public:
 
@@ -175,6 +150,32 @@ namespace core {
                return NULL; /* to avoid warnings */
             }
          }
+
+         /*
+            Pushes an array onto a Lua stack. Static access allows for both
+            Lua-to-C and C-to-Lua.
+
+            Input:
+               Lua state
+               Reference to LuaArray
+
+            Output:
+               (none)
+         */
+         static void pushArray(lua_State *L, LuaArray &arg);
+
+         /*
+            Pushes a table onto a Lua stack. Static access allows for both
+            Lua-to-C and C-to-Lua.
+
+            Input:
+               Lua state
+               Reference to LuaTable
+
+            Output:
+               (none)
+         */
+         static void pushTable(lua_State *L, LuaTable &arg);
 
          /*
             Constructor for the LuaState object.
@@ -280,13 +281,13 @@ namespace core {
          inline void pushArgument(LuaArray &arg) {
 
             nArgs++;
-            pushArray(arg);
+            pushArray(L, arg);
          }
 
          inline void pushArgument(LuaTable &arg) {
 
             nArgs++;
-            pushTable(arg);
+            pushTable(L, arg);
          }
 
          void pushArgument(entity::Entity *e);
