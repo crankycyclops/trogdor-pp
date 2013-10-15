@@ -93,6 +93,9 @@ namespace core {
             types instead of just one. Shamelessly stolen from:
             http://lua-users.org/lists/lua-l/2007-04/msg00324.html
 
+            Though I stole this, I *did* have to debug it, so I get partial
+            credit ;)
+
             Input:
                Lua state
                index of user data on the stack
@@ -103,13 +106,26 @@ namespace core {
             int i;
             void *p = lua_touserdata(L, ud);
 
-            if (p != NULL) {                                         // value is a userdata?
-               if (lua_getmetatable(L, ud)) {                        // does it have a metatable?
-                  for (i = 0; tnames[i] != NULL; i++) {              // compare to each tname given
-                     lua_getfield(L, LUA_REGISTRYINDEX, tnames[i]);  // get correct mt */
-                     if (lua_rawequal(L, -1, -2)) {                  // does it have the correct mt?
-                        lua_pop(L, 2);                               // remove both metatables
+            // value is a userdata?
+            if (p != NULL) {
+
+               // does it have a metatable?
+               if (lua_getmetatable(L, ud)) {
+
+                  // compare to each tname given
+                  for (i = 0; tnames[i] != NULL; i++) {
+
+                     // get correct mt
+                     lua_getfield(L, LUA_REGISTRYINDEX, tnames[i]);
+
+                     // does it have the correct mt?
+                     if (lua_rawequal(L, -1, -2)) {
+                        lua_pop(L, 2);  // remove both metatables
                         return p;
+                     }
+
+                     else {
+                        lua_pop(L, 1);
                      }
                   }
                }
