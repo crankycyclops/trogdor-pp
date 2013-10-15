@@ -108,7 +108,7 @@ namespace core { namespace entity {
 
             Input:
                Alias (string)
-               Object to be inserted (Object *)
+               Object to be indexed (Object *)
 
             Output:
                (none)

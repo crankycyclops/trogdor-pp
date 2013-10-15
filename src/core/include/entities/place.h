@@ -79,6 +79,69 @@ namespace core { namespace entity {
          */
          virtual void display(Being *observer, bool displayFull = false);
 
+         /*
+            Indexes a Thing's alias so that it can be referenced by
+            name.
+
+            Input:
+               Alias (string)
+               Thing to be indexed (Thing *)
+
+            Output:
+               (none)
+         */
+         inline void indexThingName(string alias, Thing *thing) {
+
+            if (thingsByName.find(alias) == thingsByName.end()) {
+               ThingList newList;
+               thingsByName[alias] = newList;
+            }
+
+            thingsByName.find(alias)->second.push_back(thing);
+         }
+
+         /*
+            Indexes a Being's alias so that it can be referenced by
+            name.
+
+            Input:
+               Alias (string)
+               Being to be indexed (Being *)
+
+            Output:
+               (none)
+         */
+         inline void indexBeingName(string alias, Being *being) {
+
+            if (beingsByName.find(alias) == beingsByName.end()) {
+               BeingList newList;
+               beingsByName[alias] = newList;
+            }
+
+            beingsByName.find(alias)->second.push_back(being);
+         }
+
+         /*
+            Indexes an Item's alias so that it can be referenced by
+            name.
+
+            Input:
+               Alias (string)
+               Item to be indexed (Item *)
+
+            Output:
+               (none)
+         */
+         inline void indexItemName(string alias, Item *item) {
+
+            if (itemsByName.find(alias) == itemsByName.end()) {
+               ItemList newList;
+               itemsByName[alias] = newList;
+            }
+
+            itemsByName.find(alias)->second.push_back(item);
+         }
+
       public:
 
          /*

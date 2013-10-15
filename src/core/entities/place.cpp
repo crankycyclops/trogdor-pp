@@ -26,13 +26,7 @@ namespace core { namespace entity {
       vector<string> aliases = thing->getAliases();
 
       for (int i = aliases.size() - 1; i >= 0; i--) {
-
-         if (thingsByName.find(aliases[i]) == thingsByName.end()) {
-            ThingList newList;
-            thingsByName[aliases[i]] = newList;
-         }
-
-         thingsByName.find(aliases[i])->second.push_back(thing);
+         indexThingName(aliases[i], thing);
       }
    }
 
@@ -43,13 +37,7 @@ namespace core { namespace entity {
       vector<string> aliases = being->getAliases();
 
       for (int i = aliases.size() - 1; i >= 0; i--) {
-
-         if (beingsByName.find(aliases[i]) == beingsByName.end()) {
-            BeingList newList;
-            beingsByName[aliases[i]] = newList;
-         }
-
-         beingsByName.find(aliases[i])->second.push_back(being);
+         indexBeingName(aliases[i], being);
       }
    }
 
@@ -60,13 +48,7 @@ namespace core { namespace entity {
       vector<string> aliases = item->getAliases();
 
       for (int i = aliases.size() - 1; i >= 0; i--) {
-
-         if (itemsByName.find(aliases[i]) == itemsByName.end()) {
-            ItemList newList;
-            itemsByName[aliases[i]] = newList;
-         }
-
-         itemsByName.find(aliases[i])->second.push_back(item);
+         indexItemName(aliases[i], item);
       }
    }
 
