@@ -114,7 +114,7 @@ namespace core { namespace entity {
             Output:
                (none)
          */
-         inline void addAlias(string alias) {aliases.insert(aliases.end(), alias);}
+         void addAlias(string alias);
    };
 }}
 

@@ -18,6 +18,9 @@ namespace core { namespace entity {
 
    class Being: public Thing {
 
+      // addAlias needs to be able to call indexInventoryItemName()
+      friend void Thing::addAlias(string alias);
+
       public:
 
          static const int DEFAULT_ATTRIBUTE_STRENGTH     = 10;
@@ -97,6 +100,27 @@ namespace core { namespace entity {
                (none)
          */
          virtual void displayShort(Being *observer);
+
+         /*
+            Indexes an inventory item's alias so that it can be referenced by
+            name.
+
+            Input:
+               Alias (string)
+               Object to be inserted (Object *)
+
+            Output:
+               (none)
+         */
+         inline void indexInventoryItemName(string alias, Object *object) {
+
+            if (inventory.objectsByName.find(alias) == inventory.objectsByName.end()) {
+               ObjectList newList;
+               inventory.objectsByName[alias] = newList;
+            }
+
+            inventory.objectsByName.find(alias)->second.push_back(object);
+         }
 
          /*
             Calculates amount of damage (in hit points) that we do when we

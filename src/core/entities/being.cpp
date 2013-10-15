@@ -77,13 +77,7 @@ namespace core { namespace entity {
       // allow referencing of inventory Objects by name and aliases
       vector<string> objAliases = object->getAliases();
       for (int i = objAliases.size() - 1; i >= 0; i--) {
-
-         if (inventory.objectsByName.find(objAliases[i]) == inventory.objectsByName.end()) {
-            ObjectList newList;
-            inventory.objectsByName[objAliases[i]] = newList;
-         }
-
-         inventory.objectsByName.find(objAliases[i])->second.push_back(object);
+         indexInventoryItemName(objAliases[i], object);
       }
 
       inventory.count++;
