@@ -3,6 +3,7 @@
 
 
 #include <string>
+#include <vector>
 #include <boost/variant.hpp>
 
 using namespace std;
@@ -12,7 +13,7 @@ using namespace boost;
 namespace core {
 
 
-   class LuaArray;
+   struct _LuaValue;
    class LuaTable;
 
 
@@ -25,13 +26,16 @@ namespace core {
       LUA_TYPE_FUNCTION
    } LuaDataType;
 
-   typedef boost::variant<string, double, bool, LuaArray *, LuaTable *> LuaValueContent;
+   // I couldn't forward declare the vector, so pay attention to this if LuaArray changes
+   typedef boost::variant<string, double, bool, vector<struct _LuaValue> *, LuaTable *> LuaValueContent;
 
    // Represents a single value
-   typedef struct {
+   typedef struct _LuaValue {
        LuaDataType      type;
        LuaValueContent  value;
    } LuaValue;
+
+   typedef vector<LuaValue> LuaArray;
 }
 
 
