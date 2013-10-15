@@ -52,6 +52,18 @@ namespace core { namespace entity {
                (none)
          */
          inline void setWeight(int w) {weight = w;}
+
+         /*
+            Extends Thing::addAlias(), and ensures that if the Object is owned,
+            that the owner's inventory's index by name is updated.
+
+            Input:
+               New alias (string)
+
+            Output:
+               (none)
+         */
+         virtual void addAlias(string alias);
    };
 }}
 

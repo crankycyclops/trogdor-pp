@@ -114,7 +114,7 @@ namespace core { namespace entity {
             Output:
                (none)
          */
-         void addAlias(string alias);
+         virtual void addAlias(string alias);
    };
 }}
 

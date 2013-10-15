@@ -10,6 +10,7 @@
 
 #include "thing.h"
 #include "place.h"
+#include "object.h"
 
 using namespace boost;
 
@@ -19,7 +20,7 @@ namespace core { namespace entity {
    class Being: public Thing {
 
       // addAlias needs to be able to call indexInventoryItemName()
-      friend void Thing::addAlias(string alias);
+      friend void Object::addAlias(string alias);
 
       public:
 

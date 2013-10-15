@@ -7,6 +7,14 @@ using namespace boost;
 
 namespace core { namespace entity {
 
-   // TODO: keeping this file around just in case I ever need it again...
+
+   void Object::addAlias(string alias) {
+
+      Thing::addAlias(alias);
+
+      if (owner) {
+         owner->indexInventoryItemName(alias, this);
+      }
+   }
 }}
 

@@ -3,10 +3,11 @@
 
 
 #include "thing.h"
-#include "being.h"
 
 
 namespace core { namespace entity {
+
+   class Being;
 
    class Item: public Thing {
 
@@ -56,7 +57,7 @@ namespace core { namespace entity {
             Output:
                Being *
          */
-         inline Being *getOwner() const {return owner;}
+         inline Being *getOwner() const {return owner;};
 
          /*
             Returns whether or not the Item can be taken.
