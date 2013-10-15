@@ -88,6 +88,15 @@ namespace core {
             values[key] = v;
          }
 
+         inline void setField(string key, LuaArray &value) {
+
+            LuaValue v;
+            v.type = LUA_TYPE_ARRAY;
+            v.value = &value;
+
+            values[key] = v;
+         }
+
          inline void setField(string key, LuaTable &value) {
 
             LuaValue v;

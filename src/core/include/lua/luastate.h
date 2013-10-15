@@ -75,12 +75,37 @@ namespace core {
          string lastErrorMsg;
 
          /*
+            Pushes a Lua Value onto the stack, but doesn't increment nArgs. This
+            is used by pushTable and pushArray.
+
+            Input:
+               Reference to LuaValue
+
+            Output:
+               (none)
+         */
+         void pushLuaValue(LuaValue v);
+
+         /*
+            Called by pushArgument(LuaArray arg) and by pushArray recursively
+            (for nested arrays) to do the actual work of pushing an array onto
+            the Lua stack for passing to a function.
+
+            Input:
+               Reference to LuaArray
+
+            Output:
+               (none)
+         */
+         void pushArray(LuaArray &arg);
+
+         /*
             Called by pushArgument(LuaTable arg) and by pushTable recursively
             (for nested tables) to do the actual work of pushing a table onto
             the Lua stack for passing to a function.
 
             Input:
-               Reference to LuaTable object
+               Reference to LuaTable
 
             Output:
                (none)
@@ -250,6 +275,12 @@ namespace core {
 
             lua_pushboolean(L, (int)arg);
             nArgs++;
+         }
+
+         inline void pushArgument(LuaArray &arg) {
+
+            nArgs++;
+            pushArray(arg);
          }
 
          inline void pushArgument(LuaTable &arg) {

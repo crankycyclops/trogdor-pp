@@ -8,6 +8,54 @@ using namespace std;
 namespace core {
 
 
+   void LuaState::pushLuaValue(LuaValue v) {
+
+      switch (v.type) {
+
+         case LUA_TYPE_STRING:
+            lua_pushstring(L, boost::get<std::string>(v.value).c_str());
+            break;
+
+         case LUA_TYPE_NUMBER:
+            lua_pushnumber(L, boost::get<double>(v.value));
+            break;
+
+         case LUA_TYPE_BOOLEAN:
+            lua_pushboolean(L, boost::get<bool>(v.value));
+            break;
+
+         case LUA_TYPE_ARRAY:
+            pushArray(*boost::get<LuaArray *>(v.value));
+            break;
+
+         case LUA_TYPE_TABLE:
+            pushTable(*boost::get<LuaTable *>(v.value));
+            break;
+
+         case LUA_TYPE_FUNCTION:
+            // TODO: add support for function type
+            break;
+
+         default:
+            throw "LuaState::pushTable: invalid type: wtf happened...?";
+      }
+   }
+
+   /***************************************************************************/
+
+   void LuaState::pushArray(LuaArray &arg) {
+
+      lua_newtable(L);
+
+      for (int i = 0; i < arg.size(); i++) {
+         LuaValue v = arg[i];
+         pushLuaValue(v);
+         lua_rawseti(L, -2, i + 1);
+      }
+   }
+
+   /***************************************************************************/
+
    void LuaState::pushTable(LuaTable &arg) {
 
       LuaTable::TableValues values = arg.getValues();
@@ -20,35 +68,7 @@ namespace core {
          string key = i->first;
          LuaValue v = i->second;
 
-         switch (v.type) {
-
-            case LUA_TYPE_STRING:
-               lua_pushstring(L, boost::get<std::string>(v.value).c_str());
-               break;
-
-            case LUA_TYPE_NUMBER:
-               lua_pushnumber(L, boost::get<double>(v.value));
-               break;
-
-            case LUA_TYPE_BOOLEAN:
-               lua_pushboolean(L, boost::get<bool>(v.value));
-               break;
-
-            case LUA_TYPE_ARRAY:
-               // TODO: add support for array type
-               break;
-
-            case LUA_TYPE_TABLE:
-               pushTable(*boost::get<LuaTable *>(v.value));
-               break;
-
-            case LUA_TYPE_FUNCTION:
-               // TODO: add support for function type
-               break;
-
-            default:
-               throw "LuaState::pushTable: invalid type: wtf happened...?";
-         }
+         pushLuaValue(v);
 
          lua_setfield(L, -2, key.c_str());
       }
