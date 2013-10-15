@@ -66,6 +66,17 @@ namespace core { namespace entity {
          static void registerLuaType(lua_State *L);
 
          /*
+            Wraps around Thing::getAliases.
+
+            Input:
+               (none)
+
+            Output:
+               Array of aliases (string[])
+         */
+         static int getAliases(lua_State *L);
+
+         /*
             Wraps around Thing::addAlias, and allows a script to add an alias to
             a Thing.
 

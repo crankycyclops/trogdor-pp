@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "../../../include/entities/thing.h"
 #include "../../../include/lua/api/entities/luathing.h"
 
@@ -26,7 +28,8 @@ namespace core { namespace entity {
    // Lua Thing methods that bind to C++ Thing methods
    // also includes meta methods
    static const luaL_reg methods[] = {
-      {"addAlias", LuaThing::addAlias},
+      {"getAliases", LuaThing::getAliases},
+      {"addAlias",   LuaThing::addAlias},
       {0, 0}
    };
 
@@ -59,6 +62,37 @@ namespace core { namespace entity {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Thing **)LuaState::luaL_checkudata_ex(L, i, thingTypes);
+   }
+
+   int LuaThing::getAliases(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (1 != n) {
+         return luaL_error(L, "takes no arguments");
+      }
+
+      Thing *t = checkThing(L, -1);
+
+      if (0 == t) {
+         return luaL_error(L, "not a Thing!");
+      }
+
+      LuaArray luaAliases;
+      vector<string> aliases = t->getAliases();
+
+      for (vector<string>::const_iterator i = aliases.begin(); i != aliases.end(); i++) {
+
+         LuaValue v;
+
+         v.type = LUA_TYPE_STRING;
+         v.value = *i;
+
+         luaAliases.insert(luaAliases.end(), v);
+      }
+
+      LuaState::pushArray(L, luaAliases);
+      return 1;
    }
 
    int LuaThing::addAlias(lua_State *L) {
