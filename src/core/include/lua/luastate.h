@@ -10,6 +10,7 @@ extern "C" {
    #include <lauxlib.h>
 }
 
+#include "luatype.h"
 #include "luatable.h"
 
 #include "api/entities/luaentity.h"

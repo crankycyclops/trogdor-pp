@@ -22,23 +22,29 @@ namespace core {
 
          switch (v.type) {
 
-            case LuaTableValue::LUATABLE_VALUE_STRING:
+            case LUA_TYPE_STRING:
                lua_pushstring(L, boost::get<std::string>(v.value).c_str());
                break;
 
-            case LuaTableValue::LUATABLE_VALUE_NUMBER:
+            case LUA_TYPE_NUMBER:
                lua_pushnumber(L, boost::get<double>(v.value));
                break;
 
-            case LuaTableValue::LUATABLE_VALUE_BOOLEAN:
+            case LUA_TYPE_BOOLEAN:
                lua_pushboolean(L, boost::get<bool>(v.value));
                break;
 
-            case LuaTableValue::LUATABLE_VALUE_TABLE:
+            case LUA_TYPE_ARRAY:
+               // TODO: add support for array type
+               break;
+
+            case LUA_TYPE_TABLE:
                pushTable(*boost::get<LuaTable *>(v.value));
                break;
 
-            // TODO: add support for function type
+            case LUA_TYPE_FUNCTION:
+               // TODO: add support for function type
+               break;
 
             default:
                throw "LuaState::pushTable: invalid type: wtf happened...?";

@@ -2,10 +2,10 @@
 #define LUATABLE_H
 
 
-#include <string>
 #include <iterator>
 #include <boost/unordered_map.hpp>
-#include <boost/variant.hpp>
+
+#include "luatype.h"
 
 using namespace std;
 using namespace boost;
@@ -22,17 +22,8 @@ namespace core {
       more than one type.
    */
    typedef struct {
-
-      enum {
-         LUATABLE_VALUE_STRING,
-         LUATABLE_VALUE_NUMBER,
-         LUATABLE_VALUE_BOOLEAN,
-         LUATABLE_VALUE_TABLE,
-         LUATABLE_VALUE_FUNCTION
-      } type;
-
-      boost::variant<string, double, bool, LuaTable *> value;
-
+       LuaDataType  type;
+       LuaValue     value;
    } LuaTableValue;
 
 
@@ -64,7 +55,7 @@ namespace core {
          inline void setField(string key, const char *value) {
 
             LuaTableValue v;
-            v.type = LuaTableValue::LUATABLE_VALUE_STRING;
+            v.type = LUA_TYPE_STRING;
             string s = value;
             v.value = s;
 
@@ -74,7 +65,7 @@ namespace core {
          inline void setField(string key, string value) {
 
             LuaTableValue v;
-            v.type = LuaTableValue::LUATABLE_VALUE_STRING;
+            v.type = LUA_TYPE_STRING;
             v.value = value;
 
             values[key] = v;
@@ -83,7 +74,7 @@ namespace core {
          inline void setField(string key, int value) {
 
             LuaTableValue v;
-            v.type = LuaTableValue::LUATABLE_VALUE_NUMBER;
+            v.type = LUA_TYPE_NUMBER;
             v.value = (double)value;
 
             values[key] = v;
@@ -92,7 +83,7 @@ namespace core {
          inline void setField(string key, double value) {
 
             LuaTableValue v;
-            v.type = LuaTableValue::LUATABLE_VALUE_NUMBER;
+            v.type = LUA_TYPE_NUMBER;
             v.value = value;
 
             values[key] = v;
@@ -101,7 +92,7 @@ namespace core {
          inline void setField(string key, bool value) {
 
             LuaTableValue v;
-            v.type = LuaTableValue::LUATABLE_VALUE_BOOLEAN;
+            v.type = LUA_TYPE_BOOLEAN;
             v.value = value;
 
             values[key] = v;
@@ -110,7 +101,7 @@ namespace core {
          inline void setField(string key, LuaTable &value) {
 
             LuaTableValue v;
-            v.type = LuaTableValue::LUATABLE_VALUE_TABLE;
+            v.type = LUA_TYPE_TABLE;
             v.value = &value;
 
             values[key] = v;
@@ -119,7 +110,7 @@ namespace core {
          inline void setFieldFunction(string key, const char *func) {
 
             LuaTableValue v;
-            v.type = LuaTableValue::LUATABLE_VALUE_FUNCTION;
+            v.type = LUA_TYPE_FUNCTION;
             v.value = func;
 
             values[key] = v;
@@ -128,7 +119,7 @@ namespace core {
          inline void setFieldFunction(string key, string func) {
 
             LuaTableValue v;
-            v.type = LuaTableValue::LUATABLE_VALUE_FUNCTION;
+            v.type = LUA_TYPE_FUNCTION;
             v.value = func;
 
             values[key] = v;
