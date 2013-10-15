@@ -18,7 +18,7 @@ namespace core {
       i != values.end(); i++) {
 
          string key = i->first;
-         LuaTableValue v = i->second;
+         LuaValue v = i->second;
 
          switch (v.type) {
 

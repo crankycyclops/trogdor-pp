@@ -18,16 +18,6 @@ namespace core {
 
 
    /*
-      Represents a single value, which gets mapped to a key.  Value can be of
-      more than one type.
-   */
-   typedef struct {
-       LuaDataType  type;
-       LuaValue     value;
-   } LuaTableValue;
-
-
-   /*
       The LuaTable class represents a Lua table structure.  We use this helper
       class to construct tables, and then pass it to LuaState::pushArgument(),
       which will handle all the work of actually pushing all the fields of the
@@ -37,7 +27,7 @@ namespace core {
 
       public:
 
-         typedef unordered_map<string, LuaTableValue> TableValues;
+         typedef unordered_map<string, LuaValue> TableValues;
 
       private:
 
@@ -54,7 +44,7 @@ namespace core {
          */
          inline void setField(string key, const char *value) {
 
-            LuaTableValue v;
+            LuaValue v;
             v.type = LUA_TYPE_STRING;
             string s = value;
             v.value = s;
@@ -64,7 +54,7 @@ namespace core {
 
          inline void setField(string key, string value) {
 
-            LuaTableValue v;
+            LuaValue v;
             v.type = LUA_TYPE_STRING;
             v.value = value;
 
@@ -73,7 +63,7 @@ namespace core {
 
          inline void setField(string key, int value) {
 
-            LuaTableValue v;
+            LuaValue v;
             v.type = LUA_TYPE_NUMBER;
             v.value = (double)value;
 
@@ -82,7 +72,7 @@ namespace core {
 
          inline void setField(string key, double value) {
 
-            LuaTableValue v;
+            LuaValue v;
             v.type = LUA_TYPE_NUMBER;
             v.value = value;
 
@@ -91,7 +81,7 @@ namespace core {
 
          inline void setField(string key, bool value) {
 
-            LuaTableValue v;
+            LuaValue v;
             v.type = LUA_TYPE_BOOLEAN;
             v.value = value;
 
@@ -100,7 +90,7 @@ namespace core {
 
          inline void setField(string key, LuaTable &value) {
 
-            LuaTableValue v;
+            LuaValue v;
             v.type = LUA_TYPE_TABLE;
             v.value = &value;
 
@@ -109,7 +99,7 @@ namespace core {
 
          inline void setFieldFunction(string key, const char *func) {
 
-            LuaTableValue v;
+            LuaValue v;
             v.type = LUA_TYPE_FUNCTION;
             v.value = func;
 
@@ -118,7 +108,7 @@ namespace core {
 
          inline void setFieldFunction(string key, string func) {
 
-            LuaTableValue v;
+            LuaValue v;
             v.type = LUA_TYPE_FUNCTION;
             v.value = func;
 

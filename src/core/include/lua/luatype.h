@@ -25,7 +25,13 @@ namespace core {
       LUA_TYPE_FUNCTION
    } LuaDataType;
 
-   typedef boost::variant<string, double, bool, LuaArray *, LuaTable *> LuaValue;
+   typedef boost::variant<string, double, bool, LuaArray *, LuaTable *> LuaValueContent;
+
+   // Represents a single value
+   typedef struct {
+       LuaDataType      type;
+       LuaValueContent  value;
+   } LuaValue;
 }
 
 
