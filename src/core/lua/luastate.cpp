@@ -43,6 +43,40 @@ namespace core {
 
    /***************************************************************************/
 
+   void LuaState::pushEntity(lua_State *L, entity::Entity *e) {
+
+      entity::Entity **eLocation = (entity::Entity **)lua_newuserdata(L, sizeof(entity::Entity *));
+      *eLocation = e;
+
+      switch (e->getType()) {
+
+         case entity::ENTITY_ROOM:
+            luaL_getmetatable(L, "Room");
+            break;
+
+         case entity::ENTITY_OBJECT:
+            luaL_getmetatable(L, "Object");
+            break;
+
+         case entity::ENTITY_CREATURE:
+            luaL_getmetatable(L, "Creature");
+            break;
+
+         case entity::ENTITY_PLAYER:
+            luaL_getmetatable(L, "Player");
+            break;
+
+         default:
+            luaL_getmetatable(L, "Entity");
+            break;
+      }
+
+      // set the argument's type
+      lua_setmetatable(L, -2);
+   }
+
+   /***************************************************************************/
+
    void LuaState::pushArray(lua_State *L, LuaArray &arg) {
 
       lua_newtable(L);
@@ -78,35 +112,7 @@ namespace core {
 
    void LuaState::pushArgument(entity::Entity *e) {
 
-      entity::Entity **eLocation = (entity::Entity **)lua_newuserdata(L, sizeof(entity::Entity *));
-      *eLocation = e;
-
-      switch (e->getType()) {
-
-         case entity::ENTITY_ROOM:
-            luaL_getmetatable(L, "Room");
-            break;
-
-         case entity::ENTITY_OBJECT:
-            luaL_getmetatable(L, "Object");
-            break;
-
-         case entity::ENTITY_CREATURE:
-            luaL_getmetatable(L, "Creature");
-            break;
-
-         case entity::ENTITY_PLAYER:
-            luaL_getmetatable(L, "Player");
-            break;
-
-         default:
-            luaL_getmetatable(L, "Entity");
-            break;
-      }
-
-      // set the argument's type
-      lua_setmetatable(L, -2);
-
+      pushEntity(L, e);
       nArgs++;
    }
 

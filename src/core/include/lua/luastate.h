@@ -152,6 +152,19 @@ namespace core {
          }
 
          /*
+            Pushes an Entity onto a Lua stack. Static access allows for both
+            Lua-to-C and C-to-Lua.
+
+            Input:
+               Lua state
+               Entity *
+
+            Output:
+               (none)
+         */
+         static void pushEntity(lua_State *L, entity::Entity *e);
+
+         /*
             Pushes an array onto a Lua stack. Static access allows for both
             Lua-to-C and C-to-Lua.
 
