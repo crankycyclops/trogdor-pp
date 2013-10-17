@@ -20,19 +20,6 @@ namespace core { namespace entity {
       protected:
 
          /*
-            Checks that an Entity exists at the specified location on the Lua
-            stack, and returns it if it does.
-
-            Input:
-               Lua State
-               Index on stack
-
-            Output:
-               Entity * (or 0 if type doesn't match or doesn't exist)
-         */
-         static Entity *checkEntity(lua_State *L, int i);
-
-         /*
             Returns all functions to be registered to our Lua wrapper around
             Entity.
 
@@ -62,6 +49,19 @@ namespace core { namespace entity {
             Registers the Entity type and its associated operations in Lua.
          */
          static void registerLuaType(lua_State *L);
+
+         /*
+            Checks that an Entity exists at the specified location on the Lua
+            stack, and returns it if it does.
+
+            Input:
+               Lua State
+               Index on stack
+
+            Output:
+               Entity * (or 0 if type doesn't match or doesn't exist)
+         */
+         static Entity *checkEntity(lua_State *L, int i);
 
          /*
             Wraps around an Entity's input stream to read a string, and returns
@@ -236,6 +236,31 @@ namespace core { namespace entity {
                (none)
          */
          static int setShortDesc(lua_State *L);
+
+         /*
+            Lua binding to Entity->observe().
+
+            Lua input:
+               Being observing the Entity (required)
+               Whether or not to trigger events (default: true)
+               Whether or not to always display full descripton (default: false)
+
+            Lua output:
+               (none)
+         */
+         static int glance(lua_State *L);
+
+         /*
+            Lua binding to Entity->glance().
+
+            Lua input:
+               Being observing the Entity (required)
+               Whether or not to trigger events (default: true)
+
+            Lua output:
+               (none)
+         */
+         static int observe(lua_State *L);
    };
 }}
 

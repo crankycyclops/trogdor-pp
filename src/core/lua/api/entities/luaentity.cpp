@@ -1,5 +1,7 @@
 #include "../../../include/entities/entity.h"
+#include "../../../include/entities/being.h"
 #include "../../../include/lua/api/entities/luaentity.h"
+#include "../../../include/lua/api/entities/luabeing.h"
 
 using namespace std;
 
@@ -44,6 +46,8 @@ namespace core { namespace entity {
       {"setLongDesc",  LuaEntity::setLongDesc},
       {"getShortDesc", LuaEntity::getShortDesc},
       {"setShortDesc", LuaEntity::setShortDesc},
+      {"observe",      LuaEntity::observe},
+      {"glance",       LuaEntity::glance},
       {"__tostring",   LuaEntity::getName},
       {0, 0}
    };
@@ -421,7 +425,7 @@ namespace core { namespace entity {
       int n = lua_gettop(L);
 
       if (3 != n) {
-         return luaL_error(L, "takes one string argument");
+         return luaL_error(L, "requires one string argument");
       }
 
       Entity *e = checkEntity(L, -2);
@@ -433,6 +437,65 @@ namespace core { namespace entity {
       string desc = luaL_checkstring(L, -1);
       e->setShortDescription(desc);
 
+      return 1;
+   }
+
+
+   int LuaEntity::observe(lua_State *L) {
+
+      // default values for optional arguments
+      bool triggerEvents = true;
+      bool displayFull = false;
+
+      int n = lua_gettop(L);
+
+      if (n < 2) {
+         return luaL_error(L, "requires one string argument");
+      }
+
+      else if (n > 4) {
+         return luaL_error(L, "too many arguments");
+      }
+
+      Entity *observed = LuaEntity::checkEntity(L, -n);
+      Being  *observer = LuaBeing::checkBeing(L, 1 - n);
+
+      if (n > 2) {
+         triggerEvents = lua_toboolean(L, 2 - n);
+      }
+
+      if (n > 3) {
+         displayFull = lua_toboolean(L, 3 - n);
+      }
+
+      observed->observe(observer, triggerEvents, displayFull);
+      return 1;
+   }
+
+
+   int LuaEntity::glance(lua_State *L) {
+
+      // default values for optional argument
+      bool triggerEvents = true;
+
+      int n = lua_gettop(L);
+
+      if (n < 2) {
+         return luaL_error(L, "requires one string argument");
+      }
+
+      else if (n > 3) {
+         return luaL_error(L, "too many arguments");
+      }
+
+      Entity *observed = LuaEntity::checkEntity(L, -n);
+      Being  *observer = LuaBeing::checkBeing(L, 1 - n);
+
+      if (n > 2) {
+         triggerEvents = lua_toboolean(L, 2 - n);
+      }
+
+      observed->glance(observer, triggerEvents);
       return 1;
    }
 }}

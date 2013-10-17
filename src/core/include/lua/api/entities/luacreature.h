@@ -22,19 +22,6 @@ namespace core { namespace entity {
       protected:
 
          /*
-            Checks that a Creature exists at the specified location on the Lua
-            stack, and returns it if it does.
-
-            Input:
-               Lua State
-               Index on stack
-
-            Output:
-               Creature * (or 0 if type doesn't match or doesn't exist)
-         */
-         static Creature *checkCreature(lua_State *L, int i);
-
-         /*
             Returns all functions to be registered to our Lua wrapper around
             Creature.
 
@@ -64,6 +51,19 @@ namespace core { namespace entity {
             Registers the Creature type and its associated operations in Lua.
          */
          static void registerLuaType(lua_State *L);
+
+         /*
+            Checks that a Creature exists at the specified location on the Lua
+            stack, and returns it if it does.
+
+            Input:
+               Lua State
+               Index on stack
+
+            Output:
+               Creature * (or 0 if type doesn't match or doesn't exist)
+         */
+         static Creature *checkCreature(lua_State *L, int i);
    };
 }}
 
