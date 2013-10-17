@@ -1,7 +1,9 @@
 #include <vector>
 
 #include "../../../include/entities/thing.h"
+#include "../../../include/entities/place.h"
 #include "../../../include/lua/api/entities/luathing.h"
+#include "../../../include/lua/api/entities/luaplace.h"
 
 using namespace std;
 
@@ -28,8 +30,11 @@ namespace core { namespace entity {
    // Lua Thing methods that bind to C++ Thing methods
    // also includes meta methods
    static const luaL_reg methods[] = {
-      {"getAliases", LuaThing::getAliases},
-      {"addAlias",   LuaThing::addAlias},
+      {"getAliases",    LuaThing::getAliases},
+      {"addAlias",      LuaThing::addAlias},
+      {"getLocation",   LuaThing::getLocation},
+      {"setLocation",   LuaThing::setLocation},
+      {"clearLocation", LuaThing::clearLocation},
       {0, 0}
    };
 
@@ -39,10 +44,12 @@ namespace core { namespace entity {
       return functions;
    }
 
+
    const luaL_reg *LuaThing::getMethods() {
 
       return methods;
    }
+
 
    void LuaThing::registerLuaType(lua_State *L) {
 
@@ -58,11 +65,13 @@ namespace core { namespace entity {
       luaL_register(L, "Thing", functions);
    }
 
+
    Thing *LuaThing::checkThing(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Thing **)LuaState::luaL_checkudata_ex(L, i, thingTypes);
    }
+
 
    int LuaThing::getAliases(lua_State *L) {
 
@@ -95,6 +104,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+
    int LuaThing::addAlias(lua_State *L) {
 
       int n = lua_gettop(L);
@@ -112,6 +122,69 @@ namespace core { namespace entity {
       string alias = luaL_checkstring(L, -1);
       t->addAlias(alias);
 
+      return 1;
+   }
+
+
+   int LuaThing::getLocation(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (1 != n) {
+         return luaL_error(L, "takes no arguments");
+      }
+
+      Thing *t = checkThing(L, -1);
+
+      if (0 == t) {
+         return luaL_error(L, "not a Thing!");
+      }
+
+      // pushEntity will take care of case where location is null
+      LuaState::pushEntity(L, t->getLocation());
+      return 1;
+   }
+
+
+   int LuaThing::setLocation(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (2 != n) {
+         return luaL_error(L, "takes one argument, a Place");
+      }
+
+      Thing *t = checkThing(L, -2);
+      Place *p = LuaPlace::checkPlace(L, -1);
+
+      if (0 == t) {
+         return luaL_error(L, "not a Thing!");
+      }
+
+      else if (0 == p) {
+         return luaL_error(L, "not a Place!");
+      }
+
+      t->setLocation(p);
+      return 1;
+   }
+
+
+   int LuaThing::clearLocation(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (1 != n) {
+         return luaL_error(L, "takes no arguments");
+      }
+
+      Thing *t = checkThing(L, -1);
+
+      if (0 == t) {
+         return luaL_error(L, "not a Thing!");
+      }
+
+      t->setLocation(0);
       return 1;
    }
 }}

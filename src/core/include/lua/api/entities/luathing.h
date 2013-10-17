@@ -87,6 +87,40 @@ namespace core { namespace entity {
                (none)
          */
          static int addAlias(lua_State *L);
+
+         /*
+            Wraps around Thing::getLocation(), and returns (in Lua) a Place.
+
+            Input:
+               (none)
+
+            Output:
+               Place (or nil if none)
+         */
+         static int getLocation(lua_State *L);
+
+         /*
+            Wraps around Thing::setLocation(). DO NOT use this to set a null
+            value. For that, use clearLocation instead.
+
+            Input:
+               Place (in Lua)
+
+            Output:
+               (none)
+         */
+         static int setLocation(lua_State *L);
+
+         /*
+            Sets a Thing's location to null.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         static int clearLocation(lua_State *L);
    };
 }}
 
