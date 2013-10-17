@@ -261,6 +261,28 @@ namespace core { namespace entity {
                (none)
          */
          static int observe(lua_State *L);
+
+         /*
+            Lua binding to Entity->glancedBy().
+
+            Lua input:
+               Being (Being *) that may or may not have glanced at the Entity.
+
+            Lua output:
+               (none)
+         */
+         static int glancedBy(lua_State *L);
+
+         /*
+            Lua binding to Entity->observedBy().
+
+            Lua input:
+               Being (Being *) that may or may not have observed the Entity.
+
+            Lua output:
+               (none)
+         */
+         static int observedBy(lua_State *L);
    };
 }}
 

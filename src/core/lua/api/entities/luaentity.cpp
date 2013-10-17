@@ -48,6 +48,8 @@ namespace core { namespace entity {
       {"setShortDesc", LuaEntity::setShortDesc},
       {"observe",      LuaEntity::observe},
       {"glance",       LuaEntity::glance},
+      {"observedBy",   LuaEntity::observedBy},
+      {"glancedBy",    LuaEntity::glancedBy},
       {"__tostring",   LuaEntity::getName},
       {0, 0}
    };
@@ -496,6 +498,46 @@ namespace core { namespace entity {
       }
 
       observed->glance(observer, triggerEvents);
+      return 1;
+   }
+
+
+   int LuaEntity::observedBy(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (n < 2) {
+         return luaL_error(L, "requires one argument");
+      }
+
+      else if (n > 2) {
+         return luaL_error(L, "too many arguments");
+      }
+
+      Entity *observed = LuaEntity::checkEntity(L, -2);
+      Being  *observer = LuaBeing::checkBeing(L, -1);
+
+      lua_pushboolean(L, observed->observedBy(observer));
+      return 1;
+   }
+
+
+   int LuaEntity::glancedBy(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (n < 2) {
+         return luaL_error(L, "requires one argument");
+      }
+
+      else if (n > 2) {
+         return luaL_error(L, "too many arguments");
+      }
+
+      Entity *glanced = LuaEntity::checkEntity(L, -2);
+      Being  *glancer = LuaBeing::checkBeing(L, -1);
+
+      lua_pushboolean(L, glanced->glancedBy(glancer));
       return 1;
    }
 }}
