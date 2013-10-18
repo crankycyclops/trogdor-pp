@@ -24,16 +24,21 @@ namespace core { namespace entity {
       {0, 0}
    };
 
+   /***************************************************************************/
 
    const luaL_reg *LuaPlayer::getFunctions() {
 
       return functions;
    }
 
+   /***************************************************************************/
+
    const luaL_reg *LuaPlayer::getMethods() {
 
       return methods;
    }
+
+   /***************************************************************************/
 
    void LuaPlayer::registerLuaType(lua_State *L) {
 
@@ -52,6 +57,8 @@ namespace core { namespace entity {
       luaL_register(L, "Player", LuaBeing::getFunctions());
       luaL_register(L, "Player", functions);
    }
+
+   /***************************************************************************/
 
    Player *LuaPlayer::checkPlayer(lua_State *L, int i) {
 

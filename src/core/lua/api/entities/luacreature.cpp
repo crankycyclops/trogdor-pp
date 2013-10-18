@@ -24,16 +24,21 @@ namespace core { namespace entity {
       {0, 0}
    };
 
+   /***************************************************************************/
 
    const luaL_reg *LuaCreature::getFunctions() {
 
       return functions;
    }
 
+   /***************************************************************************/
+
    const luaL_reg *LuaCreature::getMethods() {
 
       return methods;
    }
+
+   /***************************************************************************/
 
    void LuaCreature::registerLuaType(lua_State *L) {
 
@@ -52,6 +57,8 @@ namespace core { namespace entity {
       luaL_register(L, "Creature", LuaBeing::getFunctions());
       luaL_register(L, "Creature", functions);
    }
+
+   /***************************************************************************/
 
    Creature *LuaCreature::checkCreature(lua_State *L, int i) {
 

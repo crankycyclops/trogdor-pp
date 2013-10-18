@@ -38,18 +38,21 @@ namespace core { namespace entity {
       {0, 0}
    };
 
+   /***************************************************************************/
 
    const luaL_reg *LuaThing::getFunctions() {
 
       return functions;
    }
 
+   /***************************************************************************/
 
    const luaL_reg *LuaThing::getMethods() {
 
       return methods;
    }
 
+   /***************************************************************************/
 
    void LuaThing::registerLuaType(lua_State *L) {
 
@@ -65,6 +68,7 @@ namespace core { namespace entity {
       luaL_register(L, "Thing", functions);
    }
 
+   /***************************************************************************/
 
    Thing *LuaThing::checkThing(lua_State *L, int i) {
 
@@ -72,6 +76,7 @@ namespace core { namespace entity {
       return *(Thing **)LuaState::luaL_checkudata_ex(L, i, thingTypes);
    }
 
+   /***************************************************************************/
 
    int LuaThing::getAliases(lua_State *L) {
 
@@ -104,6 +109,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaThing::addAlias(lua_State *L) {
 
@@ -125,6 +131,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaThing::getLocation(lua_State *L) {
 
@@ -145,6 +152,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaThing::setLocation(lua_State *L) {
 
@@ -169,6 +177,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaThing::clearLocation(lua_State *L) {
 

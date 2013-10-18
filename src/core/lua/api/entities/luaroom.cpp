@@ -24,16 +24,21 @@ namespace core { namespace entity {
       {0, 0}
    };
 
+   /***************************************************************************/
 
    const luaL_reg *LuaRoom::getFunctions() {
 
       return functions;
    }
 
+   /***************************************************************************/
+
    const luaL_reg *LuaRoom::getMethods() {
 
       return methods;
    }
+
+   /***************************************************************************/
 
    void LuaRoom::registerLuaType(lua_State *L) {
 
@@ -50,6 +55,8 @@ namespace core { namespace entity {
       luaL_register(L, "Room", LuaPlace::getFunctions());
       luaL_register(L, "Room", functions);
    }
+
+   /***************************************************************************/
 
    Room *LuaRoom::checkRoom(lua_State *L, int i) {
 

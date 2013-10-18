@@ -54,16 +54,21 @@ namespace core { namespace entity {
       {0, 0}
    };
 
+   /***************************************************************************/
 
    const luaL_reg *LuaEntity::getFunctions() {
 
       return functions;
    }
 
+   /***************************************************************************/
+
    const luaL_reg *LuaEntity::getMethods() {
 
       return methods;
    }
+
+   /***************************************************************************/
 
    void LuaEntity::registerLuaType(lua_State *L) {
 
@@ -77,6 +82,7 @@ namespace core { namespace entity {
       luaL_register(L, "Entity", functions);
    }
 
+   /***************************************************************************/
 
    Entity *LuaEntity::checkEntity(lua_State *L, int i) {
 
@@ -84,6 +90,7 @@ namespace core { namespace entity {
       return *(Entity **)LuaState::luaL_checkudata_ex(L, i, entityTypes);
    }
 
+   /***************************************************************************/
 
    int LuaEntity::in(lua_State *L) {
 
@@ -107,6 +114,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::out(lua_State *L) {
 
@@ -143,6 +151,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::getMeta(lua_State *L) {
 
@@ -162,6 +171,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::setMeta(lua_State *L) {
 
@@ -181,6 +191,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::getMessage(lua_State *L) {
 
@@ -200,6 +211,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::setMessage(lua_State *L) {
 
@@ -219,6 +231,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::isType(lua_State *L) {
 
@@ -284,6 +297,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::getType(lua_State *L) {
 
@@ -303,6 +317,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::getName(lua_State *L) {
 
@@ -322,6 +337,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::getTitle(lua_State *L) {
 
@@ -341,6 +357,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::setTitle(lua_State *L) {
 
@@ -362,6 +379,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::getLongDesc(lua_State *L) {
 
@@ -381,6 +399,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::setLongDesc(lua_State *L) {
 
@@ -402,6 +421,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::getShortDesc(lua_State *L) {
 
@@ -421,6 +441,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::setShortDesc(lua_State *L) {
 
@@ -442,6 +463,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::observe(lua_State *L) {
 
@@ -474,6 +496,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::glance(lua_State *L) {
 
@@ -501,6 +524,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::observedBy(lua_State *L) {
 
@@ -521,6 +545,7 @@ namespace core { namespace entity {
       return 1;
    }
 
+   /***************************************************************************/
 
    int LuaEntity::glancedBy(lua_State *L) {
 

@@ -64,6 +64,28 @@ namespace core { namespace entity {
                Place * (or 0 if type doesn't match or doesn't exist)
          */
          static Place *checkPlace(lua_State *L, int i);
+
+         /*
+            Wraps around Place::insertThing().
+
+            Input:
+               Thing to insert
+
+            Output:
+               (none)
+         */
+         static int insertThing(lua_State *L);
+
+         /*
+            Wraps around Place::removeThing().
+
+            Input:
+               Thing to insert
+
+            Output:
+               (none)
+         */
+         static int removeThing(lua_State *L);
    };
 }}
 

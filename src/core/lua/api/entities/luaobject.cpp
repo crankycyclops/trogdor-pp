@@ -24,16 +24,21 @@ namespace core { namespace entity {
       {0, 0}
    };
 
+   /***************************************************************************/
 
    const luaL_reg *LuaObject::getFunctions() {
 
       return functions;
    }
 
+   /***************************************************************************/
+
    const luaL_reg *LuaObject::getMethods() {
 
       return methods;
    }
+
+   /***************************************************************************/
 
    void LuaObject::registerLuaType(lua_State *L) {
 
@@ -52,6 +57,8 @@ namespace core { namespace entity {
       luaL_register(L, "Object", LuaItem::getFunctions());
       luaL_register(L, "Object", functions);
    }
+
+   /***************************************************************************/
 
    Object *LuaObject::checkObject(lua_State *L, int i) {
 
