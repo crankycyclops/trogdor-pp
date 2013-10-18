@@ -141,6 +141,14 @@ namespace core { namespace entity {
          Entity(const Entity &e, string n);
 
          /*
+            Entity Destructor.
+
+            Input:
+               (none)
+         */
+         ~Entity();
+
+         /*
             Returns a reference to the Entity's input stream.  A typical use
             would look something like this:
 
@@ -187,12 +195,15 @@ namespace core { namespace entity {
          Trogout &err() {return *errStream;}
 
          /*
-            Entity Destructor.
+            Returns a pointer to the Game that contains the Entity.
 
             Input:
                (none)
+
+            Output:
+               Game *
          */
-         ~Entity();
+         inline Game *getGame() {return game;}
 
          /*
             Returns a string representation of the given Entity type.
