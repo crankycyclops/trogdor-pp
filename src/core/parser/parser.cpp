@@ -1,11 +1,11 @@
-#include "include/parser.h"
+#include "../include/parser/parser.h"
 
-#include "include/iostream/nullout.h"
-#include "include/iostream/placeout.h"
-#include "include/iostream/streamin.h"
-#include "include/iostream/streamout.h"
+#include "../include/iostream/nullout.h"
+#include "../include/iostream/placeout.h"
+#include "../include/iostream/streamin.h"
+#include "../include/iostream/streamout.h"
 
-#include "include/timer/jobs/wander.h"
+#include "../include/timer/jobs/wander.h"
 
 using namespace std;
 

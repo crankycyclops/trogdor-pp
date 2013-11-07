@@ -3,18 +3,50 @@
 <game>
 
 
-   <!-- This section MUST come first.  The manifest declares the names and types
-        of all entities in the game.  If a game entity is defined below but is
-        not declared here first, the engine will throw an error.  All entities
-        declared in the manifest must be defined below.  If an entity is
-        declared in this section and is not defined below, the engine will throw
-        an error.
+   <!-- Entity class definitions are optional. If they are used, they must
+        precede everything else, including the manifest. Entity classes are a
+        way to quickly define game Entities that are similar. You define a set
+        of attributes for a class, and then any Entity whose type is that class
+        will assume those attributes.
+
+        Attributes can be overridden in a specific Entity. So, if you define an
+        object class of type "weapon," and you assign to it a damage of 1, but
+        then create a specific object of that class and assign to it a damage of
+        10, the value of 10 will be used. -->
+<!--
+   <classes>
+
+      <objects>
+-->
+
+         <!-- Any defined objects of type "weapon" will assume these attributes. -->
+<!--
+         <object name="weapon">
+-->
+            <!-- See example objects in <objects> section for an explanation of
+                 what these attributes are. -->
+<!--
+            <weapon>1</weapon>
+            <damage>10</damage>
+
+         </object>
+
+      </objects>
+
+   </classes>
+-->
+
+   <!-- This section MUST precede everything except class definitions.  The
+        manifest declares the names and types of all entities in the game.  If a
+        game entity is defined below but is not declared here first, the engine
+        will throw an error.  All entities declared in the manifest must be
+        defined below.  If an entity is declared in this section and is not
+        defined below, the engine will throw an error.
 
          Note that each item, regardless of type, must have a unique name.
          A room and an object, for example, cannot both be named the same thing.
          If two or more objects need to be identified by the same word, you can
-         define aliases for them in the entity definitions.
-   -->
+         define aliases for them in the entity definitions. -->
    <manifest>
 
       <!-- every game must include at least one room named "start" -->
@@ -139,8 +171,7 @@ This is an introduction. If introductions are enabled, new players will have to 
                  defined with a weight of 10, and the inventory weight is
                  defined to be 11, you can then hold either the candle or the
                  sword, but not both.  What integers you choose to use are
-                 totally up to you and are completely subjective.
-            -->
+                 totally up to you and are completely subjective. -->
             <weight>0</weight>
 
          </inventory>
@@ -217,9 +248,9 @@ This is an introduction. If introductions are enabled, new players will have to 
    <objects>
 
       <object name="candle">
+
          <!-- The user will see this description the first time they encounter the
-              object, or everytime they issue the command "look at candle."
-         -->
+              object, or everytime they issue the command "look at candle." -->
          <description>
 It appears to be a firey cylinder of wax burning with the passion of a thousand suns.
          </description>

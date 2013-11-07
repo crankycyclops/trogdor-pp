@@ -11,12 +11,12 @@
 #include <libxml/xmlreader.h>
 #include <boost/lexical_cast.hpp>
 
-#include "utility.h"
-#include "vocabulary.h"
-#include "entitymap.h"
-#include "entities/player.h"
-#include "lua/luastate.h"
-#include "event/eventlistener.h"
+#include "../utility.h"
+#include "../vocabulary.h"
+#include "../entitymap.h"
+#include "../entities/player.h"
+#include "../lua/luastate.h"
+#include "../event/eventlistener.h"
 
 class Game;
 
