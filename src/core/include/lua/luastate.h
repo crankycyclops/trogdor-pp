@@ -71,8 +71,56 @@ namespace core {
          // Lua state
          lua_State *L;
 
+         // remembers parsed scripts so that we can "copy" them to another state
+         string parsedScriptData;
+
          // error message that resulted from the last operation
          string lastErrorMsg;
+
+         /*
+            Initializes the Lua State. Should only be called by a constructor.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline void initState() {
+
+            nArgs = 0;
+            nReturnValues = 0;
+            parsedScriptData = "";
+            lastErrorMsg = "";
+
+            L = luaL_newstate();
+         }
+
+         /*
+            Opens libraries and registers API stuff.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline void initLibs() {
+
+            // load standard library
+            luaL_openlibs(L);
+
+            // register global entity types
+            entity::LuaEntity::registerLuaType(L);
+            entity::LuaPlace::registerLuaType(L);
+            entity::LuaRoom::registerLuaType(L);
+            entity::LuaThing::registerLuaType(L);
+            entity::LuaItem::registerLuaType(L);
+            entity::LuaObject::registerLuaType(L);
+            entity::LuaBeing::registerLuaType(L);
+            entity::LuaCreature::registerLuaType(L);
+            entity::LuaPlayer::registerLuaType(L);
+         }
 
          /*
             Pushes a Lua Value onto the stack, but doesn't increment nArgs. This
@@ -195,24 +243,37 @@ namespace core {
          */
          inline LuaState() {
 
-            nArgs = 0;
-            nReturnValues = 0;
-            lastErrorMsg = "";
-            L = luaL_newstate();
+            initState();
+            initLibs();
+         }
 
-            // load standard library
-            luaL_openlibs(L);
+         /*
+            Copy Constructor for the LuaState object.
+         */
+         inline LuaState(const LuaState &LSrc) {
 
-            // register global entity types
-            entity::LuaEntity::registerLuaType(L);
-            entity::LuaPlace::registerLuaType(L);
-            entity::LuaRoom::registerLuaType(L);
-            entity::LuaThing::registerLuaType(L);
-            entity::LuaItem::registerLuaType(L);
-            entity::LuaObject::registerLuaType(L);
-            entity::LuaBeing::registerLuaType(L);
-            entity::LuaCreature::registerLuaType(L);
-            entity::LuaPlayer::registerLuaType(L);
+            initState();
+            initLibs();
+
+            loadScriptFromString(LSrc.parsedScriptData);
+         }
+
+         /*
+            Destructor for LuaState.
+         */
+         inline ~LuaState() {lua_close(L);}
+
+         /*
+            Assignment operator for LuaState.
+         */
+         LuaState &operator=(const LuaState &rhs) {
+
+            lua_close(L);
+
+            initState();
+            initLibs();
+
+            loadScriptFromString(rhs.parsedScriptData);
          }
 
          /*

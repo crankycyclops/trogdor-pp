@@ -1,4 +1,6 @@
+#include <fstream>
 #include <string>
+#include <sstream>
 
 #include "../include/lua/luastate.h"
 #include "../include/entities/entity.h"
@@ -153,6 +155,13 @@ namespace core {
          }
       }
 
+      // remember the contents of this script so we can copy it to another state
+      ifstream file(filename.c_str());
+      stringstream fcontents;
+      fcontents << file.rdbuf();
+      parsedScriptData += fcontents.str();
+      parsedScriptData += "\n";
+
       prime();
    }
 
@@ -181,6 +190,10 @@ namespace core {
                break;
          }
       }
+
+      // remember the contents of this script so we can copy it to another state
+      parsedScriptData += script;
+      parsedScriptData += "\n";
 
       prime();
    }
