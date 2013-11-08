@@ -680,6 +680,7 @@ namespace core {
          */
          void parseObjects();
          void parseObject(string closingTag = "object");
+         void parseObjectProperties(Object *object, int depth);
 
          /*
             Parses the creatures section of game.xml.

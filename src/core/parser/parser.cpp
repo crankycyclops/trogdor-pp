@@ -233,66 +233,6 @@ namespace core {
       s << "a " << getAttribute("name");
       object->setTitle(s.str());
 
-      while (nextTag() && 4 == getDepth()) {
-
-         if (0 == getTagName().compare("title")) {
-            object->setTitle(parseEntityTitle());
-         }
-
-         else if (0 == getTagName().compare("description")) {
-            object->setLongDescription(parseEntityLongDescription());
-         }
-
-         else if (0 == getTagName().compare("short")) {
-            object->setShortDescription(parseEntityShortDescription());
-         }
-
-         else if (0 == getTagName().compare("weight")) {
-            object->setWeight(parseObjectWeight());
-         }
-
-         else if (0 == getTagName().compare("takeable")) {
-            object->setTakeable(parseItemTakeable());
-         }
-
-         else if (0 == getTagName().compare("droppable")) {
-            object->setDroppable(parseItemDroppable());
-         }
-
-         else if (0 == getTagName().compare("weapon")) {
-            object->setIsWeapon(parseItemWeapon());
-         }
-
-         else if (0 == getTagName().compare("damage")) {
-            object->setDamage(parseItemDamage());
-         }
-
-         else if (0 == getTagName().compare("events")) {
-            parseEvents(object->L, object->triggers, 5);
-         }
-
-         else if (0 == getTagName().compare("aliases")) {
-            parseThingAliases(object, 5);
-         }
-
-         else if (0 == getTagName().compare("meta")) {
-            parseEntityMeta(object, 5);
-         }
-
-         else if (0 == getTagName().compare("messages")) {
-            Messages *m = parseMessages(5);
-            object->setMessages(*m);
-            delete m;
-         }
-
-         else {
-            s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "object class definition (line "
-               << xmlTextReaderGetParserLineNumber(reader) << ")";
-            throw s.str();
-         }
-      }
-
       try {
          typeClasses.insertType(name, object);
       }
@@ -303,6 +243,7 @@ namespace core {
             throw s.str();
       }
 
+      parseObjectProperties(object, 4);
       checkClosingTag("object");
    }
 
@@ -775,7 +716,17 @@ namespace core {
       s << "a " << getAttribute("name");
       object->setTitle(s.str());
 
-      while (nextTag() && 3 == getDepth()) {
+      parseObjectProperties(object, 3);
+      checkClosingTag(closingTag);
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseObjectProperties(Object *object, int depth) {
+
+      stringstream s;
+
+      while (nextTag() && depth == getDepth()) {
 
          if (0 == getTagName().compare("title")) {
             object->setTitle(parseEntityTitle());
@@ -829,13 +780,11 @@ namespace core {
 
          else {
             s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "object definition (line "
+               << "object or object class definition (line "
                << xmlTextReaderGetParserLineNumber(reader) << ")";
             throw s.str();
          }
       }
-
-      checkClosingTag(closingTag);
    }
 
    /***************************************************************************/
