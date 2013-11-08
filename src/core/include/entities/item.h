@@ -49,6 +49,18 @@ namespace core { namespace entity {
          }
 
          /*
+            Constructor for cloning an Item.  Requires a unique name.
+         */
+         inline Item(const Item &i, string n): Thing(i, n) {
+
+            owner = i.owner;
+            takeable = i.takeable;
+            droppable = i.droppable;
+            weapon = i.weapon;
+            damage = i.damage;
+         }
+
+         /*
             Returns the owner of the object (0 if there is no owner.)
 
             Input:

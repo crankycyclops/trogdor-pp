@@ -33,6 +33,14 @@ namespace core { namespace entity {
          }
 
          /*
+            Constructor for cloning an Object.  Requires a unique name.
+         */
+         inline Object(const Object &o, string n): Item(o, n) {
+
+            weight = o.weight;
+         }
+
+         /*
             Returns the Item's weight.
 
             Input:

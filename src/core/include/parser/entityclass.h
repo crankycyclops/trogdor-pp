@@ -49,7 +49,7 @@ namespace core { namespace entity {
               Output:
                  bool
             */
-            inline bool ObjectTypeExists(string name) {
+            inline bool objectTypeExists(string name) {
 
                return ObjectTypes.find(name) == ObjectTypes.end() ? false : true;
             }
@@ -63,7 +63,7 @@ namespace core { namespace entity {
               Output:
                  bool
             */
-            inline bool CreatureTypeExists(string name) {
+            inline bool creatureTypeExists(string name) {
 
                return CreatureTypes.find(name) == CreatureTypes.end() ? false : true;
             }

@@ -20,10 +20,11 @@
          <!-- Any defined objects of type "weapon" will assume these attributes. -->
          <object class="weapon">
 
-            <!-- See example objects in <objects> section for an explanation of
-                 what these attributes are. -->
+            <!-- If set to 1, the object is a weapon (optional: default 0) -->
             <weapon>1</weapon>
-            <damage>10</damage>
+
+            <!-- Amount of damage object does as a weapon (optional: default 1) -->
+            <damage>1</damage>
 
          </object>
 
@@ -59,10 +60,10 @@
 
       <objects>
          <object name="candle"></object>
-         <object name="stick"></object>
          <object name="rock"></object>
          <object name="boulder"></object>
-         <object name="sword"></object>
+         <weapon name="sword"></weapon>
+         <weapon name="stick"></weapon>
       </objects>
 
    </manifest>
@@ -326,7 +327,8 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
 
       </object>
 
-      <object name="sword">
+      <!-- This object belongs to the weapon class, defined above -->
+      <weapon name="sword">
 
          <!-- By default, an object's title is "a <object name>", and is shown
               whenever a player sees an object.  This title can be overridden
@@ -338,20 +340,17 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
 A smooth metallic sheen covers its surface, which looks to be of recent make and in good repair.
          </description>
 
-         <!-- If set to 1, the object is a weapon (optional: default 0) -->
-         <weapon>1</weapon>
-
-         <!-- Amount of damage object does as a weapon (optional: default 1) -->
+         <!-- Overrides default value of 1 in <weapon> class -->
          <damage>10</damage>
 
-      </object>
+      </weapon>
 
       <!-- owned by Trogdor the Burninator -->
-      <object name="stick">
+      <weapon name="stick">
          <description>It's long, narrow and definitely looks like a stick.</description>
          <weight>1</weight>
          <weapon>1</weapon>
-      </object>
+      </weapon>
 
    </objects>
 

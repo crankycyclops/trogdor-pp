@@ -622,11 +622,11 @@ namespace core {
          */
          void parseManifest();
          void parseManifestRooms();
-         bool parseManifestRoom();  // returns true if room's name is "start"
+         bool parseManifestRoom(string className = "room");  // returns true if room's name is "start"
          void parseManifestCreatures();
-         void parseManifestCreature();
+         void parseManifestCreature(string className = "creature");
          void parseManifestObjects();
-         void parseManifestObject();
+         void parseManifestObject(string className = "object");
 
          /*
             Parses meta data for entities or for the game.
@@ -674,13 +674,13 @@ namespace core {
             exception with an error message if there's a problem.
 
             Input:
-               Tag that closes the object definition
+               The object's class (string)
 
             Output:
                (none)
          */
          void parseObjects();
-         void parseObject(string closingTag = "object");
+         void parseObject(string className = "object");
          void parseObjectProperties(Object *object, int depth);
 
          /*

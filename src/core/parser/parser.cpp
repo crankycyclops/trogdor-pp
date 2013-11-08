@@ -506,6 +506,10 @@ namespace core {
             }
          }
 
+         else if (typeClasses.roomTypeExists(getTagName())) {
+            parseManifestRoom(getTagName());
+         }
+
          else {
             s << filename << ": invalid tag <" << getTagName() << "> in "
                << "rooms section of the manifest (line "
@@ -523,7 +527,7 @@ namespace core {
 
    /***************************************************************************/
 
-   bool Parser::parseManifestRoom() {
+   bool Parser::parseManifestRoom(string className) {
 
       string name = getAttribute("name");
 
@@ -537,11 +541,13 @@ namespace core {
       Room *room = new Room(game, name, new PlaceOut(), new StreamIn(&cin),
          new StreamOut(&cerr));
 
+      room->setClass(className);
+
       entities.set(name, room);
       places.set(name, room);
       rooms.set(name, room);
 
-      checkClosingTag("room");
+      checkClosingTag(className);
       return 0 == name.compare("start") ? true : false;
    }
 
@@ -557,9 +563,13 @@ namespace core {
             parseManifestObject();
          }
 
+         else if (typeClasses.objectTypeExists(getTagName())) {
+            parseManifestObject(getTagName());
+         }
+
          else {
-            s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "objects section of the manifest (line "
+            s << filename << ": <" << getTagName() << "> is not an object "
+               << "class in objects section of the manifest (line "
                << xmlTextReaderGetParserLineNumber(reader) << ")";
             throw s.str();
          }
@@ -570,7 +580,7 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseManifestObject() {
+   void Parser::parseManifestObject(string className) {
 
       string name = getAttribute("name");
 
@@ -581,15 +591,24 @@ namespace core {
          throw s.str();
       }
 
-      Object *object = new Object(game, name, new NullOut(), new StreamIn(&cin),
-         new StreamOut(&cerr));
+      Object *object;
+
+      if (0 == className.compare("object")) {
+         object = new Object(game, name, new NullOut(), new StreamIn(&cin), new StreamOut(&cerr));
+      }
+
+      else {
+         object = new Object(*typeClasses.getObjectType(className), name);
+      }
+
+      object->setClass(className);
 
       entities.set(name, object);
       things.set(name, object);
       items.set(name, object);
       objects.set(name, object);
 
-      checkClosingTag("object");
+      checkClosingTag(className);
    }
 
    /***************************************************************************/
@@ -602,6 +621,10 @@ namespace core {
 
          if (0 == getTagName().compare("creature")) {
             parseManifestCreature();
+         }
+
+         else if (typeClasses.creatureTypeExists(getTagName())) {
+            parseManifestCreature(getTagName());
          }
 
          else {
@@ -617,7 +640,7 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseManifestCreature() {
+   void Parser::parseManifestCreature(string className) {
 
       string name = getAttribute("name");
 
@@ -631,12 +654,14 @@ namespace core {
       Creature *creature = new Creature(game, name, new NullOut(),
          new StreamIn(&cin), new StreamOut(&cerr));
 
+      creature->setClass(className);
+
       entities.set(name, creature);
       things.set(name, creature);
       beings.set(name, creature);
       creatures.set(name, creature);
 
-      checkClosingTag("creature");
+      checkClosingTag(className);
    }
 
    /***************************************************************************/
@@ -743,6 +768,10 @@ namespace core {
             parseObject();
          }
 
+         else if (typeClasses.objectTypeExists(getTagName())) {
+            parseObject(getTagName());
+         }
+
          else {
             s << filename << ": invalid tag <" << getTagName() << "> in "
                << "objects section (line "
@@ -756,7 +785,7 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseObject(string closingTag) {
+   void Parser::parseObject(string className) {
 
       stringstream s;
 
@@ -769,12 +798,21 @@ namespace core {
          throw s.str();
       }
 
+      // type checking
+      else if (className != object->getClass()) {
+         s << filename << ": object type mismatch: '" << getAttribute("name")
+            << "' is of type " << object->getClass() << ", but was declared in "
+            << "objects section to be of type " << className << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
       // set the object's default title
       s << "a " << getAttribute("name");
       object->setTitle(s.str());
 
       parseObjectProperties(object, 3);
-      checkClosingTag(closingTag);
+      checkClosingTag(className);
    }
 
    /***************************************************************************/
