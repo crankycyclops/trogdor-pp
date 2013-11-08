@@ -58,16 +58,28 @@ namespace core {
    void Parser::parseGame() {
 
       stringstream s;
+      bool manifestParsed = false;
 
-      // the manifest ALWAYS comes first!
-      nextTag();
-      if (0 != getTagName().compare("manifest")) {
-         s << filename << ": expected <manifest> (line " <<
-            xmlTextReaderGetParserLineNumber(reader) << ")";
-         throw s.str();
+      // class definitions and the manifest ALWAYS come first!
+      while (!manifestParsed) {
+
+         nextTag();
+
+         if (0 == getTagName().compare("manifest")) {
+            parseManifest();
+            manifestParsed = true;
+         }
+
+         else if (0 == getTagName().compare("classes")) {
+            // TODO
+         }
+
+         else {
+            s << filename << ": expected <manifest> or <classes> (line " <<
+               xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
       }
-
-      parseManifest();
 
       // parse the remaining sections
       while (nextTag() && 1 == getDepth()) {
@@ -102,6 +114,12 @@ namespace core {
 
          else if (0 == getTagName().compare("rooms")) {
             parseRooms();
+         }
+
+         else if (0 != getTagName().compare("classes")) {
+            s << filename << ": <classes> must appear before manifest" <<
+               "(line " << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
          }
 
          else {
@@ -536,7 +554,7 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseObject() {
+   void Parser::parseObject(string closingTag) {
 
       stringstream s;
 
@@ -613,7 +631,7 @@ namespace core {
          }
       }
 
-      checkClosingTag("object");
+      checkClosingTag(closingTag);
    }
 
    /***************************************************************************/
@@ -725,7 +743,7 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseCreature() {
+   void Parser::parseCreature(string closingTag) {
 
       stringstream s;
       bool counterAttackParsed = false;
@@ -856,7 +874,7 @@ namespace core {
             -1, creature->getWanderInterval(), creature));
       }
 
-      checkClosingTag("creature");
+      checkClosingTag(closingTag);
    }
 
    /***************************************************************************/
@@ -884,7 +902,7 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseRoom() {
+   void Parser::parseRoom(string closingTag) {
 
       stringstream s;
 
@@ -946,7 +964,7 @@ namespace core {
          }
       }
 
-      checkClosingTag("room");
+      checkClosingTag(closingTag);
    }
 
    /***************************************************************************/

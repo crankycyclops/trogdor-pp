@@ -654,37 +654,37 @@ namespace core {
             exception with an error message if there's a problem.
 
             Input:
-               (none)
+               Tag that closes the object definition
 
             Output:
                (none)
          */
          void parseObjects();
-         void parseObject();
+         void parseObject(string closingTag = "object");
 
          /*
             Parses the creatures section of game.xml.
 
             Input:
-               (none)
+               Tag that closes the creature definition
 
             Output:
                (none)
          */
          void parseCreatures();
-         void parseCreature();
+         void parseCreature(string closingTag = "creature");
 
          /*
             Parses room definitions in game.xml.
 
             Input:
-               (none)
+               Tag that closes the room definition
 
             Output:
                (none)
          */
          void parseRooms();
-         void parseRoom();
+         void parseRoom(string closingTag = "room");
 
          /*
             Parses the <game> section of the XML file.  Throws an exception if
