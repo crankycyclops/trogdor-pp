@@ -538,8 +538,15 @@ namespace core {
          throw s.str();
       }
 
-      Room *room = new Room(game, name, new PlaceOut(), new StreamIn(&cin),
-         new StreamOut(&cerr));
+      Room *room;
+
+      if (0 == className.compare("room")) {
+         room = new Room(game, name, new PlaceOut(), new StreamIn(&cin), new StreamOut(&cerr));
+      }
+
+      else {
+         room = new Room(*typeClasses.getRoomType(className), name);
+      }
 
       room->setClass(className);
 
@@ -651,8 +658,15 @@ namespace core {
          throw s.str();
       }
 
-      Creature *creature = new Creature(game, name, new NullOut(),
-         new StreamIn(&cin), new StreamOut(&cerr));
+      Creature *creature;
+
+      if (0 == className.compare("creature")) {
+         creature = new Creature(game, name, new NullOut(), new StreamIn(&cin), new StreamOut(&cerr));
+      }
+
+      else {
+         creature = new Creature(*typeClasses.getCreatureType(className), name);
+      }
 
       creature->setClass(className);
 
