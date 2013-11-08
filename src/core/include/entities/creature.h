@@ -75,6 +75,19 @@ namespace core { namespace entity {
          }
 
          /*
+            Constructor that clones a Creature into another separate and unique
+            Creature with identical properties.  Requires a unique name, which
+            won't be copied.
+         */
+         inline Creature(const Creature &c, string n): Being(c, n) {
+
+            autoAttack = c.autoAttack;
+            wanderSettings = c.wanderSettings;
+            counterAttack = c.counterAttack;
+            allegiance = c.allegiance;
+         }
+
+         /*
             Clears the cached sorted list of weapons in the Creature's inventory.
             The interface needs to be public so that if an Object in the
             Creature's inventory has its weapon attribute turned off, perhaps by
