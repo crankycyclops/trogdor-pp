@@ -761,19 +761,19 @@ namespace core {
          }
 
          else if (0 == getTagName().compare("events")) {
-            parseEvents(object->L, object->triggers, 4);
+            parseEvents(object->L, object->triggers, depth + 1);
          }
 
          else if (0 == getTagName().compare("aliases")) {
-            parseThingAliases(object, 4);
+            parseThingAliases(object, depth + 1);
          }
 
          else if (0 == getTagName().compare("meta")) {
-            parseEntityMeta(object, 4);
+            parseEntityMeta(object, depth + 1);
          }
 
          else if (0 == getTagName().compare("messages")) {
-            Messages *m = parseMessages(4);
+            Messages *m = parseMessages(depth + 1);
             object->setMessages(*m);
             delete m;
          }
@@ -899,7 +899,6 @@ namespace core {
    void Parser::parseCreature(string closingTag) {
 
       stringstream s;
-      bool counterAttackParsed = false;
 
       Creature *creature = creatures.get(getAttribute("name"));
 
@@ -913,7 +912,25 @@ namespace core {
       // set the creature's default title
       creature->setTitle(getAttribute("name"));
 
-      while (nextTag() && 3 == getDepth()) {
+      parseCreatureProperties(creature, 3);
+
+      // if wandering was enabled, insert a timer job for it
+      if (creature->getWanderEnabled()) {
+         game->insertTimerJob(new WanderTimerJob(game, creature->getWanderInterval(),
+            -1, creature->getWanderInterval(), creature));
+      }
+
+      checkClosingTag(closingTag);
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseCreatureProperties(Creature *creature, int depth) {
+
+      stringstream s;
+      bool counterAttackParsed = false;
+
+      while (nextTag() && depth == getDepth()) {
 
          if (0 == getTagName().compare("title")) {
             creature->setTitle(parseEntityTitle());
@@ -961,11 +978,11 @@ namespace core {
          }
 
          else if (0 == getTagName().compare("respawn")) {
-            Parser::parseBeingRespawn(creature, 4);
+            Parser::parseBeingRespawn(creature, depth + 1);
          }
 
          else if (0 == getTagName().compare("autoattack")) {
-            parseCreatureAutoAttack(creature, 4);
+            parseCreatureAutoAttack(creature, depth + 1);
          }
 
          else if (0 == getTagName().compare("wandering")) {
@@ -981,19 +998,19 @@ namespace core {
          }
 
          else if (0 == getTagName().compare("events")) {
-            parseEvents(creature->L, creature->triggers, 4);
+            parseEvents(creature->L, creature->triggers, depth + 1);
          }
 
          else if (0 == getTagName().compare("aliases")) {
-            parseThingAliases(creature, 4);
+            parseThingAliases(creature, depth + 1);
          }
 
          else if (0 == getTagName().compare("meta")) {
-            parseEntityMeta(creature, 4);
+            parseEntityMeta(creature, depth + 1);
          }
 
          else if (0 == getTagName().compare("messages")) {
-            Messages *m = parseMessages(4);
+            Messages *m = parseMessages(depth + 1);
             creature->setMessages(*m);
             delete m;
          }
@@ -1020,14 +1037,6 @@ namespace core {
                break;
          }
       }
-
-      // if wandering was enabled, insert a timer job for it
-      if (creature->getWanderEnabled()) {
-         game->insertTimerJob(new WanderTimerJob(game, creature->getWanderInterval(),
-            -1, creature->getWanderInterval(), creature));
-      }
-
-      checkClosingTag(closingTag);
    }
 
    /***************************************************************************/
@@ -1071,7 +1080,17 @@ namespace core {
       // set Room's default title
       room->setTitle(getAttribute("name"));
 
-      while (nextTag() && 3 == getDepth()) {
+      parseRoomProperties(room, 3);
+      checkClosingTag(closingTag);
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseRoomProperties(Room *room, int depth) {
+
+      stringstream s;
+
+      while (nextTag() && depth == getDepth()) {
 
          if (0 == getTagName().compare("title")) {
             room->setTitle(parseEntityTitle());
@@ -1096,28 +1115,26 @@ namespace core {
          }
 
          else if (0 == getTagName().compare("events")) {
-            parseEvents(room->L, room->triggers, 4);
+            parseEvents(room->L, room->triggers, depth + 1);
          }
 
          else if (0 == getTagName().compare("meta")) {
-            parseEntityMeta(room, 4);
+            parseEntityMeta(room, depth + 1);
          }
 
          else if (0 == getTagName().compare("messages")) {
-            Messages *m = parseMessages(4);
+            Messages *m = parseMessages(depth + 1);
             room->setMessages(*m);
             delete m;
          }
 
          else {
             s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "room definition (line "
+               << "room or class definition (line "
                << xmlTextReaderGetParserLineNumber(reader) << ")";
             throw s.str();
          }
       }
-
-      checkClosingTag(closingTag);
    }
 
    /***************************************************************************/

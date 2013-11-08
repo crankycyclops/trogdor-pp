@@ -693,6 +693,7 @@ namespace core {
          */
          void parseCreatures();
          void parseCreature(string closingTag = "creature");
+         void parseCreatureProperties(Creature *creature, int depth);
 
          /*
             Parses room definitions in game.xml.
@@ -705,6 +706,7 @@ namespace core {
          */
          void parseRooms();
          void parseRoom(string closingTag = "room");
+         void parseRoomProperties(Room *room, int depth);
 
          /*
             Parses the <game> section of the XML file.  Throws an exception if
