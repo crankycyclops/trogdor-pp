@@ -28,6 +28,8 @@ namespace core { namespace entity {
 
             types.push_back(ENTITY_OBJECT);
             weight = DEFAULT_WEIGHT;
+
+            setClass("object");
          }
 
          /*

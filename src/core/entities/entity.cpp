@@ -26,6 +26,9 @@ namespace core { namespace entity {
       // lame, but...legacy code, ya know?
       types.push_back(ENTITY_UNDEFINED);
 
+      // this should always be overridden by a top-level Entity type
+      className = "entity";
+
       game = g;
       name = n;
       outStream = o;
@@ -46,6 +49,7 @@ namespace core { namespace entity {
       name = n;
 
       types = e.types;
+      className = e.className;
       game = e.game;
       title = e.title;
       longDesc = e.longDesc;

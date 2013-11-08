@@ -71,7 +71,7 @@ namespace core {
          }
 
          else if (0 == getTagName().compare("classes")) {
-            // TODO
+            parseClasses();
          }
 
          else {
@@ -130,6 +130,210 @@ namespace core {
       }
 
       checkClosingTag("game");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseClasses() {
+
+      stringstream s;
+
+      while (nextTag() && 2 == getDepth()) {
+
+         if (0 == getTagName().compare("rooms")) {
+            parseClassesRooms();
+         }
+
+         else if (0 == getTagName().compare("objects")) {
+            parseClassesObjects();
+         }
+
+         else if (0 == getTagName().compare("creatures")) {
+            parseClassesCreatures();
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "<classes> section (line " << xmlTextReaderGetParserLineNumber(reader)
+               << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("classes");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseClassesRooms() {
+
+      stringstream s;
+
+      while (nextTag() && 3 == getDepth()) {
+
+         if (0 == getTagName().compare("room")) {
+            parseClassesRoom();
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "rooms section of <classes> (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("rooms");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseClassesRoom() {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseClassesObjects() {
+
+      stringstream s;
+
+      while (nextTag() && 3 == getDepth()) {
+
+         if (0 == getTagName().compare("object")) {
+            parseClassesObject();
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "objects section of <classes> (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("objects");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseClassesObject() {
+
+      string name = getAttribute("name");
+      stringstream s;
+
+      Object *object = new Object(game, name, new NullOut(), new StreamIn(&cin),
+         new StreamOut(&cerr));
+
+      // for type checking
+      object->setClass(name);
+
+      // set the object's default title
+      s << "a " << getAttribute("name");
+      object->setTitle(s.str());
+
+      while (nextTag() && 4 == getDepth()) {
+
+         if (0 == getTagName().compare("title")) {
+            object->setTitle(parseEntityTitle());
+         }
+
+         else if (0 == getTagName().compare("description")) {
+            object->setLongDescription(parseEntityLongDescription());
+         }
+
+         else if (0 == getTagName().compare("short")) {
+            object->setShortDescription(parseEntityShortDescription());
+         }
+
+         else if (0 == getTagName().compare("weight")) {
+            object->setWeight(parseObjectWeight());
+         }
+
+         else if (0 == getTagName().compare("takeable")) {
+            object->setTakeable(parseItemTakeable());
+         }
+
+         else if (0 == getTagName().compare("droppable")) {
+            object->setDroppable(parseItemDroppable());
+         }
+
+         else if (0 == getTagName().compare("weapon")) {
+            object->setIsWeapon(parseItemWeapon());
+         }
+
+         else if (0 == getTagName().compare("damage")) {
+            object->setDamage(parseItemDamage());
+         }
+
+         else if (0 == getTagName().compare("events")) {
+            parseEvents(object->L, object->triggers, 5);
+         }
+
+         else if (0 == getTagName().compare("aliases")) {
+            parseThingAliases(object, 5);
+         }
+
+         else if (0 == getTagName().compare("meta")) {
+            parseEntityMeta(object, 5);
+         }
+
+         else if (0 == getTagName().compare("messages")) {
+            Messages *m = parseMessages(5);
+            object->setMessages(*m);
+            delete m;
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "object class definition (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      try {
+         typeClasses.insertType(name, object);
+      }
+
+      catch (bool e) {
+            s << filename << ": object class '" << name << "' already defined (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+      }
+
+      checkClosingTag("object");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseClassesCreatures() {
+
+      stringstream s;
+
+      while (nextTag() && 3 == getDepth()) {
+
+         if (0 == getTagName().compare("creature")) {
+            parseClassesCreature();
+         }
+
+         else {
+            s << filename << ": invalid tag <" << getTagName() << "> in "
+               << "creatures section of <classes> (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+         }
+      }
+
+      checkClosingTag("creatures");
+   }
+
+   /***************************************************************************/
+
+   void Parser::parseClassesCreature() {
+
+      // TODO
    }
 
    /***************************************************************************/
@@ -209,9 +413,9 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseEntityMeta(Entity *entity) {
+   void Parser::parseEntityMeta(Entity *entity, int depth) {
 
-      while (nextTag() && 4 == getDepth()) {
+      while (nextTag() && depth == getDepth()) {
          parseEntityMetaValue(getTagName(), entity);
       }
 
@@ -610,11 +814,11 @@ namespace core {
          }
 
          else if (0 == getTagName().compare("aliases")) {
-            parseThingAliases(object);
+            parseThingAliases(object, 4);
          }
 
          else if (0 == getTagName().compare("meta")) {
-            parseEntityMeta(object);
+            parseEntityMeta(object, 4);
          }
 
          else if (0 == getTagName().compare("messages")) {
@@ -832,11 +1036,11 @@ namespace core {
          }
 
          else if (0 == getTagName().compare("aliases")) {
-            parseThingAliases(creature);
+            parseThingAliases(creature, 4);
          }
 
          else if (0 == getTagName().compare("meta")) {
-            parseEntityMeta(creature);
+            parseEntityMeta(creature, 4);
          }
 
          else if (0 == getTagName().compare("messages")) {
@@ -947,7 +1151,7 @@ namespace core {
          }
 
          else if (0 == getTagName().compare("meta")) {
-            parseEntityMeta(room);
+            parseEntityMeta(room, 4);
          }
 
          else if (0 == getTagName().compare("messages")) {
@@ -1493,11 +1697,11 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseThingAliases(Thing *thing) {
+   void Parser::parseThingAliases(Thing *thing, int depth) {
 
       stringstream s;
 
-      while (nextTag() && 4 == getDepth()) {
+      while (nextTag() && depth == getDepth()) {
 
          if (0 == getTagName().compare("alias")) {
             thing->addAlias(parseThingAlias());

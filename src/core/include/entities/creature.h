@@ -64,6 +64,7 @@ namespace core { namespace entity {
          Being(g, n, o, i, e) {
 
             types.push_back(ENTITY_CREATURE);
+            setClass("creature");
 
             allegiance = DEFAULT_ALLEGIANCE;
             counterAttack = DEFAULT_COUNTER_ATTACK;

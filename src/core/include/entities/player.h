@@ -23,8 +23,9 @@ namespace core { namespace entity {
          Being(g, n, o, i, e) {
 
             types.push_back(ENTITY_PLAYER);
-
             attackable = true;
+
+            setClass("player");
          }
 
          /*

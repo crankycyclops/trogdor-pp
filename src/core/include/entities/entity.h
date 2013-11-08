@@ -67,6 +67,7 @@ namespace core { namespace entity {
          Trogout *errStream;
          Trogin  *inStream;
 
+         string className;
          string name;
          string title;
          string longDesc;
@@ -312,6 +313,17 @@ namespace core { namespace entity {
          }
 
          /*
+            Returns the Entity's class.
+
+            Input:
+               (none)
+
+            Output:
+               Entity's class (string)
+         */
+         inline string getClass() const {return className;}
+
+         /*
             Returns the Entity's name.
 
             Input:
@@ -452,6 +464,18 @@ namespace core { namespace entity {
                (none)
          */
          inline void setMeta(string key, string value) {meta[key] = value;}
+
+         /*
+            Sets the Entity's class.
+
+            Input:
+               New class (string)
+
+            Output:
+               (none)
+         */
+         // TODO: virtual in Thing that will remove/add alias for old and new class name
+         inline void setClass(string c) {className = c;}
 
          /*
             Sets the Entity's title.

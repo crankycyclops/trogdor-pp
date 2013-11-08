@@ -32,6 +32,7 @@ namespace core { namespace entity {
          Place(g, n, o, i, e) {
 
             types.push_back(ENTITY_ROOM);
+            setClass("room");
          }
 
          /*

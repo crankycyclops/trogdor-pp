@@ -116,6 +116,8 @@ namespace core { namespace entity {
                (none)
          */
          virtual void addAlias(string alias);
+
+         // TODO: virtual void removeAlias(string alias);
    };
 }}
 

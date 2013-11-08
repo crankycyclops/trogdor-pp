@@ -51,7 +51,7 @@ namespace core {
          Game *game;
 
          // user defined Entity classes
-         entity::EntityClass typeClases;
+         entity::EntityClass typeClasses;
 
          // Player object representing default settings for all new players
          entity::Player *defaultPlayer;
@@ -252,11 +252,12 @@ namespace core {
 
             Input:
                Pointer to Thing
+               Parse depth in XML file
 
             Output:
                (none)
          */
-         void parseThingAliases(Thing *thing);
+         void parseThingAliases(Thing *thing, int depth);
          string parseThingAlias();  // returns a single alias
 
          /*
@@ -576,6 +577,24 @@ namespace core {
          void parseEvent(LuaState *L, EventListener *triggers);
 
          /*
+            This group of functions parses the <classes> section of the XML
+            file.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseClasses();
+         void parseClassesRooms();
+         void parseClassesRoom();
+         void parseClassesObjects();
+         void parseClassesObject();
+         void parseClassesCreatures();
+         void parseClassesCreature();
+
+         /*
             This group of functions parses the <introduction> section of the XML
             file, should it exist.
 
@@ -619,7 +638,7 @@ namespace core {
          */
          void parseGameMeta();
          void parseGameMetaValue(string key);
-         void parseEntityMeta(Entity *entity);
+         void parseEntityMeta(Entity *entity, int depth);
          void parseEntityMetaValue(string key, Entity *entity);
 
          void parseSynonyms();
