@@ -693,7 +693,7 @@ namespace core {
                (none)
          */
          void parseCreatures();
-         void parseCreature(string closingTag = "creature");
+         void parseCreature(string className = "creature");
          void parseCreatureProperties(Creature *creature, int depth);
 
          /*
@@ -706,7 +706,7 @@ namespace core {
                (none)
          */
          void parseRooms();
-         void parseRoom(string closingTag = "room");
+         void parseRoom(string className = "room");
          void parseRoomProperties(Room *room, int depth);
 
          /*

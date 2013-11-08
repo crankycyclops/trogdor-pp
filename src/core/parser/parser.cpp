@@ -991,7 +991,7 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseCreature(string closingTag) {
+   void Parser::parseCreature(string className) {
 
       stringstream s;
 
@@ -1000,6 +1000,15 @@ namespace core {
       if (0 == creature) {
          s << filename << ": creature '" << getAttribute("name") << "' was not "
             << "declared in the manifest (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      // type checking
+      else if (className != creature->getClass()) {
+         s << filename << ": creature type mismatch: '" << getAttribute("name")
+            << "' is of type " << creature->getClass() << ", but was declared in "
+            << "creatures section to be of type " << className << " (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
       }
@@ -1015,7 +1024,7 @@ namespace core {
             -1, creature->getWanderInterval(), creature));
       }
 
-      checkClosingTag(closingTag);
+      checkClosingTag(className);
    }
 
    /***************************************************************************/
@@ -1159,7 +1168,7 @@ namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseRoom(string closingTag) {
+   void Parser::parseRoom(string className) {
 
       stringstream s;
 
@@ -1172,11 +1181,20 @@ namespace core {
          throw s.str();
       }
 
+      // type checking
+      else if (className != room->getClass()) {
+         s << filename << ": room type mismatch: '" << getAttribute("name")
+            << "' is of type " << room->getClass() << ", but was declared in "
+            << "rooms section to be of type " << className << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
       // set Room's default title
       room->setTitle(getAttribute("name"));
 
       parseRoomProperties(room, 3);
-      checkClosingTag(closingTag);
+      checkClosingTag(className);
    }
 
    /***************************************************************************/
