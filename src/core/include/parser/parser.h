@@ -18,6 +18,7 @@
 #include "../lua/luastate.h"
 #include "../event/eventlistener.h"
 
+#include "data.h"
 #include "entityclass.h"
 
 class Game;

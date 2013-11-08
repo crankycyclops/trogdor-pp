@@ -27,6 +27,48 @@ namespace core { namespace entity {
          public:
 
             /*
+              Returns true if the specified Room class exists and false if not.
+
+              Input:
+                 name of class (string)
+
+              Output:
+                 bool
+            */
+            inline bool roomTypeExists(string name) {
+
+               return RoomTypes.find(name) == RoomTypes.end() ? false : true;
+            }
+
+            /*
+              Returns true if the specified Object class exists and false if not.
+
+              Input:
+                 name of class (string)
+
+              Output:
+                 bool
+            */
+            inline bool ObjectTypeExists(string name) {
+
+               return ObjectTypes.find(name) == ObjectTypes.end() ? false : true;
+            }
+
+            /*
+              Returns true if the specified Creature class exists and false if not.
+
+              Input:
+                 name of class (string)
+
+              Output:
+                 bool
+            */
+            inline bool CreatureTypeExists(string name) {
+
+               return CreatureTypes.find(name) == CreatureTypes.end() ? false : true;
+            }
+
+            /*
               Returns the Room class definition of the specified name. If it
               doesn't exist, returns a NULL pointer instead.
 

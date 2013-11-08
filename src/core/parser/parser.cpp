@@ -9,40 +9,6 @@
 
 using namespace std;
 
-
-// these words are reserved and cannot be used as names for user-defined classes
-static const char *g_reservedClassNames[] = {
-   "entity",
-   "object",
-   "creature",
-   "room",
-   "player",
-   0
-};
-
-/*
-   For internal use only!
-
-   Determines whether or not a class name is reserved.
-
-   Input:
-      class name (string)
-
-   Output:
-      true if the word is reserved and false if not
-*/
-static bool isClassNameReserved(string name) {
-
-   for (int i = 0; g_reservedClassNames[i] != 0; i++) {
-      if (0 == strcmp(name.c_str(), g_reservedClassNames[i])) {
-         return true;
-      }
-   }
-
-   return false;
-}
-
-
 namespace core {
 
 
