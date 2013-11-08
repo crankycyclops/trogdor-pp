@@ -18,6 +18,8 @@
 #include "../lua/luastate.h"
 #include "../event/eventlistener.h"
 
+#include "entityclass.h"
+
 class Game;
 
 
@@ -47,6 +49,9 @@ namespace core {
 
          // Entities must be instantiated with a reference to their Game
          Game *game;
+
+         // user defined Entity classes
+         entity::EntityClass typeClases;
 
          // Player object representing default settings for all new players
          entity::Player *defaultPlayer;
