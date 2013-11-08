@@ -151,6 +151,14 @@ namespace core { namespace entity {
          Place(Game *g, string n, Trogout *o, Trogin *i, Trogout *e);
 
          /*
+            Constructor for cloning an existing Place.  Requires a unique name.
+
+            NOTE: items that are in a Place will not be copied, in order to
+            maintain sanity.
+         */
+         inline Place(const Place &p, string n): Entity(p, n) {}
+
+         /*
             Inserts a Thing that resides inside the Place.  An example would
             be an Object inside a Room.
 

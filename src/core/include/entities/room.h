@@ -36,6 +36,15 @@ namespace core { namespace entity {
          }
 
          /*
+            Constructor for cloning an existing Room.  Requires a unique name.
+         */
+         inline Room(const Room &r, string n): Place(r, n) {
+
+            // TODO: trying to decide if this makes sense?
+            connections = r.connections;
+         }
+
+         /*
             Returns room connected by the specified direction.  Returns 0 if
             the connection does not exist.
 
