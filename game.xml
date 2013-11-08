@@ -13,19 +13,15 @@
         object class of type "weapon," and you assign to it a damage of 1, but
         then create a specific object of that class and assign to it a damage of
         10, the value of 10 will be used. -->
-
    <classes>
 
       <objects>
 
-
          <!-- Any defined objects of type "weapon" will assume these attributes. -->
-
-         <object name="weapon">
+         <object class="weapon">
 
             <!-- See example objects in <objects> section for an explanation of
                  what these attributes are. -->
-
             <weapon>1</weapon>
             <damage>10</damage>
 

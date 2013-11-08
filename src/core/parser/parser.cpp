@@ -224,7 +224,7 @@ namespace core {
 
    void Parser::parseClassesRoom() {
 
-      string name = getAttribute("name");
+      string name = getAttribute("class");
       stringstream s;
 
       if (isClassNameReserved(name)) {
@@ -281,7 +281,7 @@ namespace core {
 
    void Parser::parseClassesObject() {
 
-      string name = getAttribute("name");
+      string name = getAttribute("class");
       stringstream s;
 
       if (isClassNameReserved(name)) {
@@ -338,7 +338,7 @@ namespace core {
 
    void Parser::parseClassesCreature() {
 
-      string name = getAttribute("name");
+      string name = getAttribute("class");
       stringstream s;
 
       if (isClassNameReserved(name)) {
