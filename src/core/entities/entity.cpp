@@ -23,8 +23,7 @@ namespace core { namespace entity {
 
    Entity::Entity(Game *g, string n, Trogout *o, Trogin *i, Trogout *e) {
 
-      // lame, but...legacy code, ya know?
-      types.push_back(ENTITY_UNDEFINED);
+      types.push_back(ENTITY_ENTITY);
 
       // this should always be overridden by a top-level Entity type
       className = "entity";

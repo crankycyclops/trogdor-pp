@@ -252,7 +252,7 @@ namespace core { namespace entity {
 
       // TODO: move all of this into Entity::strToType()
       if (0 == typeStr.compare("entity")) {
-         type = ENTITY_UNDEFINED;
+         type = ENTITY_ENTITY;
       }
 
       else if (0 == typeStr.compare("place")) {

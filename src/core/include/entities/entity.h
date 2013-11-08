@@ -41,7 +41,7 @@ namespace core { namespace entity {
 
    // used for run-time check of an Entity's type
    enum EntityType {
-      ENTITY_UNDEFINED = 1,
+      ENTITY_ENTITY = 1,
       ENTITY_PLACE = 2,
       ENTITY_ROOM = 3,
       ENTITY_THING = 4,
