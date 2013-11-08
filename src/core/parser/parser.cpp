@@ -9,6 +9,40 @@
 
 using namespace std;
 
+
+// these words are reserved and cannot be used as names for user-defined classes
+static const char *g_reservedClassNames[] = {
+   "entity",
+   "object",
+   "creature",
+   "room",
+   "player",
+   0
+};
+
+/*
+   For internal use only!
+
+   Determines whether or not a class name is reserved.
+
+   Input:
+      class name (string)
+
+   Output:
+      true if the word is reserved and false if not
+*/
+static bool isClassNameReserved(string name) {
+
+   for (int i = 0; g_reservedClassNames[i] != 0; i++) {
+      if (0 == strcmp(name.c_str(), g_reservedClassNames[i])) {
+         return true;
+      }
+   }
+
+   return false;
+}
+
+
 namespace core {
 
 
@@ -190,7 +224,34 @@ namespace core {
 
    void Parser::parseClassesRoom() {
 
-      // TODO
+      string name = getAttribute("name");
+      stringstream s;
+
+      if (isClassNameReserved(name)) {
+         s << filename << ": class name '" << name << "' is reserved (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      Room *room = new Room(game, name, new PlaceOut(), new StreamIn(&cin),
+         new StreamOut(&cerr));
+
+      // for type checking
+      room->setClass(name);
+      room->setTitle(name);
+
+      try {
+         typeClasses.insertType(name, room);
+      }
+
+      catch (bool e) {
+            s << filename << ": room class '" << name << "' already defined (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+      }
+
+      parseRoomProperties(room, 4);
+      checkClosingTag("room");
    }
 
    /***************************************************************************/
@@ -223,15 +284,18 @@ namespace core {
       string name = getAttribute("name");
       stringstream s;
 
+      if (isClassNameReserved(name)) {
+         s << filename << ": class name '" << name << "' is reserved (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
       Object *object = new Object(game, name, new NullOut(), new StreamIn(&cin),
          new StreamOut(&cerr));
 
       // for type checking
       object->setClass(name);
-
-      // set the object's default title
-      s << "a " << getAttribute("name");
-      object->setTitle(s.str());
+      object->setTitle(name);
 
       try {
          typeClasses.insertType(name, object);
@@ -274,7 +338,34 @@ namespace core {
 
    void Parser::parseClassesCreature() {
 
-      // TODO
+      string name = getAttribute("name");
+      stringstream s;
+
+      if (isClassNameReserved(name)) {
+         s << filename << ": class name '" << name << "' is reserved (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      Creature *creature = new Creature(game, name, new NullOut(),
+         new StreamIn(&cin), new StreamOut(&cerr));
+
+      // for type checking
+      creature->setClass(name);
+      creature->setTitle(name);
+
+      try {
+         typeClasses.insertType(name, creature);
+      }
+
+      catch (bool e) {
+            s << filename << ": creature class '" << name << "' already defined (line "
+               << xmlTextReaderGetParserLineNumber(reader) << ")";
+            throw s.str();
+      }
+
+      parseCreatureProperties(creature, 4);
+      checkClosingTag("creature");
    }
 
    /***************************************************************************/
