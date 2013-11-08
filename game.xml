@@ -349,7 +349,6 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
       <weapon name="stick">
          <description>It's long, narrow and definitely looks like a stick.</description>
          <weight>1</weight>
-         <weapon>1</weapon>
       </weapon>
 
    </objects>
