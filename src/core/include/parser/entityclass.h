@@ -27,6 +27,27 @@ namespace core { namespace entity {
          public:
 
             /*
+               Destructor for EntityClass.
+            */
+            inline ~EntityClass() {
+
+               for (unordered_map<string, Room *>::iterator i = RoomTypes.begin();
+               i != RoomTypes.end(); i++) {
+                  delete i->second;
+               }
+
+               for (unordered_map<string, Object *>::iterator i = ObjectTypes.begin();
+               i != ObjectTypes.end(); i++) {
+                  delete i->second;
+               }
+
+               for (unordered_map<string, Creature *>::iterator i = CreatureTypes.begin();
+               i != CreatureTypes.end(); i++) {
+                  delete i->second;
+               }
+            }
+
+            /*
               Returns true if the specified Room class exists and false if not.
 
               Input:

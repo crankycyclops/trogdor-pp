@@ -53,8 +53,10 @@ namespace core {
          delete lastCommand;
       }
 
+      delete L;
       delete timer;
       delete events;
+      delete parser;
 
       // TODO: delete all action objects initialized in initActions()
    }
