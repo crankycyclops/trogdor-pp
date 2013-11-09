@@ -29,6 +29,7 @@ namespace core { namespace event {
                L->pushArgument(boost::get<string>(args[i]));
                break;
 
+            // TODO: we should pass the Game once we have a Lua object for it
             case 4: // we ignore Game *
                break;
 

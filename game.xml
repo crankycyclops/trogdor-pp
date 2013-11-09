@@ -30,6 +30,23 @@
 
       </objects>
 
+      <creatures>
+
+         <creature class="soul">
+
+            <!-- any creature of this type can be referenced by these aliases -->
+            <aliases>
+               <alias>ghost</alias>
+               <alias>spirit</alias>
+               <alias>specter</alias>
+               <alias>spectre</alias>
+               <alias>phantom</alias>
+            </aliases>
+
+         </creature>
+
+      </creatures>
+
    </classes>
 
 
@@ -55,7 +72,7 @@
 
       <creatures>
          <creature name="trogdor"></creature>
-         <creature name="casper"></creature>
+         <soul name="casper"></soul>
       </creatures>
 
       <objects>
@@ -455,7 +472,7 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
       </creature>
 
 
-      <creature name="casper">
+      <soul name="casper">
 
          <title>Casper the Friendly Ghost</title>
 
@@ -489,15 +506,7 @@ He's white, transparent and floating six or seven feet off the ground.  He smile
 
          </wandering>
 
-         <aliases>
-            <alias>ghost</alias>
-            <alias>spirit</alias>
-            <alias>specter</alias>
-            <alias>spectre</alias>
-            <alias>phantom</alias>
-         </aliases>
-
-      </creature>
+      </soul>
 
 
    </creatures>

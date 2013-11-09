@@ -992,6 +992,10 @@ namespace core {
             parseCreature();
          }
 
+         else if (typeClasses.creatureTypeExists(getTagName())) {
+            parseCreature(getTagName());
+         }
+
          else {
             s << filename << ": invalid tag <" << getTagName() << "> in "
                << "creatures section (line "
@@ -1167,6 +1171,10 @@ namespace core {
 
          if (0 == getTagName().compare("room")) {
             parseRoom();
+         }
+
+         else if (typeClasses.roomTypeExists(getTagName())) {
+            parseRoom(getTagName());
          }
 
          else {
