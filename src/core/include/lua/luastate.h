@@ -256,7 +256,6 @@ namespace core {
             initLibs();
 
             if (LSrc.parsedScriptData.length() > 0) {
-               // TODO: I think this is going to cause a segfault, and I don't know why...
                loadScriptFromString(LSrc.parsedScriptData);
             }
          }
