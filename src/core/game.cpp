@@ -58,6 +58,8 @@ namespace core {
       delete events;
       delete parser;
 
+      entities.destroyEntities();
+
       // TODO: delete all action objects initialized in initActions()
    }
 

@@ -255,7 +255,10 @@ namespace core {
             initState();
             initLibs();
 
-            loadScriptFromString(LSrc.parsedScriptData);
+            if (LSrc.parsedScriptData.length() > 0) {
+               // TODO: I think this is going to cause a segfault, and I don't know why...
+               loadScriptFromString(LSrc.parsedScriptData);
+            }
          }
 
          /*
@@ -266,14 +269,14 @@ namespace core {
          /*
             Assignment operator for LuaState.
          */
-         LuaState &operator=(const LuaState &rhs) {
+         inline LuaState &operator=(const LuaState &rhs) {
 
-            lua_close(L);
-
-            initState();
-            initLibs();
-
-            loadScriptFromString(rhs.parsedScriptData);
+            if (this != &rhs) {
+               lua_close(L);
+               initState();
+               initLibs();
+               loadScriptFromString(rhs.parsedScriptData);
+            }
          }
 
          /*

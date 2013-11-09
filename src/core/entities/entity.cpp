@@ -58,7 +58,7 @@ namespace core { namespace entity {
       errStream = e.errStream->clone();
       inStream = e.inStream->clone();
 
-      L = e.L;
+      L = new LuaState(*e.L);
       // TODO: we need to do some kind of intelligent copying for event handlers
       triggers = new event::EventListener();
    }

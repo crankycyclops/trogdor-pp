@@ -45,6 +45,11 @@ namespace core { namespace entity {
 
       public:
 
+         /*
+            Destructor for EntityMap.
+         */
+         inline ~EntityMap() {clear();}
+
          /* Returns true if the entity with the given name is set and false if
             it's not.
 
@@ -93,6 +98,25 @@ namespace core { namespace entity {
             Output: (none)
          */
          inline void clear() {entities.clear();}
+
+         /*
+            Destroys all contained Entities, then clears the hash table. We can't
+            make this a part of the destructor, because there are cases where we
+            want to free the memory associated with an EntityMap without freeing
+            the Entities inside.
+
+            Input: (none)
+            Output: (none)
+         */
+         inline void destroyEntities() {
+
+            for (unordered_map<string, Entity *>::iterator i = entities.begin();
+            i != entities.end(); i++) {
+               delete i->second;
+            }
+
+            clear();
+         }
    };
 
    /***************************************************************************/
