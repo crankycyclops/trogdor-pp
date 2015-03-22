@@ -58,11 +58,22 @@ namespace core {
 
          status  = parseDirectObject(tokenizer);
 
-         // check for a dangling preposition, which is a syntax error
          try {
             status += parseIndirectObject(tokenizer);
-         } catch (bool i) {
-            return;
+         }
+
+         // check for a dangling preposition, which is a syntax error
+         catch (string preposition) {
+
+            // Hackety hack: "in" and "out" are also considered to be
+            // directions, so they should alternatively be treated like direct
+            // objects.
+            if (0 == preposition.compare("in") || 0 == preposition.compare("out")) {
+               directObject = preposition;
+               status++;
+            } else {
+               return;
+            }
          }
 
          // if we detected additional characters, but don't have a direct object
@@ -152,7 +163,7 @@ namespace core {
 
          // a dangling preposition is considered a syntax error
          if (preposition.length() > 0) {
-            throw false;
+            throw preposition;
          }
 
          return 0;

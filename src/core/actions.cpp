@@ -368,7 +368,7 @@ namespace core {
       string dobj = command->getDirectObject();
       string iobj = command->getIndirectObject();
 
-      // A valid quit command should not contain both a direct and indirect object
+      // A valid move command should not contain both a direct and indirect object
       if (dobj.length() > 0 && iobj.length() > 0) {
          return false;
       }
