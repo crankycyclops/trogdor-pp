@@ -1,8 +1,6 @@
 #include <string>
 
 #include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
 
 #include "../include/network/tcpconnection.h"
@@ -14,24 +12,21 @@ using boost::asio::ip::tcp;
 
 
 void TCPServer::handleAccept(
-	TCPConnection::ptr connection,
+	TCPConnection *connection,
 	const error_code &e,
-	TCPConnection::callback_t callback,
+	callback_t callback,
 	void *callbackArg
 ) {
 
 	if (!e) {
 		callback(connection, callbackArg);
 	}
-
-	// Once we've accepted one connection, 
-	startAccept(callback, callbackArg);
 }
 
 
-void TCPServer::startAccept(TCPConnection::callback_t callback, void *callbackArg) {
+void TCPServer::startAccept(callback_t callback, void *callbackArg) {
 
-	TCPConnection::ptr connection = TCPConnection::create(acceptor.get_io_service());
+	TCPConnection *connection = new TCPConnection(acceptor.get_io_service());
 
 	acceptor.async_accept(
 		connection->getSocket(),

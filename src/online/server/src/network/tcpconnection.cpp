@@ -1,8 +1,6 @@
 #include <string>
 
 #include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
 
 #include "../include/network/tcpcommon.h"
@@ -21,7 +19,7 @@ void TCPConnection::handleRead(
 
 	if (!e) {
 		if (callback) {
-			callback(shared_from_this(), callbackArg);
+			callback(this, callbackArg);
 		}
 	}
 
@@ -37,7 +35,7 @@ void TCPConnection::handleWrite(
 
 	if (!e) {
 		if (callback) {
-			callback(shared_from_this(), callbackArg);
+			callback(this, callbackArg);
 		}
 	}
 
@@ -45,19 +43,39 @@ void TCPConnection::handleWrite(
 }
 
 
+void TCPConnection::close() {
+
+	// Do nothing, because the connection's already closed.
+	if (!socket) {
+		return;
+	}
+
+	boost::system::error_code ec;
+
+	socket->shutdown(tcp::socket::shutdown_send, ec);
+	if (ec) {
+		// TODO: some error occured. Handle it.
+	}
+
+	socket->close();
+	delete socket;
+	socket = 0;
+}
+
+
 void TCPConnection::read(callback_t callback, void *callbackArg) {
 
-	if (!opened) {
+	if (!socket) {
 		throw string("Trying to read from a closed connection.");
 	}
 
 	boost::asio::async_read_until(
-		socket,
+		*socket,
 		inBuffer,
 		EOT,
 		boost::bind(
 			&TCPConnection::handleRead,
-			shared_from_this(),
+			this,
 			boost::asio::placeholders::error,
 			callback,
 			callbackArg
@@ -68,39 +86,20 @@ void TCPConnection::read(callback_t callback, void *callbackArg) {
 
 void TCPConnection::write(string message, callback_t callback, void *callbackArg) {
 
-	if (!opened) {
+	if (!socket) {
 		throw string("Trying to write on a closed connection.");
 	}
 
 	boost::asio::async_write(
-		socket,
+		*socket,
 		boost::asio::buffer(message),
 		boost::bind(
 			&TCPConnection::handleWrite,
-			shared_from_this(),
+			this,
 			boost::asio::placeholders::error,
 			callback,
 			callbackArg
 		)
 	);
-}
-
-
-void TCPConnection::close() {
-
-	// Do nothing, because the connection's already closed.
-	if (!opened) {
-		return;
-	}
-
-	boost::system::error_code ec;
-
-	socket.shutdown(tcp::socket::shutdown_send, ec);
-	if (ec) {
-		// TODO: some error occured. Handle it.
-	}
-
-	socket.close();
-	opened = false;
 }
 

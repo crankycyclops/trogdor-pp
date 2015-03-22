@@ -2,9 +2,12 @@
 #define TCPCOMMON_H
 
 
-#include <boost/shared_ptr.hpp>
-
 #define EOT 0x4 // EOT (end of transmission) character
+
+// Callback that takes a single argument and is called at the
+// conclusion of an asynchronous event. 
+class TCPConnection;
+typedef void (*callback_t)(TCPConnection *, void *);
 
 
 #endif

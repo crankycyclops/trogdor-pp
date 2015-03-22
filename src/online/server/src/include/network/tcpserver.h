@@ -26,8 +26,8 @@ class TCPServer {
 
 		// Handles an asynchronous accept. If there are no errors, the
 		// specified callback is called along with the specified argument.
-		void handleAccept(TCPConnection::ptr connection, const error_code &e,
-			TCPConnection::callback_t callback, void *arg);
+		void handleAccept(TCPConnection *connection, const error_code &e,
+			callback_t callback, void *arg);
 
 	public:
 
@@ -40,7 +40,7 @@ class TCPServer {
 		// thread. The provided callback should assume that a connection was
 		// successfully accepted and should continue from there using the
 		// provided TCPConnection.
-		void startAccept(TCPConnection::callback_t callback, void *callbackArg);
+		void startAccept(callback_t callback, void *callbackArg);
 };
 
 
