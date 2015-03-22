@@ -6,8 +6,8 @@
 #include <sstream>
 #include <string>
 #include <cstdlib>
-#include <pthread.h>
 
+#include "thread.h"
 #include "command.h"
 #include "event/eventhandler.h"
 #include "entitymap.h"
@@ -130,10 +130,10 @@ namespace core {
       public:
 
          /* lock on this to keep data consistent between threads */
-         pthread_mutex_t resourceMutex;
+         mutex_t resourceMutex;
 
          /* lock on this to synchronize timer actions */
-         pthread_mutex_t timerMutex;
+         mutex_t timerMutex;
 
          /*
             Constructor for the Game class.

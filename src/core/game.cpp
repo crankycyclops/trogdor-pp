@@ -35,8 +35,8 @@ namespace core {
       lastCommand = NULL;
 
       // initialize thread mutexes
-      pthread_mutex_init(&resourceMutex, 0);
-      pthread_mutex_init(&timerMutex, 0);
+      INIT_MUTEX(resourceMutex);
+      INIT_MUTEX(timerMutex);
 
       timer = new Timer(this);
       events = new event::EventHandler;
@@ -171,19 +171,19 @@ namespace core {
 
    void Game::start() {
 
-      pthread_mutex_lock(&resourceMutex);
+      MUTEX_LOCK(resourceMutex);
       inGame = true;
       timer->start();
-      pthread_mutex_unlock(&resourceMutex);
+      MUTEX_UNLOCK(resourceMutex);
    }
 
 
    void Game::stop() {
 
-      pthread_mutex_lock(&resourceMutex);
+      MUTEX_LOCK(resourceMutex);
       timer->stop();
       inGame = false;
-      pthread_mutex_unlock(&resourceMutex);
+      MUTEX_UNLOCK(resourceMutex);
    }
 
 
@@ -249,9 +249,9 @@ namespace core {
 
          else {
 
-            pthread_mutex_lock(&resourceMutex);
+            MUTEX_LOCK(resourceMutex);
             action->execute(player, command, this);
-            pthread_mutex_unlock(&resourceMutex);
+            MUTEX_UNLOCK(resourceMutex);
          }
       }
 

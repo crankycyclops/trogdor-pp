@@ -1,4 +1,3 @@
-#include <cstdio>
 #include "../include/timer/timer.h"
 
 using namespace std;
@@ -40,9 +39,9 @@ namespace core {
       sleep(1);
 
       // increment the current game time
-      pthread_mutex_lock(&(game->timerMutex));
+      MUTEX_LOCK(game->timerMutex);
       time++;
-      pthread_mutex_unlock(&(game->timerMutex));
+      MUTEX_UNLOCK(game->timerMutex);
 
       for (list<TimerJob *>::iterator i = queue.begin(); i != queue.end(); ++i) {
 
@@ -52,9 +51,9 @@ namespace core {
             (time - (*i)->getInitTime() - (*i)->getStartTime()) % (*i)->getInterval() == 0) {
 
                // run the job
-               pthread_mutex_lock(&(game->timerMutex));
+               MUTEX_LOCK(game->timerMutex);
                (*i)->execute(**i);
-               pthread_mutex_unlock(&(game->timerMutex));
+               MUTEX_UNLOCK(game->timerMutex);
 
                // decrement executions (unless it's -1, which means the job
                // should execute indefinitely)
@@ -66,10 +65,10 @@ namespace core {
 
          // job is expired, so remove it
          else {
-            pthread_mutex_lock(&(game->timerMutex));
+            MUTEX_LOCK(game->timerMutex);
             list<TimerJob *>::iterator iprev = i++;
             queue.remove(*iprev);
-            pthread_mutex_unlock(&(game->timerMutex));
+            MUTEX_UNLOCK(game->timerMutex);
          }
       }
    }
@@ -89,16 +88,10 @@ namespace core {
 
       if (!active) {
 
-         pthread_mutex_lock(&(game->timerMutex));
+         MUTEX_LOCK(game->timerMutex);
          active = true;
-
-         // start the timer thread
-         if (pthread_create(&thread, 0, &doTick, this)) {
-            game->err() << "Failed to start the timer!\n";
-            exit(EXIT_FAILURE);
-         }
-
-         pthread_mutex_unlock(&(game->timerMutex));
+         THREAD_CREATE(jobThread, doTick, this, "Failed to start the timer!\n");
+         MUTEX_UNLOCK(game->timerMutex);
       }
    }
 
@@ -107,9 +100,9 @@ namespace core {
    void Timer::stop() {
 
       if (active) {
-         pthread_mutex_lock(&(game->timerMutex));
+         MUTEX_LOCK(game->timerMutex);
          active = false;
-         pthread_mutex_unlock(&(game->timerMutex));
+         MUTEX_UNLOCK(game->timerMutex);
       }
    }
 
@@ -117,10 +110,10 @@ namespace core {
 
    void Timer::reset() {
 
-      pthread_mutex_lock(&(game->timerMutex));
+      MUTEX_LOCK(game->timerMutex);
       time = 0;
       clearJobs();
-      pthread_mutex_unlock(&(game->timerMutex));
+      MUTEX_UNLOCK(game->timerMutex);
    }
 
 /******************************************************************************/
@@ -135,11 +128,7 @@ namespace core {
       
       // insert job asynchronously to avoid deadlock when a function called by
       // a job inserts another job
-      if (pthread_create(&thread, 0, &doInsertJob, arg)) {
-         game->err() << "Failed to insert timer job!\n";
-         exit(EXIT_FAILURE);
-      }
-      
+      THREAD_CREATE(insertJobThread, doInsertJob, arg, "Failed to insert timer job!\n");
    }
 
 /******************************************************************************/
@@ -159,10 +148,10 @@ namespace core {
       Timer *t = ((DoInsertJobArg *)arg)->timer;
       TimerJob *j = ((DoInsertJobArg *)arg)->job;
 
-      pthread_mutex_lock(&(g->timerMutex));
+      MUTEX_LOCK(g->timerMutex);
       j->initTime = t->time;
       t->queue.insert(t->queue.end(), j);
-      pthread_mutex_unlock(&(g->timerMutex));
+      MUTEX_UNLOCK(g->timerMutex);
 
       delete (DoInsertJobArg *)arg;
    }

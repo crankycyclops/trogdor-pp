@@ -7,8 +7,8 @@
 #include <cstdlib>
 
 #include <unistd.h>
-#include <pthread.h>
 
+#include "../thread.h"
 #include "../game.h"
 
 using namespace std;
@@ -16,8 +16,7 @@ using namespace std;
 namespace core {
 
 
-   // Thread function that's accessible by pthread_create() and which executes
-   // tick() inside of our timer object
+   // Thread worker function that executes tick() inside of our timer object
    void *doTick(void *timerObj);
 
    // thread function that handles the insertion of a timer job so that
@@ -47,15 +46,17 @@ namespace core {
 
       private:
 
-         Game *game;             // the game in which the timer is running
-         bool active;            // whether or not the timer is active
-         unsigned long time;     // current time
-         list<TimerJob *> queue; // queue of jobs to execute every n ticks
-         pthread_t thread;       // thread id for timer thread
+         Game *game;                // the game in which the timer is running
+         bool active;               // whether or not the timer is active
+         unsigned long time;        // current time
+         list<TimerJob *> queue;    // queue of jobs to execute every n ticks
+
+         thread_t jobThread;        // main timer thread (executes doTick)
+         thread_t insertJobThread;  // thread that handles the insertion of a job
 
          /*
             Executes all jobs in the queue and increments the time.  This is
-            called by pthread and shouldn't be called directly.
+            called by the doTick() thread worker and shouldn't be called directly.
 
             Input: (none -- we don't really use it...)
             Output: (none)
@@ -146,9 +147,9 @@ namespace core {
          */
          inline void removeJob(TimerJob *job) {
 
-            pthread_mutex_lock(&(game->timerMutex));
+            MUTEX_LOCK(game->timerMutex);
             queue.remove(job);
-            pthread_mutex_unlock(&(game->timerMutex));
+            MUTEX_UNLOCK(game->timerMutex);
          }
 
          // thread function that bootstraps our timer object and calls tick()
