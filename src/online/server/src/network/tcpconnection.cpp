@@ -20,7 +20,9 @@ void TCPConnection::handleRead(
 ) {
 
 	if (!e) {
-		callback(shared_from_this(), callbackArg);
+		if (callback) {
+			callback(shared_from_this(), callbackArg);
+		}
 	}
 
 	// TODO: error handling
@@ -34,7 +36,9 @@ void TCPConnection::handleWrite(
 ) {
 
 	if (!e) {
-		callback(shared_from_this(), callbackArg);
+		if (callback) {
+			callback(shared_from_this(), callbackArg);
+		}
 	}
 
 	// TODO: error handling
@@ -42,6 +46,10 @@ void TCPConnection::handleWrite(
 
 
 void TCPConnection::read(callback_t callback, void *callbackArg) {
+
+	if (!opened) {
+		throw string("Trying to read from a closed connection.");
+	}
 
 	boost::asio::async_read_until(
 		socket,
@@ -60,6 +68,10 @@ void TCPConnection::read(callback_t callback, void *callbackArg) {
 
 void TCPConnection::write(string message, callback_t callback, void *callbackArg) {
 
+	if (!opened) {
+		throw string("Trying to write on a closed connection.");
+	}
+
 	boost::asio::async_write(
 		socket,
 		boost::asio::buffer(message),
@@ -71,5 +83,24 @@ void TCPConnection::write(string message, callback_t callback, void *callbackArg
 			callbackArg
 		)
 	);
+}
+
+
+void TCPConnection::close() {
+
+	// Do nothing, because the connection's already closed.
+	if (!opened) {
+		return;
+	}
+
+	boost::system::error_code ec;
+
+	socket.shutdown(tcp::socket::shutdown_send, ec);
+	if (ec) {
+		// TODO: some error occured. Handle it.
+	}
+
+	socket.close();
+	opened = false;
 }
 

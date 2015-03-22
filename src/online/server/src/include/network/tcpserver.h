@@ -2,8 +2,6 @@
 #define TCPSERVER_H
 
 
-#define SERVER_PORT 1040
-
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -35,8 +33,8 @@ class TCPServer {
 
 		// Contructor establishes that we're using IPv4 and that we're
 		// listening on port SERVER_PORT.
-		TCPServer(boost::asio::io_service &io_service):
-			acceptor(io_service, tcp::endpoint(tcp::v4(), SERVER_PORT)) {}
+		TCPServer(boost::asio::io_service &io_service, unsigned short port):
+			acceptor(io_service, tcp::endpoint(tcp::v4(), port)) {}
 
 		// Calls async_accept(), which waits for a connection in a separate
 		// thread. The provided callback should assume that a connection was

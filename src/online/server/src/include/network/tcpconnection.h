@@ -35,9 +35,12 @@ class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
 		tcp::socket socket;
 		boost::asio::streambuf inBuffer;
 
+		// whether the connection is open (true) or closed (false)
+		bool opened;
+
 		// Constructor should only be called internally by create().
 		TCPConnection(boost::asio::io_service &io_service):
-			socket(io_service) {}
+			socket(io_service), opened(true) {}
 
 		// Called after async_read_until() completes. Takes as input a callback
 		// function and a void pointer with an argument. Callback is only
@@ -50,6 +53,9 @@ class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
 		void handleWrite(const error_code &e, callback_t callback, void *callbackArg);
 
 	public:
+
+		// Make sure we cleanly close the connection on destruction.
+		~TCPConnection() {close();}
 
 		// Call this instead of using new directly. Returns a smart pointer
 		// to an instance of TCPConnection that will automatically destruct
@@ -68,6 +74,9 @@ class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
 		// Send a string through a connection that was established during
 		// instantiation.
 		void write(string message, callback_t callback, void *callbackArg);
+
+		// Closes the connection.
+		void close();
 };
 
 /******************************************************************************/
