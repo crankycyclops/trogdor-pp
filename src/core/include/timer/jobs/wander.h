@@ -28,17 +28,6 @@ namespace core {
          }
 
          /*
-            Specifies who's doing the attacking (always a Creature.)
-
-            Input:
-               Pointer to wandering Creature (Creature *)
-
-            Output:
-               (none)
-         */
-         inline void setWanderer(Creature *c) {wanderer = c;}
-
-         /*
             Executes Creature's wandering.
 
             Input:

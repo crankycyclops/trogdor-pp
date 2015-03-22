@@ -98,7 +98,7 @@ namespace core {
             Input: (none)
             Output: Whether or not timer is active (bool)
          */
-         inline unsigned long isActive() const {return active;}
+         inline bool isActive() const {return active;}
 
          /*
             Starts the timer.
