@@ -7,20 +7,14 @@
 #define SERVER_PORT 1040 // config that should be moved outside
 
 
-void serveConnection(TCPConnection::ptr connection, void *) {
-
-	connection->write("Test", 0, 0);
-	connection->getServer()->startAccept(&serveConnection, 0);
-}
-
-
 int main(int argc, char **argv) {
 
+	boost::asio::io_service io;
 	TCPServer *server;
 
-	boost::asio::io_service io;
+	// constructor starts up a deadline_timer that checks at regular intervals
+	// on the needs of existing connections as well as accepting new ones.
 	server = new TCPServer(io, SERVER_PORT);
-	server->startAccept(&serveConnection, 0);
 	io.run();
 
 	delete server;

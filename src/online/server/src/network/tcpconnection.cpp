@@ -27,6 +27,7 @@ void TCPConnection::handleRead(
 	// TODO: error handling
 }
 
+/******************************************************************************/
 
 void TCPConnection::handleWrite(
 	const error_code &e,
@@ -42,6 +43,7 @@ void TCPConnection::handleWrite(
 	// TODO: error handling
 }
 
+/******************************************************************************/
 
 void TCPConnection::read(callback_t callback, void *callbackArg) {
 
@@ -59,6 +61,7 @@ void TCPConnection::read(callback_t callback, void *callbackArg) {
 	);
 }
 
+/******************************************************************************/
 
 void TCPConnection::write(string message, callback_t callback, void *callbackArg) {
 

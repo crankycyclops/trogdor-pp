@@ -2,10 +2,15 @@
 #define TCPSERVER_H
 
 
+// defined in milliseconds
+#define SERVE_SLEEP_TIME 1000
+
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
+#include <boost/bind.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "tcpcommon.h"
 #include "tcpconnection.h"
@@ -23,6 +28,7 @@ class TCPServer {
 	private:
 
 		tcp::acceptor acceptor;
+		boost::asio::deadline_timer timer;
 
 		// Handles an asynchronous accept. If there are no errors, the
 		// specified callback is called along with the specified argument.
@@ -33,22 +39,17 @@ class TCPServer {
 
 		// Contructor establishes that we're using IPv4 and that we're
 		// listening on port SERVER_PORT.
-		inline TCPServer(boost::asio::io_service &io_service, unsigned short port):
-			acceptor(io_service) {
-
-			tcp::endpoint endpoint(tcp::v4(), port);
-
-			acceptor.open(endpoint.protocol());
-			acceptor.set_option(tcp::acceptor::reuse_address(true));
-			acceptor.bind(endpoint);
-			acceptor.listen();
-		}
+		TCPServer(boost::asio::io_service &io_service, unsigned short port);
 
 		// Calls async_accept(), which waits for a connection in a separate
 		// thread. The provided callback should assume that a connection was
 		// successfully accepted and should continue from there using the
 		// provided TCPConnection.
 		void startAccept(TCPConnection::callback_t callback, void *callbackArg);
+
+		// Executes at regular intervals, serving existing connections and
+		// listening for new ones.
+		void serveConnections();
 };
 
 
