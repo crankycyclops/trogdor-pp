@@ -2,6 +2,16 @@ Trogdor++ is the C++ version of the Trogdor Text Adventure Engine, which was wri
 
 https://github.com/crankycyclops/trogdor
 
+For this project, you'll require the following tools:
+	- GNU C++ compiler (if you want to use a different compiler, you're on your own)
+	- GNU Make (if you want to use a different build tool, you're also on your own)
+	- The boost libraries (libboost-all-dev package on Ubuntu)
+	- LibXML2 (libxml2-dev package on Ubuntu)
+	- Lua 5.1 (lua5.1-dev package on Ubuntu)
+
+To install everything in one fell swoop (on Ubuntu 12.04 and up):
+$ apt-get install make g++ libxml2-dev lua5.1-dev libboost-all-dev
+
 Trogdor-pp supports both pthread and boost::thread. To compile with support for pthread, type:
 
 THREAD=pthread make
