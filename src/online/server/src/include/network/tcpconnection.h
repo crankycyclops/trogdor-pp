@@ -15,6 +15,8 @@ using namespace std;
 using namespace boost::system;
 using boost::asio::ip::tcp;
 
+class TCPServer;
+
 
 // Class adapted from the example found here:
 // http://www.boost.org/doc/libs/1_54_0/doc/html/boost_asio/tutorial/tutdaytime3/src.html
@@ -35,12 +37,13 @@ class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
 
 	private:
 
+		TCPServer *server; // server class that spawned this connection
 		tcp::socket socket;
 		boost::asio::streambuf inBuffer;
 
 		// Constructor should only be called internally by create().
-		TCPConnection(boost::asio::io_service &io_service):
-			socket(io_service) {}
+		TCPConnection(boost::asio::io_service &io_service, TCPServer *s):
+			socket(io_service), server(s) {}
 
 		// Called after async_read_until() completes. Takes as input a callback
 		// function and a void pointer with an argument. Callback is only
@@ -57,10 +60,13 @@ class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
 		// Call this instead of using new directly. Returns a smart pointer
 		// to an instance of TCPConnection that will automatically destruct
 		// when we're done with it.
-		static inline ptr create(boost::asio::io_service &io_service) {
+		static inline ptr create(boost::asio::io_service &io_service, TCPServer *s) {
 
-			return ptr(new TCPConnection(io_service));
+			return ptr(new TCPConnection(io_service, s));
 		}
+
+		// Returns a pointer to the server object that spawned this connection
+		inline TCPServer *getServer() {return server;}
 
 		// Return a reference to the socket that represents this connection.
 		inline tcp::socket &getSocket() {return socket;}

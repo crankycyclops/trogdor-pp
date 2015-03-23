@@ -10,8 +10,7 @@
 void serveConnection(TCPConnection::ptr connection, void *) {
 
 	connection->write("Test", 0, 0);
-	//server->startAccept(&serveConnection, 0);
-	//connection->close();
+	connection->getServer()->startAccept(&serveConnection, 0);
 }
 
 

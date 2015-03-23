@@ -29,7 +29,7 @@ void TCPServer::handleAccept(
 
 void TCPServer::startAccept(TCPConnection::callback_t callback, void *callbackArg) {
 
-	TCPConnection::ptr connection = TCPConnection::create(acceptor.get_io_service());
+	TCPConnection::ptr connection = TCPConnection::create(acceptor.get_io_service(), this);
 
 	acceptor.async_accept(
 		connection->getSocket(),
