@@ -2,7 +2,7 @@
 #define TCPCOMMON_H
 
 
-#define EOT 0x4 // EOT (end of transmission) character
+#define EOT 0x04 // EOT (end of transmission) character
 
 
 #endif
