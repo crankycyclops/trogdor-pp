@@ -31,9 +31,9 @@ void Dispatcher::establishConnection(TCPConnection::ptr connection, void *) {
 
 	// confirm successful connection to the client
 	// TODO: move instantiation to a registry
-	ConnectAction *action = new ConnectAction();
+	ConnectAction action;
 	connection->setInUse(true);
-	(*action)(connection);
+	action(connection);
 }
 
 /******************************************************************************/
