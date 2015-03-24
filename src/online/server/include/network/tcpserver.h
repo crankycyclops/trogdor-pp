@@ -3,7 +3,7 @@
 
 
 // defined in milliseconds
-#define SERVE_SLEEP_TIME 1000
+#define SERVE_SLEEP_TIME 100
 
 #include <list>
 

@@ -2,7 +2,11 @@
 #define TCPCOMMON_H
 
 
-#define EOT 0x04 // EOT (end of transmission) character
+// Commands
+#define ACKNOWLEDGE ("OK")
+
+// Special transmission characters
+#define EOT ((char)0x04) // EOT (end of transmission) character
 
 
 #endif

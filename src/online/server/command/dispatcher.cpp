@@ -2,6 +2,8 @@
 #include "../include/network/tcpserver.h"
 #include "../include/command/dispatcher.h"
 
+#include "../include/command/actions/connectaction.h"
+
 using namespace std;
 
 
@@ -28,8 +30,10 @@ void Dispatcher::establishConnection(TCPConnection::ptr connection, void *) {
 	connection->getServer()->addActiveConnection(connection);
 
 	// confirm successful connection to the client
-	//connection->setInUse(true);
-	// TODO: special NetworkAction that sends "OK" to client
+	// TODO: move instantiation to a registry
+	ConnectAction *action = new ConnectAction();
+	connection->setInUse(true);
+	(*action)(connection);
 }
 
 /******************************************************************************/

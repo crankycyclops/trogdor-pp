@@ -86,7 +86,7 @@ void TCPServer::serveConnections() {
 	startAccept(Dispatcher::establishConnection, 0);
 
 	// call this again at the next interval
-	timer.expires_at(timer.expires_at() + boost::posix_time::milliseconds(100));
+	timer.expires_at(timer.expires_at() + boost::posix_time::milliseconds(SERVE_SLEEP_TIME));
 	timer.async_wait(boost::bind(&TCPServer::serveConnections, this));
 }
 
