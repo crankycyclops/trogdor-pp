@@ -22,6 +22,11 @@ class Dispatcher {
 		// Returns singleton instance of 
 		static Dispatcher *get();
 
+		static void establishConnection(TCPConnection::ptr connection, void *);
+
+		// Callback that passes new requests to the dispatcher
+		static void serveRequest(TCPConnection::ptr connection, void *);
+
 		// Locates a root command's corresponding network action and executes it
 		void dispatch(TCPConnection::ptr connection);
 };

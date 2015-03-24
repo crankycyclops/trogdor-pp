@@ -5,6 +5,8 @@
 // defined in milliseconds
 #define SERVE_SLEEP_TIME 1000
 
+#include <list>
+
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -27,6 +29,9 @@ class TCPServer {
 
 	private:
 
+		// active connections that need to be maintained
+		std::list<TCPConnection::ptr> activeConnections;
+
 		tcp::acceptor acceptor;
 		boost::asio::deadline_timer timer;
 
@@ -36,6 +41,12 @@ class TCPServer {
 			TCPConnection::callback_t callback, void *arg);
 
 	public:
+
+		// Adds a connection to the list of active connections
+		inline void addActiveConnection(TCPConnection::ptr connection) {
+
+			activeConnections.insert(activeConnections.begin(), connection);
+		}
 
 		// Contructor establishes that we're using IPv4 and that we're
 		// listening on port SERVER_PORT.

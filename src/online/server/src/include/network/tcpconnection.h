@@ -40,10 +40,11 @@ class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
 		TCPServer *server; // server class that spawned this connection
 		tcp::socket socket;
 		boost::asio::streambuf inBuffer;
+		bool inUse;
 
 		// Constructor should only be called internally by create().
 		TCPConnection(boost::asio::io_service &io_service, TCPServer *s):
-			socket(io_service), server(s) {}
+			socket(io_service), server(s), inUse(false) {}
 
 		// Called after async_read_until() completes. Takes as input a callback
 		// function and a void pointer with an argument. Callback is only
@@ -64,6 +65,13 @@ class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
 
 			return ptr(new TCPConnection(io_service, s));
 		}
+
+		// Returns whether or not the connection is in use (AKA waiting on the
+		// completion of an asynchronous call.)
+		inline bool isInUse() {return inUse;}
+
+		// Signal whether or not the connection is in use.
+		inline void setInUse(bool status) {inUse = status;}
 
 		// Returns a pointer to the server object that spawned this connection
 		inline TCPServer *getServer() {return server;}

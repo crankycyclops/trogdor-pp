@@ -8,7 +8,7 @@
 
 #include "../include/network/tcpconnection.h"
 #include "../include/network/tcpserver.h"
-#include "../include/command/command.h"
+#include "../include/command/dispatcher.h"
 
 using namespace std;
 using namespace boost::system;
@@ -66,13 +66,27 @@ void TCPServer::startAccept(TCPConnection::callback_t callback, void *callbackAr
 
 void TCPServer::serveConnections() {
 
-	// TODO: handle existing connections
+	size_t nConnections = activeConnections.size();
+
+	// listen for new requests on active connections
+	for (std::list<TCPConnection::ptr>::iterator i = activeConnections.begin();
+	i != activeConnections.end(); i++) {
+
+		TCPConnection::ptr connection = *i;
+
+		// If the connection isn't already in the middle of a request, we 
+		// should listen for a new one.
+		if (!connection->isInUse()) {
+			connection->setInUse(true);
+			connection->read(Dispatcher::serveRequest, 0);
+		}
+	}
 
 	// listen for new connections
-	startAccept(&serveConnection, 0);
+	startAccept(Dispatcher::establishConnection, 0);
 
 	// call this again at the next interval
-	timer.expires_at(timer.expires_at() + boost::posix_time::milliseconds(1000));
+	timer.expires_at(timer.expires_at() + boost::posix_time::milliseconds(100));
 	timer.async_wait(boost::bind(&TCPServer::serveConnections, this));
 }
 
