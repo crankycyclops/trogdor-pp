@@ -9,7 +9,7 @@ For this project, you'll require the following tools:
 	- LibXML2 (libxml2-dev package on Ubuntu)
 	- Lua 5.1 (lua5.1-dev package on Ubuntu)
 
-To install everything in one fell swoop (on Ubuntu 12.04 and up):
+To install all dependencies in one fell swoop (on Ubuntu 12.04 and up):
 $ apt-get install make g++ libxml2-dev lua5.1-dev libboost-all-dev
 
 Trogdor-pp supports both pthread and boost::thread. To compile with support for pthread, type:
