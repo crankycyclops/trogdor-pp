@@ -20,7 +20,7 @@ To compile with support for boost::thread, simply type:
 
 make
 
-Instead of compiling a standalone single-player game, you can also compile a server/client that allows multi-player network play by typing the following commands (the same optional THREAD environment variable is accepted):
+Instead of compiling a standalone single-player game, you can also compile a server/client that allows multi-player network play by typing the commands below. Please be aware that the server and client both use boost::asio, which requires support for pthreads.
 
 make server (for the backend server that links to the actual trogdor engine)
 make client (for the frontend client that talks to the server)
