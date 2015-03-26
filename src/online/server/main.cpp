@@ -53,6 +53,8 @@ int main(int argc, char **argv) {
 
 	currentGame->stop();
 	delete server;
-	return 0;
+	delete currentGame;
+
+	return EXIT_SUCCESS;
 }
 
