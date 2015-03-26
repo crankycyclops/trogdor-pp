@@ -73,8 +73,14 @@ class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
 		// Signal whether or not the connection is in use.
 		inline void setInUse(bool status) {inUse = status;}
 
-		// Returns a string containing the last received message.
-		inline string getBufferStr() const {return boost::asio::buffer_cast<const char*>(inBuffer.data());}
+		// Returns a string containing the last received message. Removes
+		// trailing EOT.
+		inline string getBufferStr() const {
+
+			string buffer = boost::asio::buffer_cast<const char*>(inBuffer.data());
+			buffer.erase(remove(buffer.begin(), buffer.end(), EOT), buffer.end());
+			return buffer;
+		}
 
 		// Returns a pointer to the server object that spawned this connection
 		inline TCPServer *getServer() {return server;}

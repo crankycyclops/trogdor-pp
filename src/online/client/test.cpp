@@ -35,9 +35,7 @@ std::string getResponse(tcp::socket *socket) {
 	boost::asio::read_until(*socket, acceptBuffer, std::string() + EOT, error);
 	std::string response = boost::asio::buffer_cast<const char *>(acceptBuffer.data());
 
-	// remove EOT
-	response.resize(response.size() - 1);
-
+	response.erase(remove(response.begin(), response.end(), EOT), response.end());
 	return response;
 }
 
@@ -64,20 +62,9 @@ int main(int argc, char **argv) {
 		boost::asio::write(*socket, boost::asio::buffer(test), ignored_error);
 
 		while (1) {
-
-			boost::array<char, 128> buf;
-			boost::system::error_code error;
-
-
-			size_t len = socket->read_some(boost::asio::buffer(buf), error);
-
-			if (error == boost::asio::error::eof) {
-				break;
-			} else if (error) {
-				throw boost::system::system_error(error);
-			}
-
-			std::cout.write(buf.data(), len);
+			std::string response = getResponse(socket);
+			std::cout << response << std::endl;
+			std::cout.flush();
 		}
 
 		delete socket;

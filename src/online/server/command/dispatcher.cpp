@@ -51,17 +51,11 @@ void Dispatcher::serveRequest(TCPConnection::ptr connection, void *) {
 
 void Dispatcher::dispatch(TCPConnection::ptr connection) {
 
-	// receive and tokenize the user's input
+	// receive and tokenize the client's message
 	string requestStr = connection->getBufferStr();
 	vector<string> request;
-	request = boost::split(request, requestStr, boost::is_any_of("\n\t "));
+	request = boost::split(request, requestStr, boost::is_any_of("\n\t "), boost::token_compress_on);
 
-	// trim out surrounding whitespace
-/*
-	for (vector<string>::iterator i = request.begin(); i != request.end(); i++) {
-		*i = boost::trim(*i);
-	}
-*/
 	// TODO: this should be part of the NetworkAction
 	connection->write(request[0] + EOT, 0, 0);
 	connection->setInUse(false);
