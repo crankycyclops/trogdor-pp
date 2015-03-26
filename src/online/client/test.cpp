@@ -36,7 +36,7 @@ std::string getResponse(tcp::socket *socket) {
 	std::string response = boost::asio::buffer_cast<const char *>(acceptBuffer.data());
 
 	// remove EOT
-	response.resize (response.size() - 1);
+	response.resize(response.size() - 1);
 
 	return response;
 }

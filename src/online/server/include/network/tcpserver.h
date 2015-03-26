@@ -2,8 +2,9 @@
 #define TCPSERVER_H
 
 
-// defined in milliseconds
-#define SERVE_SLEEP_TIME 100
+// defined in milliseconds (tuned for my laptop: YMMV)
+// TODO: eventually make this a setting that can be read in via a config file
+#define SERVE_SLEEP_TIME 5
 
 #include <list>
 

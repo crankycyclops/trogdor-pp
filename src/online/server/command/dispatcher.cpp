@@ -1,3 +1,7 @@
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+
 #include "../include/network/tcpconnection.h"
 #include "../include/network/tcpserver.h"
 #include "../include/command/dispatcher.h"
@@ -47,9 +51,19 @@ void Dispatcher::serveRequest(TCPConnection::ptr connection, void *) {
 
 void Dispatcher::dispatch(TCPConnection::ptr connection) {
 
-	// TODO: grab command from connection's buffer, which was already read
+	// receive and tokenize the user's input
+	string requestStr = connection->getBufferStr();
+	vector<string> request;
+	request = boost::split(request, requestStr, boost::is_any_of("\n\t "));
+
+	// trim out surrounding whitespace
+/*
+	for (vector<string>::iterator i = request.begin(); i != request.end(); i++) {
+		*i = boost::trim(*i);
+	}
+*/
 	// TODO: this should be part of the NetworkAction
-	connection->write("Test\n", 0, 0);
+	connection->write(request[0] + EOT, 0, 0);
 	connection->setInUse(false);
 
 	return;

@@ -68,7 +68,7 @@ void TCPServer::serveConnections() {
 
 	size_t nConnections = activeConnections.size();
 
-	// listen for new requests on active connections
+	// listen for new requests on already accepted connections
 	for (std::list<TCPConnection::ptr>::iterator i = activeConnections.begin();
 	i != activeConnections.end(); i++) {
 
