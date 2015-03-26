@@ -10,7 +10,7 @@ default:
 	g++ $(THREAD_MACRO) -O2 -I/usr/include/libxml2 -I/usr/include/lua5.1 src/core/*.cpp src/core/parser/*.cpp src/core/lua/*.cpp src/core/lua/api/entities/*.cpp src/core/iostream/*.cpp src/core/event/*.cpp src/core/event/triggers/*.cpp src/core/timer/*.cpp src/core/timer/jobs/*.cpp src/core/entities/*.cpp src/standalone/*.cpp -o trogdor $(THREAD_LFLAGS) -lxml2 -llua5.1
 
 server:
-	g++ -O2 -I/usr/include/libxml2 -I/usr/include/lua5.1 src/core/*.cpp src/core/parser/*.cpp src/core/lua/*.cpp src/core/lua/api/entities/*.cpp src/core/iostream/*.cpp src/core/event/*.cpp src/core/event/triggers/*.cpp src/core/timer/*.cpp src/core/timer/jobs/*.cpp src/core/entities/*.cpp src/online/server/*.cpp src/online/server/network/*.cpp src/online/server/command/*.cpp -o trogdor-server -pthread -lxml2 -llua5.1
+	g++ -O2 -I/usr/include/libxml2 -I/usr/include/lua5.1 src/core/*.cpp src/core/parser/*.cpp src/core/lua/*.cpp src/core/lua/api/entities/*.cpp src/core/iostream/*.cpp src/core/event/*.cpp src/core/event/triggers/*.cpp src/core/timer/*.cpp src/core/timer/jobs/*.cpp src/core/entities/*.cpp src/online/server/*.cpp src/online/server/network/*.cpp src/online/server/command/*.cpp -o trogdor-server -pthread -lboost_system -lxml2 -llua5.1
 
 client:
 	echo "NOT YET IMPLEMENTED"
@@ -22,7 +22,7 @@ debug:
 	g++ $(THREAD_MACRO) -I/usr/include/libxml2 -I/usr/include/lua5.1 -g src/core/*.cpp src/core/parser/*.cpp src/core/lua/*.cpp src/core/lua/api/entities/*.cpp src/core/iostream/*.cpp src/core/event/*.cpp src/core/event/triggers/*.cpp src/core/timer/*.cpp src/core/timer/jobs/*.cpp src/core/entities/*.cpp src/standalone/*.cpp -o trogdor $(THREAD_LFLAGS) -lxml2 -llua5.1
 
 server-debug:
-	g++ -I/usr/include/libxml2 -I/usr/include/lua5.1 -g src/core/*.cpp src/core/parser/*.cpp src/core/lua/*.cpp src/core/lua/api/entities/*.cpp src/core/iostream/*.cpp src/core/event/*.cpp src/core/event/triggers/*.cpp src/core/timer/*.cpp src/core/timer/jobs/*.cpp src/core/entities/*.cpp src/online/server/src/*.cpp src/online/server/src/network/*.cpp src/online/server/src/command/*.cpp -o trogdor-server -pthread -lxml2 -llua5.1
+	g++ -I/usr/include/libxml2 -I/usr/include/lua5.1 -g src/core/*.cpp src/core/parser/*.cpp src/core/lua/*.cpp src/core/lua/api/entities/*.cpp src/core/iostream/*.cpp src/core/event/*.cpp src/core/event/triggers/*.cpp src/core/timer/*.cpp src/core/timer/jobs/*.cpp src/core/entities/*.cpp src/online/server/src/*.cpp src/online/server/src/network/*.cpp src/online/server/src/command/*.cpp -o trogdor-server -pthread -lboost_system -lxml2 -llua5.1
 
 client-debug:
 	echo "NOT YET IMPLEMENTED"
