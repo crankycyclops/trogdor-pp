@@ -1,18 +1,15 @@
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-
 #include "../include/network/tcpconnection.h"
 #include "../include/network/tcpserver.h"
 #include "../include/command/dispatcher.h"
 
 #include "../include/command/actions/connectaction.h"
+#include "../include/command/actions/badcommandaction.h"
 
 using namespace std;
 
 
 // static
-Dispatcher *Dispatcher::instance;
+Dispatcher *Dispatcher::instance = 0;
 
 /******************************************************************************/
 
@@ -28,16 +25,59 @@ Dispatcher *Dispatcher::get() {
 
 /******************************************************************************/
 
+Dispatcher::Dispatcher() {
+
+	// special connect action used for the sole purpose of confirming to the
+	// client that a connection has been established. The client should not
+	// pass this, and if they do, we won't recognize it as a valid command.
+	//actions["_CONNECT"] = new ConnectAction();
+
+	// Special NetworkAction we use to confirm to the client that a connection
+	// has been made
+	confirmConnect = new ConnectAction();
+
+	// special NetworkAction to throw when client provides an unknown command
+	badCommand = new BadCommandAction();
+}
+
+/******************************************************************************/
+
+Dispatcher::~Dispatcher() {
+
+	// TODO: delete all actions inside hashmap and badCommand NetworkAction
+}
+
+/******************************************************************************/
+
+NetworkAction *Dispatcher::getAction(const string command) const {
+
+	if (actions.find(command) == actions.end()) {
+		return badCommand;
+	}
+
+	return actions.find(command)->second;
+}
+
+/******************************************************************************/
+
+void Dispatcher::destroy() {
+
+	if (instance) {
+		delete instance;
+		instance = 0;
+	}
+}
+
+/******************************************************************************/
+
 void Dispatcher::establishConnection(TCPConnection::ptr connection, void *) {
 
 	// add connection to list of active connections
 	connection->getServer()->addActiveConnection(connection);
 
 	// confirm successful connection to the client
-	// TODO: move instantiation to a registry
-	ConnectAction action;
 	connection->setInUse(true);
-	action(connection);
+	(*get()->confirmConnect)(connection);
 }
 
 /******************************************************************************/
@@ -51,14 +91,12 @@ void Dispatcher::serveRequest(TCPConnection::ptr connection, void *) {
 
 void Dispatcher::dispatch(TCPConnection::ptr connection) {
 
-	// receive and tokenize the client's message
-	string requestStr = connection->getBufferStr();
-	vector<string> request;
-	request = boost::split(request, requestStr, boost::is_any_of("\n\t "), boost::token_compress_on);
+	// get tokenized command
+	vector<string> request = connection->getBufferParts();
 
-	// TODO: this should be part of the NetworkAction
-	connection->write(request[0] + EOT, 0, 0);
-	connection->setInUse(false);
+	// process request (duh...)
+	connection->setInUse(true);
+	(*get()->getAction(request[0]))(connection);
 
 	return;
 }

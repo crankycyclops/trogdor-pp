@@ -3,11 +3,13 @@
 
 
 #include <string>
+#include <vector>
 
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "tcpcommon.h"
 
@@ -82,6 +84,13 @@ class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
 			return buffer;
 		}
 
+		inline vector<string> getBufferParts() const {
+
+			string requestStr = getBufferStr();
+			vector<string> request;
+			return boost::split(request, requestStr, boost::is_any_of("\n\t "), boost::token_compress_on);
+		}
+
 		// Returns a pointer to the server object that spawned this connection
 		inline TCPServer *getServer() {return server;}
 
@@ -94,6 +103,16 @@ class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
 		// Send a string through a connection that was established during
 		// instantiation.
 		void write(string message, TCPConnection::callback_t callback, void *callbackArg);
+
+		// Closes the connection. Once this is done, the connection cannot be
+		// reopened again, and any further operations on this connection
+		// object will result in undefined behavior.
+		inline void close() {
+
+			boost::system::error_code ignore;
+			socket.shutdown(tcp::socket::shutdown_both, ignore);
+			socket.close();
+		}
 };
 
 /******************************************************************************/

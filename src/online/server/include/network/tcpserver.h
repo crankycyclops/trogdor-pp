@@ -49,6 +49,13 @@ class TCPServer {
 			activeConnections.insert(activeConnections.begin(), connection);
 		}
 
+		// Removes a connection from the list of active connections, thereby
+		// effectively closing it.
+		inline void removeActiveConnection(TCPConnection::ptr connection) {
+
+			activeConnections.remove(connection);
+		}
+
 		// Contructor establishes that we're using IPv4 and that we're
 		// listening on port SERVER_PORT.
 		TCPServer(boost::asio::io_service &io_service, unsigned short port);
