@@ -9,8 +9,6 @@
 void ISGAMEONAction::execute(TCPConnection::ptr connection) {
 
 	connection->write(std::string(currentGame->inProgress() ? "YES" : "NO") + EOT, freeConnection, 0);
-	connection->close();
-	connection->getServer()->removeActiveConnection(connection);
-
 	return;
 }
+

@@ -19,6 +19,14 @@ void TCPConnection::handleRead(
 	void *callbackArg
 ) {
 	if (!e) {
+
+		// copy the contents of the buffer to a string, trim out EOT and clear
+		// the buffer for the next request
+		bufferStr = boost::asio::buffer_cast<const char *>(inBuffer.data());
+		bufferStr.erase(remove(bufferStr.begin(), bufferStr.end(), EOT), bufferStr.end());
+		clearBuffer();
+
+		// if a callback was passed, call it
 		if (callback) {
 			callback(shared_from_this(), callbackArg);
 		}

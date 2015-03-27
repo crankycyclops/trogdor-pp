@@ -41,8 +41,10 @@ class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
 
 		TCPServer *server; // server class that spawned this connection
 		tcp::socket socket;
-		boost::asio::streambuf inBuffer;
 		bool inUse;
+
+		boost::asio::streambuf inBuffer;
+		string bufferStr;
 
 		// Constructor should only be called internally by create().
 		TCPConnection(boost::asio::io_service &io_service, TCPServer *s):
@@ -57,6 +59,9 @@ class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
 		// function and a void pointer with an argument. Callback is only
 		// called if there were no errors during write.
 		void handleWrite(const error_code &e, callback_t callback, void *callbackArg);
+
+		// Clears the buffer once it's been used
+		inline void clearBuffer() {inBuffer.consume(bufferStr.length() + 1);}
 
 	public:
 
@@ -77,13 +82,10 @@ class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
 
 		// Returns a string containing the last received message. Removes
 		// trailing EOT.
-		inline string getBufferStr() const {
+		inline string getBufferStr() const {return bufferStr;}
 
-			string buffer = boost::asio::buffer_cast<const char*>(inBuffer.data());
-			buffer.erase(remove(buffer.begin(), buffer.end(), EOT), buffer.end());
-			return buffer;
-		}
-
+		// Returns a tokenized version of bufferStr, with each token delimited
+		// by one or more characters of whitespace
 		inline vector<string> getBufferParts() const {
 
 			string requestStr = getBufferStr();

@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 		std::cout.flush();
 
 		boost::system::error_code ignored_error;
-		std::string test = "TEST";
+		std::string test = "TIME";
 		test += EOT;
 		boost::asio::write(*socket, boost::asio::buffer(test), ignored_error);
 

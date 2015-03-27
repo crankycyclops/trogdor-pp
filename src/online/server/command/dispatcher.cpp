@@ -5,6 +5,7 @@
 #include "../include/command/actions/connectaction.h"
 #include "../include/command/actions/badcommandaction.h"
 #include "../include/command/actions/isgameonaction.h"
+#include "../include/command/actions/timeaction.h"
 
 using namespace std;
 
@@ -30,6 +31,7 @@ Dispatcher::Dispatcher() {
 
 	// register possible commands and their corresponding actions.
 	actions["ISGAMEON"] = new ISGAMEONAction();
+	actions["TIME"]     = new TIMEAction();
 
 	// Special NetworkAction we use to confirm to the client that a connection
 	// has been made
@@ -43,7 +45,12 @@ Dispatcher::Dispatcher() {
 
 Dispatcher::~Dispatcher() {
 
-	// TODO: delete all actions inside hashmap and badCommand NetworkAction
+	for (ActionMap::iterator i = actions.begin(); i != actions.end(); i++) {
+		delete i->second;
+	}
+
+	delete badCommand;
+	delete confirmConnect;
 }
 
 /******************************************************************************/
@@ -90,11 +97,8 @@ void Dispatcher::serveRequest(TCPConnection::ptr connection, void *) {
 
 void Dispatcher::dispatch(TCPConnection::ptr connection) {
 
-	// get tokenized command
+	// process tokenized request
 	vector<string> request = connection->getBufferParts();
-
-	// process request (duh...)
-	connection->setInUse(true);
 	(*get()->getAction(request[0]))(connection);
 
 	return;

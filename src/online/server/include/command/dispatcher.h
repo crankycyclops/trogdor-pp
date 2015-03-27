@@ -12,12 +12,16 @@ using namespace std;
 
 class Dispatcher {
 
+	public:
+
+		typedef boost::unordered_map<string, NetworkAction *> ActionMap;
+
 	private:
 
 		static Dispatcher *instance;
 
 		// Map of request commands to their associated actions
-		boost::unordered_map<string, NetworkAction *> actions;
+		ActionMap actions;
 
 		// Special NetworkAction we use to confirm to the client that a
 		// connection has been made
