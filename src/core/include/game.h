@@ -138,7 +138,7 @@ namespace core {
          /*
             Constructor for the Game class.
          */
-         Game();
+         Game(Trogout *e);
 
          /*
             Destructor for the Game class.

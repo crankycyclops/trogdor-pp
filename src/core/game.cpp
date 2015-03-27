@@ -18,7 +18,7 @@
 #include "include/event/triggers/deathdrop.h"
 #include "include/event/triggers/respawn.h"
 
-#include "include/iostream/streamout.h"
+#include "include/iostream/trogout.h"
 
 
 using namespace std;
@@ -26,9 +26,9 @@ using namespace std;
 namespace core {
 
 
-   Game::Game() {
+   Game::Game(Trogout *e) {
 
-      errStream = new StreamOut(&cerr);
+      errStream = e;
 
       inGame = false;
       actions = new ActionMap(this);
@@ -59,6 +59,8 @@ namespace core {
       delete parser;
 
       entities.destroyEntities();
+
+      delete errStream;
 
       // TODO: delete all action objects initialized in initActions()
    }

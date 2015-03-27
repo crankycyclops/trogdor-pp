@@ -7,8 +7,7 @@
 #include "include/network/tcpserver.h"
 
 #include "../../core/include/game.h"
-#include "../../core/include/iostream/streamout.h"
-#include "../../core/include/iostream/streamin.h"
+#include "../../core/include/iostream/nullout.h"
 
 #define SERVER_PORT 1040 // config that should be moved outside
 
@@ -34,7 +33,9 @@ int main(int argc, char **argv) {
 		gameXML = argv[1];
 	}
 
-	currentGame = new core::Game();
+	// TODO: replace NullOut with some kind of logger stream that outputs
+	// errors to a file
+	currentGame = new core::Game(new core::NullOut());
 
 	if (currentGame->initialize(gameXML)) {
 		currentGame->start();

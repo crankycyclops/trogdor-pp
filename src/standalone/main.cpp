@@ -1,16 +1,16 @@
 /*
    This is a sample single player client whose sole purpose is to demo what the
    Trogdor engine (in src/core) can do.  The engine itself supports multiple
-   players, and will soon have code that will allow input and output streams
-   to function over a network.
+   players.
 */
 
 #include <iostream>
 #include <cstdlib>
 
 #include "../core/include/game.h"
-#include "../core/include/iostream/streamout.h"
-#include "../core/include/iostream/streamin.h"
+
+#include "include/streamout.h"
+#include "include/streamin.h"
 
 
 using namespace std;
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
       gameXML = argv[1];
    }
 
-   core::Game *currentGame = new core::Game();
+   core::Game *currentGame = new core::Game(new StreamOut(&cerr));
 
    if (currentGame->initialize(gameXML)) {
 
@@ -47,8 +47,8 @@ int main(int argc, char **argv) {
          cout << "Author: " << author << endl << endl;
       }
 
-      Player *player = currentGame->createPlayer("player", new core::StreamOut(&cout),
-         new core::StreamIn(&cin), new core::StreamOut(&cerr));
+      Player *player = currentGame->createPlayer("player", new StreamOut(&cout),
+         new StreamIn(&cin), new StreamOut(&cerr));
 
       currentGame->start();
 

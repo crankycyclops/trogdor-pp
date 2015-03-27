@@ -1,9 +1,8 @@
 #include "../include/parser/parser.h"
 
 #include "../include/iostream/nullout.h"
+#include "../include/iostream/nullin.h"
 #include "../include/iostream/placeout.h"
-#include "../include/iostream/streamin.h"
-#include "../include/iostream/streamout.h"
 
 #include "../include/timer/jobs/wander.h"
 
@@ -25,7 +24,7 @@ namespace core {
       gameL = new LuaState();
       eventListener = new event::EventListener();
       defaultPlayer = new entity::Player(game, "default", new NullOut(),
-         new StreamIn(&cin), new StreamOut(&cerr));
+         new NullIn(), new NullOut());
    }
 
    /***************************************************************************/
@@ -199,8 +198,8 @@ namespace core {
          throw s.str();
       }
 
-      Room *room = new Room(game, name, new PlaceOut(), new StreamIn(&cin),
-         new StreamOut(&cerr));
+      Room *room = new Room(game, name, new PlaceOut(), new NullIn(),
+         game->err().clone());
 
       // for type checking
       room->setClass(name);
@@ -256,8 +255,8 @@ namespace core {
          throw s.str();
       }
 
-      Object *object = new Object(game, name, new NullOut(), new StreamIn(&cin),
-         new StreamOut(&cerr));
+      Object *object = new Object(game, name, new NullOut(), new NullIn(),
+         game->err().clone());
 
       // for type checking
       object->setClass(name);
@@ -313,8 +312,9 @@ namespace core {
          throw s.str();
       }
 
+      // TODO: should Creatures have some kind of special input stream?
       Creature *creature = new Creature(game, name, new NullOut(),
-         new StreamIn(&cin), new StreamOut(&cerr));
+         new NullIn(), game->err().clone());
 
       // for type checking
       creature->setClass(name);
@@ -541,7 +541,7 @@ namespace core {
       Room *room;
 
       if (0 == className.compare("room")) {
-         room = new Room(game, name, new PlaceOut(), new StreamIn(&cin), new StreamOut(&cerr));
+         room = new Room(game, name, new PlaceOut(), new NullIn(), game->err().clone());
       }
 
       else {
@@ -601,7 +601,7 @@ namespace core {
       Object *object;
 
       if (0 == className.compare("object")) {
-         object = new Object(game, name, new NullOut(), new StreamIn(&cin), new StreamOut(&cerr));
+         object = new Object(game, name, new NullOut(), new NullIn(), game->err().clone());
       }
 
       else {
@@ -661,7 +661,7 @@ namespace core {
       Creature *creature;
 
       if (0 == className.compare("creature")) {
-         creature = new Creature(game, name, new NullOut(), new StreamIn(&cin), new StreamOut(&cerr));
+         creature = new Creature(game, name, new NullOut(), new NullIn(), game->err().clone());
       }
 
       else {
