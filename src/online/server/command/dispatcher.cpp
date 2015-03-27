@@ -4,6 +4,7 @@
 
 #include "../include/command/actions/connectaction.h"
 #include "../include/command/actions/badcommandaction.h"
+#include "../include/command/actions/isgameonaction.h"
 
 using namespace std;
 
@@ -27,10 +28,8 @@ Dispatcher *Dispatcher::get() {
 
 Dispatcher::Dispatcher() {
 
-	// special connect action used for the sole purpose of confirming to the
-	// client that a connection has been established. The client should not
-	// pass this, and if they do, we won't recognize it as a valid command.
-	//actions["_CONNECT"] = new ConnectAction();
+	// register possible commands and their corresponding actions.
+	actions["ISGAMEON"] = new ISGAMEONAction();
 
 	// Special NetworkAction we use to confirm to the client that a connection
 	// has been made

@@ -10,9 +10,6 @@ class ConnectAction: public NetworkAction {
 
 	private:
 
-		// Free up the connection so that it can be used for other requests.
-		static void acknowledgeCallback(TCPConnection::ptr connection, void *);
-
 		// Sends the acknowledgement
 		virtual void execute(TCPConnection::ptr connection);
 };

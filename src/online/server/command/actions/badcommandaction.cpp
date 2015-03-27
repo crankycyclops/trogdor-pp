@@ -11,4 +11,3 @@ void BadCommandAction::execute(TCPConnection::ptr connection) {
 
 	return;
 }
-
