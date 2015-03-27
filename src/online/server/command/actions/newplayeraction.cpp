@@ -4,7 +4,7 @@
 #include "../../include/network/tcpserver.h"
 #include "../../include/command/actions/newplayeraction.h"
 
-#include "../../../../core/include/iostream/nullin.h"
+#include "../../include/iostream/tcpin.h"
 #include "../../../../core/include/iostream/nullout.h"
 
 // provides extern definition of Game object
@@ -22,9 +22,9 @@ void NEWPLAYERAction::execute(TCPConnection::ptr connection) {
 
 	// add the player and signal to the client that creation was successful
 	try {
-		// TODO: implement network stream objects to replace NullIn/Out
+		// TODO: implement network stream objects to replace NullOut
 		currentGame->createPlayer(request[1], new core::NullOut(),
-		    new core::NullIn(), new core::NullOut());
+		    new TCPIn(connection), new core::NullOut());
 		connection->write(std::string("OK") + EOT, freeConnection, 0);
 	}
 
