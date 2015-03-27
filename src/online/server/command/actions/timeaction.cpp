@@ -10,8 +10,8 @@
 
 void TIMEAction::execute(TCPConnection::ptr connection) {
 
-	connection->write(std::string() +
-		boost::lexical_cast<std::string>(currentGame->getTime()) + EOT, freeConnection, 0);
+	connection->write(boost::lexical_cast<std::string>(currentGame->getTime()) + EOT,
+		freeConnection, 0);
 	return;
 }
 

@@ -6,6 +6,7 @@
 #include "../include/command/actions/badcommandaction.h"
 #include "../include/command/actions/isgameonaction.h"
 #include "../include/command/actions/timeaction.h"
+#include "../include/command/actions/newplayeraction.h"
 
 using namespace std;
 
@@ -30,8 +31,9 @@ Dispatcher *Dispatcher::get() {
 Dispatcher::Dispatcher() {
 
 	// register possible commands and their corresponding actions.
-	actions["ISGAMEON"] = new ISGAMEONAction();
-	actions["TIME"]     = new TIMEAction();
+	actions["ISGAMEON"]  = new ISGAMEONAction();
+	actions["TIME"]      = new TIMEAction();
+	actions["NEWPLAYER"] = new NEWPLAYERAction();
 
 	// Special NetworkAction we use to confirm to the client that a connection
 	// has been made
@@ -99,7 +101,13 @@ void Dispatcher::dispatch(TCPConnection::ptr connection) {
 
 	// process tokenized request
 	vector<string> request = connection->getBufferParts();
-	(*get()->getAction(request[0]))(connection);
+
+	// action throws an exception if the command syntax is invalid
+	try {
+		(*get()->getAction(request[0]))(connection);
+	} catch (bool e) {
+		(*get()->badCommand)(connection);
+	}
 
 	return;
 }
