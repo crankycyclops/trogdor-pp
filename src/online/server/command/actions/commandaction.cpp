@@ -12,6 +12,7 @@ void *COMMANDAction::processCommandThread(void *connection) {
 
 	TCPConnection::ptr *c = ((TCPConnection::ptr *)connection);
 	vector<string> request = (*c)->getBufferParts();
+
 	core::entity::Player *player = currentGame->getPlayer(request[1]);
 
 	currentGame->processCommand(player);
@@ -31,8 +32,9 @@ void COMMANDAction::execute(TCPConnection::ptr connection) {
 	}
 
 	if (currentGame->playerIsInGame(request[1])) {
+		// connection.get() is the raw pointer inside the smart_ptr
 		THREAD_CREATE_NONCORE(commandThread, COMMANDAction::processCommandThread,
-			boost::addressof(connection), "Could not start player command thread.");
+			connection.get(), "Could not start player command thread.");
 	} else {
 		connection->write(std::string("NOEXIST") + EOT, freeConnection, 0);
 	}
