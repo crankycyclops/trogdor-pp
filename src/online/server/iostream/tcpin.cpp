@@ -24,6 +24,7 @@ void TCPIn::readInput(TCPConnection::ptr connection, void *that) {
 // WARNING: always do this inside a separate thread, because TCPIn WILL block.
 core::Trogin &TCPIn::operator>> (string &val) {
 
+	MUTEX_LOCK(streamMutex);
 	connection->write(string("GET") + EOT, TCPIn::readInput, (void *)this);
 
 	while (!requestMutex) {
@@ -33,8 +34,11 @@ core::Trogin &TCPIn::operator>> (string &val) {
 	val = connection->getBufferStr();
 
 	requestMutex = false; // reset this for the next call
+	MUTEX_UNLOCK(streamMutex);
+
 	return *this;
 }
+
 
 core::Trogin *TCPIn::clone() {
 

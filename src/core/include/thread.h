@@ -41,6 +41,13 @@ if (pthread_create(&(THREAD), 0, &(FUNC), (ARG))) { \
 #define INIT_MUTEX(X)
 #endif
 
+// Mutex destroy (do nothing for boost)
+#if PTHREAD
+#define DESTROY_MUTEX(X) pthread_mutex_destroy(&(X))
+#else
+#define DESTROY_MUTEX(X)
+#endif
+
 // Mutex lock
 #if PTHREAD
 #define MUTEX_LOCK(X) pthread_mutex_lock(&(X))

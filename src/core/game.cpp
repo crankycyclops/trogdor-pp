@@ -62,6 +62,9 @@ namespace core {
 
       delete errStream;
 
+      DESTROY_MUTEX(resourceMutex);
+      DESTROY_MUTEX(timerMutex);
+
       // TODO: delete all action objects initialized in initActions()
    }
 

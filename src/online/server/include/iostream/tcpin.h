@@ -27,6 +27,10 @@ class TCPIn: public core::Trogin {
 		// for input is complete.
 		bool requestMutex;
 
+		// Blocks any thread that tries to access a particular instance of
+		// TCPIn while another thread is currently using it.
+		mutex_t streamMutex;
+
 		// Callback that asynchronously reads data from the client after the
 		// it recives the GET command. Takes as an argument a pointer to the
 		// current instance of TCPIn.
@@ -39,7 +43,12 @@ class TCPIn: public core::Trogin {
 
 	public:
 
-		inline TCPIn(TCPConnection::ptr c): connection(c), requestMutex(false) {}
+		// Constructor
+		inline TCPIn(TCPConnection::ptr c):
+			connection(c), requestMutex(false) {INIT_MUTEX(streamMutex);}
+
+		// Destructor
+		inline ~TCPIn() {DESTROY_MUTEX(streamMutex);}
 
 		// Allows us to use a new TCP connection object in the event that a
 		// previous connection expires.
