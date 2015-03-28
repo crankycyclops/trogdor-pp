@@ -3,6 +3,8 @@
 
 
 #include "../network/tcpconnection.h"
+
+#include "../../../../core/include/thread.h"
 #include "../../../../core/include/iostream/trogin.h"
 
 
@@ -11,28 +13,45 @@ using namespace std;
 
 /*
  Input "stream" that uses data from a TCP connection's read buffer.
+
+ WARNING: ALWAYS use TCPIn inside a separate thread, because it WILL block while
+ it waits on the client for data.
 */
 class TCPIn: public core::Trogin {
 
-   private:
+	private:
 
-      TCPConnection::ptr connection;
+		TCPConnection::ptr connection;
 
-   public:
+		// Not really a mutex, but a way to signal when an asynchronous request
+		// for input is complete.
+		bool requestMutex;
 
-      inline TCPIn(TCPConnection::ptr c) {connection = c;}
+		// Callback that asynchronously reads data from the client after the
+		// it recives the GET command. Takes as an argument a pointer to the
+		// current instance of TCPIn.
+		static void readInput(TCPConnection::ptr connection, void *that);
 
-      // Allows us to use a new TCP connection object in the event that a
-      // previous connection expires.
-      inline void updateConnection(TCPConnection::ptr c) {connection = c;}
+		// Callback that signals to the input stream operator that data from
+		// the client has arrived and that it can continue executing. Takes as
+		// input a pointer to the current instance of TCPIn.
+		static void processInput(TCPConnection::ptr connection, void *that);
 
-      /*
-       See include/iostream/trogin.h for details.
-      */
-      virtual core::Trogin *clone();
+	public:
 
-      // For now, I only need to define input for strings.
-      virtual core::Trogin &operator>> (string &val);
+		inline TCPIn(TCPConnection::ptr c): connection(c), requestMutex(false) {}
+
+		// Allows us to use a new TCP connection object in the event that a
+		// previous connection expires.
+		inline void updateConnection(TCPConnection::ptr c) {connection = c;}
+
+		/*
+		 See include/iostream/trogin.h for details.
+		*/
+		virtual core::Trogin *clone();
+
+		// For now, I only need to define input for strings.
+		virtual core::Trogin &operator>> (string &val);
 };
 
 
