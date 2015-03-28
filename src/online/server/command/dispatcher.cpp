@@ -3,6 +3,7 @@
 #include "../include/command/dispatcher.h"
 
 #include "../include/command/actions/connectaction.h"
+#include "../include/command/actions/commandaction.h"
 #include "../include/command/actions/badcommandaction.h"
 #include "../include/command/actions/isgameonaction.h"
 #include "../include/command/actions/timeaction.h"
@@ -34,6 +35,7 @@ Dispatcher::Dispatcher() {
 	actions["ISGAMEON"]  = new ISGAMEONAction();
 	actions["TIME"]      = new TIMEAction();
 	actions["NEWPLAYER"] = new NEWPLAYERAction();
+	actions["COMMAND"]   = new COMMANDAction();
 
 	// Special NetworkAction we use to confirm to the client that a connection
 	// has been made

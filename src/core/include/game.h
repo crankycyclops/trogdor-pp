@@ -363,6 +363,27 @@ namespace core {
          }
 
          /*
+            Returns the Player object associated with the specified player name.
+            Throws an exception if the specified player name doesn't exist.
+
+            Input:
+               Name of player (string)
+
+            Output:
+               Player *
+         */
+         inline Player *getPlayer(const string name) {
+
+            if (!players.isset(name)) {
+               stringstream s;
+               s << "Player with name '" << name << "' doesn't exist";
+               throw s.str();
+            }
+
+            return players.get(name);
+         }
+
+         /*
             Initializes the game, including the event handler, timer and all game
             entities.
 

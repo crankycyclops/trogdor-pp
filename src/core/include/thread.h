@@ -4,6 +4,7 @@
 
 #if PTHREAD
 #include <cstdio>
+#include <iostream>
 #include <pthread.h>
 #else
 #include <boost/thread/thread.hpp>
@@ -32,6 +33,17 @@ if (pthread_create(&(THREAD), 0, &(FUNC), (ARG))) { \
 }
 #else
 #define THREAD_CREATE(THREAD, FUNC, ARG, ERRMSG) THREAD = new boost::thread((FUNC), (ARG));
+#endif
+
+// Thread creation (outside core::Game)
+#if PTHREAD
+#define THREAD_CREATE_NONCORE(THREAD, FUNC, ARG, ERRMSG) \
+if (pthread_create(&(THREAD), 0, &(FUNC), (ARG))) { \
+   cerr << (ERRMSG); \
+   exit(EXIT_FAILURE); \
+}
+#else
+#define THREAD_CREATE_NONCORE(THREAD, FUNC, ARG, ERRMSG) THREAD = new boost::thread((FUNC), (ARG));
 #endif
 
 // Mutex init (do nothing for boost)
