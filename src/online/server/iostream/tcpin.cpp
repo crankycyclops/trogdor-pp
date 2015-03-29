@@ -24,6 +24,11 @@ void TCPIn::readInput(TCPConnection::ptr connection, void *that) {
 // WARNING: always do this inside a separate thread, because TCPIn WILL block.
 core::Trogin &TCPIn::operator>> (string &val) {
 
+	// if there's no connection, then we can't really get anything meaningful
+	if (!connection.get()) {
+		val = "";
+	}
+
 	MUTEX_LOCK(streamMutex);
 	connection->write(string("GET") + EOT, TCPIn::readInput, (void *)this);
 

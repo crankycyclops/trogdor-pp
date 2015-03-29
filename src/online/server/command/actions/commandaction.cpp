@@ -5,6 +5,7 @@
 #include "../../../../core/include/entities/player.h"
 
 #include "../../include/command/actions/commandaction.h"
+#include "../../include/iostream/tcpin.h"
 #include "../../include/main.h"
 
 
@@ -15,9 +16,11 @@ void *COMMANDAction::processCommandThread(void *connection) {
 
 	core::entity::Player *player = currentGame->getPlayer(request[1]);
 
+	dynamic_cast<TCPIn &>(player->in()).setConnection(*c);
 	currentGame->processCommand(player);
-	(*c)->setInUse(false);
 
+	dynamic_cast<TCPIn &>(player->in()).setConnection(TCPConnection::ptr());
+	(*c)->setInUse(false);
 	return 0;
 }
 

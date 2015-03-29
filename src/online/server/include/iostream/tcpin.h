@@ -2,6 +2,8 @@
 #define TCPIN_H
 
 
+#include <cstddef>
+
 #include "../network/tcpconnection.h"
 
 #include "../../../../core/include/thread.h"
@@ -43,16 +45,18 @@ class TCPIn: public core::Trogin {
 
 	public:
 
-		// Constructor
+		// Constructor (Set a null connection, because we have to set it
+		// manually every time we use this stream object)
 		inline TCPIn(TCPConnection::ptr c):
-			connection(c), requestMutex(false) {INIT_MUTEX(streamMutex);}
+			connection(TCPConnection::ptr()), requestMutex(false)
+			{INIT_MUTEX(streamMutex);}
 
 		// Destructor
 		inline ~TCPIn() {DESTROY_MUTEX(streamMutex);}
 
 		// Allows us to use a new TCP connection object in the event that a
 		// previous connection expires.
-		inline void updateConnection(TCPConnection::ptr c) {connection = c;}
+		inline void setConnection(TCPConnection::ptr c) {connection = c;}
 
 		/*
 		 See include/iostream/trogin.h for details.
