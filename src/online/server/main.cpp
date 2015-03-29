@@ -20,6 +20,10 @@ core::Game *currentGame;
 
 int main(int argc, char **argv) {
 
+	/******************************\
+    * Step 1. Bootstrap the game *
+   \******************************/
+
 	// default game filename
 	string gameXML = "game-server.xml";
 
@@ -43,6 +47,10 @@ int main(int argc, char **argv) {
 		cerr << "\nFailed to initialize the game :'(\n\n" << endl;
 		return EXIT_FAILURE;
 	}
+
+	/********************************\
+    * Step 2. Bootstrap the server *
+   \********************************/
 
 	boost::asio::io_service io;
 	TCPServer *server;
