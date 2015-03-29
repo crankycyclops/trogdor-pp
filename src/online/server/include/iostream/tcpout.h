@@ -70,7 +70,7 @@ class TCPOut: public core::Trogout {
 
 		// Constructor (Set a null connection, because we have to set it
 		// manually every time we use this stream object)
-		inline TCPOut(TCPConnection::ptr c): connection(TCPConnection::ptr()) {}
+		inline TCPOut(TCPConnection::ptr c = TCPConnection::ptr()): connection(c) {}
 
 		// Allows us to use a new TCP connection object in the event that a
 		// previous connection expires.

@@ -47,8 +47,8 @@ class TCPIn: public core::Trogin {
 
 		// Constructor (Set a null connection, because we have to set it
 		// manually every time we use this stream object)
-		inline TCPIn(TCPConnection::ptr c):
-			connection(TCPConnection::ptr()), requestMutex(false)
+		inline TCPIn(TCPConnection::ptr c = TCPConnection::ptr()):
+			connection(c), requestMutex(false)
 			{INIT_MUTEX(streamMutex);}
 
 		// Destructor

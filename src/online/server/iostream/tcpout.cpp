@@ -9,7 +9,11 @@ using namespace std;
 void TCPOut::handleMessageWrite(TCPConnection::ptr connection, void *message) {
 
 	// TODO: handle on error retries (requires error handler in TCPConnection)
-	connection->setInUse(false);
+
+	// NOTE: do not call connection->setInUse(false) here. The inUse should only
+	// be used when processing incoming requests. The client should understand
+	// that it might arbitrarily receive MESSAGE commands, and it should know how
+	// to handle that.
 }
 
 
