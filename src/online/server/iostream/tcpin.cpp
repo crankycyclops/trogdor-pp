@@ -29,19 +29,22 @@ core::Trogin &TCPIn::operator>> (string &val) {
 		val = "";
 	}
 
-	MUTEX_LOCK(streamMutex);
-	connection->write(string("GET") + EOT, TCPIn::readInput, (void *)this);
+	else {
 
-	while (!requestMutex) {
-		boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+		MUTEX_LOCK(streamMutex);
+		connection->write(string("GET") + EOT, TCPIn::readInput, (void *)this);
+
+		while (!requestMutex) {
+			boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+		}
+
+		val = connection->getBufferStr();
+
+		requestMutex = false; // reset this for the next call
+		MUTEX_UNLOCK(streamMutex);
+
+		return *this;
 	}
-
-	val = connection->getBufferStr();
-
-	requestMutex = false; // reset this for the next call
-	MUTEX_UNLOCK(streamMutex);
-
-	return *this;
 }
 
 
