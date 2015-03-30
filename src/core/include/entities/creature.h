@@ -61,13 +61,11 @@ namespace core { namespace entity {
             containing Game object and a name.
          */
          inline Creature(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
-         Being(g, n, o, i, e) {
+         Being(g, n, o, i, e),
+         allegiance(DEFAULT_ALLEGIANCE), counterAttack(DEFAULT_COUNTER_ATTACK) {
 
             types.push_back(ENTITY_CREATURE);
             setClass("creature");
-
-            allegiance = DEFAULT_ALLEGIANCE;
-            counterAttack = DEFAULT_COUNTER_ATTACK;
 
             autoAttack.enabled = DEFAULT_AUTO_ATTACK_ENABLED;
             autoAttack.interval = DEFAULT_AUTO_ATTACK_INTERVAL;

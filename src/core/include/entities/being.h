@@ -193,22 +193,20 @@ namespace core { namespace entity {
             containing Game object and a name.
          */
          inline Being(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
-         Thing(g, n, o, i, e) {
+         Thing(g, n, o, i, e),
+         attackable(DEFAULT_ATTACKABLE), damageBareHands(DEFAULT_DAMAGE_BARE_HANDS) {
 
-            attackable = DEFAULT_ATTACKABLE;
-            damageBareHands = DEFAULT_DAMAGE_BARE_HANDS;
-
-            respawnSettings.enabled = DEFAULT_RESPAWN_ENABLED;
+            respawnSettings.enabled  = DEFAULT_RESPAWN_ENABLED;
             respawnSettings.interval = DEFAULT_RESPAWN_INTERVAL;
-            respawnSettings.lives = DEFAULT_RESPAWN_LIVES;
+            respawnSettings.lives    = DEFAULT_RESPAWN_LIVES;
 
             setAttribute("strength", DEFAULT_ATTRIBUTE_STRENGTH);
             setAttribute("dexterity", DEFAULT_ATTRIBUTE_DEXTERITY);
             setAttribute("intelligence", DEFAULT_ATTRIBUTE_INTELLIGENCE);
             setAttributesInitialTotal();
 
-            inventory.count = 0;
-            inventory.weight = DEFAULT_INVENTORY_WEIGHT;
+            inventory.count         = 0;
+            inventory.weight        = DEFAULT_INVENTORY_WEIGHT;
             inventory.currentWeight = 0;
 
             types.push_back(ENTITY_BEING);

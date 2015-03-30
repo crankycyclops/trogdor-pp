@@ -37,13 +37,9 @@ namespace core { namespace entity {
             containing Game object and a name.
          */
          inline Item(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
-         Thing(g, n, o, i, e) {
-
-            owner = 0;
-            takeable = DEFAULT_TAKEABLE;
-            droppable = DEFAULT_DROPPABLE;
-            weapon = DEFAULT_IS_WEAPON;
-            damage = DEFAULT_DAMAGE;
+         Thing(g, n, o, i, e),
+         owner(0), takeable(DEFAULT_TAKEABLE), droppable(DEFAULT_DROPPABLE),
+         weapon(DEFAULT_IS_WEAPON), damage(DEFAULT_DAMAGE) {
 
             types.push_back(ENTITY_ITEM);
          }
