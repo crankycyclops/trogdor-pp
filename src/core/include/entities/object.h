@@ -24,11 +24,10 @@ namespace core { namespace entity {
             containing Game object and a name.
          */
          inline Object(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
-         Item(g, n, o, i, e) {
+         Item(g, n, o, i, e),
+         weight(DEFAULT_WEIGHT) {
 
             types.push_back(ENTITY_OBJECT);
-            weight = DEFAULT_WEIGHT;
-
             setClass("object");
          }
 

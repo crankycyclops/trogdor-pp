@@ -50,9 +50,9 @@ namespace core { namespace entity {
             containing Game object and a name.
          */
          inline Thing(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
-         Entity(g, n, o, i, e) {
+         Entity(g, n, o, i, e),
+         location(0) {
 
-            location = 0;
             types.push_back(ENTITY_THING);
 
             // Name is also an alias that we can reference a Thing by
