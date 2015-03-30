@@ -21,21 +21,14 @@ namespace core { namespace entity {
    ObjectList    emptyObjectList;
 
 
-   Entity::Entity(Game *g, string n, Trogout *o, Trogin *i, Trogout *e) {
+   // The title property will usually be set to something more descriptive later
+   Entity::Entity(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
+      game(g), name(n), outStream(o), errStream(e), inStream(i), title(n) {
 
       types.push_back(ENTITY_ENTITY);
 
       // this should always be overridden by a top-level Entity type
       className = "entity";
-
-      game = g;
-      name = n;
-      outStream = o;
-      errStream = e;
-      inStream = i;
-
-      // this will usually be set again later
-      title = n;
 
       L = new LuaState();
       triggers = new event::EventListener();
