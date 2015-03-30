@@ -6,6 +6,7 @@
 
 #include "../../include/iostream/tcpin.h"
 #include "../../include/iostream/tcpout.h"
+#include "../../../../core/include/iostream/nullout.h"
 
 // provides extern definition of Game object
 #include "../../include/main.h"
@@ -22,9 +23,11 @@ void NEWPLAYERAction::execute(TCPConnection::ptr connection) {
 
 	// add the player and signal to the client that creation was successful
 	try {
-		// TODO: implement network stream objects to replace NullOut
+		// TODO: create DEBUG define statement, and set NullOut to TCPOut in the
+		// event that DEBUG is set (will help tremendously in testing; actions do
+		// use player->err() to flag bugs.)
 		currentGame->createPlayer(request[1], new TCPOut(connection),
-		    new TCPIn(connection), new TCPOut(connection));
+			new TCPIn(connection), new core::NullOut());
 		connection->write(std::string("OK") + EOT, freeConnection, 0);
 	}
 
