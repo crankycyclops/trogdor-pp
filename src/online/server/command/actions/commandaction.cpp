@@ -23,8 +23,12 @@ void *COMMANDAction::processCommandThread(void *connection) {
 
 	currentGame->processCommand(player);
 
-	dynamic_cast<TCPIn &>(player->in()).setConnection(TCPConnection::ptr());
-	dynamic_cast<TCPOut &>(player->out()).setConnection(TCPConnection::ptr());
+	// make sure the player wasn't removed from the game before attempting to
+	// reset its input and output streams for future use
+	if (currentGame->playerIsInGame(request[1])) {
+		dynamic_cast<TCPIn &>(player->in()).setConnection(TCPConnection::ptr());
+		dynamic_cast<TCPOut &>(player->out()).setConnection(TCPConnection::ptr());
+	}
 
 	(*c)->setInUse(false);
 
