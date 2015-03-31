@@ -325,11 +325,12 @@ namespace core {
 
             Input:
                Name of player (string)
+               Message to output to player before removing (string: default is none)
 
             Output:
                (none)
          */
-         inline void removePlayer(const string name) {
+         inline void removePlayer(const string name, const string message = "") {
 
             if (!players.isset(name)) {
                stringstream s;
@@ -338,6 +339,10 @@ namespace core {
             }
 
             Player *player = players.get(name);
+
+            if (message.length()) {
+               player->out("notifications") << message << endl;
+            }
 
             entities.erase(name);
             things.erase(name);
