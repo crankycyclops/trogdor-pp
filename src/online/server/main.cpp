@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+
 #include <boost/asio.hpp>
 
 #include "include/network/tcpcommon.h"
@@ -17,6 +18,24 @@ using namespace std;
 // global object that should be accessible to the entire application
 core::Game *currentGame;
 
+// serves TCP connections
+static TCPServer *server;
+
+/******************************************************************************/
+
+// Called whenever we receive SIGINT (CTRL-C) or SIGTERM
+static void shutdownHandler(const boost::system::error_code& error, int signal_number) {
+
+	currentGame->stop();
+
+	delete server;
+	delete currentGame;
+
+	cout << "\n" << "Shutting down Trogdor server...\n" << endl;
+	exit(error ? EXIT_FAILURE : EXIT_SUCCESS);
+}
+
+/******************************************************************************/
 
 int main(int argc, char **argv) {
 
@@ -28,7 +47,7 @@ int main(int argc, char **argv) {
 	string gameXML = "game-server.xml";
 
 	if (argc > 2) {
-		cerr << "\nUsage: trogdor [game_filename.xml]\n\n" << endl;
+		cerr << "\nUsage: trogdor-server [game_filename.xml]\n\n" << endl;
 		return EXIT_FAILURE;
 	}
 
@@ -53,17 +72,17 @@ int main(int argc, char **argv) {
    \********************************/
 
 	boost::asio::io_service io;
-	TCPServer *server;
+
+	// shutdown the server if we receive CTRL-C or a kill signal
+	boost::asio::signal_set signals(io, SIGINT, SIGTERM);
+	signals.async_wait(shutdownHandler);
 
 	// constructor starts up a deadline_timer that checks at regular intervals
 	// on the needs of existing connections as well as accepting new ones.
 	server = new TCPServer(io, SERVER_PORT);
 	io.run();
 
-	currentGame->stop();
-	delete server;
-	delete currentGame;
-
+	// we don't actually ever get here...
 	return EXIT_SUCCESS;
 }
 
