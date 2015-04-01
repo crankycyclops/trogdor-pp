@@ -18,7 +18,6 @@
 
 #include "tcpcommon.h"
 #include "tcpconnection.h"
-
 #include "../../../../core/include/entities/player.h"
 
 using namespace boost::system;
@@ -68,10 +67,6 @@ class TCPServer {
 		// listening on port SERVER_PORT.
 		TCPServer(boost::asio::io_service &io_service, unsigned short port);
 
-		// Maps a connection to a player. If a connection is already mapped to
-		// the specified player, that previous connection is closed first.
-		void assignPlayerToConnection(core::entity::Player *player, TCPConnection::ptr connection);
-
 		// Calls async_accept(), which waits for a connection in a separate
 		// thread. The provided callback should assume that a connection was
 		// successfully accepted and should continue from there using the
@@ -81,8 +76,16 @@ class TCPServer {
 		// Executes at regular intervals, serving existing connections and
 		// listening for new ones.
 		void serveConnections();
+
+		// Maps the connection to a Player. Needs access to our private
+		// PlayerConnectionMap. If the not-quite-decoupled relationship between
+		// TCPServer and TCPConnection troubles you, you're not alone...
+		friend void TCPConnection::assignPlayer(core::entity::Player *player);
+
+		// Returns the Player associated with the connection. If none, this
+		// return a null pointer instead.
+		friend core::entity::Player *TCPConnection::getPlayer();
 };
 
 
 #endif
-

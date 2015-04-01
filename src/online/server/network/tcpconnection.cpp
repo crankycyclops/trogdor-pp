@@ -8,6 +8,7 @@
 
 #include "../include/network/tcpcommon.h"
 #include "../include/network/tcpconnection.h"
+#include "../include/network/tcpserver.h"
 
 using namespace std;
 using namespace boost::system;
@@ -102,3 +103,27 @@ void TCPConnection::write(string message, callback_t callback, void *callbackArg
 	);
 }
 
+/******************************************************************************/
+
+void TCPConnection::assignPlayer(core::entity::Player *player) {
+
+	// If another connection is currently bound to the player, close it first.
+	if (server->playerToConnection.left.find(player) != server->playerToConnection.left.end() &&
+	shared_from_this() != server->playerToConnection.left.find(player)->second) {
+		server->playerToConnection.left.find(player)->second->close();
+		server->playerToConnection.left.erase(player);
+	}
+
+	server->playerToConnection.insert(TCPServer::PlayerConnectionMap::value_type(player, shared_from_this()));
+}
+
+/******************************************************************************/
+
+core::entity::Player *TCPConnection::getPlayer() {
+
+	if (server->playerToConnection.right.find(shared_from_this()) != server->playerToConnection.right.end()) {
+		return server->playerToConnection.right.find(shared_from_this())->second;
+	} else {
+		return 0;
+	}
+}

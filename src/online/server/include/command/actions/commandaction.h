@@ -13,8 +13,8 @@
 
 	Workflow:
 
-	1) execute() checks if the specified player is in the game. If he isn't,
-	   then we return NOEXIST. If it does, we spin off a separate thread that
+	1) execute() checks if the connection is associated with a player. If not,
+	   then we return AUTHREQ. If one is, we spin off a separate thread that
 	   runs processCommandThread. We need to run this inside a separate thread
 	   because TCPIn will block while it waits to read data from the client.
 

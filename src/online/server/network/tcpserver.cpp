@@ -30,18 +30,6 @@ acceptor(io_service), timer(io_service, boost::posix_time::milliseconds(SERVE_SL
 
 /******************************************************************************/
 
-void TCPServer::assignPlayerToConnection(core::entity::Player *player, TCPConnection::ptr connection) {
-
-	if (playerToConnection.left.find(player) != playerToConnection.left.end()) {
-		playerToConnection.left.find(player)->second->close();
-		playerToConnection.left.erase(player);
-	}
-
-	playerToConnection.insert(PlayerConnectionMap::value_type(player, connection));
-}
-
-/******************************************************************************/
-
 void TCPServer::handleAccept(
 	TCPConnection::ptr connection,
 	const error_code &e,

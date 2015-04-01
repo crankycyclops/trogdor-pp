@@ -28,7 +28,7 @@ void NEWPLAYERAction::execute(TCPConnection::ptr connection) {
 		// use player->err() to flag bugs.)
 		currentGame->createPlayer(request[1], new TCPOut(connection),
 			new TCPIn(connection), new core::NullOut());
-		connection->getServer()->assignPlayerToConnection(currentGame->getPlayer(request[1]), connection);
+		connection->assignPlayer(currentGame->getPlayer(request[1]));
 		connection->write(std::string("OK") + EOT, freeConnection, 0);
 	}
 

@@ -14,9 +14,7 @@
 void *COMMANDAction::processCommandThread(void *connection) {
 
 	TCPConnection::ptr *c = ((TCPConnection::ptr *)connection);
-	vector<string> request = (*c)->getBufferParts();
-
-	core::entity::Player *player = currentGame->getPlayer(request[1]);
+	core::entity::Player *player = (*c)->getPlayer();
 
 	dynamic_cast<TCPIn &>(player->in()).setConnection(*c);
 	dynamic_cast<TCPOut &>(player->out()).setConnection(*c);
@@ -25,7 +23,7 @@ void *COMMANDAction::processCommandThread(void *connection) {
 
 	// make sure the player wasn't removed from the game before attempting to
 	// reset its input and output streams for future use
-	if (currentGame->playerIsInGame(request[1])) {
+	if (currentGame->playerIsInGame(player->getName())) {
 		dynamic_cast<TCPIn &>(player->in()).setConnection(TCPConnection::ptr());
 		dynamic_cast<TCPOut &>(player->out()).setConnection(TCPConnection::ptr());
 	}
@@ -40,19 +38,19 @@ void COMMANDAction::execute(TCPConnection::ptr connection) {
 
 	vector<string> request = connection->getBufferParts();
 
-	// make sure the command follows the correct syntax ("COMMAND <player>")
-	if (2 != request.size()) {
+	// make sure the command follows the correct syntax ("COMMAND")
+	if (1 != request.size()) {
 		throw true;
 	}
 
-	if (currentGame->playerIsInGame(request[1])) {
+	
+	if (connection->getPlayer()) {
 		// connection.get() is the raw pointer inside the smart_ptr
 		THREAD_CREATE_NONCORE(commandThread, COMMANDAction::processCommandThread,
 			connection.get(), "Could not start player command thread.");
 	} else {
-		connection->write(std::string("NOEXIST") + EOT, freeConnection, 0);
+		connection->write(std::string("AUTHREQ") + EOT, freeConnection, 0);
 	}
 
 	return;
 }
-
