@@ -14,9 +14,12 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/bimap.hpp>
 
 #include "tcpcommon.h"
 #include "tcpconnection.h"
+
+#include "../../../../core/include/entities/player.h"
 
 using namespace boost::system;
 using boost::asio::ip::tcp;
@@ -32,6 +35,10 @@ class TCPServer {
 
 		// active connections that need to be maintained
 		std::list<TCPConnection::ptr> activeConnections;
+
+		// mapping of players to their associated connections (so that only one
+		// connection at a time can be used to control a particular player)
+		boost::bimap<core::entity::Player *, TCPConnection::ptr> playerToConnection;
 
 		tcp::acceptor acceptor;
 		boost::asio::deadline_timer timer;
@@ -59,6 +66,10 @@ class TCPServer {
 		// Contructor establishes that we're using IPv4 and that we're
 		// listening on port SERVER_PORT.
 		TCPServer(boost::asio::io_service &io_service, unsigned short port);
+
+		// Maps a connection to a player. If a connection is already mapped to
+		// the specified player, that previous connection is closed first.
+		void assignPlayerToConnection(core::entity::Player *player, TCPConnection::ptr connection);
 
 		// Calls async_accept(), which waits for a connection in a separate
 		// thread. The provided callback should assume that a connection was

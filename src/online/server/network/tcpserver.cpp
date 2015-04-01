@@ -30,6 +30,18 @@ acceptor(io_service), timer(io_service, boost::posix_time::milliseconds(SERVE_SL
 
 /******************************************************************************/
 
+void TCPServer::assignPlayerToConnection(core::entity::Player *player, TCPConnection::ptr connection) {
+
+	if (playerToConnection.left.find(player) != playerToConnection.left.end()) {
+		playerToConnection.left.find(player)->second->close();
+		playerToConnection.left.erase(player);
+	}
+
+	playerToConnection.left.insert(player, connection);
+}
+
+/******************************************************************************/
+
 void TCPServer::handleAccept(
 	TCPConnection::ptr connection,
 	const error_code &e,
@@ -74,9 +86,14 @@ void TCPServer::serveConnections() {
 
 		TCPConnection::ptr connection = *i;
 
+		// If the connection was closed, remove it.
+		if (!connection->isOpen()) {
+			removeActiveConnection(connection);
+		}
+
 		// If the connection isn't already in the middle of a request, we 
 		// should listen for a new one.
-		if (!connection->isInUse()) {
+		else if (!connection->isInUse()) {
 			connection->setInUse(true);
 			connection->read(Dispatcher::serveRequest, 0);
 		}
