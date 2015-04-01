@@ -37,7 +37,7 @@ void TCPServer::assignPlayerToConnection(core::entity::Player *player, TCPConnec
 		playerToConnection.left.erase(player);
 	}
 
-	playerToConnection.left.insert(player, connection);
+	playerToConnection.insert(PlayerConnectionMap::value_type(player, connection));
 }
 
 /******************************************************************************/

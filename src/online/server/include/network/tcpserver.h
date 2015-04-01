@@ -38,7 +38,8 @@ class TCPServer {
 
 		// mapping of players to their associated connections (so that only one
 		// connection at a time can be used to control a particular player)
-		boost::bimap<core::entity::Player *, TCPConnection::ptr> playerToConnection;
+		typedef boost::bimap<core::entity::Player *, TCPConnection::ptr> PlayerConnectionMap;
+		PlayerConnectionMap playerToConnection;
 
 		tcp::acceptor acceptor;
 		boost::asio::deadline_timer timer;
