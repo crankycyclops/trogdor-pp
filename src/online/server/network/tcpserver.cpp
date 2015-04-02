@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
@@ -74,16 +75,15 @@ void TCPServer::serveConnections() {
 
 		TCPConnection::ptr connection = *i;
 
-		// TODO: figure out why this causes a segfault
-		// If the connection was closed, remove it.
-		//if (!connection->isOpen()) {
-		//	removeActiveConnection(connection);
-		//}
+		// If the connection was closed, remove it and skip ahead to the next.
+		if (!connection->isOpen()) {
+			i = activeConnections.erase(i);
+			continue;
+		}
 
 		// If the connection isn't already in the middle of a request, we 
 		// should listen for a new one.
-		// else if (!connection->isInUse()) {
-		if (!connection->isInUse()) {
+		else if (!connection->isInUse()) {
 			connection->setInUse(true);
 			connection->read(Dispatcher::serveRequest, 0);
 		}
