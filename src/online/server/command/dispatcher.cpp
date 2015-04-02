@@ -8,6 +8,7 @@
 #include "../include/command/actions/isgameonaction.h"
 #include "../include/command/actions/timeaction.h"
 #include "../include/command/actions/newplayeraction.h"
+#include "../include/command/actions/loginaction.h"
 
 using namespace std;
 
@@ -35,6 +36,7 @@ Dispatcher::Dispatcher() {
 	actions["ISGAMEON"]  = new ISGAMEONAction();
 	actions["TIME"]      = new TIMEAction();
 	actions["NEWPLAYER"] = new NEWPLAYERAction();
+	actions["LOGIN"]     = new LOGINAction();
 	actions["COMMAND"]   = new COMMANDAction();
 
 	// Special NetworkAction we use to confirm to the client that a connection
