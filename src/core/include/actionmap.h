@@ -1,7 +1,6 @@
 #ifndef ACTIONMAP_H
 #define ACTIONMAP_H
 
-
 #include <string>
 #include <boost/unordered_map.hpp>
 
@@ -31,6 +30,22 @@ namespace core {
          */
          inline ActionMap(Game *gameRef) {game = gameRef;}
 
+         /*
+            Destructor.
+         */
+         inline ~ActionMap() {
+
+            // destroy all actions
+            for (unordered_map<string, Action *>::iterator i = actionTable.begin(); i != actionTable.end(); i++) {
+               delete i->second;
+            }
+         }
+
+         /*
+            WARNING: Do not register the same Action object with more than one
+            verb, lest you encounter a nasty and fatal double free during
+            destruction.
+         */
          inline void setAction(string verb, Action *action) {
             actionTable[verb] = action;
          }

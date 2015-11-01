@@ -65,7 +65,7 @@ namespace core {
       DESTROY_MUTEX(resourceMutex);
       DESTROY_MUTEX(timerMutex);
 
-      // TODO: delete all action objects initialized in initActions()
+      delete actions;
    }
 
 
@@ -98,20 +98,16 @@ namespace core {
       setSynonym("inventory", "inv");
       setSynonym("list", "inv");
 
-      MoveAction *move = new MoveAction;
-      actions->setAction("move", move);
+      actions->setAction("move", new MoveAction);
       setSynonym("go", "move");
-
-      // checkSyntax for MoveAction relies on direction names being mapped
-      // directly to the action object instead of just being a synonym.
-      actions->setAction("north", move);
-      actions->setAction("south", move);
-      actions->setAction("east", move);
-      actions->setAction("west", move);
-      actions->setAction("up", move);
-      actions->setAction("down", move);
-      actions->setAction("in", move);
-      actions->setAction("out", move);
+      setSynonym("north", "move");
+      setSynonym("south", "move");
+      setSynonym("east", "move");
+      setSynonym("west", "move");
+      setSynonym("up", "move");
+      setSynonym("down", "move");
+      setSynonym("in", "move");
+      setSynonym("out", "move");
 
       actions->setAction("look", new LookAction);
       setSynonym("observe", "look");
@@ -143,7 +139,6 @@ namespace core {
    void Game::initEvents() {
 
       eventListener->add("afterGotoLocation", new AutoAttackEventTrigger());
-
       eventListener->add("afterDie", new DeathDropEventTrigger());
       eventListener->add("afterDie", new RespawnEventTrigger());
    }
@@ -253,7 +248,6 @@ namespace core {
          }
 
          else {
-
             MUTEX_LOCK(resourceMutex);
             action->execute(player, command, this);
             MUTEX_UNLOCK(resourceMutex);

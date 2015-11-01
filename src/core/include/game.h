@@ -293,7 +293,7 @@ namespace core {
                string blah;
 
                player->out() << introduction.text << endl << endl;
-               player->out() << "Press enter to start the game." << endl;
+               player->out() << "Press enter to start." << endl;
                player->in() >> blah;
                player->out() << endl;
 
@@ -482,6 +482,8 @@ namespace core {
          */
          inline bool event(const char *event) {
 
+            // make sure global EventListener is always listening
+				events->addListener(eventListener);
             return events->event(event);
          }
    };
