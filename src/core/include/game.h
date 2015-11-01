@@ -483,7 +483,7 @@ namespace core {
          inline bool event(const char *event) {
 
             // make sure global EventListener is always listening
-				events->addListener(eventListener);
+            events->addListener(eventListener);
             return events->event(event);
          }
    };

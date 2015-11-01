@@ -177,9 +177,6 @@ namespace core {
       // because this is a Game * const, not just Game *
       Task *task = new Task(currentGame, 1, 1, 1);
 
-      // insertJob will set the job's id and return it in case you need it later
-      unsigned long id = timer->insertJob(task);
-
       The job has free reign to change any of its public or protected parameters
       at any time during execution.  For example, a job that was originally
       supposed to execute 1 time might increment executions to make it run one
@@ -192,9 +189,9 @@ namespace core {
       */
       private:
 
-         unsigned long initTime; // time when the job was registered in the queue
-         int startTime;          // how long to wait before job's first execution
-         int interval;           // timer ticks between each job execution
+         unsigned long initTime;   // time when the job was registered in the queue
+         unsigned long startTime;  // how long to wait before job's first execution
+         unsigned long interval;   // timer ticks between each job execution
 
          // Number of times to execute the job before removing it from the queue.
          // This value is decremented on every tick of the clock, and when it
@@ -216,9 +213,9 @@ namespace core {
             initTime = 0; // will be set by insertJob()
 
             game = g;
-            startTime = s;
             interval = i;
             executions = e;
+            startTime = s;
          }
 
          /*
@@ -229,12 +226,12 @@ namespace core {
          virtual void execute(TimerJob &job) = 0;
 
          inline unsigned long getInitTime() const {return initTime;}
-         inline int getStartTime() const {return startTime;}
-         inline int getInterval() const {return interval;}
+         inline unsigned long getStartTime() const {return startTime;}
+         inline unsigned long getInterval() const {return interval;}
          inline int getExecutions() const {return executions;}
 
-         inline void setStartTime(int s) {startTime = s;}
-         inline void setInterval(int i) {interval = i;}
+         inline void setStartTime(unsigned long s) {startTime = s;}
+         inline void setInterval(unsigned long i) {interval = i;}
          inline void setExecutions(int e) {executions = e;}
 
          // decrement executions
