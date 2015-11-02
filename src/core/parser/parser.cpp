@@ -198,8 +198,7 @@ namespace core {
          throw s.str();
       }
 
-      Room *room = new Room(game, name, new PlaceOut(), new NullIn(),
-         game->err().clone());
+      Room *room = new Room(game, name, new PlaceOut(), game->err().clone());
 
       // for type checking
       room->setClass(name);
@@ -255,8 +254,7 @@ namespace core {
          throw s.str();
       }
 
-      Object *object = new Object(game, name, new NullOut(), new NullIn(),
-         game->err().clone());
+      Object *object = new Object(game, name, new NullOut(), game->err().clone());
 
       // for type checking
       object->setClass(name);
@@ -314,7 +312,7 @@ namespace core {
 
       // TODO: should Creatures have some kind of special input stream?
       Creature *creature = new Creature(game, name, new NullOut(),
-         new NullIn(), game->err().clone());
+         game->err().clone());
 
       // for type checking
       creature->setClass(name);
@@ -541,7 +539,7 @@ namespace core {
       Room *room;
 
       if (0 == className.compare("room")) {
-         room = new Room(game, name, new PlaceOut(), new NullIn(), game->err().clone());
+         room = new Room(game, name, new PlaceOut(), game->err().clone());
       }
 
       else {
@@ -601,7 +599,7 @@ namespace core {
       Object *object;
 
       if (0 == className.compare("object")) {
-         object = new Object(game, name, new NullOut(), new NullIn(), game->err().clone());
+         object = new Object(game, name, new NullOut(), game->err().clone());
       }
 
       else {
@@ -660,7 +658,7 @@ namespace core {
       Creature *creature;
 
       if (0 == className.compare("creature")) {
-         creature = new Creature(game, name, new NullOut(), new NullIn(), game->err().clone());
+         creature = new Creature(game, name, new NullOut(), game->err().clone());
       }
 
       else {

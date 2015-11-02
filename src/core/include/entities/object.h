@@ -3,6 +3,7 @@
 
 
 #include "thing.h"
+#include "../iostream/nullin.h"
 
 
 namespace core { namespace entity {
@@ -38,8 +39,8 @@ namespace core { namespace entity {
             Constructor for creating a new Object.  Requires reference to the
             containing Game object and a name.
          */
-         inline Object(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
-         Thing(g, n, o, i, e),
+         inline Object(Game *g, string n, Trogout *o, Trogout *e):
+         Thing(g, n, o, new NullIn(), e),
          owner(0), weight(DEFAULT_WEIGHT), takeable(DEFAULT_TAKEABLE),
          droppable(DEFAULT_DROPPABLE), weapon(DEFAULT_IS_WEAPON),
          damage(DEFAULT_DAMAGE) {

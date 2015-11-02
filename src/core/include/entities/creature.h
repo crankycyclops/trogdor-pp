@@ -5,6 +5,8 @@
 #include "../dice.h"
 #include "being.h"
 
+#include "../iostream/nullin.h"
+
 
 namespace core { namespace entity {
 
@@ -60,8 +62,8 @@ namespace core { namespace entity {
             Constructor for creating a new Creature.  Requires reference to the
             containing Game object and a name.
          */
-         inline Creature(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
-         Being(g, n, o, i, e),
+         inline Creature(Game *g, string n, Trogout *o, Trogout *e):
+         Being(g, n, o, new NullIn(), e),
          allegiance(DEFAULT_ALLEGIANCE), counterAttack(DEFAULT_COUNTER_ATTACK) {
 
             types.push_back(ENTITY_CREATURE);

@@ -5,6 +5,7 @@
 #include "../include/entities/object.h"
 
 #include "../include/game.h"
+#include "../include/iostream/nullin.h"
 #include "../include/iostream/placeout.h"
 
 
@@ -12,8 +13,8 @@ using namespace std;
 
 namespace core { namespace entity {
 
-   Place::Place(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
-   Entity(g, n, o, i, e) {
+   Place::Place(Game *g, string n, Trogout *o, Trogout *e):
+   Entity(g, n, o, new NullIn(), e) {
 
       types.push_back(ENTITY_PLACE);
       static_cast<PlaceOut *>(o)->setPlace(this);
