@@ -17,7 +17,6 @@ extern "C" {
 #include "api/entities/luaplace.h"
 #include "api/entities/luaroom.h"
 #include "api/entities/luathing.h"
-#include "api/entities/luaitem.h"
 #include "api/entities/luaobject.h"
 #include "api/entities/luabeing.h"
 #include "api/entities/luacreature.h"
@@ -115,7 +114,6 @@ namespace core {
             entity::LuaPlace::registerLuaType(L);
             entity::LuaRoom::registerLuaType(L);
             entity::LuaThing::registerLuaType(L);
-            entity::LuaItem::registerLuaType(L);
             entity::LuaObject::registerLuaType(L);
             entity::LuaBeing::registerLuaType(L);
             entity::LuaCreature::registerLuaType(L);

@@ -19,7 +19,6 @@ namespace core { namespace entity {
    // Forward declarations to prevent circular dependency issues
    class Thing;
    class Being;
-   class Item;
    class Player;
    class Creature;
    class Object;
@@ -40,7 +39,6 @@ namespace core { namespace entity {
          */
          // TODO: try to templatize these?
          void insertThingByName(Thing *thing);
-         void insertThingByName(Item *thing);
          void insertThingByName(Being *thing);
          void insertThingByName(Player *thing);
          void insertThingByName(Creature *thing);
@@ -53,7 +51,6 @@ namespace core { namespace entity {
          // sequential list of all entities in a place
          ThingList    things;
          BeingList    beings;
-         ItemList     items;
          PlayerList   players;
          CreatureList creatures;
          ObjectList   objects;
@@ -61,7 +58,6 @@ namespace core { namespace entity {
          // name -> entity list mappings (accomodates synonyms)
          ThingsByNameMap    thingsByName;
          BeingsByNameMap    beingsByName;
-         ItemsByNameMap     itemsByName;
          PlayersByNameMap   playersByName;
          CreaturesByNameMap creaturesByName;
          ObjectsByNameMap   objectsByName;
@@ -121,27 +117,6 @@ namespace core { namespace entity {
             beingsByName.find(alias)->second.push_back(being);
          }
 
-         /*
-            Indexes an Item's alias so that it can be referenced by
-            name.
-
-            Input:
-               Alias (string)
-               Item to be indexed (Item *)
-
-            Output:
-               (none)
-         */
-         inline void indexItemName(string alias, Item *item) {
-
-            if (itemsByName.find(alias) == itemsByName.end()) {
-               ItemList newList;
-               itemsByName[alias] = newList;
-            }
-
-            itemsByName.find(alias)->second.push_back(item);
-         }
-
       public:
 
          /*
@@ -153,7 +128,7 @@ namespace core { namespace entity {
          /*
             Constructor for cloning an existing Place.  Requires a unique name.
 
-            NOTE: items that are in a Place will not be copied, in order to
+            NOTE: Objects that are in a Place will not be copied, in order to
             maintain sanity.
          */
          inline Place(const Place &p, string n): Entity(p, n) {}

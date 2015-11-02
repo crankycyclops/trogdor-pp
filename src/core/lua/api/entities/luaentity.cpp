@@ -14,7 +14,6 @@ namespace core { namespace entity {
       "Place",
       "Room",
       "Thing",
-      "Item",
       "Object",
       "Being",
       "Player",
@@ -265,10 +264,6 @@ namespace core { namespace entity {
 
       else if (0 == typeStr.compare("thing")) {
          type = ENTITY_THING;
-      }
-
-      else if (0 == typeStr.compare("item")) {
-         type = ENTITY_ITEM;
       }
 
       else if (0 == typeStr.compare("object")) {

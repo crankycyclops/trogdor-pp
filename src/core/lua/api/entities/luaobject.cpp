@@ -50,11 +50,9 @@ namespace core { namespace entity {
 
       luaL_register(L, 0, LuaEntity::getMethods());
       luaL_register(L, 0, LuaThing::getMethods());
-      luaL_register(L, 0, LuaItem::getMethods());
       luaL_register(L, 0, methods);
       luaL_register(L, "Object", LuaEntity::getFunctions());
       luaL_register(L, "Object", LuaThing::getFunctions());
-      luaL_register(L, "Object", LuaItem::getFunctions());
       luaL_register(L, "Object", functions);
    }
 

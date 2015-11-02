@@ -13,7 +13,6 @@ namespace core { namespace entity {
    // Types which are considered valid by checkThing()
    static const char *thingTypes[] = {
       "Thing",
-      "Item",
       "Object",
       "Being",
       "Player",

@@ -2,7 +2,6 @@
 #define THING_H
 
 
-
 #include <vector>
 
 #include "entity.h"
@@ -64,6 +63,8 @@ namespace core { namespace entity {
          */
          inline Thing(const Thing &t, string n): Entity(t, n) {
 
+				location = t.location;
+
             // copy over existing aliases, minus the original Thing's name, and
             // then add the new name to our list of aliases
             aliases = t.aliases;
@@ -72,7 +73,7 @@ namespace core { namespace entity {
          }
 
          /*
-            Returns the Being's current location in the game.  If the Being
+            Returns the Thing's current location in the game.  If the Thing
             hasn't been placed anywhere, 0 will be returned.
 
             Input:

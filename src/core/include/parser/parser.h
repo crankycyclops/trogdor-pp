@@ -66,7 +66,6 @@ namespace core {
          entity::ThingMap     things;
          entity::RoomMap      rooms;
          entity::BeingMap     beings;
-         entity::ItemMap      items;
          entity::CreatureMap  creatures;
          entity::ObjectMap    objects;
 
@@ -455,7 +454,7 @@ namespace core {
          enum entity::Creature::AllegianceType parseCreatureAllegiance();
 
          /*
-            Parses an Item's definition to see if it's takeable or droppable by
+            Parses an Object's definition to see if it's takeable or droppable by
             a Being.
 
             Input:
@@ -464,8 +463,8 @@ namespace core {
             Output:
                Bool
          */
-         bool parseItemTakeable();
-         bool parseItemDroppable();
+         bool parseObjectTakeable();
+         bool parseObjectDroppable();
 
          /*
             Parses an Object's weight (how much space it takes up in a Being's
@@ -480,7 +479,7 @@ namespace core {
          int parseObjectWeight();
 
          /*
-            Parses whether or not an Item is a weapon.
+            Parses whether or not an Object is a weapon.
 
             Input:
                (none)
@@ -488,10 +487,10 @@ namespace core {
             Output:
                (none)
          */
-         bool parseItemWeapon();
+         bool parseObjectWeapon();
 
          /*
-            Parses how much damage an object does (hit points taken) if it's a
+            Parses how much damage an Object does (hit points taken) if it's a
             weapon.
 
             Input:
@@ -500,7 +499,7 @@ namespace core {
             Output:
                damage (int)
          */
-         int parseItemDamage();
+         int parseObjectDamage();
 
          /*
             Takes tags such as <north>, <south>, etc. in a room definition and
@@ -528,7 +527,7 @@ namespace core {
          void parseRoomContains(Room *room);
 
          /*
-            Parses a single item in a Room's <contains> section.
+            Parses a single Object in a Room's <contains> section.
 
             Input:
                Tag name (right now, could be "creature" or "object")
@@ -752,7 +751,6 @@ namespace core {
          inline entity::RoomMap getRooms() {return rooms;}
          inline entity::BeingMap getBeings() {return beings;}
          inline entity::CreatureMap getCreatures() {return creatures;}
-         inline entity::ItemMap getItems() {return items;}
          inline entity::ObjectMap getObjects() {return objects;}
 
          inline entity::Player *getDefaultPlayer() {return defaultPlayer;}

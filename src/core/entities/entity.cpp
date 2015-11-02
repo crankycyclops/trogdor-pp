@@ -15,7 +15,6 @@ namespace core { namespace entity {
    RoomList      emptyRoomList;
    ThingList     emptyThingList;
    BeingList     emptyBeingList;
-   ItemList      emptyItemList;
    PlayerList    emptyPlayerList;
    CreatureList  emptyCreatureList;
    ObjectList    emptyObjectList;

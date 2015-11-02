@@ -85,7 +85,6 @@ namespace core {
          entity::BeingMap     beings;
          entity::PlayerMap    players;
          entity::CreatureMap  creatures;
-         entity::ItemMap      items;
          entity::ObjectMap    objects;
 
          // defines if and how a player is presented with an introduction when

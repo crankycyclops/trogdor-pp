@@ -1,7 +1,6 @@
 #include <cstdio>
 
 #include "../include/entities/thing.h"
-#include "../include/entities/item.h"
 #include "../include/entities/being.h"
 #include "../include/game.h"
 

@@ -10,7 +10,6 @@
 #include "entities/thing.h"
 #include "entities/room.h"
 #include "entities/being.h"
-#include "entities/item.h"
 #include "entities/player.h"
 #include "entities/creature.h"
 #include "entities/object.h"
@@ -193,19 +192,7 @@ namespace core { namespace entity {
 
    /***************************************************************************/
 
-   class ItemMap: public ThingMap {
-
-      public:
-
-         inline Item *get(const string name) {
-
-            return (Item *)EntityMap::get(name);
-         }
-   };
-
-   /***************************************************************************/
-
-   class ObjectMap: public ItemMap {
+   class ObjectMap: public ThingMap {
 
       public:
 

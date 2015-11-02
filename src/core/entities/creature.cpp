@@ -27,7 +27,7 @@ namespace core { namespace entity {
                }
             }
 
-            // item belongs at the very back
+            // object belongs at the very back
             if (!inserted) {
                weaponCache.push_back(*o);
             }

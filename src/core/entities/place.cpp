@@ -43,17 +43,6 @@ namespace core { namespace entity {
 
    /****************************************************************************/
 
-   void Place::insertThingByName(Item *item) {
-
-      vector<string> aliases = item->getAliases();
-
-      for (int i = aliases.size() - 1; i >= 0; i--) {
-         indexItemName(aliases[i], item);
-      }
-   }
-
-   /****************************************************************************/
-
    void Place::insertThingByName(Player *player) {
 
       vector<string> aliases = player->getAliases();
@@ -127,9 +116,7 @@ namespace core { namespace entity {
 
          case ENTITY_OBJECT:
 
-            items.insert(items.end(), static_cast<Item *>(thing));
             objects.insert(objects.end(), static_cast<Object *>(thing));
-            insertThingByName(static_cast<Item *>(thing));
             insertThingByName(static_cast<Object *>(thing));
             break;
 
@@ -169,7 +156,6 @@ namespace core { namespace entity {
                break;
 
             case ENTITY_OBJECT:
-               itemsByName.find(aliases[i])->second.remove(static_cast<Item *>(thing));
                objectsByName.find(aliases[i])->second.remove(static_cast<Object *>(thing));
                break;
          }
@@ -198,7 +184,6 @@ namespace core { namespace entity {
 
          case ENTITY_OBJECT:
 
-            items.remove(static_cast<Item *>(thing));
             objects.remove(static_cast<Object *>(thing));
             break;
 

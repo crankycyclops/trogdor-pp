@@ -72,7 +72,7 @@ namespace core { namespace entity {
          struct {
             int weight;         // how much weight inventory can hold
             int currentWeight;  // how much weight is currently used
-            unsigned count;     // number of items in the inventory
+            unsigned count;     // number of objects in the inventory
             ObjectSet objects;
             ObjectsByNameMap objectsByName;
          } inventory;
@@ -103,7 +103,7 @@ namespace core { namespace entity {
          virtual void displayShort(Being *observer);
 
          /*
-            Indexes an inventory item's alias so that it can be referenced by
+            Indexes an inventory Object's alias so that it can be referenced by
             name.
 
             Input:
@@ -675,9 +675,6 @@ namespace core { namespace entity {
 
             Output:
                (none)
-
-            // TODO: Items are weapons, not Objects. Fix this, but make sure to
-            // investigate all logical consequences, including EventArgs...
          */
          void attack(Being *defender, Object *weapon, bool allowCounterAttack = true);
 

@@ -612,7 +612,6 @@ namespace core {
 
       entities.set(name, object);
       things.set(name, object);
-      items.set(name, object);
       objects.set(name, object);
 
       checkClosingTag(className);
@@ -854,19 +853,19 @@ namespace core {
          }
 
          else if (0 == getTagName().compare("takeable")) {
-            object->setTakeable(parseItemTakeable());
+            object->setTakeable(parseObjectTakeable());
          }
 
          else if (0 == getTagName().compare("droppable")) {
-            object->setDroppable(parseItemDroppable());
+            object->setDroppable(parseObjectDroppable());
          }
 
          else if (0 == getTagName().compare("weapon")) {
-            object->setIsWeapon(parseItemWeapon());
+            object->setIsWeapon(parseObjectWeapon());
          }
 
          else if (0 == getTagName().compare("damage")) {
-            object->setDamage(parseItemDamage());
+            object->setDamage(parseObjectDamage());
          }
 
          else if (0 == getTagName().compare("events")) {
@@ -1336,7 +1335,7 @@ namespace core {
 
    /***************************************************************************/
 
-   bool Parser::parseItemTakeable() {
+   bool Parser::parseObjectTakeable() {
 
       bool takeable = parseBool();
       checkClosingTag("takeable");
@@ -1345,7 +1344,7 @@ namespace core {
 
    /***************************************************************************/
 
-   bool Parser::parseItemDroppable() {
+   bool Parser::parseObjectDroppable() {
 
       bool droppable = parseBool();
       checkClosingTag("droppable");
@@ -1363,7 +1362,7 @@ namespace core {
 
    /***************************************************************************/
 
-   bool Parser::parseItemWeapon() {
+   bool Parser::parseObjectWeapon() {
 
       bool isWeapon = parseBool();
       checkClosingTag("weapon");
@@ -1372,7 +1371,7 @@ namespace core {
 
    /***************************************************************************/
 
-   int Parser::parseItemDamage() {
+   int Parser::parseObjectDamage() {
 
       int damage = parseInt();
       checkClosingTag("damage");

@@ -32,7 +32,6 @@ namespace core { namespace entity {
    class Place;
    class Room;
    class Thing;
-   class Item;
    class Object;
    class Being;
    class Player;
@@ -45,11 +44,10 @@ namespace core { namespace entity {
       ENTITY_PLACE = 2,
       ENTITY_ROOM = 3,
       ENTITY_THING = 4,
-      ENTITY_ITEM = 5,
-      ENTITY_OBJECT = 6,
-      ENTITY_BEING = 7,
-      ENTITY_PLAYER = 8,
-      ENTITY_CREATURE = 9
+      ENTITY_OBJECT = 5,
+      ENTITY_BEING = 6,
+      ENTITY_PLAYER = 7,
+      ENTITY_CREATURE = 8
    };
 
    /***************************************************************************/
@@ -227,9 +225,6 @@ namespace core { namespace entity {
 
                case ENTITY_THING:
                   return "thing";
-
-               case ENTITY_ITEM:
-                  return "item";
 
                case ENTITY_BEING:
                   return "being";
@@ -593,7 +588,6 @@ namespace core { namespace entity {
    typedef list<Room *>     RoomList;
    typedef list<Thing *>    ThingList;
    typedef list<Being *>    BeingList;
-   typedef list<Item *>     ItemList;
    typedef list<Player *>   PlayerList;
    typedef list<Creature *> CreatureList;
    typedef list<Object *>   ObjectList;
@@ -602,7 +596,6 @@ namespace core { namespace entity {
    typedef RoomList::const_iterator     RoomListCIt;
    typedef ThingList::const_iterator    ThingListCIt;
    typedef BeingList::const_iterator    BeingListCIt;
-   typedef ItemList::const_iterator     ItemListCIt;
    typedef PlayerList::const_iterator   PlayerListCIt;
    typedef CreatureList::const_iterator CreatureListCIt;
    typedef ObjectList::const_iterator   ObjectListCIt;
@@ -628,11 +621,6 @@ namespace core { namespace entity {
    } BeingListCItPair;
 
    typedef struct {
-      ItemListCIt begin;
-      ItemListCIt end;
-   } ItemListCItPair;
-
-   typedef struct {
       PlayerListCIt begin;
       PlayerListCIt end;
    } PlayerListCItPair;
@@ -651,7 +639,6 @@ namespace core { namespace entity {
    typedef RoomList::iterator     RoomListIt;
    typedef ThingList::iterator    ThingListIt;
    typedef BeingList::iterator    BeingListIt;
-   typedef ItemList::iterator     ItemListIt;
    typedef PlayerList::iterator   PlayerListIt;
    typedef CreatureList::iterator CreatureListIt;
    typedef ObjectList::iterator   ObjectListIt;
@@ -660,7 +647,6 @@ namespace core { namespace entity {
    typedef set<Room *, EntityAlphaComparator>     RoomSet;
    typedef set<Thing *, EntityAlphaComparator>    ThingSet;
    typedef set<Being *, EntityAlphaComparator>    BeingSet;
-   typedef set<Item *, EntityAlphaComparator>     ItemSet;
    typedef set<Player *, EntityAlphaComparator>   PlayerSet;
    typedef set<Creature *, EntityAlphaComparator> CreatureSet;
    typedef set<Object *, EntityAlphaComparator>   ObjectSet;
@@ -669,7 +655,6 @@ namespace core { namespace entity {
    typedef RoomSet::const_iterator     RoomSetCIt;
    typedef ThingSet::const_iterator    ThingSetCIt;
    typedef BeingSet::const_iterator    BeingSetCIt;
-   typedef ItemSet::const_iterator     ItemSetCIt;
    typedef PlayerSet::const_iterator   PlayerSetCIt;
    typedef CreatureSet::const_iterator CreatureSetCIt;
    typedef ObjectSet::const_iterator   ObjectSetCIt;
@@ -681,7 +666,6 @@ namespace core { namespace entity {
 
    typedef unordered_map<string, ThingList>    ThingsByNameMap;
    typedef unordered_map<string, BeingList>    BeingsByNameMap;
-   typedef unordered_map<string, ItemList>     ItemsByNameMap;
    typedef unordered_map<string, PlayerList>   PlayersByNameMap;
    typedef unordered_map<string, CreatureList> CreaturesByNameMap;
    typedef unordered_map<string, ObjectList>   ObjectsByNameMap;
@@ -694,7 +678,6 @@ namespace core { namespace entity {
    extern RoomList      emptyRoomList;
    extern ThingList     emptyThingList;
    extern BeingList     emptyBeingList;
-   extern ItemList      emptyItemList;
    extern PlayerList    emptyPlayerList;
    extern CreatureList  emptyCreatureList;
    extern ObjectList    emptyObjectList;
@@ -702,16 +685,16 @@ namespace core { namespace entity {
    /***************************************************************************/
 
    template <typename CItStruct, typename CItType, typename ResultType>
-   ResultType Entity::clarifyEntity(CItStruct items, Entity *user) {
+   ResultType Entity::clarifyEntity(CItStruct objects, Entity *user) {
 
-      CItType i = items.begin;
+      CItType i = objects.begin;
 
-      if (i == items.end) {
+      if (i == objects.end) {
          return 0;
       }
 
       // pre-increment for looking ahead by one
-      else if (++i == items.end) {
+      else if (++i == objects.end) {
          return *(--i);
       }
 
@@ -727,24 +710,24 @@ namespace core { namespace entity {
          // the existing loop to make it work with bi-directional iterators
          // where i don't know the number of elements.  I apologize in advance
          // to whoever is forced to read it...
-         for (i = items.begin; i != items.end; ) {
+         for (i = objects.begin; i != objects.end; ) {
 
             user->out() << (*i)->getName();
             i++;
 
             // hackety hack
-            if (i == items.end) {
+            if (i == objects.end) {
                break;
             }
 
             // temporary lookahead on a bi-directional const_iterator
-            else if (++i == items.end) {
+            else if (++i == objects.end) {
                user->out() << " or the ";
                i--;
             }
 
             // pre-decrement to undo temporary lookahead
-            else if (--i != items.begin) {
+            else if (--i != objects.begin) {
                user->out() << ", ";
             }
          }
@@ -755,7 +738,7 @@ namespace core { namespace entity {
          string answer;
          user->in() >> answer;
 
-         for (i = items.begin; i != items.end; i++) {
+         for (i = objects.begin; i != objects.end; i++) {
             if (0 == answer.compare((*i)->getName())) {
                return *i;
             }

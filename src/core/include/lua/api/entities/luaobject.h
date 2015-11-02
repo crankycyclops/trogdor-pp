@@ -5,7 +5,7 @@
 #include "../../luatable.h"
 #include "../../luastate.h"
 
-#include "luaitem.h"
+#include "luathing.h"
 
 
 using namespace std;
@@ -16,7 +16,7 @@ namespace core { namespace entity {
    class Object;
 
 
-   class LuaObject: public LuaItem {
+   class LuaObject: public LuaThing {
 
 
       protected:

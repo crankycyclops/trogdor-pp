@@ -11,7 +11,6 @@
 #include "include/entities/being.h"
 #include "include/entities/player.h"
 #include "include/entities/creature.h"
-#include "include/entities/item.h"
 #include "include/entities/object.h"
 
 #include "include/event/triggers/autoattack.h"
@@ -77,7 +76,6 @@ namespace core {
       rooms = parser->getRooms();
       beings = parser->getBeings();
       creatures = parser->getCreatures();
-      items = parser->getItems();
       objects = parser->getObjects();
    }
 
