@@ -12,7 +12,7 @@
 #include "../iostream/trogin.h"
 
 
-namespace core {
+namespace trogdor { namespace core {
 
    class Game;
    class Parser;
@@ -21,12 +21,12 @@ namespace core {
 
       class EventListener;
    }
-}
+}}
 
-using namespace core::event;
+using namespace trogdor::core::event;
 
 
-namespace core { namespace entity {
+namespace trogdor { namespace core { namespace entity {
 
 
    class Place;
@@ -748,7 +748,7 @@ namespace core { namespace entity {
          throw answer;
       }
    }
-}}
+}}}
 
 
 #endif

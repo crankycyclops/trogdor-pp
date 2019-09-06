@@ -12,7 +12,7 @@ using namespace std;
 using namespace boost;
 
 
-namespace core { namespace entity {
+namespace trogdor { namespace core { namespace entity {
 
    class Room: public Place {
 
@@ -134,7 +134,7 @@ namespace core { namespace entity {
             }
          }
    };
-}}
+}}}
 
 
 #endif

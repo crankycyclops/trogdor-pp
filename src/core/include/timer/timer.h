@@ -13,7 +13,7 @@
 
 using namespace std;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    // Thread worker function that executes tick() inside of our timer object
@@ -243,7 +243,7 @@ namespace core {
          // allows us to insert a job asynchronously
          friend void *doInsertJob(void *arg);
    };
-}
+}}
 
 
 #endif

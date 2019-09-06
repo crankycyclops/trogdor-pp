@@ -10,7 +10,7 @@
 
 using namespace std;
 
-namespace core { namespace event {
+namespace trogdor { namespace core { namespace event {
 
 
    class LuaEventTrigger: public EventTrigger {
@@ -46,7 +46,7 @@ namespace core { namespace event {
          */
          virtual void execute(EventArgumentList args);
    };
-}}
+}}}
 
 
 #endif

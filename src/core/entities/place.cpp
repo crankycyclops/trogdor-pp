@@ -11,7 +11,7 @@
 
 using namespace std;
 
-namespace core { namespace entity {
+namespace trogdor { namespace core { namespace entity {
 
    Place::Place(Game *g, string n, Trogout *o, Trogout *e):
    Entity(g, n, o, new NullIn(), e) {
@@ -216,5 +216,5 @@ namespace core { namespace entity {
          }
       }
    }
-}}
+}}}
 

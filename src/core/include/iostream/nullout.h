@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    /*
@@ -27,7 +27,7 @@ namespace core {
          */
          virtual Trogout *clone();
    };
-}
+}}
 
 
 #endif

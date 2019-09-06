@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace core { namespace event {
+namespace trogdor { namespace core { namespace event {
 
 
    class AutoAttackEventTrigger: public EventTrigger {
@@ -27,7 +27,7 @@ namespace core { namespace event {
          */
          virtual void execute(EventArgumentList args);
    };
-}}
+}}}
 
 
 #endif

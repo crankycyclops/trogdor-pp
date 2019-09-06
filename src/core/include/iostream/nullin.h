@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    /*
@@ -25,7 +25,7 @@ namespace core {
          // For now, I only need to define input for strings
          virtual Trogin &operator>> (string &val);
    };
-}
+}}
 
 
 #endif

@@ -3,7 +3,7 @@
 
 using namespace std;
 
-namespace core { namespace event {
+namespace trogdor { namespace core { namespace event {
 
 
    void RespawnEventTrigger::execute(EventArgumentList args) {
@@ -30,5 +30,5 @@ namespace core { namespace event {
       continueExecutionFlag = true;
       allowActionFlag = true;
    }
-}}
+}}}
 

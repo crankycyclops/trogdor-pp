@@ -11,7 +11,7 @@
 
 using namespace std;
 
-namespace core { namespace event {
+namespace trogdor { namespace core { namespace event {
 
 
    class EventHandler {
@@ -82,7 +82,7 @@ namespace core { namespace event {
          */
          bool event(const char *event);
    };
-}}
+}}}
 
 
 #endif

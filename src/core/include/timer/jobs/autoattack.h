@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    class AutoAttackTimerJob: public TimerJob {
@@ -62,7 +62,7 @@ namespace core {
          */
          virtual void execute(TimerJob &job);
    };
-}
+}}
 
 
 #endif

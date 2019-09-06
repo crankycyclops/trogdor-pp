@@ -5,7 +5,7 @@
 using namespace std;
 using namespace boost;
 
-namespace core { namespace entity {
+namespace trogdor { namespace core { namespace entity {
 
 
    void Creature::buildWeaponCache() {
@@ -68,5 +68,5 @@ namespace core { namespace entity {
       // creature either didn't have a weapon or couldn't use one
       return 0;
    }
-}}
+}}}
 

@@ -3,9 +3,9 @@
 
 
 using namespace std;
-using namespace core::entity;
+using namespace trogdor::core::entity;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    void PlaceOut::flush() {
@@ -24,5 +24,5 @@ namespace core {
 
       return new PlaceOut;
    }
-}
+}}
 

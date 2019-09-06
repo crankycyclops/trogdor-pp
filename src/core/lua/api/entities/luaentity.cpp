@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace core { namespace entity {
+namespace trogdor { namespace core { namespace entity {
 
 
    // Types which are considered valid by checkEntity()
@@ -560,5 +560,5 @@ namespace core { namespace entity {
       lua_pushboolean(L, glanced->glancedBy(glancer));
       return 1;
    }
-}}
+}}}
 

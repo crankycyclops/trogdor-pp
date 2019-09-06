@@ -11,7 +11,7 @@ using namespace std;
 using namespace boost;
 
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    class LuaTable;
@@ -136,7 +136,7 @@ namespace core {
          */
          inline const TableValues &getValues() const {return values;}
    };
-}
+}}
 
 
 #endif

@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    Action *ActionMap::getAction(string verb) const {
@@ -13,5 +13,5 @@ namespace core {
 
       return actionTable.find(verb)->second;
    }
-}
+}}
 

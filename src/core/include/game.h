@@ -16,7 +16,7 @@
 
 using namespace std;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    class ActionMap; // resolves circular dependency ActionMap <-> Game
@@ -486,7 +486,7 @@ namespace core {
             return events->event(event);
          }
    };
-}
+}}
 
 
 #endif

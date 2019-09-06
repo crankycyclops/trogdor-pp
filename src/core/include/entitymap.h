@@ -18,7 +18,7 @@ using namespace std;
 using namespace boost;
 
 
-namespace core { namespace entity {
+namespace trogdor { namespace core { namespace entity {
 
 
    /*
@@ -201,7 +201,7 @@ namespace core { namespace entity {
             return (Object *)EntityMap::get(name);
          }
    };
-}}
+}}}
 
 
 #endif

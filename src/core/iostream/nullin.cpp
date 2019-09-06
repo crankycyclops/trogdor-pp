@@ -3,7 +3,7 @@
 
 using namespace std;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    Trogin &NullIn::operator>> (string &val) {
@@ -15,5 +15,5 @@ namespace core {
 
       return new NullIn();
    }
-}
+}}
 

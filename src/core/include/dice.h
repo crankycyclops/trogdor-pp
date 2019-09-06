@@ -4,7 +4,7 @@
 
 #include <cstdlib>
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    /*
@@ -64,7 +64,7 @@ namespace core {
             return ((int)(value * RAND_MAX)) % maxVal;
          }
    };
-}
+}}
 
 
 #endif

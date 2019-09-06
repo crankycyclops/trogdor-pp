@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace core { namespace entity {
+namespace trogdor { namespace core { namespace entity {
 
 
    class Entity;
@@ -284,7 +284,7 @@ namespace core { namespace entity {
          */
          static int observedBy(lua_State *L);
    };
-}}
+}}}
 
 
 #endif

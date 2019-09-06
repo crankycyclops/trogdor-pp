@@ -5,7 +5,7 @@
 using namespace std;
 using namespace boost;
 
-namespace core { namespace entity {
+namespace trogdor { namespace core { namespace entity {
 
 
    void Object::addAlias(string alias) {
@@ -32,5 +32,5 @@ namespace core { namespace entity {
          weapon = w;
       }
    }
-}}
+}}}
 

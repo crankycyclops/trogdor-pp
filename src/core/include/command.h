@@ -12,9 +12,9 @@
 #include "entities/entity.h"
 
 using namespace std;
-using namespace core::entity;
+using namespace trogdor::core::entity;
 
-namespace core {
+namespace trogdor { namespace core {
 
    class Game; // resolves circular dependency Game <-> Command
 
@@ -76,7 +76,7 @@ namespace core {
          */
          friend ostream &operator<<(ostream &out, const Command &c);
    };
-}
+}}
 
 
 #endif

@@ -3,14 +3,17 @@
 
 using namespace std;
 
+namespace trogdor { namespace standalone {
 
-core::Trogin &StreamIn::operator>> (string &val) {
 
-   getline(*stream, val);
-}
+	trogdor::core::Trogin &StreamIn::operator>> (string &val) {
 
-core::Trogin *StreamIn::clone() {
+	   getline(*stream, val);
+	}
 
-   return new StreamIn(stream);
-}
+	trogdor::core::Trogin *StreamIn::clone() {
+
+	   return new StreamIn(stream);
+	}
+}}
 

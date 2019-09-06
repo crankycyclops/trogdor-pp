@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace core { namespace entity {
+namespace trogdor { namespace core { namespace entity {
 
 
    // Types which are considered valid by checkThing()
@@ -195,5 +195,5 @@ namespace core { namespace entity {
       t->setLocation(0);
       return 1;
    }
-}}
+}}}
 

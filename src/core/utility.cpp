@@ -69,3 +69,4 @@ string &rtrim(std::string &s) {
 string &trim(std::string &s) {
         return ltrim(rtrim(s));
 }
+

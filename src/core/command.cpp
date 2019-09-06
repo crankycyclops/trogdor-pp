@@ -5,9 +5,9 @@
 #include "include/utility.h"
 
 using namespace std;
-using namespace core::entity;
+using namespace trogdor::core::entity;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    Command::Command() {
@@ -214,5 +214,5 @@ namespace core {
 
       return out;
    }
-}
+}}
 

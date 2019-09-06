@@ -11,7 +11,7 @@
 using namespace std;
 using namespace boost;
 
-namespace core {
+namespace trogdor { namespace core {
 
    class ActionMap {
 
@@ -55,7 +55,7 @@ namespace core {
 
          Action *getAction(string verb) const;
    };
-}
+}}
 
 
 #endif

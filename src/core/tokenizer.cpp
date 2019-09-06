@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    void Tokenizer::init(const char *str) {
@@ -43,5 +43,5 @@ namespace core {
       end = false;
       curToken = strtok((char *)wholeStr.c_str(), " \t");
    }
-}
+}}
 

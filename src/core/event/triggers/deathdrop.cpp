@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace core { namespace event {
+namespace trogdor { namespace core { namespace event {
 
 
    void DeathDropEventTrigger::execute(EventArgumentList args) {
@@ -25,5 +25,5 @@ namespace core { namespace event {
       continueExecutionFlag = true;
       allowActionFlag = true;
    }
-}}
+}}}
 

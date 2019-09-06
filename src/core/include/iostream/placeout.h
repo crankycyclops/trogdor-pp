@@ -7,9 +7,9 @@
 
 
 using namespace std;
-using namespace core::entity;
+using namespace trogdor::core::entity;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    /*
@@ -58,7 +58,7 @@ namespace core {
          */
          virtual Trogout *clone();
    };
-}
+}}
 
 
 #endif

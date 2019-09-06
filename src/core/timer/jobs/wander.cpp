@@ -3,9 +3,9 @@
 
 
 using namespace std;
-using namespace core::entity;
+using namespace trogdor::core::entity;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    void WanderTimerJob::execute(TimerJob &job) {
@@ -47,5 +47,5 @@ namespace core {
       // if wander interval ever changes, we should make sure it's updated
       setInterval(wanderer->getWanderInterval());
    }
-}
+}}
 

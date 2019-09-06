@@ -26,7 +26,7 @@ class Game;
 
 using namespace std;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    /*
@@ -758,7 +758,7 @@ namespace core {
          inline LuaState *getLuaState() {return gameL;}
          inline event::EventListener *getEventListener() {return eventListener;}
    };
-}
+}}
 
 
 #endif

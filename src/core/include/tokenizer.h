@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace core {
+namespace trogdor { namespace core {
 
    class Tokenizer {
 
@@ -65,7 +65,7 @@ namespace core {
          */
          void rewind();
    };
-}
+}}
 
 
 #endif

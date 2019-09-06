@@ -6,9 +6,9 @@
 #include "include/actions.h"
 
 using namespace std;
-using namespace core::entity;
+using namespace trogdor::core::entity;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    /*
@@ -513,5 +513,5 @@ namespace core {
          player->out("display") << "There is no " << name << " here!" << endl;
       }
    }
-}
+}}
 

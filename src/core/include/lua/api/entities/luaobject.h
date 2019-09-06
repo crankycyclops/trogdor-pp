@@ -10,7 +10,7 @@
 
 using namespace std;
 
-namespace core { namespace entity {
+namespace trogdor { namespace core { namespace entity {
 
 
    class Object;
@@ -65,7 +65,7 @@ namespace core { namespace entity {
          */
          static Object *checkObject(lua_State *L, int i);
    };
-}}
+}}}
 
 
 #endif

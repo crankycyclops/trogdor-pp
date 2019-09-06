@@ -7,28 +7,31 @@
 
 using namespace std;
 
+namespace trogdor { namespace standalone {
 
-/*
- Input "stream" that reads from the specified istream.
-*/
-class StreamIn: public core::Trogin {
 
-   private:
+	/*
+	 Input "stream" that reads from the specified istream.
+	*/
+	class StreamIn: public trogdor::core::Trogin {
 
-      istream *stream;
+	   private:
 
-   public:
+		  istream *stream;
 
-      inline StreamIn(istream *s) {stream = s;}
+	   public:
 
-      /*
-       See include/iostream/trogin.h for details.
-      */
-      virtual core::Trogin *clone();
+		  inline StreamIn(istream *s) {stream = s;}
 
-      // For now, I only need to define input for strings
-      virtual core::Trogin &operator>> (string &val);
-};
+		  /*
+		   See include/iostream/trogin.h for details.
+		  */
+		  virtual trogdor::core::Trogin *clone();
+
+		  // For now, I only need to define input for strings
+		  virtual trogdor::core::Trogin &operator>> (string &val);
+	};
+}}
 
 
 #endif

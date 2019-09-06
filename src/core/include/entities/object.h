@@ -6,7 +6,7 @@
 #include "../iostream/nullin.h"
 
 
-namespace core { namespace entity {
+namespace trogdor { namespace core { namespace entity {
 
    class Being;
 
@@ -210,7 +210,7 @@ namespace core { namespace entity {
          */
          virtual void addAlias(string alias);
    };
-}}
+}}}
 
 
 #endif

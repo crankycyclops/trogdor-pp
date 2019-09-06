@@ -14,6 +14,8 @@
 
 
 using namespace std;
+using namespace trogdor::standalone;
+
 
 int main(int argc, char **argv) {
 
@@ -21,45 +23,45 @@ int main(int argc, char **argv) {
    string gameXML = "game.xml";
 
    if (argc > 2) {
-      cerr << "Usage: trogdor [game_filename.xml]\n" << endl;
-      return EXIT_FAILURE;
+	  cerr << "Usage: trogdor [game_filename.xml]\n" << endl;
+	  return EXIT_FAILURE;
    }
 
    // user passed in a custom game filename
    if (argc > 1) {
-      gameXML = argv[1];
+	  gameXML = argv[1];
    }
 
-   core::Game *currentGame = new core::Game(new StreamOut(&cerr));
+   trogdor::core::Game *currentGame = new trogdor::core::Game(new StreamOut(&cerr));
 
    if (currentGame->initialize(gameXML)) {
 
-      string title = currentGame->getMeta("title");
-      string author = currentGame->getMeta("author");
+	  string title = currentGame->getMeta("title");
+	  string author = currentGame->getMeta("author");
 
-      cout << endl;
+	  cout << endl;
 
-      if (title.length() > 0) {
-         cout << endl << "Title: " << title << endl;
-      }
+	  if (title.length() > 0) {
+	     cout << endl << "Title: " << title << endl;
+	  }
 
-      if (author.length() > 0) {
-         cout << "Author: " << author << endl << endl;
-      }
+	  if (author.length() > 0) {
+	     cout << "Author: " << author << endl << endl;
+	  }
 
-      Player *player = currentGame->createPlayer("player", new StreamOut(&cout),
-         new StreamIn(&cin), new StreamOut(&cerr));
+	  Player *player = currentGame->createPlayer("player", new StreamOut(&cout),
+	     new StreamIn(&cin), new StreamOut(&cerr));
 
-      currentGame->start();
+	  currentGame->start();
 
-      while (currentGame->inProgress() && currentGame->playerIsInGame("player")) {
-         currentGame->processCommand(player);
-      }
+	  while (currentGame->inProgress() && currentGame->playerIsInGame("player")) {
+	     currentGame->processCommand(player);
+	  }
 
-      currentGame->stop();
+	  currentGame->stop();
 
-      cout << "Game lasted for " << currentGame->getTime() + 1
-         << " seconds.  Goodbye!\n\n";
+	  cout << "Game lasted for " << currentGame->getTime() + 1
+	     << " seconds.  Goodbye!\n\n";
    }
 
    delete currentGame;

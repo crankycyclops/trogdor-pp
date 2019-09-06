@@ -22,7 +22,7 @@
 
 using namespace std;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    Game::Game(Trogout *e) {
@@ -262,5 +262,5 @@ namespace core {
 
       lastCommand = command;
    }   
-}
+}}
 

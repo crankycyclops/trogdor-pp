@@ -5,7 +5,7 @@
 #include "being.h"
 
 
-namespace core { namespace entity {
+namespace trogdor { namespace core { namespace entity {
 
    class Player: public Being {
 
@@ -45,7 +45,7 @@ namespace core { namespace entity {
             errStream = e;
          }
    };
-}}
+}}}
 
 
 #endif

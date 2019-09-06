@@ -8,7 +8,7 @@
 #include "../iostream/nullin.h"
 
 
-namespace core { namespace entity {
+namespace trogdor { namespace core { namespace entity {
 
    class Creature: public Being {
 
@@ -318,7 +318,7 @@ namespace core { namespace entity {
          */
          Object *selectWeapon();
    };
-}}
+}}}
 
 
 #endif

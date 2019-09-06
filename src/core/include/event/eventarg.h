@@ -16,16 +16,16 @@
 #include "../entities/creature.h"
 
 using namespace std;
-using namespace core::entity;
+using namespace trogdor::core::entity;
 
-namespace core { namespace event {
+namespace trogdor { namespace core { namespace event {
 
    // Allows us to pass a variable number of unknown type arguments to an
    // EventTrigger via EventHandler::event().
    typedef boost::variant<int, double, bool, string, Game *, Entity *> EventArgument;
    typedef vector<EventArgument> EventArgumentList;
 
-}}
+}}}
 
 
 #endif

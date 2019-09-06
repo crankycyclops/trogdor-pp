@@ -7,31 +7,34 @@
 
 using namespace std;
 
+namespace trogdor { namespace standalone {
 
-/*
- Output "stream" that wraps around the specified ostream object. This
- particular object happens to ignore channels.
-*/
-class StreamOut: public core::Trogout {
 
-   private:
+	/*
+	 Output "stream" that wraps around the specified ostream object. This
+	 particular object happens to ignore channels.
+	*/
+	class StreamOut: public trogdor::core::Trogout {
 
-      ostream *stream; // output stream where flush() sends data
+	   private:
 
-   public:
+		  ostream *stream; // output stream where flush() sends data
 
-      inline StreamOut(ostream *s) {stream = s;}
+	   public:
 
-      /*
-       See include/iostream/trogout.h for details.
-      */
-      virtual void flush();
+		  inline StreamOut(ostream *s) {stream = s;}
 
-      /*
-       See include/iostream/trogout.h for details.
-      */
-      virtual core::Trogout *clone();
-};
+		  /*
+		   See include/iostream/trogout.h for details.
+		  */
+		  virtual void flush();
+
+		  /*
+		   See include/iostream/trogout.h for details.
+		  */
+		  virtual trogdor::core::Trogout *clone();
+	};
+}}
 
 
 #endif

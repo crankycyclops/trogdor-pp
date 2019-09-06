@@ -3,16 +3,19 @@
 
 using namespace std;
 
+namespace trogdor { namespace standalone {
 
-void StreamOut::flush() {
 
-   *stream << getBufferStr();
-   stream->flush();
-   clear();
-}
+	void StreamOut::flush() {
 
-core::Trogout *StreamOut::clone() {
+	   *stream << getBufferStr();
+	   stream->flush();
+	   clear();
+	}
 
-   return new StreamOut(stream);
-}
+	trogdor::core::Trogout *StreamOut::clone() {
+
+	   return new StreamOut(stream);
+	}
+}}
 

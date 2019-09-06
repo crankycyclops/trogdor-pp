@@ -3,7 +3,7 @@
 
 using namespace std;
 
-namespace core { namespace event {
+namespace trogdor { namespace core { namespace event {
 
 
    bool EventHandler::event(const char *event, EventArgumentList &args) {
@@ -45,5 +45,5 @@ namespace core { namespace event {
       EventArgumentList empty;
       return EventHandler::event(event, empty);
    }
-}}
+}}}
 

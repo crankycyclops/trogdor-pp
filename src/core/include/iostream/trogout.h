@@ -9,7 +9,7 @@
 
 using namespace std;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    /*
@@ -128,7 +128,7 @@ namespace core {
             return *this;
          }
    };
-}
+}}
 
 
 #endif

@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    // For debugging purposes; allows us to print a TimerJob object
@@ -155,5 +155,5 @@ namespace core {
 
       delete (DoInsertJobArg *)arg;
    }
-}
+}}
 

@@ -3,7 +3,7 @@
 
 using namespace std;
 
-namespace core {
+namespace trogdor { namespace core {
 
 
    void AutoAttackTimerJob::execute(TimerJob &job) {
@@ -25,5 +25,5 @@ namespace core {
 
       aggressor->attack(defender, aggressor->selectWeapon());
    }
-}
+}}
 

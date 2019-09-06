@@ -12,7 +12,7 @@
 using namespace std;
 using namespace boost;
 
-namespace core { namespace event {
+namespace trogdor { namespace core { namespace event {
 
 
    class EventListener {
@@ -99,7 +99,7 @@ namespace core { namespace event {
          */
          void execute(string event, EventArgumentList args);
    };
-}}
+}}}
 
 
 #endif
