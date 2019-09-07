@@ -36,7 +36,9 @@ namespace trogdor { namespace core {
 
    void Timer::tick() {
 
-      sleep(1);
+      // look into std::chrono::high_resolution_clock for more accurate timekeeping
+      static std::chrono::milliseconds tickInterval(TICK_MILLISECONDS);
+      std::this_thread::sleep_for(tickInterval);
 
       // increment the current game time
       MUTEX_LOCK(game->timerMutex);

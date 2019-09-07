@@ -2,14 +2,17 @@
 #define TIMER_H
 
 
+#include <chrono>
+#include <thread>
 #include <list>
 #include <iostream>
 #include <cstdlib>
 
-#include <unistd.h>
-
 #include "../thread.h"
 #include "../game.h"
+
+// number of milliseconds in each clock tick
+#define TICK_MILLISECONDS 1000
 
 using namespace std;
 

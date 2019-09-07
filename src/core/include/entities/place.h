@@ -6,12 +6,9 @@
 #include <cstring>
 #include <sstream>
 #include <unordered_map>
-#include <boost/type_traits.hpp>
 
 #include "entity.h"
 
-
-using namespace boost;
 
 namespace trogdor { namespace core { namespace entity {
 
