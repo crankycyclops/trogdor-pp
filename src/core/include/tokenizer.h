@@ -2,8 +2,9 @@
 #define TOKENIZER_H
 
 
-#include <cstring>
 #include <string>
+#include <regex>
+#include <vector>
 
 using namespace std;
 
@@ -13,33 +14,12 @@ namespace trogdor { namespace core {
 
       private:
 
-         bool   end;        // true if we've reached the end
-         string wholeStr;   // string that we're tokenizing
-         string curToken;   // the current token
-
-         /*
-            Called by the constructors to initialize the tokenizer.
-
-            Input: C string (const char *)
-            Output: (none)
-         */
-         void init(const char *str);
+         vector<string> tokens;        // tokens parsed from the string
+         unsigned int   curTokenIndex; // current position in the tokens vector
 
       public:
 
-         /*
-            Constructors for the tokenizer class
-         */
-         inline Tokenizer(const char *str) {init(str);}
-         inline Tokenizer(string str) {init(str.c_str());}
-
-         /*
-            Retrieve the current token.
-
-            Input: (none)
-            Output: current token (string)
-         */
-         inline string getCurToken() const {return curToken;}
+         Tokenizer(string s);
 
          /*
             Returns true if we've reached the end of the string.
@@ -47,7 +27,15 @@ namespace trogdor { namespace core {
             Input: (none)
             Output: bool
          */
-         inline bool isEnd() const {return end;}
+         inline bool isEnd() const {return curTokenIndex >= tokens.size() ? true : false;}
+
+         /*
+            Retrieve the current token.
+
+            Input: (none)
+            Output: current token (string)
+         */
+         inline string getCurToken() const {return isEnd() ? string() : tokens[curTokenIndex];}
 
          /*
             Advances the current token.
@@ -55,7 +43,7 @@ namespace trogdor { namespace core {
             Input: (none)
             Output: (none)
          */
-         void next();
+         inline void next() {curTokenIndex++;}
 
          /*
             Rewinds the tokenizer to the beginning of the string.
@@ -63,7 +51,7 @@ namespace trogdor { namespace core {
             Input: (none)
             Output: (none)
          */
-         void rewind();
+         inline void rewind() {curTokenIndex = 0;}
    };
 }}
 

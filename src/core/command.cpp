@@ -56,7 +56,7 @@ namespace trogdor { namespace core {
 
          int status;
 
-         status  = parseDirectObject(tokenizer);
+         status = parseDirectObject(tokenizer);
 
          try {
             status += parseIndirectObject(tokenizer);
@@ -94,7 +94,7 @@ namespace trogdor { namespace core {
       string dobj = "";
       string token = tokenizer->getCurToken();
 
-      while (!tokenizer->isEnd() && !isPreposition(token)) {
+      while (!token.empty() && !tokenizer->isEnd() && !isPreposition(token)) {
 
          // ignore filler words such as articles like "the" or "a"
          if (isFillerWord(token)) {

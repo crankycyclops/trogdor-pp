@@ -5,43 +5,17 @@ using namespace std;
 namespace trogdor { namespace core {
 
 
-   void Tokenizer::init(const char *str) {
+   Tokenizer::Tokenizer(string s) {
 
-      const char *token;
+      regex re("\\s+");
+      sregex_token_iterator curToken(s.begin(), s.end(), re, -1);
+      sregex_token_iterator endOfTokens;
 
-      end = false;
-      wholeStr = str;
-
-      token = strtok((char *)str, " \t");
-
-      if (NULL == token) {
-         end = true;
+      for (; curToken != endOfTokens; ++curToken) {
+         tokens.push_back(curToken->str());
       }
 
-      else {
-         curToken = token;
-      }
-   }
-
-
-   void Tokenizer::next() {
-
-      const char *token = strtok(NULL, " \t");
-
-      if (NULL == token) {
-         end = true;
-      }
-
-      else {
-         curToken = token;
-      }
-   }
-
-
-   void Tokenizer::rewind() {
-
-      end = false;
-      curToken = strtok((char *)wholeStr.c_str(), " \t");
+      rewind();
    }
 }}
 
