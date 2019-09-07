@@ -33,9 +33,6 @@ namespace trogdor { namespace core {
       actions = new ActionMap(this);
       lastCommand = NULL;
 
-      // initialize thread mutexes
-      INIT_MUTEX(resourceMutex);
-
       timer = new Timer(this);
       events = new event::EventHandler;
 
@@ -59,9 +56,6 @@ namespace trogdor { namespace core {
       entities.destroyEntities();
 
       delete errStream;
-
-      DESTROY_MUTEX(resourceMutex);
-
       delete actions;
    }
 
@@ -167,19 +161,19 @@ namespace trogdor { namespace core {
 
    void Game::start() {
 
-      MUTEX_LOCK(resourceMutex);
+      resourceMutex.lock();
       inGame = true;
       timer->start();
-      MUTEX_UNLOCK(resourceMutex);
+      resourceMutex.unlock();
    }
 
 
    void Game::stop() {
 
-      MUTEX_LOCK(resourceMutex);
+      resourceMutex.lock();
       timer->stop();
       inGame = false;
-      MUTEX_UNLOCK(resourceMutex);
+      resourceMutex.unlock();
    }
 
 
@@ -244,9 +238,9 @@ namespace trogdor { namespace core {
          }
 
          else {
-            MUTEX_LOCK(resourceMutex);
+            resourceMutex.lock();
             action->execute(player, command, this);
-            MUTEX_UNLOCK(resourceMutex);
+            resourceMutex.unlock();
          }
       }
 

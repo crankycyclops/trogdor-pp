@@ -12,15 +12,17 @@ For this project, you'll require the following tools:
 To install all dependencies in one fell swoop (on Ubuntu 12.04 and up):
 $ apt-get install make g++ libxml2-dev lua5.1-dev libboost-all-dev
 
-Trogdor-pp supports both pthread and boost::thread. To compile with support for pthread, type:
-
-THREAD=pthread make
-
-To compile with support for boost::thread, simply type:
+To build a single player wrapper around the core engine, type:
 
 make
 
-Instead of compiling a standalone single-player game, you can also compile a server/client that allows multi-player network play by typing the commands below. Please be aware that the server and client both use boost::asio, which requires support for pthreads.
+To build a version with GDB debug symbols, type:
+
+make debug
+
+Instead of compiling a standalone single-player game, you can also compile a sample (and very poorly written) server/client that allows multi-player network play by typing the commands below. Please be aware that the server and client both use boost::asio, which requires support for pthreads. I had no idea what I was doing when I wrote these components, so use at your own risk ;)
+
+NOTE: the server and client haven't been tested in a VERY LONG TIME and will likely break.
 
 make server (for the backend server that links to the actual trogdor engine)
 make client (for the frontend client that talks to the server)

@@ -10,7 +10,6 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "../thread.h"
 #include "../game.h"
 
 // number of milliseconds in each clock tick

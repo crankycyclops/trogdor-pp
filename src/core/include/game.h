@@ -10,7 +10,6 @@
 #include <thread>
 #include <mutex>
 
-#include "thread.h"
 #include "command.h"
 #include "event/eventhandler.h"
 #include "entitymap.h"
@@ -132,7 +131,7 @@ namespace trogdor { namespace core {
       public:
 
          /* lock on this to keep data consistent between threads */
-         mutex_t resourceMutex;
+         std::mutex resourceMutex;
 
          /* lock on this to synchronize timer actions */
          std::mutex timerMutex;

@@ -1,4 +1,5 @@
 #include <string>
+#include <thread>
 #include <boost/utility/addressof.hpp>
 
 #include "../../../../core/include/game.h"
@@ -46,8 +47,10 @@ void COMMANDAction::execute(TCPConnection::ptr connection) {
 	
 	if (connection->getPlayer()) {
 		// connection.get() is the raw pointer inside the smart_ptr
-		THREAD_CREATE_NONCORE(commandThread, COMMANDAction::processCommandThread,
-			connection.get(), "Could not start player command thread.");
+		// TODO: need a thread for each connection, since we recycle the
+		// CommandAction object. Do I want to use an unordered_map to map
+		// connections to individual commandThreads?       
+		std::thread processCommand(COMMANDAction::processCommandThread, connection.get());
 	} else {
 		connection->write(std::string("AUTHREQ") + EOT, freeConnection, 0);
 	}

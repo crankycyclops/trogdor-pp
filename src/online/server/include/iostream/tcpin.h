@@ -3,10 +3,11 @@
 
 
 #include <cstddef>
+#include <thread>
+#include <mutex>
 
 #include "../network/tcpconnection.h"
 
-#include "../../../../core/include/thread.h"
 #include "../../../../core/include/iostream/trogin.h"
 
 
@@ -31,7 +32,7 @@ class TCPIn: public core::Trogin {
 
 		// Blocks any thread that tries to access a particular instance of
 		// TCPIn while another thread is currently using it.
-		mutex_t streamMutex;
+		std::mutex streamMutex;
 
 		// Callback that asynchronously reads data from the client after the
 		// it recives the GET command. Takes as an argument a pointer to the
@@ -48,11 +49,10 @@ class TCPIn: public core::Trogin {
 		// Constructor (Set a null connection, because we have to set it
 		// manually every time we use this stream object)
 		inline TCPIn(TCPConnection::ptr c = TCPConnection::ptr()):
-			connection(c), requestMutex(false)
-			{INIT_MUTEX(streamMutex);}
+			connection(c), requestMutex(false) {}
 
 		// Destructor
-		inline ~TCPIn() {DESTROY_MUTEX(streamMutex);}
+		inline ~TCPIn() {}
 
 		// Allows us to use a new TCP connection object in the event that a
 		// previous connection expires.

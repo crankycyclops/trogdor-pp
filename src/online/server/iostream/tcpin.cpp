@@ -1,5 +1,4 @@
 #include <string>
-#include <boost/thread/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "../include/network/tcpcommon.h"
@@ -31,7 +30,7 @@ core::Trogin &TCPIn::operator>> (string &val) {
 
 	else {
 
-		MUTEX_LOCK(streamMutex);
+		streamMutex.lock();
 		connection->write(string("GET") + EOT, TCPIn::readInput, (void *)this);
 
 		while (!requestMutex) {
@@ -41,7 +40,7 @@ core::Trogin &TCPIn::operator>> (string &val) {
 		val = connection->getBufferStr();
 
 		requestMutex = false; // reset this for the next call
-		MUTEX_UNLOCK(streamMutex);
+		streamMutex.unlock();
 
 		return *this;
 	}

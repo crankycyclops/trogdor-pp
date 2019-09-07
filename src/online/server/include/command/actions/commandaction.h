@@ -4,8 +4,6 @@
 
 #include "../networkaction.h"
 
-#include "../../../../../core/include/thread.h"
-
 
 /*
 	Receives a player's command from the client and passes it to the game to be
@@ -41,11 +39,6 @@
 class COMMANDAction: public NetworkAction {
 
 	private:
-
-		// TODO: need one for each connection, since we recycle the CommandAction
-		// object. Do I want to use an unordered_map to map connections to
-		// individual commandThreads?
-		thread_t commandThread;
 
 		// Thread that processes a player command.
 		static void *processCommandThread(void *connection);
