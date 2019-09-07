@@ -19,9 +19,6 @@ using namespace std;
 namespace trogdor { namespace core {
 
 
-   // Thread worker function that executes tick() inside of our timer object
-   void *doTick(void *timerObj);
-
    // thread function that handles the insertion of a timer job so that
    // Timer::insertJob() can be asynchronous (avoids deadlocks when a job is
    // inserted somewhere inside of another job, which happens...)
@@ -29,9 +26,7 @@ namespace trogdor { namespace core {
       Game *game;
       Timer *timer;
       TimerJob *job;
-   } DoInsertJobArg;
-
-   void *doInsertJob(void *arg);
+   } InsertJobArg;
 
 /******************************************************************************/
 
@@ -54,12 +49,13 @@ namespace trogdor { namespace core {
          unsigned long time;        // current time
          list<TimerJob *> queue;    // queue of jobs to execute every n ticks
 
-         thread_t jobThread;        // main timer thread (executes doTick)
+         thread_t jobThread;        // main timer thread
          thread_t insertJobThread;  // thread that handles the insertion of a job
 
          /*
             Executes all jobs in the queue and increments the time.  This is
-            called by the doTick() thread worker and shouldn't be called directly.
+            called by the thread created in Timer::start() and shouldn't be
+            called directly.
 
             Input: (none -- we don't really use it...)
             Output: (none)
@@ -154,14 +150,6 @@ namespace trogdor { namespace core {
             queue.remove(job);
             MUTEX_UNLOCK(game->timerMutex);
          }
-
-         // thread function that bootstraps our timer object and calls tick()
-         friend void *doTick(void *timerObj);
-
-         // thread function that handles the insertion of a timer job so that
-         // Timer::insertJob() can be asynchronous (avoids deadlocks when a job
-         // is inserted somewhere inside of another job, which happens...)
-         friend void *doInsertJob(void *arg);
    };
 
 /******************************************************************************/
@@ -242,9 +230,6 @@ namespace trogdor { namespace core {
 
          // allows Timer to interact with the TimerJob object
          friend void Timer::insertJob(TimerJob *job);
-
-         // allows us to insert a job asynchronously
-         friend void *doInsertJob(void *arg);
    };
 }}
 

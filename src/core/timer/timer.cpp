@@ -92,7 +92,14 @@ namespace trogdor { namespace core {
 
          MUTEX_LOCK(game->timerMutex);
          active = true;
-         THREAD_CREATE(jobThread, doTick, this, "Failed to start the timer!\n");
+
+         THREAD_CREATE(jobThread, [](void *timerObj) {
+
+            while (((Timer *)timerObj)->active) {
+               ((Timer *)timerObj)->tick();
+            }
+         }, this, "Failed to start the timer!\n");
+
          MUTEX_UNLOCK(game->timerMutex);
       }
    }
@@ -122,40 +129,28 @@ namespace trogdor { namespace core {
 
    void Timer::insertJob(TimerJob *job) {
 
-      DoInsertJobArg *arg = new DoInsertJobArg();
+      InsertJobArg *arg = new InsertJobArg();
 
       arg->game = game;
       arg->timer = this;
       arg->job = job;
       
       // insert job asynchronously to avoid deadlock when a function called by
-      // a job inserts another job
-      THREAD_CREATE(insertJobThread, doInsertJob, arg, "Failed to insert timer job!\n");
+      // one job inserts another job
+      THREAD_CREATE(insertJobThread, [](void *arg) {
+
+         Game *g = ((InsertJobArg *)arg)->game;
+         Timer *t = ((InsertJobArg *)arg)->timer;
+         TimerJob *j = ((InsertJobArg *)arg)->job;
+
+         MUTEX_LOCK(g->timerMutex);
+         j->initTime = t->time;
+         t->queue.insert(t->queue.end(), j);
+         MUTEX_UNLOCK(g->timerMutex);
+
+         delete (InsertJobArg *)arg;
+      }, arg, "Failed to insert timer job!\n");
    }
 
-/******************************************************************************/
-
-   void *doTick(void *timerObj) {
-
-      while (((Timer *)timerObj)->active) {
-         ((Timer *)timerObj)->tick();
-      }
-   }
-
-/******************************************************************************/
-
-   void *doInsertJob(void *arg) {
-
-      Game *g = ((DoInsertJobArg *)arg)->game;
-      Timer *t = ((DoInsertJobArg *)arg)->timer;
-      TimerJob *j = ((DoInsertJobArg *)arg)->job;
-
-      MUTEX_LOCK(g->timerMutex);
-      j->initTime = t->time;
-      t->queue.insert(t->queue.end(), j);
-      MUTEX_UNLOCK(g->timerMutex);
-
-      delete (DoInsertJobArg *)arg;
-   }
 }}
 
