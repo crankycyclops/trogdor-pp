@@ -51,6 +51,7 @@ void COMMANDAction::execute(TCPConnection::ptr connection) {
 		// CommandAction object. Do I want to use an unordered_map to map
 		// connections to individual commandThreads?       
 		std::thread processCommand(COMMANDAction::processCommandThread, connection.get());
+		processCommand.detach();
 	} else {
 		connection->write(std::string("AUTHREQ") + EOT, freeConnection, 0);
 	}
