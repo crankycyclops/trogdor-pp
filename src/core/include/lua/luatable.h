@@ -3,13 +3,12 @@
 
 
 #include <iterator>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include "luatype.h"
 
-using namespace std;
-using namespace boost;
 
+using namespace std;
 
 namespace trogdor { namespace core {
 

@@ -2,15 +2,14 @@
 #define ENTITYCLASS_H
 
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include "../entities/room.h"
 #include "../entities/object.h"
 #include "../entities/creature.h"
 
-using namespace std;
-using namespace boost;
 
+using namespace std;
 
 namespace trogdor { namespace core { namespace entity {
 

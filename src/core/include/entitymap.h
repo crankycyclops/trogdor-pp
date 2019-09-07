@@ -3,7 +3,7 @@
 
 
 #include <string>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include "entities/entity.h"
 #include "entities/place.h"
@@ -14,9 +14,8 @@
 #include "entities/creature.h"
 #include "entities/object.h"
 
-using namespace std;
-using namespace boost;
 
+using namespace std;
 
 namespace trogdor { namespace core { namespace entity {
 

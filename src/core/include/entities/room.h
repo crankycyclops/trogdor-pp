@@ -3,14 +3,13 @@
 
 
 #include <string>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include "../vocabulary.h"
 #include "place.h"
 
-using namespace std;
-using namespace boost;
 
+using namespace std;
 
 namespace trogdor { namespace core { namespace entity {
 

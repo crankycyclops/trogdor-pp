@@ -3,13 +3,13 @@
 
 
 #include <string>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include "game.h"
 #include "action.h"
 
+
 using namespace std;
-using namespace boost;
 
 namespace trogdor { namespace core {
 

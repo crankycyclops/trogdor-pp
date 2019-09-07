@@ -3,10 +3,10 @@
 
 
 #include <string>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
+
 
 using namespace std;
-using namespace boost;
 
 namespace trogdor { namespace core {
 

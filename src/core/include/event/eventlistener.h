@@ -3,14 +3,13 @@
 
 
 #include <string>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include "eventtrigger.h"
 #include "triggers/luaeventtrigger.h"
 
 
 using namespace std;
-using namespace boost;
 
 namespace trogdor { namespace core { namespace event {
 
