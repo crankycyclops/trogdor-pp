@@ -41,9 +41,9 @@ namespace trogdor { namespace core {
       std::this_thread::sleep_for(tickInterval);
 
       // increment the current game time
-      MUTEX_LOCK(game->timerMutex);
+      game->timerMutex.lock();
       time++;
-      MUTEX_UNLOCK(game->timerMutex);
+      game->timerMutex.unlock();
 
       for (list<TimerJob *>::iterator i = queue.begin(); i != queue.end(); ++i) {
 
@@ -53,9 +53,9 @@ namespace trogdor { namespace core {
             (time - (*i)->getInitTime() - (*i)->getStartTime()) % (*i)->getInterval() == 0) {
 
                // run the job
-               MUTEX_LOCK(game->timerMutex);
+               game->timerMutex.lock();
                (*i)->execute(**i);
-               MUTEX_UNLOCK(game->timerMutex);
+               game->timerMutex.unlock();
 
                // decrement executions (unless it's -1, which means the job
                // should execute indefinitely)
@@ -67,10 +67,10 @@ namespace trogdor { namespace core {
 
          // job is expired, so remove it
          else {
-            MUTEX_LOCK(game->timerMutex);
+            game->timerMutex.lock();
             list<TimerJob *>::iterator iprev = i++;
             queue.remove(*iprev);
-            MUTEX_UNLOCK(game->timerMutex);
+            game->timerMutex.unlock();
          }
       }
    }
@@ -90,17 +90,18 @@ namespace trogdor { namespace core {
 
       if (!active) {
 
-         MUTEX_LOCK(game->timerMutex);
+         game->timerMutex.lock();
          active = true;
 
-         THREAD_CREATE(jobThread, [](void *timerObj) {
+         std::thread jobThread([](Timer *timerObj) {
 
-            while (((Timer *)timerObj)->active) {
-               ((Timer *)timerObj)->tick();
+            while ((timerObj)->active) {
+               timerObj->tick();
             }
-         }, this, "Failed to start the timer!\n");
+         }, this);
 
-         MUTEX_UNLOCK(game->timerMutex);
+         jobThread.detach();
+         game->timerMutex.unlock();
       }
    }
 
@@ -109,9 +110,9 @@ namespace trogdor { namespace core {
    void Timer::stop() {
 
       if (active) {
-         MUTEX_LOCK(game->timerMutex);
+         game->timerMutex.lock();
          active = false;
-         MUTEX_UNLOCK(game->timerMutex);
+         game->timerMutex.unlock();
       }
    }
 
@@ -119,37 +120,27 @@ namespace trogdor { namespace core {
 
    void Timer::reset() {
 
-      MUTEX_LOCK(game->timerMutex);
+      game->timerMutex.lock();
       time = 0;
       clearJobs();
-      MUTEX_UNLOCK(game->timerMutex);
+      game->timerMutex.unlock();
    }
 
 /******************************************************************************/
 
    void Timer::insertJob(TimerJob *job) {
 
-      InsertJobArg *arg = new InsertJobArg();
-
-      arg->game = game;
-      arg->timer = this;
-      arg->job = job;
-      
       // insert job asynchronously to avoid deadlock when a function called by
       // one job inserts another job
-      THREAD_CREATE(insertJobThread, [](void *arg) {
+      std::thread insertJobThread([](Game *g, Timer *t, TimerJob *j) {
 
-         Game *g = ((InsertJobArg *)arg)->game;
-         Timer *t = ((InsertJobArg *)arg)->timer;
-         TimerJob *j = ((InsertJobArg *)arg)->job;
-
-         MUTEX_LOCK(g->timerMutex);
+         g->timerMutex.lock();
          j->initTime = t->time;
          t->queue.insert(t->queue.end(), j);
-         MUTEX_UNLOCK(g->timerMutex);
+         g->timerMutex.unlock();
+      }, game, this, job);
 
-         delete (InsertJobArg *)arg;
-      }, arg, "Failed to insert timer job!\n");
+      insertJobThread.detach();
    }
 
 }}

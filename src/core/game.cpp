@@ -35,7 +35,6 @@ namespace trogdor { namespace core {
 
       // initialize thread mutexes
       INIT_MUTEX(resourceMutex);
-      INIT_MUTEX(timerMutex);
 
       timer = new Timer(this);
       events = new event::EventHandler;
@@ -62,7 +61,6 @@ namespace trogdor { namespace core {
       delete errStream;
 
       DESTROY_MUTEX(resourceMutex);
-      DESTROY_MUTEX(timerMutex);
 
       delete actions;
    }

@@ -4,6 +4,8 @@
 
 #include <chrono>
 #include <thread>
+#include <mutex>
+
 #include <list>
 #include <iostream>
 #include <cstdlib>
@@ -19,20 +21,7 @@ using namespace std;
 namespace trogdor { namespace core {
 
 
-   // thread function that handles the insertion of a timer job so that
-   // Timer::insertJob() can be asynchronous (avoids deadlocks when a job is
-   // inserted somewhere inside of another job, which happens...)
-   typedef struct {
-      Game *game;
-      Timer *timer;
-      TimerJob *job;
-   } InsertJobArg;
-
-/******************************************************************************/
-
-   class TimerJob; // full declaration occurs after Timer in this file
-
-/******************************************************************************/
+   class TimerJob; // full declaration occurs after Timer
 
    /*
       The timer keeps track of a game's time and handles the scheduling of jobs
@@ -44,13 +33,10 @@ namespace trogdor { namespace core {
 
       private:
 
-         Game *game;                // the game in which the timer is running
-         bool active;               // whether or not the timer is active
-         unsigned long time;        // current time
-         list<TimerJob *> queue;    // queue of jobs to execute every n ticks
-
-         thread_t jobThread;        // main timer thread
-         thread_t insertJobThread;  // thread that handles the insertion of a job
+         Game *game;                    // the game in which the timer is running
+         bool active;                   // whether or not the timer is active
+         unsigned long time;            // current time
+         list<TimerJob *> queue;        // queue of jobs to execute every n ticks
 
          /*
             Executes all jobs in the queue and increments the time.  This is
@@ -146,9 +132,9 @@ namespace trogdor { namespace core {
          */
          inline void removeJob(TimerJob *job) {
 
-            MUTEX_LOCK(game->timerMutex);
+            game->timerMutex.lock();
             queue.remove(job);
-            MUTEX_UNLOCK(game->timerMutex);
+            game->timerMutex.unlock();
          }
    };
 

@@ -7,6 +7,9 @@
 #include <string>
 #include <cstdlib>
 
+#include <thread>
+#include <mutex>
+
 #include "thread.h"
 #include "command.h"
 #include "event/eventhandler.h"
@@ -132,7 +135,7 @@ namespace trogdor { namespace core {
          mutex_t resourceMutex;
 
          /* lock on this to synchronize timer actions */
-         mutex_t timerMutex;
+         std::mutex timerMutex;
 
          /*
             Constructor for the Game class.
