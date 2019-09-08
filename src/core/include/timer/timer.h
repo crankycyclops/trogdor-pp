@@ -13,7 +13,8 @@
 #include "../game.h"
 
 // number of milliseconds in each clock tick
-#define TICK_MILLISECONDS 1000
+constexpr int TICK_MILLISECONDS = 1000;
+
 
 using namespace std;
 
