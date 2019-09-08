@@ -30,7 +30,7 @@ namespace trogdor { namespace core {
       errStream = e;
 
       inGame = false;
-      actions = new ActionMap(this);
+      actions = make_unique<ActionMap>(this);
       lastCommand = NULL;
 
       timer = new Timer(this);
@@ -44,19 +44,13 @@ namespace trogdor { namespace core {
 
    Game::~Game() {
 
-      if (NULL != lastCommand) {
-         delete lastCommand;
-      }
-
       delete L;
       delete timer;
       delete events;
-      delete parser;
 
       entities.destroyEntities();
 
       delete errStream;
-      delete actions;
    }
 
 
@@ -137,7 +131,7 @@ namespace trogdor { namespace core {
    bool Game::initialize(string gameXML) {
 
       try {
-         parser = new Parser(this, gameXML);
+         parser = make_unique<Parser>(this, gameXML);
          parser->parse();
       }
 
@@ -197,7 +191,7 @@ namespace trogdor { namespace core {
 
    void Game::processCommand(Player *player) {
 
-      Command *command = new Command();
+      std::shared_ptr<Command> command = make_shared<Command>();
       command->read(player);
 
       // do nothing if we're not in a running state
@@ -212,8 +206,7 @@ namespace trogdor { namespace core {
          if (0 == command->getVerb().compare("a") ||
          0 == command->getVerb().compare("again")) {
 
-            if (NULL != lastCommand) {
-               delete command;
+            if (nullptr != lastCommand) {
                command = lastCommand;
             }
 
@@ -246,10 +239,6 @@ namespace trogdor { namespace core {
 
       else {
          player->out() << "Sorry, I don't understand you." << endl;
-      }
-
-      if (lastCommand != command) {
-         delete lastCommand;
       }
 
       lastCommand = command;

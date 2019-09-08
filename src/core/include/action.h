@@ -30,7 +30,7 @@ namespace trogdor { namespace core {
             Output:
                bool
          */
-         virtual bool checkSyntax(Command *command) = 0;
+         virtual bool checkSyntax(const std::shared_ptr<Command> &command) = 0;
 
          /*
             Executes the action.  This mehod will be implemented by the specific
@@ -43,7 +43,7 @@ namespace trogdor { namespace core {
             Output:
                (none)
          */
-         virtual void execute(Player *player, Command *command, Game *game) = 0;
+         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game) = 0;
    };
 }}
 

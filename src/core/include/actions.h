@@ -2,6 +2,7 @@
 #define ACTIONS_H
 
 
+#include <memory>
 #include "action.h"
 
 using namespace std;
@@ -21,9 +22,9 @@ namespace trogdor { namespace core {
             is to have a command with just a verb and no direct object or
             indirect object.
          */
-         virtual bool checkSyntax(Command *command);
+         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, Command *command, Game *game);
+         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game);
    };
 
 /******************************************************************************/
@@ -35,9 +36,9 @@ namespace trogdor { namespace core {
 
       public:
 
-         virtual bool checkSyntax(Command *command);
+         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, Command *command, Game *game);
+         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game);
    };
 
 /******************************************************************************/
@@ -54,9 +55,9 @@ namespace trogdor { namespace core {
             action is to have a command with just a verb and no direct object or
             indirect object.
          */
-         virtual bool checkSyntax(Command *command);
+         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, Command *command, Game *game);
+         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game);
    };
 
 /******************************************************************************/
@@ -71,9 +72,9 @@ namespace trogdor { namespace core {
             in the player observing that object (if it exists in the user's
             current Location OR inventory.)
          */
-         virtual bool checkSyntax(Command *command);
+         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, Command *command, Game *game); 
+         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game); 
    };
 
 /******************************************************************************/
@@ -85,9 +86,9 @@ namespace trogdor { namespace core {
             is to have a verb + direct object.  The result is for the Object
             to be taken into the Being's inventory, if possible.
          */
-         virtual bool checkSyntax(Command *command);
+         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, Command *command, Game *game); 
+         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game); 
    };
 
 /******************************************************************************/
@@ -100,9 +101,9 @@ namespace trogdor { namespace core {
             to be removed from the Being's inventory and dropped into the Being's
             current location, if possible.
          */
-         virtual bool checkSyntax(Command *command);
+         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, Command *command, Game *game); 
+         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game); 
    };
 
 /******************************************************************************/
@@ -120,9 +121,9 @@ namespace trogdor { namespace core {
             (but not both) that matches a valid direction name, or a verb that
             matches a valid direction name.
          */
-         virtual bool checkSyntax(Command *command);
+         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, Command *command, Game *game);
+         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game);
    };
 
 /******************************************************************************/
@@ -139,9 +140,9 @@ namespace trogdor { namespace core {
             indirect object is optional, and would specify a weapon to use in
             the attack.
          */
-         virtual bool checkSyntax(Command *command);
+         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, Command *command, Game *game);
+         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game);
    };
 }}
 

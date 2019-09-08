@@ -2,6 +2,7 @@
 #define GAME_H
 
 
+#include <memory>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -58,10 +59,10 @@ namespace trogdor { namespace core {
 
       private:
 
-         bool       inGame;        // whether or not a game is in progress
-         Parser     *parser;       // parses game.xml and constructs entities
-         ActionMap  *actions;      // maps verbs to actions
-         Command    *lastCommand;  // the last executed command
+         bool       inGame;                    // whether or not a game is in progress
+         std::unique_ptr<Parser> parser;       // parses game.xml and constructs entities
+         std::unique_ptr<ActionMap> actions;   // maps verbs to actions
+         std::shared_ptr<Command> lastCommand; // the last executed command
          Timer      *timer;
 
          StringMap    meta;          // meta data

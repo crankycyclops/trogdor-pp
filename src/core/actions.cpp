@@ -1,3 +1,4 @@
+#include <memory>
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
@@ -15,7 +16,7 @@ namespace trogdor { namespace core {
       Methods for the Quit action.
    */
 
-   bool QuitAction::checkSyntax(Command *command) {
+   bool QuitAction::checkSyntax(const std::shared_ptr<Command> &command) {
 
       // A valid quit command should only be one word, a verb
       if (command->getDirectObject().length() > 0 ||
@@ -27,7 +28,7 @@ namespace trogdor { namespace core {
    }
 
 
-   void QuitAction::execute(Player *player, Command *command, Game *game) {
+   void QuitAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
       game->removePlayer(player->getName());
    }
@@ -38,13 +39,13 @@ namespace trogdor { namespace core {
       Methods for the Cuss action.
    */
 
-   bool CussAction::checkSyntax(Command *command) {
+   bool CussAction::checkSyntax(const std::shared_ptr<Command> &command) {
 
       return true;
    }
 
 
-   void CussAction::execute(Player *player, Command *command, Game *game) {
+   void CussAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
       static const char *responses[] = {
          "Such language!",
@@ -73,7 +74,7 @@ namespace trogdor { namespace core {
       Methods for the Inventory action.
    */
 
-   bool InventoryAction::checkSyntax(Command *command) {
+   bool InventoryAction::checkSyntax(const std::shared_ptr<Command> &command) {
 
       // A valid inventory command should only be one word, a verb
       if (command->getDirectObject().length() > 0 ||
@@ -85,7 +86,7 @@ namespace trogdor { namespace core {
    }
 
 
-   void InventoryAction::execute(Player *player, Command *command, Game *game) {
+   void InventoryAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
       // percentage of available space used
       double totalPercent = 0.0;
@@ -135,7 +136,7 @@ namespace trogdor { namespace core {
       Methods for the Look action.
    */
 
-   bool LookAction::checkSyntax(Command *command) {
+   bool LookAction::checkSyntax(const std::shared_ptr<Command> &command) {
 
       // we can only have one of either
       if (command->getDirectObject().length() > 0 &&
@@ -146,7 +147,7 @@ namespace trogdor { namespace core {
       return true;
    }
 
-   void LookAction::execute(Player *player, Command *command, Game *game) {
+   void LookAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
       string object = command->getDirectObject();
 
@@ -206,7 +207,7 @@ namespace trogdor { namespace core {
       Methods for the Take action.
    */
 
-   bool TakeAction::checkSyntax(Command *command) {
+   bool TakeAction::checkSyntax(const std::shared_ptr<Command> &command) {
 
       if (command->getIndirectObject().length() > 0 ||
       command->getDirectObject().length() == 0) {
@@ -216,7 +217,7 @@ namespace trogdor { namespace core {
       return true;
    }
 
-   void TakeAction::execute(Player *player, Command *command, Game *game) {
+   void TakeAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
       Place            *location = player->getLocation();
       ThingListCItPair roomItems = location->getThingsByName(command->getDirectObject());
@@ -289,7 +290,7 @@ namespace trogdor { namespace core {
       Methods for the Drop action.
    */
 
-   bool DropAction::checkSyntax(Command *command) {
+   bool DropAction::checkSyntax(const std::shared_ptr<Command> &command) {
 
       if (command->getIndirectObject().length() > 0 ||
       command->getDirectObject().length() == 0) {
@@ -300,7 +301,7 @@ namespace trogdor { namespace core {
    }
 
    // TODO: consider custom messages
-   void DropAction::execute(Player *player, Command *command, Game *game) {
+   void DropAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
       Place             *location = player->getLocation();
       ObjectListCItPair invItems;
@@ -362,7 +363,7 @@ namespace trogdor { namespace core {
       Methods for the Move action.
    */
 
-   bool MoveAction::checkSyntax(Command *command) {
+   bool MoveAction::checkSyntax(const std::shared_ptr<Command> &command) {
 
       string verb = command->getVerb();
       string dobj = command->getDirectObject();
@@ -392,7 +393,7 @@ namespace trogdor { namespace core {
 
 
    // TODO: consider custom messages for transitions
-   void MoveAction::execute(Player *player, Command *command, Game *game) {
+   void MoveAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
       string direction = "";
 
@@ -443,7 +444,7 @@ namespace trogdor { namespace core {
       Methods for the Attack action.
    */
 
-   bool AttackAction::checkSyntax(Command *command) {
+   bool AttackAction::checkSyntax(const std::shared_ptr<Command> &command) {
 
       string verb = command->getVerb();
       string dobj = command->getDirectObject();
@@ -457,7 +458,7 @@ namespace trogdor { namespace core {
    }
 
 
-   void AttackAction::execute(Player *player, Command *command, Game *game) {
+   void AttackAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
       Place            *location = player->getLocation();
       BeingListCItPair beings = location->getBeingsByName(command->getDirectObject());
