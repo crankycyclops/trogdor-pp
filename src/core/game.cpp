@@ -31,21 +31,20 @@ namespace trogdor { namespace core {
 
       inGame = false;
       actions = make_unique<ActionMap>(this);
-      lastCommand = NULL;
-
-      timer = new Timer(this);
+      timer = make_unique<Timer>(this);
       events = new event::EventHandler;
 
       introduction.enabled           = DEFAULT_INTRODUCTION_ENABLED;
       introduction.pauseWhileReading = DEFAULT_INTRODUCTION_PAUSE;
       introduction.text              = "";
+
+      lastCommand = NULL;
    }
 
 
    Game::~Game() {
 
       delete L;
-      delete timer;
       delete events;
 
       entities.destroyEntities();

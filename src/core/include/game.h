@@ -57,16 +57,34 @@ namespace trogdor { namespace core {
          static const bool DEFAULT_INTRODUCTION_ENABLED = false;
          static const bool DEFAULT_INTRODUCTION_PAUSE   = false;
 
+         /* lock on this to keep data consistent between threads */
+         std::mutex resourceMutex;
+
+         /* lock on this to synchronize timer actions */
+         std::mutex timerMutex;
+
       private:
 
-         bool       inGame;                    // whether or not a game is in progress
-         std::unique_ptr<Parser> parser;       // parses game.xml and constructs entities
-         std::unique_ptr<ActionMap> actions;   // maps verbs to actions
-         std::shared_ptr<Command> lastCommand; // the last executed command
-         Timer      *timer;
+         // whether or not a game is in progress
+         bool inGame;
 
-         StringMap    meta;          // meta data
-         StringMap    synonyms;      // verb synonyms
+         // parses game.xml and constructs entities
+         std::unique_ptr<Parser> parser;
+
+         // maps verbs to actions
+         std::unique_ptr<ActionMap> actions;
+
+         // Keeps time in the game and executes scheduled jobs
+         std::unique_ptr<Timer> timer;
+
+         // the last executed command
+         std::shared_ptr<Command> lastCommand;
+
+         // game meta data (like title, description, etc.)
+         StringMap meta;
+
+         // verb synonyms
+         StringMap synonyms;
 
          // used to call subscribed event listeners
          event::EventHandler *events;
@@ -130,12 +148,6 @@ namespace trogdor { namespace core {
          void initEvents();
 
       public:
-
-         /* lock on this to keep data consistent between threads */
-         std::mutex resourceMutex;
-
-         /* lock on this to synchronize timer actions */
-         std::mutex timerMutex;
 
          /*
             Constructor for the Game class.
