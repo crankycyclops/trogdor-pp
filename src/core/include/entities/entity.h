@@ -2,6 +2,7 @@
 #define ENTITY_H
 
 
+#include <memory>
 #include <list>
 #include <set>
 
@@ -73,7 +74,7 @@ namespace trogdor { namespace core { namespace entity {
 
          Messages msgs;
 
-         LuaState *L;
+         std::shared_ptr<LuaState> L;
          EventListener *triggers;
 
          // maintains a list of all Beings that have glanced at but not fully

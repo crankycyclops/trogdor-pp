@@ -4,6 +4,7 @@
    players.
 */
 
+#include <memory>
 #include <iostream>
 #include <cstdlib>
 
@@ -32,7 +33,8 @@ int main(int argc, char **argv) {
 	  gameXML = argv[1];
    }
 
-   trogdor::core::Game *currentGame = new trogdor::core::Game(new StreamOut(&cerr));
+   std::shared_ptr<StreamOut> errStream = make_shared<StreamOut>(&cerr);
+   trogdor::core::Game *currentGame = new trogdor::core::Game(errStream);
 
    if (currentGame->initialize(gameXML)) {
 

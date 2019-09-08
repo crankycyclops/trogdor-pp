@@ -87,10 +87,10 @@ namespace trogdor { namespace core {
          StringMap synonyms;
 
          // used to call subscribed event listeners
-         event::EventHandler *events;
+         std::unique_ptr<event::EventHandler> events;
 
          // Global Lua state for the entire game
-         LuaState *L;
+         std::shared_ptr<LuaState> L;
 
          // Global EventListener for the entire game
          event::EventListener *eventListener;
@@ -117,7 +117,7 @@ namespace trogdor { namespace core {
          } introduction;
 
          /* global error stream */
-         Trogout *errStream;
+         std::shared_ptr<Trogout> errStream;
 
          /*
             Initializes Entities from what was parsed.
@@ -150,14 +150,24 @@ namespace trogdor { namespace core {
       public:
 
          /*
-            Constructor for the Game class.
+            Constructor for the Game class (require the error stream as an
+            argument.)
          */
-         Game(Trogout *e);
+         Game() = delete;
+         Game(std::shared_ptr<Trogout> e);
 
          /*
             Destructor for the Game class.
          */
          ~Game();
+
+         /*
+            Don't allow copying since I don't currently have a good reason to
+            clone a Game object and won't take the time to write that
+            functionality.
+         */
+         Game& operator=(const Game &) = delete;
+         Game(const Game &) = delete;
 
          /*
             Returns a reference to the Game's error stream.  A typical use

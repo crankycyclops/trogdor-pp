@@ -2,6 +2,7 @@
 #define PARSER_H
 
 
+#include <memory>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -70,7 +71,7 @@ namespace trogdor { namespace core {
          entity::ObjectMap    objects;
 
          // Global Lua state for the entire game
-         LuaState *gameL;
+         std::shared_ptr<LuaState> gameL;
 
          // Global EventListener for the entire game
          event::EventListener *eventListener;
@@ -572,9 +573,9 @@ namespace trogdor { namespace core {
             Output:
                (none)
          */
-         void parseEvents(LuaState *L, EventListener *triggers, int depth);
-         void parseScript(LuaState *L);
-         void parseEvent(LuaState *L, EventListener *triggers);
+         void parseEvents(std::shared_ptr<LuaState> L, EventListener *triggers, int depth);
+         void parseScript(std::shared_ptr<LuaState> L);
+         void parseEvent(std::shared_ptr<LuaState> L, EventListener *triggers);
 
          /*
             This group of functions parses the <classes> section of the XML
@@ -755,7 +756,7 @@ namespace trogdor { namespace core {
 
          inline entity::Player *getDefaultPlayer() {return defaultPlayer;}
 
-         inline LuaState *getLuaState() {return gameL;}
+         inline std::shared_ptr<LuaState> getLuaState() {return gameL;}
          inline event::EventListener *getEventListener() {return eventListener;}
    };
 }}

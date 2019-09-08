@@ -1,3 +1,4 @@
+#include <memory>
 #include <iostream>
 #include <cstdlib>
 
@@ -58,7 +59,8 @@ int main(int argc, char **argv) {
 
 	// TODO: replace NullOut with some kind of logger stream that outputs
 	// errors to a file
-	currentGame = new core::Game(new core::NullOut());
+	std::shared_ptr<NullOut> errStream = make_shared<NullOut>();
+	currentGame = new core::Game(errStream);
 
 	if (currentGame->initialize(gameXML)) {
 		currentGame->start();

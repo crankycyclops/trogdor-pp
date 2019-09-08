@@ -1,9 +1,9 @@
-#include "../include/parser/parser.h"
+#include <memory>
 
+#include "../include/parser/parser.h"
 #include "../include/iostream/nullout.h"
 #include "../include/iostream/nullin.h"
 #include "../include/iostream/placeout.h"
-
 #include "../include/timer/jobs/wander.h"
 
 using namespace std;
@@ -21,7 +21,7 @@ namespace trogdor { namespace core {
          throw "failed to open " + gameFile + "!\n";
       }
 
-      gameL = new LuaState();
+      gameL = make_shared<LuaState>();
       eventListener = new event::EventListener();
       defaultPlayer = new entity::Player(game, "default", new NullOut(),
          new NullIn(), new NullOut());
@@ -33,7 +33,7 @@ namespace trogdor { namespace core {
 
       // TODO: do I free entity objects inside, or let Game do it?
       xmlFreeTextReader(reader);
-      // TODO: do I free gameL and eventListener, or let Game do it?
+      // TODO: do I free eventListener or let Game do it?
       // TODO: do I need to free default player object, or let Game do it?
    }
 
@@ -711,7 +711,7 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseEvents(LuaState *L, EventListener *triggers, int depth) {
+   void Parser::parseEvents(std::shared_ptr<LuaState> L, EventListener *triggers, int depth) {
 
       stringstream s;
 
@@ -739,7 +739,7 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseScript(LuaState *L) {
+   void Parser::parseScript(std::shared_ptr<LuaState> L) {
 
       // external script
       try {
@@ -756,7 +756,7 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseEvent(LuaState *L, EventListener *triggers) {
+   void Parser::parseEvent(std::shared_ptr<LuaState> L, EventListener *triggers) {
 
       string name = getAttribute("name");
       string function = parseString();

@@ -2,6 +2,8 @@
 #define LUAEVENTTRIGGER_H
 
 
+#include <memory>
+
 #include "../../lua/luastate.h"
 #include "../../lua/api/entities/luaentity.h"
 
@@ -17,8 +19,8 @@ namespace trogdor { namespace core { namespace event {
 
       private:
 
-         string function;  // name of the function to execute
-         LuaState *L;      // lua state in which we'll execute the function
+         string function;              // name of the function to execute
+         std::shared_ptr<LuaState> L;  // lua state in which we'll execute the function
 
       public:
 
@@ -27,7 +29,7 @@ namespace trogdor { namespace core { namespace event {
             of the Lua function to execute and a LuaState object which should
             contain the function.
          */
-         inline LuaEventTrigger(string newfunc, LuaState *newL): EventTrigger() {
+         inline LuaEventTrigger(string newfunc, std::shared_ptr<LuaState> newL): EventTrigger() {
 
             function = newfunc;
             L = newL;

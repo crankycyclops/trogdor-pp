@@ -25,31 +25,26 @@ using namespace std;
 namespace trogdor { namespace core {
 
 
-   Game::Game(Trogout *e) {
+   Game::Game(std::shared_ptr<Trogout> e) {
 
       errStream = e;
 
       inGame = false;
       actions = make_unique<ActionMap>(this);
       timer = make_unique<Timer>(this);
-      events = new event::EventHandler;
+      events = make_unique<event::EventHandler>();
 
       introduction.enabled           = DEFAULT_INTRODUCTION_ENABLED;
       introduction.pauseWhileReading = DEFAULT_INTRODUCTION_PAUSE;
       introduction.text              = "";
 
-      lastCommand = NULL;
+      lastCommand = nullptr;
    }
 
 
    Game::~Game() {
 
-      delete L;
-      delete events;
-
       entities.destroyEntities();
-
-      delete errStream;
    }
 
 
@@ -118,7 +113,10 @@ namespace trogdor { namespace core {
       setSynonym("fight", "attack");
    }
 
+
    // NOTE: order is important!
+   // TODO: does it make more sense for these events to be added via the trigger
+   // objects themselves?
    void Game::initEvents() {
 
       eventListener->add("afterGotoLocation", new AutoAttackEventTrigger());

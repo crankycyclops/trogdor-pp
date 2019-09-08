@@ -29,7 +29,7 @@ namespace trogdor { namespace core { namespace entity {
       // this should always be overridden by a top-level Entity type
       className = "entity";
 
-      L = new LuaState();
+      L = make_shared<LuaState>();
       triggers = new event::EventListener();
    }
 
@@ -50,7 +50,7 @@ namespace trogdor { namespace core { namespace entity {
       errStream = e.errStream->clone();
       inStream = e.inStream->clone();
 
-      L = new LuaState(*e.L);
+      L = make_shared<LuaState>(*e.L);
       // TODO: we need to do some kind of intelligent copying for event handlers
       triggers = new event::EventListener();
    }
@@ -59,7 +59,6 @@ namespace trogdor { namespace core { namespace entity {
 
    Entity::~Entity() {
 
-      delete L;
       delete triggers;
       delete outStream;
       delete errStream;
