@@ -573,9 +573,9 @@ namespace trogdor { namespace core {
             Output:
                (none)
          */
-         void parseEvents(std::shared_ptr<LuaState> L, EventListener *triggers, int depth);
-         void parseScript(std::shared_ptr<LuaState> L);
-         void parseEvent(std::shared_ptr<LuaState> L, EventListener *triggers);
+         void parseEvents(const std::shared_ptr<LuaState> &L, EventListener *triggers, int depth);
+         void parseScript(const std::shared_ptr<LuaState> &L);
+         void parseEvent(const std::shared_ptr<LuaState> &L, EventListener *triggers);
 
          /*
             This group of functions parses the <classes> section of the XML

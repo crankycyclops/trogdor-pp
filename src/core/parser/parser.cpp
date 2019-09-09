@@ -711,7 +711,7 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseEvents(std::shared_ptr<LuaState> L, EventListener *triggers, int depth) {
+   void Parser::parseEvents(const std::shared_ptr<LuaState> &L, EventListener *triggers, int depth) {
 
       stringstream s;
 
@@ -739,7 +739,7 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseScript(std::shared_ptr<LuaState> L) {
+   void Parser::parseScript(const std::shared_ptr<LuaState> &L) {
 
       // external script
       try {
@@ -756,7 +756,7 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseEvent(std::shared_ptr<LuaState> L, EventListener *triggers) {
+   void Parser::parseEvent(const std::shared_ptr<LuaState> &L, EventListener *triggers) {
 
       string name = getAttribute("name");
       string function = parseString();
