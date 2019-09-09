@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
    }
 
    std::shared_ptr<StreamOut> errStream = make_shared<StreamOut>(&cerr);
-   trogdor::core::Game *currentGame = new trogdor::core::Game(errStream);
+   std::unique_ptr<trogdor::core::Game> currentGame = make_unique<trogdor::core::Game>(errStream);
 
    if (currentGame->initialize(gameXML)) {
 
@@ -66,7 +66,6 @@ int main(int argc, char **argv) {
 	     << " seconds.  Goodbye!\n\n";
    }
 
-   delete currentGame;
    return EXIT_SUCCESS;
 }
 

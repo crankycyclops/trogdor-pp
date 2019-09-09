@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
 	// TODO: replace NullOut with some kind of logger stream that outputs
 	// errors to a file
 	std::shared_ptr<NullOut> errStream = make_shared<NullOut>();
-	currentGame = new core::Game(errStream);
+	std::unique_ptr<core::Game> currentGame = make_unique<core::Game>(errStream);
 
 	if (currentGame->initialize(gameXML)) {
 		currentGame->start();
