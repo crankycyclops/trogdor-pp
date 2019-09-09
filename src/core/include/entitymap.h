@@ -125,7 +125,7 @@ namespace trogdor { namespace core { namespace entity {
 
          inline Place *get(const string name) {
 
-            return (Place *)EntityMap::get(name);
+            return dynamic_cast<Place *>(EntityMap::get(name));
          }
    };
 
@@ -137,7 +137,7 @@ namespace trogdor { namespace core { namespace entity {
 
          inline Room *get(const string name) {
 
-            return (Room *)EntityMap::get(name);
+            return dynamic_cast<Room *>(EntityMap::get(name));
          }
    };
 
@@ -149,7 +149,7 @@ namespace trogdor { namespace core { namespace entity {
 
          inline Thing *get(const string name) {
 
-            return (Thing *)EntityMap::get(name);
+            return dynamic_cast<Thing *>(EntityMap::get(name));
          }
    };
 
@@ -161,7 +161,7 @@ namespace trogdor { namespace core { namespace entity {
 
          inline Being *get(const string name) {
 
-            return (Being *)EntityMap::get(name);
+            return dynamic_cast<Being *>(EntityMap::get(name));
          }
    };
 
@@ -173,7 +173,7 @@ namespace trogdor { namespace core { namespace entity {
 
          inline Player *get(const string name) {
 
-            return (Player *)EntityMap::get(name);
+            return dynamic_cast<Player *>(EntityMap::get(name));
          }
    };
 
@@ -185,7 +185,7 @@ namespace trogdor { namespace core { namespace entity {
 
          inline Creature *get(const string name) {
 
-            return (Creature *)EntityMap::get(name);
+            return dynamic_cast<Creature *>(EntityMap::get(name));
          }
    };
 
@@ -197,7 +197,7 @@ namespace trogdor { namespace core { namespace entity {
 
          inline Object *get(const string name) {
 
-            return (Object *)EntityMap::get(name);
+            return dynamic_cast<Object *>(EntityMap::get(name));
          }
    };
 }}}

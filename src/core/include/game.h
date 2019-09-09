@@ -31,8 +31,8 @@ namespace trogdor { namespace core {
 
    /*
       Each Game object represents a self contained game and contains all
-      game-related data.  A standard lifecycle of a game object -- assuming it
-      exists in main() -- might look something like:
+      game-related data.  A standard lifecycle of a game object--assuming it
+      exists in main()--might look something like:
 
       Game currentGame = new Game();
 
