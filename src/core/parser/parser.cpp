@@ -536,14 +536,14 @@ namespace trogdor { namespace core {
          throw s.str();
       }
 
-      Room *room;
+      std::shared_ptr<Room> room;
 
       if (0 == className.compare("room")) {
-         room = new Room(game, name, new PlaceOut(), game->err().clone());
+         room = make_shared<Room>(game, name, new PlaceOut(), game->err().clone());
       }
 
       else {
-         room = new Room(*typeClasses.getRoomType(className), name);
+         room = make_shared<Room>(*typeClasses.getRoomType(className), name);
       }
 
       room->setClass(className);
@@ -596,14 +596,14 @@ namespace trogdor { namespace core {
          throw s.str();
       }
 
-      Object *object;
+      std::shared_ptr<Object> object;
 
       if (0 == className.compare("object")) {
-         object = new Object(game, name, new NullOut(), game->err().clone());
+         object = make_shared<Object>(game, name, new NullOut(), game->err().clone());
       }
 
       else {
-         object = new Object(*typeClasses.getObjectType(className), name);
+         object = make_shared<Object>(*typeClasses.getObjectType(className), name);
       }
 
       object->setClass(className);
@@ -655,14 +655,14 @@ namespace trogdor { namespace core {
          throw s.str();
       }
 
-      Creature *creature;
+      std::shared_ptr<Creature> creature;
 
       if (0 == className.compare("creature")) {
-         creature = new Creature(game, name, new NullOut(), game->err().clone());
+         creature = make_shared<Creature>(game, name, new NullOut(), game->err().clone());
       }
 
       else {
-         creature = new Creature(*typeClasses.getCreatureType(className), name);
+         creature = make_shared<Creature>(*typeClasses.getCreatureType(className), name);
       }
 
       creature->setClass(className);

@@ -157,17 +157,18 @@ namespace trogdor { namespace core {
          Game(std::shared_ptr<Trogout> e);
 
          /*
-            Destructor for the Game class.
-         */
-         ~Game();
-
-         /*
             Don't allow copying since I don't currently have a good reason to
             clone a Game object and won't take the time to write that
             functionality.
          */
          Game& operator=(const Game &) = delete;
          Game(const Game &) = delete;
+
+         /*
+            Empty destructor defined in game.cpp. If this isn't defined, the
+            compiler will choke on the parser's unique_ptr.
+         */
+         ~Game();
 
          /*
             Returns a reference to the Game's error stream.  A typical use
@@ -290,7 +291,7 @@ namespace trogdor { namespace core {
                Pointer to an output stream (Trogout *)
 
             Output:
-               Pointer to Player object
+               Player *
          */
          inline Player *createPlayer(string name, Trogout *outStream,
          Trogin *inStream, Trogout *errStream) {
@@ -302,11 +303,14 @@ namespace trogdor { namespace core {
             }
 
             // clone the default player, giving it the specified name
-            Player *player = new Player(*defaultPlayer, name, outStream,
+            std::shared_ptr<Player> player = std::make_shared<Player>(*defaultPlayer, name, outStream,
                inStream, errStream);
 
             // if new player introduction is enabled, show it before inserting
             // the new player into the game
+            // TODO: this works fine for a single player game, but in a
+            // multi-player environment, the game can't stop every time a player
+            // has to read the introduction...
             if (introduction.enabled && introduction.text.length() > 0) {
 
                if (introduction.pauseWhileReading) {
@@ -326,8 +330,6 @@ namespace trogdor { namespace core {
                }
             }
 
-            // TODO: set other attributes from default
-
             entities.set(name, player);
             things.set(name, player);
             beings.set(name, player);
@@ -340,7 +342,7 @@ namespace trogdor { namespace core {
             // Player must see an initial description of where they are
             player->getLocation()->observe(player, false);
 
-            return player;
+            return player.get();
          }
 
          /*
@@ -362,18 +364,14 @@ namespace trogdor { namespace core {
                throw s.str();
             }
 
-            Player *player = players.get(name);
-
             if (message.length()) {
-               player->out("notifications") << message << endl;
+               players.get(name)->out("notifications") << message << endl;
             }
 
             entities.erase(name);
             things.erase(name);
             beings.erase(name);
             players.erase(name);
-
-            delete player;
          }
 
          /*

@@ -42,10 +42,10 @@ namespace trogdor { namespace core {
    }
 
 
-   Game::~Game() {
-
-      entities.destroyEntities();
-   }
+   // Empty destructor required here, where parser.h has been included and the
+   // parser class has been defined. If I don't include this, the compiler will
+   // choke.
+   Game::~Game() {}
 
 
    void Game::initEntities() {

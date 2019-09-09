@@ -5,6 +5,7 @@
 #include <list>
 #include <cstring>
 #include <sstream>
+#include <memory>
 #include <unordered_map>
 
 #include "entity.h"
@@ -39,8 +40,14 @@ namespace trogdor { namespace core { namespace entity {
          void insertThingByName(Player *thing);
          void insertThingByName(Creature *thing);
          void insertThingByName(Object *thing);
+         inline void insertThingByName(std::shared_ptr<Thing> thing) {insertThingByName(thing.get());}
+         inline void insertThingByName(std::shared_ptr<Being> being) {insertThingByName(being.get());}
+         inline void insertThingByName(std::shared_ptr<Player> player) {insertThingByName(player.get());}
+         inline void insertThingByName(std::shared_ptr<Creature> creature) {insertThingByName(creature.get());}
+         inline void insertThingByName(std::shared_ptr<Object> object) {insertThingByName(object.get());}
 
          void removeThingByName(Thing *thing);
+         inline void removeThingByName(std::shared_ptr<Thing> thing) {removeThingByName(thing.get());}
 
       protected:
 
@@ -92,6 +99,11 @@ namespace trogdor { namespace core { namespace entity {
             thingsByName.find(alias)->second.push_back(thing);
          }
 
+         inline void indexThingName(string alias, std::shared_ptr<Thing> thing) {
+
+            indexThingName(alias, thing.get());
+         }
+
          /*
             Indexes a Being's alias so that it can be referenced by
             name.
@@ -111,6 +123,11 @@ namespace trogdor { namespace core { namespace entity {
             }
 
             beingsByName.find(alias)->second.push_back(being);
+         }
+
+         inline void indexBeingName(string alias, std::shared_ptr<Being> being) {
+
+            indexBeingName(alias, being.get());
          }
 
       public:
@@ -140,6 +157,7 @@ namespace trogdor { namespace core { namespace entity {
                (none)
          */
          void insertThing(Thing *thing);
+         inline void insertThing(std::shared_ptr<Thing> thing) {insertThing(thing.get());}
 
          /*
             Removes a Thing from the Place.
@@ -151,6 +169,7 @@ namespace trogdor { namespace core { namespace entity {
                (none)
          */
          void removeThing(Thing *thing);
+         inline void removeThing(std::shared_ptr<Thing> thing) {removeThing(thing.get());}
 
          /*
             Returns iterators over a list of all Things that match the given

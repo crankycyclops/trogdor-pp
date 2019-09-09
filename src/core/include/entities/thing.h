@@ -3,6 +3,7 @@
 
 
 #include <vector>
+#include <memory>
 
 #include "entity.h"
 #include "place.h"
@@ -105,6 +106,7 @@ namespace trogdor { namespace core { namespace entity {
                (none)
          */
          inline void setLocation(Place *l) {location = l;}
+         inline void setLocation(std::shared_ptr<Place> l) {setLocation(l.get());}
 
          /*
             Adds an alias to the Thing, which is another name that the Thing can

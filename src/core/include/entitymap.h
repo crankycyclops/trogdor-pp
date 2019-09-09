@@ -3,6 +3,7 @@
 
 
 #include <string>
+#include <memory>
 #include <unordered_map>
 
 #include "entities/entity.h"
@@ -22,9 +23,6 @@ namespace trogdor { namespace core { namespace entity {
 
    /*
       EntityMap wraps around the unordered_map type and maps names to entities.
-      This class isn't strictly necessary, but I have a gut feeling that's
-      telling me the extra abstraction will help me later when I do more with my
-      engine.  We'll see...
 
       There are derived classes for each entity type, which go by the name of
       "<Type>Map."  These do nothing except wrap around the parent getter and
@@ -39,7 +37,26 @@ namespace trogdor { namespace core { namespace entity {
       private:
 
          // Hash table mapping names to entities
-         unordered_map<string, Entity *> entities;
+         unordered_map<string, std::shared_ptr<Entity>> entities;
+
+      protected:
+
+         /*
+            Returns the shared_ptr associated with the given name instead of
+            the raw pointer. This is to grant read-only access to the get()
+            method in classes for derived types (Thing, Place, etc.)
+
+            Input: Entity name (string)
+            Output: Entity's shared_ptr (or nullptr if it doesn't exist)
+         */
+         inline const std::shared_ptr<Entity> &getSharedPtr(string name) {
+
+            if (isset(name)) {
+               return entities.find(name)->second;
+            } else {
+               throw false;
+            }
+         }
 
       public:
 
@@ -68,7 +85,7 @@ namespace trogdor { namespace core { namespace entity {
          */
          inline Entity *get(const string name) {
 
-            return isset(name) ? entities.find(name)->second : 0;
+            return isset(name) ? entities.find(name)->second.get() : nullptr;
          }
 
          /*
@@ -78,7 +95,7 @@ namespace trogdor { namespace core { namespace entity {
             Input: Entity name (string), Pointer to entity
             Output: (none)
          */
-         inline void set(string name, Entity *entity) {entities[name] = entity;}
+         inline void set(string name, std::shared_ptr<Entity> entity) {entities[name] = entity;}
 
          /*
             Removes an entity from the hash table.
@@ -96,25 +113,6 @@ namespace trogdor { namespace core { namespace entity {
             Output: (none)
          */
          inline void clear() {entities.clear();}
-
-         /*
-            Destroys all contained Entities, then clears the hash table. We can't
-            make this a part of the destructor, because there are cases where we
-            want to free the memory associated with an EntityMap without freeing
-            the Entities inside.
-
-            Input: (none)
-            Output: (none)
-         */
-         inline void destroyEntities() {
-
-            for (unordered_map<string, Entity *>::iterator i = entities.begin();
-            i != entities.end(); i++) {
-               delete i->second;
-            }
-
-            clear();
-         }
    };
 
    /***************************************************************************/
@@ -125,7 +123,11 @@ namespace trogdor { namespace core { namespace entity {
 
          inline Place *get(const string name) {
 
-            return dynamic_cast<Place *>(EntityMap::get(name));
+            try {
+               return dynamic_cast<Place *>(EntityMap::getSharedPtr(name).get());
+            } catch (bool e) {
+               return nullptr;
+            }
          }
    };
 
@@ -137,7 +139,11 @@ namespace trogdor { namespace core { namespace entity {
 
          inline Room *get(const string name) {
 
-            return dynamic_cast<Room *>(EntityMap::get(name));
+            try {
+               return dynamic_cast<Room *>(EntityMap::getSharedPtr(name).get());
+            } catch (bool e) {
+               return nullptr;
+            }
          }
    };
 
@@ -149,7 +155,11 @@ namespace trogdor { namespace core { namespace entity {
 
          inline Thing *get(const string name) {
 
-            return dynamic_cast<Thing *>(EntityMap::get(name));
+            try {
+               return dynamic_cast<Thing *>(EntityMap::getSharedPtr(name).get());
+            } catch (bool e) {
+               return nullptr;
+            }
          }
    };
 
@@ -161,7 +171,11 @@ namespace trogdor { namespace core { namespace entity {
 
          inline Being *get(const string name) {
 
-            return dynamic_cast<Being *>(EntityMap::get(name));
+            try {
+               return dynamic_cast<Being *>(EntityMap::getSharedPtr(name).get());
+            } catch (bool e) {
+               return nullptr;
+            }
          }
    };
 
@@ -173,7 +187,11 @@ namespace trogdor { namespace core { namespace entity {
 
          inline Player *get(const string name) {
 
-            return dynamic_cast<Player *>(EntityMap::get(name));
+            try {
+               return dynamic_cast<Player *>(EntityMap::getSharedPtr(name).get());
+            } catch (bool e) {
+               return nullptr;
+            }
          }
    };
 
@@ -185,7 +203,11 @@ namespace trogdor { namespace core { namespace entity {
 
          inline Creature *get(const string name) {
 
-            return dynamic_cast<Creature *>(EntityMap::get(name));
+            try {
+               return dynamic_cast<Creature *>(EntityMap::getSharedPtr(name).get());
+            } catch (bool e) {
+               return nullptr;
+            }
          }
    };
 
@@ -197,7 +219,11 @@ namespace trogdor { namespace core { namespace entity {
 
          inline Object *get(const string name) {
 
-            return dynamic_cast<Object *>(EntityMap::get(name));
+            try {
+               return dynamic_cast<Object *>(EntityMap::getSharedPtr(name).get());
+            } catch (bool e) {
+               return nullptr;
+            }
          }
    };
 }}}

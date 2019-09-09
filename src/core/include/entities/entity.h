@@ -2,9 +2,9 @@
 #define ENTITY_H
 
 
-#include <memory>
 #include <list>
 #include <set>
+#include <memory>
 
 #include "../messages.h"
 #include "../lua/luatable.h"
@@ -99,6 +99,7 @@ namespace trogdor { namespace core { namespace entity {
                (none)
          */
          virtual void display(Being *observer, bool displayFull = false);
+         inline void display(std::shared_ptr<Being> being, bool displayFull = false) {display(being.get(), displayFull);}
 
          /*
             Displays the short description of an Entity.  This may be
@@ -111,6 +112,7 @@ namespace trogdor { namespace core { namespace entity {
                (none)
          */
          virtual void displayShort(Being *observer);
+         inline void displayShort(std::shared_ptr<Being> being) {displayShort(being.get());}
 
       public:
 
@@ -392,6 +394,8 @@ namespace trogdor { namespace core { namespace entity {
             return true;
          }
 
+         inline bool observedBy(std::shared_ptr<Being> being) {return observedBy(being.get());}
+
          /*
             Returns whether or not a given Being has glanced at the Entity.  If
             a Being has fully observed an Entity, it stands to reason that the
@@ -412,6 +416,8 @@ namespace trogdor { namespace core { namespace entity {
 
             return true;
          }
+
+         inline bool glancedBy(std::shared_ptr<Being> being) {return glancedBy(being.get());}
 
          /*
             Copies another Messages object into our own, replacing all previous
@@ -526,6 +532,12 @@ namespace trogdor { namespace core { namespace entity {
          virtual void observe(Being *observer, bool triggerEvents = true,
          bool displayFull = false);
 
+         inline void observe(std::shared_ptr<Being> observer,
+         bool triggerEvents = true, bool displayFull = false) {
+
+            observe(observer.get(), triggerEvents, displayFull);
+         }
+
          /*
             Gives a Being the ability to partially observe an Entity without
             looking straight at it (what you might see during a cursory glance
@@ -544,6 +556,12 @@ namespace trogdor { namespace core { namespace entity {
                afterGlance
          */
          virtual void glance(Being *observer, bool triggerEvents = true);
+
+         inline void glance(std::shared_ptr<Being> observer,
+         bool triggerEvents = true) {
+
+            glance(observer.get(), triggerEvents);
+         }
 
          /*
             Static method that takes as input iterators over a list of Entities
