@@ -23,7 +23,7 @@ namespace trogdor { namespace core {
 
       gameL = make_shared<LuaState>();
       eventListener = new event::EventListener();
-      defaultPlayer = new entity::Player(game, "default", new NullOut(),
+      defaultPlayer = make_unique<entity::Player>(game, "default", new NullOut(),
          new NullIn(), new NullOut());
    }
 
@@ -931,15 +931,15 @@ namespace trogdor { namespace core {
          }
 
          else if (0 == getTagName().compare("inventory")) {
-            parseBeingInventory(defaultPlayer, false);
+            parseBeingInventory(defaultPlayer.get(), false);
          }
 
          else if (0 == getTagName().compare("respawn")) {
-            Parser::parseBeingRespawn(defaultPlayer, 4);
+            Parser::parseBeingRespawn(defaultPlayer.get(), 4);
          }
 
          else if (0 == getTagName().compare("attributes")) {
-            parseBeingAttributes(defaultPlayer);
+            parseBeingAttributes(defaultPlayer.get());
          }
 
          else if (0 == getTagName().compare("alive")) {

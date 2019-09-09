@@ -140,7 +140,6 @@ namespace trogdor { namespace core {
       initEntities();
       initActions();
 
-      defaultPlayer = parser->getDefaultPlayer();
       L = parser->getLuaState();
       eventListener = parser->getEventListener();
 
@@ -165,6 +164,60 @@ namespace trogdor { namespace core {
       timer->stop();
       inGame = false;
       resourceMutex.unlock();
+   }
+
+
+   Player *Game::createPlayer(string name, Trogout *outStream, Trogin *inStream,
+   Trogout *errStream) {
+
+      if (entities.isset(name)) {
+         stringstream s;
+         s << "Entity with name '" << name << "' already exists";
+         throw s.str();
+      }
+
+      // clone the default player, giving it the specified name
+      std::shared_ptr<Player> player = std::make_shared<Player>(
+         *(parser->getDefaultPlayer()), name, outStream, inStream, errStream
+      );
+
+      // if new player introduction is enabled, show it before inserting
+      // the new player into the game
+      // TODO: this works fine for a single player game, but in a
+      // multi-player environment, the game can't stop every time a player
+      // has to read the introduction...
+      if (introduction.enabled && introduction.text.length() > 0) {
+
+         if (introduction.pauseWhileReading) {
+            stop();
+         }
+
+         // we really only need this to give player->in() something to do
+         string blah;
+
+         player->out() << introduction.text << endl << endl;
+         player->out() << "Press enter to start." << endl;
+         player->in() >> blah;
+         player->out() << endl;
+
+         if (introduction.pauseWhileReading) {
+            start();
+         }
+      }
+
+      entities.set(name, player);
+      things.set(name, player);
+      beings.set(name, player);
+      players.set(name, player);
+
+      // set Player's initial location
+      player->setLocation(places.get("start"));
+      places.get("start")->insertThing(player);
+
+      // Player must see an initial description of where they are
+      player->getLocation()->observe(player, false);
+
+      return player.get();
    }
 
 

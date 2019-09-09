@@ -56,7 +56,7 @@ namespace trogdor { namespace core {
          entity::EntityClass typeClasses;
 
          // Player object representing default settings for all new players
-         entity::Player *defaultPlayer;
+         std::unique_ptr<entity::Player> defaultPlayer;
 
          // hash tables for various types of entities
          // Note: the logical conclusion of having a hierarchical mapping of
@@ -754,7 +754,7 @@ namespace trogdor { namespace core {
          inline entity::CreatureMap getCreatures() {return creatures;}
          inline entity::ObjectMap getObjects() {return objects;}
 
-         inline entity::Player *getDefaultPlayer() {return defaultPlayer;}
+         inline const entity::Player *getDefaultPlayer() const {return defaultPlayer.get();}
 
          inline std::shared_ptr<LuaState> getLuaState() {return gameL;}
          inline event::EventListener *getEventListener() {return eventListener;}
