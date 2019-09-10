@@ -1,4 +1,5 @@
 #include <memory>
+#include <algorithm>
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
@@ -101,15 +102,14 @@ namespace trogdor { namespace core {
 
          player->out("display") << "Items in your inventory:" << endl << endl;
 
-         for (ObjectSet::const_iterator i = invItems.begin;
-         i != invItems.end; i++) {
+         for_each(invItems.begin, invItems.end, [&](Object * const &obj) {
 
-            player->out("display") << (*i)->getTitle();
+            player->out("display") << obj->getTitle();
 
             if (player->getInventoryMaxWeight() > 0) {
 
-               if ((*i)->getWeight() > 0) {
-                  double percent = 100 * ((double)(*i)->getWeight() /
+               if (obj->getWeight() > 0) {
+                  double percent = 100 * ((double)obj->getWeight() /
                      (double)player->getInventoryMaxWeight());
                   totalPercent += percent;
                   player->out("display") << " (" << percent << "%)";
@@ -121,7 +121,7 @@ namespace trogdor { namespace core {
             }
 
             player->out("display") << endl;
-         }
+         });
 
          if (player->getInventoryMaxWeight() > 0) {
             player->out("display") << endl << "You are currently using "
@@ -161,23 +161,20 @@ namespace trogdor { namespace core {
 
       else {
 
-         Place *location = player->getLocation();
-
-         // Note: I can't use list.merge(), because ObjectList and ThingList are
-         // of different types :'(
          ThingList items;
+         Place *location = player->getLocation();
 
          // consider matching inventory items, if there are any
          ObjectListCItPair invItems = player->getInventoryObjectsByName(object);
-         for (ObjectListCIt i = invItems.begin; i != invItems.end; i++) {
-               items.push_front(*i);
-         }
+         for_each(invItems.begin, invItems.end, [&](Object * const &invObject) {
+               items.push_front(invObject);
+         });
 
          // also consider matching items in the room, if there are any
          ThingListCItPair roomItems = location->getThingsByName(object);
-         for (ThingListCIt i = roomItems.begin; i != roomItems.end; i++) {
-            items.push_front(*i);
-         }
+         for_each(roomItems.begin, roomItems.end, [&](Thing * const &roomThing) {
+            items.push_front(roomThing);
+         });
 
          if (0 == items.size()) {
             player->out("display") << "There is no " << object << " here!" << endl;

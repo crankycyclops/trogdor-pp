@@ -153,7 +153,7 @@ This is an introduction. If introductions are enabled, new players will have to 
 
             -- first value decides if we should continue executing event handlers
             -- second value decides if we should execute the action that
-            -- triggered the even
+            -- triggered the event
             return true, true
 
          end
