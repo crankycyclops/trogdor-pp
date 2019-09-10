@@ -2,6 +2,7 @@
 #define ENTITYCLASS_H
 
 
+#include <memory>
 #include <unordered_map>
 
 #include "../entities/room.h"
@@ -19,32 +20,11 @@ namespace trogdor { namespace core { namespace entity {
 
             // Entity classes are implemented as Entities with a defined set of
             // attributes which can then be cloned
-            unordered_map<string, Room *>      RoomTypes;
-            unordered_map<string, Object *>    ObjectTypes;
-            unordered_map<string, Creature *>  CreatureTypes;
+            unordered_map<string, std::unique_ptr<Room>> RoomTypes;
+            unordered_map<string, std::unique_ptr<Object>> ObjectTypes;
+            unordered_map<string, std::unique_ptr<Creature>> CreatureTypes;
 
          public:
-
-            /*
-               Destructor for EntityClass.
-            */
-            inline ~EntityClass() {
-
-               for (unordered_map<string, Room *>::iterator i = RoomTypes.begin();
-               i != RoomTypes.end(); i++) {
-                  delete i->second;
-               }
-
-               for (unordered_map<string, Object *>::iterator i = ObjectTypes.begin();
-               i != ObjectTypes.end(); i++) {
-                  delete i->second;
-               }
-
-               for (unordered_map<string, Creature *>::iterator i = CreatureTypes.begin();
-               i != CreatureTypes.end(); i++) {
-                  delete i->second;
-               }
-            }
 
             /*
               Returns true if the specified Room class exists and false if not.
@@ -104,7 +84,7 @@ namespace trogdor { namespace core { namespace entity {
             inline Room *getRoomType(string name) {
 
                try {
-                  return RoomTypes.at(name);
+                  return RoomTypes.at(name).get();
                }
 
                catch (const out_of_range &e) {
@@ -128,7 +108,7 @@ namespace trogdor { namespace core { namespace entity {
             inline Object *getObjectType(string name) {
 
                try {
-                  return ObjectTypes.at(name);
+                  return ObjectTypes.at(name).get();
                }
 
                catch (const out_of_range &e) {
@@ -152,7 +132,7 @@ namespace trogdor { namespace core { namespace entity {
             inline Creature *getCreatureType(string name) {
 
                try {
-                  return CreatureTypes.at(name);
+                  return CreatureTypes.at(name).get();
                }
 
                catch (const out_of_range &e) {
@@ -166,7 +146,7 @@ namespace trogdor { namespace core { namespace entity {
 
               Input:
                  name of class (string)
-                 class definition (Room *)
+                 class definition (std::unique_ptr<Room>)
 
               Output:
                  (none)
@@ -174,7 +154,7 @@ namespace trogdor { namespace core { namespace entity {
               Exceptions:
                  boolean true (if class with same name already exists)
             */
-            inline void insertType(string name, Room *r) {
+            inline void insertType(string name, std::unique_ptr<Room> r) {
 
                // make sure class with the same name doesn't already exist
                try {
@@ -183,7 +163,7 @@ namespace trogdor { namespace core { namespace entity {
                }
 
                catch (const out_of_range &e) {
-                  RoomTypes[name] = r;
+                  RoomTypes[name] = std::move(r);
                }
             }
 
@@ -193,7 +173,7 @@ namespace trogdor { namespace core { namespace entity {
 
               Input:
                  name of class (string)
-                 class definition (Object *)
+                 class definition (std::unique_ptr<Object>)
 
               Output:
                  (none)
@@ -201,7 +181,7 @@ namespace trogdor { namespace core { namespace entity {
               Exceptions:
                  boolean true (if class with same name already exists)
             */
-            inline void insertType(string name, Object *o) {
+            inline void insertType(string name, std::unique_ptr<Object> o) {
 
                // make sure class with the same name doesn't already exist
                try {
@@ -210,7 +190,7 @@ namespace trogdor { namespace core { namespace entity {
                }
 
                catch (const out_of_range &e) {
-                  ObjectTypes[name] = o;
+                  ObjectTypes[name] = std::move(o);
                }
             }
 
@@ -220,7 +200,7 @@ namespace trogdor { namespace core { namespace entity {
 
               Input:
                  name of class (string)
-                 class definition (Creature *)
+                 class definition (std::unique_ptr<Creature>)
 
               Output:
                  (none)
@@ -228,7 +208,7 @@ namespace trogdor { namespace core { namespace entity {
               Exceptions:
                  boolean true (if class with same name already exists)
             */
-            inline void insertType(string name, Creature *c) {
+            inline void insertType(string name, std::unique_ptr<Creature> c) {
 
                // make sure class with the same name doesn't already exist
                try {
@@ -237,7 +217,7 @@ namespace trogdor { namespace core { namespace entity {
                }
 
                catch (const out_of_range &e) {
-                  CreatureTypes[name] = c;
+                  CreatureTypes[name] = std::move(c);
                }
             }
 	};

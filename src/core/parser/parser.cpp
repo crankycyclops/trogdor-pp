@@ -196,14 +196,14 @@ namespace trogdor { namespace core {
          throw s.str();
       }
 
-      Room *room = new Room(game, name, new PlaceOut(), game->err().clone());
+      std::unique_ptr<Room> room = make_unique<Room>(game, name, new PlaceOut(), game->err().clone());
 
       // for type checking
       room->setClass(name);
       room->setTitle(name);
 
       try {
-         typeClasses.insertType(name, room);
+         typeClasses.insertType(name, std::move(room));
       }
 
       catch (bool e) {
@@ -212,7 +212,8 @@ namespace trogdor { namespace core {
             throw s.str();
       }
 
-      parseRoomProperties(room, 4);
+      // Don't pass room! It's been moved and is no longer a valid pointer.
+      parseRoomProperties(typeClasses.getRoomType(name), 4);
       checkClosingTag("room");
    }
 
@@ -252,14 +253,14 @@ namespace trogdor { namespace core {
          throw s.str();
       }
 
-      Object *object = new Object(game, name, new NullOut(), game->err().clone());
+      std::unique_ptr<Object> object = make_unique<Object>(game, name, new NullOut(), game->err().clone());
 
       // for type checking
       object->setClass(name);
       object->setTitle(name);
 
       try {
-         typeClasses.insertType(name, object);
+         typeClasses.insertType(name, std::move(object));
       }
 
       catch (bool e) {
@@ -268,7 +269,8 @@ namespace trogdor { namespace core {
             throw s.str();
       }
 
-      parseObjectProperties(object, 4);
+      // Don't pass object! It's been moved and is no longer a valid pointer.
+      parseObjectProperties(typeClasses.getObjectType(name), 4);
       checkClosingTag("object");
    }
 
@@ -309,7 +311,7 @@ namespace trogdor { namespace core {
       }
 
       // TODO: should Creatures have some kind of special input stream?
-      Creature *creature = new Creature(game, name, new NullOut(),
+      std::unique_ptr<Creature> creature = make_unique<Creature>(game, name, new NullOut(),
          game->err().clone());
 
       // for type checking
@@ -317,7 +319,7 @@ namespace trogdor { namespace core {
       creature->setTitle(name);
 
       try {
-         typeClasses.insertType(name, creature);
+         typeClasses.insertType(name, std::move(creature));
       }
 
       catch (bool e) {
@@ -326,7 +328,8 @@ namespace trogdor { namespace core {
             throw s.str();
       }
 
-      parseCreatureProperties(creature, 4);
+      // Don't pass creature! It's been moved and is no longer a valid pointer.
+      parseCreatureProperties(typeClasses.getCreatureType(name), 4);
       checkClosingTag("creature");
    }
 
