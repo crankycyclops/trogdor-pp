@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "../include/timer/timer.h"
 
 using namespace std;
@@ -27,6 +28,7 @@ namespace trogdor { namespace core {
 
 /******************************************************************************/
 
+   // TODO: remove this once I convert to smart pointers
    Timer::~Timer() {
 
       clearJobs();
@@ -45,6 +47,8 @@ namespace trogdor { namespace core {
       time++;
       game->timerMutex.unlock();
 
+      // I can't use for_each because I have to remove expired jobs from queue
+      // and must be able to manipulate the iterator.
       for (list<TimerJob *>::iterator i = queue.begin(); i != queue.end(); ++i) {
 
          if ((*i)->getExecutions() != 0) {
@@ -79,9 +83,12 @@ namespace trogdor { namespace core {
 
    void Timer::clearJobs() {
 
-      for (list<TimerJob *>::iterator i = queue.begin(); i != queue.end(); ++i) {
-         delete *i;
-      }
+      // TODO: remove this loop once I start using smart pointers
+      for_each(queue.begin(), queue.end(), [&](TimerJob *job) {
+         delete job;
+      });
+
+      queue.clear();
    }
 
 /******************************************************************************/

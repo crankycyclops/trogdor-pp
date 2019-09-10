@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "../include/iostream/placeout.h"
 #include "../include/entities/thing.h"
 
@@ -14,9 +16,9 @@ namespace trogdor { namespace core {
 
          ThingListCItPair things = place->getThings();
 
-         for (ThingListCIt i = things.begin; i != things.end; i++) {
-            (*i)->out(getChannel()) << getBufferStr() << endl;
-         }
+         for_each(things.begin, things.end, [&](Thing * const &thing) {
+            thing->out(getChannel()) << getBufferStr() << endl;
+         });
       }
    }
 
