@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "../include/game.h"
 #include "../include/entities/creature.h"
 
@@ -12,16 +14,17 @@ namespace trogdor { namespace core { namespace entity {
 
       ObjectSetCItPair objs = getInventoryObjects();
 
-      for (ObjectSetCIt o = objs.begin; o != objs.end; o++) {
+      for_each(objs.begin, objs.end, [&](Object * const &object) {
 
-         if ((*o)->isWeapon()) {
+         if (object->isWeapon()) {
 
             bool inserted = false;
 
-            // insert weapon into the cache in sorted order
-            for (ObjectListIt i = weaponCache.begin(); i != weaponCache.end(); i++) {
-               if ((*o)->getDamage() >= (*i)->getDamage()) {
-                  weaponCache.insert(i, *o);
+            // insert weapon into the cache in sorted order (can't use for_each
+            // here because I need the iterator to insert at the correct position)
+            for (auto i = weaponCache.begin(); i != weaponCache.end(); i++) {
+               if (object->getDamage() >= (*i)->getDamage()) {
+                  weaponCache.insert(i, object);
                   inserted = true;
                   break;
                }
@@ -29,10 +32,10 @@ namespace trogdor { namespace core { namespace entity {
 
             // object belongs at the very back
             if (!inserted) {
-               weaponCache.push_back(*o);
+               weaponCache.push_back(object);
             }
          }
-      }
+      });
    }
 
    Object *Creature::selectWeapon() {
@@ -55,11 +58,11 @@ namespace trogdor { namespace core { namespace entity {
 
          // select the next strongest weapon with some probability determined by
          // intelligence
-         for (ObjectListCIt i = weaponCache.begin(); i != weaponCache.end(); i++) {
+         for_each(weaponCache.begin(), weaponCache.end(), [&](Object * const &weapon) {
             if (d.roll() < pSelectWeapon) {
-               return *i;
+               return weapon;
             }
-         }
+         });
 
          // we got all the way to the end, so return the weakest weapon
          return weaponCache.back();

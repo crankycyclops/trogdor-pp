@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "../include/entities/place.h"
 #include "../include/entities/thing.h"
 #include "../include/entities/player.h"
@@ -209,12 +211,12 @@ namespace trogdor { namespace core { namespace entity {
       observer->out("display") << getTitle() << endl << endl;
       Entity::display(observer, displayFull);
 
-      for (ThingList::iterator i = things.begin(); i != things.end(); i++) {
-         if (observer != static_cast<Being *>(*i)) { // dirty, but it works
+      for_each(things.begin(), things.end(), [&](Thing *&thing) {
+         if (observer != static_cast<Being *>(thing)) { // dirty, but it works
             observer->out("display") << endl;
-            (*i)->glance(observer);
+            thing->glance(observer);
          }
-      }
+      });
    }
 }}}
 
