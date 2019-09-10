@@ -55,9 +55,6 @@ namespace trogdor { namespace core {
          // user defined Entity classes
          entity::EntityClass typeClasses;
 
-         // Player object representing default settings for all new players
-         std::unique_ptr<entity::Player> defaultPlayer;
-
          // hash tables for various types of entities
          // Note: the logical conclusion of having a hierarchical mapping of
          // object types is that no object of any type can share the same name!
@@ -753,8 +750,6 @@ namespace trogdor { namespace core {
          inline entity::BeingMap getBeings() {return beings;}
          inline entity::CreatureMap getCreatures() {return creatures;}
          inline entity::ObjectMap getObjects() {return objects;}
-
-         inline const entity::Player *getDefaultPlayer() const {return defaultPlayer.get();}
 
          inline std::shared_ptr<LuaState> getLuaState() {return gameL;}
          inline event::EventListener *getEventListener() {return eventListener;}

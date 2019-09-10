@@ -95,6 +95,9 @@ namespace trogdor { namespace core {
          // Global EventListener for the entire game
          event::EventListener *eventListener;
 
+         // Player object representing default settings for all new players
+         std::unique_ptr<entity::Player> defaultPlayer;
+
          // Hash table of all entities in the game
          entity::EntityMap    entities;
          entity::PlaceMap     places;
@@ -278,6 +281,21 @@ namespace trogdor { namespace core {
                (none)
          */
          inline void setIntroductionText(string t) {introduction.text = t;}
+
+         /*
+            Gets the default player. Used by Parser to initialize settings for
+            default player as defined in game.xml.
+
+            Input:
+               (none)
+
+            Output:
+               Reference to unique_ptr<entity::Player>
+         */
+         inline std::unique_ptr<entity::Player> &getDefaultPlayer() {
+
+            return defaultPlayer;
+         }
 
          /*
             Removes a player from the game.  Throws an exception if the player

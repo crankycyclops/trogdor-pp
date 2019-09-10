@@ -23,8 +23,6 @@ namespace trogdor { namespace core {
 
       gameL = make_shared<LuaState>();
       eventListener = new event::EventListener();
-      defaultPlayer = make_unique<entity::Player>(game, "default", new NullOut(),
-         new NullIn(), new NullOut());
    }
 
    /***************************************************************************/
@@ -926,44 +924,44 @@ namespace trogdor { namespace core {
 
          if (0 == getTagName().compare("messages")) {
             Messages *m = parseMessages(4);
-            defaultPlayer->setMessages(*m);
+            game->getDefaultPlayer()->setMessages(*m);
             delete m;
          }
 
          else if (0 == getTagName().compare("inventory")) {
-            parseBeingInventory(defaultPlayer.get(), false);
+            parseBeingInventory(game->getDefaultPlayer().get(), false);
          }
 
          else if (0 == getTagName().compare("respawn")) {
-            Parser::parseBeingRespawn(defaultPlayer.get(), 4);
+            Parser::parseBeingRespawn(game->getDefaultPlayer().get(), 4);
          }
 
          else if (0 == getTagName().compare("attributes")) {
-            parseBeingAttributes(defaultPlayer.get());
+            parseBeingAttributes(game->getDefaultPlayer().get());
          }
 
          else if (0 == getTagName().compare("alive")) {
-            defaultPlayer->setAlive(parseBeingAlive());
+            game->getDefaultPlayer().get()->setAlive(parseBeingAlive());
          }
 
          else if (0 == getTagName().compare("health")) {
-            defaultPlayer->setHealth(parseBeingHealth());
+            game->getDefaultPlayer().get()->setHealth(parseBeingHealth());
          }
 
          else if (0 == getTagName().compare("maxhealth")) {
-            defaultPlayer->setMaxHealth(parseBeingMaxHealth());
+            game->getDefaultPlayer().get()->setMaxHealth(parseBeingMaxHealth());
          }
 
          else if (0 == getTagName().compare("woundrate")) {
-            defaultPlayer->setWoundRate(parseBeingWoundRate());
+            game->getDefaultPlayer().get()->setWoundRate(parseBeingWoundRate());
          }
 
          else if (0 == getTagName().compare("attackable")) {
-            defaultPlayer->setAttackable(parseBeingAttackable());
+            game->getDefaultPlayer().get()->setAttackable(parseBeingAttackable());
          }
 
          else if (0 == getTagName().compare("damagebarehands")) {
-            defaultPlayer->setDamageBareHands(parseBeingDamageBareHands());
+            game->getDefaultPlayer().get()->setDamageBareHands(parseBeingDamageBareHands());
          }
 
          else {

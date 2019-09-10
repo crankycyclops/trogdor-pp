@@ -17,6 +17,8 @@
 #include "include/event/triggers/deathdrop.h"
 #include "include/event/triggers/respawn.h"
 
+#include "include/iostream/nullout.h"
+#include "include/iostream/nullin.h"
 #include "include/iostream/trogout.h"
 
 
@@ -37,6 +39,10 @@ namespace trogdor { namespace core {
       introduction.enabled           = DEFAULT_INTRODUCTION_ENABLED;
       introduction.pauseWhileReading = DEFAULT_INTRODUCTION_PAUSE;
       introduction.text              = "";
+
+      defaultPlayer = make_unique<entity::Player>(
+         this, "default", new NullOut(), new NullIn(), new NullOut()
+      );
 
       lastCommand = nullptr;
    }
@@ -178,7 +184,7 @@ namespace trogdor { namespace core {
 
       // clone the default player, giving it the specified name
       std::shared_ptr<Player> player = std::make_shared<Player>(
-         *(parser->getDefaultPlayer()), name, outStream, inStream, errStream
+         *defaultPlayer, name, outStream, inStream, errStream
       );
 
       // if new player introduction is enabled, show it before inserting
