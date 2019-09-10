@@ -39,20 +39,20 @@ namespace trogdor { namespace core {
 
    void Command::parse(string commandStr) {
 
-      Tokenizer *tokenizer = new Tokenizer(commandStr);
+      Tokenizer tokenizer(commandStr);
 
       // the user pressed enter without issuing a command, so ignore it
-      if (tokenizer->isEnd()) {
+      if (tokenizer.isEnd()) {
         return;
       }
 
       // the first token will always be considered the "verb"
-      verb = strToLower(tokenizer->getCurToken());
+      verb = strToLower(tokenizer.getCurToken());
 
       // we may have a direct and/or indirect object to look at
-      tokenizer->next();
+      tokenizer.next();
 
-      if (!tokenizer->isEnd()) {
+      if (!tokenizer.isEnd()) {
 
          int status;
 
@@ -89,17 +89,17 @@ namespace trogdor { namespace core {
    }
 
 
-   int Command::parseDirectObject(Tokenizer *tokenizer) {
+   int Command::parseDirectObject(Tokenizer &tokenizer) {
 
       string dobj = "";
-      string token = tokenizer->getCurToken();
+      string token = tokenizer.getCurToken();
 
-      while (!token.empty() && !tokenizer->isEnd() && !isPreposition(token)) {
+      while (!token.empty() && !tokenizer.isEnd() && !isPreposition(token)) {
 
          // ignore filler words such as articles like "the" or "a"
          if (isFillerWord(token)) {
-            tokenizer->next();
-            token = tokenizer->getCurToken();
+            tokenizer.next();
+            token = tokenizer.getCurToken();
             continue;
          }
 
@@ -111,8 +111,8 @@ namespace trogdor { namespace core {
 
          dobj += token;
 
-         tokenizer->next();
-         token = tokenizer->getCurToken();
+         tokenizer.next();
+         token = tokenizer.getCurToken();
       }
 
       // set the command's fully assembled direct object!
@@ -123,27 +123,27 @@ namespace trogdor { namespace core {
    }
 
 
-   int Command::parseIndirectObject(Tokenizer *tokenizer) {
+   int Command::parseIndirectObject(Tokenizer &tokenizer) {
 
       string idobj = "";
-      string token = tokenizer->getCurToken();
+      string token = tokenizer.getCurToken();
 
       // an indirect object must be preceded by a preposition
-      if (tokenizer->isEnd() || !isPreposition(token)) {
+      if (tokenizer.isEnd() || !isPreposition(token)) {
          return 0;
       }
 
       // anything after the preposition will be counted as part of the IDO
-      preposition = strToLower(tokenizer->getCurToken());
-      tokenizer->next();
-      token = tokenizer->getCurToken();
+      preposition = strToLower(tokenizer.getCurToken());
+      tokenizer.next();
+      token = tokenizer.getCurToken();
 
-      while (!tokenizer->isEnd()) {
+      while (!tokenizer.isEnd()) {
 
          // ignore filler words
          if (isFillerWord(token)) {
-            tokenizer->next();
-            token = tokenizer->getCurToken();
+            tokenizer.next();
+            token = tokenizer.getCurToken();
             continue;
          }
 
@@ -154,8 +154,8 @@ namespace trogdor { namespace core {
 
          idobj += token;
 
-         tokenizer->next();
-         token = tokenizer->getCurToken();
+         tokenizer.next();
+         token = tokenizer.getCurToken();
       }
 
       // no indirect object was parsed

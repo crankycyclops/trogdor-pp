@@ -32,9 +32,9 @@ namespace trogdor { namespace core {
 
          void parse(string commandStr);
 
-         int parseDirectObject(Tokenizer *tokenizer);
+         int parseDirectObject(Tokenizer &tokenizer);
 
-         int parseIndirectObject(Tokenizer *tokenizer);
+         int parseIndirectObject(Tokenizer &tokenizer);
 
          bool isPreposition(const string word);
 
