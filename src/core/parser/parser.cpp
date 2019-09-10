@@ -527,28 +527,31 @@ namespace trogdor { namespace core {
 
       string name = getAttribute("name");
 
-      if (entities.isset(name)) {
+      try {
+         game->getEntity(name);
          stringstream s;
          s << "Cannot define room with name '" << name << ": an entity with " <<
             "that name already exists";
          throw s.str();
       }
 
-      std::shared_ptr<Room> room;
+      // This is actually a good thing. It means an entity by this name doesn't
+      // already exist.
+      catch (string error) {
 
-      if (0 == className.compare("room")) {
-         room = make_shared<Room>(game, name, new PlaceOut(), game->err().clone());
+         std::shared_ptr<Room> room;
+
+         if (0 == className.compare("room")) {
+            room = make_shared<Room>(game, name, new PlaceOut(), game->err().clone());
+         }
+
+         else {
+            room = make_shared<Room>(*typeClasses.getRoomType(className), name);
+         }
+
+         room->setClass(className);
+         game->insertEntity(name, room);
       }
-
-      else {
-         room = make_shared<Room>(*typeClasses.getRoomType(className), name);
-      }
-
-      room->setClass(className);
-
-      entities.set(name, room);
-      places.set(name, room);
-      rooms.set(name, room);
 
       checkClosingTag(className);
       return 0 == name.compare("start") ? true : false;
@@ -587,28 +590,31 @@ namespace trogdor { namespace core {
 
       string name = getAttribute("name");
 
-      if (entities.isset(name)) {
+      try {
+         game->getEntity(name);
          stringstream s;
          s << "Cannot define object with name '" << name << ": an entity with "
             << "that name already exists";
          throw s.str();
       }
 
-      std::shared_ptr<Object> object;
+      // This is actually a good thing. It means an entity by this name doesn't
+      // already exist.
+      catch (string error) {
 
-      if (0 == className.compare("object")) {
-         object = make_shared<Object>(game, name, new NullOut(), game->err().clone());
+         std::shared_ptr<Object> object;
+
+         if (0 == className.compare("object")) {
+            object = make_shared<Object>(game, name, new NullOut(), game->err().clone());
+         }
+
+         else {
+            object = make_shared<Object>(*typeClasses.getObjectType(className), name);
+         }
+
+         object->setClass(className);
+         game->insertEntity(name, object);
       }
-
-      else {
-         object = make_shared<Object>(*typeClasses.getObjectType(className), name);
-      }
-
-      object->setClass(className);
-
-      entities.set(name, object);
-      things.set(name, object);
-      objects.set(name, object);
 
       checkClosingTag(className);
    }
@@ -646,29 +652,31 @@ namespace trogdor { namespace core {
 
       string name = getAttribute("name");
 
-      if (entities.isset(name)) {
+      try {
+         game->getEntity(name);
          stringstream s;
          s << "Cannot define creature with name '" << name << ": an entity "
             << "with that name already exists";
          throw s.str();
       }
 
-      std::shared_ptr<Creature> creature;
+      // This is actually a good thing. It means an entity by this name doesn't
+      // already exist.
+      catch (string error) {
 
-      if (0 == className.compare("creature")) {
-         creature = make_shared<Creature>(game, name, new NullOut(), game->err().clone());
+         std::shared_ptr<Creature> creature;
+
+         if (0 == className.compare("creature")) {
+            creature = make_shared<Creature>(game, name, new NullOut(), game->err().clone());
+         }
+
+         else {
+            creature = make_shared<Creature>(*typeClasses.getCreatureType(className), name);
+         }
+
+         creature->setClass(className);
+         game->insertEntity(name, creature);
       }
-
-      else {
-         creature = make_shared<Creature>(*typeClasses.getCreatureType(className), name);
-      }
-
-      creature->setClass(className);
-
-      entities.set(name, creature);
-      things.set(name, creature);
-      beings.set(name, creature);
-      creatures.set(name, creature);
 
       checkClosingTag(className);
    }
@@ -797,10 +805,13 @@ namespace trogdor { namespace core {
    void Parser::parseObject(string className) {
 
       stringstream s;
+      Object *object;
 
-      Object *object = objects.get(getAttribute("name"));
+      try {
+         object = game->getObject(getAttribute("name"));
+      }
 
-      if (0 == object) {
+      catch (string error) {
          s << filename << ": object '" << getAttribute("name") << "' was not "
             << "declared in the manifest (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
@@ -808,7 +819,7 @@ namespace trogdor { namespace core {
       }
 
       // type checking
-      else if (className != object->getClass()) {
+      if (className != object->getClass()) {
          s << filename << ": object type mismatch: '" << getAttribute("name")
             << "' is of type " << object->getClass() << ", but was declared in "
             << "objects section to be of type " << className << " (line "
@@ -1007,10 +1018,13 @@ namespace trogdor { namespace core {
    void Parser::parseCreature(string className) {
 
       stringstream s;
+      Creature *creature;
 
-      Creature *creature = creatures.get(getAttribute("name"));
+      try {
+         creature = game->getCreature(getAttribute("name"));
+      }
 
-      if (0 == creature) {
+      catch (string error) {
          s << filename << ": creature '" << getAttribute("name") << "' was not "
             << "declared in the manifest (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
@@ -1018,7 +1032,7 @@ namespace trogdor { namespace core {
       }
 
       // type checking
-      else if (className != creature->getClass()) {
+      if (className != creature->getClass()) {
          s << filename << ": creature type mismatch: '" << getAttribute("name")
             << "' is of type " << creature->getClass() << ", but was declared in "
             << "creatures section to be of type " << className << " (line "
@@ -1188,10 +1202,13 @@ namespace trogdor { namespace core {
    void Parser::parseRoom(string className) {
 
       stringstream s;
+      Room *room;
 
-      Room *room = rooms.get(getAttribute("name"));
+      try {
+         room = game->getRoom(getAttribute("name"));
+      }
 
-      if (0 == room) {
+      catch (string error) {
          s << filename << ": room '" << getAttribute("name") << "' was not "
             << "declared in the manifest (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
@@ -1199,7 +1216,7 @@ namespace trogdor { namespace core {
       }
 
       // type checking
-      else if (className != room->getClass()) {
+      if (className != room->getClass()) {
          s << filename << ": room type mismatch: '" << getAttribute("name")
             << "' is of type " << room->getClass() << ", but was declared in "
             << "rooms section to be of type " << className << " (line "
@@ -1272,10 +1289,13 @@ namespace trogdor { namespace core {
    void Parser::parseRoomConnection(string direction, Room *room, string connectTo) {
 
       stringstream s;
+      Room *connectToRoom;
 
-      Room *connectToRoom = rooms.get(connectTo);
+      try {
+         connectToRoom = game->getRoom(connectTo);
+      }
 
-      if (0 == connectToRoom) {
+      catch (string error) {
          s << filename << ": room '" << connectTo << "' does not exist (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
@@ -1315,11 +1335,15 @@ namespace trogdor { namespace core {
    Thing *Parser::parseRoomContainsThing(string tag) {
 
       stringstream s;
+      Thing *thing;
 
       string thingName = parseString();
-      Thing *thing = things.get(thingName);
 
-      if (0 == thing) {
+      try {
+         thing = game->getThing(thingName);
+      }
+
+      catch (string error) {
          s << filename << ": Thing '" << tag << "' doesn't exist (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
@@ -1641,17 +1665,20 @@ namespace trogdor { namespace core {
    void Parser::parseBeingInventoryObject(Being *being) {
 
       stringstream s;
+      Object *object;
       string objectName = parseString();
 
-      Object *object = objects.get(objectName);
+      try {
+         object = game->getObject(objectName);
+      }
 
-      if (0 == object) {
+      catch (string error) {
          s << filename << ": object '" << objectName << "' doesn't exist (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
       }
 
-      else if (0 != object->getOwner()) {
+      if (0 != object->getOwner()) {
          s << filename << ": object '" << objectName << "' is already owned by '"
             << object->getOwner()->getName() << "' (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";

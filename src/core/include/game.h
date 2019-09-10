@@ -99,6 +99,9 @@ namespace trogdor { namespace core {
          std::unique_ptr<entity::Player> defaultPlayer;
 
          // Hash table of all entities in the game
+         // Note: the logical conclusion of having a hierarchical mapping of
+         // object types is that no object of any type can share the same name!
+         // This can be worked around via aliases :)
          entity::EntityMap    entities;
          entity::PlaceMap     places;
          entity::ThingMap     things;
@@ -118,17 +121,6 @@ namespace trogdor { namespace core {
 
          /* global error stream */
          std::shared_ptr<Trogout> errStream;
-
-         /*
-            Initializes Entities from what was parsed.
-
-            Input:
-               (none)
-
-            Output:
-               (none)
-         */
-         void initEntities();
 
          /*
             Called by initialize().  This initializes game actions and maps
@@ -341,6 +333,48 @@ namespace trogdor { namespace core {
             return players.isset(name);
          }
 
+        /*
+            Returns the Entity associated with the specified name. Throws an
+            exception if the Entity doesn't exist.
+
+            Input:
+               Name of Thing (string)
+
+            Output:
+               Thing *
+         */
+         inline Entity *getEntity(const string name) {
+
+            if (!entities.isset(name)) {
+               stringstream s;
+               s << "Entity with name '" << name << "' doesn't exist";
+               throw s.str();
+            }
+
+            return entities.get(name);
+         }
+
+        /*
+            Returns the Thing object associated with the specified name. Throws
+            an exception if the Thing doesn't exist.
+
+            Input:
+               Name of Thing (string)
+
+            Output:
+               Thing *
+         */
+         inline Thing *getThing(const string name) {
+
+            if (!things.isset(name)) {
+               stringstream s;
+               s << "Thing with name '" << name << "' doesn't exist";
+               throw s.str();
+            }
+
+            return things.get(name);
+         }
+
          /*
             Returns the Player object associated with the specified player name.
             Throws an exception if the specified player name doesn't exist.
@@ -360,6 +394,135 @@ namespace trogdor { namespace core {
             }
 
             return players.get(name);
+         }
+
+         /*
+            Returns the Creature object associated with the specified name.
+            Throws an exception if the creature doesn't exist.
+
+            Input:
+               Name of creature (string)
+
+            Output:
+               Creature *
+         */
+         inline Creature *getCreature(const string name) {
+
+            if (!creatures.isset(name)) {
+               stringstream s;
+               s << "Creature with name '" << name << "' doesn't exist";
+               throw s.str();
+            }
+
+            return creatures.get(name);
+         }
+
+         /*
+            Returns the Object associated with the specified name. Throws an
+            exception if the Object doesn't exist.
+
+            Input:
+               Name of Object (string)
+
+            Output:
+               Object *
+         */
+         inline Object *getObject(const string name) {
+
+            if (!objects.isset(name)) {
+               stringstream s;
+               s << "Object with name '" << name << "' doesn't exist";
+               throw s.str();
+            }
+
+            return objects.get(name);
+         }
+
+         /*
+            Returns the Room associated with the specified name. Throws an
+            exception if the Room doesn't exist.
+
+            Input:
+               Name of Room (string)
+
+            Output:
+               Room *
+         */
+         inline Room *getRoom(const string name) {
+
+            if (!rooms.isset(name)) {
+               stringstream s;
+               s << "Room with name '" << name << "' doesn't exist";
+               throw s.str();
+            }
+
+            return rooms.get(name);
+         }
+
+         /*
+            Inserts a player into the game.
+
+            Input:
+               shared_ptr<entity::Player>
+
+            Output:
+               (none)
+         */
+         inline void insertEntity(string name, std::shared_ptr<entity::Player> player) {
+
+            entities.set(name, player);
+            things.set(name, player);
+            beings.set(name, player);
+            players.set(name, player);
+         }
+
+         /*
+            Inserts a creature into the game.
+
+            Input:
+               shared_ptr<entity::Creature>
+
+            Output:
+               (none)
+         */
+         inline void insertEntity(string name, std::shared_ptr<entity::Creature> creature) {
+
+            entities.set(name, creature);
+            things.set(name, creature);
+            beings.set(name, creature);
+            creatures.set(name, creature);
+         }
+
+         /*
+            Inserts an object into the game.
+
+            Input:
+               shared_ptr<entity::Object>
+
+            Output:
+               (none)
+         */
+         inline void insertEntity(string name, std::shared_ptr<entity::Object> object) {
+
+            entities.set(name, object);
+            things.set(name, object);
+            objects.set(name, object);
+         }
+
+         /*
+            Inserts a room into the game.
+
+            Input:
+               shared_ptr<entity::Room>
+
+            Output:
+               (none)
+         */
+         inline void insertEntity(string name, std::shared_ptr<entity::Room> room) {
+
+            entities.set(name, room);
+            places.set(name, room);
+            rooms.set(name, room);
          }
 
          /*

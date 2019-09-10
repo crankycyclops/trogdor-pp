@@ -55,18 +55,6 @@ namespace trogdor { namespace core {
          // user defined Entity classes
          entity::EntityClass typeClasses;
 
-         // hash tables for various types of entities
-         // Note: the logical conclusion of having a hierarchical mapping of
-         // object types is that no object of any type can share the same name!
-         // This can be worked around via aliases :)
-         entity::EntityMap    entities;
-         entity::PlaceMap     places;
-         entity::ThingMap     things;
-         entity::RoomMap      rooms;
-         entity::BeingMap     beings;
-         entity::CreatureMap  creatures;
-         entity::ObjectMap    objects;
-
          // Global Lua state for the entire game
          std::shared_ptr<LuaState> gameL;
 
@@ -741,15 +729,6 @@ namespace trogdor { namespace core {
             Output: (none)
          */
          void parse();
-
-         // TODO: should the copy go deeper?
-         inline entity::EntityMap getEntities() {return entities;}
-         inline entity::PlaceMap getPlaces() {return places;}
-         inline entity::ThingMap getThings() {return things;}
-         inline entity::RoomMap getRooms() {return rooms;}
-         inline entity::BeingMap getBeings() {return beings;}
-         inline entity::CreatureMap getCreatures() {return creatures;}
-         inline entity::ObjectMap getObjects() {return objects;}
 
          inline std::shared_ptr<LuaState> getLuaState() {return gameL;}
          inline event::EventListener *getEventListener() {return eventListener;}

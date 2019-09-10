@@ -54,18 +54,6 @@ namespace trogdor { namespace core {
    Game::~Game() {}
 
 
-   void Game::initEntities() {
-
-      entities = parser->getEntities();
-      places = parser->getPlaces();
-      things = parser->getThings();
-      rooms = parser->getRooms();
-      beings = parser->getBeings();
-      creatures = parser->getCreatures();
-      objects = parser->getObjects();
-   }
-
-
    void Game::initActions() {
 
       actions->setAction("quit", new QuitAction);
@@ -143,7 +131,6 @@ namespace trogdor { namespace core {
          return false;
       }
 
-      initEntities();
       initActions();
 
       L = parser->getLuaState();
