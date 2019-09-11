@@ -6,7 +6,7 @@ using namespace std;
 namespace trogdor { namespace core {
 
 
-   void RespawnTimerJob::execute(TimerJob &job) {
+   void RespawnTimerJob::execute() {
 
       deadGuy->doRespawn();
    }

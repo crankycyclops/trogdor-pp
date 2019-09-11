@@ -58,7 +58,7 @@ namespace trogdor { namespace core {
 
                // run the job
                game->timerMutex.lock();
-               (*i)->execute(**i);
+               (*i)->execute();
                game->timerMutex.unlock();
 
                // decrement executions (unless it's -1, which means the job

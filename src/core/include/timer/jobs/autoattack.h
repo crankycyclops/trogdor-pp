@@ -55,12 +55,12 @@ namespace trogdor { namespace core {
             Automatically executes an attack against a Being
 
             Input:
-               Reference to itself for modification during execution
+               (none)
 
             Output:
                (none)
          */
-         virtual void execute(TimerJob &job);
+         virtual void execute();
    };
 }}
 

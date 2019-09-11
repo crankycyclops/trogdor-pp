@@ -8,7 +8,7 @@ using namespace trogdor::core::entity;
 namespace trogdor { namespace core {
 
 
-   void WanderTimerJob::execute(TimerJob &job) {
+   void WanderTimerJob::execute() {
 
       Dice d;
 

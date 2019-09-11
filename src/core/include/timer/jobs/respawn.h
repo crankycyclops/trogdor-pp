@@ -43,12 +43,12 @@ namespace trogdor { namespace core {
             Executes Being's respawning.
 
             Input:
-               Reference to itself for possible modification during execution
+               (none)
 
             Output:
                (none)
          */
-         virtual void execute(TimerJob &job);
+         virtual void execute();
    };
 }}
 

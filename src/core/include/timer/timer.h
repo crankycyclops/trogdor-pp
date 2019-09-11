@@ -200,7 +200,7 @@ namespace trogdor { namespace core {
             It should be implemented in another class designed for a specific
             job.
          */
-         virtual void execute(TimerJob &job) = 0;
+         virtual void execute() = 0;
 
          inline unsigned long getInitTime() const {return initTime;}
          inline unsigned long getStartTime() const {return startTime;}

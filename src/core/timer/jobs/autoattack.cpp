@@ -6,20 +6,20 @@ using namespace std;
 namespace trogdor { namespace core {
 
 
-   void AutoAttackTimerJob::execute(TimerJob &job) {
+   void AutoAttackTimerJob::execute() {
 
       if (!aggressor->isAlive() || !defender->isAlive()) {
-         job.setExecutions(0);
+         setExecutions(0);
          return;
       }
 
       else if (!defender->isAttackable()) {
-         job.setExecutions(0);
+         setExecutions(0);
          return;
       }
 
       else if (aggressor->getLocation() != defender->getLocation()) {
-         job.setExecutions(0);
+         setExecutions(0);
          return;
       }
 
