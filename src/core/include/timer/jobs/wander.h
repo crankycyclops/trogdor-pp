@@ -2,7 +2,7 @@
 #define WANDERJOB_H
 
 
-#include "../timer.h"
+#include "../timerjob.h"
 
 
 using namespace std;

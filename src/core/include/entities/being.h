@@ -3,6 +3,7 @@
 
 
 #include <set>
+#include <algorithm>
 #include <unordered_map>
 
 #include "../utility.h"
