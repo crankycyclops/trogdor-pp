@@ -2,6 +2,7 @@
 #define TIMERJOB_H
 
 
+#include <memory>
 #include "timer.h"
 
 
@@ -84,7 +85,7 @@ namespace trogdor { namespace core {
          inline void decExecutions() {executions--;}
 
          // allows Timer to interact with the TimerJob object
-         friend void Timer::insertJob(TimerJob *job);
+         friend void Timer::insertJob(std::shared_ptr<TimerJob> job);
    };
 }}
 

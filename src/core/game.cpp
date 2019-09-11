@@ -214,13 +214,13 @@ namespace trogdor { namespace core {
    }
 
 
-   void Game::insertTimerJob(TimerJob *j) {
+   void Game::insertTimerJob(std::shared_ptr<TimerJob> j) {
 
       timer->insertJob(j);
    }
 
 
-   void Game::removeTimerJob(TimerJob *j) {
+   void Game::removeTimerJob(std::shared_ptr<TimerJob> j) {
 
       timer->removeJob(j);
    }

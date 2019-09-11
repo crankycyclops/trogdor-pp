@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "../../include/event/triggers/respawn.h"
 #include "../../include/timer/jobs/respawn.h"
 
@@ -17,7 +19,7 @@ namespace trogdor { namespace core { namespace event {
 
          // we have to wait a certain number of clock ticks
          if (in > 0) {
-            RespawnTimerJob *j = new RespawnTimerJob(game, in, 1, in, being);
+            std::shared_ptr<RespawnTimerJob> j = std::make_shared<RespawnTimerJob>(game, in, 1, in, being);
             game->insertTimerJob(j);
          }
 

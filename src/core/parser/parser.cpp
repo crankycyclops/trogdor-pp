@@ -1050,7 +1050,7 @@ namespace trogdor { namespace core {
 
       // if wandering was enabled, insert a timer job for it
       if (creature->getWanderEnabled()) {
-         game->insertTimerJob(new WanderTimerJob(game, creature->getWanderInterval(),
+         game->insertTimerJob(std::make_shared<WanderTimerJob>(game, creature->getWanderInterval(),
             -1, creature->getWanderInterval(), creature));
       }
 

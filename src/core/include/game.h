@@ -582,8 +582,8 @@ namespace trogdor { namespace core {
          /*
             Wraps around Timer API.  See timer.h for documentation.
          */
-         void insertTimerJob(TimerJob *j);
-         void removeTimerJob(TimerJob *j);
+         void insertTimerJob(std::shared_ptr<TimerJob> j);
+         void removeTimerJob(std::shared_ptr<TimerJob> j);
 
          /*
             Gets the current game time (in seconds.)  Note that I can't inline

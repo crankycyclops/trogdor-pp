@@ -5,6 +5,7 @@
 #include <chrono>
 #include <thread>
 #include <mutex>
+#include <memory>
 
 #include <list>
 #include <iostream>
@@ -36,7 +37,9 @@ namespace trogdor { namespace core {
          Game *game;                    // the game in which the timer is running
          bool active;                   // whether or not the timer is active
          unsigned long time;            // current time
-         list<TimerJob *> queue;        // queue of jobs to execute every n ticks
+
+         // queue of jobs to execute every n ticks
+         list<std::shared_ptr<TimerJob>> queue;
 
          /*
             Executes all jobs in the queue and increments the time.  This is
@@ -55,7 +58,7 @@ namespace trogdor { namespace core {
             Input: (none)
             Output: (none)
          */
-         void clearJobs();
+         inline void clearJobs() {queue.clear();}
 
       public:
 
@@ -63,11 +66,6 @@ namespace trogdor { namespace core {
             Constructor for the Timer class.
          */
          Timer(Game *game);
-
-         /*
-            Destructor for the Timer class.
-         */
-         ~Timer();
 
          /*
             Returns the current time.
@@ -118,7 +116,7 @@ namespace trogdor { namespace core {
             Input: Pointer to TimerJob object
             Output: (none)
          */
-         void insertJob(TimerJob *job);
+         void insertJob(std::shared_ptr<TimerJob> job);
 
          /*
             Removes the job from the timer's work queue.  DO NOT call this from
@@ -127,10 +125,10 @@ namespace trogdor { namespace core {
             the timer the next time it's encountered in the queue and will not
             be executed.
 
-            Input: Pointer to TimerJob object to remove
+            Input: Pointer to TimerJob object we want to remove
             Output: (none)
          */
-         inline void removeJob(TimerJob *job) {
+         inline void removeJob(std::shared_ptr<TimerJob> job) {
 
             game->timerMutex.lock();
             queue.remove(job);

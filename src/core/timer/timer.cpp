@@ -1,3 +1,4 @@
+#include <memory>
 #include <algorithm>
 
 #include "../include/timer/timer.h"
@@ -30,14 +31,6 @@ namespace trogdor { namespace core {
 
 /******************************************************************************/
 
-   // TODO: remove this once I convert to smart pointers
-   Timer::~Timer() {
-
-      clearJobs();
-   }
-
-/******************************************************************************/
-
    void Timer::tick() {
 
       // look into std::chrono::high_resolution_clock for more accurate timekeeping
@@ -51,7 +44,7 @@ namespace trogdor { namespace core {
 
       // I can't use for_each because I have to remove expired jobs from queue
       // and must be able to manipulate the iterator.
-      for (list<TimerJob *>::iterator i = queue.begin(); i != queue.end(); ++i) {
+      for (list<std::shared_ptr<TimerJob>>::iterator i = queue.begin(); i != queue.end(); ++i) {
 
          if ((*i)->getExecutions() != 0) {
 
@@ -74,23 +67,11 @@ namespace trogdor { namespace core {
          // job is expired, so remove it
          else {
             game->timerMutex.lock();
-            list<TimerJob *>::iterator iprev = i++;
+            list<std::shared_ptr<TimerJob>>::iterator iprev = i++;
             queue.remove(*iprev);
             game->timerMutex.unlock();
          }
       }
-   }
-
-/******************************************************************************/
-
-   void Timer::clearJobs() {
-
-      // TODO: remove this loop once I start using smart pointers
-      for_each(queue.begin(), queue.end(), [&](TimerJob *job) {
-         delete job;
-      });
-
-      queue.clear();
    }
 
 /******************************************************************************/
@@ -137,11 +118,11 @@ namespace trogdor { namespace core {
 
 /******************************************************************************/
 
-   void Timer::insertJob(TimerJob *job) {
+   void Timer::insertJob(std::shared_ptr<TimerJob> job) {
 
       // insert job asynchronously to avoid deadlock when a function called by
       // one job inserts another job
-      std::thread insertJobThread([](Game *g, Timer *t, TimerJob *j) {
+      std::thread insertJobThread([](Game *g, Timer *t, std::shared_ptr<TimerJob> j) {
 
          g->timerMutex.lock();
          j->initTime = t->time;

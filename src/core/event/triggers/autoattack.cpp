@@ -1,3 +1,4 @@
+#include <memory>
 #include <algorithm>
 
 #include "../../include/event/triggers/autoattack.h"
@@ -25,7 +26,7 @@ namespace trogdor { namespace core { namespace event {
             int e  = creature->getAutoAttackRepeat() ? -1 : 1;
             int s  = creature->getAutoAttackInterval();
 
-            AutoAttackTimerJob *j = new AutoAttackTimerJob(game, in, e, s, creature, being);
+            std::shared_ptr<AutoAttackTimerJob> j = std::make_shared<AutoAttackTimerJob>(game, in, e, s, creature, being);
             game->insertTimerJob(j);
          }
       });
