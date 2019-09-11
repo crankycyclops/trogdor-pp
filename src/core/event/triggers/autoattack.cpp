@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "../../include/event/triggers/autoattack.h"
 #include "../../include/timer/jobs/autoattack.h"
 
@@ -15,18 +17,18 @@ namespace trogdor { namespace core { namespace event {
       entity::CreatureListCItPair creatures = place->getCreatures();
 
       // each Creature that has auto-attack enabled should be setup to attack
-      for (entity::CreatureListCIt i = creatures.begin; i != creatures.end; i++) {
+      for_each(creatures.begin, creatures.end, [&](entity::Creature * const &creature) {
 
-         if ((*i)->getAutoAttackEnabled()) {
+         if (creature->getAutoAttackEnabled()) {
 
-            int in = (*i)->getAutoAttackInterval();
-            int e  = (*i)->getAutoAttackRepeat() ? -1 : 1;
-            int s  = (*i)->getAutoAttackInterval();
+            int in = creature->getAutoAttackInterval();
+            int e  = creature->getAutoAttackRepeat() ? -1 : 1;
+            int s  = creature->getAutoAttackInterval();
 
-            AutoAttackTimerJob *j = new AutoAttackTimerJob(game, in, e, s, *i, being);
+            AutoAttackTimerJob *j = new AutoAttackTimerJob(game, in, e, s, creature, being);
             game->insertTimerJob(j);
          }
-      }
+      });
 
       continueExecutionFlag = true;
       allowActionFlag = true;
