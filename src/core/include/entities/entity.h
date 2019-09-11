@@ -5,6 +5,7 @@
 #include <list>
 #include <set>
 #include <memory>
+#include <algorithm>
 
 #include "../messages.h"
 #include "../lua/luatable.h"
@@ -281,14 +282,12 @@ namespace trogdor { namespace core { namespace entity {
          */
          inline bool isType(enum EntityType type) const {
 
-            for (list<enum EntityType>::const_iterator i = types.begin();
-            i != types.end(); i++) {
-               if (type == *i) {
-                  return true;
-               }
-            }
+            auto matchedType = find_if(types.begin(), types.end(),
+            [&](enum EntityType curType) {
+               return type == curType;
+            });
 
-            return false;
+            return matchedType == types.end() ? false : true;
          }
 
          /*
