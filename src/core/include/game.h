@@ -34,18 +34,17 @@ namespace trogdor { namespace core {
       game-related data.  A standard lifecycle of a game object--assuming it
       exists in main()--might look something like:
 
-      Game currentGame = new Game();
+      Game currentGame = std::make_unique<Game>();
 
-      currentGame.initialize();
+      currentGame->initialize();
+      currentGame->start();
 
-      currentGame.start();
-      while (currentGame.inProgress()) {
+      while (currentGame->inProgress()) {
          ...
          read/execute a command;
          ...
       }
 
-      delete currentGame;
       return EXIT_SUCCESS;
    */
    class Game {
