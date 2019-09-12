@@ -41,7 +41,11 @@ namespace trogdor { namespace core {
       introduction.text              = "";
 
       defaultPlayer = make_unique<entity::Player>(
-         this, "default", new NullOut(), new NullIn(), new NullOut()
+         this,
+         "default",
+         std::make_unique<NullOut>(),
+         std::make_unique<NullIn>(),
+         std::make_unique<NullOut>()
       );
 
       lastCommand = nullptr;
@@ -160,8 +164,8 @@ namespace trogdor { namespace core {
    }
 
 
-   Player *Game::createPlayer(string name, Trogout *outStream, Trogin *inStream,
-   Trogout *errStream) {
+   Player *Game::createPlayer(string name, std::unique_ptr<Trogout> outStream,
+   std::unique_ptr<Trogin> inStream, std::unique_ptr<Trogout> errStream) {
 
       if (entities.isset(name)) {
          stringstream s;
@@ -171,7 +175,7 @@ namespace trogdor { namespace core {
 
       // clone the default player, giving it the specified name
       std::shared_ptr<Player> player = std::make_shared<Player>(
-         *defaultPlayer, name, outStream, inStream, errStream
+         *defaultPlayer, name, std::move(outStream), std::move(inStream), std::move(errStream)
       );
 
       // if new player introduction is enabled, show it before inserting

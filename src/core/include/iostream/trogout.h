@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <memory>
 
 
 using namespace std;
@@ -87,7 +88,7 @@ namespace trogdor { namespace core {
             Output:
                Pointer to new Trogout (actual type is of child class)
          */
-         virtual Trogout *clone() = 0;
+         virtual std::unique_ptr<Trogout> clone() = 0;
 
          /*
             Flushes the "buffer" to the real output stream.

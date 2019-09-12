@@ -51,8 +51,12 @@ int main(int argc, char **argv) {
 	     cout << "Author: " << author << endl << endl;
 	  }
 
-	  Player *player = currentGame->createPlayer("player", new StreamOut(&cout),
-	     new StreamIn(&cin), new StreamOut(&cerr));
+	  Player *player = currentGame->createPlayer(
+         "player",
+         std::make_unique<StreamOut>(&cout),
+         std::make_unique<StreamIn>(&cin),
+         std::make_unique<StreamOut>(&cerr)
+      );
 
 	  currentGame->start();
 

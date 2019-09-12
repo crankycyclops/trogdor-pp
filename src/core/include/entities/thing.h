@@ -49,9 +49,9 @@ namespace trogdor { namespace core { namespace entity {
             Constructor for creating a new Thing.  Requires reference to the
             containing Game object and a name.
          */
-         inline Thing(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
-         Entity(g, n, o, i, e),
-         location(0) {
+         inline Thing(Game *g, string n, std::unique_ptr<Trogout> o,
+         std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e): Entity(g, n,
+         std::move(o), std::move(i), std::move(e)), location(nullptr) {
 
             types.push_back(ENTITY_THING);
 

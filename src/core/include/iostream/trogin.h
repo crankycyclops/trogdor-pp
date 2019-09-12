@@ -4,6 +4,7 @@
 
 #include <string>
 #include <iostream>
+#include <memory>
 
 
 using namespace std;
@@ -29,7 +30,7 @@ namespace trogdor { namespace core {
             Output:
                Pointer to new Trogin (actual type is of child class)
          */
-         virtual Trogin *clone() = 0;
+         virtual std::unique_ptr<Trogin> clone() = 0;
 
          // For now, I only need to define input for strings.  Note: contrary to
          // cin, this should always return after the user presses enter,

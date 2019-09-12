@@ -3,6 +3,7 @@
 
 
 #include <string>
+#include <memory>
 #include <ctime>
 
 #include <boost/lexical_cast.hpp>
@@ -84,7 +85,7 @@ class TCPOut: public core::Trogout {
 		/*
 			See include/iostream/trogin.h for details.
 		*/
-		virtual core::Trogout *clone();
+		virtual std::unique_ptr<core::Trogout> clone();
 };
 
 

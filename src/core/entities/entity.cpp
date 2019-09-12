@@ -21,8 +21,9 @@ namespace trogdor { namespace core { namespace entity {
 
 
    // The title property will usually be set to something more descriptive later
-   Entity::Entity(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
-      game(g), name(n), outStream(o), errStream(e), inStream(i), title(n) {
+   Entity::Entity(Game *g, string n, std::unique_ptr<Trogout> o,
+   std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e): game(g), name(n),
+   outStream(std::move(o)), errStream(std::move(e)), inStream(std::move(i)), title(n) {
 
       types.push_back(ENTITY_ENTITY);
 
@@ -60,9 +61,6 @@ namespace trogdor { namespace core { namespace entity {
    Entity::~Entity() {
 
       delete triggers;
-      delete outStream;
-      delete errStream;
-      delete inStream;
    }
 
    /***************************************************************************/

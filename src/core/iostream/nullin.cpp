@@ -11,9 +11,9 @@ namespace trogdor { namespace core {
       val = "";
    }
 
-   Trogin *NullIn::clone() {
+   std::unique_ptr<Trogin> NullIn::clone() {
 
-      return new NullIn();
+      return std::make_unique<NullIn>();
    }
 }}
 

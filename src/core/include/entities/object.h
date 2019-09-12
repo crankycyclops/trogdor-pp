@@ -2,6 +2,8 @@
 #define OBJECT_H
 
 
+#include <memory>
+
 #include "thing.h"
 #include "../iostream/nullin.h"
 
@@ -39,9 +41,10 @@ namespace trogdor { namespace core { namespace entity {
             Constructor for creating a new Object.  Requires reference to the
             containing Game object and a name.
          */
-         inline Object(Game *g, string n, Trogout *o, Trogout *e):
-         Thing(g, n, o, new NullIn(), e),
-         owner(0), weight(DEFAULT_WEIGHT), takeable(DEFAULT_TAKEABLE),
+         inline Object(Game *g, string n, std::unique_ptr<Trogout> o,
+         std::unique_ptr<Trogout> e): Thing(g, n, std::move(o),
+         std::make_unique<NullIn>(), std::move(e)), owner(0),
+         weight(DEFAULT_WEIGHT), takeable(DEFAULT_TAKEABLE),
          droppable(DEFAULT_DROPPABLE), weapon(DEFAULT_IS_WEAPON),
          damage(DEFAULT_DAMAGE) {
 

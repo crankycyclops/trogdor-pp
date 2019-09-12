@@ -576,8 +576,8 @@ namespace trogdor { namespace core {
             Output:
                Player *
          */
-         Player *createPlayer(string name, Trogout *outStream, Trogin *inStream,
-         Trogout *errStream);
+         Player *createPlayer(string name, std::unique_ptr<Trogout> outStream,
+         std::unique_ptr<Trogin> inStream, std::unique_ptr<Trogout> errStream);
 
          /*
             Wraps around Timer API.  See timer.h for documentation.

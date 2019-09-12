@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <memory>
 
 #include "../include/entities/place.h"
 #include "../include/entities/thing.h"
@@ -15,11 +16,11 @@ using namespace std;
 
 namespace trogdor { namespace core { namespace entity {
 
-   Place::Place(Game *g, string n, Trogout *o, Trogout *e):
-   Entity(g, n, o, new NullIn(), e) {
+   Place::Place(Game *g, string n, std::unique_ptr<Trogout> o, std::unique_ptr<Trogout> e):
+   Entity(g, n, std::move(o), std::move(std::make_unique<NullIn>()), std::move(e)) {
 
       types.push_back(ENTITY_PLACE);
-      static_cast<PlaceOut *>(o)->setPlace(this);
+      static_cast<PlaceOut *>(outStream.get())->setPlace(this);
    }
 
    /***************************************************************************/

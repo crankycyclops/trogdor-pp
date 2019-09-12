@@ -3,6 +3,7 @@
 
 
 #include <string>
+#include <memory>
 #include <unordered_map>
 
 #include "../vocabulary.h"
@@ -27,8 +28,8 @@ namespace trogdor { namespace core { namespace entity {
             Constructor for creating a new Room.  Requires reference to the
             containing Game object and a name.
          */
-         inline Room(Game *g, string n, Trogout *o, Trogout *e):
-         Place(g, n, o, e) {
+         inline Room(Game *g, string n, std::unique_ptr<Trogout> o,
+         std::unique_ptr<Trogout> e): Place(g, n, std::move(o), std::move(e)) {
 
             types.push_back(ENTITY_ROOM);
             setClass("room");

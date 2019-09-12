@@ -22,9 +22,9 @@ namespace trogdor { namespace core {
       }
    }
 
-   Trogout *PlaceOut::clone() {
+   std::unique_ptr<Trogout> PlaceOut::clone() {
 
-      return new PlaceOut;
+      return std::make_unique<PlaceOut>();
    }
 }}
 

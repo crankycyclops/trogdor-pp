@@ -2,6 +2,7 @@
 #define NULLOUT_H
 
 
+#include <memory>
 #include "trogout.h"
 
 
@@ -25,7 +26,7 @@ namespace trogdor { namespace core {
          /*
             See include/iostream/trogout.h for details.
          */
-         virtual Trogout *clone();
+         virtual std::unique_ptr<Trogout> clone();
    };
 }}
 

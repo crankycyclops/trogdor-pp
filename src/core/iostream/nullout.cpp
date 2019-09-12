@@ -11,9 +11,9 @@ namespace trogdor { namespace core {
       return; // complicated, huh... :)
    }
 
-   Trogout *NullOut::clone() {
+   std::unique_ptr<Trogout> NullOut::clone() {
 
-      return new NullOut;
+      return std::make_unique<NullOut>();
    }
 }}
 

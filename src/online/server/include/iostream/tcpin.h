@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <thread>
 #include <mutex>
+#include <memory>
 
 #include "../network/tcpconnection.h"
 
@@ -61,7 +62,7 @@ class TCPIn: public core::Trogin {
 		/*
 		 See include/iostream/trogin.h for details.
 		*/
-		virtual core::Trogin *clone();
+		virtual std::unique_ptr<core::Trogin> clone();
 
 		// For now, I only need to define input for strings.
 		virtual core::Trogin &operator>> (string &val);

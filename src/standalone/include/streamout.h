@@ -2,6 +2,7 @@
 #define STREAMOUT_H
 
 
+#include <memory>
 #include "../../core/include/iostream/trogout.h"
 
 
@@ -32,7 +33,7 @@ namespace trogdor { namespace standalone {
 		  /*
 		   See include/iostream/trogout.h for details.
 		  */
-		  virtual trogdor::core::Trogout *clone();
+		  virtual std::unique_ptr<trogdor::core::Trogout> clone();
 	};
 }}
 

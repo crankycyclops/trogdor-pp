@@ -196,7 +196,9 @@ namespace trogdor { namespace core {
          throw s.str();
       }
 
-      std::unique_ptr<Room> room = make_unique<Room>(game, name, new PlaceOut(), game->err().clone());
+      std::unique_ptr<Room> room = make_unique<Room>(
+         game, name, std::make_unique<PlaceOut>(), game->err().clone()
+      );
 
       // for type checking
       room->setClass(name);
@@ -253,7 +255,9 @@ namespace trogdor { namespace core {
          throw s.str();
       }
 
-      std::unique_ptr<Object> object = make_unique<Object>(game, name, new NullOut(), game->err().clone());
+      std::unique_ptr<Object> object = make_unique<Object>(
+         game, name, std::make_unique<NullOut>(), game->err().clone()
+      );
 
       // for type checking
       object->setClass(name);
@@ -311,8 +315,9 @@ namespace trogdor { namespace core {
       }
 
       // TODO: should Creatures have some kind of special input stream?
-      std::unique_ptr<Creature> creature = make_unique<Creature>(game, name, new NullOut(),
-         game->err().clone());
+      std::unique_ptr<Creature> creature = make_unique<Creature>(
+         game, name, std::make_unique<NullOut>(), game->err().clone()
+      );
 
       // for type checking
       creature->setClass(name);
@@ -545,11 +550,13 @@ namespace trogdor { namespace core {
          std::shared_ptr<Room> room;
 
          if (0 == className.compare("room")) {
-            room = make_shared<Room>(game, name, new PlaceOut(), game->err().clone());
+            room = std::make_shared<Room>(
+               game, name, std::make_unique<PlaceOut>(), game->err().clone()
+            );
          }
 
          else {
-            room = make_shared<Room>(*typeClasses.getRoomType(className), name);
+            room = std::make_shared<Room>(*typeClasses.getRoomType(className), name);
          }
 
          room->setClass(className);
@@ -608,7 +615,9 @@ namespace trogdor { namespace core {
          std::shared_ptr<Object> object;
 
          if (0 == className.compare("object")) {
-            object = make_shared<Object>(game, name, new NullOut(), game->err().clone());
+            object = std::make_shared<Object>(
+               game, name, std::make_unique<NullOut>(), game->err().clone()
+            );
          }
 
          else {
@@ -670,7 +679,9 @@ namespace trogdor { namespace core {
          std::shared_ptr<Creature> creature;
 
          if (0 == className.compare("creature")) {
-            creature = make_shared<Creature>(game, name, new NullOut(), game->err().clone());
+            creature = make_shared<Creature>(
+               game, name, std::make_unique<NullOut>(), game->err().clone()
+            );
          }
 
          else {

@@ -4,6 +4,7 @@
 
 #include <set>
 #include <algorithm>
+#include <memory>
 #include <unordered_map>
 
 #include "../utility.h"
@@ -191,9 +192,10 @@ namespace trogdor { namespace core { namespace entity {
             Constructor for creating a new Being.  Requires reference to the
             containing Game object and a name.
          */
-         inline Being(Game *g, string n, Trogout *o, Trogin *i, Trogout *e):
-         Thing(g, n, o, i, e),
-         attackable(DEFAULT_ATTACKABLE), damageBareHands(DEFAULT_DAMAGE_BARE_HANDS) {
+         inline Being(Game *g, string n, std::unique_ptr<Trogout> o,
+         std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e): Thing(g, n,
+         std::move(o), std::move(i), std::move(e)), attackable(DEFAULT_ATTACKABLE),
+         damageBareHands(DEFAULT_DAMAGE_BARE_HANDS) {
 
             respawnSettings.enabled  = DEFAULT_RESPAWN_ENABLED;
             respawnSettings.interval = DEFAULT_RESPAWN_INTERVAL;

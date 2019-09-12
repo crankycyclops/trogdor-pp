@@ -63,9 +63,9 @@ namespace trogdor { namespace core { namespace entity {
 
          Game *game;
 
-         Trogout *outStream;
-         Trogout *errStream;
-         Trogin  *inStream;
+         std::unique_ptr<Trogout> outStream;
+         std::unique_ptr<Trogout> errStream;
+         std::unique_ptr<Trogin> inStream;
 
          string className;
          string name;
@@ -132,7 +132,8 @@ namespace trogdor { namespace core { namespace entity {
                Pointer to input stream object (Trogin *)
                Pointer to error stream object (Trogout *)
          */
-         Entity(Game *g, string n, Trogout *o, Trogin *i, Trogout *e);
+         Entity(Game *g, string n, std::unique_ptr<Trogout> o,
+         std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e);
 
          /*
             Constructor for cloning an Entity into another (with a unique name.)

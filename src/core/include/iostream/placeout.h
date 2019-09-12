@@ -2,6 +2,8 @@
 #define PLACEOUT_H
 
 
+#include <memory>
+
 #include "trogout.h"
 #include "../entities/place.h"
 
@@ -56,7 +58,7 @@ namespace trogdor { namespace core {
          /*
             See include/iostream/trogout.h for details.
          */
-         virtual Trogout *clone();
+         virtual std::unique_ptr<Trogout> clone();
    };
 }}
 

@@ -2,6 +2,7 @@
 #define STREAMIN_H
 
 
+#include <memory>
 #include "../../core/include/iostream/trogin.h"
 
 
@@ -26,7 +27,7 @@ namespace trogdor { namespace standalone {
 		  /*
 		   See include/iostream/trogin.h for details.
 		  */
-		  virtual trogdor::core::Trogin *clone();
+		  virtual std::unique_ptr<trogdor::core::Trogin> clone();
 
 		  // For now, I only need to define input for strings
 		  virtual trogdor::core::Trogin &operator>> (string &val);

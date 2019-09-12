@@ -36,8 +36,8 @@ void TCPOut::flush() {
 }
 
 
-core::Trogout *TCPOut::clone() {
+std::unique_ptr<core::Trogout> TCPOut::clone() {
 
-	return new TCPOut(connection);
+	return std::make_unique<TCPOut>(connection);
 }
 

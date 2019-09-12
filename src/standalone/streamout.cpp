@@ -1,3 +1,4 @@
+#include <memory>
 #include "include/streamout.h"
 
 
@@ -13,9 +14,9 @@ namespace trogdor { namespace standalone {
 	   clear();
 	}
 
-	trogdor::core::Trogout *StreamOut::clone() {
+	std::unique_ptr<trogdor::core::Trogout> StreamOut::clone() {
 
-	   return new StreamOut(stream);
+	   return std::make_unique<StreamOut>(stream);
 	}
 }}
 

@@ -1,4 +1,5 @@
 #include <string>
+#include <memory>
 #include <boost/lexical_cast.hpp>
 
 #include "../../include/network/tcpserver.h"
@@ -26,8 +27,8 @@ void NEWPLAYERAction::execute(TCPConnection::ptr connection) {
 		// TODO: create DEBUG define statement, and set NullOut to TCPOut in the
 		// event that DEBUG is set (will help tremendously in testing; actions do
 		// use player->err() to flag bugs.)
-		currentGame->createPlayer(request[1], new TCPOut(connection),
-			new TCPIn(connection), new core::NullOut());
+		currentGame->createPlayer(request[1], std::make_unique<TCPOut>(connection),
+			std::make_unique<TCPIn>(connection), std::make_unique<core::NullOut>());
 		connection->assignPlayer(currentGame->getPlayer(request[1]));
 		connection->write(std::string("OK") + EOT, freeConnection, 0);
 	}

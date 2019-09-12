@@ -2,6 +2,7 @@
 #define NULLIN_H
 
 
+#include <memory>
 #include "trogin.h"
 
 
@@ -20,7 +21,7 @@ namespace trogdor { namespace core {
          /*
             See include/iostream/trogin.h for details.
          */
-         virtual Trogin *clone();
+         virtual std::unique_ptr<Trogin> clone();
 
          // For now, I only need to define input for strings
          virtual Trogin &operator>> (string &val);

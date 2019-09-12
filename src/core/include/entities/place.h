@@ -136,7 +136,7 @@ namespace trogdor { namespace core { namespace entity {
             Constructor for creating a new Place.  Requires reference to the
             containing Game object and a name.
          */
-         Place(Game *g, string n, Trogout *o, Trogout *e);
+         Place(Game *g, string n, std::unique_ptr<Trogout> o, std::unique_ptr<Trogout> e);
 
          /*
             Constructor for cloning an existing Place.  Requires a unique name.

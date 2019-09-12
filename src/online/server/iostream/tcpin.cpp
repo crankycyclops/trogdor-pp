@@ -47,8 +47,8 @@ core::Trogin &TCPIn::operator>> (string &val) {
 }
 
 
-core::Trogin *TCPIn::clone() {
+std::unique_ptr<core::Trogin> TCPIn::clone() {
 
-	return new TCPIn(connection);
+	return std::make_unique<TCPIn>(connection);
 }
 

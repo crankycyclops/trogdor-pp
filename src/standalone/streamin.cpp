@@ -1,3 +1,4 @@
+#include <memory>
 #include "include/streamin.h"
 
 
@@ -11,9 +12,9 @@ namespace trogdor { namespace standalone {
 	   getline(*stream, val);
 	}
 
-	trogdor::core::Trogin *StreamIn::clone() {
+	std::unique_ptr<trogdor::core::Trogin> StreamIn::clone() {
 
-	   return new StreamIn(stream);
+	   return std::make_unique<StreamIn>(stream);
 	}
 }}
 
