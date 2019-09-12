@@ -27,9 +27,9 @@ using namespace std;
 namespace trogdor { namespace core {
 
 
-   Game::Game(std::shared_ptr<Trogout> e) {
+   Game::Game(std::unique_ptr<Trogout> e) {
 
-      errStream = e;
+      errStream = std::move(e);
 
       inGame = false;
       actions = make_unique<ActionMap>(this);

@@ -120,7 +120,7 @@ namespace trogdor { namespace core {
          } introduction;
 
          /* global error stream */
-         std::shared_ptr<Trogout> errStream;
+         std::unique_ptr<Trogout> errStream;
 
          /*
             Called by initialize().  This initializes game actions and maps
@@ -146,7 +146,7 @@ namespace trogdor { namespace core {
             argument.)
          */
          Game() = delete;
-         Game(std::shared_ptr<Trogout> e);
+         Game(std::unique_ptr<Trogout> e);
 
          /*
             Don't allow copying since I don't currently have a good reason to

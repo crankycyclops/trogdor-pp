@@ -33,8 +33,9 @@ int main(int argc, char **argv) {
 	  gameXML = argv[1];
    }
 
-   std::shared_ptr<StreamOut> errStream = make_shared<StreamOut>(&cerr);
-   std::unique_ptr<trogdor::core::Game> currentGame = make_unique<trogdor::core::Game>(errStream);
+   std::unique_ptr<trogdor::core::Game> currentGame = make_unique<trogdor::core::Game>(
+      make_unique<StreamOut>(&cerr)
+   );
 
    if (currentGame->initialize(gameXML)) {
 
