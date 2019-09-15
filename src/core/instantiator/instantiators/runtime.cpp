@@ -400,6 +400,8 @@ namespace trogdor { namespace core {
          game->setIntroductionText(value);
       };
 
+      /**********/
+
       gameSetters["introduction.enabled"] = [](Game *game, string value) {
 
          if (value != "1" && value != "0") {
@@ -409,6 +411,8 @@ namespace trogdor { namespace core {
          game->setIntroductionEnabled(stoi(value));
       };
 
+      /**********/
+
       gameSetters["introduction.pause"] = [](Game *game, string value) {
 
          if (value != "1" && value != "0") {
@@ -416,6 +420,16 @@ namespace trogdor { namespace core {
          }
 
          game->setIntroductionPause(stoi(value));
+      };
+
+      /**********/
+
+      gameSetters["meta"] = [](Game *game, string value) {
+
+         string metaKey = value.substr(0, value.find(":"));
+         string metaValue = value.substr(value.find(":") + 1, value.length());
+
+         game->setMeta(metaKey, metaValue);
       };
    }
 

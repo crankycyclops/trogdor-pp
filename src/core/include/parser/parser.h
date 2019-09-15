@@ -402,7 +402,6 @@ namespace trogdor { namespace core {
                (none)
          */
          void parseGameMeta();
-         void parseGameMetaValue(string key);
          void parseEntityMeta(string entityName, enum ParseMode mode, int depth);
          void parseEntityMetaValue(string key, string entityName, enum ParseMode mode);
 

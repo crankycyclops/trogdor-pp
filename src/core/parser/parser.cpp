@@ -381,19 +381,14 @@ namespace trogdor { namespace core {
    void Parser::parseGameMeta() {
 
       while (nextTag() && 2 == getDepth()) {
-         parseGameMetaValue(getTagName());
+         string key = getTagName();
+         string value = getNodeValue();
+         value = trim(value);
+         instantiator->gameSetter("meta", key + ":" + value);
+         checkClosingTag(key);
       }
 
       checkClosingTag("meta");
-   }
-
-   /***************************************************************************/
-
-   void Parser::parseGameMetaValue(string key) {
-
-      string value = parseString();
-      game->setMeta(key, value);
-      checkClosingTag(key);
    }
 
    /***************************************************************************/
