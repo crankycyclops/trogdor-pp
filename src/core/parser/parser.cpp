@@ -410,7 +410,11 @@ namespace trogdor { namespace core {
       while (nextTag() && 2 == getDepth()) {
 
          if (0 == getTagName().compare("verb")) {
-            parseSynonymVerb(getAttribute("action"));
+            string action = getAttribute("action");
+            action = trim(action);
+            string synonym = parseString();
+            instantiator->gameSetter("synonym", synonym + ":" + action);
+            checkClosingTag("verb");
          }
 
          else {
@@ -422,14 +426,6 @@ namespace trogdor { namespace core {
       }
 
       checkClosingTag("synonyms");
-   }
-
-   /***************************************************************************/
-
-   void Parser::parseSynonymVerb(string action) {
-
-      game->setSynonym(parseString(), action);
-      checkClosingTag("verb");
    }
 
    /***************************************************************************/

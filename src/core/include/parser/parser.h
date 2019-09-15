@@ -405,7 +405,6 @@ namespace trogdor { namespace core {
          void parseEntityMeta(string entityName, enum ParseMode mode, int depth);
 
          void parseSynonyms();
-         void parseSynonymVerb(string action);
 
          /*
             Parse the Player section.  Throws an exception with an error message

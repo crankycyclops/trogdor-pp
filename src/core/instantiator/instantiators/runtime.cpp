@@ -396,12 +396,15 @@ namespace trogdor { namespace core {
    // Private method
    void Runtime::mapGameSetters() {
 
+      // If a game introduction is enabled, all players will see this text once
+      // before beginning the game
       gameSetters["introduction.text"] = [](Game *game, string value) {
          game->setIntroductionText(value);
       };
 
       /**********/
 
+      // Whether or not a game introduction is enabled
       gameSetters["introduction.enabled"] = [](Game *game, string value) {
 
          if (value != "1" && value != "0") {
@@ -413,6 +416,8 @@ namespace trogdor { namespace core {
 
       /**********/
 
+      // Whether or not the game should pause after the introduction before
+      // continuing (if the introduction is enabled)
       gameSetters["introduction.pause"] = [](Game *game, string value) {
 
          if (value != "1" && value != "0") {
@@ -424,12 +429,25 @@ namespace trogdor { namespace core {
 
       /**********/
 
+      // Sets a meta data value for the game
       gameSetters["meta"] = [](Game *game, string value) {
 
          string metaKey = value.substr(0, value.find(":"));
          string metaValue = value.substr(value.find(":") + 1, value.length());
 
          game->setMeta(metaKey, metaValue);
+      };
+
+      /**********/
+
+      // Sets an action synonym for the game (for example, "shutdown" might be
+      // a synonym for "quit")
+      gameSetters["synonym"] = [](Game *game, string value) {
+
+         string synonym = value.substr(0, value.find(":"));
+         string action = value.substr(value.find(":") + 1, value.length());
+
+         game->setSynonym(synonym, action);
       };
    }
 
