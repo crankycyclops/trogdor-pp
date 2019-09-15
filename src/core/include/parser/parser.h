@@ -22,8 +22,6 @@
 
 #include "data.h"
 
-class Game;
-
 
 using namespace std;
 
@@ -56,10 +54,6 @@ namespace trogdor { namespace core {
          // if this has a value, checkClosingTag() will use it instead of
          // walking the XML tree.
          string lastClosedTag;
-
-         // Entities must be instantiated with a reference to their Game
-         // TODO: remove this once I finish writing the instantiator
-         Game *game;
 
          // Used to instantiate entities and events
          std::unique_ptr<Instantiator> instantiator;
@@ -485,11 +479,12 @@ namespace trogdor { namespace core {
       public:
 
          /*
-            Constructor for the Parser class.  Takes as input the filename of
-            the game XML file and opens the file for reading.  If the specified
-            file cannot be opened, an exception is thrown with an error message.
+            Constructor for the Parser class.  Takes as input an instantiator
+            (used to create objects in the game) and the filename of the game
+            XML file and opens the file for reading.  If the specified file
+            cannot be opened, an exception is thrown with an error message.
          */
-         Parser(std::unique_ptr<Instantiator> i, string gameFile, Game *g);
+         Parser(std::unique_ptr<Instantiator> i, string gameFile);
 
          /*
             Destructor for the Parser class.

@@ -5,19 +5,13 @@
 #include "../include/iostream/nullin.h"
 #include "../include/iostream/placeout.h"
 
-// TODO: remove after testing
-#include "../include/game.h"
 
 using namespace std;
 
 namespace trogdor { namespace core {
 
 
-   // TODO: remove g as argument after testing
-   Parser::Parser(std::unique_ptr<Instantiator> i, string gameFile, Game *g) {
-
-      // TODO: remove after testing
-      game = g;
+   Parser::Parser(std::unique_ptr<Instantiator> i, string gameFile) {
 
       instantiator = std::move(i);
 

@@ -127,9 +127,7 @@ namespace trogdor { namespace core {
    bool Game::initialize(string gameXML) {
 
       try {
-         // TODO: after I finish writing the instantiator, remove Game * from
-         // arguments and Game * from Parser definition
-         parser = make_unique<Parser>(make_unique<Runtime>(this), gameXML, this);
+         parser = make_unique<Parser>(make_unique<Runtime>(this), gameXML);
          parser->parse();
       }
 
