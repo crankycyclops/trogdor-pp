@@ -345,22 +345,19 @@ namespace trogdor { namespace core {
       while (nextTag() && 2 == getDepth()) {
 
          if (0 == getTagName().compare("enabled")) {
-            string value = getNodeValue();
-            value = trim(value);
+            string value = parseString();
             instantiator->gameSetter("introduction.enabled", value);
             checkClosingTag("enabled");
          }
 
          else if (0 == getTagName().compare("pause")) {
-            string value = getNodeValue();
-            value = trim(value);
+            string value = parseString();
             instantiator->gameSetter("introduction.pause", value);
             checkClosingTag("pause");
          }
 
          else if (0 == getTagName().compare("text")) {
-            string value = getNodeValue();
-            value = trim(value);
+            string value = parseString();
             instantiator->gameSetter("introduction.text", value);
             checkClosingTag("text");
          }
@@ -396,20 +393,14 @@ namespace trogdor { namespace core {
    void Parser::parseEntityMeta(string entityName, enum ParseMode mode, int depth) {
 
       while (nextTag() && depth == getDepth()) {
-         parseEntityMetaValue(getTagName(), entityName, mode);
+         string key = getTagName();
+         string value = getNodeValue();
+         value = trim(value);
+         entitySetter(entityName, "meta", key + ":" + value, mode);
+         checkClosingTag(key);
       }
 
       checkClosingTag("meta");
-   }
-
-   /***************************************************************************/
-
-   void Parser::parseEntityMetaValue(string key, string entityName, enum ParseMode mode) {
-
-      string value = parseString();
-
-      entitySetter(entityName, "meta", key + ":" + value, mode);
-      checkClosingTag(key);
    }
 
    /***************************************************************************/
@@ -1663,6 +1654,7 @@ namespace trogdor { namespace core {
 
       stringstream s;
       string value = getNodeValue();
+      value = trim(value);
 
       s << filename << ": Tag requires a value (line "
          << xmlTextReaderGetParserLineNumber(reader) << ")";
