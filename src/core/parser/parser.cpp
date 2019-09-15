@@ -13,6 +13,7 @@ using namespace std;
 namespace trogdor { namespace core {
 
 
+   // TODO: remove g as argument after testing
    Parser::Parser(std::unique_ptr<Instantiator> i, string gameFile, Game *g) {
 
       // TODO: remove after testing
@@ -692,6 +693,15 @@ namespace trogdor { namespace core {
          L->loadScriptFromString(parseString());
       }
 */
+      // TODO: delete this after testing
+      try {
+         cout << "Stub: Skipping script file: " << getAttribute("src") << endl;
+      }
+
+      catch (string error) {
+         cout << "Stub: Skipping inline script: " << endl << parseString() << endl;
+      }
+
       checkClosingTag("script");
    }
 
@@ -1267,7 +1277,7 @@ namespace trogdor { namespace core {
 
       // set Room's default title and parse remaining properties
       entitySetter(getAttribute("name"), "title", getAttribute("name"), PARSE_ENTITY);
-      parseRoomProperties(className, PARSE_ENTITY, 3);
+      parseRoomProperties(getAttribute("name"), PARSE_ENTITY, 3);
       checkClosingTag(className);
    }
 
@@ -1601,19 +1611,21 @@ namespace trogdor { namespace core {
 
          while (nextTag() && 4 == getDepth()) {
 
+           string tag = getTagName();
+
             if (
-               0 == getTagName().compare("strength") ||
-               0 == getTagName().compare("dexterity") ||
-               0 == getTagName().compare("intelligence")
+               0 == tag.compare("strength") ||
+               0 == tag.compare("dexterity") ||
+               0 == tag.compare("intelligence")
             ) {
                string value = getNodeValue();
                value = trim(value);
-               entitySetter(beingName, string("attribute"), getTagName() + ":" + value, mode);
-               checkClosingTag(getTagName());
+               entitySetter(beingName, string("attribute"), tag + ":" + value, mode);
+               checkClosingTag(tag);
             }
 
             else {
-               s << filename << ": invalid tag <" << getTagName() << "> in "
+               s << filename << ": invalid tag <" << tag << "> in "
                   << "default player's inventory settings (line "
                   << xmlTextReaderGetParserLineNumber(reader) << ")";
                throw s.str();
@@ -1810,7 +1822,7 @@ namespace trogdor { namespace core {
       }
 
       else if (XML_ELEMENT_DECL != xmlTextReaderNodeType(reader) ||
-      0 != strcmp(tag.c_str(), (const char *)xmlTextReaderConstName(reader))) {
+      0 != tag.compare(strToLower((const char *)xmlTextReaderConstName(reader)))) {
          s << "missing closing </" << tag << "> (line " <<
             xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();

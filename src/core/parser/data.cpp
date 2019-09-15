@@ -6,10 +6,13 @@ using namespace std;
 
 const char *g_reservedClassNames[] = {
    "entity",
-   "object",
-   "creature",
+   "place",
    "room",
+   "thing",
+   "object",
+   "being",
    "player",
+   "creature",
    0
 };
 

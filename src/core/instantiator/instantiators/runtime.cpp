@@ -88,11 +88,11 @@ namespace trogdor { namespace core {
    string value) {
 
       if (typeClasses.end() == typeClasses.find(className)) {
-         throw "Entity class does not exist";
+         throw string("Entity class does not exist");
       }
 
       if (propSetters.find(typeClasses[className]->getTypeName()) == propSetters.end()) {
-         throw "Runtime instantiator: entity class: setting property on unsupported entity type";
+         throw string("Runtime instantiator: entity class: setting property on unsupported entity type");
       }
 
       else if (propSetters[typeClasses[className]->getTypeName()].find(property) ==
@@ -111,7 +111,7 @@ namespace trogdor { namespace core {
    string message) {
 
       if (typeClasses.end() == typeClasses.find(className)) {
-         throw "Entity class does not exist";
+         throw string("Entity class does not exist");
       }
 
       typeClasses[className]->setMessage(messageName, message);
@@ -144,7 +144,10 @@ namespace trogdor { namespace core {
             case entity::ENTITY_ROOM:
 
                // Entity has no class, so create a blank Entity
-               if (0 == className.compare("")) {
+               if (
+                  0 == className.compare("") ||
+                  0 == className.compare(Entity::typeToStr(entity::ENTITY_ROOM))
+               ) {
                   entity = std::make_shared<entity::Room>(
                      game, entityName, std::make_unique<PlaceOut>(), game->err().clone()
                  );
@@ -152,32 +155,52 @@ namespace trogdor { namespace core {
 
                // Entity has a class, so copy the class's prototype
                else {
-                  entity = std::make_shared<Room>(
-                     *(dynamic_cast<entity::Room *>(typeClasses[className].get())), entityName
-                  );
+
+                  if (!entityClassExists(className, entity::ENTITY_ROOM)) {
+                     throw string("room class ") + className + " was not defined";
+                  }
+
+                  else {
+                     entity = std::make_shared<entity::Room>(
+                        *(dynamic_cast<entity::Room *>(typeClasses[className].get())), entityName
+                     );
+                  }
                }
 
                break;
 
             case entity::ENTITY_OBJECT:
 
-               if (0 == className.compare("")) {
+               if (
+                  0 == className.compare("") ||
+                  0 == className.compare(Entity::typeToStr(entity::ENTITY_OBJECT))
+               ) {
                   entity = std::make_shared<entity::Object>(
                      game, entityName, std::make_unique<NullOut>(), game->err().clone()
                   );
                }
 
                else {
-                  entity = make_shared<Object>(
-                     *(dynamic_cast<entity::Object *>(typeClasses[className].get())), entityName
-                  );
+
+                  if (!entityClassExists(className, entity::ENTITY_OBJECT)) {
+                     throw string("object class ") + className + " was not defined";
+                  }
+
+                  else {
+                     entity = make_shared<entity::Object>(
+                        *(dynamic_cast<entity::Object *>(typeClasses[className].get())), entityName
+                     );
+                  }
                }
 
                break;
 
             case entity::ENTITY_CREATURE:
 
-               if (0 == className.compare("")) {
+               if (
+                  0 == className.compare("") ||
+                  0 == className.compare(Entity::typeToStr(entity::ENTITY_CREATURE))
+               ) {
                   // TODO: should Creatures have some kind of special input stream?
                   entity = make_shared<entity::Creature>(
                      game, entityName, std::make_unique<NullOut>(), game->err().clone()
@@ -185,9 +208,16 @@ namespace trogdor { namespace core {
                }
 
                else {
-                  entity = make_shared<Creature>(
-                     *(dynamic_cast<entity::Creature *>(typeClasses[className].get())), entityName
-                  );
+
+                  if (!entityClassExists(className, entity::ENTITY_CREATURE)) {
+                     throw string("creature class ") + className + " was not defined";
+                  }
+
+                  else {
+                     entity = make_shared<entity::Creature>(
+                        *(dynamic_cast<entity::Creature *>(typeClasses[className].get())), entityName
+                     );
+                  }
                }
 
                break;
@@ -196,7 +226,7 @@ namespace trogdor { namespace core {
               throw string("TODO: haven't had a reason to instantiate Player objects yet.");
 
             default:
-               throw string("Unsupported entity type");
+               throw string("Unsupported entity type. This is a bug.");
          }
 
          entity->setClass(0 == className.compare("") ? entity->getTypeName() : className);
@@ -244,16 +274,16 @@ namespace trogdor { namespace core {
       }
 
       catch (string e) {
-         throw entity->getTypeName() + " '" + entityName + "' does not exist";
+         throw string("Runtime instantiator: entity '") + entityName + "' does not exist. This is a bug.";
       }
 
       if (propSetters.find(entity->getTypeName()) == propSetters.end()) {
-         throw "Runtime instantiator: setting property on unsupported entity type";
+         throw string("Runtime instantiator: setting property on unsupported entity type. This is a bug.");
       }
 
       else if (propSetters[entity->getTypeName()].find(property) ==
       propSetters[entity->getTypeName()].end()) {
-         throw string("Runtime instantiator: setting unsupported property '") + property + "'";
+         throw string("Runtime instantiator: setting unsupported property '") + property + ".' This is a bug.";
       }
 
       propSetters[entity->getTypeName()][property](game, entity, value);
@@ -312,7 +342,7 @@ namespace trogdor { namespace core {
    void Runtime::defaultPlayerSetter(string property, string value) {
 
       if (propSetters.find(game->getDefaultPlayer()->getTypeName()) == propSetters.end()) {
-         throw "Runtime instantiator: default player is an unsupported entity type?";
+         throw string("Runtime instantiator: default player is an unsupported entity type?");
       }
 
       else if (propSetters[game->getDefaultPlayer()->getTypeName()].find(property) ==
@@ -413,12 +443,13 @@ namespace trogdor { namespace core {
       /**********/
 
       // Set whether or not a Being is alive
-      propSetters["creature"]["alias"] =
-      propSetters["player"]["alias"] = [](Game *game, entity::Entity *being,
+      propSetters["creature"]["alive"] =
+      propSetters["player"]["alive"] = [](Game *game, entity::Entity *being,
       string value) {
 
          if (value != "1" && value != "0") {
-            throw "being alive: should be either 1 for true or 0 for false";
+
+            throw string("being alive: should be either 1 for true or 0 for false");
          }
 
          dynamic_cast<entity::Being *>(being)->setAlive(stoi(value));
@@ -432,7 +463,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (!isValidInteger(value)) {
-            throw "being health: should be a valid integer";
+            throw string("being health: should be a valid integer");
          }
 
          dynamic_cast<entity::Being *>(being)->setHealth(stoi(value));
@@ -446,7 +477,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (!isValidInteger(value)) {
-            throw "being max health: should be a valid integer";
+            throw string("being max health: should be a valid integer");
          }
 
          dynamic_cast<entity::Being *>(being)->setMaxHealth(stoi(value));
@@ -460,7 +491,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (value != "1" && value != "0") {
-            throw "being attackable: should be either 1 for true or 0 for false";
+            throw string("being attackable: should be either 1 for true or 0 for false");
          }
 
          dynamic_cast<entity::Being *>(being)->setAttackable(stoi(value));
@@ -474,7 +505,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (!isValidDouble(value)) {
-            throw "being wound rate: should be a valid decimal probability between 0 and 1";
+            throw string("being wound rate: should be a valid decimal probability between 0 and 1");
          }
 
          dynamic_cast<entity::Being *>(being)->setWoundRate(stod(value));
@@ -489,7 +520,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (!isValidInteger(value)) {
-            throw "being damagebarehands: should be a valid integer";
+            throw string("being damagebarehands: should be a valid integer");
          }
 
          dynamic_cast<entity::Being *>(being)->setDamageBareHands(stoi(value));
@@ -498,12 +529,12 @@ namespace trogdor { namespace core {
       /**********/
 
       // Set whether the Being can respawn
-      propSetters["creature"]["respawn.enable"] =
-      propSetters["player"]["respawn.enable"] = [](Game *game, entity::Entity *being,
+      propSetters["creature"]["respawn.enabled"] =
+      propSetters["player"]["respawn.enabled"] = [](Game *game, entity::Entity *being,
       string value) {
 
          if (value != "1" && value != "0") {
-            throw "being respawn: should be either 1 for true or 0 for false";
+            throw string("being respawn: should be either 1 for true or 0 for false");
          }
 
          dynamic_cast<entity::Being *>(being)->setRespawnEnabled(stoi(value));
@@ -517,7 +548,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (!isValidInteger(value)) {
-            throw "being respawn interval: Expected integer value";
+            throw string("being respawn interval: Expected integer value");
          }
 
          dynamic_cast<entity::Being *>(being)->setRespawnInterval(stoi(value));
@@ -531,7 +562,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (!isValidInteger(value)) {
-            throw "being respawn lives: Expected integer value";
+            throw string("being respawn lives: Expected integer value");
          }
 
          dynamic_cast<entity::Being *>(being)->setRespawnLives(stoi(value));
@@ -545,7 +576,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (!isValidInteger(value)) {
-            throw "being inventory weight: Expected integer value";
+            throw string("being inventory weight: Expected integer value");
          }
 
          dynamic_cast<entity::Being *>(being)->setInventoryWeight(stoi(value));
@@ -592,7 +623,7 @@ namespace trogdor { namespace core {
          string attrValue = value.substr(value.find(":") + 1, value.length());
 
          if (!isValidInteger(attrValue)) {
-            throw "being attribute: Expected integer value";
+            throw string("being attribute: Expected integer value");
          }
 
          dynamic_cast<entity::Being *>(being)->setAttribute(attr, stoi(attrValue));
@@ -606,7 +637,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (value != "1" && value != "0") {
-            throw "creature counter attack: should be either 1 for true or 0 for false";
+            throw string("creature counter attack: should be either 1 for true or 0 for false");
          }
 
          dynamic_cast<entity::Creature *>(creature)->setCounterAttack(stoi(value));
@@ -632,8 +663,6 @@ namespace trogdor { namespace core {
                dynamic_cast<entity::Creature *>(creature)->setCounterAttack(true);
                break;
          }
-
-         dynamic_cast<entity::Creature *>(creature)->setCounterAttack(stoi(value));
       };
 
       /**********/
@@ -657,7 +686,7 @@ namespace trogdor { namespace core {
          }
 
          else {
-            throw "creature allegiance: must be 'friend', 'neutral' or 'enemy'";
+            throw string("creature allegiance: must be 'friend', 'neutral' or 'enemy'");
          }
 
          dynamic_cast<entity::Creature *>(creature)->setAllegiance(allegiance);
@@ -670,7 +699,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (value != "1" && value != "0") {
-            throw "creature autoattack enabled: should be either 1 for true or 0 for false";
+            throw string("creature autoattack enabled: should be either 1 for true or 0 for false");
          }
 
          dynamic_cast<entity::Creature *>(creature)->setAutoAttackEnabled(stoi(value));
@@ -683,7 +712,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (value != "1" && value != "0") {
-            throw "object takeable: should be either 1 for true or 0 for false";
+            throw string("object takeable: should be either 1 for true or 0 for false");
          }
 
          dynamic_cast<entity::Creature *>(creature)->setAutoAttackRepeat(stoi(value));
@@ -697,7 +726,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (!isValidInteger(value)) {
-            throw "object damage: Expected integer value";
+            throw string("object damage: Expected integer value");
          }
 
          dynamic_cast<entity::Creature *>(creature)->setAutoAttackInterval(stoi(value));
@@ -706,11 +735,11 @@ namespace trogdor { namespace core {
       /**********/
 
       // Whether or not to enable Creature wandering
-      propSetters["creature"]["wandering.enable"] = [](Game *game, entity::Entity *creature,
+      propSetters["creature"]["wandering.enabled"] = [](Game *game, entity::Entity *creature,
       string value) {
 
          if (value != "1" && value != "0") {
-            throw "creature wandering enable: should be either 1 for true or 0 for false";
+            throw string("creature wandering enable: should be either 1 for true or 0 for false");
          }
 
          dynamic_cast<entity::Creature *>(creature)->setWanderEnabled(stoi(value));
@@ -723,7 +752,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (!isValidInteger(value)) {
-            throw "creature wandering interval: Expected integer value";
+            throw string("creature wandering interval: Expected integer value");
          }
 
          dynamic_cast<entity::Creature *>(creature)->setWanderInterval(stoi(value));
@@ -737,7 +766,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (!isValidDouble(value)) {
-            throw "creature wanderlust: should be a valid decimal probability between 0 and 1";
+            throw string("creature wanderlust: should be a valid decimal probability between 0 and 1");
          }
 
          dynamic_cast<entity::Creature *>(creature)->setWanderLust(stod(value));
@@ -792,7 +821,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (!isValidInteger(value)) {
-            throw "object weight: Expected integer value";
+            throw string("object weight: Expected integer value");
          }
 
          dynamic_cast<entity::Object *>(object)->setWeight(stoi(value));
@@ -805,7 +834,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (value != "1" && value != "0") {
-            throw "object takeable: should be either 1 for true or 0 for false";
+            throw string("object takeable: should be either 1 for true or 0 for false");
          }
 
          dynamic_cast<entity::Object *>(object)->setTakeable(stoi(value));
@@ -818,7 +847,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (value != "1" && value != "0") {
-            throw "object droppable: should be either 1 for true or 0 for false";
+            throw string("object droppable: should be either 1 for true or 0 for false");
          }
 
          dynamic_cast<entity::Object *>(object)->setDroppable(stoi(value));
@@ -831,7 +860,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (value != "1" && value != "0") {
-            throw "object weapon: should be either 1 for true or 0 for false";
+            throw string("object weapon: should be either 1 for true or 0 for false");
          }
 
          dynamic_cast<entity::Object *>(object)->setIsWeapon(stoi(value));
@@ -844,7 +873,7 @@ namespace trogdor { namespace core {
       string value) {
 
          if (!isValidInteger(value)) {
-            throw "object damage: Expected integer value";
+            throw string("object damage: Expected integer value");
          }
 
          dynamic_cast<entity::Object *>(object)->setDamage(stoi(value));

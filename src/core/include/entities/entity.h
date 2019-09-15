@@ -49,7 +49,7 @@ namespace trogdor { namespace core { namespace entity {
       ENTITY_OBJECT = 5,
       ENTITY_BEING = 6,
       ENTITY_PLAYER = 7,
-      ENTITY_CREATURE = 8
+      ENTITY_CREATURE = 8,
    };
 
    /***************************************************************************/
