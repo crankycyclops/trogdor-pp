@@ -49,6 +49,9 @@ namespace trogdor { namespace core {
          make_unique<NullOut>()
       );
 
+      L = std::make_shared<LuaState>();
+      eventListener = std::make_unique<event::EventListener>();
+
       lastCommand = nullptr;
    }
 
@@ -137,10 +140,6 @@ namespace trogdor { namespace core {
       }
 
       initActions();
-
-      L = parser->getLuaState();
-      eventListener = parser->getEventListener();
-
       initEvents();
 
       return true;

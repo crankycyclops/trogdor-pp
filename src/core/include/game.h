@@ -93,7 +93,7 @@ namespace trogdor { namespace core {
          std::shared_ptr<LuaState> L;
 
          // Global EventListener for the entire game
-         event::EventListener *eventListener;
+         std::unique_ptr<event::EventListener> eventListener;
 
          // Player object representing default settings for all new players
          std::unique_ptr<entity::Player> defaultPlayer;
@@ -743,7 +743,7 @@ namespace trogdor { namespace core {
          inline bool event(const char *event, event::EventArgumentList &args) {
 
             // make sure global EventListener is always listening
-            events->addListener(eventListener);
+            events->addListener(eventListener.get());
             return events->event(event, args);
          }
 
@@ -753,7 +753,7 @@ namespace trogdor { namespace core {
          inline bool event(const char *event) {
 
             // make sure global EventListener is always listening
-            events->addListener(eventListener);
+            events->addListener(eventListener.get());
             return events->event(event);
          }
    };

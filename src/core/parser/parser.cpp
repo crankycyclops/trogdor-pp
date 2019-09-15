@@ -21,10 +21,6 @@ namespace trogdor { namespace core {
       if (NULL == reader) {
          throw "failed to open " + gameFile + "!\n";
       }
-
-      // TODO: remove after moving into instantiator
-      gameL = make_shared<LuaState>();
-      eventListener = new event::EventListener();
    }
 
    /***************************************************************************/
@@ -86,7 +82,9 @@ namespace trogdor { namespace core {
          }
 
          else if (0 == getTagName().compare("events")) {
-            parseEvents(gameL, eventListener, 2);
+// TODO: fix
+//            parseEvents(gameL, eventListener, 2);
+              parseEvents(nullptr, nullptr, 2);
          }
 
          else if (0 == getTagName().compare("introduction")) {

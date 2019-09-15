@@ -58,12 +58,6 @@ namespace trogdor { namespace core {
          // Used to instantiate entities and events
          std::unique_ptr<Instantiator> instantiator;
 
-         // Global Lua state for the entire game
-         std::shared_ptr<LuaState> gameL;
-
-         // Global EventListener for the entire game
-         event::EventListener *eventListener;
-
          /*
             Sets an Entity or Entity class's property via the instantiator.
 
@@ -500,9 +494,6 @@ namespace trogdor { namespace core {
             Output: (none)
          */
          void parse();
-
-         inline std::shared_ptr<LuaState> getLuaState() {return gameL;}
-         inline event::EventListener *getEventListener() {return eventListener;}
    };
 }}
 
