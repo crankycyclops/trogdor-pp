@@ -47,6 +47,23 @@ extern string &rtrim(std::string &s);
 */
 extern string &trim(std::string &s);
 
+/*
+   Checks if a string represents a valid integer.
+
+   Input: string
+   Output: true if the string is a valid integer and false if not
+*/
+extern bool isValidInteger(const std::string &s);
+
+/*
+   Checks if a string represents a valid double. Shamelessly stolen from:
+   https://stackoverflow.com/questions/29169153/how-do-i-verify-a-string-is-valid-double-even-if-it-has-a-point-in-it
+
+   Input: string
+   Output: true if the string is a valid double and false if not
+*/
+extern bool isValidDouble(const std::string &s);
+
 
 #endif
 

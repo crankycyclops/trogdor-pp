@@ -1,6 +1,7 @@
 #include <string>
 #include <cstring>
 #include <cctype>
+#include <regex>
 #include <algorithm> 
 #include <functional>
 #include <locale>
@@ -43,6 +44,23 @@ string &rtrim(std::string &s);
 */
 string &trim(std::string &s);
 
+/*
+   Checks if a string represents a valid integer.
+
+   Input: string
+   Output: true if the string is a valid integer and false if not
+*/
+bool isValidInteger(const std::string &s);
+
+/*
+   Checks if a string represents a valid double. Shamelessly stolen from:
+   https://stackoverflow.com/questions/29169153/how-do-i-verify-a-string-is-valid-double-even-if-it-has-a-point-in-it
+
+   Input: string
+   Output: true if the string is a valid double and false if not
+*/
+bool isValidDouble(const std::string &s);
+
 
 string strToLower(string str) {
 
@@ -68,5 +86,19 @@ string &rtrim(std::string &s) {
 
 string &trim(std::string &s) {
         return ltrim(rtrim(s));
+}
+
+
+bool isValidInteger(const std::string &s) {
+
+   return regex_match(s, regex("^\\-?\\d+$")) ? true : false;
+}
+
+
+bool isValidDouble(const std::string &s) {
+
+   char *end = 0;
+   double val = strtod(s.c_str(), &end);
+   return end != s.c_str() && *end == '\0' && val != HUGE_VAL;
 }
 

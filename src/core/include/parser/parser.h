@@ -18,9 +18,9 @@
 #include "../entities/player.h"
 #include "../lua/luastate.h"
 #include "../event/eventlistener.h"
+#include "../instantiator/instantiator.h"
 
 #include "data.h"
-#include "entityclass.h"
 
 class Game;
 
@@ -38,6 +38,14 @@ namespace trogdor { namespace core {
 
       private:
 
+         // When passed to a function, determines if we're parsing for an entity
+         // class, an entity object, or the default player
+         enum ParseMode {
+            PARSE_CLASS = 0,
+            PARSE_ENTITY = 1,
+            PARSE_DEFAULT_PLAYER = 2
+         };
+
          // handles the actual XML parsing
          xmlTextReaderPtr reader;
 
@@ -50,16 +58,60 @@ namespace trogdor { namespace core {
          string lastClosedTag;
 
          // Entities must be instantiated with a reference to their Game
+         // TODO: remove this once I finish writing the instantiator
          Game *game;
 
-         // user defined Entity classes
-         entity::EntityClass typeClasses;
+         // Used to instantiate entities and events
+         std::unique_ptr<Instantiator> instantiator;
 
          // Global Lua state for the entire game
          std::shared_ptr<LuaState> gameL;
 
          // Global EventListener for the entire game
          event::EventListener *eventListener;
+
+         /*
+            Sets an Entity or Entity class's property via the instantiator.
+
+            Input:
+               Entity name (string, ignored if mode = PARSE_DEFAULT_PLAYER)
+               Property name (string)
+               Property value (string)
+               Whether we're parsing aliases for Entity of Entity class (enum ParseMode mode)
+         */
+         inline void entitySetter(string entity, string property,
+         string value, enum ParseMode mode) {
+
+            if (PARSE_ENTITY == mode) {
+               instantiator->entitySetter(entity, property, value);
+            } else if (PARSE_CLASS == mode) {
+               instantiator->entityClassSetter(entity, property, value);
+            } else {
+               instantiator->defaultPlayerSetter(property, value);
+            }
+         }
+
+         /*
+            Sets a message for the specified Entity or Entity class via the
+            instantiator.
+
+            Input:
+               Entity name (string, ignored if mode = PARSE_DEFAULT_PLAYER)
+               Property name (string)
+               Property value (string)
+               Whether we're parsing aliases for Entity of Entity class (enum ParseMode mode)
+         */
+         inline void setEntityMessage(string entity, string messageName,
+         string message, enum ParseMode mode) {
+
+            if (PARSE_ENTITY == mode) {
+               instantiator->setEntityMessage(entity, messageName, message);
+            } else if (PARSE_DEFAULT_PLAYER == mode) {
+               instantiator->setDefaultPlayerMessage(messageName, message);
+            } else {
+               instantiator->setEntityClassMessage(entity, messageName, message);
+            }
+         }
 
          /*
             Returns the name of the current XML tag.  Characters in the tag name
@@ -160,40 +212,6 @@ namespace trogdor { namespace core {
          bool parseBool();
 
          /*
-            Parses an integer value from the last encountered XML tag and leaves
-            the current position in the XML file just after the value.  Throws
-            an exception if there's an error.
-
-            Input:
-               (none)
-
-            Output:
-               (none)
-
-            Exceptions:
-               Throws exception if there's a parsing error or if the value
-               isn't an integer.
-         */
-         int parseInt();
-
-         /*
-            Parses a double from the last encountered XML tag and leaves the
-            current position in the XML file just after the value.  Throws an
-            exception if there's an error.
-
-            Input:
-               (none)
-
-            Output:
-               (none)
-
-            Exceptions:
-               Throws exception if there's a parsing error or if the value
-               isn't a valid number.
-         */
-         double parseDouble();
-
-         /*
             Parses a string from the last encountered XML tag and leaves the
             current position in the XML file just after the value.  Throws an
             exception if there's an error.
@@ -211,281 +229,81 @@ namespace trogdor { namespace core {
          string parseString();
 
          /*
-            Parses an Entity's title.
-
-            Input:
-               (none)
-
-            Output:
-               The title (string)
-         */
-         string parseEntityTitle();
-
-         /*
-            Parses an Entity's long and short descriptions.
-
-            Input:
-               (none)
-
-            Output:
-               description (string)
-         */
-         string parseEntityLongDescription();
-         string parseEntityShortDescription();
-
-         /*
             Parses a list of aliases, alternate identifiers for Things.
 
             Input:
-               Pointer to Thing
+               Name of Thing (string)
+               Whether we're parsing aliases for Entity of Entity class (enum ParseMode)
                Parse depth in XML file
 
             Output:
                (none)
          */
-         void parseThingAliases(Thing *thing, int depth);
-         string parseThingAlias();  // returns a single alias
-
-         /*
-            Parses whether or not creature should automatically retaliate against
-            an attack.
-
-            Input:
-               (none)
-
-            Output:
-               bool
-         */
-         bool parseCreatureCounterAttack();
+         void parseThingAliases(string entityName, enum ParseMode mode, int depth);
 
          /*
             Parses auto-attack settings for a Creature.
 
             Input:
-               Pointer to Creature
+               Name of Creature (string)
+               Are we parsing an entity or entity class? enum ParseMode mode)
                depth in the XML tree (int)
 
             Output:
                (none)
          */
-         void parseCreatureAutoAttack(Creature *creature, int depth);
-
-         /*
-            Parses whether or not auto-attack is enabled.
-
-            Input:
-               (none)
-
-            Output:
-               boolean
-         */
-         bool parseCreatureAutoAttackEnabled();
-
-         /*
-            Parses auto-attack interval.
-
-            Input:
-               (none)
-
-            Output:
-               number of clock ticks (int)
-         */
-         int parseCreatureAutoAttackInterval();
-
-         /*
-            Parses whether or not auto-attack should repeat as long as both
-            Beings are alive and are in the same room.
-
-            Input:
-               (none)
-
-            Output:
-               boolean
-         */
-         bool parseCreatureAutoAttackRepeat();
+         void parseCreatureAutoAttack(string creatureName, enum ParseMode mode,
+         int depth);
 
          /*
             Parses a Creature's wandering settings.
 
             Input:
-               Pointer to the Creature whose wandering settings are being configured
+               Name of Creature (string)
+               Whether we're parsing an Entity of Entity class (enum ParseMode)
 
             Output:
                (none)
          */
-         void parseCreatureWandering(entity::Creature *creature);
-         bool parseCreatureWanderingEnabled();
-         int parseCreatureWanderingInterval();
-         double parseCreatureWanderLust();
+         void parseCreatureWandering(string creatureName, enum ParseMode mode);
 
          /*
             Parses a Being's respawn settings.
 
             Input:
-               Pointer to the being whose respawn settings are being configured
+               Name of being whose respawn settings are being configured
+               Whether we're parsing for an Entity, Entity class, or default player
                Depth in the XML tree
 
             Output:
                (none)
          */
-         void parseBeingRespawn(entity::Being *being, int depth);
-         bool parseBeingRespawnEnabled();
-         int parseBeingRespawnInterval();
-         int parseBeingRespawnLives();
+         void parseBeingRespawn(string beingName, enum ParseMode mode, int depth);
 
          /*
             Parses a Being's inventory settings.
 
             Input:
-               Pointer to the being whose inventory is being configured
+               Name of being whose respawn settings are being configured
+               Whether we're parsing for an Entity, Entity class, or default player
                Whether or not to allow a set of objects initialized in game.xml
 
             Output:
                (none)
          */
-         void parseBeingInventory(entity::Being *being, bool allowObjects);
-         void parseBeingInventoryObject(Being *being);
-         int parseBeingInventoryWeight();
+         void parseBeingInventory(string beingName, enum ParseMode mode, bool allowObjects);
 
          /*
             Parses a Being's Attributes.
 
             Input:
-               Pointer to being whose attributes are being set
+               Name of Being whose attributes are being set
+               Whether we're parsing an Entity or an Entity class (enum ParseMode)
 
             Output:
                (none)
          */
-         void parseBeingAttributes(entity::Being *being);
-         int parseBeingAttributesStrength();
-         int parseBeingAttributesDexterity();
-         int parseBeingAttributesIntelligence();
-
-         /*
-            Parses whether or not a Being starts out being alive.
-
-            Input:
-               (none)
-
-            Output:
-               (none)
-         */
-         bool parseBeingAlive();
-
-         /*
-            Parses a Being's initial health.
-
-            Input:
-               (none)
-
-            Output:
-               boolean (alive or dead)
-         */
-         int parseBeingHealth();
-
-         /*
-            Parses a Being's maximum health (0 for immortal.)
-
-            Input:
-               (none)
-
-            Output:
-               Being's health (int)
-         */
-         int parseBeingMaxHealth();
-
-         /*
-            Parses a Being's woundRate setting, which is a factor that influences how
-            likely a Being is to be hit during an attack.
-
-            Input:
-               (none)
-
-            Output:
-               Being's max health (int)
-         */
-         double parseBeingWoundRate();
-
-         /*
-            Parses whether or not players, by default, are attackable.
-
-            Input:
-               (none)
-
-            Output:
-               bool
-         */
-         bool parseBeingAttackable();
-
-         /*
-            Parses amount of damage a Being does with its bare hands.
-
-            Input:
-               (none)
-
-            Output:
-               int (damage points)
-         */
-         int parseBeingDamageBareHands();
-
-         /*
-            Parses a Creature's allegiance.
-
-            Input:
-               (none)
-
-            Output:
-               enum entity::Creature::AllegianceType
-         */
-         enum entity::Creature::AllegianceType parseCreatureAllegiance();
-
-         /*
-            Parses an Object's definition to see if it's takeable or droppable by
-            a Being.
-
-            Input:
-               (none)
-
-            Output:
-               Bool
-         */
-         bool parseObjectTakeable();
-         bool parseObjectDroppable();
-
-         /*
-            Parses an Object's weight (how much space it takes up in a Being's
-            inventory.
-
-            Input:
-               (none)
-
-            Output:
-               weight (int)
-         */
-         int parseObjectWeight();
-
-         /*
-            Parses whether or not an Object is a weapon.
-
-            Input:
-               (none)
-
-            Output:
-               (none)
-         */
-         bool parseObjectWeapon();
-
-         /*
-            Parses how much damage an Object does (hit points taken) if it's a
-            weapon.
-
-            Input:
-               (none)
-
-            Output:
-               damage (int)
-         */
-         int parseObjectDamage();
+         void parseBeingAttributes(string beingName, enum ParseMode mode);
 
          /*
             Takes tags such as <north>, <south>, etc. in a room definition and
@@ -493,58 +311,39 @@ namespace trogdor { namespace core {
 
             Input:
                direction (string)
-               Pointer to room where connection should be made (Room *)
+               Name of room where the connection should be made (string)
                Name of room that we want to connect to (string)
+               Whether we're parsing an Entity or an Entity class (enum ParseMode)
 
             Output:
                (none)
          */
-         void parseRoomConnection(string direction, Room *room, string connectTo);
+         void parseRoomConnection(string direction, string roomName, string connectTo, enum ParseMode mode);
 
          /*
             Parses a Room's version of the <contains> section.
 
             Input:
-               Pointer to Room in which we're inserting the object
+               Name of room into which we're inserting the object (string)
+               Whether we're parsing an Entity or an Entity class (enum ParseMode)
 
             Output:
                (none)
          */
-         void parseRoomContains(Room *room);
-
-         /*
-            Parses a single Object in a Room's <contains> section.
-
-            Input:
-               Tag name (right now, could be "creature" or "object")
-
-            Output:
-               (none)
-         */
-         Thing *parseRoomContainsThing(string tag);
+         void parseRoomContains(string roomName, enum ParseMode mode);
 
          /*
             Parse the contents of a Messages object from XML.
 
             Input:
-               depth -- how deeply nested <message> tags will be (int)
+               Name of Entity we're parsing messages for (string)
+               Whether we're parsing an Entity or an Entity class (enum ParseMode)
+               XML Depth--how deeply nested <message> tags will be (int)
 
             Output:
                Messages object containing the parsed messages
          */
-         Messages *parseMessages(int depth);
-
-         /*
-            Called by parseMessages() to parse a single message from the XML.
-            Stores the result in the Message object pointed to by m.
-
-            Input:
-               Messages object that will contain the message
-
-            Output:
-               (none)
-         */
-         void parseMessage(Messages *m);
+         void parseMessages(string entityName, enum ParseMode mode, int depth);
 
          /*
             Parses an <events> section and populates the given LuaState and
@@ -624,8 +423,8 @@ namespace trogdor { namespace core {
          */
          void parseGameMeta();
          void parseGameMetaValue(string key);
-         void parseEntityMeta(Entity *entity, int depth);
-         void parseEntityMetaValue(string key, Entity *entity);
+         void parseEntityMeta(string entityName, enum ParseMode mode, int depth);
+         void parseEntityMetaValue(string key, string entityName, enum ParseMode mode);
 
          void parseSynonyms();
          void parseSynonymVerb(string action);
@@ -666,7 +465,7 @@ namespace trogdor { namespace core {
          */
          void parseObjects();
          void parseObject(string className = "object");
-         void parseObjectProperties(Object *object, int depth);
+         void parseObjectProperties(string name, enum ParseMode mode, int depth);
 
          /*
             Parses the creatures section of game.xml.
@@ -679,7 +478,7 @@ namespace trogdor { namespace core {
          */
          void parseCreatures();
          void parseCreature(string className = "creature");
-         void parseCreatureProperties(Creature *creature, int depth);
+         void parseCreatureProperties(string name, enum ParseMode mode, int depth);
 
          /*
             Parses room definitions in game.xml.
@@ -692,7 +491,7 @@ namespace trogdor { namespace core {
          */
          void parseRooms();
          void parseRoom(string className = "room");
-         void parseRoomProperties(Room *room, int depth);
+         void parseRoomProperties(string name, enum ParseMode mode, int depth);
 
          /*
             Parses the <game> section of the XML file.  Throws an exception if
@@ -713,7 +512,7 @@ namespace trogdor { namespace core {
             the game XML file and opens the file for reading.  If the specified
             file cannot be opened, an exception is thrown with an error message.
          */
-         Parser(Game *g, string gameFile);
+         Parser(std::unique_ptr<Instantiator> i, string gameFile, Game *g);
 
          /*
             Destructor for the Parser class.

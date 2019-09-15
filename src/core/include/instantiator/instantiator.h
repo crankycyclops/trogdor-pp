@@ -44,8 +44,23 @@ namespace trogdor { namespace core {
          virtual void makeEntityClass(string name, enum entity::EntityType) = 0;
 
          /*
+            Returns true if the entity class identified by className exists and
+            false if either it doesn't or, if it does, the entity type doesn't
+            match.
+
+            Input:
+               Entity class's name (string)
+               Entity class's type (enum entity::entityType)
+
+            Output:
+               Whether or not the Entity class exists (bool)
+         */
+         virtual bool entityClassExists(string className,
+         enum entity::EntityType entityType) = 0;
+
+         /*
             Set's an Entity class's property to the specified value. See
-            comment for setEntityProperty() for more details.
+            comment for entitySetter() for more details.
 
             Input:
                Entity class's name (string)
@@ -55,8 +70,22 @@ namespace trogdor { namespace core {
             Output:
                (none)
          */
-         virtual void setEntityClassProperty(string className, string property,
+         virtual void entityClassSetter(string className, string property,
          string value) = 0;
+
+         /*
+            Set's a message for an Entity class.
+
+            Input:
+               Entity class's name (string)
+               Message name (string)
+               Message value (string)
+
+            Output:
+               (none)
+         */
+         virtual void setEntityClassMessage(string className, string messageName,
+         string message) = 0;
 
          /*
             Instantiates an entity (Room, Creature, or Object.) If a class is
@@ -75,11 +104,47 @@ namespace trogdor { namespace core {
          string className = "") = 0;
 
          /*
-            Set's an Entity's property to the specified value. Properties are
-            defined using periods to demarcate sections. So, for example, a
-            Being's weight setting for their inventory would be "inventory.weight."
-            It is the derived class's responsibility to infer the appropriate
-            data type for each property.
+            Returns true if the entity identified by entityName exists and false
+            if it doesn't.
+
+            Input:
+               Entity's name (string)
+
+            Output:
+               Whether or not the Entity exists (bool)
+         */
+         virtual bool entityExists(string entityName) = 0;
+
+         /*
+            Returns the type of the Entity referenced by entityName. Throws an
+            exception if the Entity doesn't exist.
+
+            Input:
+               Entity's name (string)
+
+            Output:
+               The Entity's type (enum entity::EntityType)
+         */
+         virtual enum entity::EntityType getEntityType(string entityName) = 0;
+
+         /*
+            Returns the class of the Entity referenced by entityName. Throws an
+            exception if the Entity doesn't exist.
+
+            Input:
+               Entity's name (string)
+
+            Output:
+               The Entity's class (string)
+         */
+         virtual string getEntityClass(string entityName) = 0;
+
+         /*
+            Calls an Entity's setter. Setter names are defined using periods to
+            demarcate sections. So, for example, a Being's weight setting for
+            their inventory would be "inventory.weight." It is the derived
+            class's responsibility to infer the appropriate data type for each
+            property.
 
             Input:
                Entity's name (string)
@@ -89,21 +154,8 @@ namespace trogdor { namespace core {
             Output:
                (none)
          */
-         virtual void setEntityProperty(string entityName, string property,
+         virtual void entitySetter(string entityName, string property,
          string value) = 0;
-
-         /*
-            Identical to setEntityProperty, except that we're setting a property
-            of the default player.
-
-            Input:
-               Property name (string)
-               Property value (string)
-
-            Output:
-               (none)
-         */
-         virtual void setDefaultPlayerProperty(string property, string value) = 0;
 
          /*
             Loads a Lua script into the game's global Lua state. By default,
@@ -174,6 +226,31 @@ namespace trogdor { namespace core {
          */
          virtual void setEntityMessage(string entityName, string messageName,
          string message) = 0;
+
+         /*
+            Identical to entitySetter, except that we're setting a property
+            of the default player.
+
+            Input:
+               Property name (string)
+               Property value (string)
+
+            Output:
+               (none)
+         */
+         virtual void defaultPlayerSetter(string property, string value) = 0;
+
+         /*
+            Set's a message for the default player.
+
+            Input:
+               Message name (string)
+               Message value (string)
+
+            Output:
+               (none)
+         */
+         virtual void setDefaultPlayerMessage(string messageName, string message) = 0;
 
          /*
             Should be called after parsing is complete. If this step is

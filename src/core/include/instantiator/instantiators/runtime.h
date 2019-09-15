@@ -2,18 +2,46 @@
 #define RUNTIME_H
 
 
+#include <memory>
+#include <unordered_map>
+
 #include "../instantiator.h"
-#include "../../game.h"
 
 
 namespace trogdor { namespace core {
+
+   // Forward declaration of Game, later defined in game.h
+   class Game;
 
    class Runtime: public Instantiator {
 
       private:
 
+         // Function type used by propertySetters
+         typedef void (*propSetterFunc) (
+            Game *game, entity::Entity * entity, string value
+         );
+
          // Pointer to the game we're populating
          Game *game;
+
+         // User defined Entity classes
+         unordered_map<string, std::unique_ptr<Entity>> typeClasses;
+
+         // A hash mapping of entity type -> property name -> setter function
+         unordered_map<string, unordered_map<string, propSetterFunc>> propSetters;
+
+         /*
+            Creates an entity type -> property -> function map that's used to
+            implement entitySetter() an entityClassSetter().
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void mapSetters();
 
       public:
 
@@ -22,7 +50,7 @@ namespace trogdor { namespace core {
          */
          Runtime() = delete;
          Runtime(const Runtime &) = delete;
-         inline Runtime(Game *g) {game = g;}
+         Runtime(Game *g);
 
          /*
             Creates an entity class that can be used to instantiate one or
@@ -35,11 +63,25 @@ namespace trogdor { namespace core {
             Output:
                (none)
          */
-         virtual void makeEntityClass(string name, enum entity::EntityType);
+         virtual void makeEntityClass(string className, enum entity::EntityType classType);
+
+         /*
+            Returns true if the entity class identified by className exists and
+            false if it doesn't.
+
+            Input:
+               Entity class's name (string)
+               Entity class's type (enum entity::EntityType)
+
+            Output:
+               Whether or not the Entity class exists (bool)
+         */
+         virtual bool entityClassExists(string className,
+         enum entity::EntityType entityType);
 
          /*
             Set's an Entity class's property to the specified value. See
-            comment for setEntityProperty() for more details.
+            comment for entitySetter() for more details.
 
             Input:
                Entity class's name (string)
@@ -49,13 +91,30 @@ namespace trogdor { namespace core {
             Output:
                (none)
          */
-         virtual void setEntityClassProperty(string className, string property,
+         virtual void entityClassSetter(string className, string property,
          string value);
+
+         /*
+            Set's a message for an Entity class.
+
+            Input:
+               Entity class's name (string)
+               Message name (string)
+               Message value (string)
+
+            Output:
+               (none)
+         */
+         virtual void setEntityClassMessage(string className, string messageName,
+         string message);
 
          /*
             Instantiates an entity (Room, Creature, or Object.) If a class is
             specified, the entity will be configured according to that class's
             properties.
+
+            This method should throw an exception if another entity by the same
+            name already exists.
 
             Input:
                Entity's name (string)
@@ -65,15 +124,49 @@ namespace trogdor { namespace core {
             Output:
                (none)
          */
-         virtual void makeEntity(string entityName, enum entity::EntityType type,
+         virtual void makeEntity(string entityName, enum entity::EntityType entityType,
          string className = "");
 
          /*
-            Set's an Entity's property to the specified value. Properties are
-            defined using periods to demarcate sections. So, for example, a
-            Being's weight setting for their inventory would be "inventory.weight."
-            It is the derived class's responsibility to infer the appropriate
-            data type for each property.
+            Returns true if the entity identified by entityName exists and false
+            if it doesn't.
+
+            Input:
+               Entity's name (string)
+
+            Output:
+               Whether or not the Entity exists (bool)
+         */
+         virtual bool entityExists(string entityName);
+
+         /*
+            Returns the type of Entity referenced by entityName. Throws an
+            exception if the entity doesn't exist.
+
+            Input:
+               Entity's name (string)
+
+            Output:
+               The Entity's type (enum entity::EntityType)
+         */
+         virtual enum entity::EntityType getEntityType(string entityName);
+
+         /*
+            Returns the class of the Entity referenced by entityName. Throws an
+            exception if the Entity doesn't exist.
+
+            Input:
+               Entity's name (string)
+
+            Output:
+               The Entity's class (string)
+         */
+         virtual string getEntityClass(string entityName);
+
+         /*
+            Calls an Entity's setter. Setter names are defined using periods to
+            demarcate sections. So, for example, a Being's weight setting for
+            their inventory would be "inventory.weight."
 
             Input:
                Entity's name (string)
@@ -83,21 +176,8 @@ namespace trogdor { namespace core {
             Output:
                (none)
          */
-         virtual void setEntityProperty(string entityName, string property,
+         virtual void entitySetter(string entityName, string property,
          string value);
-
-         /*
-            Identical to setEntityProperty, except that we're setting a property
-            of the default player.
-
-            Input:
-               Property name (string)
-               Property value (string)
-
-            Output:
-               (none)
-         */
-         virtual void setDefaultPlayerProperty(string property, string value);
 
          /*
             Loads a Lua script into the game's global Lua state. By default,
@@ -170,8 +250,34 @@ namespace trogdor { namespace core {
          string message);
 
          /*
-            Not actually used by Runtime, but required by the parent class. Just
-            fill this in as an empty method.
+            Identical to entitySetter, except that we're setting a property
+            of the default player.
+
+            Input:
+               Property name (string)
+               Property value (string)
+
+            Output:
+               (none)
+         */
+         virtual void defaultPlayerSetter(string property, string value);
+
+         /*
+            Set's a message for the default player.
+
+            Input:
+               Message name (string)
+               Message value (string)
+
+            Output:
+               (none)
+         */
+         virtual void setDefaultPlayerMessage(string messageName, string message);
+
+         /*
+            Most of the instantiation is completed already by the above functions,
+            but there are a few things we need to do at the end before the game
+            can be ready to play.
 
             Input:
                (none)

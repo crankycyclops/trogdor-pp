@@ -3,6 +3,7 @@
 #include "include/actions.h"
 #include "include/timer/timer.h"
 #include "include/parser/parser.h"
+#include "include/instantiator/instantiators/runtime.h"
 
 #include "include/entities/entity.h"
 #include "include/entities/place.h"
@@ -43,9 +44,9 @@ namespace trogdor { namespace core {
       defaultPlayer = make_unique<entity::Player>(
          this,
          "default",
-         std::make_unique<NullOut>(),
-         std::make_unique<NullIn>(),
-         std::make_unique<NullOut>()
+         make_unique<NullOut>(),
+         make_unique<NullIn>(),
+         make_unique<NullOut>()
       );
 
       lastCommand = nullptr;
@@ -126,7 +127,9 @@ namespace trogdor { namespace core {
    bool Game::initialize(string gameXML) {
 
       try {
-         parser = make_unique<Parser>(this, gameXML);
+         // TODO: after I finish writing the instantiator, remove Game * from
+         // arguments and Game * from Parser definition
+         parser = make_unique<Parser>(make_unique<Runtime>(this), gameXML, this);
          parser->parse();
       }
 
@@ -174,7 +177,7 @@ namespace trogdor { namespace core {
       }
 
       // clone the default player, giving it the specified name
-      std::shared_ptr<Player> player = std::make_shared<Player>(
+      std::shared_ptr<Player> player = make_shared<Player>(
          *defaultPlayer, name, std::move(outStream), std::move(inStream), std::move(errStream)
       );
 

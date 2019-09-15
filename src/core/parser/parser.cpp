@@ -4,16 +4,22 @@
 #include "../include/iostream/nullout.h"
 #include "../include/iostream/nullin.h"
 #include "../include/iostream/placeout.h"
-#include "../include/timer/jobs/wander.h"
+
+// TODO: remove after testing
+#include "../include/game.h"
 
 using namespace std;
 
 namespace trogdor { namespace core {
 
 
-   Parser::Parser(Game *g, string gameFile) {
+   Parser::Parser(std::unique_ptr<Instantiator> i, string gameFile, Game *g) {
 
+      // TODO: remove after testing
       game = g;
+
+      instantiator = std::move(i);
+
       filename = gameFile;
 
       reader = xmlReaderForFile(gameFile.c_str(), NULL, XML_PARSE_NOBLANKS);
@@ -21,6 +27,7 @@ namespace trogdor { namespace core {
          throw "failed to open " + gameFile + "!\n";
       }
 
+      // TODO: remove after moving into instantiator
       gameL = make_shared<LuaState>();
       eventListener = new event::EventListener();
    }
@@ -29,10 +36,7 @@ namespace trogdor { namespace core {
 
    Parser::~Parser() {
 
-      // TODO: do I free entity objects inside, or let Game do it?
       xmlFreeTextReader(reader);
-      // TODO: do I free eventListener or let Game do it?
-      // TODO: do I need to free default player object, or let Game do it?
    }
 
    /***************************************************************************/
@@ -48,6 +52,7 @@ namespace trogdor { namespace core {
       }
 
       parseGame();
+      instantiator->instantiate();
    }
 
    /***************************************************************************/
@@ -196,26 +201,23 @@ namespace trogdor { namespace core {
          throw s.str();
       }
 
-      std::unique_ptr<Room> room = make_unique<Room>(
-         game, name, std::make_unique<PlaceOut>(), game->err().clone()
-      );
-
-      // for type checking
-      room->setClass(name);
-      room->setTitle(name);
-
       try {
-         typeClasses.insertType(name, std::move(room));
+         instantiator->makeEntityClass(name, entity::ENTITY_ROOM);
       }
 
       catch (bool e) {
-            s << filename << ": room class '" << name << "' already defined (line "
-               << xmlTextReaderGetParserLineNumber(reader) << ")";
-            throw s.str();
+         s << filename << ": room class '" << name << "' already defined (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
       }
 
-      // Don't pass room! It's been moved and is no longer a valid pointer.
-      parseRoomProperties(typeClasses.getRoomType(name), 4);
+      catch (string e) {
+         s << filename << ": " << e << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      parseRoomProperties(name, PARSE_CLASS, 4);
       checkClosingTag("room");
    }
 
@@ -255,16 +257,8 @@ namespace trogdor { namespace core {
          throw s.str();
       }
 
-      std::unique_ptr<Object> object = make_unique<Object>(
-         game, name, std::make_unique<NullOut>(), game->err().clone()
-      );
-
-      // for type checking
-      object->setClass(name);
-      object->setTitle(name);
-
       try {
-         typeClasses.insertType(name, std::move(object));
+         instantiator->makeEntityClass(name, entity::ENTITY_OBJECT);
       }
 
       catch (bool e) {
@@ -273,8 +267,14 @@ namespace trogdor { namespace core {
             throw s.str();
       }
 
+      catch (string error) {
+         s << filename << ": " << error << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
       // Don't pass object! It's been moved and is no longer a valid pointer.
-      parseObjectProperties(typeClasses.getObjectType(name), 4);
+      parseObjectProperties(name, PARSE_CLASS, 4);
       checkClosingTag("object");
    }
 
@@ -314,17 +314,8 @@ namespace trogdor { namespace core {
          throw s.str();
       }
 
-      // TODO: should Creatures have some kind of special input stream?
-      std::unique_ptr<Creature> creature = make_unique<Creature>(
-         game, name, std::make_unique<NullOut>(), game->err().clone()
-      );
-
-      // for type checking
-      creature->setClass(name);
-      creature->setTitle(name);
-
       try {
-         typeClasses.insertType(name, std::move(creature));
+         instantiator->makeEntityClass(name, entity::ENTITY_CREATURE);
       }
 
       catch (bool e) {
@@ -333,8 +324,14 @@ namespace trogdor { namespace core {
             throw s.str();
       }
 
+      catch (string e) {
+         s << filename << ": " << e << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
       // Don't pass creature! It's been moved and is no longer a valid pointer.
-      parseCreatureProperties(typeClasses.getCreatureType(name), 4);
+      parseCreatureProperties(name, PARSE_CLASS, 4);
       checkClosingTag("creature");
    }
 
@@ -415,10 +412,10 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseEntityMeta(Entity *entity, int depth) {
+   void Parser::parseEntityMeta(string entityName, enum ParseMode mode, int depth) {
 
       while (nextTag() && depth == getDepth()) {
-         parseEntityMetaValue(getTagName(), entity);
+         parseEntityMetaValue(getTagName(), entityName, mode);
       }
 
       checkClosingTag("meta");
@@ -426,10 +423,11 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseEntityMetaValue(string key, Entity *entity) {
+   void Parser::parseEntityMetaValue(string key, string entityName, enum ParseMode mode) {
 
       string value = parseString();
-      entity->setMeta(key, value);
+
+      entitySetter(entityName, "meta", key + ":" + value, mode);
       checkClosingTag(key);
    }
 
@@ -510,7 +508,7 @@ namespace trogdor { namespace core {
             }
          }
 
-         else if (typeClasses.roomTypeExists(getTagName())) {
+         else if (instantiator->entityClassExists(getTagName(), entity::ENTITY_ROOM)) {
             parseManifestRoom(getTagName());
          }
 
@@ -534,35 +532,7 @@ namespace trogdor { namespace core {
    bool Parser::parseManifestRoom(string className) {
 
       string name = getAttribute("name");
-
-      try {
-         game->getEntity(name);
-         stringstream s;
-         s << "Cannot define room with name '" << name << ": an entity with " <<
-            "that name already exists";
-         throw s.str();
-      }
-
-      // This is actually a good thing. It means an entity by this name doesn't
-      // already exist.
-      catch (string error) {
-
-         std::shared_ptr<Room> room;
-
-         if (0 == className.compare("room")) {
-            room = std::make_shared<Room>(
-               game, name, std::make_unique<PlaceOut>(), game->err().clone()
-            );
-         }
-
-         else {
-            room = std::make_shared<Room>(*typeClasses.getRoomType(className), name);
-         }
-
-         room->setClass(className);
-         game->insertEntity(name, room);
-      }
-
+      instantiator->makeEntity(name, entity::ENTITY_ROOM, className);
       checkClosingTag(className);
       return 0 == name.compare("start") ? true : false;
    }
@@ -579,7 +549,7 @@ namespace trogdor { namespace core {
             parseManifestObject();
          }
 
-         else if (typeClasses.objectTypeExists(getTagName())) {
+         else if (instantiator->entityClassExists(getTagName(), entity::ENTITY_OBJECT)) {
             parseManifestObject(getTagName());
          }
 
@@ -599,35 +569,7 @@ namespace trogdor { namespace core {
    void Parser::parseManifestObject(string className) {
 
       string name = getAttribute("name");
-
-      try {
-         game->getEntity(name);
-         stringstream s;
-         s << "Cannot define object with name '" << name << ": an entity with "
-            << "that name already exists";
-         throw s.str();
-      }
-
-      // This is actually a good thing. It means an entity by this name doesn't
-      // already exist.
-      catch (string error) {
-
-         std::shared_ptr<Object> object;
-
-         if (0 == className.compare("object")) {
-            object = std::make_shared<Object>(
-               game, name, std::make_unique<NullOut>(), game->err().clone()
-            );
-         }
-
-         else {
-            object = make_shared<Object>(*typeClasses.getObjectType(className), name);
-         }
-
-         object->setClass(className);
-         game->insertEntity(name, object);
-      }
-
+      instantiator->makeEntity(name, entity::ENTITY_OBJECT, className);
       checkClosingTag(className);
    }
 
@@ -643,7 +585,7 @@ namespace trogdor { namespace core {
             parseManifestCreature();
          }
 
-         else if (typeClasses.creatureTypeExists(getTagName())) {
+         else if (instantiator->entityClassExists(getTagName(), entity::ENTITY_CREATURE)) {
             parseManifestCreature(getTagName());
          }
 
@@ -663,70 +605,48 @@ namespace trogdor { namespace core {
    void Parser::parseManifestCreature(string className) {
 
       string name = getAttribute("name");
-
-      try {
-         game->getEntity(name);
-         stringstream s;
-         s << "Cannot define creature with name '" << name << ": an entity "
-            << "with that name already exists";
-         throw s.str();
-      }
-
-      // This is actually a good thing. It means an entity by this name doesn't
-      // already exist.
-      catch (string error) {
-
-         std::shared_ptr<Creature> creature;
-
-         if (0 == className.compare("creature")) {
-            creature = make_shared<Creature>(
-               game, name, std::make_unique<NullOut>(), game->err().clone()
-            );
-         }
-
-         else {
-            creature = make_shared<Creature>(*typeClasses.getCreatureType(className), name);
-         }
-
-         creature->setClass(className);
-         game->insertEntity(name, creature);
-      }
-
+      instantiator->makeEntity(name, entity::ENTITY_CREATURE, className);
       checkClosingTag(className);
    }
 
    /***************************************************************************/
 
-   Messages *Parser::parseMessages(int depth) {
+   void Parser::parseMessages(string entityName, enum ParseMode mode, int depth) {
 
       stringstream s;
-      Messages *m = new Messages;
 
       while (nextTag() && depth == getDepth()) {
 
          if (0 == getTagName().compare("message")) {
-            parseMessage(m);
+
+            try {
+
+               string messageName = getAttribute("name");
+               messageName = trim(messageName);
+
+               string message = getNodeValue();
+               message = trim(message);
+
+               setEntityMessage(entityName, messageName, message, mode);
+               checkClosingTag("message");
+            }
+
+            catch (string error) {
+               s << filename << ": " << error << " (line "
+                  << xmlTextReaderGetParserLineNumber(reader) << ")";
+               throw s.str();
+            }
          }
 
          else {
             s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "messages section -- expected <message> (line "
+               << "messages section: expected <message> (line "
                << xmlTextReaderGetParserLineNumber(reader) << ")";
             throw s.str();
          }
       }
 
       checkClosingTag("messages");
-      return m;
-   }
-
-   /***************************************************************************/
-
-   void Parser::parseMessage(Messages *m) {
-
-      string name = getAttribute("name");
-      m->set(name, getNodeValue());
-      checkClosingTag("message");
    }
 
    /***************************************************************************/
@@ -762,6 +682,7 @@ namespace trogdor { namespace core {
    void Parser::parseScript(const std::shared_ptr<LuaState> &L) {
 
       // external script
+/* TODO: stub for testing
       try {
          L->loadScriptFromFile(getAttribute("src"));
       }
@@ -770,7 +691,7 @@ namespace trogdor { namespace core {
       catch (string error) {
          L->loadScriptFromString(parseString());
       }
-
+*/
       checkClosingTag("script");
    }
 
@@ -780,10 +701,10 @@ namespace trogdor { namespace core {
 
       string name = getAttribute("name");
       string function = parseString();
-
+/* TODO: stub for testing
       LuaEventTrigger *trigger = new LuaEventTrigger(function, L);
       triggers->add(name.c_str(), trigger);
-
+*/
       checkClosingTag("event");
    }
 
@@ -799,7 +720,7 @@ namespace trogdor { namespace core {
             parseObject();
          }
 
-         else if (typeClasses.objectTypeExists(getTagName())) {
+         else if (instantiator->entityClassExists(getTagName(), entity::ENTITY_OBJECT)) {
             parseObject(getTagName());
          }
 
@@ -819,100 +740,141 @@ namespace trogdor { namespace core {
    void Parser::parseObject(string className) {
 
       stringstream s;
-      Object *object;
 
-      try {
-         object = game->getObject(getAttribute("name"));
-      }
-
-      catch (string error) {
+      if (!instantiator->entityExists(getAttribute("name"))) {
          s << filename << ": object '" << getAttribute("name") << "' was not "
             << "declared in the manifest (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
       }
 
-      // type checking
-      if (className != object->getClass()) {
+      // Make sure entity is an object
+      enum entity::EntityType type = instantiator->getEntityType(getAttribute("name"));
+
+      if (entity::ENTITY_OBJECT != type) {
          s << filename << ": object type mismatch: '" << getAttribute("name")
-            << "' is of type " << object->getClass() << ", but was declared in "
-            << "objects section to be of type " << className << " (line "
+            << "' is of type " << Entity::typeToStr(type) << ", but was declared in "
+            << "<objects> (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      // Make sure object is the correct class
+      string entityClass = instantiator->getEntityClass(getAttribute("name"));
+
+      if (className != entityClass) {
+         s << filename << ": object type mismatch: '" << getAttribute("name")
+            << "' is of type " << entityClass << ", but was declared in "
+            << "<objects> to be of type " << className << " (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
       }
 
       // set the object's default title
       s << "a " << getAttribute("name");
-      object->setTitle(s.str());
+      entitySetter(getAttribute("name"), "title", s.str(), PARSE_ENTITY);
 
-      parseObjectProperties(object, 3);
+      parseObjectProperties(getAttribute("name"), PARSE_ENTITY, 3);
       checkClosingTag(className);
    }
 
    /***************************************************************************/
 
-   void Parser::parseObjectProperties(Object *object, int depth) {
+   void Parser::parseObjectProperties(string name, enum ParseMode mode, int depth) {
 
       stringstream s;
 
-      while (nextTag() && depth == getDepth()) {
+      try {
 
-         if (0 == getTagName().compare("title")) {
-            object->setTitle(parseEntityTitle());
-         }
+         while (nextTag() && depth == getDepth()) {
 
-         else if (0 == getTagName().compare("description")) {
-            object->setLongDescription(parseEntityLongDescription());
-         }
+            if (0 == getTagName().compare("title")) {
+               string title = getNodeValue();
+               title = trim(title);
+               entitySetter(name, "title", title, mode);
+               checkClosingTag("title");
+            }
 
-         else if (0 == getTagName().compare("short")) {
-            object->setShortDescription(parseEntityShortDescription());
-         }
+            else if (0 == getTagName().compare("description")) {
+               string longdesc = getNodeValue();
+               longdesc = trim(longdesc);
+               entitySetter(name, "longDesc", longdesc, mode);
+               checkClosingTag("description");
+            }
 
-         else if (0 == getTagName().compare("weight")) {
-            object->setWeight(parseObjectWeight());
-         }
+            else if (0 == getTagName().compare("short")) {
+               string shortdesc = getNodeValue();
+               shortdesc = trim(shortdesc);
+               entitySetter(name, "shortDesc", shortdesc, mode);
+               checkClosingTag("short");
+            }
 
-         else if (0 == getTagName().compare("takeable")) {
-            object->setTakeable(parseObjectTakeable());
-         }
+            else if (0 == getTagName().compare("weight")) {
+               string weight = getNodeValue();
+               weight = trim(weight);
+               entitySetter(name, "weight", weight, mode);
+               checkClosingTag("weight");
+            }
 
-         else if (0 == getTagName().compare("droppable")) {
-            object->setDroppable(parseObjectDroppable());
-         }
+            else if (0 == getTagName().compare("takeable")) {
+               string takeable = getNodeValue();
+               takeable = trim(takeable);
+               entitySetter(name, "takeable", takeable, mode);
+               checkClosingTag("takeable");
+            }
 
-         else if (0 == getTagName().compare("weapon")) {
-            object->setIsWeapon(parseObjectWeapon());
-         }
+            else if (0 == getTagName().compare("droppable")) {
+               string droppable = getNodeValue();
+               droppable = trim(droppable);
+               entitySetter(name, "droppable", droppable, mode);
+               checkClosingTag("droppable");
+            }
 
-         else if (0 == getTagName().compare("damage")) {
-            object->setDamage(parseObjectDamage());
-         }
+            else if (0 == getTagName().compare("weapon")) {
+               string weapon = getNodeValue();
+               weapon = trim(weapon);
+               entitySetter(name, "weapon", weapon, mode);
+               checkClosingTag("weapon");
+            }
 
-         else if (0 == getTagName().compare("events")) {
-            parseEvents(object->L, object->triggers, depth + 1);
-         }
+            else if (0 == getTagName().compare("damage")) {
+               string damage = getNodeValue();
+               damage = trim(damage);
+               entitySetter(name, "damage", damage, mode);
+               checkClosingTag("damage");
+            }
 
-         else if (0 == getTagName().compare("aliases")) {
-            parseThingAliases(object, depth + 1);
-         }
+            else if (0 == getTagName().compare("meta")) {
+               parseEntityMeta(name, mode, depth + 1);
+            }
 
-         else if (0 == getTagName().compare("meta")) {
-            parseEntityMeta(object, depth + 1);
-         }
+            else if (0 == getTagName().compare("messages")) {
+               parseMessages(name, mode, depth + 1);
+            }
 
-         else if (0 == getTagName().compare("messages")) {
-            Messages *m = parseMessages(depth + 1);
-            object->setMessages(*m);
-            delete m;
-         }
+            else if (0 == getTagName().compare("aliases")) {
+               parseThingAliases(name, mode, depth + 1);
+            }
 
-         else {
-            s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "object or object class definition (line "
-               << xmlTextReaderGetParserLineNumber(reader) << ")";
-            throw s.str();
+            else if (0 == getTagName().compare("events")) {
+               // TODO: stub for testing
+               parseEvents(nullptr, nullptr, depth + 1);
+               //parseEvents(object->L, object->triggers, depth + 1);
+            }
+
+            else {
+               s << filename << ": invalid tag <" << getTagName() << "> in "
+                  << "object or object class definition (line "
+                  << xmlTextReaderGetParserLineNumber(reader) << ")";
+               throw s.str();
+            }
          }
+      }
+
+      catch (string error) {
+         s << filename << ": " << error << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
       }
    }
 
@@ -945,56 +907,81 @@ namespace trogdor { namespace core {
 
       stringstream s;
 
-      while (nextTag() && 3 == getDepth()) {
+      try {
 
-         if (0 == getTagName().compare("messages")) {
-            Messages *m = parseMessages(4);
-            game->getDefaultPlayer()->setMessages(*m);
-            delete m;
-         }
+         while (nextTag() && 3 == getDepth()) {
 
-         else if (0 == getTagName().compare("inventory")) {
-            parseBeingInventory(game->getDefaultPlayer().get(), false);
-         }
+            if (0 == getTagName().compare("messages")) {
+               parseMessages("", PARSE_DEFAULT_PLAYER, 4);
+            }
 
-         else if (0 == getTagName().compare("respawn")) {
-            Parser::parseBeingRespawn(game->getDefaultPlayer().get(), 4);
-         }
+            else if (0 == getTagName().compare("inventory")) {
+               parseBeingInventory("", PARSE_DEFAULT_PLAYER, false);
+            }
 
-         else if (0 == getTagName().compare("attributes")) {
-            parseBeingAttributes(game->getDefaultPlayer().get());
-         }
+            else if (0 == getTagName().compare("respawn")) {
+               Parser::parseBeingRespawn("", PARSE_DEFAULT_PLAYER, 4);
+            }
 
-         else if (0 == getTagName().compare("alive")) {
-            game->getDefaultPlayer().get()->setAlive(parseBeingAlive());
-         }
+            else if (0 == getTagName().compare("attributes")) {
+               parseBeingAttributes("", PARSE_DEFAULT_PLAYER);
+            }
 
-         else if (0 == getTagName().compare("health")) {
-            game->getDefaultPlayer().get()->setHealth(parseBeingHealth());
-         }
+            else if (0 == getTagName().compare("alive")) {
+               string alive = getNodeValue();
+               alive = trim(alive);
+               entitySetter("", "alive", alive, PARSE_DEFAULT_PLAYER);
+               checkClosingTag("alive");
+            }
 
-         else if (0 == getTagName().compare("maxhealth")) {
-            game->getDefaultPlayer().get()->setMaxHealth(parseBeingMaxHealth());
-         }
+            else if (0 == getTagName().compare("health")) {
+               string health = getNodeValue();
+               health = trim(health);
+               entitySetter("", "health", health, PARSE_DEFAULT_PLAYER);
+               checkClosingTag("health");
+            }
 
-         else if (0 == getTagName().compare("woundrate")) {
-            game->getDefaultPlayer().get()->setWoundRate(parseBeingWoundRate());
-         }
+            else if (0 == getTagName().compare("maxhealth")) {
+               string maxhealth = getNodeValue();
+               maxhealth = trim(maxhealth);
+               entitySetter("", "maxhealth", maxhealth, PARSE_DEFAULT_PLAYER);
+               checkClosingTag("maxhealth");
+            }
 
-         else if (0 == getTagName().compare("attackable")) {
-            game->getDefaultPlayer().get()->setAttackable(parseBeingAttackable());
-         }
+            else if (0 == getTagName().compare("attackable")) {
+               string attackable = getNodeValue();
+               attackable = trim(attackable);
+               entitySetter("", "attackable", attackable, PARSE_DEFAULT_PLAYER);
+               checkClosingTag("attackable");
+            }
 
-         else if (0 == getTagName().compare("damagebarehands")) {
-            game->getDefaultPlayer().get()->setDamageBareHands(parseBeingDamageBareHands());
-         }
+            else if (0 == getTagName().compare("woundrate")) {
+               string rate = getNodeValue();
+               rate = trim(rate);
+               entitySetter("", "woundrate", rate, PARSE_DEFAULT_PLAYER);
+               checkClosingTag("woundrate");
+            }
 
-         else {
-            s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "default player settings (line "
-               << xmlTextReaderGetParserLineNumber(reader) << ")";
-            throw s.str();
+            else if (0 == getTagName().compare("damagebarehands")) {
+               string damage = getNodeValue();
+               damage = trim(damage);
+               entitySetter("", "damagebarehands", damage, PARSE_DEFAULT_PLAYER);
+               checkClosingTag("damagebarehands");
+            }
+
+            else {
+               s << filename << ": invalid tag <" << getTagName() << "> in "
+                  << "default player settings (line "
+                  << xmlTextReaderGetParserLineNumber(reader) << ")";
+               throw s.str();
+            }
          }
+      }
+
+      catch (string error) {
+         s << filename << ": " << error << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
       }
 
       checkClosingTag("default");
@@ -1012,7 +999,7 @@ namespace trogdor { namespace core {
             parseCreature();
          }
 
-         else if (typeClasses.creatureTypeExists(getTagName())) {
+         else if (instantiator->entityClassExists(getTagName(), entity::ENTITY_CREATURE)) {
             parseCreature(getTagName());
          }
 
@@ -1032,155 +1019,187 @@ namespace trogdor { namespace core {
    void Parser::parseCreature(string className) {
 
       stringstream s;
-      Creature *creature;
 
-      try {
-         creature = game->getCreature(getAttribute("name"));
-      }
-
-      catch (string error) {
+      if (!instantiator->entityExists(getAttribute("name"))) {
          s << filename << ": creature '" << getAttribute("name") << "' was not "
             << "declared in the manifest (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
       }
 
-      // type checking
-      if (className != creature->getClass()) {
+      // Make sure entity is a creature
+      enum entity::EntityType type = instantiator->getEntityType(getAttribute("name"));
+
+      if (entity::ENTITY_CREATURE != type) {
          s << filename << ": creature type mismatch: '" << getAttribute("name")
-            << "' is of type " << creature->getClass() << ", but was declared in "
-            << "creatures section to be of type " << className << " (line "
+            << "' is of type " << Entity::typeToStr(type) << ", but was declared in "
+            << "<creatures> (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
       }
 
-      // set the creature's default title
-      creature->setTitle(getAttribute("name"));
+      // Make sure creature is the correct class
+      string entityClass = instantiator->getEntityClass(getAttribute("name"));
 
-      parseCreatureProperties(creature, 3);
-
-      // if wandering was enabled, insert a timer job for it
-      if (creature->getWanderEnabled()) {
-         game->insertTimerJob(std::make_shared<WanderTimerJob>(game, creature->getWanderInterval(),
-            -1, creature->getWanderInterval(), creature));
+      if (className != entityClass) {
+         s << filename << ": creature type mismatch: '" << getAttribute("name")
+            << "' is of type " << entityClass << ", but was declared in "
+            << "<creatures> to be of type " << className << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
       }
 
+      // set the creature's default title and parse the rest of its properties
+      entitySetter(getAttribute("name"), "title", getAttribute("name"), PARSE_ENTITY);
+      parseCreatureProperties(getAttribute("name"), PARSE_ENTITY, 3);
       checkClosingTag(className);
    }
 
    /***************************************************************************/
 
-   void Parser::parseCreatureProperties(Creature *creature, int depth) {
+   void Parser::parseCreatureProperties(string name, enum ParseMode mode, int depth) {
 
       stringstream s;
       bool counterAttackParsed = false;
 
-      while (nextTag() && depth == getDepth()) {
+      try {
 
-         if (0 == getTagName().compare("title")) {
-            creature->setTitle(parseEntityTitle());
+         while (nextTag() && depth == getDepth()) {
+
+            if (0 == getTagName().compare("title")) {
+               string title = getNodeValue();
+               title = trim(title);
+               entitySetter(name, "title", title, mode);
+               checkClosingTag("title");
+            }
+
+            else if (0 == getTagName().compare("description")) {
+               string longdesc = getNodeValue();
+               longdesc = trim(longdesc);
+               entitySetter(name, "longDesc", longdesc, mode);
+               checkClosingTag("description");
+            }
+
+            else if (0 == getTagName().compare("short")) {
+               string shortdesc = getNodeValue();
+               shortdesc = trim(shortdesc);
+               entitySetter(name, "shortDesc", shortdesc, mode);
+               checkClosingTag("short");
+            }
+
+            else if (0 == getTagName().compare("alive")) {
+               string alive = getNodeValue();
+               alive = trim(alive);
+               entitySetter(name, "alive", alive, mode);
+               checkClosingTag("alive");
+            }
+
+            else if (0 == getTagName().compare("health")) {
+               string health = getNodeValue();
+               health = trim(health);
+               entitySetter(name, "health", health, mode);
+               checkClosingTag("health");
+            }
+
+            else if (0 == getTagName().compare("maxhealth")) {
+               string maxhealth = getNodeValue();
+               maxhealth = trim(maxhealth);
+               entitySetter(name, "maxhealth", maxhealth, mode);
+               checkClosingTag("maxhealth");
+            }
+
+            else if (0 == getTagName().compare("attackable")) {
+               string attackable = getNodeValue();
+               attackable = trim(attackable);
+               entitySetter(name, "attackable", attackable, mode);
+               checkClosingTag("attackable");
+            }
+
+            else if (0 == getTagName().compare("woundrate")) {
+               string rate = getNodeValue();
+               rate = trim(rate);
+               entitySetter(name, "woundrate", rate, mode);
+               checkClosingTag("woundrate");
+            }
+
+            else if (0 == getTagName().compare("damagebarehands")) {
+               string damage = getNodeValue();
+               damage = trim(damage);
+               entitySetter(name, "damagebarehands", damage, mode);
+               checkClosingTag("damagebarehands");
+            }
+
+            else if (0 == getTagName().compare("counterattack")) {
+               string counterattack = getNodeValue();
+               counterattack = trim(counterattack);
+               entitySetter(name, "counterattack", counterattack, mode);
+               counterAttackParsed = true;
+               checkClosingTag("counterattack");
+            }
+
+            else if (0 == getTagName().compare("allegiance")) {
+               string allegiance = getNodeValue();
+               allegiance = trim(allegiance);
+               entitySetter(name, "allegiance", allegiance, mode);
+               checkClosingTag("allegiance");
+            }
+
+            else if (0 == getTagName().compare("inventory")) {
+               parseBeingInventory(name, mode, true);
+            }
+
+            else if (0 == getTagName().compare("respawn")) {
+               Parser::parseBeingRespawn(name, mode, depth + 1);
+            }
+
+            else if (0 == getTagName().compare("autoattack")) {
+               parseCreatureAutoAttack(name, mode, depth + 1);
+            }
+
+            else if (0 == getTagName().compare("wandering")) {
+               parseCreatureWandering(name, mode);
+            }
+
+            else if (0 == getTagName().compare("attributes")) {
+               parseBeingAttributes(name, mode);
+            }
+
+            else if (0 == getTagName().compare("meta")) {
+               parseEntityMeta(name, mode, depth + 1);
+            }
+
+            else if (0 == getTagName().compare("messages")) {
+               parseMessages(name, mode, depth + 1);
+            }
+
+            else if (0 == getTagName().compare("aliases")) {
+               parseThingAliases(name, mode, depth + 1);
+            }
+
+            else if (0 == getTagName().compare("events")) {
+               // TODO: stub for now to test without event parsing
+               parseEvents(nullptr, nullptr, depth + 1);
+               //parseEvents(creature->L, creature->triggers, depth + 1);
+            }
+
+            else {
+               s << filename << ": invalid tag <" << getTagName() << "> in "
+                  << "creature definition (line "
+                  << xmlTextReaderGetParserLineNumber(reader) << ")";
+               throw s.str();
+            }
          }
 
-         else if (0 == getTagName().compare("description")) {
-            creature->setLongDescription(parseEntityLongDescription());
-         }
-
-         else if (0 == getTagName().compare("short")) {
-            creature->setShortDescription(parseEntityShortDescription());
-         }
-
-         else if (0 == getTagName().compare("alive")) {
-            creature->setAlive(parseBeingAlive());
-         }
-
-         else if (0 == getTagName().compare("health")) {
-            creature->setHealth(parseBeingHealth());
-         }
-
-         else if (0 == getTagName().compare("maxhealth")) {
-            creature->setMaxHealth(parseBeingMaxHealth());
-         }
-
-         else if (0 == getTagName().compare("attackable")) {
-            creature->setAttackable(parseBeingAttackable());
-         }
-
-         else if (0 == getTagName().compare("woundrate")) {
-            creature->setWoundRate(parseBeingWoundRate());
-         }
-
-         else if (0 == getTagName().compare("damagebarehands")) {
-            creature->setDamageBareHands(parseBeingDamageBareHands());
-         }
-
-         else if (0 == getTagName().compare("allegiance")) {
-            creature->setAllegiance(parseCreatureAllegiance());
-         }
-
-         else if (0 == getTagName().compare("counterattack")) {
-            counterAttackParsed = true;
-            creature->setCounterAttack(parseCreatureCounterAttack());
-         }
-
-         else if (0 == getTagName().compare("respawn")) {
-            Parser::parseBeingRespawn(creature, depth + 1);
-         }
-
-         else if (0 == getTagName().compare("autoattack")) {
-            parseCreatureAutoAttack(creature, depth + 1);
-         }
-
-         else if (0 == getTagName().compare("wandering")) {
-            parseCreatureWandering(creature);
-         }
-
-         else if (0 == getTagName().compare("inventory")) {
-            parseBeingInventory(creature, true);
-         }
-
-         else if (0 == getTagName().compare("attributes")) {
-            parseBeingAttributes(creature);
-         }
-
-         else if (0 == getTagName().compare("events")) {
-            parseEvents(creature->L, creature->triggers, depth + 1);
-         }
-
-         else if (0 == getTagName().compare("aliases")) {
-            parseThingAliases(creature, depth + 1);
-         }
-
-         else if (0 == getTagName().compare("meta")) {
-            parseEntityMeta(creature, depth + 1);
-         }
-
-         else if (0 == getTagName().compare("messages")) {
-            Messages *m = parseMessages(depth + 1);
-            creature->setMessages(*m);
-            delete m;
-         }
-
-         else {
-            s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "creature definition (line "
-               << xmlTextReaderGetParserLineNumber(reader) << ")";
-            throw s.str();
+         // Set default counter-attack rules
+         if (!counterAttackParsed) {
+            entitySetter(name, "counterattack.default", "", mode);
          }
       }
 
-      // verify default counter-attack rules
-      if (!counterAttackParsed) {
-
-         switch (creature->getAllegiance()) {
-
-            case entity::Creature::FRIEND:
-               creature->setCounterAttack(false);
-               break;
-
-            default:
-               creature->setCounterAttack(true);
-               break;
-         }
+      catch (string error) {
+         s << filename << ": " << error << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
       }
    }
 
@@ -1196,7 +1215,7 @@ namespace trogdor { namespace core {
             parseRoom();
          }
 
-         else if (typeClasses.roomTypeExists(getTagName())) {
+         else if (instantiator->entityClassExists(getTagName(), entity::ENTITY_ROOM)) {
             parseRoom(getTagName());
          }
 
@@ -1216,112 +1235,136 @@ namespace trogdor { namespace core {
    void Parser::parseRoom(string className) {
 
       stringstream s;
-      Room *room;
 
-      try {
-         room = game->getRoom(getAttribute("name"));
-      }
-
-      catch (string error) {
+      if (!instantiator->entityExists(getAttribute("name"))) {
          s << filename << ": room '" << getAttribute("name") << "' was not "
             << "declared in the manifest (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
       }
 
-      // type checking
-      if (className != room->getClass()) {
+      // Make sure entity is a room
+      enum entity::EntityType type = instantiator->getEntityType(getAttribute("name"));
+
+      if (entity::ENTITY_ROOM != type) {
          s << filename << ": room type mismatch: '" << getAttribute("name")
-            << "' is of type " << room->getClass() << ", but was declared in "
-            << "rooms section to be of type " << className << " (line "
+            << "' is of type " << Entity::typeToStr(type) << ", but was declared in "
+            << "<rooms> (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
       }
 
-      // set Room's default title
-      room->setTitle(getAttribute("name"));
+      // Make sure room is the correct class
+      string entityClass = instantiator->getEntityClass(getAttribute("name"));
 
-      parseRoomProperties(room, 3);
+      if (className != entityClass) {
+         s << filename << ": room type mismatch: '" << getAttribute("name")
+            << "' is of type " << entityClass << ", but was declared in "
+            << "<rooms> to be of type " << className << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
+      // set Room's default title and parse remaining properties
+      entitySetter(getAttribute("name"), "title", getAttribute("name"), PARSE_ENTITY);
+      parseRoomProperties(className, PARSE_ENTITY, 3);
       checkClosingTag(className);
    }
 
    /***************************************************************************/
 
-   void Parser::parseRoomProperties(Room *room, int depth) {
+   void Parser::parseRoomProperties(string name, enum ParseMode mode, int depth) {
 
       stringstream s;
 
-      while (nextTag() && depth == getDepth()) {
+      try {
 
-         if (0 == getTagName().compare("title")) {
-            room->setTitle(parseEntityTitle());
-         }
+         while (nextTag() && depth == getDepth()) {
 
-         else if (0 == getTagName().compare("description")) {
-            room->setLongDescription(parseEntityLongDescription());
-         }
+            if (0 == getTagName().compare("title")) {
+               string title = getNodeValue();
+               title = trim(title);
+               entitySetter(name, "title", title, mode);
+               checkClosingTag("title");
+            }
 
-         else if (0 == getTagName().compare("short")) {
-            room->setShortDescription(parseEntityShortDescription());
-         }
+            else if (0 == getTagName().compare("description")) {
+               string longdesc = getNodeValue();
+               longdesc = trim(longdesc);
+               entitySetter(name, "longDesc", longdesc, mode);
+               checkClosingTag("description");
+            }
 
-         else if (isDirection(getTagName())) {
-            string direction = getTagName();
-            string connection = parseString();
-            parseRoomConnection(direction, room, connection);
-         }
+            else if (0 == getTagName().compare("short")) {
+               string shortdesc = getNodeValue();
+               shortdesc = trim(shortdesc);
+               entitySetter(name, "shortDesc", shortdesc, mode);
+               checkClosingTag("short");
+            }
 
-         else if (0 == getTagName().compare("contains")) {
-            parseRoomContains(room);
-         }
+            else if (isDirection(getTagName())) {
+               string direction = getTagName();
+               string connection = parseString();
+               parseRoomConnection(direction, name, connection, mode);
+            }
 
-         else if (0 == getTagName().compare("events")) {
-            parseEvents(room->L, room->triggers, depth + 1);
-         }
+            else if (0 == getTagName().compare("contains")) {
+               parseRoomContains(name, mode);
+            }
 
-         else if (0 == getTagName().compare("meta")) {
-            parseEntityMeta(room, depth + 1);
-         }
+            else if (0 == getTagName().compare("meta")) {
+               parseEntityMeta(name, mode, depth + 1);
+            }
 
-         else if (0 == getTagName().compare("messages")) {
-            Messages *m = parseMessages(depth + 1);
-            room->setMessages(*m);
-            delete m;
-         }
+            else if (0 == getTagName().compare("messages")) {
+               parseMessages(name, mode, depth + 1);
+            }
 
-         else {
-            s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "room or class definition (line "
-               << xmlTextReaderGetParserLineNumber(reader) << ")";
-            throw s.str();
+            else if (0 == getTagName().compare("events")) {
+               // TODO: stub for testing without actually parsing events
+               parseEvents(nullptr, nullptr, depth + 1);
+               //parseEvents(room->L, room->triggers, depth + 1);
+            }
+
+            else {
+               s << filename << ": invalid tag <" << getTagName() << "> in "
+                  << "room or class definition (line "
+                  << xmlTextReaderGetParserLineNumber(reader) << ")";
+               throw s.str();
+            }
          }
+      }
+
+      catch (string error) {
+         s << filename << ": " << error << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
       }
    }
 
    /***************************************************************************/
 
-   void Parser::parseRoomConnection(string direction, Room *room, string connectTo) {
+   void Parser::parseRoomConnection(string direction, string roomName,
+   string connectTo, enum ParseMode mode) {
 
       stringstream s;
-      Room *connectToRoom;
 
       try {
-         connectToRoom = game->getRoom(connectTo);
+         entitySetter(roomName, "connection", direction + ":" + connectTo, mode);
       }
 
       catch (string error) {
-         s << filename << ": room '" << connectTo << "' does not exist (line "
+         s << filename << ": " << error << " (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
       }
 
-      room->setConnection(direction, connectToRoom);
       checkClosingTag(direction);
    }
 
    /***************************************************************************/
 
-   void Parser::parseRoomContains(Room *room) {
+   void Parser::parseRoomContains(string roomName, enum ParseMode mode) {
 
       stringstream s;
 
@@ -1330,7 +1373,16 @@ namespace trogdor { namespace core {
          string tag = getTagName();
 
          if (0 == tag.compare("object") || 0 == tag.compare("creature")) {
-            room->insertThing(parseRoomContainsThing(tag));
+
+            try {
+               entitySetter(roomName, "contains", parseString(), mode);
+            }
+
+            catch (string error) {
+               s << filename << ": " << error << " (line "
+                  << xmlTextReaderGetParserLineNumber(reader) << ")";
+               throw s.str();
+            }
          }
 
          else {
@@ -1339,6 +1391,8 @@ namespace trogdor { namespace core {
                << xmlTextReaderGetParserLineNumber(reader) << ")";
             throw s.str();
          }
+
+         checkClosingTag(tag);
       }
 
       checkClosingTag("contains");
@@ -1346,107 +1400,49 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   Thing *Parser::parseRoomContainsThing(string tag) {
+   void Parser::parseCreatureAutoAttack(string creatureName, enum ParseMode mode,
+   int depth) {
 
       stringstream s;
-      Thing *thing;
-
-      string thingName = parseString();
 
       try {
-         thing = game->getThing(thingName);
+
+         while (nextTag() && depth == getDepth()) {
+
+            if (0 == getTagName().compare("enabled")) {
+               string enabled = getNodeValue();
+               enabled = trim(enabled);
+               entitySetter(creatureName, "autoattack.enabled", enabled, mode);
+               checkClosingTag("enabled");
+            }
+
+            else if (0 == getTagName().compare("repeat")) {
+               string repeat = getNodeValue();
+               repeat = trim(repeat);
+               entitySetter(creatureName, "autoattack.repeat", repeat, mode);
+               checkClosingTag("repeat");
+            }
+
+            else if (0 == getTagName().compare("interval")) {
+               string interval = getNodeValue();
+               interval = trim(interval);
+               entitySetter(creatureName, "autoattack.interval", interval, mode);
+               checkClosingTag("interval");
+            }
+
+            else {
+               s << filename << ": invalid tag <" << getTagName() << "> in "
+                  << "creature autoattack section (line "
+                  << xmlTextReaderGetParserLineNumber(reader) << ")";
+               throw s.str();
+            }
+         }
       }
 
       catch (string error) {
-         s << filename << ": Thing '" << tag << "' doesn't exist (line "
+         s << filename << ": " << error << " (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
-      }
-
-      checkClosingTag(tag);
-      return thing;
-   }
-
-   /***************************************************************************/
-
-   bool Parser::parseObjectTakeable() {
-
-      bool takeable = parseBool();
-      checkClosingTag("takeable");
-      return takeable;
-   }
-
-   /***************************************************************************/
-
-   bool Parser::parseObjectDroppable() {
-
-      bool droppable = parseBool();
-      checkClosingTag("droppable");
-      return droppable;
-   }
-
-   /***************************************************************************/
-
-   int Parser::parseObjectWeight() {
-
-      int weight = parseInt();
-      checkClosingTag("weight");
-      return weight;
-   }
-
-   /***************************************************************************/
-
-   bool Parser::parseObjectWeapon() {
-
-      bool isWeapon = parseBool();
-      checkClosingTag("weapon");
-      return isWeapon;
-   }
-
-   /***************************************************************************/
-
-   int Parser::parseObjectDamage() {
-
-      int damage = parseInt();
-      checkClosingTag("damage");
-      return damage;
-   }
-
-   /***************************************************************************/
-
-   bool Parser::parseCreatureCounterAttack() {
-
-      bool counterAttack = parseBool();
-      checkClosingTag("counterattack");
-      return counterAttack;
-   }
-
-   /***************************************************************************/
-
-   void Parser::parseCreatureAutoAttack(Creature *creature, int depth) {
-
-      stringstream s;
-
-      while (nextTag() && depth == getDepth()) {
-
-         if (0 == getTagName().compare("enabled")) {
-            creature->setAutoAttackEnabled(parseCreatureAutoAttackEnabled());
-         }
-
-         else if (0 == getTagName().compare("interval")) {
-            creature->setAutoAttackInterval(parseCreatureAutoAttackInterval());
-         }
-
-         else if (0 == getTagName().compare("repeat")) {
-            creature->setAutoAttackRepeat(parseCreatureAutoAttackRepeat());
-         }
-
-         else {
-            s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "creature autoattack section (line "
-               << xmlTextReaderGetParserLineNumber(reader) << ")";
-            throw s.str();
-         }
       }
 
       checkClosingTag("autoattack");
@@ -1454,79 +1450,50 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   bool Parser::parseCreatureAutoAttackEnabled() {
-
-      bool enabled = parseBool();
-      checkClosingTag("enabled");
-      return enabled;
-   }
-
-   /***************************************************************************/
-
-   int Parser::parseCreatureAutoAttackInterval() {
-
-      int interval = parseInt();
-      checkClosingTag("interval");
-      return interval;
-   }
-
-   /***************************************************************************/
-
-   bool Parser::parseCreatureAutoAttackRepeat() {
-
-      bool repeat = parseBool();
-      checkClosingTag("repeat");
-      return repeat;
-   }
-
-   /***************************************************************************/
-
-   void Parser::parseCreatureWandering(Creature *creature) {
+   void Parser::parseCreatureWandering(string creatureName, enum ParseMode mode) {
 
       stringstream s;
 
-      while (nextTag() && 4 == getDepth()) {
+      try {
 
-         string tag = getTagName();
+         while (nextTag() && 4 == getDepth()) {
 
-         if (0 == tag.compare("enabled")) {
-            creature->setWanderEnabled(parseCreatureWanderingEnabled());
-         }
+            string tag = getTagName();
 
-         else if (0 == tag.compare("interval")) {
-
-            try {
-               creature->setWanderInterval(parseCreatureWanderingInterval());
+            if (0 == tag.compare("enabled")) {
+               string enabled = getNodeValue();
+               enabled = trim(enabled);
+               entitySetter(creatureName, "wandering.enabled", enabled, mode);
+               checkClosingTag("enabled");
             }
 
-            catch (char const *error) {
-               s << filename << ": "
-                  << error << " in creature wander interval setting (line "
+            else if (0 == tag.compare("interval")) {
+               string interval = getNodeValue();
+               interval = trim(interval);
+               entitySetter(creatureName, "wandering.interval", interval, mode);
+               checkClosingTag("interval");
+            }
+
+            else if (0 == tag.compare("wanderlust")) {
+               string wanderlust = getNodeValue();
+               wanderlust = trim(wanderlust);
+               entitySetter(creatureName, "wandering.wanderlust", wanderlust, mode);
+               checkClosingTag("wanderlust");
+            }
+
+            else {
+               s << filename << ": invalid tag <" << getTagName() << "> in "
+                  << "creature wandering settings (line "
                   << xmlTextReaderGetParserLineNumber(reader) << ")";
                throw s.str();
             }
          }
+      }
 
-         else if (0 == tag.compare("wanderlust")) {
-
-            try {
-               creature->setWanderLust(parseCreatureWanderLust());
-            }
-
-            catch (char const *error) {
-               s << filename << ": "
-                  << error << " in creature wanderlust setting (line "
-                  << xmlTextReaderGetParserLineNumber(reader) << ")";
-               throw s.str();
-            }
-         }
-
-         else {
-            s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "creature wandering settings (line "
-               << xmlTextReaderGetParserLineNumber(reader) << ")";
-            throw s.str();
-         }
+      catch (string error) {
+         s << filename << ": " << error << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
       }
 
       checkClosingTag("wandering");
@@ -1534,87 +1501,48 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   bool Parser::parseCreatureWanderingEnabled() {
-
-      bool enabled = parseBool();
-      checkClosingTag("enabled");
-      return enabled;
-   }
-
-   /***************************************************************************/
-
-   int Parser::parseCreatureWanderingInterval() {
-
-      int interval = parseInt();
-      checkClosingTag("interval");
-      return interval;
-   }
-
-   /***************************************************************************/
-
-   double Parser::parseCreatureWanderLust() {
-
-      double wanderlust = parseDouble();
-      checkClosingTag("wanderlust");
-      return wanderlust;
-   }
-
-   /***************************************************************************/
-
-   enum entity::Creature::AllegianceType Parser::parseCreatureAllegiance() {
+   void Parser::parseBeingRespawn(string beingName, enum ParseMode mode, int depth) {
 
       stringstream s;
 
-      string allegiance = strToLower(parseString());
+      try {
 
-      checkClosingTag("allegiance");
+         while (nextTag() && depth == getDepth()) {
 
-      if (0 == allegiance.compare("friend")) {
-         return entity::Creature::FRIEND;
+            if (0 == getTagName().compare("enabled")) {
+               string respawnEnabled = getNodeValue();
+               respawnEnabled = trim(respawnEnabled);
+               entitySetter(beingName, "respawn.enabled", respawnEnabled, mode);
+               checkClosingTag("enabled");
+            }
+
+            else if (0 == getTagName().compare("interval")) {
+               string interval = getNodeValue();
+               interval = trim(interval);
+               entitySetter(beingName, "respawn.interval", interval, mode);
+               checkClosingTag("interval");
+            }
+
+            else if (0 == getTagName().compare("lives")) {
+               string lives = getNodeValue();
+               lives = trim(lives);
+               entitySetter(beingName, "respawn.lives", lives, mode);
+               checkClosingTag("lives");
+            }
+
+            else {
+               s << filename << ": invalid tag <" << getTagName() << "> in "
+                  << "being respawn section (line "
+                  << xmlTextReaderGetParserLineNumber(reader) << ")";
+               throw s.str();
+            }
+         }
       }
 
-      if (0 == allegiance.compare("neutral")) {
-         return entity::Creature::NEUTRAL;
-      }
-
-      if (0 == allegiance.compare("enemy")) {
-         return entity::Creature::ENEMY;
-      }
-
-      else {
-         s << "Expecting one of 'friend', 'neutral' or 'enemy' in creature "
-            << "allegiance setting (line "
+      catch (string error) {
+         s << filename << ": " << error << " (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
-      }
-   }
-
-   /***************************************************************************/
-
-   void Parser::parseBeingRespawn(Being *being, int depth) {
-
-      stringstream s;
-
-      while (nextTag() && depth == getDepth()) {
-
-         if (0 == getTagName().compare("enabled")) {
-            being->setRespawnEnabled(parseBeingRespawnEnabled());
-         }
-
-         else if (0 == getTagName().compare("interval")) {
-            being->setRespawnInterval(parseBeingRespawnInterval());
-         }
-
-         else if (0 == getTagName().compare("lives")) {
-            being->setRespawnLives(parseBeingRespawnLives());
-         }
-
-         else {
-            s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "being respawn section (line "
-               << xmlTextReaderGetParserLineNumber(reader) << ")";
-            throw s.str();
-         }
       }
 
       checkClosingTag("respawn");
@@ -1622,53 +1550,42 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   bool Parser::parseBeingRespawnEnabled() {
-
-      bool enabled = parseBool();
-      checkClosingTag("enabled");
-      return enabled;
-   }
-
-   /***************************************************************************/
-
-   int Parser::parseBeingRespawnInterval() {
-
-      int interval = parseInt();
-      checkClosingTag("interval");
-      return interval;
-   }
-
-   /***************************************************************************/
-
-   int Parser::parseBeingRespawnLives() {
-
-      int lives = parseInt();
-      checkClosingTag("lives");
-      return lives;
-   }
-
-   /***************************************************************************/
-
-   void Parser::parseBeingInventory(entity::Being *being, bool allowObjects) {
+   void Parser::parseBeingInventory(string beingName, enum ParseMode mode,
+   bool allowObjects) {
 
       stringstream s;
 
-      while (nextTag() && 4 == getDepth()) {
+      try {
 
-         if (0 == getTagName().compare("weight")) {
-            being->setInventoryWeight(parseBeingInventoryWeight());
-         }
+         while (nextTag() && 4 == getDepth()) {
 
-         else if (true == allowObjects && 0 == getTagName().compare("object")) {
-            parseBeingInventoryObject(being);
-         }
+            if (0 == getTagName().compare("weight")) {
+               string weight = getNodeValue();
+               weight = trim(weight);
+               entitySetter(beingName, "inventory.weight", weight, mode);
+               checkClosingTag("weight");
+            }
 
-         else {
-            s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "default player's inventory settings (line "
-               << xmlTextReaderGetParserLineNumber(reader) << ")";
-            throw s.str();
+            else if (true == allowObjects && 0 == getTagName().compare("object")) {
+               string objectName = getNodeValue();
+               objectName = trim(objectName);
+               entitySetter(beingName, "inventory.object", objectName, mode);
+               checkClosingTag("object");
+            }
+
+            else {
+               s << filename << ": invalid tag <" << getTagName() << "> in "
+                  << "inventory settings (line "
+                  << xmlTextReaderGetParserLineNumber(reader) << ")";
+               throw s.str();
+            }
          }
+      }
+
+      catch (string error) {
+         s << filename << ": " << error << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
       }
 
       checkClosingTag("inventory");
@@ -1676,219 +1593,76 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseBeingInventoryObject(Being *being) {
+   void Parser::parseBeingAttributes(string beingName, enum ParseMode mode) {
 
       stringstream s;
-      Object *object;
-      string objectName = parseString();
 
       try {
-         object = game->getObject(objectName);
+
+         while (nextTag() && 4 == getDepth()) {
+
+            if (
+               0 == getTagName().compare("strength") ||
+               0 == getTagName().compare("dexterity") ||
+               0 == getTagName().compare("intelligence")
+            ) {
+               string value = getNodeValue();
+               value = trim(value);
+               entitySetter(beingName, string("attribute"), getTagName() + ":" + value, mode);
+               checkClosingTag(getTagName());
+            }
+
+            else {
+               s << filename << ": invalid tag <" << getTagName() << "> in "
+                  << "default player's inventory settings (line "
+                  << xmlTextReaderGetParserLineNumber(reader) << ")";
+               throw s.str();
+            }
+         }
       }
 
       catch (string error) {
-         s << filename << ": object '" << objectName << "' doesn't exist (line "
+         s << filename << ": " << error << " (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
          throw s.str();
       }
 
-      if (0 != object->getOwner()) {
-         s << filename << ": object '" << objectName << "' is already owned by '"
-            << object->getOwner()->getName() << "' (line "
-            << xmlTextReaderGetParserLineNumber(reader) << ")";
-         throw s.str();
-      }
-
-      else if (0 != object->getLocation()) {
-         s << filename << ": object '" << objectName << "' was already placed "
-            << "in room '" << object->getLocation()->getName() << "' (line "
-            << xmlTextReaderGetParserLineNumber(reader) << ")";
-         throw s.str();
-      }
-
-      being->insertIntoInventory(object, false);
-      checkClosingTag("object");
-   }
-
-   /***************************************************************************/
-
-   int Parser::parseBeingInventoryWeight() {
-
-      int weight = parseInt();
-      checkClosingTag("weight");
-      return weight;
-   }
-
-   /***************************************************************************/
-
-   void Parser::parseBeingAttributes(entity::Being *being) {
-
-      stringstream s;
-
-      while (nextTag() && 4 == getDepth()) {
-
-         if (0 == getTagName().compare("strength")) {
-            being->setAttribute("strength", parseBeingAttributesStrength());
-         }
-
-         else if (0 == getTagName().compare("dexterity")) {
-            being->setAttribute("dexterity", parseBeingAttributesDexterity());
-         }
-
-         else if (0 == getTagName().compare("intelligence")) {
-            being->setAttribute("intelligence", parseBeingAttributesIntelligence());
-         }
-
-         else {
-            s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "default player's inventory settings (line "
-               << xmlTextReaderGetParserLineNumber(reader) << ")";
-            throw s.str();
-         }
-      }
-
-      being->setAttributesInitialTotal();
       checkClosingTag("attributes");
    }
 
    /***************************************************************************/
 
-   int Parser::parseBeingAttributesStrength() {
-
-      int strength = parseInt();
-      checkClosingTag("strength");
-      return strength;
-   }
-
-   /***************************************************************************/
-
-   int Parser::parseBeingAttributesDexterity() {
-
-      int dexterity = parseInt();
-      checkClosingTag("dexterity");
-      return dexterity;
-   }
-
-   /***************************************************************************/
-
-   int Parser::parseBeingAttributesIntelligence() {
-
-      int intelligence = parseInt();
-      checkClosingTag("intelligence");
-      return intelligence;
-   }
-
-   /***************************************************************************/
-
-   bool Parser::parseBeingAlive() {
-
-      bool alive = parseBool();
-      checkClosingTag("alive");
-      return alive;
-   }
-
-   /***************************************************************************/
-
-   int Parser::parseBeingHealth() {
-
-      int health = parseInt();
-      checkClosingTag("health");
-      return health;
-   }
-
-   /***************************************************************************/
-
-   int Parser::parseBeingMaxHealth() {
-
-      int maxHealth = parseInt();
-      checkClosingTag("maxHealth");
-      return maxHealth;
-   }
-
-   /***************************************************************************/
-
-   double Parser::parseBeingWoundRate() {
-
-      double woundRate = parseDouble();
-      checkClosingTag("woundrate");
-      return woundRate;
-   }
-
-   /***************************************************************************/
-
-   bool Parser::parseBeingAttackable() {
-
-      bool attackable = parseBool();
-      checkClosingTag("attackable");
-      return attackable;
-   }
-
-   /***************************************************************************/
-
-   int Parser::parseBeingDamageBareHands() {
-
-      int damage = parseInt();
-      checkClosingTag("damagebarehands");
-      return damage;
-   }
-
-   /***************************************************************************/
-
-   void Parser::parseThingAliases(Thing *thing, int depth) {
+   void Parser::parseThingAliases(string entityName, enum ParseMode mode, int depth) {
 
       stringstream s;
 
-      while (nextTag() && depth == getDepth()) {
+      try {
 
-         if (0 == getTagName().compare("alias")) {
-            thing->addAlias(parseThingAlias());
-         }
+         while (nextTag() && depth == getDepth()) {
 
-         else {
-            s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "aliases (line "
-               << xmlTextReaderGetParserLineNumber(reader) << ")";
-            throw s.str();
+            if (0 == getTagName().compare("alias")) {
+               string alias = getNodeValue();
+               alias = trim(alias);
+               entitySetter(entityName, "alias", alias, mode);
+               checkClosingTag("alias");
+            }
+
+            else {
+               s << filename << ": invalid tag <" << getTagName() << "> in "
+                  << "aliases (line "
+                  << xmlTextReaderGetParserLineNumber(reader) << ")";
+               throw s.str();
+            }
          }
       }
 
+      catch (string error) {
+         s << filename << ": " << error << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
       checkClosingTag("aliases");
-   }
-
-   /***************************************************************************/
-
-   string Parser::parseThingAlias() {
-
-      string alias = parseString();
-      checkClosingTag("alias");
-      return trim(alias);
-   }
-
-   /***************************************************************************/
-
-   string Parser::parseEntityTitle() {
-
-      string title = parseString();
-      checkClosingTag("title");
-      return trim(title);
-   }
-
-   /***************************************************************************/
-
-   string Parser::parseEntityLongDescription() {
-
-      string longdesc = parseString();
-      checkClosingTag("description");
-      return trim(longdesc);
-   }
-
-   /***************************************************************************/
-
-   string Parser::parseEntityShortDescription() {
-
-      string shortdesc = parseString();
-      checkClosingTag("short");
-      return trim(shortdesc);
    }
 
    /***************************************************************************/
@@ -1902,42 +1676,6 @@ namespace trogdor { namespace core {
 
       try {
          return boost::lexical_cast<bool>(getNodeValue());
-      }
-
-      catch (boost::bad_lexical_cast) {
-         throw s.str();
-      }
-   }
-
-   /***************************************************************************/
-
-   int Parser::parseInt() {
-
-      stringstream s;
-
-      s << filename << ": Expecting integer value (line "
-         << xmlTextReaderGetParserLineNumber(reader) << ")";
-
-      try {
-         return boost::lexical_cast<int>(getNodeValue());
-      }
-
-      catch (boost::bad_lexical_cast) {
-         throw s.str();
-      }
-   }
-
-   /***************************************************************************/
-
-   double Parser::parseDouble() {
-
-      stringstream s;
-
-      s << filename << ": Expecting floating point number (line "
-         << xmlTextReaderGetParserLineNumber(reader) << ")";
-
-      try {
-         return boost::lexical_cast<double>(getNodeValue());
       }
 
       catch (boost::bad_lexical_cast) {
@@ -2063,7 +1801,7 @@ namespace trogdor { namespace core {
          return;
       }
 
-      // TODO: skip comments (right now, we'll get an error!)
+      // TODO: skip over XML comments (right now, we'll get an error!)
 
       if (xmlTextReaderRead(reader) < 0) {
          s << "Unknown error reading " << filename << " (line "

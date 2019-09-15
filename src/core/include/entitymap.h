@@ -34,10 +34,13 @@ namespace trogdor { namespace core { namespace entity {
    */
    class EntityMap {
 
+      // What we use internally to store string -> Entity mappings
+      typedef unordered_map<string, std::shared_ptr<Entity>> entityUnorderedMap;
+
       private:
 
          // Hash table mapping names to entities
-         unordered_map<string, std::shared_ptr<Entity>> entities;
+         entityUnorderedMap entities;
 
       protected:
 
@@ -113,6 +116,24 @@ namespace trogdor { namespace core { namespace entity {
             Output: (none)
          */
          inline void clear() {entities.clear();}
+
+         /*
+            Returns a const iterator pointing to the beginning of the map. Used
+            to iterate over all contained entities.
+
+            Input: (none)
+            Output: entityUnorderedMap::const_iterator const
+         */
+         inline entityUnorderedMap::const_iterator const begin() {return entities.begin();}
+
+         /*
+            Returns a const iterator pointing to the end of the map. Used to
+            iterate over all contained entities.
+
+            Input: (none)
+            Output: entityUnorderedMap::const_iterator const
+         */
+         inline entityUnorderedMap::const_iterator const end() {return entities.end();}
    };
 
    /***************************************************************************/

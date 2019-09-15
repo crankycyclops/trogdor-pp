@@ -40,6 +40,14 @@ namespace trogdor { namespace core {
          }
 
          /*
+            Clears all messages.
+
+            Input: (none)
+            Output: (none)
+         */
+         inline void clear() {messageTable.clear();}
+
+         /*
             Gets a message by name.  If it doesn't exist, an empty string is
             returned.
 

@@ -15,6 +15,7 @@
 #include "event/eventhandler.h"
 #include "entitymap.h"
 #include "iostream/trogout.h"
+#include "instantiator/instantiators/runtime.h"
 
 
 using namespace std;
@@ -139,6 +140,8 @@ namespace trogdor { namespace core {
          void initEvents();
 
       public:
+
+         //typedef EntityMap::entityUnorderedMap::const_iterator creatureIterator;
 
          /*
             Constructor for the Game class (require the error stream as an
@@ -353,6 +356,18 @@ namespace trogdor { namespace core {
             return entities.get(name);
          }
 
+         /*
+            Returns a pair of iterators covering all Entities in the game.
+
+            Input:
+               (none)
+
+            Output:
+               Entity iterator
+         */
+         inline auto const entitiesBegin() {return entities.begin();}
+         inline auto const entitiesEnd() {return entities.end();}
+
         /*
             Returns the Thing object associated with the specified name. Throws
             an exception if the Thing doesn't exist.
@@ -373,6 +388,20 @@ namespace trogdor { namespace core {
 
             return things.get(name);
          }
+
+         /*
+            Returns a pair of iterators covering all Things in the game. The
+            underline pointers are of type shared_ptr<Entity> and must be cast
+            to shared_ptr<Thing> when accessing Thing-specific methods.
+
+            Input:
+               (none)
+
+            Output:
+               Things iterator
+         */
+         inline auto const thingsBegin() {return things.begin();}
+         inline auto const thingsEnd() {return things.end();}
 
          /*
             Returns the Player object associated with the specified player name.
@@ -396,6 +425,20 @@ namespace trogdor { namespace core {
          }
 
          /*
+            Returns a pair of iterators covering all Players in the game. The
+            underline pointers are of type shared_ptr<Entity> and must be cast
+            to shared_ptr<Player> when accessing Player-specific methods.
+
+            Input:
+               (none)
+
+            Output:
+               Players iterator
+         */
+         inline auto const playersBegin() {return players.begin();}
+         inline auto const playersEnd() {return players.end();}
+
+         /*
             Returns the Creature object associated with the specified name.
             Throws an exception if the creature doesn't exist.
 
@@ -415,6 +458,20 @@ namespace trogdor { namespace core {
 
             return creatures.get(name);
          }
+
+         /*
+            Returns a pair of iterators covering all Creatures in the game. The
+            underline pointers are of type shared_ptr<Entity> and must be cast
+            to shared_ptr<Creature> when accessing Creature-specific methods.
+
+            Input:
+               (none)
+
+            Output:
+               Creatures iterator
+         */
+         inline auto const creaturesBegin() {return creatures.begin();}
+         inline auto const creaturesEnd() {return creatures.end();}
 
          /*
             Returns the Object associated with the specified name. Throws an
@@ -438,6 +495,20 @@ namespace trogdor { namespace core {
          }
 
          /*
+            Returns a pair of iterators covering all Objects in the game. The
+            underline pointers are of type shared_ptr<Entity> and must be cast
+            to shared_ptr<Object> when accessing Object-specific methods.
+
+            Input:
+               (none)
+
+            Output:
+               Objects iterator
+         */
+         inline auto const objectsBegin() {return objects.begin();}
+         inline auto const objectsEnd() {return objects.end();}
+
+         /*
             Returns the Room associated with the specified name. Throws an
             exception if the Room doesn't exist.
 
@@ -456,6 +527,55 @@ namespace trogdor { namespace core {
             }
 
             return rooms.get(name);
+         }
+
+         /*
+            Returns a pair of iterators covering all Rooms in the game. The
+            underline pointers are of type shared_ptr<Entity> and must be cast
+            to shared_ptr<Room> when accessing Room-specific methods.
+
+            Input:
+               (none)
+
+            Output:
+               Rooms iterator
+         */
+         inline auto const roomsBegin() {return rooms.begin();}
+         inline auto const roomsEnd() {return rooms.end();}
+
+         /*
+            Wraps around the other insertEntity methods in cases where I have a
+            base class shared_ptr.
+
+            Input:
+               shared_ptr<entity::Entity>
+
+            Output:
+               (none)
+         */
+         inline void insertEntity(string name, std::shared_ptr<entity::Entity> entity) {
+
+            switch (entity->getType()) {
+
+               case entity::ENTITY_ROOM:
+                  insertEntity(name, std::dynamic_pointer_cast<entity::Room>(entity));
+                  break;
+
+               case entity::ENTITY_OBJECT:
+                  insertEntity(name, std::dynamic_pointer_cast<entity::Object>(entity));
+                  break;
+
+               case entity::ENTITY_CREATURE:
+                  insertEntity(name, std::dynamic_pointer_cast<entity::Creature>(entity));
+                  break;
+
+               case entity::ENTITY_PLAYER:
+                  insertEntity(name, std::dynamic_pointer_cast<entity::Player>(entity));
+                  break;
+
+               default:
+                  throw "Game.insertEntity: Unsupported entity type";
+            }
          }
 
          /*

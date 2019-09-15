@@ -218,7 +218,7 @@ namespace trogdor { namespace core { namespace entity {
             Output:
                Type name (string)
          */
-         inline string typeToStr(enum EntityType e) const {
+         static inline string typeToStr(enum EntityType e) {
 
             switch (e) {
 
@@ -418,18 +418,6 @@ namespace trogdor { namespace core { namespace entity {
          }
 
          inline bool glancedBy(std::shared_ptr<Being> being) {return glancedBy(being.get());}
-
-         /*
-            Copies another Messages object into our own, replacing all previous
-            content.  This should only ever be used by the Parser.
-
-            Input:
-               Reference to Messages object
-
-            Output:
-               (none)
-         */
-         inline void setMessages(Messages &m) {msgs = m;}
 
          /*
             Returns the specified message.  If it doesn't exist, an empty string
