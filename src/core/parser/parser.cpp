@@ -379,8 +379,7 @@ namespace trogdor { namespace core {
 
       while (nextTag() && 2 == getDepth()) {
          string key = getTagName();
-         string value = getNodeValue();
-         value = trim(value);
+         string value = parseString();
          instantiator->gameSetter("meta", key + ":" + value);
          checkClosingTag(key);
       }
@@ -394,8 +393,7 @@ namespace trogdor { namespace core {
 
       while (nextTag() && depth == getDepth()) {
          string key = getTagName();
-         string value = getNodeValue();
-         value = trim(value);
+         string value = parseString();
          entitySetter(entityName, "meta", key + ":" + value, mode);
          checkClosingTag(key);
       }
@@ -595,9 +593,7 @@ namespace trogdor { namespace core {
 
                string messageName = getAttribute("name");
                messageName = trim(messageName);
-
-               string message = getNodeValue();
-               message = trim(message);
+               string message = parseString();
 
                setEntityMessage(entityName, messageName, message, mode);
                checkClosingTag("message");
@@ -770,57 +766,49 @@ namespace trogdor { namespace core {
          while (nextTag() && depth == getDepth()) {
 
             if (0 == getTagName().compare("title")) {
-               string title = getNodeValue();
-               title = trim(title);
+               string title = parseString();
                entitySetter(name, "title", title, mode);
                checkClosingTag("title");
             }
 
             else if (0 == getTagName().compare("description")) {
-               string longdesc = getNodeValue();
-               longdesc = trim(longdesc);
+               string longdesc = parseString();
                entitySetter(name, "longDesc", longdesc, mode);
                checkClosingTag("description");
             }
 
             else if (0 == getTagName().compare("short")) {
-               string shortdesc = getNodeValue();
-               shortdesc = trim(shortdesc);
+               string shortdesc = parseString();
                entitySetter(name, "shortDesc", shortdesc, mode);
                checkClosingTag("short");
             }
 
             else if (0 == getTagName().compare("weight")) {
-               string weight = getNodeValue();
-               weight = trim(weight);
+               string weight = parseString();
                entitySetter(name, "weight", weight, mode);
                checkClosingTag("weight");
             }
 
             else if (0 == getTagName().compare("takeable")) {
-               string takeable = getNodeValue();
-               takeable = trim(takeable);
+               string takeable = parseString();
                entitySetter(name, "takeable", takeable, mode);
                checkClosingTag("takeable");
             }
 
             else if (0 == getTagName().compare("droppable")) {
-               string droppable = getNodeValue();
-               droppable = trim(droppable);
+               string droppable = parseString();
                entitySetter(name, "droppable", droppable, mode);
                checkClosingTag("droppable");
             }
 
             else if (0 == getTagName().compare("weapon")) {
-               string weapon = getNodeValue();
-               weapon = trim(weapon);
+               string weapon = parseString();
                entitySetter(name, "weapon", weapon, mode);
                checkClosingTag("weapon");
             }
 
             else if (0 == getTagName().compare("damage")) {
-               string damage = getNodeValue();
-               damage = trim(damage);
+               string damage = parseString();
                entitySetter(name, "damage", damage, mode);
                checkClosingTag("damage");
             }
@@ -909,43 +897,37 @@ namespace trogdor { namespace core {
             }
 
             else if (0 == getTagName().compare("alive")) {
-               string alive = getNodeValue();
-               alive = trim(alive);
+               string alive = parseString();
                entitySetter("", "alive", alive, PARSE_DEFAULT_PLAYER);
                checkClosingTag("alive");
             }
 
             else if (0 == getTagName().compare("health")) {
-               string health = getNodeValue();
-               health = trim(health);
+               string health = parseString();
                entitySetter("", "health", health, PARSE_DEFAULT_PLAYER);
                checkClosingTag("health");
             }
 
             else if (0 == getTagName().compare("maxhealth")) {
-               string maxhealth = getNodeValue();
-               maxhealth = trim(maxhealth);
+               string maxhealth = parseString();
                entitySetter("", "maxhealth", maxhealth, PARSE_DEFAULT_PLAYER);
                checkClosingTag("maxhealth");
             }
 
             else if (0 == getTagName().compare("attackable")) {
-               string attackable = getNodeValue();
-               attackable = trim(attackable);
+               string attackable = parseString();
                entitySetter("", "attackable", attackable, PARSE_DEFAULT_PLAYER);
                checkClosingTag("attackable");
             }
 
             else if (0 == getTagName().compare("woundrate")) {
-               string rate = getNodeValue();
-               rate = trim(rate);
+               string rate = parseString();
                entitySetter("", "woundrate", rate, PARSE_DEFAULT_PLAYER);
                checkClosingTag("woundrate");
             }
 
             else if (0 == getTagName().compare("damagebarehands")) {
-               string damage = getNodeValue();
-               damage = trim(damage);
+               string damage = parseString();
                entitySetter("", "damagebarehands", damage, PARSE_DEFAULT_PLAYER);
                checkClosingTag("damagebarehands");
             }
@@ -1048,79 +1030,68 @@ namespace trogdor { namespace core {
          while (nextTag() && depth == getDepth()) {
 
             if (0 == getTagName().compare("title")) {
-               string title = getNodeValue();
-               title = trim(title);
+               string title = parseString();
                entitySetter(name, "title", title, mode);
                checkClosingTag("title");
             }
 
             else if (0 == getTagName().compare("description")) {
-               string longdesc = getNodeValue();
-               longdesc = trim(longdesc);
+               string longdesc = parseString();
                entitySetter(name, "longDesc", longdesc, mode);
                checkClosingTag("description");
             }
 
             else if (0 == getTagName().compare("short")) {
-               string shortdesc = getNodeValue();
-               shortdesc = trim(shortdesc);
+               string shortdesc = parseString();
                entitySetter(name, "shortDesc", shortdesc, mode);
                checkClosingTag("short");
             }
 
             else if (0 == getTagName().compare("alive")) {
-               string alive = getNodeValue();
-               alive = trim(alive);
+               string alive = parseString();
                entitySetter(name, "alive", alive, mode);
                checkClosingTag("alive");
             }
 
             else if (0 == getTagName().compare("health")) {
-               string health = getNodeValue();
-               health = trim(health);
+               string health = parseString();
                entitySetter(name, "health", health, mode);
                checkClosingTag("health");
             }
 
             else if (0 == getTagName().compare("maxhealth")) {
-               string maxhealth = getNodeValue();
-               maxhealth = trim(maxhealth);
+               string maxhealth = parseString();
                entitySetter(name, "maxhealth", maxhealth, mode);
                checkClosingTag("maxhealth");
             }
 
             else if (0 == getTagName().compare("attackable")) {
-               string attackable = getNodeValue();
-               attackable = trim(attackable);
+               string attackable = parseString();
                entitySetter(name, "attackable", attackable, mode);
                checkClosingTag("attackable");
             }
 
             else if (0 == getTagName().compare("woundrate")) {
-               string rate = getNodeValue();
-               rate = trim(rate);
+               string rate = parseString();
                entitySetter(name, "woundrate", rate, mode);
                checkClosingTag("woundrate");
             }
 
             else if (0 == getTagName().compare("damagebarehands")) {
-               string damage = getNodeValue();
-               damage = trim(damage);
+               string damage = parseString();
                entitySetter(name, "damagebarehands", damage, mode);
                checkClosingTag("damagebarehands");
             }
 
             else if (0 == getTagName().compare("counterattack")) {
-               string counterattack = getNodeValue();
-               counterattack = trim(counterattack);
+               string counterattack = parseString();
                entitySetter(name, "counterattack", counterattack, mode);
                counterAttackParsed = true;
                checkClosingTag("counterattack");
             }
 
             else if (0 == getTagName().compare("allegiance")) {
-               string allegiance = getNodeValue();
-               allegiance = trim(allegiance);
+               string allegiance = parseString();
                entitySetter(name, "allegiance", allegiance, mode);
                checkClosingTag("allegiance");
             }
@@ -1263,22 +1234,19 @@ namespace trogdor { namespace core {
          while (nextTag() && depth == getDepth()) {
 
             if (0 == getTagName().compare("title")) {
-               string title = getNodeValue();
-               title = trim(title);
+               string title = parseString();
                entitySetter(name, "title", title, mode);
                checkClosingTag("title");
             }
 
             else if (0 == getTagName().compare("description")) {
-               string longdesc = getNodeValue();
-               longdesc = trim(longdesc);
+               string longdesc = parseString();
                entitySetter(name, "longDesc", longdesc, mode);
                checkClosingTag("description");
             }
 
             else if (0 == getTagName().compare("short")) {
-               string shortdesc = getNodeValue();
-               shortdesc = trim(shortdesc);
+               string shortdesc = parseString();
                entitySetter(name, "shortDesc", shortdesc, mode);
                checkClosingTag("short");
             }
@@ -1391,22 +1359,19 @@ namespace trogdor { namespace core {
          while (nextTag() && depth == getDepth()) {
 
             if (0 == getTagName().compare("enabled")) {
-               string enabled = getNodeValue();
-               enabled = trim(enabled);
+               string enabled = parseString();
                entitySetter(creatureName, "autoattack.enabled", enabled, mode);
                checkClosingTag("enabled");
             }
 
             else if (0 == getTagName().compare("repeat")) {
-               string repeat = getNodeValue();
-               repeat = trim(repeat);
+               string repeat = parseString();
                entitySetter(creatureName, "autoattack.repeat", repeat, mode);
                checkClosingTag("repeat");
             }
 
             else if (0 == getTagName().compare("interval")) {
-               string interval = getNodeValue();
-               interval = trim(interval);
+               string interval = parseString();
                entitySetter(creatureName, "autoattack.interval", interval, mode);
                checkClosingTag("interval");
             }
@@ -1442,22 +1407,19 @@ namespace trogdor { namespace core {
             string tag = getTagName();
 
             if (0 == tag.compare("enabled")) {
-               string enabled = getNodeValue();
-               enabled = trim(enabled);
+               string enabled = parseString();
                entitySetter(creatureName, "wandering.enabled", enabled, mode);
                checkClosingTag("enabled");
             }
 
             else if (0 == tag.compare("interval")) {
-               string interval = getNodeValue();
-               interval = trim(interval);
+               string interval = parseString();
                entitySetter(creatureName, "wandering.interval", interval, mode);
                checkClosingTag("interval");
             }
 
             else if (0 == tag.compare("wanderlust")) {
-               string wanderlust = getNodeValue();
-               wanderlust = trim(wanderlust);
+               string wanderlust = parseString();
                entitySetter(creatureName, "wandering.wanderlust", wanderlust, mode);
                checkClosingTag("wanderlust");
             }
@@ -1491,22 +1453,19 @@ namespace trogdor { namespace core {
          while (nextTag() && depth == getDepth()) {
 
             if (0 == getTagName().compare("enabled")) {
-               string respawnEnabled = getNodeValue();
-               respawnEnabled = trim(respawnEnabled);
+               string respawnEnabled = parseString();
                entitySetter(beingName, "respawn.enabled", respawnEnabled, mode);
                checkClosingTag("enabled");
             }
 
             else if (0 == getTagName().compare("interval")) {
-               string interval = getNodeValue();
-               interval = trim(interval);
+               string interval = parseString();
                entitySetter(beingName, "respawn.interval", interval, mode);
                checkClosingTag("interval");
             }
 
             else if (0 == getTagName().compare("lives")) {
-               string lives = getNodeValue();
-               lives = trim(lives);
+               string lives = parseString();
                entitySetter(beingName, "respawn.lives", lives, mode);
                checkClosingTag("lives");
             }
@@ -1541,15 +1500,13 @@ namespace trogdor { namespace core {
          while (nextTag() && 4 == getDepth()) {
 
             if (0 == getTagName().compare("weight")) {
-               string weight = getNodeValue();
-               weight = trim(weight);
+               string weight = parseString();
                entitySetter(beingName, "inventory.weight", weight, mode);
                checkClosingTag("weight");
             }
 
             else if (true == allowObjects && 0 == getTagName().compare("object")) {
-               string objectName = getNodeValue();
-               objectName = trim(objectName);
+               string objectName = parseString();
                entitySetter(beingName, "inventory.object", objectName, mode);
                checkClosingTag("object");
             }
@@ -1589,8 +1546,7 @@ namespace trogdor { namespace core {
                0 == tag.compare("dexterity") ||
                0 == tag.compare("intelligence")
             ) {
-               string value = getNodeValue();
-               value = trim(value);
+               string value = parseString();
                entitySetter(beingName, string("attribute"), tag + ":" + value, mode);
                checkClosingTag(tag);
             }
@@ -1624,8 +1580,7 @@ namespace trogdor { namespace core {
          while (nextTag() && depth == getDepth()) {
 
             if (0 == getTagName().compare("alias")) {
-               string alias = getNodeValue();
-               alias = trim(alias);
+               string alias = parseString();
                entitySetter(entityName, "alias", alias, mode);
                checkClosingTag("alias");
             }
