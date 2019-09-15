@@ -76,7 +76,7 @@ namespace trogdor { namespace core { namespace entity {
          Messages msgs;
 
          std::shared_ptr<LuaState> L;
-         EventListener *triggers;
+         std::unique_ptr<EventListener> triggers;
 
          // maintains a list of all Beings that have glanced at but not fully
          // observed the Entity
@@ -117,10 +117,6 @@ namespace trogdor { namespace core { namespace entity {
 
       public:
 
-         // This is annoying, but due to unforseen design problems, this is now
-         // my only option (grrr...)
-         friend class core::Parser;
-
          /*
             Constructor for creating a new Entity.  Requires reference to the
             containing Game object and a name.
@@ -145,7 +141,9 @@ namespace trogdor { namespace core { namespace entity {
          Entity(const Entity &e, string n);
 
          /*
-            Entity Destructor.
+            Entity Destructor. For some reason that mystifies me, this is
+            required to compile successfully, even though it's blank (see
+            entities/entity.cpp.)
 
             Input:
                (none)
@@ -366,7 +364,7 @@ namespace trogdor { namespace core { namespace entity {
          inline string getShortDescription() const {return shortDesc;}
 
          /*
-            Returns Entity's EventListener.
+            Returns raw pointer to Entity's EventListener.
 
             Input:
                (none)
@@ -374,7 +372,7 @@ namespace trogdor { namespace core { namespace entity {
             Output:
                Pointer to EventListener
          */
-         inline EventListener *getEventListener() const {return triggers;}
+         inline EventListener *getEventListener() const {return triggers.get();}
 
          /*
             Returns whether or not a given Being has observed the Entity.

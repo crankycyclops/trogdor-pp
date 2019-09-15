@@ -30,8 +30,8 @@ namespace trogdor { namespace core { namespace entity {
       // this should always be overridden by a top-level Entity type
       className = "entity";
 
-      L = make_shared<LuaState>();
-      triggers = new event::EventListener();
+      L = std::make_shared<LuaState>();
+      triggers = std::make_unique<event::EventListener>();
    }
 
    /***************************************************************************/
@@ -53,15 +53,13 @@ namespace trogdor { namespace core { namespace entity {
 
       L = make_shared<LuaState>(*e.L);
       // TODO: we need to do some kind of intelligent copying for event handlers
-      triggers = new event::EventListener();
+      triggers = std::make_unique<event::EventListener>();
    }
 
    /***************************************************************************/
 
-   Entity::~Entity() {
-
-      delete triggers;
-   }
+   // For some reason that mystifies me, this is required to compile successfully
+   Entity::~Entity() {}
 
    /***************************************************************************/
 
@@ -102,7 +100,7 @@ namespace trogdor { namespace core { namespace entity {
          eventArgs.push_back(observer);
 
          game->setupEventHandler();
-         game->addEventListener(triggers);
+         game->addEventListener(triggers.get());
          game->addEventListener(observer->getEventListener());
          if (!game->event("beforeObserve", eventArgs)) {
             return;
@@ -114,7 +112,7 @@ namespace trogdor { namespace core { namespace entity {
 
       if (triggerEvents) {
          game->setupEventHandler();
-         game->addEventListener(triggers);
+         game->addEventListener(triggers.get());
          game->addEventListener(observer->getEventListener());
          game->event("afterObserve", eventArgs);
       }
@@ -132,7 +130,7 @@ namespace trogdor { namespace core { namespace entity {
          eventArgs.push_back(observer);
 
          game->setupEventHandler();
-         game->addEventListener(triggers);
+         game->addEventListener(triggers.get());
          game->addEventListener(observer->getEventListener());
          if (!game->event("beforeGlance", eventArgs)) {
             return;
@@ -144,7 +142,7 @@ namespace trogdor { namespace core { namespace entity {
 
       if (triggerEvents) {
          game->setupEventHandler();
-         game->addEventListener(triggers);
+         game->addEventListener(triggers.get());
          game->addEventListener(observer->getEventListener());
          game->event("afterGlance", eventArgs);
       }

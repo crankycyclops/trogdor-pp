@@ -125,7 +125,7 @@ namespace trogdor { namespace core { namespace entity {
 
       game->setupEventHandler();
       game->addEventListener(l->getEventListener());
-      game->addEventListener(triggers);
+      game->addEventListener(triggers.get());
       if (!game->event("beforeGotoLocation", eventArgs)) {
          return;
       }
@@ -150,7 +150,7 @@ namespace trogdor { namespace core { namespace entity {
 
       game->setupEventHandler();
       game->addEventListener(l->getEventListener());
-      game->addEventListener(triggers);
+      game->addEventListener(triggers.get());
       game->event("afterGotoLocation", eventArgs);
    }
 
@@ -165,7 +165,7 @@ namespace trogdor { namespace core { namespace entity {
          eventArgs.push_back(object);
 
          game->setupEventHandler();
-         game->addEventListener(triggers);
+         game->addEventListener(triggers.get());
          game->addEventListener(object->getEventListener());
          if (!game->event("beforeTake", eventArgs)) {
             return;
@@ -176,7 +176,7 @@ namespace trogdor { namespace core { namespace entity {
 
          if (doEvents) {
             game->setupEventHandler();
-            game->addEventListener(triggers);
+            game->addEventListener(triggers.get());
             game->addEventListener(object->getEventListener());
             game->event("takeUntakeable", eventArgs);
          }
@@ -188,7 +188,7 @@ namespace trogdor { namespace core { namespace entity {
 
          if (doEvents) {
             game->setupEventHandler();
-            game->addEventListener(triggers);
+            game->addEventListener(triggers.get());
             game->addEventListener(object->getEventListener());
             game->event("takeTooHeavy", eventArgs);
          }
@@ -204,7 +204,7 @@ namespace trogdor { namespace core { namespace entity {
 
       if (doEvents) {
          game->setupEventHandler();
-         game->addEventListener(triggers);
+         game->addEventListener(triggers.get());
          game->addEventListener(object->getEventListener());
          game->event("afterTake", eventArgs);
       }
@@ -222,7 +222,7 @@ namespace trogdor { namespace core { namespace entity {
          eventArgs.push_back(object);
 
          game->setupEventHandler();
-         game->addEventListener(triggers);
+         game->addEventListener(triggers.get());
          game->addEventListener(object->getEventListener());
          if (!game->event("beforeDrop", eventArgs)) {
             return;
@@ -233,7 +233,7 @@ namespace trogdor { namespace core { namespace entity {
 
          if (doEvents) {
             game->setupEventHandler();
-            game->addEventListener(triggers);
+            game->addEventListener(triggers.get());
             game->addEventListener(object->getEventListener());
             game->event("dropUndroppable", eventArgs);
          }
@@ -248,7 +248,7 @@ namespace trogdor { namespace core { namespace entity {
 
       if (doEvents) {
          game->setupEventHandler();
-         game->addEventListener(triggers);
+         game->addEventListener(triggers.get());
          game->addEventListener(object->getEventListener());
          game->event("afterDrop", eventArgs);
       }
@@ -293,7 +293,7 @@ namespace trogdor { namespace core { namespace entity {
       eventArgs.push_back(weapon);
 
       game->setupEventHandler();
-      game->addEventListener(triggers);
+      game->addEventListener(triggers.get());
       game->addEventListener(defender->getEventListener());
       if (0 != weapon) {
          game->addEventListener(weapon->getEventListener());
@@ -306,7 +306,7 @@ namespace trogdor { namespace core { namespace entity {
       if (!isAlive()) {
 
          game->setupEventHandler();
-         game->addEventListener(triggers);
+         game->addEventListener(triggers.get());
          game->addEventListener(defender->getEventListener());
          if (0 != weapon) {
             game->addEventListener(weapon->getEventListener());
@@ -323,7 +323,7 @@ namespace trogdor { namespace core { namespace entity {
       if (!defender->isAlive()) {
 
          game->setupEventHandler();
-         game->addEventListener(triggers);
+         game->addEventListener(triggers.get());
          game->addEventListener(defender->getEventListener());
          if (0 != weapon) {
             game->addEventListener(weapon->getEventListener());
@@ -341,7 +341,7 @@ namespace trogdor { namespace core { namespace entity {
       if (defender->isImmortal()) {
 
          game->setupEventHandler();
-         game->addEventListener(triggers);
+         game->addEventListener(triggers.get());
          game->addEventListener(defender->getEventListener());
          if (0 != weapon) {
             game->addEventListener(weapon->getEventListener());
@@ -358,7 +358,7 @@ namespace trogdor { namespace core { namespace entity {
 
       // used either if the attack is successful or if it fails
       game->setupEventHandler();
-      game->addEventListener(triggers);
+      game->addEventListener(triggers.get());
       game->addEventListener(defender->getEventListener());
       if (0 != weapon) {
          game->addEventListener(weapon->getEventListener());
@@ -419,7 +419,7 @@ namespace trogdor { namespace core { namespace entity {
       }
 
       game->setupEventHandler();
-      game->addEventListener(triggers);
+      game->addEventListener(triggers.get());
       game->addEventListener(defender->getEventListener());
       if (0 != weapon) {
          game->addEventListener(weapon->getEventListener());
@@ -439,7 +439,7 @@ namespace trogdor { namespace core { namespace entity {
       eventArgs.push_back(up);
 
       game->setupEventHandler();
-      game->addEventListener(triggers);
+      game->addEventListener(triggers.get());
       if (!game->event("beforeAddHealth", eventArgs)) {
          return;
       }
@@ -451,7 +451,7 @@ namespace trogdor { namespace core { namespace entity {
       }
 
       game->setupEventHandler();
-      game->addEventListener(triggers);
+      game->addEventListener(triggers.get());
       game->event("afterAddHealth", eventArgs);
    }
 
@@ -466,7 +466,7 @@ namespace trogdor { namespace core { namespace entity {
       eventArgs.push_back(down);
 
       game->setupEventHandler();
-      game->addEventListener(triggers);
+      game->addEventListener(triggers.get());
       if (!game->event("beforeRemoveHealth", eventArgs)) {
          return;
       }
@@ -483,7 +483,7 @@ namespace trogdor { namespace core { namespace entity {
       }
 
       game->setupEventHandler();
-      game->addEventListener(triggers);
+      game->addEventListener(triggers.get());
       game->event("afterRemoveHealth", eventArgs);
    }
 
@@ -498,7 +498,7 @@ namespace trogdor { namespace core { namespace entity {
       eventArgs.push_back(this);
 
       game->setupEventHandler();
-      game->addEventListener(triggers);
+      game->addEventListener(triggers.get());
       if (!game->event("beforeDie", eventArgs)) {
          return;
       }
@@ -510,7 +510,7 @@ namespace trogdor { namespace core { namespace entity {
       }
 
       game->setupEventHandler();
-      game->addEventListener(triggers);
+      game->addEventListener(triggers.get());
       game->event("afterDie", eventArgs);
    }
 
@@ -548,7 +548,7 @@ namespace trogdor { namespace core { namespace entity {
       eventArgs.push_back(this);
 
       game->setupEventHandler();
-      game->addEventListener(triggers);
+      game->addEventListener(triggers.get());
       if (!game->event("beforeRespawn", eventArgs)) {
          return;
       }
@@ -557,7 +557,7 @@ namespace trogdor { namespace core { namespace entity {
       health = maxHealth;
 
       game->setupEventHandler();
-      game->addEventListener(triggers);
+      game->addEventListener(triggers.get());
       game->event("afterRespawn", eventArgs);
    }
 }}}
