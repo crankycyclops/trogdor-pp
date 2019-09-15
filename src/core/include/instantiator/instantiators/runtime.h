@@ -17,7 +17,12 @@ namespace trogdor { namespace core {
 
       private:
 
-         // Function type used by propertySetters
+         // Function type used by gameSetters on a Game object
+         typedef void (*gameSetterFunc) (
+            Game *game, string value
+         );
+
+         // Function type used by propSetters on Entities
          typedef void (*propSetterFunc) (
             Game *game, entity::Entity * entity, string value
          );
@@ -31,9 +36,12 @@ namespace trogdor { namespace core {
          // A hash mapping of entity type -> property name -> setter function
          unordered_map<string, unordered_map<string, propSetterFunc>> propSetters;
 
+         // A hash mapping of game property setter functions
+         unordered_map<string, gameSetterFunc> gameSetters;
+
          /*
-            Creates an entity type -> property -> function map that's used to
-            implement entitySetter() an entityClassSetter().
+            Creates a property -> function map that's used to
+            implement gameSetter().
 
             Input:
                (none)
@@ -41,7 +49,19 @@ namespace trogdor { namespace core {
             Output:
                (none)
          */
-         void mapSetters();
+         void mapGameSetters();
+
+         /*
+            Creates an entity type -> property -> function map that's used to
+            implement entitySetter() and entityClassSetter().
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void mapEntitySetters();
 
       public:
 
@@ -180,21 +200,6 @@ namespace trogdor { namespace core {
          string value);
 
          /*
-            Loads a Lua script into the game's global Lua state. By default,
-            we load a script by filename, but passing STRING into the second
-            argument will allow you to pass the script into the first parameter
-            as a string.
-
-            Input:
-               Script (filename or script)
-               Load method (FILE = load by filename, STRING = load as string)
-
-            Output:
-               (none)
-         */
-         virtual void loadGameScript(string script, enum LoadScriptMethod method = FILE);
-
-         /*
             Identical to loadGameScript, except that the script gets loaded into
             an Entity's Lua state instead of core::Game's.
 
@@ -208,18 +213,6 @@ namespace trogdor { namespace core {
          */
          virtual void loadEntityScript(string entityName, string script,
          enum LoadScriptMethod method = FILE);
-
-         /*
-            Sets a global event.
-
-            Input:
-               Event name (string)
-               Function to call when event is triggered(string)
-
-            Output:
-               (none)
-         */
-         virtual void setGameEvent(string eventName, string function);
 
          /*
             Sets an event for a specific Entity.
@@ -273,6 +266,46 @@ namespace trogdor { namespace core {
                (none)
          */
          virtual void setDefaultPlayerMessage(string messageName, string message);
+
+         /*
+            Similar to entitySetter, except that we're setting a property
+            of the Game object.
+
+            Input:
+               Property we're setting (string)
+               Property's value (string)
+
+            Output:
+               (none)
+         */
+         virtual void gameSetter(string property, string value);
+
+         /*
+            Loads a Lua script into the game's global Lua state. By default,
+            we load a script by filename, but passing STRING into the second
+            argument will allow you to pass the script into the first parameter
+            as a string.
+
+            Input:
+               Script (filename or script)
+               Load method (FILE = load by filename, STRING = load as string)
+
+            Output:
+               (none)
+         */
+         virtual void loadGameScript(string script, enum LoadScriptMethod method = FILE);
+
+         /*
+            Sets a global event.
+
+            Input:
+               Event name (string)
+               Function to call when event is triggered(string)
+
+            Output:
+               (none)
+         */
+         virtual void setGameEvent(string eventName, string function);
 
          /*
             Most of the instantiation is completed already by the above functions,

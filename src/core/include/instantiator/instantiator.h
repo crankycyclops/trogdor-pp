@@ -158,21 +158,6 @@ namespace trogdor { namespace core {
          string value) = 0;
 
          /*
-            Loads a Lua script into the game's global Lua state. By default,
-            we load a script by filename, but passing STRING into the second
-            argument will allow you to pass the script into the first parameter
-            as a string.
-
-            Input:
-               Script (filename or script)
-               Load method (FILE = load by filename, STRING = load as string)
-
-            Output:
-               (none)
-         */
-         virtual void loadGameScript(string script, enum LoadScriptMethod method = FILE) = 0;
-
-         /*
             Identical to loadGameScript, except that the script gets loaded into
             an Entity's Lua state instead of core::Game's.
 
@@ -186,18 +171,6 @@ namespace trogdor { namespace core {
          */
          virtual void loadEntityScript(string entityName, string script,
          enum LoadScriptMethod method = FILE) = 0;
-
-         /*
-            Sets a global event.
-
-            Input:
-               Event name (string)
-               Function to call when event is triggered(string)
-
-            Output:
-               (none)
-         */
-         virtual void setGameEvent(string eventName, string function) = 0;
 
          /*
             Sets an event for a specific Entity.
@@ -251,6 +224,46 @@ namespace trogdor { namespace core {
                (none)
          */
          virtual void setDefaultPlayerMessage(string messageName, string message) = 0;
+
+         /*
+            Similar to entitySetter, except that we're setting a property
+            of the Game object.
+
+            Input:
+               Property we're setting (string)
+               Property's value (string)
+
+            Output:
+               (none)
+         */
+         virtual void gameSetter(string property, string value) = 0;
+
+         /*
+            Loads a Lua script into the game's global Lua state. By default,
+            we load a script by filename, but passing STRING into the second
+            argument will allow you to pass the script into the first parameter
+            as a string.
+
+            Input:
+               Script (filename or script)
+               Load method (FILE = load by filename, STRING = load as string)
+
+            Output:
+               (none)
+         */
+         virtual void loadGameScript(string script, enum LoadScriptMethod method = FILE) = 0;
+
+         /*
+            Sets a global event.
+
+            Input:
+               Event name (string)
+               Function to call when event is triggered(string)
+
+            Output:
+               (none)
+         */
+         virtual void setGameEvent(string eventName, string function) = 0;
 
          /*
             Should be called after parsing is complete. If this step is

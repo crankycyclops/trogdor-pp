@@ -18,7 +18,8 @@ namespace trogdor { namespace core {
    Runtime::Runtime(Game *g) {
 
       game = g;
-      mapSetters();
+      mapGameSetters();
+      mapEntitySetters();
    }
 
    /***************************************************************************/
@@ -291,22 +292,8 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   void Runtime::loadGameScript(string script, enum LoadScriptMethod method) {
-
-      // TODO
-   }
-
-   /***************************************************************************/
-
    void Runtime::loadEntityScript(string entityName, string script,
    enum LoadScriptMethod method) {
-
-      // TODO
-   }
-
-   /***************************************************************************/
-
-   void Runtime::setGameEvent(string eventName, string function) {
 
       // TODO
    }
@@ -364,6 +351,31 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
+   void Runtime::gameSetter(string property, string value) {
+
+      if (gameSetters.find(property) == gameSetters.end()) {
+         throw string("Runtime instantiator: unsupported game property '") + property + "'";
+      }
+
+      gameSetters[property](game, value);
+   }
+
+   /***************************************************************************/
+
+   void Runtime::loadGameScript(string script, enum LoadScriptMethod method) {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   void Runtime::setGameEvent(string eventName, string function) {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
    void Runtime::instantiate() {
 
       // For each creature, check if wandering was enabled, and if so, insert a
@@ -382,7 +394,35 @@ namespace trogdor { namespace core {
    /***************************************************************************/
 
    // Private method
-   void Runtime::mapSetters() {
+   void Runtime::mapGameSetters() {
+
+      gameSetters["introduction.text"] = [](Game *game, string value) {
+         game->setIntroductionText(value);
+      };
+
+      gameSetters["introduction.enabled"] = [](Game *game, string value) {
+
+         if (value != "1" && value != "0") {
+            throw string("game introduction enabled: should be either 1 for true or 0 for false");
+         }
+
+         game->setIntroductionEnabled(stoi(value));
+      };
+
+      gameSetters["introduction.pause"] = [](Game *game, string value) {
+
+         if (value != "1" && value != "0") {
+            throw string("game introduction pause: should be either 1 for true or 0 for false");
+         }
+
+         game->setIntroductionPause(stoi(value));
+      };
+   }
+
+   /***************************************************************************/
+
+   // Private method
+   void Runtime::mapEntitySetters() {
 
       // Set Entity title (all types)
       propSetters["room"]["title"] =
@@ -448,7 +488,6 @@ namespace trogdor { namespace core {
       string value) {
 
          if (value != "1" && value != "0") {
-
             throw string("being alive: should be either 1 for true or 0 for false");
          }
 

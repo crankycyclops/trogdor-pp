@@ -345,15 +345,24 @@ namespace trogdor { namespace core {
       while (nextTag() && 2 == getDepth()) {
 
          if (0 == getTagName().compare("enabled")) {
-            parseIntroductionEnabled();
+            string value = getNodeValue();
+            value = trim(value);
+            instantiator->gameSetter("introduction.enabled", value);
+            checkClosingTag("enabled");
          }
 
          else if (0 == getTagName().compare("pause")) {
-            parseIntroductionPause();
+            string value = getNodeValue();
+            value = trim(value);
+            instantiator->gameSetter("introduction.pause", value);
+            checkClosingTag("pause");
          }
 
          else if (0 == getTagName().compare("text")) {
-            parseIntroductionText();
+            string value = getNodeValue();
+            value = trim(value);
+            instantiator->gameSetter("introduction.text", value);
+            checkClosingTag("text");
          }
 
          else {
@@ -365,30 +374,6 @@ namespace trogdor { namespace core {
       }
 
       checkClosingTag("introduction");
-   }
-
-   /***************************************************************************/
-
-   void Parser::parseIntroductionEnabled() {
-
-      game->setIntroductionEnabled(parseBool());
-      checkClosingTag("enabled");
-   }
-
-   /***************************************************************************/
-
-   void Parser::parseIntroductionPause() {
-
-      game->setIntroductionPause(parseBool());
-      checkClosingTag("pause");
-   }
-
-   /***************************************************************************/
-
-   void Parser::parseIntroductionText() {
-
-      game->setIntroductionText(parseString());
-      checkClosingTag("text");
    }
 
    /***************************************************************************/
@@ -1675,24 +1660,6 @@ namespace trogdor { namespace core {
       }
 
       checkClosingTag("aliases");
-   }
-
-   /***************************************************************************/
-
-   bool Parser::parseBool() {
-
-      stringstream s;
-
-      s << filename << ": Expecting boolean 1 for true or 0 for false (line "
-         << xmlTextReaderGetParserLineNumber(reader) << ")";
-
-      try {
-         return boost::lexical_cast<bool>(getNodeValue());
-      }
-
-      catch (boost::bad_lexical_cast) {
-         throw s.str();
-      }
    }
 
    /***************************************************************************/

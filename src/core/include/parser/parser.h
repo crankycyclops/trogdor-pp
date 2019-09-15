@@ -195,23 +195,6 @@ namespace trogdor { namespace core {
          void checkClosingTag(string tag);
 
          /*
-            Parses a boolean value from the last encountered XML tag and leaves
-            the current position in the XML file just after the value.  Throws
-            an exception if there's an error.
-
-            Input:
-               (none)
-
-            Output:
-               (none)
-
-            Exceptions:
-               Throws exception if there's a parsing error or if the value
-               isn't 1 (for true) or 0 (for false.)
-         */
-         bool parseBool();
-
-         /*
             Parses a string from the last encountered XML tag and leaves the
             current position in the XML file just after the value.  Throws an
             exception if there's an error.
@@ -390,9 +373,6 @@ namespace trogdor { namespace core {
                (none)
          */
          void parseIntroduction();
-         void parseIntroductionEnabled();
-         void parseIntroductionPause();
-         void parseIntroductionText();
 
          /*
             This group of functions parses the <manifest> section of the XML
