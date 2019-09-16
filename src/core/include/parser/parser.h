@@ -10,14 +10,12 @@
 #include <cstdlib>
 
 #include <libxml/xmlreader.h>
-#include <boost/lexical_cast.hpp>
 
 #include "../utility.h"
 #include "../vocabulary.h"
 #include "../entitymap.h"
 #include "../entities/player.h"
 #include "../lua/luastate.h"
-#include "../event/eventlistener.h"
 #include "../instantiator/instantiator.h"
 
 #include "data.h"
@@ -124,7 +122,7 @@ namespace trogdor { namespace core {
                   break;
 
                default:
-                  throw string("Parser::setEntityMessage: invalid mode. This is a bug.");
+                  throw string("Parser::setEntityMessage: invalid parse mode. This is a bug.");
             }
          }
 
@@ -159,7 +157,40 @@ namespace trogdor { namespace core {
                   break;
 
                default:
-                  throw string("Parser::setEntityMessage: invalid mode. This is a bug.");
+                  throw string("Parser::loadScript: invalid parse mode. This is a bug.");
+            }
+         }
+
+         /*
+            Sets an event for Game, an Entity, or an Entity class using the
+            Instantiator.
+
+            Input:
+               What kind of object we're loading the script into (enum ParseMode)
+                  . Possible values are PARSE_ENTITY, PARSE_CLASS, or PARSE_GAME
+               Event name (string)
+               Lua function to call for the event (string)
+               Entity or Entity class name (ignored if mode = PARSE_GAME)
+         */
+         inline void setEvent(enum ParseMode mode, string eventName, string function,
+         string entityName = "") {
+
+            switch (mode) {
+
+               case PARSE_ENTITY:
+                  instantiator->setEntityEvent(entityName, eventName, function);
+                  break;
+
+               case PARSE_CLASS:
+                  instantiator->setEntityClassEvent(entityName, eventName, function);
+                  break;
+
+               case PARSE_GAME:
+                  instantiator->setGameEvent(eventName, function);
+                  break;
+
+               default:
+                  throw string("Parser::setEvent: invalid parse mode. This is a bug.");
             }
          }
 
@@ -379,8 +410,8 @@ namespace trogdor { namespace core {
          void parseMessages(string entityName, enum ParseMode mode, int depth);
 
          /*
-            Parses an <events> section and populates the given LuaState and
-            EventListener objects.  Throws an exception if there's an error.
+            Parses an <events> section for Entities, Entity classes, and Game.
+            Throws an exception if there's an error.
 
             Input:
                Entity or Entity class name (string -- ignored if mode = PARSE_GAME)

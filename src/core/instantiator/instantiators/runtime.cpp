@@ -120,6 +120,11 @@ namespace trogdor { namespace core {
    void Runtime::setEntityClassEvent(string entityClass, string eventName,
    string function) {
 
+      /* TODO: Calls I need to implement are something like this:
+         LuaEventTrigger *trigger = new LuaEventTrigger(function, L);
+         entity->triggers->add(name.c_str(), trigger);
+      */
+
       // TODO: this will remain a stub until I actually implement class event
       // handlers via the Entity copy constructor.
    }
@@ -322,6 +327,11 @@ namespace trogdor { namespace core {
    void Runtime::setEntityEvent(string entityName, string eventName,
    string function) {
 
+      /* TODO: Calls I need to implement are something like this:
+         LuaEventTrigger *trigger = new LuaEventTrigger(function, L);
+         entity->triggers->add(name.c_str(), trigger);
+      */
+
       // TODO: stub for testing
       cout << "Stub: called Runtime::setEntityEvent()" << endl;
    }
@@ -391,6 +401,11 @@ namespace trogdor { namespace core {
    /***************************************************************************/
 
    void Runtime::setGameEvent(string eventName, string function) {
+
+      /* TODO: Calls I need to implement are something like this:
+         LuaEventTrigger *trigger = new LuaEventTrigger(function, L);
+         entity->triggers->add(name.c_str(), trigger);
+      */
 
       // TODO: stub for testing
       cout << "Stub: called Runtime::setGameEvent()" << endl;

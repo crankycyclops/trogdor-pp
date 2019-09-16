@@ -675,12 +675,21 @@ namespace trogdor { namespace core {
 
    void Parser::parseEvent(string entityName, enum ParseMode mode) {
 
+      stringstream s;
+
       string name = getAttribute("name");
       string function = parseString();
-/* TODO: stub for testing
-      LuaEventTrigger *trigger = new LuaEventTrigger(function, L);
-      triggers->add(name.c_str(), trigger);
-*/
+
+      try {
+         setEvent(mode, name, function, entityName);
+      }
+
+      catch (string error) {
+         s << filename << ": " << error << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
+
       checkClosingTag("event");
    }
 
