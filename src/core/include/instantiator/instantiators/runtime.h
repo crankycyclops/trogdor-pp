@@ -115,6 +115,35 @@ namespace trogdor { namespace core {
          string value);
 
          /*
+            Identical to loadGameScript and loadEntityScript, except that the
+            script gets loaded into an Entity class's Lua state.
+
+            Input:
+               Entity class's name (string)
+               Script (filename or script)
+               Load method (FILE = load by filename, STRING = load as string)
+
+            Output:
+               (none)
+         */
+         virtual void loadEntityClassScript(string entityClass, string script,
+         enum LoadScriptMethod method = FILE);
+
+         /*
+            Sets an event for a specific Entity class.
+
+            Input:
+               Entity class name (string)
+               Event name (string)
+               Function to call when event is triggered(string)
+
+            Output:
+               (none)
+         */
+         virtual void setEntityClassEvent(string entityName, string eventName,
+         string function);
+
+         /*
             Set's a message for an Entity class.
 
             Input:

@@ -82,9 +82,7 @@ namespace trogdor { namespace core {
          }
 
          else if (0 == getTagName().compare("events")) {
-// TODO: fix
-//            parseEvents(gameL, eventListener, 2);
-              parseEvents(nullptr, nullptr, 2);
+              parseEvents("", PARSE_GAME, 2);
          }
 
          else if (0 == getTagName().compare("introduction")) {
@@ -607,27 +605,35 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseEvents(const std::shared_ptr<LuaState> &L, EventListener *triggers, int depth) {
+   void Parser::parseEvents(string entityName, enum ParseMode mode, int depth) {
 
       stringstream s;
 
-      while (nextTag() && depth == getDepth()) {
+      try {
 
-         if (0 == getTagName().compare("script")) {
-            parseScript(L);
+         while (nextTag() && depth == getDepth()) {
+
+            if (0 == getTagName().compare("script")) {
+               parseScript(entityName, mode);
+            }
+
+            else if (0 == getTagName().compare("event")) {
+               parseEvent(entityName, mode);
+            }
+
+            else {
+               s << filename << ": invalid tag <" << getTagName() << "> in "
+                  << "<events> (line " << xmlTextReaderGetParserLineNumber(reader)
+                  << ")";
+               throw s.str();
+            }
          }
+      }
 
-         else if (0 == getTagName().compare("event")) {
-            parseEvent(L, triggers);
-         }
-
-
-         else {
-            s << filename << ": invalid tag <" << getTagName() << "> in "
-               << "<events> (line " << xmlTextReaderGetParserLineNumber(reader)
-               << ")";
-            throw s.str();
-         }
+      catch (string error) {
+         s << filename << ": " << error << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
       }
 
       checkClosingTag("events");
@@ -635,26 +641,31 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseScript(const std::shared_ptr<LuaState> &L) {
+   void Parser::parseScript(string entityName, enum ParseMode mode) {
 
-      // external script
-/* TODO: stub for testing
+      stringstream s;
+      string script;
+      enum Instantiator::LoadScriptMethod method;
+
       try {
-         L->loadScriptFromFile(getAttribute("src"));
+
+         try {
+            script = getAttribute("src");
+            method = Instantiator::FILE;
+         }
+
+         catch (string error) {
+            script = parseString();
+            method = Instantiator::STRING;
+         }
+
+         loadScript(mode, script, method, entityName);
       }
 
-      // inline script
       catch (string error) {
-         L->loadScriptFromString(parseString());
-      }
-*/
-      // TODO: delete this after testing
-      try {
-         cout << "Stub: Skipping script file: " << getAttribute("src") << endl;
-      }
-
-      catch (string error) {
-         cout << "Stub: Skipping inline script: " << endl << parseString() << endl;
+         s << filename << ": " << error << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
       }
 
       checkClosingTag("script");
@@ -662,7 +673,7 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
-   void Parser::parseEvent(const std::shared_ptr<LuaState> &L, EventListener *triggers) {
+   void Parser::parseEvent(string entityName, enum ParseMode mode) {
 
       string name = getAttribute("name");
       string function = parseString();
@@ -814,9 +825,7 @@ namespace trogdor { namespace core {
             }
 
             else if (0 == getTagName().compare("events")) {
-               // TODO: stub for testing
-               parseEvents(nullptr, nullptr, depth + 1);
-               //parseEvents(object->L, object->triggers, depth + 1);
+               parseEvents(name, mode, depth + 1);
             }
 
             else {
@@ -1117,9 +1126,7 @@ namespace trogdor { namespace core {
             }
 
             else if (0 == getTagName().compare("events")) {
-               // TODO: stub for now to test without event parsing
-               parseEvents(nullptr, nullptr, depth + 1);
-               //parseEvents(creature->L, creature->triggers, depth + 1);
+               parseEvents(name, mode, depth + 1);
             }
 
             else {
@@ -1258,9 +1265,7 @@ namespace trogdor { namespace core {
             }
 
             else if (0 == getTagName().compare("events")) {
-               // TODO: stub for testing without actually parsing events
-               parseEvents(nullptr, nullptr, depth + 1);
-               //parseEvents(room->L, room->triggers, depth + 1);
+               parseEvents(name, mode, depth + 1);
             }
 
             else {

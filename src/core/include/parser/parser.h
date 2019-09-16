@@ -37,11 +37,14 @@ namespace trogdor { namespace core {
       private:
 
          // When passed to a function, determines if we're parsing for an entity
-         // class, an entity object, or the default player
+         // class, an entity object, the default player, or the game. This makes
+         // sure that we can call the proper instantiator method using wrapper
+         // methods like entitySetter().
          enum ParseMode {
             PARSE_CLASS = 0,
             PARSE_ENTITY = 1,
-            PARSE_DEFAULT_PLAYER = 2
+            PARSE_DEFAULT_PLAYER = 2,
+            PARSE_GAME = 3
          };
 
          // handles the actual XML parsing
@@ -66,16 +69,28 @@ namespace trogdor { namespace core {
                Property name (string)
                Property value (string)
                Whether we're parsing aliases for Entity of Entity class (enum ParseMode mode)
+                  . Possible values are: PARSE_ENTITY, PARSE_ENTITY_CLASS, and
+                    PARSE_DEFAULT_PLAYER
          */
          inline void entitySetter(string entity, string property,
          string value, enum ParseMode mode) {
 
-            if (PARSE_ENTITY == mode) {
-               instantiator->entitySetter(entity, property, value);
-            } else if (PARSE_CLASS == mode) {
-               instantiator->entityClassSetter(entity, property, value);
-            } else {
-               instantiator->defaultPlayerSetter(property, value);
+            switch (mode) {
+
+               case PARSE_ENTITY:
+                  instantiator->entitySetter(entity, property, value);
+                  break;
+
+               case PARSE_CLASS:
+                  instantiator->entityClassSetter(entity, property, value);
+                  break;
+
+               case PARSE_DEFAULT_PLAYER:
+                  instantiator->defaultPlayerSetter(property, value);
+                  break;
+
+               default:
+                  throw string("Parser::entitySetter: invalid mode. This is a bug.");
             }
          }
 
@@ -87,17 +102,64 @@ namespace trogdor { namespace core {
                Entity name (string, ignored if mode = PARSE_DEFAULT_PLAYER)
                Property name (string)
                Property value (string)
-               Whether we're parsing aliases for Entity of Entity class (enum ParseMode mode)
+               Whether we're parsing aliases for Entity of Entity class (enum ParseMode)
+                  . Possible values for mode are PARSE_ENTITY, PARSE_CLASS, or
+                    PARSE_DEFAULT_PLAYER.
          */
          inline void setEntityMessage(string entity, string messageName,
          string message, enum ParseMode mode) {
 
-            if (PARSE_ENTITY == mode) {
-               instantiator->setEntityMessage(entity, messageName, message);
-            } else if (PARSE_DEFAULT_PLAYER == mode) {
-               instantiator->setDefaultPlayerMessage(messageName, message);
-            } else {
-               instantiator->setEntityClassMessage(entity, messageName, message);
+            switch (mode) {
+
+               case PARSE_ENTITY:
+                  instantiator->setEntityMessage(entity, messageName, message);
+                  break;
+
+               case PARSE_CLASS:
+                  instantiator->setEntityClassMessage(entity, messageName, message);
+                  break;
+
+               case PARSE_DEFAULT_PLAYER:
+                  instantiator->setDefaultPlayerMessage(messageName, message);
+                  break;
+
+               default:
+                  throw string("Parser::setEntityMessage: invalid mode. This is a bug.");
+            }
+         }
+
+         /*
+            Loads a Lua script into a Lua state belonging either to an entity,
+            an entity class, or an instance of Game.
+
+            Input:
+               What kind of object we're loading the script into (enum ParseMode)
+                  . Possible values are PARSE_ENTITY, PARSE_CLASS, or PARSE_GAME
+               Script filename or content (string)
+               Whether we're loading the script from a file or a string
+                  (enum Instantiator::LoadScriptMethod)
+               Entity or Entity class name (ignored if mode = PARSE_GAME)
+         */
+         inline void loadScript(enum ParseMode mode, string script,
+         enum Instantiator::LoadScriptMethod scriptMethod = Instantiator::FILE,
+         string entityName = "") {
+
+            switch (mode) {
+
+               case PARSE_ENTITY:
+                  instantiator->loadEntityScript(entityName, script, scriptMethod);
+                  break;
+
+               case PARSE_CLASS:
+                  instantiator->loadEntityClassScript(entityName, script, scriptMethod);
+                  break;
+
+               case PARSE_GAME:
+                  instantiator->loadGameScript(script, scriptMethod);
+                  break;
+
+               default:
+                  throw string("Parser::setEntityMessage: invalid mode. This is a bug.");
             }
          }
 
@@ -321,16 +383,17 @@ namespace trogdor { namespace core {
             EventListener objects.  Throws an exception if there's an error.
 
             Input:
-               Pointer to LuaState
-               Pointer to EventListener
+               Entity or Entity class name (string -- ignored if mode = PARSE_GAME)
+               Whether we're parsing an Entity, an Entity class, or Game (enum ParseMode)
+                  . Valid values are PARSE_ENTITY, PARSE_CLASS, and PARSE_GAME
                Depth in XML tree (int)
 
             Output:
                (none)
          */
-         void parseEvents(const std::shared_ptr<LuaState> &L, EventListener *triggers, int depth);
-         void parseScript(const std::shared_ptr<LuaState> &L);
-         void parseEvent(const std::shared_ptr<LuaState> &L, EventListener *triggers);
+         void parseEvents(string entityName, enum ParseMode mode, int depth);
+         void parseScript(string entityName, enum ParseMode mode);
+         void parseEvent(string entityName, enum ParseMode mode);
 
          /*
             This group of functions parses the <classes> section of the XML

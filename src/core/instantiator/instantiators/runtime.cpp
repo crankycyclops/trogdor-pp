@@ -108,6 +108,24 @@ namespace trogdor { namespace core {
 
    /***************************************************************************/
 
+   void Runtime::loadEntityClassScript(string entityClass, string script,
+   enum LoadScriptMethod method) {
+
+      // TODO: stub for testing
+      cout << "Stub: called Runtime::loadEntityClassScript()" << endl;
+   }
+
+   /***************************************************************************/
+
+   void Runtime::setEntityClassEvent(string entityClass, string eventName,
+   string function) {
+
+      // TODO: this will remain a stub until I actually implement class event
+      // handlers via the Entity copy constructor.
+   }
+
+   /***************************************************************************/
+
    void Runtime::setEntityClassMessage(string className, string messageName,
    string message) {
 
@@ -295,7 +313,8 @@ namespace trogdor { namespace core {
    void Runtime::loadEntityScript(string entityName, string script,
    enum LoadScriptMethod method) {
 
-      // TODO
+      // TODO: stub for testing
+      cout << "Stub: called Runtime::loadEntityScript()" << endl;
    }
 
    /***************************************************************************/
@@ -303,7 +322,8 @@ namespace trogdor { namespace core {
    void Runtime::setEntityEvent(string entityName, string eventName,
    string function) {
 
-      // TODO
+      // TODO: stub for testing
+      cout << "Stub: called Runtime::setEntityEvent()" << endl;
    }
 
    /***************************************************************************/
@@ -364,14 +384,16 @@ namespace trogdor { namespace core {
 
    void Runtime::loadGameScript(string script, enum LoadScriptMethod method) {
 
-      // TODO
+      // TODO: stub for testing
+      cout << "Stub: called Runtime::loadGameScript()" << endl;
    }
 
    /***************************************************************************/
 
    void Runtime::setGameEvent(string eventName, string function) {
 
-      // TODO
+      // TODO: stub for testing
+      cout << "Stub: called Runtime::setGameEvent()" << endl;
    }
 
    /***************************************************************************/
