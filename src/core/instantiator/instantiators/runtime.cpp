@@ -412,30 +412,20 @@ namespace trogdor { namespace core {
 
    void Runtime::loadGameScript(string script, enum LoadScriptMethod method) {
 
-      /* TODO: Call I need to implement will be something like this (where L
-         is an instance of LuaState):
-         if (FILE == method) {
-            L->loadScriptFromFile(script);
-         } else {
-            L->loadScriptFromString(script);
-         }
-      */
-
-      // TODO: stub for testing
-      cout << "Stub: called Runtime::loadGameScript()" << endl;
+      if (FILE == method) {
+         game->getLuaState()->loadScriptFromFile(script);
+      } else {
+         game->getLuaState()->loadScriptFromString(script);
+      }
    }
 
    /***************************************************************************/
 
    void Runtime::setGameEvent(string eventName, string function) {
 
-      /* TODO: Calls I need to implement are something like this:
-         LuaEventTrigger *trigger = new LuaEventTrigger(function, L);
-         entity->triggers->add(name.c_str(), trigger);
-      */
-
-      // TODO: stub for testing
-      cout << "Stub: called Runtime::setGameEvent()" << endl;
+      // TODO: modify Lua and event code so I can use smart pointers
+      LuaEventTrigger *LEventTrigger = new LuaEventTrigger(function, game->getLuaState());
+      game->getEventListener()->add(eventName.c_str(), LEventTrigger);
    }
 
    /***************************************************************************/

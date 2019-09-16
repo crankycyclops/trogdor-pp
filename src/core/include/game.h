@@ -165,6 +165,34 @@ namespace trogdor { namespace core {
          ~Game();
 
          /*
+            Returns a reference to Game instance's LuaState object. This should
+            ONLY be used by the instantiator and (possibly) other select classes
+            that need to interact directly with this. THIS IS A DANGEROUS METHOD.
+            You have been warned.
+
+            Input:
+               (none)
+
+            Output:
+               Game's Lua State (const &LuaState)
+         */
+         std::shared_ptr<LuaState> &getLuaState() {return L;}
+
+         /*
+            Returns a reference to Game instance's EventListener. This should
+            ONLY be used by the instantiator and (possibly) other select classes
+            that need to interact directly with this. THIS IS A DANGEROUS METHOD.
+            You have been warned.
+
+            Input:
+               (none)
+
+            Output:
+               Game's EventListener (const &event::EventListener)
+         */
+         std::unique_ptr<event::EventListener> &getEventListener() {return eventListener;}
+
+         /*
             Returns a reference to the Game's error stream.  A typical use
             would look something like this:
 
@@ -177,7 +205,6 @@ namespace trogdor { namespace core {
                Trogout &
          */
          Trogout &err() {return *errStream;}
-
 
          /*
             Gets a meta data value.  If the value isn't set, an empty string is
