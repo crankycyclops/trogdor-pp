@@ -111,6 +111,15 @@ namespace trogdor { namespace core {
    void Runtime::loadEntityClassScript(string entityClass, string script,
    enum LoadScriptMethod method) {
 
+      /* TODO: Call I need to implement will be something like this (where L
+         is an instance of LuaState):
+         if (FILE == method) {
+            L->loadScriptFromFile(script);
+         } else {
+            L->loadScriptFromString(script);
+         }
+      */
+
       // TODO: stub for testing
       cout << "Stub: called Runtime::loadEntityClassScript()" << endl;
    }
@@ -125,8 +134,8 @@ namespace trogdor { namespace core {
          entity->triggers->add(name.c_str(), trigger);
       */
 
-      // TODO: this will remain a stub until I actually implement class event
-      // handlers via the Entity copy constructor.
+      // TODO: I'll implement this, but it won't actually work in terms of
+      // actual Entities until I also update the Entity copy constructor.
    }
 
    /***************************************************************************/
@@ -318,6 +327,15 @@ namespace trogdor { namespace core {
    void Runtime::loadEntityScript(string entityName, string script,
    enum LoadScriptMethod method) {
 
+      /* TODO: Call I need to implement will be something like this (where L
+         is an instance of LuaState):
+         if (FILE == method) {
+            L->loadScriptFromFile(script);
+         } else {
+            L->loadScriptFromString(script);
+         }
+      */
+
       // TODO: stub for testing
       cout << "Stub: called Runtime::loadEntityScript()" << endl;
    }
@@ -393,6 +411,15 @@ namespace trogdor { namespace core {
    /***************************************************************************/
 
    void Runtime::loadGameScript(string script, enum LoadScriptMethod method) {
+
+      /* TODO: Call I need to implement will be something like this (where L
+         is an instance of LuaState):
+         if (FILE == method) {
+            L->loadScriptFromFile(script);
+         } else {
+            L->loadScriptFromString(script);
+         }
+      */
 
       // TODO: stub for testing
       cout << "Stub: called Runtime::loadGameScript()" << endl;
