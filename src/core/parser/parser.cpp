@@ -840,65 +840,42 @@ namespace trogdor { namespace core {
    void Parser::parseDefaultPlayer() {
 
       stringstream s;
+      static unordered_map<string, string> tagToProperty({
+         {"alive", "alive"}, {"health", "health"}, {"maxhealth", "maxhealth"},
+         {"attackable", "attackable"}, {"woundrate", "woundrate"},
+         {"damagebarehands", "damagebarehands"}
+      });
 
       try {
 
          while (nextTag() && 3 == getDepth()) {
 
-            if (0 == getTagName().compare("messages")) {
+            string tag = getTagName();
+
+            if (0 == tag.compare("messages")) {
                parseMessages("", PARSE_DEFAULT_PLAYER, 4);
             }
 
-            else if (0 == getTagName().compare("inventory")) {
+            else if (0 == tag.compare("inventory")) {
                parseBeingInventory("", PARSE_DEFAULT_PLAYER, false);
             }
 
-            else if (0 == getTagName().compare("respawn")) {
+            else if (0 == tag.compare("respawn")) {
                Parser::parseBeingRespawn("", PARSE_DEFAULT_PLAYER, 4);
             }
 
-            else if (0 == getTagName().compare("attributes")) {
+            else if (0 == tag.compare("attributes")) {
                parseBeingAttributes("", PARSE_DEFAULT_PLAYER);
             }
 
-            else if (0 == getTagName().compare("alive")) {
-               string alive = parseString();
-               entitySetter("", "alive", alive, PARSE_DEFAULT_PLAYER);
-               checkClosingTag("alive");
-            }
-
-            else if (0 == getTagName().compare("health")) {
-               string health = parseString();
-               entitySetter("", "health", health, PARSE_DEFAULT_PLAYER);
-               checkClosingTag("health");
-            }
-
-            else if (0 == getTagName().compare("maxhealth")) {
-               string maxhealth = parseString();
-               entitySetter("", "maxhealth", maxhealth, PARSE_DEFAULT_PLAYER);
-               checkClosingTag("maxhealth");
-            }
-
-            else if (0 == getTagName().compare("attackable")) {
-               string attackable = parseString();
-               entitySetter("", "attackable", attackable, PARSE_DEFAULT_PLAYER);
-               checkClosingTag("attackable");
-            }
-
-            else if (0 == getTagName().compare("woundrate")) {
-               string rate = parseString();
-               entitySetter("", "woundrate", rate, PARSE_DEFAULT_PLAYER);
-               checkClosingTag("woundrate");
-            }
-
-            else if (0 == getTagName().compare("damagebarehands")) {
-               string damage = parseString();
-               entitySetter("", "damagebarehands", damage, PARSE_DEFAULT_PLAYER);
-               checkClosingTag("damagebarehands");
+            else if (tagToProperty.find(tag) != tagToProperty.end()) {
+               string value = parseString();
+               entitySetter("", tagToProperty[tag], value, PARSE_DEFAULT_PLAYER);
+               checkClosingTag(tag);
             }
 
             else {
-               s << filename << ": invalid tag <" << getTagName() << "> in "
+               s << filename << ": invalid tag <" << tag << "> in "
                   << "default player settings (line "
                   << xmlTextReaderGetParserLineNumber(reader) << ")";
                throw s.str();
