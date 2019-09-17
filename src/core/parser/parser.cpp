@@ -331,29 +331,23 @@ namespace trogdor { namespace core {
    void Parser::parseIntroduction() {
 
       stringstream s;
+      static unordered_map<string, string> tagToProperty({
+         {"enabled", "introduction.enabled"}, {"pause", "introduction.pause"},
+         {"text", "introduction.text"}
+      });
 
       while (nextTag() && 2 == getDepth()) {
 
-         if (0 == getTagName().compare("enabled")) {
-            string value = parseString();
-            instantiator->gameSetter("introduction.enabled", value);
-            checkClosingTag("enabled");
-         }
+         string tag = getTagName();
 
-         else if (0 == getTagName().compare("pause")) {
+         if (tagToProperty.find(tag) != tagToProperty.end()) {
             string value = parseString();
-            instantiator->gameSetter("introduction.pause", value);
-            checkClosingTag("pause");
-         }
-
-         else if (0 == getTagName().compare("text")) {
-            string value = parseString();
-            instantiator->gameSetter("introduction.text", value);
-            checkClosingTag("text");
+            instantiator->gameSetter(tagToProperty[tag], value);
+            checkClosingTag(tag);
          }
 
          else {
-            s << filename << ": invalid tag <" << getTagName() <<
+            s << filename << ": invalid tag <" << tag <<
                "> in <introduction> section (line " <<
                xmlTextReaderGetParserLineNumber(reader) << ")";
             throw s.str();
