@@ -768,77 +768,42 @@ namespace trogdor { namespace core {
    void Parser::parseObjectProperties(string name, enum ParseMode mode, int depth) {
 
       stringstream s;
+      static unordered_map<string, string> tagToProperty({
+         {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"},
+         {"weight", "weight"}, {"takeable", "takeable"}, {"droppable", "droppable"},
+         {"weapon", "weapon"}, {"damage", "damage"}
+      });
 
       try {
 
          while (nextTag() && depth == getDepth()) {
 
-            if (0 == getTagName().compare("title")) {
-               string title = parseString();
-               entitySetter(name, "title", title, mode);
-               checkClosingTag("title");
-            }
+            string tag = getTagName();
 
-            else if (0 == getTagName().compare("description")) {
-               string longdesc = parseString();
-               entitySetter(name, "longDesc", longdesc, mode);
-               checkClosingTag("description");
-            }
-
-            else if (0 == getTagName().compare("short")) {
-               string shortdesc = parseString();
-               entitySetter(name, "shortDesc", shortdesc, mode);
-               checkClosingTag("short");
-            }
-
-            else if (0 == getTagName().compare("weight")) {
-               string weight = parseString();
-               entitySetter(name, "weight", weight, mode);
-               checkClosingTag("weight");
-            }
-
-            else if (0 == getTagName().compare("takeable")) {
-               string takeable = parseString();
-               entitySetter(name, "takeable", takeable, mode);
-               checkClosingTag("takeable");
-            }
-
-            else if (0 == getTagName().compare("droppable")) {
-               string droppable = parseString();
-               entitySetter(name, "droppable", droppable, mode);
-               checkClosingTag("droppable");
-            }
-
-            else if (0 == getTagName().compare("weapon")) {
-               string weapon = parseString();
-               entitySetter(name, "weapon", weapon, mode);
-               checkClosingTag("weapon");
-            }
-
-            else if (0 == getTagName().compare("damage")) {
-               string damage = parseString();
-               entitySetter(name, "damage", damage, mode);
-               checkClosingTag("damage");
-            }
-
-            else if (0 == getTagName().compare("meta")) {
+            if (0 == tag.compare("meta")) {
                parseEntityMeta(name, mode, depth + 1);
             }
 
-            else if (0 == getTagName().compare("messages")) {
+            else if (0 == tag.compare("messages")) {
                parseMessages(name, mode, depth + 1);
             }
 
-            else if (0 == getTagName().compare("aliases")) {
+            else if (0 == tag.compare("aliases")) {
                parseThingAliases(name, mode, depth + 1);
             }
 
-            else if (0 == getTagName().compare("events")) {
+            else if (0 == tag.compare("events")) {
                parseEvents(name, mode, depth + 1);
             }
 
+            else if (tagToProperty.find(tag) != tagToProperty.end()) {
+               string value = parseString();
+               entitySetter(name, tagToProperty[tag], value, mode);
+               checkClosingTag(tag);
+            }
+
             else {
-               s << filename << ": invalid tag <" << getTagName() << "> in "
+               s << filename << ": invalid tag <" << tag << "> in "
                   << "object or object class definition (line "
                   << xmlTextReaderGetParserLineNumber(reader) << ")";
                throw s.str();
@@ -1030,116 +995,64 @@ namespace trogdor { namespace core {
 
       stringstream s;
       bool counterAttackParsed = false;
+      static unordered_map<string, string> tagToProperty({
+         {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"},
+         {"alive", "alive"}, {"health", "health"}, {"maxhealth", "maxhealth"},
+         {"attackable", "attackable"}, {"woundrate", "woundrate"},
+         {"damagebarehands", "damagebarehands"}, {"counterattack", "counterattack"},
+         {"allegiance", "allegiance"}
+      });
 
       try {
 
          while (nextTag() && depth == getDepth()) {
 
-            if (0 == getTagName().compare("title")) {
-               string title = parseString();
-               entitySetter(name, "title", title, mode);
-               checkClosingTag("title");
-            }
+            string tag = getTagName();
 
-            else if (0 == getTagName().compare("description")) {
-               string longdesc = parseString();
-               entitySetter(name, "longDesc", longdesc, mode);
-               checkClosingTag("description");
-            }
-
-            else if (0 == getTagName().compare("short")) {
-               string shortdesc = parseString();
-               entitySetter(name, "shortDesc", shortdesc, mode);
-               checkClosingTag("short");
-            }
-
-            else if (0 == getTagName().compare("alive")) {
-               string alive = parseString();
-               entitySetter(name, "alive", alive, mode);
-               checkClosingTag("alive");
-            }
-
-            else if (0 == getTagName().compare("health")) {
-               string health = parseString();
-               entitySetter(name, "health", health, mode);
-               checkClosingTag("health");
-            }
-
-            else if (0 == getTagName().compare("maxhealth")) {
-               string maxhealth = parseString();
-               entitySetter(name, "maxhealth", maxhealth, mode);
-               checkClosingTag("maxhealth");
-            }
-
-            else if (0 == getTagName().compare("attackable")) {
-               string attackable = parseString();
-               entitySetter(name, "attackable", attackable, mode);
-               checkClosingTag("attackable");
-            }
-
-            else if (0 == getTagName().compare("woundrate")) {
-               string rate = parseString();
-               entitySetter(name, "woundrate", rate, mode);
-               checkClosingTag("woundrate");
-            }
-
-            else if (0 == getTagName().compare("damagebarehands")) {
-               string damage = parseString();
-               entitySetter(name, "damagebarehands", damage, mode);
-               checkClosingTag("damagebarehands");
-            }
-
-            else if (0 == getTagName().compare("counterattack")) {
-               string counterattack = parseString();
-               entitySetter(name, "counterattack", counterattack, mode);
-               counterAttackParsed = true;
-               checkClosingTag("counterattack");
-            }
-
-            else if (0 == getTagName().compare("allegiance")) {
-               string allegiance = parseString();
-               entitySetter(name, "allegiance", allegiance, mode);
-               checkClosingTag("allegiance");
-            }
-
-            else if (0 == getTagName().compare("inventory")) {
+            if (0 == tag.compare("inventory")) {
                parseBeingInventory(name, mode, true);
             }
 
-            else if (0 == getTagName().compare("respawn")) {
+            else if (0 == tag.compare("respawn")) {
                Parser::parseBeingRespawn(name, mode, depth + 1);
             }
 
-            else if (0 == getTagName().compare("autoattack")) {
+            else if (0 == tag.compare("autoattack")) {
                parseCreatureAutoAttack(name, mode, depth + 1);
             }
 
-            else if (0 == getTagName().compare("wandering")) {
+            else if (0 == tag.compare("wandering")) {
                parseCreatureWandering(name, mode);
             }
 
-            else if (0 == getTagName().compare("attributes")) {
+            else if (0 == tag.compare("attributes")) {
                parseBeingAttributes(name, mode);
             }
 
-            else if (0 == getTagName().compare("meta")) {
+            else if (0 == tag.compare("meta")) {
                parseEntityMeta(name, mode, depth + 1);
             }
 
-            else if (0 == getTagName().compare("messages")) {
+            else if (0 == tag.compare("messages")) {
                parseMessages(name, mode, depth + 1);
             }
 
-            else if (0 == getTagName().compare("aliases")) {
+            else if (0 == tag.compare("aliases")) {
                parseThingAliases(name, mode, depth + 1);
             }
 
-            else if (0 == getTagName().compare("events")) {
+            else if (0 == tag.compare("events")) {
                parseEvents(name, mode, depth + 1);
             }
 
+            else if (tagToProperty.find(tag) != tagToProperty.end()) {
+               string value = parseString();
+               entitySetter(name, tagToProperty[tag], value, mode);
+               checkClosingTag(tag);
+            }
+
             else {
-               s << filename << ": invalid tag <" << getTagName() << "> in "
+               s << filename << ": invalid tag <" << tag << "> in "
                   << "creature definition (line "
                   << xmlTextReaderGetParserLineNumber(reader) << ")";
                throw s.str();
@@ -1232,53 +1145,45 @@ namespace trogdor { namespace core {
    void Parser::parseRoomProperties(string name, enum ParseMode mode, int depth) {
 
       stringstream s;
+      static unordered_map<string, string> tagToProperty({
+         {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"}
+      });
 
       try {
 
          while (nextTag() && depth == getDepth()) {
 
-            if (0 == getTagName().compare("title")) {
-               string title = parseString();
-               entitySetter(name, "title", title, mode);
-               checkClosingTag("title");
-            }
+            string tag = getTagName();
 
-            else if (0 == getTagName().compare("description")) {
-               string longdesc = parseString();
-               entitySetter(name, "longDesc", longdesc, mode);
-               checkClosingTag("description");
-            }
-
-            else if (0 == getTagName().compare("short")) {
-               string shortdesc = parseString();
-               entitySetter(name, "shortDesc", shortdesc, mode);
-               checkClosingTag("short");
-            }
-
-            else if (isDirection(getTagName())) {
-               string direction = getTagName();
+            if (isDirection(tag)) {
                string connection = parseString();
-               parseRoomConnection(direction, name, connection, mode);
+               parseRoomConnection(tag, name, connection, mode);
             }
 
-            else if (0 == getTagName().compare("contains")) {
+            else if (0 == tag.compare("contains")) {
                parseRoomContains(name, mode);
             }
 
-            else if (0 == getTagName().compare("meta")) {
+            else if (0 == tag.compare("meta")) {
                parseEntityMeta(name, mode, depth + 1);
             }
 
-            else if (0 == getTagName().compare("messages")) {
+            else if (0 == tag.compare("messages")) {
                parseMessages(name, mode, depth + 1);
             }
 
-            else if (0 == getTagName().compare("events")) {
+            else if (0 == tag.compare("events")) {
                parseEvents(name, mode, depth + 1);
             }
 
+            else if (tagToProperty.find(tag) != tagToProperty.end()) {
+               string value = parseString();
+               entitySetter(name, tagToProperty[tag], value, mode);
+               checkClosingTag(tag);
+            }
+
             else {
-               s << filename << ": invalid tag <" << getTagName() << "> in "
+               s << filename << ": invalid tag <" << tag << "> in "
                   << "room or class definition (line "
                   << xmlTextReaderGetParserLineNumber(reader) << ")";
                throw s.str();
@@ -1449,31 +1354,25 @@ namespace trogdor { namespace core {
    void Parser::parseBeingRespawn(string beingName, enum ParseMode mode, int depth) {
 
       stringstream s;
+      static unordered_map<string, string> tagToProperty({
+         {"enabled", "respawn.enabled"}, {"interval", "respawn.interval"},
+         {"lives", "respawn.lives"}
+      });
 
       try {
 
          while (nextTag() && depth == getDepth()) {
 
-            if (0 == getTagName().compare("enabled")) {
-               string respawnEnabled = parseString();
-               entitySetter(beingName, "respawn.enabled", respawnEnabled, mode);
-               checkClosingTag("enabled");
-            }
+            string tag = getTagName();
 
-            else if (0 == getTagName().compare("interval")) {
-               string interval = parseString();
-               entitySetter(beingName, "respawn.interval", interval, mode);
-               checkClosingTag("interval");
-            }
-
-            else if (0 == getTagName().compare("lives")) {
-               string lives = parseString();
-               entitySetter(beingName, "respawn.lives", lives, mode);
-               checkClosingTag("lives");
+            if (tagToProperty.find(tag) != tagToProperty.end()) {
+               string value = parseString();
+               entitySetter(beingName, tagToProperty[tag], value, mode);
+               checkClosingTag(tag);
             }
 
             else {
-               s << filename << ": invalid tag <" << getTagName() << "> in "
+               s << filename << ": invalid tag <" << tag << "> in "
                   << "being respawn section (line "
                   << xmlTextReaderGetParserLineNumber(reader) << ")";
                throw s.str();
