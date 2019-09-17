@@ -64,9 +64,9 @@ namespace trogdor { namespace core {
 
    void Game::initActions() {
 
-      actions->setAction("quit", new QuitAction);
+      actions->setAction("quit", std::make_unique<QuitAction>());
 
-      actions->setAction("fuck", new CussAction);
+      actions->setAction("fuck", std::make_unique<CussAction>());
       setSynonym("shit", "fuck");
       setSynonym("bitch", "fuck");
       setSynonym("damn", "fuck");
@@ -74,11 +74,11 @@ namespace trogdor { namespace core {
       setSynonym("asshole", "fuck");
       setSynonym("asshat", "fuck");
 
-      actions->setAction("inv", new InventoryAction);
+      actions->setAction("inv", std::make_unique<InventoryAction>());
       setSynonym("inventory", "inv");
       setSynonym("list", "inv");
 
-      actions->setAction("move", new MoveAction);
+      actions->setAction("move", std::make_unique<MoveAction>());
       setSynonym("go", "move");
       setSynonym("north", "move");
       setSynonym("south", "move");
@@ -89,14 +89,14 @@ namespace trogdor { namespace core {
       setSynonym("in", "move");
       setSynonym("out", "move");
 
-      actions->setAction("look", new LookAction);
+      actions->setAction("look", std::make_unique<LookAction>());
       setSynonym("observe", "look");
       setSynonym("see", "look");
       setSynonym("show", "look");
       setSynonym("describe", "look");
       setSynonym("examine", "look");
 
-      actions->setAction("take", new TakeAction);
+      actions->setAction("take", std::make_unique<TakeAction>());
       setSynonym("acquire", "take");
       setSynonym("get", "take");
       setSynonym("grab", "take");
@@ -104,9 +104,9 @@ namespace trogdor { namespace core {
       setSynonym("claim", "take");
       setSynonym("carry", "take");
 
-      actions->setAction("drop", new DropAction);
+      actions->setAction("drop", std::make_unique<DropAction>());
 
-      actions->setAction("attack", new AttackAction);
+      actions->setAction("attack", std::make_unique<AttackAction>());
       setSynonym("hit", "attack");
       setSynonym("harm", "attack");
       setSynonym("kill", "attack");

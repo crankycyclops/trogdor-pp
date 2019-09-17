@@ -8,10 +8,10 @@ namespace trogdor { namespace core {
    Action *ActionMap::getAction(string verb) const {
 
       if (actionTable.find(verb) == actionTable.end()) {
-         return 0;
+         return nullptr;
       }
 
-      return actionTable.find(verb)->second;
+      return actionTable.find(verb)->second.get();
    }
 }}
 

@@ -3,6 +3,7 @@
 
 
 #include <string>
+#include <memory>
 #include <unordered_map>
 
 #include "game.h"
@@ -21,7 +22,7 @@ namespace trogdor { namespace core {
          Game *game;
 
          // maps verbs to Action objects
-         unordered_map<string, Action *> actionTable;
+         unordered_map<string, std::unique_ptr<Action>> actionTable;
 
       public:
 
@@ -35,20 +36,16 @@ namespace trogdor { namespace core {
             Destructor.
          */
          inline ~ActionMap() {
-
+/* TODO: delete when I see I don't need it
             // destroy all actions
             for (unordered_map<string, Action *>::iterator i = actionTable.begin(); i != actionTable.end(); i++) {
                delete i->second;
             }
+*/
          }
 
-         /*
-            WARNING: Do not register the same Action object with more than one
-            verb, lest you encounter a nasty and fatal double free during
-            destruction.
-         */
-         inline void setAction(string verb, Action *action) {
-            actionTable[verb] = action;
+         inline void setAction(string verb, std::unique_ptr<Action> action) {
+            actionTable[verb] = std::move(action);
          }
 
          inline void removeAction(string verb) {actionTable.erase(verb);}
