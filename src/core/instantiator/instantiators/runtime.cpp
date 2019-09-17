@@ -18,6 +18,7 @@ namespace trogdor { namespace core {
    Runtime::Runtime(Game *g) {
 
       game = g;
+
       mapGameSetters();
       mapEntitySetters();
    }
@@ -54,7 +55,7 @@ namespace trogdor { namespace core {
             throw string("Class cannot be defined for type Player");
 
          default:
-            throw string("Class defined for unsupported entity type");
+            throw string("Runtime::makeEntityClass: class defined for unsupported entity type. This is a bug.");
       }
 
       // for type checking
@@ -89,16 +90,16 @@ namespace trogdor { namespace core {
    string value) {
 
       if (typeClasses.end() == typeClasses.find(className)) {
-         throw string("Entity class does not exist");
+         throw string("Runtime::entityClassSetter: Entity class does not exist");
       }
 
       if (propSetters.find(typeClasses[className]->getTypeName()) == propSetters.end()) {
-         throw string("Runtime instantiator: entity class: setting property on unsupported entity type");
+         throw string("Runtime::entityClassSetter: entity class: setting property on unsupported entity type");
       }
 
       else if (propSetters[typeClasses[className]->getTypeName()].find(property) ==
       propSetters[typeClasses[className]->getTypeName()].end()) {
-         throw string("Runtime instantiator: entity class: setting unsupported property '") + property + "'";
+         throw string("Runtime::entityClassSetter: entity class: setting unsupported property '") + property + "'";
       }
 
       propSetters[typeClasses[className]->getTypeName()][property](
@@ -111,17 +112,15 @@ namespace trogdor { namespace core {
    void Runtime::loadEntityClassScript(string entityClass, string script,
    enum LoadScriptMethod method) {
 
-      /* TODO: Call I need to implement will be something like this (where L
-         is an instance of LuaState):
-         if (FILE == method) {
-            L->loadScriptFromFile(script);
-         } else {
-            L->loadScriptFromString(script);
-         }
-      */
+      if (typeClasses.end() == typeClasses.find(entityClass)) {
+         throw string("Runtime::loadEntityClassScript: Entity class does not exist");
+      }
 
-      // TODO: stub for testing
-      cout << "Stub: called Runtime::loadEntityClassScript()" << endl;
+      if (FILE == method) {
+         typeClasses[entityClass].get()->getLuaState()->loadScriptFromFile(script);
+      } else {
+         typeClasses[entityClass].get()->getLuaState()->loadScriptFromString(script);
+      }
    }
 
    /***************************************************************************/
@@ -129,13 +128,12 @@ namespace trogdor { namespace core {
    void Runtime::setEntityClassEvent(string entityClass, string eventName,
    string function) {
 
-      /* TODO: Calls I need to implement are something like this:
-         LuaEventTrigger *trigger = new LuaEventTrigger(function, L);
-         entity->triggers->add(name.c_str(), trigger);
-      */
+      if (typeClasses.end() == typeClasses.find(entityClass)) {
+         throw string("Runtime::setEntityClassEvent: Entity class does not exist");
+      }
 
-      // TODO: I'll implement this, but it won't actually work in terms of
-      // actual Entities until I also update the Entity copy constructor.
+      LuaEventTrigger *trigger = new LuaEventTrigger(function, typeClasses[entityClass].get()->getLuaState());
+      typeClasses[entityClass].get()->getEventListener()->add(eventName.c_str(), trigger);
    }
 
    /***************************************************************************/
@@ -259,7 +257,7 @@ namespace trogdor { namespace core {
               throw string("TODO: haven't had a reason to instantiate Player objects yet.");
 
             default:
-               throw string("Unsupported entity type. This is a bug.");
+               throw string("Runtime::makeEntity: unsupported entity type. This is a bug.");
          }
 
          entity->setClass(0 == className.compare("") ? entity->getTypeName() : className);
@@ -307,16 +305,16 @@ namespace trogdor { namespace core {
       }
 
       catch (string e) {
-         throw string("Runtime instantiator: entity '") + entityName + "' does not exist. This is a bug.";
+         throw string("Runtime::entitySetter: entity '") + entityName + "' does not exist. This is a bug.";
       }
 
       if (propSetters.find(entity->getTypeName()) == propSetters.end()) {
-         throw string("Runtime instantiator: setting property on unsupported entity type. This is a bug.");
+         throw string("Runtime::entitySetter: setting property on unsupported entity type. This is a bug.");
       }
 
       else if (propSetters[entity->getTypeName()].find(property) ==
       propSetters[entity->getTypeName()].end()) {
-         throw string("Runtime instantiator: setting unsupported property '") + property + ".' This is a bug.";
+         throw string("Runtime::entitySetter: setting unsupported property '") + property + ".' This is a bug.";
       }
 
       propSetters[entity->getTypeName()][property](game, entity, value);
@@ -327,17 +325,21 @@ namespace trogdor { namespace core {
    void Runtime::loadEntityScript(string entityName, string script,
    enum LoadScriptMethod method) {
 
-      /* TODO: Call I need to implement will be something like this (where L
-         is an instance of LuaState):
-         if (FILE == method) {
-            L->loadScriptFromFile(script);
-         } else {
-            L->loadScriptFromString(script);
-         }
-      */
+      entity::Entity *entity;
 
-      // TODO: stub for testing
-      cout << "Stub: called Runtime::loadEntityScript()" << endl;
+      try {
+         entity = game->getEntity(entityName);
+      }
+
+      catch (string e) {
+         throw string("Runtime::loadEntityScript: entity '") + entityName + "' does not exist. This is a bug.";
+      }
+
+      if (FILE == method) {
+         entity->getLuaState()->loadScriptFromFile(script);
+      } else {
+         entity->getLuaState()->loadScriptFromString(script);
+      }
    }
 
    /***************************************************************************/
@@ -345,13 +347,18 @@ namespace trogdor { namespace core {
    void Runtime::setEntityEvent(string entityName, string eventName,
    string function) {
 
-      /* TODO: Calls I need to implement are something like this:
-         LuaEventTrigger *trigger = new LuaEventTrigger(function, L);
-         entity->triggers->add(name.c_str(), trigger);
-      */
+      entity::Entity *entity;
 
-      // TODO: stub for testing
-      cout << "Stub: called Runtime::setEntityEvent()" << endl;
+      try {
+         entity = game->getEntity(entityName);
+      }
+
+      catch (string e) {
+         throw string("Runtime::setEntityEvent: entity '") + entityName + "' does not exist. This is a bug.";
+      }
+
+      LuaEventTrigger *trigger = new LuaEventTrigger(function, entity->getLuaState());
+      entity->getEventListener()->add(eventName.c_str(), trigger);
    }
 
    /***************************************************************************/
@@ -377,12 +384,12 @@ namespace trogdor { namespace core {
    void Runtime::defaultPlayerSetter(string property, string value) {
 
       if (propSetters.find(game->getDefaultPlayer()->getTypeName()) == propSetters.end()) {
-         throw string("Runtime instantiator: default player is an unsupported entity type?");
+         throw string("Runtime::defaultPlayerSetter: default player is an unsupported entity type?");
       }
 
       else if (propSetters[game->getDefaultPlayer()->getTypeName()].find(property) ==
       propSetters[game->getDefaultPlayer()->getTypeName()].end()) {
-         throw string("Runtime instantiator: default player: setting unsupported property '") + property + "'";
+         throw string("Runtime::defaultPlayerSetter: default player: setting unsupported property '") + property + "'";
       }
 
       propSetters[game->getDefaultPlayer()->getTypeName()][property](
@@ -402,7 +409,7 @@ namespace trogdor { namespace core {
    void Runtime::gameSetter(string property, string value) {
 
       if (gameSetters.find(property) == gameSetters.end()) {
-         throw string("Runtime instantiator: unsupported game property '") + property + "'";
+         throw string("Runtime::gameSetter: unsupported game property '") + property + "'";
       }
 
       gameSetters[property](game, value);

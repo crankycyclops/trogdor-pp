@@ -364,7 +364,22 @@ namespace trogdor { namespace core { namespace entity {
          inline string getShortDescription() const {return shortDesc;}
 
          /*
+            Returns a reference to Entity's LuaState object. This should ONLY be
+            used by the instantiator and (possibly) other select classes that
+            need to interact directly with this. THIS IS A DANGEROUS METHOD. You
+            have been warned.
+
+            Input:
+               (none)
+
+            Output:
+               Game's Lua State (const &LuaState)
+         */
+         std::shared_ptr<LuaState> &getLuaState() {return L;}
+
+         /*
             Returns raw pointer to Entity's EventListener.
+            TODO: make this consistent with Game::getEventListener.
 
             Input:
                (none)

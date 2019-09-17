@@ -179,10 +179,7 @@ namespace trogdor { namespace core {
          std::shared_ptr<LuaState> &getLuaState() {return L;}
 
          /*
-            Returns a reference to Game instance's EventListener. This should
-            ONLY be used by the instantiator and (possibly) other select classes
-            that need to interact directly with this. THIS IS A DANGEROUS METHOD.
-            You have been warned.
+            Returns a reference to Game instance's EventListener.
 
             Input:
                (none)
