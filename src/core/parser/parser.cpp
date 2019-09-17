@@ -1254,27 +1254,21 @@ namespace trogdor { namespace core {
    int depth) {
 
       stringstream s;
+      static unordered_map<string, string> tagToProperty({
+         {"enabled", "autoattack.enabled"}, {"repeat", "autoattack.repeat"},
+         {"interval", "autoattack.interval"}
+      });
 
       try {
 
          while (nextTag() && depth == getDepth()) {
 
-            if (0 == getTagName().compare("enabled")) {
-               string enabled = parseString();
-               entitySetter(creatureName, "autoattack.enabled", enabled, mode);
-               checkClosingTag("enabled");
-            }
+            string tag = getTagName();
 
-            else if (0 == getTagName().compare("repeat")) {
-               string repeat = parseString();
-               entitySetter(creatureName, "autoattack.repeat", repeat, mode);
-               checkClosingTag("repeat");
-            }
-
-            else if (0 == getTagName().compare("interval")) {
-               string interval = parseString();
-               entitySetter(creatureName, "autoattack.interval", interval, mode);
-               checkClosingTag("interval");
+            if (tagToProperty.find(tag) != tagToProperty.end()) {
+               string value = parseString();
+               entitySetter(creatureName, tagToProperty[tag], value, mode);
+               checkClosingTag(tag);
             }
 
             else {
@@ -1300,6 +1294,10 @@ namespace trogdor { namespace core {
    void Parser::parseCreatureWandering(string creatureName, enum ParseMode mode) {
 
       stringstream s;
+      static unordered_map<string, string> tagToProperty({
+         {"enabled", "wandering.enabled"}, {"interval", "wandering.interval"},
+         {"wanderlust", "wandering.wanderlust"}
+      });
 
       try {
 
@@ -1307,26 +1305,14 @@ namespace trogdor { namespace core {
 
             string tag = getTagName();
 
-            if (0 == tag.compare("enabled")) {
-               string enabled = parseString();
-               entitySetter(creatureName, "wandering.enabled", enabled, mode);
-               checkClosingTag("enabled");
-            }
-
-            else if (0 == tag.compare("interval")) {
-               string interval = parseString();
-               entitySetter(creatureName, "wandering.interval", interval, mode);
-               checkClosingTag("interval");
-            }
-
-            else if (0 == tag.compare("wanderlust")) {
-               string wanderlust = parseString();
-               entitySetter(creatureName, "wandering.wanderlust", wanderlust, mode);
-               checkClosingTag("wanderlust");
+            if (tagToProperty.find(tag) != tagToProperty.end()) {
+               string value = parseString();
+               entitySetter(creatureName, tagToProperty[tag], value, mode);
+               checkClosingTag(tag);
             }
 
             else {
-               s << filename << ": invalid tag <" << getTagName() << "> in "
+               s << filename << ": invalid tag <" << tag << "> in "
                   << "creature wandering settings (line "
                   << xmlTextReaderGetParserLineNumber(reader) << ")";
                throw s.str();
@@ -1389,25 +1375,24 @@ namespace trogdor { namespace core {
    bool allowObjects) {
 
       stringstream s;
+      static unordered_map<string, string> tagToProperty({
+         {"weight", "inventory.weight"}, {"object", "inventory.object"}
+      });
 
       try {
 
          while (nextTag() && 4 == getDepth()) {
 
-            if (0 == getTagName().compare("weight")) {
-               string weight = parseString();
-               entitySetter(beingName, "inventory.weight", weight, mode);
-               checkClosingTag("weight");
-            }
+            string tag = getTagName();
 
-            else if (true == allowObjects && 0 == getTagName().compare("object")) {
-               string objectName = parseString();
-               entitySetter(beingName, "inventory.object", objectName, mode);
-               checkClosingTag("object");
+            if (tagToProperty.find(tag) != tagToProperty.end()) {
+               string value = parseString();
+               entitySetter(beingName, tagToProperty[tag], value, mode);
+               checkClosingTag(tag);
             }
 
             else {
-               s << filename << ": invalid tag <" << getTagName() << "> in "
+               s << filename << ": invalid tag <" << tag << "> in "
                   << "inventory settings (line "
                   << xmlTextReaderGetParserLineNumber(reader) << ")";
                throw s.str();
