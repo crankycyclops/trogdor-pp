@@ -23,10 +23,11 @@ using namespace std;
 namespace trogdor { namespace core {
 
 
-   class ActionMap; // resolves circular dependency ActionMap <-> Game
-   class Timer;     // resolves circular dependency Timer <-> Game
-   class Parser;    // resolves circular dependency Parser <-> Game
-
+   // Resolve circular dependencies
+   class Action;
+   class ActionMap;
+   class Parser;
+   class Timer;
    class TimerJob;
 
 
@@ -744,6 +745,12 @@ namespace trogdor { namespace core {
             Output: (none)
          */
          void processCommand(Player *player);
+
+         /*
+            Wraps around ActionMap::setAction, allowing the client to supply its
+            own custom actions. See actionmap.h for documentation.
+         */
+         void setAction(string verb, std::unique_ptr<Action> action);
 
          /*
             Wraps around EventHandler API.  See eventhandler.h for documentation.

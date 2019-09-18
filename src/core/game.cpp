@@ -1,5 +1,6 @@
 #include "include/game.h"
 #include "include/actionmap.h"
+#include "include/action.h"
 #include "include/actions.h"
 #include "include/timer/timer.h"
 #include "include/parser/parser.h"
@@ -289,6 +290,12 @@ namespace trogdor { namespace core {
       }
 
       lastCommand = command;
-   }   
+   }
+
+
+   void Game::setAction(string verb, std::unique_ptr<Action> action) {
+
+      actions->setAction(verb, std::move(action));
+   }
 }}
 

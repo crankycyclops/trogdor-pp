@@ -37,6 +37,13 @@ int main(int argc, char **argv) {
       make_unique<StreamOut>(&cerr)
    );
 
+   // The client can add its own synonyms for built-in verbs
+   currentGame->setSynonym("escape", "quit");
+
+   // The client can also write and set its own custom game actions
+   // TODO: implement a custom action class and insert it here using 
+   // currentGame->setAction(verb, actionObject).
+
    if (currentGame->initialize(gameXML)) {
 
 	  string title = currentGame->getMeta("title");
