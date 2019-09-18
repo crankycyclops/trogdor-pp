@@ -12,6 +12,7 @@
 
 #include "include/streamout.h"
 #include "include/streamin.h"
+#include "include/actions/timeaction.h"
 
 
 using namespace std;
@@ -41,8 +42,7 @@ int main(int argc, char **argv) {
    currentGame->setSynonym("escape", "quit");
 
    // The client can also write and set its own custom game actions
-   // TODO: implement a custom action class and insert it here using 
-   // currentGame->setAction(verb, actionObject).
+   currentGame->setAction("time", std::make_unique<TimeAction>());
 
    if (currentGame->initialize(gameXML)) {
 

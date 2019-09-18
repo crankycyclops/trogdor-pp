@@ -65,8 +65,6 @@ namespace trogdor { namespace core {
 
    void Game::initActions() {
 
-      actions->setAction("quit", std::make_unique<QuitAction>());
-
       actions->setAction("fuck", std::make_unique<CussAction>());
       setSynonym("shit", "fuck");
       setSynonym("bitch", "fuck");
@@ -114,6 +112,8 @@ namespace trogdor { namespace core {
       setSynonym("injure", "attack");
       setSynonym("maim", "attack");
       setSynonym("fight", "attack");
+
+      actions->setAction("quit", std::make_unique<QuitAction>());
    }
 
 
