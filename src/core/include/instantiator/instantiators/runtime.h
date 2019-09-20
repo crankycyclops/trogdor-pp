@@ -63,6 +63,64 @@ namespace trogdor {
          */
          void mapEntitySetters();
 
+      protected:
+
+         /*
+            Does the actual setting of the Entity class's property value and
+            throws an exception if there are any errors.
+
+            Input:
+               Entity class's name (string)
+               Property name (string)
+               Property value (string)
+
+            Output:
+               (none)
+         */
+         virtual void entityClassSetterDriver(string className, string property,
+         string value);
+
+         /*
+            Does the actual setting of the Entity's property value and throws an
+            exception if there are any errors.
+
+            Input:
+               Entity's name (string)
+               Property name (string)
+               Property value (string)
+
+            Output:
+               (none)
+         */
+         virtual void entitySetterDriver(string entityName, string property,
+         string value);
+
+         /*
+            Does the actual setting of the default player property value and
+            throws an exception if there are any errors.
+
+            Input:
+               Property name (string)
+               Property value (string)
+
+            Output:
+               (none)
+         */
+         virtual void defaultPlayerSetterDriver(string property, string value);
+
+         /*
+            Does the actual setting of the game property value and throws an
+            exception if there are any errors.
+
+            Input:
+               Property name (string)
+               Property value (string)
+
+            Output:
+               (none)
+         */
+         virtual void gameSetterDriver(string property, string value);
+
       public:
 
          /*
@@ -100,19 +158,27 @@ namespace trogdor {
          enum entity::EntityType entityType);
 
          /*
-            Set's an Entity class's property to the specified value. See
-            comment for entitySetter() for more details.
+            Same as previous definition of entityClassExists() except that it
+            doesn't take into account the class's type.
+
+            Input:
+               Entity's class name (string)
+
+            Output:
+               Whether or not the Entity class exists (bool)
+         */
+         virtual bool entityClassExists(string className);
+
+         /*
+            Takes as input the name of an Entity class and returns its type.
 
             Input:
                Entity class's name (string)
-               Property name (string)
-               Property value (string)
 
             Output:
-               (none)
+               Entity class's type (enum Entity::EntityType)
          */
-         virtual void entityClassSetter(string className, string property,
-         string value);
+         virtual enum entity::EntityType getEntityClassType(string className);
 
          /*
             Identical to loadGameScript and loadEntityScript, except that the
@@ -213,22 +279,6 @@ namespace trogdor {
          virtual string getEntityClass(string entityName);
 
          /*
-            Calls an Entity's setter. Setter names are defined using periods to
-            demarcate sections. So, for example, a Being's weight setting for
-            their inventory would be "inventory.weight."
-
-            Input:
-               Entity's name (string)
-               Property name (string)
-               Property value (string)
-
-            Output:
-               (none)
-         */
-         virtual void entitySetter(string entityName, string property,
-         string value);
-
-         /*
             Identical to loadGameScript, except that the script gets loaded into
             an Entity's Lua state instead of core::Game's.
 
@@ -272,19 +322,6 @@ namespace trogdor {
          string message);
 
          /*
-            Identical to entitySetter, except that we're setting a property
-            of the default player.
-
-            Input:
-               Property name (string)
-               Property value (string)
-
-            Output:
-               (none)
-         */
-         virtual void defaultPlayerSetter(string property, string value);
-
-         /*
             Set's a message for the default player.
 
             Input:
@@ -295,19 +332,6 @@ namespace trogdor {
                (none)
          */
          virtual void setDefaultPlayerMessage(string messageName, string message);
-
-         /*
-            Similar to entitySetter, except that we're setting a property
-            of the Game object.
-
-            Input:
-               Property we're setting (string)
-               Property's value (string)
-
-            Output:
-               (none)
-         */
-         virtual void gameSetter(string property, string value);
 
          /*
             Loads a Lua script into the game's global Lua state. By default,

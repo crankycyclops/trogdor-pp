@@ -340,16 +340,25 @@ namespace trogdor {
 
          string tag = getTagName();
 
-         if (tagToProperty.find(tag) != tagToProperty.end()) {
-            string value = parseString();
-            instantiator->gameSetter(tagToProperty[tag], value);
-            checkClosingTag(tag);
+         try {
+
+            if (tagToProperty.find(tag) != tagToProperty.end()) {
+               string value = parseString();
+               instantiator->gameSetter(tagToProperty[tag], value);
+               checkClosingTag(tag);
+            }
+
+            else {
+               s << filename << ": invalid tag <" << tag <<
+                  "> in <introduction> section (line " <<
+                  xmlTextReaderGetParserLineNumber(reader) << ")";
+               throw s.str();
+            }
          }
 
-         else {
-            s << filename << ": invalid tag <" << tag <<
-               "> in <introduction> section (line " <<
-               xmlTextReaderGetParserLineNumber(reader) << ")";
+         catch (string error) {
+            s << filename << ": " << tagToProperty[tag] << ": " << error <<
+               " (line " << xmlTextReaderGetParserLineNumber(reader) << ")";
             throw s.str();
          }
       }

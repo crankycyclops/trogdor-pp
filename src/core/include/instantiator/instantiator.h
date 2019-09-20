@@ -2,13 +2,19 @@
 #define INSTANTIATOR_H
 
 
+#include <string>
+#include <unordered_map>
+
 #include "../entities/room.h"
 #include "../entities/object.h"
 #include "../entities/creature.h"
 #include "../entities/player.h"
 
 
+using namespace std;
+
 namespace trogdor {
+
 
    /*
       The purpose of this class is to separate the parsing of entities and game
@@ -21,6 +27,156 @@ namespace trogdor {
    */
    class Instantiator {
 
+      private:
+
+         // Function type used to check if a property value is valid
+         typedef void (*validatorFunc) (string value);
+
+         // Maintains a list of valid Entity and Entity class properties (second
+         // list's keys), along with a validator function for each (second
+         // list's values) for each Entity type (first list's keys)
+         unordered_map<string, unordered_map<string, validatorFunc>> entityPropValidators;
+
+         // Maintains a list of valid Game properties (keys), along with a
+         // validator function for each (values)
+         unordered_map<string, validatorFunc> gamePropValidators;
+
+         /*
+            Throws an exception if the value is not a valid boolean.
+
+            Input:
+               Property value (string)
+
+            Output:
+               (none)
+         */
+         static void assertBool(string value);
+
+         /*
+            Throws an exception if the value is not a valid integer.
+
+            Input:
+               Property value (string)
+
+            Output:
+               (none)
+         */
+         static void assertInt(string value);
+
+         /*
+            Throws an exception if value is not a valid double precision number.
+
+            Input:
+               Property value (string)
+
+            Output:
+               (none)
+         */
+         static void assertDouble(string value);
+
+         /*
+            Throws an exception if value does not represent a valid probability
+            (number between 0 and 1.)
+
+            Input:
+               Property value (string)
+
+            Output:
+               (none)
+         */
+         static void assertProbability(string value);
+
+         /*
+            A dummy validator that whitelists all strings.
+
+            Input:
+               Property value (string)
+
+            Output:
+               Always returns true
+         */
+         static void assertString(string value);
+
+         /*
+            Maps Entity type -> Entity property name -> Validator function.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void mapEntityPropValidators();
+
+         /*
+            Maps Game property name -> Validator function.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void mapGamePropValidators();
+
+      protected:
+
+         /*
+            Does the actual setting of the Entity class's property value and
+            throws an exception if there are any errors.
+
+            Input:
+               Entity class's name (string)
+               Property name (string)
+               Property value (string)
+
+            Output:
+               (none)
+         */
+         virtual void entityClassSetterDriver(string className, string property,
+         string value) = 0;
+
+         /*
+            Does the actual setting of the Entity's property value and throws an
+            exception if there are any errors.
+
+            Input:
+               Entity's name (string)
+               Property name (string)
+               Property value (string)
+
+            Output:
+               (none)
+         */
+         virtual void entitySetterDriver(string entityName, string property,
+         string value) = 0;
+
+         /*
+            Does the actual setting of the default player property value and
+            throws an exception if there are any errors.
+
+            Input:
+               Property name (string)
+               Property value (string)
+
+            Output:
+               (none)
+         */
+         virtual void defaultPlayerSetterDriver(string property, string value) = 0;
+
+         /*
+            Does the actual setting of the game property value and throws an
+            exception if there are any errors.
+
+            Input:
+               Property name (string)
+               Property value (string)
+
+            Output:
+               (none)
+         */
+         virtual void gameSetterDriver(string property, string value) = 0;
+
       public:
 
          // When passed to loadGameScript or loadEntityScript, determines
@@ -29,6 +185,11 @@ namespace trogdor {
             FILE = 0,
             STRING = 1
          };
+
+         // Constructor and assignment operator
+         Instantiator& operator=(const Instantiator &) = delete;
+         Instantiator(const Instantiator &) = delete;
+         Instantiator();
 
          /*
             Creates an entity class that can be used to instantiate one or
@@ -59,6 +220,29 @@ namespace trogdor {
          enum entity::EntityType entityType) = 0;
 
          /*
+            Same as previous definition of entityClassExists() except that it
+            doesn't take into account the class's type.
+
+            Input:
+               Entity's class name (string)
+
+            Output:
+               Whether or not the Entity class exists (bool)
+         */
+         virtual bool entityClassExists(string className) = 0;
+
+         /*
+            Takes as input the name of an Entity class and returns its type.
+
+            Input:
+               Entity class's name (string)
+
+            Output:
+               Entity class's type (enum Entity::EntityType)
+         */
+         virtual enum entity::EntityType getEntityClassType(string className) = 0;
+
+         /*
             Set's an Entity class's property to the specified value. See
             comment for entitySetter() for more details.
 
@@ -70,8 +254,32 @@ namespace trogdor {
             Output:
                (none)
          */
-         virtual void entityClassSetter(string className, string property,
-         string value) = 0;
+         inline void entityClassSetter(string className, string property,
+         string value) {
+
+            string classType;
+
+            if (!entityClassExists(className)) {
+               throw string("Instantiator::entityClassSetter: Entity class '")
+                  + className + "' does not exist. This is a bug.";
+            }
+
+            classType = entity::Entity::typeToStr(getEntityClassType(className));
+
+            if (entityPropValidators.find(classType) == entityPropValidators.end()) {
+               throw string("Instantiator::entityClassSetter: Setting property ")
+                  + "on Entity with unsupported type. This is a bug.";
+            }
+
+            else if (entityPropValidators[classType].end() ==
+            entityPropValidators[classType].find(property)) {
+               throw string("Instantiator::entityClassSetter: Setting unsupported ")
+                  + classType + " property '" + property + "'. This is a bug.";
+            }
+
+            entityPropValidators[classType][property](value);
+            entityClassSetterDriver(className, property, value);
+         }
 
          /*
             Identical to loadGameScript and loadEntityScript, except that the
@@ -183,8 +391,33 @@ namespace trogdor {
             Output:
                (none)
          */
-         virtual void entitySetter(string entityName, string property,
-         string value) = 0;
+         inline void entitySetter(string entityName, string property,
+         string value) {
+
+            string entityType;
+
+            if (!entityExists(entityName)) {
+               throw string("Instantiator::entitySetter: Entity '") + entityName
+                  + "' does not exist. This is a bug.";
+            }
+
+            entityType = entity::Entity::typeToStr(getEntityType(entityName));
+
+            if (entityPropValidators.find(entityType) ==
+            entityPropValidators.end()) {
+               throw string("Instantiator::entitySetter: Setting property on ")
+                  + "unsupported Entity type. This is a bug.";
+            }
+
+            else if (entityPropValidators[entityType].end() ==
+            entityPropValidators[entityType].find(property)) {
+               throw string("Instantiator::entitySetter: Setting unsupported ")
+                  + entityType + " property '" + property + "'. This is a bug.";
+            }
+
+            entityPropValidators[entityType][property](value);
+            entitySetterDriver(entityName, property, value);
+         }
 
          /*
             Identical to loadGameScript, except that the script gets loaded into
@@ -240,7 +473,17 @@ namespace trogdor {
             Output:
                (none)
          */
-         virtual void defaultPlayerSetter(string property, string value) = 0;
+         inline void defaultPlayerSetter(string property, string value) {
+
+            if (entityPropValidators["player"].end() ==
+            entityPropValidators["player"].find(property)) {
+               throw string("Instantiator::defaultPlayerSetter: Setting unsupported ")
+                  + "player property '" + property + "'. This is a bug.";
+            }
+
+            entityPropValidators["player"][property](value);
+            defaultPlayerSetterDriver(property, value);
+         }
 
          /*
             Set's a message for the default player.
@@ -265,7 +508,16 @@ namespace trogdor {
             Output:
                (none)
          */
-         virtual void gameSetter(string property, string value) = 0;
+         inline void gameSetter(string property, string value) {
+
+            if (gamePropValidators.end() == gamePropValidators.find(property)) {
+               throw string("Instantiator::gameSetter: Setting unsupported ")
+                  + "game property '" + property + "'. This is a bug.";
+            }
+
+            gamePropValidators[property](value);
+            gameSetterDriver(property, value);
+         }
 
          /*
             Loads a Lua script into the game's global Lua state. By default,
