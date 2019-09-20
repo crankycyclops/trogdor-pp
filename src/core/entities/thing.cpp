@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
 
 
    void Thing::display(Being *observer, bool displayFull) {
@@ -30,5 +30,5 @@ namespace trogdor { namespace core { namespace entity {
 
       aliases.insert(aliases.end(), alias);
    }
-}}}
+}}
 

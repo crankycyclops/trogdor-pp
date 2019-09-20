@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core { namespace event {
+namespace trogdor { namespace event {
 
 
    void EventListener::add(string event, EventTrigger *trigger) {
@@ -49,5 +49,5 @@ namespace trogdor { namespace core { namespace event {
          }
       }
    }
-}}}
+}}
 

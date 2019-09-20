@@ -3,14 +3,13 @@
 
 using namespace std;
 
-namespace trogdor { namespace core { namespace event {
+namespace trogdor { namespace event {
 
 
    void DeathDropEventTrigger::execute(EventArgumentList args) {
 
-      Being *being = static_cast<Being *>(boost::get<Entity *>(args[1]));
-
       entity::ObjectList drops;
+      entity::Being *being = static_cast<entity::Being *>(boost::get<entity::Entity *>(args[1]));
 
       // TODO: should we only drop with some probability?
       // TODO: right now, we drop undroppable objects; should we?
@@ -26,5 +25,5 @@ namespace trogdor { namespace core { namespace event {
       continueExecutionFlag = true;
       allowActionFlag = true;
    }
-}}}
+}}
 

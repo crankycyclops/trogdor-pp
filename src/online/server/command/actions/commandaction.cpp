@@ -15,7 +15,7 @@
 void *COMMANDAction::processCommandThread(void *connection) {
 
 	TCPConnection::ptr *c = ((TCPConnection::ptr *)connection);
-	core::entity::Player *player = (*c)->getPlayer();
+	trogdor::entity::Player *player = (*c)->getPlayer();
 
 	dynamic_cast<TCPIn &>(player->in()).setConnection(*c);
 	dynamic_cast<TCPOut &>(player->out()).setConnection(*c);

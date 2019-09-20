@@ -10,7 +10,8 @@
 #include "../iostream/nullin.h"
 
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
+
 
    class Creature: public Being {
 
@@ -321,7 +322,7 @@ namespace trogdor { namespace core { namespace entity {
          */
          Object *selectWeapon();
    };
-}}}
+}}
 
 
 #endif

@@ -14,7 +14,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
 
    Place::Place(Game *g, string n, std::unique_ptr<Trogout> o, std::unique_ptr<Trogout> e):
    Entity(g, n, std::move(o), std::move(std::make_unique<NullIn>()), std::move(e)) {
@@ -219,5 +219,5 @@ namespace trogdor { namespace core { namespace entity {
          }
       });
    }
-}}}
+}}
 

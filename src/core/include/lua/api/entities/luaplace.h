@@ -10,7 +10,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
 
 
    class Place;
@@ -87,7 +87,7 @@ namespace trogdor { namespace core { namespace entity {
          */
          static int removeThing(lua_State *L);
    };
-}}}
+}}
 
 
 #endif

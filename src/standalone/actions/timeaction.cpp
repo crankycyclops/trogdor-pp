@@ -7,7 +7,7 @@ using namespace std;
 /*
   Methods for the Time action.
 */
-bool TimeAction::checkSyntax(const std::shared_ptr<trogdor::core::Command> &command) {
+bool TimeAction::checkSyntax(const std::shared_ptr<trogdor::Command> &command) {
 
    // A valid quit command should only be one word, a verb
    if (command->getDirectObject().length() > 0 ||
@@ -19,8 +19,8 @@ bool TimeAction::checkSyntax(const std::shared_ptr<trogdor::core::Command> &comm
 }
 
 
-void TimeAction::execute(trogdor::core::entity::Player *player,
-const std::shared_ptr<trogdor::core::Command> &command, trogdor::core::Game *game) {
+void TimeAction::execute(trogdor::entity::Player *player,
+const std::shared_ptr<trogdor::Command> &command, trogdor::Game *game) {
 
    player->out("display") << "Current game time is " << game->getTime() << " seconds." << endl;
 }

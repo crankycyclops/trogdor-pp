@@ -11,7 +11,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core { namespace event {
+namespace trogdor { namespace event {
 
 
    class EventListener {
@@ -98,7 +98,7 @@ namespace trogdor { namespace core { namespace event {
          */
          void execute(string event, EventArgumentList args);
    };
-}}}
+}}
 
 
 #endif

@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core { namespace event {
+namespace trogdor { namespace event {
 
 
    void LuaEventTrigger::execute(EventArgumentList args) {
@@ -35,7 +35,7 @@ namespace trogdor { namespace core { namespace event {
 
             default: // it's some kind of Entity
 
-               Entity *arg = boost::get<Entity *>(args[i]);
+               entity::Entity *arg = boost::get<entity::Entity *>(args[i]);
 
                if (0 == arg) {
                   L->pushNilArgument();
@@ -54,5 +54,5 @@ namespace trogdor { namespace core { namespace event {
       continueExecutionFlag = L->getBoolean(0);
       allowActionFlag = L->getBoolean(1);
    }
-}}}
+}}
 

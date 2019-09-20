@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
    /*
       TimerJob is an abstract class that represents a single job in a timer
@@ -87,7 +87,7 @@ namespace trogdor { namespace core {
          // allows Timer to interact with the TimerJob object
          friend void Timer::insertJob(std::shared_ptr<TimerJob> job);
    };
-}}
+}
 
 
 #endif

@@ -11,7 +11,8 @@
 #include "entity.h"
 
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
+
 
    // Forward declarations to prevent circular dependency issues
    class Thing;
@@ -269,7 +270,7 @@ namespace trogdor { namespace core { namespace entity {
             return iterators;
          }
    };
-}}}
+}}
 
 
 #endif

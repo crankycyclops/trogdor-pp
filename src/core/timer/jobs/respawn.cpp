@@ -3,12 +3,12 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    void RespawnTimerJob::execute() {
 
       deadGuy->doRespawn();
    }
-}}
+}
 

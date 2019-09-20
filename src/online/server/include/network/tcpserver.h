@@ -37,7 +37,7 @@ class TCPServer {
 
 		// mapping of players to their associated connections (so that only one
 		// connection at a time can be used to control a particular player)
-		typedef boost::bimap<core::entity::Player *, TCPConnection::ptr> PlayerConnectionMap;
+		typedef boost::bimap<trogdor::entity::Player *, TCPConnection::ptr> PlayerConnectionMap;
 		PlayerConnectionMap playerToConnection;
 
 		tcp::acceptor acceptor;
@@ -80,11 +80,11 @@ class TCPServer {
 		// Maps the connection to a Player. Needs access to our private
 		// PlayerConnectionMap. If the not-quite-decoupled relationship between
 		// TCPServer and TCPConnection troubles you, you're not alone...
-		friend void TCPConnection::assignPlayer(core::entity::Player *player);
+		friend void TCPConnection::assignPlayer(trogdor::entity::Player *player);
 
 		// Returns the Player associated with the connection. If none, this
 		// return a null pointer instead.
-		friend core::entity::Player *TCPConnection::getPlayer();
+		friend trogdor::entity::Player *TCPConnection::getPlayer();
 };
 
 

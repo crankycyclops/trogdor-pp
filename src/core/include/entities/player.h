@@ -6,7 +6,8 @@
 #include "being.h"
 
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
+
 
    class Player: public Being {
 
@@ -43,7 +44,7 @@ namespace trogdor { namespace core { namespace entity {
             errStream = std::move(e);
          }
    };
-}}}
+}}
 
 
 #endif

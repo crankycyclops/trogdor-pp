@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    void LuaState::pushLuaValue(LuaValue v, lua_State *L) {
@@ -225,5 +225,5 @@ namespace trogdor { namespace core {
       nArgs = 0;
       nReturnValues = nReturnVals;
    }
-}}
+}
 

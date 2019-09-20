@@ -15,7 +15,8 @@
 #include "object.h"
 
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
+
 
    class Being: public Thing {
 
@@ -739,7 +740,7 @@ namespace trogdor { namespace core { namespace entity {
          */
          void respawn();
    };
-}}}
+}}
 
 
 #endif

@@ -10,7 +10,7 @@ using namespace std;
 using namespace boost;
 
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    struct _LuaValue;
@@ -36,7 +36,7 @@ namespace trogdor { namespace core {
    } LuaValue;
 
    typedef vector<LuaValue> LuaArray;
-}}
+}
 
 
 #endif

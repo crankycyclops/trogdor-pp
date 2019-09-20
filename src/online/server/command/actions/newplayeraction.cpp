@@ -28,7 +28,7 @@ void NEWPLAYERAction::execute(TCPConnection::ptr connection) {
 		// event that DEBUG is set (will help tremendously in testing; actions do
 		// use player->err() to flag bugs.)
 		currentGame->createPlayer(request[1], std::make_unique<TCPOut>(connection),
-			std::make_unique<TCPIn>(connection), std::make_unique<core::NullOut>());
+			std::make_unique<TCPIn>(connection), std::make_unique<trogdor::NullOut>());
 		connection->assignPlayer(currentGame->getPlayer(request[1]));
 		connection->write(std::string("OK") + EOT, freeConnection, 0);
 	}

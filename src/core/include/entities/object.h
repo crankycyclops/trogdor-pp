@@ -8,7 +8,8 @@
 #include "../iostream/nullin.h"
 
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
+
 
    class Being;
 
@@ -213,7 +214,7 @@ namespace trogdor { namespace core { namespace entity {
          */
          virtual void addAlias(string alias);
    };
-}}}
+}}
 
 
 #endif

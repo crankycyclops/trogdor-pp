@@ -9,9 +9,9 @@
 
 
 using namespace std;
-using namespace trogdor::core::entity;
+using namespace trogdor::entity;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    /*
@@ -60,7 +60,7 @@ namespace trogdor { namespace core {
          */
          virtual std::unique_ptr<Trogout> clone();
    };
-}}
+}
 
 
 #endif

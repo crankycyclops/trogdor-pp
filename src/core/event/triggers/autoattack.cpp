@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core { namespace event {
+namespace trogdor { namespace event {
 
 
    void AutoAttackEventTrigger::execute(EventArgumentList args) {
@@ -34,5 +34,5 @@ namespace trogdor { namespace core { namespace event {
       continueExecutionFlag = true;
       allowActionFlag = true;
    }
-}}}
+}}
 

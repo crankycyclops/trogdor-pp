@@ -10,7 +10,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    class LuaTable;
@@ -135,7 +135,7 @@ namespace trogdor { namespace core {
          */
          inline const TableValues &getValues() const {return values;}
    };
-}}
+}
 
 
 #endif

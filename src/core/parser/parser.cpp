@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    Parser::Parser(std::unique_ptr<Instantiator> i, string gameFile) {
@@ -1594,5 +1594,5 @@ namespace trogdor { namespace core {
          throw s.str();
       }
    }
-}}
+}
 

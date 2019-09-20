@@ -23,7 +23,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    /*
@@ -589,7 +589,7 @@ namespace trogdor { namespace core {
          */
          void parse();
    };
-}}
+}
 
 
 #endif

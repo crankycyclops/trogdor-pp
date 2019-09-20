@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    /*
@@ -144,7 +144,7 @@ namespace trogdor { namespace core {
 
          virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game);
    };
-}}
+}
 
 
 #endif

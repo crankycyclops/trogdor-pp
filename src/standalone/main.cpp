@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 	  gameXML = argv[1];
    }
 
-   std::unique_ptr<trogdor::core::Game> currentGame = make_unique<trogdor::core::Game>(
+   std::unique_ptr<trogdor::Game> currentGame = make_unique<trogdor::Game>(
       make_unique<StreamOut>(&cerr)
    );
 

@@ -124,11 +124,11 @@ class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
 
 		// Maps this connection to a player. If a connection is already mapped
 		// to the specified player, that previous connection is closed first.
-		void assignPlayer(core::entity::Player *player);
+		void assignPlayer(trogdor::entity::Player *player);
 
 		// Returns the Player associated with the connection. If none, this
 		// return a null pointer instead.
-		core::entity::Player *getPlayer();
+		trogdor::entity::Player *getPlayer();
 };
 
 /******************************************************************************/

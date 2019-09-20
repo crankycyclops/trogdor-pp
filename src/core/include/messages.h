@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
    class Messages {
 
@@ -73,7 +73,7 @@ namespace trogdor { namespace core {
          */
          void display(string name, ostream &out) const;
    };
-}}
+}
 
 
 #endif

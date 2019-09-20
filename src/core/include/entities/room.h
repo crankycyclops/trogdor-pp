@@ -12,7 +12,8 @@
 
 using namespace std;
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
+
 
    class Room: public Place {
 
@@ -134,7 +135,7 @@ namespace trogdor { namespace core { namespace entity {
             }
          }
    };
-}}}
+}}
 
 
 #endif

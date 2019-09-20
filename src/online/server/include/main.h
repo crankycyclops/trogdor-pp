@@ -2,5 +2,5 @@
 
 
 // global object that should be accessible to the entire application
-extern core::Game *currentGame;
+extern trogdor::Game *currentGame;
 

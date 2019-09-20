@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
 
 
    // Special empty lists used for returning .end() iterator pairs in the case
@@ -147,5 +147,5 @@ namespace trogdor { namespace core { namespace entity {
          game->event("afterGlance", eventArgs);
       }
    }
-}}}
+}}
 

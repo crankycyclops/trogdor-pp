@@ -105,7 +105,7 @@ void TCPConnection::write(string message, callback_t callback, void *callbackArg
 
 /******************************************************************************/
 
-void TCPConnection::assignPlayer(core::entity::Player *player) {
+void TCPConnection::assignPlayer(trogdor::entity::Player *player) {
 
 	// If another connection is currently bound to the player, close it first.
 	if (server->playerToConnection.left.find(player) != server->playerToConnection.left.end() &&
@@ -119,7 +119,7 @@ void TCPConnection::assignPlayer(core::entity::Player *player) {
 
 /******************************************************************************/
 
-core::entity::Player *TCPConnection::getPlayer() {
+trogdor::entity::Player *TCPConnection::getPlayer() {
 
 	if (server->playerToConnection.right.find(shared_from_this()) != server->playerToConnection.right.end()) {
 		return server->playerToConnection.right.find(shared_from_this())->second;

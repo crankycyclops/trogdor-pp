@@ -12,7 +12,7 @@ void StreamOut::flush() {
    clear();
 }
 
-std::unique_ptr<trogdor::core::Trogout> StreamOut::clone() {
+std::unique_ptr<trogdor::Trogout> StreamOut::clone() {
 
    return std::make_unique<StreamOut>(stream);
 }

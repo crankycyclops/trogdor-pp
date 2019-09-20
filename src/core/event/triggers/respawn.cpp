@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core { namespace event {
+namespace trogdor { namespace event {
 
 
    void RespawnEventTrigger::execute(EventArgumentList args) {
@@ -32,5 +32,5 @@ namespace trogdor { namespace core { namespace event {
       continueExecutionFlag = true;
       allowActionFlag = true;
    }
-}}}
+}}
 

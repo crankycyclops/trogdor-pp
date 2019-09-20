@@ -26,7 +26,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    Game::Game(std::unique_ptr<Trogout> e) {
@@ -297,5 +297,5 @@ namespace trogdor { namespace core {
 
       actions->setAction(verb, std::move(action));
    }
-}}
+}
 

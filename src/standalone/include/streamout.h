@@ -13,7 +13,7 @@ using namespace std;
    Output "stream" that wraps around the specified ostream object. This
    particular object happens to ignore channels.
 */
-class StreamOut: public trogdor::core::Trogout {
+class StreamOut: public trogdor::Trogout {
 
    private:
 
@@ -31,7 +31,7 @@ class StreamOut: public trogdor::core::Trogout {
       /*
          See include/iostream/trogout.h for details.
       */
-      virtual std::unique_ptr<trogdor::core::Trogout> clone();
+      virtual std::unique_ptr<trogdor::Trogout> clone();
 };
 
 

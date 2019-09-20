@@ -12,7 +12,7 @@ using namespace std;
 /*
    Input "stream" that reads from the specified istream.
 */
-class StreamIn: public trogdor::core::Trogin {
+class StreamIn: public trogdor::Trogin {
 
    private:
 
@@ -25,10 +25,10 @@ class StreamIn: public trogdor::core::Trogin {
    /*
       See include/iostream/trogin.h for details.
    */
-   virtual std::unique_ptr<trogdor::core::Trogin> clone();
+   virtual std::unique_ptr<trogdor::Trogin> clone();
 
    // For now, I only need to define input for strings
-   virtual trogdor::core::Trogin &operator>> (string &val);
+   virtual trogdor::Trogin &operator>> (string &val);
 };
 
 

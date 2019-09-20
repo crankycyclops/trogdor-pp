@@ -9,7 +9,8 @@
 #include "place.h"
 
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
+
 
    class Thing: public Entity {
 
@@ -122,7 +123,7 @@ namespace trogdor { namespace core { namespace entity {
 
          // TODO: virtual void removeAlias(string alias);
    };
-}}}
+}}
 
 
 #endif

@@ -20,7 +20,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    // Resolve circular dependencies
@@ -788,7 +788,7 @@ namespace trogdor { namespace core {
             return events->event(event);
          }
    };
-}}
+}
 
 
 #endif

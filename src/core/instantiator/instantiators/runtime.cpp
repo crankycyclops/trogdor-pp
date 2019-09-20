@@ -13,7 +13,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
    Runtime::Runtime(Game *g) {
 
@@ -1011,5 +1011,5 @@ namespace trogdor { namespace core {
          dynamic_cast<entity::Object *>(object)->setDamage(stoi(value));
       };
    }
-}}
+}
 

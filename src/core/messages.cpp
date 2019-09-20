@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    string Messages::get(const string name) const {
@@ -36,5 +36,5 @@ namespace trogdor { namespace core {
 
       return;
    }
-}}
+}
 

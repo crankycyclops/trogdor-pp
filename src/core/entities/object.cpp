@@ -3,9 +3,8 @@
 
 
 using namespace std;
-using namespace boost;
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
 
 
    void Object::addAlias(string alias) {
@@ -32,5 +31,5 @@ namespace trogdor { namespace core { namespace entity {
          weapon = w;
       }
    }
-}}}
+}}
 

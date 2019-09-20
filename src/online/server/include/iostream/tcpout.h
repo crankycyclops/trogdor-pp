@@ -43,7 +43,7 @@ using namespace std;
 	the connection object and the message struct, and would allow us to retry
 	sending the message up to MAX_RETRIES times.
 */
-class TCPOut: public core::Trogout {
+class TCPOut: public trogdor::Trogout {
 
 	private:
 
@@ -85,7 +85,7 @@ class TCPOut: public core::Trogout {
 		/*
 			See include/iostream/trogin.h for details.
 		*/
-		virtual std::unique_ptr<core::Trogout> clone();
+		virtual std::unique_ptr<trogdor::Trogout> clone();
 };
 
 

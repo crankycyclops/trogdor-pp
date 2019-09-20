@@ -3,7 +3,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    void NullOut::flush() {
@@ -15,5 +15,5 @@ namespace trogdor { namespace core {
 
       return std::make_unique<NullOut>();
    }
-}}
+}
 

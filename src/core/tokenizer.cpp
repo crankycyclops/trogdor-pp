@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    Tokenizer::Tokenizer(string s) {
@@ -17,5 +17,5 @@ namespace trogdor { namespace core {
 
       rewind();
    }
-}}
+}
 

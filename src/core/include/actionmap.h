@@ -12,7 +12,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
    class ActionMap {
 
@@ -40,7 +40,7 @@ namespace trogdor { namespace core {
 
          Action *getAction(string verb) const;
    };
-}}
+}
 
 
 #endif

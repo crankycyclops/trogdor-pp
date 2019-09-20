@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    /*
@@ -28,7 +28,7 @@ namespace trogdor { namespace core {
          */
          virtual std::unique_ptr<Trogout> clone();
    };
-}}
+}
 
 
 #endif

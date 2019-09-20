@@ -12,7 +12,7 @@ using namespace std;
   TimeAction outputs the current game time to whichever player issues
   the command.
 */
-class TimeAction: public trogdor::core::Action {
+class TimeAction: public trogdor::Action {
 
    public:
 
@@ -21,10 +21,10 @@ class TimeAction: public trogdor::core::Action {
          Time action is to have a command with just a verb and no direct
          object or indirect object.
       */
-      virtual bool checkSyntax(const std::shared_ptr<trogdor::core::Command> &command);
+      virtual bool checkSyntax(const std::shared_ptr<trogdor::Command> &command);
 
-      virtual void execute(trogdor::core::entity::Player *player,
-      const std::shared_ptr<trogdor::core::Command> &command, trogdor::core::Game *game);
+      virtual void execute(trogdor::entity::Player *player,
+      const std::shared_ptr<trogdor::Command> &command, trogdor::Game *game);
 };
 
 

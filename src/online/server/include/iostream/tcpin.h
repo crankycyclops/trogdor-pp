@@ -21,7 +21,7 @@ using namespace std;
  WARNING: ALWAYS use TCPIn inside a separate thread, because it WILL block while
  it waits on the client for data.
 */
-class TCPIn: public core::Trogin {
+class TCPIn: public trogdor::Trogin {
 
 	private:
 
@@ -62,10 +62,10 @@ class TCPIn: public core::Trogin {
 		/*
 		 See include/iostream/trogin.h for details.
 		*/
-		virtual std::unique_ptr<core::Trogin> clone();
+		virtual std::unique_ptr<trogdor::Trogin> clone();
 
 		// For now, I only need to define input for strings.
-		virtual core::Trogin &operator>> (string &val);
+		virtual trogdor::Trogin &operator>> (string &val);
 };
 
 

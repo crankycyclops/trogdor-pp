@@ -18,7 +18,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
 
 
    /*
@@ -247,7 +247,7 @@ namespace trogdor { namespace core { namespace entity {
             }
          }
    };
-}}}
+}}
 
 
 #endif

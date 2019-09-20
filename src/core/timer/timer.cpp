@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    // For debugging purposes; allows us to print a TimerJob object
@@ -133,5 +133,5 @@ namespace trogdor { namespace core {
       insertJobThread.detach();
    }
 
-}}
+}
 

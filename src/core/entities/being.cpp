@@ -9,7 +9,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
 
 
    void Being::display(Being *observer, bool displayFull) {
@@ -560,5 +560,5 @@ namespace trogdor { namespace core { namespace entity {
       game->addEventListener(triggers.get());
       game->event("afterRespawn", eventArgs);
    }
-}}}
+}}
 

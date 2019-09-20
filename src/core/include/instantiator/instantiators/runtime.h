@@ -8,7 +8,7 @@
 #include "../instantiator.h"
 
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
    // Forward declaration of Game, later defined in game.h
    class Game;
@@ -349,7 +349,7 @@ namespace trogdor { namespace core {
          */
          virtual void instantiate();
    };
-}}
+}
 
 
 #endif

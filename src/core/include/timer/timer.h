@@ -19,7 +19,7 @@ constexpr int TICK_MILLISECONDS = 1000;
 
 using namespace std;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    class TimerJob; // full declaration occurs in timerjob.h
@@ -135,7 +135,7 @@ namespace trogdor { namespace core {
             game->timerMutex.unlock();
          }
    };
-}}
+}
 
 
 #endif

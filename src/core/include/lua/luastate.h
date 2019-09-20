@@ -26,7 +26,7 @@ extern "C" {
 using namespace std;
 
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
    namespace entity {
       class Entity;
@@ -439,7 +439,7 @@ namespace trogdor { namespace core {
          */
          void execute(int nReturnVals = 0);
    };
-}}
+}
 
 
 #endif

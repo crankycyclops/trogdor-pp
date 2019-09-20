@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
 
 
    // Types which are considered valid by checkPlace()
@@ -134,5 +134,5 @@ namespace trogdor { namespace core { namespace entity {
       p->removeThing(t);
       return 1;
    }
-}}}
+}}
 

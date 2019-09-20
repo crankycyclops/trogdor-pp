@@ -21,7 +21,7 @@ void TCPIn::readInput(TCPConnection::ptr connection, void *that) {
 
 
 // WARNING: always do this inside a separate thread, because TCPIn WILL block.
-core::Trogin &TCPIn::operator>> (string &val) {
+trogdor::Trogin &TCPIn::operator>> (string &val) {
 
 	// if there's no connection, then we can't really get anything meaningful
 	if (!connection.get()) {
@@ -47,7 +47,7 @@ core::Trogin &TCPIn::operator>> (string &val) {
 }
 
 
-std::unique_ptr<core::Trogin> TCPIn::clone() {
+std::unique_ptr<trogdor::Trogin> TCPIn::clone() {
 
 	return std::make_unique<TCPIn>(connection);
 }

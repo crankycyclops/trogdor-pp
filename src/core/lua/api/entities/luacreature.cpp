@@ -3,7 +3,7 @@
 
 using namespace std;
 
-namespace trogdor { namespace core { namespace entity {
+namespace trogdor { namespace entity {
 
 
    // Types which are considered valid by checkCreature()
@@ -65,5 +65,5 @@ namespace trogdor { namespace core { namespace entity {
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Creature **)LuaState::luaL_checkudata_ex(L, i, creatureTypes);
    }
-}}}
+}}
 

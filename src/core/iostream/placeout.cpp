@@ -5,9 +5,9 @@
 
 
 using namespace std;
-using namespace trogdor::core::entity;
+using namespace trogdor::entity;
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
 
    void PlaceOut::flush() {
@@ -26,5 +26,5 @@ namespace trogdor { namespace core {
 
       return std::make_unique<PlaceOut>();
    }
-}}
+}
 

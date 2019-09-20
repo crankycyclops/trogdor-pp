@@ -8,7 +8,7 @@
 #include "../entities/player.h"
 
 
-namespace trogdor { namespace core {
+namespace trogdor {
 
    /*
       The purpose of this class is to separate the parsing of entities and game
@@ -308,7 +308,7 @@ namespace trogdor { namespace core {
          */
          virtual void instantiate() = 0;
    };
-}}
+}
 
 
 #endif
