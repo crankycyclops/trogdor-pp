@@ -481,10 +481,20 @@ namespace trogdor {
 
    bool Parser::parseManifestRoom(string className) {
 
-      string name = getAttribute("name");
-      instantiator->makeEntity(name, entity::ENTITY_ROOM, className);
-      checkClosingTag(className);
-      return 0 == name.compare("start") ? true : false;
+      stringstream s;
+
+      try {
+         string name = getAttribute("name");
+         instantiator->makeEntity(name, entity::ENTITY_ROOM, className);
+         checkClosingTag(className);
+         return 0 == name.compare("start") ? true : false;
+      }
+
+      catch (string e) {
+         s << filename << ": " << e << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
    }
 
    /***************************************************************************/
@@ -518,9 +528,19 @@ namespace trogdor {
 
    void Parser::parseManifestObject(string className) {
 
-      string name = getAttribute("name");
-      instantiator->makeEntity(name, entity::ENTITY_OBJECT, className);
-      checkClosingTag(className);
+      stringstream s;
+
+      try {
+         string name = getAttribute("name");
+         instantiator->makeEntity(name, entity::ENTITY_OBJECT, className);
+         checkClosingTag(className);
+      }
+
+      catch (string e) {
+         s << filename << ": " << e << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
    }
 
    /***************************************************************************/
@@ -554,9 +574,19 @@ namespace trogdor {
 
    void Parser::parseManifestCreature(string className) {
 
-      string name = getAttribute("name");
-      instantiator->makeEntity(name, entity::ENTITY_CREATURE, className);
-      checkClosingTag(className);
+      stringstream s;
+
+      try {
+         string name = getAttribute("name");
+         instantiator->makeEntity(name, entity::ENTITY_CREATURE, className);
+         checkClosingTag(className);
+      }
+
+      catch (string e) {
+         s << filename << ": " << e << " (line "
+            << xmlTextReaderGetParserLineNumber(reader) << ")";
+         throw s.str();
+      }
    }
 
    /***************************************************************************/

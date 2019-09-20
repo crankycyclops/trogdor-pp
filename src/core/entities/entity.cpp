@@ -25,6 +25,10 @@ namespace trogdor { namespace entity {
    std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e): game(g), name(n),
    outStream(std::move(o)), errStream(std::move(e)), inStream(std::move(i)), title(n) {
 
+      if (!isNameValid(n)) {
+         throw string("name '") + n + "' is invalid (must contain only letters, numbers, underscores, and dashes.)";
+      }
+
       types.push_back(ENTITY_ENTITY);
 
       // this should always be overridden by a top-level Entity type
@@ -37,6 +41,10 @@ namespace trogdor { namespace entity {
    /***************************************************************************/
 
    Entity::Entity(const Entity &e, string n) {
+
+      if (!isNameValid(n)) {
+         throw string("name '") + n + "' is invalid (must contain only letters, numbers, underscores, and dashes.)";
+      }
 
       name = n;
 

@@ -27,42 +27,49 @@ namespace trogdor {
 
    void Runtime::makeEntityClass(string className, enum entity::EntityType entityType) {
 
-      // Entity classes are represented as model Entity objects that can be copied
-      std::unique_ptr<Entity> entity;
+      try {
 
-      switch (entityType) {
+         // Entity classes are represented as model Entity objects that can be copied
+         std::unique_ptr<Entity> entity;
 
-         case entity::ENTITY_ROOM:
-            entity = make_unique<Room>(
-               game, className, std::make_unique<PlaceOut>(), game->err().clone()
-            );
-            break;
+         switch (entityType) {
 
-         case entity::ENTITY_OBJECT:
-            entity = make_unique<Object>(
-               game, className, std::make_unique<NullOut>(), game->err().clone()
-            );
-            break;
+            case entity::ENTITY_ROOM:
+               entity = make_unique<Room>(
+                  game, className, std::make_unique<PlaceOut>(), game->err().clone()
+               );
+               break;
 
-         case entity::ENTITY_CREATURE:
-            // TODO: should Creatures have some kind of special input stream?
-            entity = make_unique<Creature>(
-               game, className, std::make_unique<NullOut>(), game->err().clone()
-            );
-            break;
+            case entity::ENTITY_OBJECT:
+               entity = make_unique<Object>(
+                  game, className, std::make_unique<NullOut>(), game->err().clone()
+               );
+               break;
 
-         case entity::ENTITY_PLAYER:
-            throw string("Class cannot be defined for type Player");
+            case entity::ENTITY_CREATURE:
+               // TODO: should Creatures have some kind of special input stream?
+               entity = make_unique<Creature>(
+                  game, className, std::make_unique<NullOut>(), game->err().clone()
+               );
+               break;
 
-         default:
-            throw string("Runtime::makeEntityClass: class defined for unsupported entity type. This is a bug.");
+            case entity::ENTITY_PLAYER:
+               throw string("Class cannot be defined for type Player");
+
+            default:
+               throw string("Runtime::makeEntityClass: class defined for unsupported entity type. This is a bug.");
+         }
+
+         // for type checking
+         entity->setClass(className);
+         entity->setTitle(className);
+
+         typeClasses[className] = std::move(entity);
       }
 
-      // for type checking
-      entity->setClass(className);
-      entity->setTitle(className);
-
-      typeClasses[className] = std::move(entity);
+      catch (string error) {
+         throw Entity::typeToStr(entityType) + " class: " + error;
+      }
    }
 
    /***************************************************************************/
@@ -153,115 +160,122 @@ namespace trogdor {
    void Runtime::makeEntity(string entityName, enum entity::EntityType entityType,
    string className) {
 
-      // Entity classes are represented as model Entity objects that can be copied
-      std::unique_ptr<Entity> entity;
-
-      // Check to see if another entity with the same name already exists
       try {
-         Entity *existingEntity = game->getEntity(entityName);
-         stringstream s;
-         s << "Cannot define " << existingEntity->getTypeName()
-            << " '" << entityName << "': an entity with that name already exists";
-         throw s.str();
-      }
 
-      // In this case, an exception is actually a good thing ;)
-      catch (string error) {
+         // Entity classes are represented as model Entity objects that can be copied
+         std::unique_ptr<Entity> entity;
 
-         std::shared_ptr<Entity> entity;
-
-         switch (entityType) {
-
-            case entity::ENTITY_ROOM:
-
-               // Entity has no class, so create a blank Entity
-               if (
-                  0 == className.compare("") ||
-                  0 == className.compare(Entity::typeToStr(entity::ENTITY_ROOM))
-               ) {
-                  entity = std::make_shared<entity::Room>(
-                     game, entityName, std::make_unique<PlaceOut>(), game->err().clone()
-                 );
-               }
-
-               // Entity has a class, so copy the class's prototype
-               else {
-
-                  if (!entityClassExists(className, entity::ENTITY_ROOM)) {
-                     throw string("room class ") + className + " was not defined";
-                  }
-
-                  else {
-                     entity = std::make_shared<entity::Room>(
-                        *(dynamic_cast<entity::Room *>(typeClasses[className].get())), entityName
-                     );
-                  }
-               }
-
-               break;
-
-            case entity::ENTITY_OBJECT:
-
-               if (
-                  0 == className.compare("") ||
-                  0 == className.compare(Entity::typeToStr(entity::ENTITY_OBJECT))
-               ) {
-                  entity = std::make_shared<entity::Object>(
-                     game, entityName, std::make_unique<NullOut>(), game->err().clone()
-                  );
-               }
-
-               else {
-
-                  if (!entityClassExists(className, entity::ENTITY_OBJECT)) {
-                     throw string("object class ") + className + " was not defined";
-                  }
-
-                  else {
-                     entity = make_shared<entity::Object>(
-                        *(dynamic_cast<entity::Object *>(typeClasses[className].get())), entityName
-                     );
-                  }
-               }
-
-               break;
-
-            case entity::ENTITY_CREATURE:
-
-               if (
-                  0 == className.compare("") ||
-                  0 == className.compare(Entity::typeToStr(entity::ENTITY_CREATURE))
-               ) {
-                  // TODO: should Creatures have some kind of special input stream?
-                  entity = make_shared<entity::Creature>(
-                     game, entityName, std::make_unique<NullOut>(), game->err().clone()
-                  );
-               }
-
-               else {
-
-                  if (!entityClassExists(className, entity::ENTITY_CREATURE)) {
-                     throw string("creature class ") + className + " was not defined";
-                  }
-
-                  else {
-                     entity = make_shared<entity::Creature>(
-                        *(dynamic_cast<entity::Creature *>(typeClasses[className].get())), entityName
-                     );
-                  }
-               }
-
-               break;
-
-            case entity::ENTITY_PLAYER:
-              throw string("TODO: haven't had a reason to instantiate Player objects yet.");
-
-            default:
-               throw string("Runtime::makeEntity: unsupported entity type. This is a bug.");
+         // Check to see if another entity with the same name already exists
+         try {
+            Entity *existingEntity = game->getEntity(entityName);
+            stringstream s;
+            s << "Cannot define " << existingEntity->getTypeName()
+               << " '" << entityName << "': an entity with that name already exists";
+            throw s.str();
          }
 
-         entity->setClass(0 == className.compare("") ? entity->getTypeName() : className);
-         game->insertEntity(entityName, entity);
+         // In this case, an exception is actually a good thing ;)
+         catch (string error) {
+
+            std::shared_ptr<Entity> entity;
+
+            switch (entityType) {
+
+               case entity::ENTITY_ROOM:
+
+                  // Entity has no class, so create a blank Entity
+                  if (
+                     0 == className.compare("") ||
+                     0 == className.compare(Entity::typeToStr(entity::ENTITY_ROOM))
+                  ) {
+                     entity = std::make_shared<entity::Room>(
+                        game, entityName, std::make_unique<PlaceOut>(), game->err().clone()
+                    );
+                  }
+
+                  // Entity has a class, so copy the class's prototype
+                  else {
+
+                     if (!entityClassExists(className, entity::ENTITY_ROOM)) {
+                        throw string("room class ") + className + " was not defined";
+                     }
+
+                     else {
+                        entity = std::make_shared<entity::Room>(
+                           *(dynamic_cast<entity::Room *>(typeClasses[className].get())), entityName
+                        );
+                     }
+                  }
+
+                  break;
+
+               case entity::ENTITY_OBJECT:
+
+                  if (
+                     0 == className.compare("") ||
+                     0 == className.compare(Entity::typeToStr(entity::ENTITY_OBJECT))
+                  ) {
+                     entity = std::make_shared<entity::Object>(
+                        game, entityName, std::make_unique<NullOut>(), game->err().clone()
+                     );
+                  }
+
+                  else {
+
+                     if (!entityClassExists(className, entity::ENTITY_OBJECT)) {
+                        throw string("object class ") + className + " was not defined";
+                     }
+
+                     else {
+                        entity = make_shared<entity::Object>(
+                           *(dynamic_cast<entity::Object *>(typeClasses[className].get())), entityName
+                        );
+                     }
+                  }
+
+                  break;
+
+               case entity::ENTITY_CREATURE:
+
+                  if (
+                     0 == className.compare("") ||
+                     0 == className.compare(Entity::typeToStr(entity::ENTITY_CREATURE))
+                  ) {
+                     // TODO: should Creatures have some kind of special input stream?
+                     entity = make_shared<entity::Creature>(
+                        game, entityName, std::make_unique<NullOut>(), game->err().clone()
+                     );
+                  }
+
+                  else {
+
+                     if (!entityClassExists(className, entity::ENTITY_CREATURE)) {
+                        throw string("creature class ") + className + " was not defined";
+                     }
+
+                     else {
+                        entity = make_shared<entity::Creature>(
+                           *(dynamic_cast<entity::Creature *>(typeClasses[className].get())), entityName
+                        );
+                     }
+                  }
+
+                  break;
+
+               case entity::ENTITY_PLAYER:
+                 throw string("TODO: haven't had a reason to instantiate Player objects yet.");
+
+               default:
+                  throw string("Runtime::makeEntity: unsupported entity type. This is a bug.");
+            }
+
+            entity->setClass(0 == className.compare("") ? entity->getTypeName() : className);
+            game->insertEntity(entityName, entity);
+         }
+      }
+
+      catch (string error) {
+         throw Entity::typeToStr(entityType) + ": " + error;
       }
    }
 

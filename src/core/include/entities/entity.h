@@ -6,6 +6,7 @@
 #include <set>
 #include <memory>
 #include <algorithm>
+#include <regex>
 
 #include "../messages.h"
 #include "../lua/luatable.h"
@@ -50,6 +51,9 @@ namespace trogdor { namespace entity {
       ENTITY_PLAYER = 7,
       ENTITY_CREATURE = 8,
    };
+
+   // Defines a valid entity or entity class name
+   static const char *validEntityNameRegex = "^[A-Za-z0-9_-]+$";
 
    /***************************************************************************/
 
@@ -115,6 +119,60 @@ namespace trogdor { namespace entity {
          inline void displayShort(std::shared_ptr<Being> being) {displayShort(being.get());}
 
       public:
+
+         /*
+            Returns true if the given entity or class name is valid and false
+            otherwise.
+
+            Input:
+               Entity or class name (string)
+
+            Output:
+               True if the name is valid and false if not
+         */
+         static inline bool isNameValid(string name) {
+
+            return regex_match(name, regex(validEntityNameRegex)) ? true : false;
+         }
+
+         /*
+            Returns a string representation of the given Entity type.
+
+            Input:
+               enum EntityType
+
+            Output:
+               Type name (string)
+         */
+         static inline string typeToStr(enum EntityType e) {
+
+            switch (e) {
+
+               case ENTITY_PLACE:
+                  return "place";
+
+               case ENTITY_ROOM:
+                  return "room";
+
+               case ENTITY_THING:
+                  return "thing";
+
+               case ENTITY_BEING:
+                  return "being";
+
+               case ENTITY_OBJECT:
+                  return "object";
+
+               case ENTITY_CREATURE:
+                  return "creature";
+
+               case ENTITY_PLAYER:
+                  return "player";
+
+               default:
+                  return "undefined";
+            }
+         }
 
          /*
             Constructor for creating a new Entity.  Requires reference to the
@@ -205,45 +263,6 @@ namespace trogdor { namespace entity {
                Game *
          */
          inline Game *getGame() {return game;}
-
-         /*
-            Returns a string representation of the given Entity type.
-
-            Input:
-               enum EntityType
-
-            Output:
-               Type name (string)
-         */
-         static inline string typeToStr(enum EntityType e) {
-
-            switch (e) {
-
-               case ENTITY_PLACE:
-                  return "place";
-
-               case ENTITY_ROOM:
-                  return "room";
-
-               case ENTITY_THING:
-                  return "thing";
-
-               case ENTITY_BEING:
-                  return "being";
-
-               case ENTITY_OBJECT:
-                  return "object";
-
-               case ENTITY_CREATURE:
-                  return "creature";
-
-               case ENTITY_PLAYER:
-                  return "player";
-
-               default:
-                  return "undefined";
-            }
-         }
 
          /*
             Returns the Entity's most specific type.
