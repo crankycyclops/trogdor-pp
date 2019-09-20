@@ -16,7 +16,6 @@
 
 
 using namespace std;
-using namespace trogdor::standalone;
 
 
 int main(int argc, char **argv) {

@@ -4,17 +4,14 @@
 
 using namespace std;
 
-namespace trogdor { namespace standalone {
 
+trogdor::core::Trogin &StreamIn::operator>> (string &val) {
 
-	trogdor::core::Trogin &StreamIn::operator>> (string &val) {
+   getline(*stream, val);
+}
 
-	   getline(*stream, val);
-	}
+std::unique_ptr<trogdor::core::Trogin> StreamIn::clone() {
 
-	std::unique_ptr<trogdor::core::Trogin> StreamIn::clone() {
-
-	   return std::make_unique<StreamIn>(stream);
-	}
-}}
+   return std::make_unique<StreamIn>(stream);
+}
 
