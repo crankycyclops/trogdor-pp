@@ -150,21 +150,45 @@ namespace trogdor { namespace entity {
          switch (thing->getType()) {
 
             case ENTITY_PLAYER:
-               beingsByName.find(aliases[i])->second.remove(static_cast<Being *>(thing));
-               playersByName.find(aliases[i])->second.remove(static_cast<Player *>(thing));
+
+               if (beingsByName.find(aliases[i]) != beingsByName.end()) {
+                  beingsByName.find(aliases[i])->second.remove(static_cast<Being *>(thing));
+               }
+
+               if (playersByName.find(aliases[i]) != playersByName.end()) {
+                  playersByName.find(aliases[i])->second.remove(static_cast<Player *>(thing));
+               }
+
                break;
 
             case ENTITY_CREATURE:
-               beingsByName.find(aliases[i])->second.remove(static_cast<Being *>(thing));
-               creaturesByName.find(aliases[i])->second.remove(static_cast<Creature *>(thing));
+
+               if (beingsByName.find(aliases[i]) != beingsByName.end()) {
+                  beingsByName.find(aliases[i])->second.remove(static_cast<Being *>(thing));
+               }
+
+               if (creaturesByName.find(aliases[i]) != creaturesByName.end()) {
+                  creaturesByName.find(aliases[i])->second.remove(static_cast<Creature *>(thing));
+               }
+
                break;
 
             case ENTITY_OBJECT:
-               objectsByName.find(aliases[i])->second.remove(static_cast<Object *>(thing));
+
+               if (objectsByName.find(aliases[i]) != objectsByName.end()) {
+                  objectsByName.find(aliases[i])->second.remove(static_cast<Object *>(thing));
+               }
+
                break;
+
+            default:
+               throw string("RemoveThingByName called on unsupported Entity type '") +
+                  thing->getTypeName() + "'. This is a bug.";
          }
 
-         thingsByName.find(aliases[i])->second.remove(thing);
+         if (thingsByName.find(aliases[i]) != thingsByName.end()) {
+            thingsByName.find(aliases[i])->second.remove(thing);
+         }
       }
    }
 

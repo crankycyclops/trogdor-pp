@@ -118,7 +118,7 @@ namespace trogdor { namespace entity {
          return luaL_error(L, "takes one string argument");
       }
 
-      Thing *t = checkThing(L, -2);
+      Thing *t = checkThing(L, -n);
 
       if (0 == t) {
          return luaL_error(L, "not a Thing!");
