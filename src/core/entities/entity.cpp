@@ -19,6 +19,32 @@ namespace trogdor { namespace entity {
    CreatureList  emptyCreatureList;
    ObjectList    emptyObjectList;
 
+/*
+   // Initialize Entity::typeToStrMap
+   const unordered_map<enum EntityType, string> Entity::typeToStrMap = {
+      {ENTITY_ENTITY, "entity"},
+      {ENTITY_PLACE, "place"},
+      {ENTITY_ROOM, "room"},
+      {ENTITY_THING, "thing"},
+      {ENTITY_BEING, "being"},
+      {ENTITY_OBJECT, "object"},
+      {ENTITY_CREATURE, "creature"},
+      {ENTITY_PLAYER, "player"}
+   };
+
+   // Initialize Entity::strToTypeMap
+   const unordered_map<string, enum EntityType> Entity::strToTypeMap = {
+      {"entity", ENTITY_ENTITY},
+      {"place", ENTITY_PLACE},
+      {"room", ENTITY_ROOM},
+      {"thing", ENTITY_THING},
+      {"being", ENTITY_BEING},
+      {"object", ENTITY_OBJECT},
+      {"creature", ENTITY_CREATURE},
+      {"player", ENTITY_PLAYER}
+   };
+*/
+   /***************************************************************************/
 
    // The title property will usually be set to something more descriptive later
    Entity::Entity(Game *g, string n, std::unique_ptr<Trogout> o,

@@ -147,7 +147,7 @@ namespace trogdor { namespace entity {
       e->out(channel) << message;
       e->out(channel).flush();
 
-      return 1;
+      return 0;
    }
 
    /***************************************************************************/
@@ -187,7 +187,7 @@ namespace trogdor { namespace entity {
       }
 
       e->setMeta(luaL_checkstring(L, -2), luaL_checkstring(L, -1));
-      return 1;
+      return 0;
    }
 
    /***************************************************************************/
@@ -227,7 +227,7 @@ namespace trogdor { namespace entity {
       }
 
       e->setMessage(luaL_checkstring(L, -2), luaL_checkstring(L, -1));
-      return 1;
+      return 0;
    }
 
    /***************************************************************************/
@@ -246,47 +246,7 @@ namespace trogdor { namespace entity {
          return luaL_error(L, "not an Entity!");
       }
 
-      enum EntityType type;
-      string typeStr = luaL_checkstring(L, -1);
-
-      // TODO: move all of this into Entity::strToType()
-      if (0 == typeStr.compare("entity")) {
-         type = ENTITY_ENTITY;
-      }
-
-      else if (0 == typeStr.compare("place")) {
-         type = ENTITY_PLACE;
-      }
-
-      else if (0 == typeStr.compare("room")) {
-         type = ENTITY_ROOM;
-      }
-
-      else if (0 == typeStr.compare("thing")) {
-         type = ENTITY_THING;
-      }
-
-      else if (0 == typeStr.compare("object")) {
-         type = ENTITY_OBJECT;
-      }
-
-      else if (0 == typeStr.compare("being")) {
-         type = ENTITY_BEING;
-      }
-
-      else if (0 == typeStr.compare("player")) {
-         type = ENTITY_PLAYER;
-      }
-
-      else if (0 == typeStr.compare("creature")) {
-         type = ENTITY_CREATURE;
-      }
-
-      // string doesn't match any type (script writer is stupid)
-      else {
-         lua_pushboolean(L, 0);
-         return 1;
-      }
+      enum EntityType type = Entity::strToType(luaL_checkstring(L, -1));
 
       lua_pushboolean(L, e->isType(type));
       return 1;
@@ -358,11 +318,11 @@ namespace trogdor { namespace entity {
 
       int n = lua_gettop(L);
 
-      if (3 != n) {
-         return luaL_error(L, "takes one string argument");
+      if (2 != n) {
+         return luaL_error(L, "requires one string argument");
       }
 
-      Entity *e = checkEntity(L, -2);
+      Entity *e = checkEntity(L, -n);
 
       if (0 == e) {
          return luaL_error(L, "not an Entity!");
@@ -371,7 +331,7 @@ namespace trogdor { namespace entity {
       string title = luaL_checkstring(L, -1);
       e->setTitle(title);
 
-      return 1;
+      return 0;
    }
 
    /***************************************************************************/
@@ -400,8 +360,8 @@ namespace trogdor { namespace entity {
 
       int n = lua_gettop(L);
 
-      if (3 != n) {
-         return luaL_error(L, "takes one string argument");
+      if (2 != n) {
+         return luaL_error(L, "requires one string argument");
       }
 
       Entity *e = checkEntity(L, -2);
@@ -413,7 +373,7 @@ namespace trogdor { namespace entity {
       string desc = luaL_checkstring(L, -1);
       e->setLongDescription(desc);
 
-      return 1;
+      return 0;
    }
 
    /***************************************************************************/
@@ -442,7 +402,7 @@ namespace trogdor { namespace entity {
 
       int n = lua_gettop(L);
 
-      if (3 != n) {
+      if (2 != n) {
          return luaL_error(L, "requires one string argument");
       }
 
@@ -455,7 +415,7 @@ namespace trogdor { namespace entity {
       string desc = luaL_checkstring(L, -1);
       e->setShortDescription(desc);
 
-      return 1;
+      return 0;
    }
 
    /***************************************************************************/
@@ -469,7 +429,7 @@ namespace trogdor { namespace entity {
       int n = lua_gettop(L);
 
       if (n < 2) {
-         return luaL_error(L, "requires one string argument");
+         return luaL_error(L, "requires at least one string argument");
       }
 
       else if (n > 4) {
@@ -488,7 +448,7 @@ namespace trogdor { namespace entity {
       }
 
       observed->observe(observer, triggerEvents, displayFull);
-      return 1;
+      return 0;
    }
 
    /***************************************************************************/
@@ -516,7 +476,7 @@ namespace trogdor { namespace entity {
       }
 
       observed->glance(observer, triggerEvents);
-      return 1;
+      return 0;
    }
 
    /***************************************************************************/

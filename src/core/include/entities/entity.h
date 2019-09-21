@@ -42,6 +42,7 @@ namespace trogdor { namespace entity {
 
    // used for run-time check of an Entity's type
    enum EntityType {
+      ENTITY_UNDEFINED = 0,
       ENTITY_ENTITY = 1,
       ENTITY_PLACE = 2,
       ENTITY_ROOM = 3,
@@ -136,6 +137,33 @@ namespace trogdor { namespace entity {
          }
 
          /*
+            Returns the EntityType corresponding to the given string.
+
+            Input:
+               Entity type name (string)
+
+            Output:
+               Entity type (enum EntityType)
+         */
+         static inline enum EntityType strToType(string typeName) {
+
+            // Maps name of Entity type to enum EntityType (initialized in entity.cpp)
+            static unordered_map<string, enum EntityType> strToTypeMap = {
+               {"entity", ENTITY_ENTITY},
+               {"place", ENTITY_PLACE},
+               {"room", ENTITY_ROOM},
+               {"thing", ENTITY_THING},
+               {"being", ENTITY_BEING},
+               {"object", ENTITY_OBJECT},
+               {"creature", ENTITY_CREATURE},
+               {"player", ENTITY_PLAYER}
+            };
+
+            return strToTypeMap.find(typeName) != strToTypeMap.end() ?
+               strToTypeMap[typeName] : ENTITY_UNDEFINED;
+         }
+
+         /*
             Returns a string representation of the given Entity type.
 
             Input:
@@ -146,32 +174,23 @@ namespace trogdor { namespace entity {
          */
          static inline string typeToStr(enum EntityType e) {
 
-            switch (e) {
+            // Maps enum EntityType to its name (initialized in entity.cpp)
+            // See that std::hash thing? Yeah, I banged my head against the wall
+            // on that for a while. See: 
+            // https://stackoverflow.com/questions/18837857/cant-use-enum-class-as-unordered-map-key
+            static unordered_map<enum EntityType, string, std::hash<int>> typeToStrMap = {
+               {ENTITY_ENTITY, "entity"},
+               {ENTITY_PLACE, "place"},
+               {ENTITY_ROOM, "room"},
+               {ENTITY_THING, "thing"},
+               {ENTITY_BEING, "being"},
+               {ENTITY_OBJECT, "object"},
+               {ENTITY_CREATURE, "creature"},
+               {ENTITY_PLAYER, "player"}
+            };
 
-               case ENTITY_PLACE:
-                  return "place";
-
-               case ENTITY_ROOM:
-                  return "room";
-
-               case ENTITY_THING:
-                  return "thing";
-
-               case ENTITY_BEING:
-                  return "being";
-
-               case ENTITY_OBJECT:
-                  return "object";
-
-               case ENTITY_CREATURE:
-                  return "creature";
-
-               case ENTITY_PLAYER:
-                  return "player";
-
-               default:
-                  return "undefined";
-            }
+            return typeToStrMap.find(e) != typeToStrMap.end() ?
+               typeToStrMap[e] : "undefined";
          }
 
          /*

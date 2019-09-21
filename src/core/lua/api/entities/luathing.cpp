@@ -57,7 +57,7 @@ namespace trogdor { namespace entity {
 
       luaL_newmetatable(L, "Thing");
 
-      // Entity.__index = Entity
+      // Thing.__index = Thing
       lua_pushvalue(L, -1);
       lua_setfield(L, -2, "__index");
 
@@ -127,7 +127,7 @@ namespace trogdor { namespace entity {
       string alias = luaL_checkstring(L, -1);
       t->addAlias(alias);
 
-      return 1;
+      return 0;
    }
 
    /***************************************************************************/
@@ -173,7 +173,7 @@ namespace trogdor { namespace entity {
       }
 
       t->setLocation(p);
-      return 1;
+      return 0;
    }
 
    /***************************************************************************/
@@ -193,7 +193,7 @@ namespace trogdor { namespace entity {
       }
 
       t->setLocation(0);
-      return 1;
+      return 0;
    }
 }}
 

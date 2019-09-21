@@ -107,7 +107,7 @@ namespace trogdor { namespace entity {
       }
 
       p->insertThing(t);
-      return 1;
+      return 0;
    }
 
    /***************************************************************************/
@@ -132,7 +132,7 @@ namespace trogdor { namespace entity {
       }
 
       p->removeThing(t);
-      return 1;
+      return 0;
    }
 }}
 
