@@ -11,6 +11,9 @@ using namespace std;
 namespace trogdor { namespace entity {
 
 
+   // The name of the metatable that represents the Place metatable
+   const char *LuaPlace::MetatableName = "Place";
+
    // Types which are considered valid by checkPlace()
    static const char *placeTypes[] = {
       "Place",
@@ -50,7 +53,7 @@ namespace trogdor { namespace entity {
 
    void LuaPlace::registerLuaType(lua_State *L) {
 
-      luaL_newmetatable(L, "Place");
+      luaL_newmetatable(L, MetatableName);
 
       // Place.__index = Place
       lua_pushvalue(L, -1);
@@ -58,8 +61,8 @@ namespace trogdor { namespace entity {
 
       luaL_register(L, 0, LuaEntity::getMethods());
       luaL_register(L, 0, methods);
-      luaL_register(L, "Place", LuaEntity::getFunctions());
-      luaL_register(L, "Place", functions);
+      luaL_register(L, MetatableName, LuaEntity::getFunctions());
+      luaL_register(L, MetatableName, functions);
    }
 
    /***************************************************************************/

@@ -6,6 +6,9 @@ using namespace std;
 namespace trogdor { namespace entity {
 
 
+   // The name of the metatable that represents the Creature metatable
+   const char *LuaCreature::MetatableName = "Creature";
+
    // Types which are considered valid by checkCreature()
    static const char *creatureTypes[] = {
       "Creature",
@@ -42,7 +45,7 @@ namespace trogdor { namespace entity {
 
    void LuaCreature::registerLuaType(lua_State *L) {
 
-      luaL_newmetatable(L, "Creature");
+      luaL_newmetatable(L, MetatableName);
 
       // Creature.__index = Creature
       lua_pushvalue(L, -1);
@@ -52,10 +55,10 @@ namespace trogdor { namespace entity {
       luaL_register(L, 0, LuaThing::getMethods());
       luaL_register(L, 0, LuaBeing::getMethods());
       luaL_register(L, 0, methods);
-      luaL_register(L, "Creature", LuaEntity::getFunctions());
-      luaL_register(L, "Creature", LuaThing::getFunctions());
-      luaL_register(L, "Creature", LuaBeing::getFunctions());
-      luaL_register(L, "Creature", functions);
+      luaL_register(L, MetatableName, LuaEntity::getFunctions());
+      luaL_register(L, MetatableName, LuaThing::getFunctions());
+      luaL_register(L, MetatableName, LuaBeing::getFunctions());
+      luaL_register(L, MetatableName, functions);
    }
 
    /***************************************************************************/

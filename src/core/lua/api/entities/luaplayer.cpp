@@ -6,6 +6,9 @@ using namespace std;
 namespace trogdor { namespace entity {
 
 
+   // The name of the metatable that represents the Player metatable
+   const char *LuaPlayer::MetatableName = "Player";
+
    // Types which are considered valid by checkPlayer()
    static const char *playerTypes[] = {
       "Player",
@@ -42,7 +45,7 @@ namespace trogdor { namespace entity {
 
    void LuaPlayer::registerLuaType(lua_State *L) {
 
-      luaL_newmetatable(L, "Player");
+      luaL_newmetatable(L, MetatableName);
 
       // Player.__index = Player
       lua_pushvalue(L, -1);
@@ -52,10 +55,10 @@ namespace trogdor { namespace entity {
       luaL_register(L, 0, LuaThing::getMethods());
       luaL_register(L, 0, LuaBeing::getMethods());
       luaL_register(L, 0, methods);
-      luaL_register(L, "Player", LuaEntity::getFunctions());
-      luaL_register(L, "Player", LuaThing::getFunctions());
-      luaL_register(L, "Player", LuaBeing::getFunctions());
-      luaL_register(L, "Player", functions);
+      luaL_register(L, MetatableName, LuaEntity::getFunctions());
+      luaL_register(L, MetatableName, LuaThing::getFunctions());
+      luaL_register(L, MetatableName, LuaBeing::getFunctions());
+      luaL_register(L, MetatableName, functions);
    }
 
    /***************************************************************************/

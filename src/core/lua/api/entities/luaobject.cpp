@@ -6,6 +6,9 @@ using namespace std;
 namespace trogdor { namespace entity {
 
 
+   // The name of the metatable that represents the Object metatable
+   const char *LuaObject::MetatableName = "Object";
+
    // Types which are considered valid by checkObject()
    static const char *objectTypes[] = {
       "Object",
@@ -42,7 +45,7 @@ namespace trogdor { namespace entity {
 
    void LuaObject::registerLuaType(lua_State *L) {
 
-      luaL_newmetatable(L, "Object");
+      luaL_newmetatable(L, MetatableName);
 
       // Object.__index = Object
       lua_pushvalue(L, -1);
@@ -51,9 +54,9 @@ namespace trogdor { namespace entity {
       luaL_register(L, 0, LuaEntity::getMethods());
       luaL_register(L, 0, LuaThing::getMethods());
       luaL_register(L, 0, methods);
-      luaL_register(L, "Object", LuaEntity::getFunctions());
-      luaL_register(L, "Object", LuaThing::getFunctions());
-      luaL_register(L, "Object", functions);
+      luaL_register(L, MetatableName, LuaEntity::getFunctions());
+      luaL_register(L, MetatableName, LuaThing::getFunctions());
+      luaL_register(L, MetatableName, functions);
    }
 
    /***************************************************************************/

@@ -76,23 +76,23 @@ namespace trogdor {
          switch (e->getType()) {
 
             case entity::ENTITY_ROOM:
-               luaL_getmetatable(L, "Room");
+               luaL_getmetatable(L, entity::LuaRoom::MetatableName);
                break;
 
             case entity::ENTITY_OBJECT:
-               luaL_getmetatable(L, "Object");
+               luaL_getmetatable(L, entity::LuaObject::MetatableName);
                break;
 
             case entity::ENTITY_CREATURE:
-               luaL_getmetatable(L, "Creature");
+               luaL_getmetatable(L, entity::LuaCreature::MetatableName);
                break;
 
             case entity::ENTITY_PLAYER:
-               luaL_getmetatable(L, "Player");
+               luaL_getmetatable(L, entity::LuaPlayer::MetatableName);
                break;
 
             default:
-               luaL_getmetatable(L, "Entity");
+               luaL_getmetatable(L, entity::LuaEntity::MetatableName);
                break;
          }
 

@@ -6,6 +6,9 @@ using namespace std;
 namespace trogdor { namespace entity {
 
 
+   // The name of the metatable that represents the Being metatable
+   const char *LuaBeing::MetatableName = "Being";
+
    // Types which are considered valid by checkBeing()
    static const char *beingTypes[] = {
       "Being",
@@ -44,7 +47,7 @@ namespace trogdor { namespace entity {
 
    void LuaBeing::registerLuaType(lua_State *L) {
 
-      luaL_newmetatable(L, "Being");
+      luaL_newmetatable(L, MetatableName);
 
       // Being.__index = Being
       lua_pushvalue(L, -1);
@@ -53,9 +56,9 @@ namespace trogdor { namespace entity {
       luaL_register(L, 0, LuaEntity::getMethods());
       luaL_register(L, 0, LuaThing::getMethods());
       luaL_register(L, 0, methods);
-      luaL_register(L, "Being", LuaEntity::getFunctions());
-      luaL_register(L, "Being", LuaThing::getFunctions());
-      luaL_register(L, "Being", functions);
+      luaL_register(L, MetatableName, LuaEntity::getFunctions());
+      luaL_register(L, MetatableName, LuaThing::getFunctions());
+      luaL_register(L, MetatableName, functions);
    }
 
    /***************************************************************************/

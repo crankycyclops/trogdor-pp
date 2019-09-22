@@ -47,6 +47,9 @@ namespace trogdor { namespace entity {
 
       public:
 
+         // The name of the metatable that represents the Being metatable
+         static const char *MetatableName;
+
          /*
             Registers the Being type and its associated operations in Lua.
          */

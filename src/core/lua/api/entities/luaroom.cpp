@@ -6,6 +6,9 @@ using namespace std;
 namespace trogdor { namespace entity {
 
 
+   // The name of the metatable that represents the Room metatable
+   const char *LuaRoom::MetatableName = "Room";
+
    // Types which are considered valid by checkRoom()
    static const char *roomTypes[] = {
       "Room",
@@ -42,7 +45,7 @@ namespace trogdor { namespace entity {
 
    void LuaRoom::registerLuaType(lua_State *L) {
 
-      luaL_newmetatable(L, "Room");
+      luaL_newmetatable(L, MetatableName);
 
       // Room.__index = Room
       lua_pushvalue(L, -1);
@@ -51,9 +54,9 @@ namespace trogdor { namespace entity {
       luaL_register(L, 0, LuaEntity::getMethods());
       luaL_register(L, 0, LuaPlace::getMethods());
       luaL_register(L, 0, methods);
-      luaL_register(L, "Room", LuaEntity::getFunctions());
-      luaL_register(L, "Room", LuaPlace::getFunctions());
-      luaL_register(L, "Room", functions);
+      luaL_register(L, MetatableName, LuaEntity::getFunctions());
+      luaL_register(L, MetatableName, LuaPlace::getFunctions());
+      luaL_register(L, MetatableName, functions);
    }
 
    /***************************************************************************/

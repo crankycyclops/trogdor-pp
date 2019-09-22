@@ -44,6 +44,9 @@ namespace trogdor { namespace entity {
 
       public:
 
+         // The name of the metatable that represents the Entity metatable
+         static const char *MetatableName;
+
          /*
             Registers the Entity type and its associated operations in Lua.
          */
