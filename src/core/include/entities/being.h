@@ -605,7 +605,7 @@ namespace trogdor { namespace entity {
 
          /*
             Removes an object from a Being's inventory.  If the Object isn't in
-            the Being's inventory, then nothing happens.
+            the Being's inventory, nothing happens.
 
             Input:
                Pointer to Object to remove

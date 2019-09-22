@@ -98,7 +98,7 @@ namespace trogdor { namespace entity {
          inline vector<string> const getAliases() const {return aliases;}
 
          /*
-            Set's the Being's current location in the game.
+            Set's the Thing's current location in the game.
 
             Input:
                Pointer to Place

@@ -44,7 +44,7 @@ namespace trogdor { namespace entity {
          */
          inline Object(Game *g, string n, std::unique_ptr<Trogout> o,
          std::unique_ptr<Trogout> e): Thing(g, n, std::move(o),
-         std::make_unique<NullIn>(), std::move(e)), owner(0),
+         std::make_unique<NullIn>(), std::move(e)), owner(nullptr),
          weight(DEFAULT_WEIGHT), takeable(DEFAULT_TAKEABLE),
          droppable(DEFAULT_DROPPABLE), weapon(DEFAULT_IS_WEAPON),
          damage(DEFAULT_DAMAGE) {

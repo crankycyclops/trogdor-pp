@@ -318,7 +318,7 @@ namespace trogdor {
             player);
 
          try {
- 
+
             player->drop(object);
 
             string message = object->getMessage("drop");

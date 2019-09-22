@@ -100,8 +100,12 @@ namespace trogdor { namespace entity {
          static int getLocation(lua_State *L);
 
          /*
-            Wraps around Thing::setLocation(). DO NOT use this to set a null
-            value. For that, use clearLocation instead.
+            Wraps around Thing::setLocation(). If the Thing is also an Object
+            and has an owner, it will be removed from the owner's inventory
+            first.
+
+            DO NOT pass nil to remove this Thing from its location. For that,
+            use clearLocation instead.
 
             Input:
                Place (in Lua)
@@ -112,7 +116,8 @@ namespace trogdor { namespace entity {
          static int setLocation(lua_State *L);
 
          /*
-            Sets a Thing's location to null.
+            Removes Thing from whatever Place it's in. If it isn't in a place,
+            this function will do nothing.
 
             Input:
                (none)
@@ -120,7 +125,7 @@ namespace trogdor { namespace entity {
             Output:
                (none)
          */
-         static int clearLocation(lua_State *L);
+         static int removeFromLocation(lua_State *L);
    };
 }}
 

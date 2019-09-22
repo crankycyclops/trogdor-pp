@@ -30,9 +30,8 @@ namespace trogdor { namespace entity {
    void Thing::addAlias(string alias) {
 
       // The number of aliases should be small enough that it's not a big deal
-      // to iterate through the vector, and only calling insert if the alias
-      // doesn't already exist minimizes the potential for side effects (it also
-      // fixes a weird bug I encountered.)
+      // to iterate through the vector, and an alias shouldn't appear in the
+      // vector more than once (otherwise, subtle but nasty things happen.)
       if (std::find(aliases.begin(), aliases.end(), alias) == aliases.end()) {
 
          aliases.insert(aliases.end(), alias);
