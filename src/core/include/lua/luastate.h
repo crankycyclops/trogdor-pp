@@ -30,6 +30,8 @@ using namespace std;
 
 namespace trogdor {
 
+   class Game;
+
    namespace entity {
       class Entity;
    }
@@ -39,7 +41,7 @@ namespace trogdor {
       perform basic operations on it, specifically loading scripts and calling
       functions.  A typical workflow might look something like this:
 
-      LuaState L;
+      LuaState L(game); // game here is of type Game *
 
       try {
          L.loadScriptFromFile("script.lua");
@@ -63,6 +65,9 @@ namespace trogdor {
 
       private:
 
+         // Pointer to the Game object this Lua state is a part of
+         Game *game;
+
          // number of function arguments pushed onto the Lua stack
          int nArgs;
 
@@ -77,6 +82,18 @@ namespace trogdor {
 
          // error message that resulted from the last operation
          string lastErrorMsg;
+
+         /*
+            Registers the global Game object that Lua will use to interact with
+            the state's instance of the C++ class Game.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void registerGlobalGame();
 
          /*
             Initializes the Lua State. Should only be called by a constructor.
@@ -109,10 +126,13 @@ namespace trogdor {
          inline void initLibs() {
 
             // load standard library
+            // TODO: only open certain standard libraries. I don't, for example,
+            // want to allow things like os.exit(). Hold off on this until I
+            // migrate to Lua 5.2+.
             luaL_openlibs(L);
 
             // register Game type
-            LuaGame::registerLuaType(L);
+            registerGlobalGame();
 
             // register Entity types
             entity::LuaEntity::registerLuaType(L);
@@ -244,7 +264,11 @@ namespace trogdor {
          /*
             Constructor for the LuaState object.
          */
-         inline LuaState() {
+         LuaState() = delete;
+
+         inline LuaState(Game *g) {
+
+            game = g;
 
             initState();
             initLibs();
@@ -254,6 +278,8 @@ namespace trogdor {
             Copy Constructor for the LuaState object.
          */
          inline LuaState(const LuaState &LSrc) {
+
+            game = LSrc.game;
 
             initState();
             initLibs();
@@ -275,6 +301,7 @@ namespace trogdor {
 
             if (this != &rhs) {
                lua_close(L);
+               game = rhs.game;
                initState();
                initLibs();
                loadScriptFromString(rhs.parsedScriptData);

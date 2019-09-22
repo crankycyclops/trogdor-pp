@@ -50,7 +50,7 @@ namespace trogdor {
          make_unique<NullOut>()
       );
 
-      L = std::make_shared<LuaState>();
+      L = std::make_shared<LuaState>(this);
       eventListener = std::make_unique<event::EventListener>();
 
       lastCommand = nullptr;

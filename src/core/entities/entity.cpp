@@ -60,7 +60,7 @@ namespace trogdor { namespace entity {
       // this should always be overridden by a top-level Entity type
       className = "entity";
 
-      L = std::make_shared<LuaState>();
+      L = std::make_shared<LuaState>(g);
       triggers = std::make_unique<event::EventListener>();
    }
 

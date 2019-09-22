@@ -21,14 +21,15 @@ namespace trogdor { namespace entity {
       0
    };
 
-   // functions that take an Entity as an input (new, get, etc.)
-   // format of call: Entity.new(e), where e is an Entity
+   // Non-object oriented functions that can't be called with the colon
+   // operator or passed an instance of self as the first argument.
    static const luaL_reg functions[] = {
       {0, 0}
    };
 
-   // Lua Entity methods that bind to C++ Entity methods
-   // also includes meta methods
+   // Lua Entity methods that bind to C++ Entity methods. These should be called
+   // with the colon operator or passed an instance of self as the first
+   // argument.
    static const luaL_reg methods[] = {
       {"input",        LuaEntity::in},
       {"out",          LuaEntity::out},

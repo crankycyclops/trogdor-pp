@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 
+#include "../include/game.h"
 #include "../include/lua/luastate.h"
 #include "../include/entities/entity.h"
 
@@ -9,6 +10,22 @@ using namespace std;
 
 namespace trogdor {
 
+
+   void LuaState::registerGlobalGame() {
+
+      LuaGame::registerLuaType(L);
+
+      Game **gameLocation = (Game **)lua_newuserdata(L, sizeof(Game *));
+      *gameLocation = game;
+
+      luaL_getmetatable(L, LuaGame::MetatableName);
+      lua_setmetatable(L, -2);
+
+      // Scripts can access the Game object through the global variable "game"
+      lua_setglobal(L, "game");
+   }
+
+   /***************************************************************************/
 
    void LuaState::pushLuaValue(LuaValue v, lua_State *L) {
 
