@@ -16,7 +16,6 @@ namespace trogdor { namespace entity {
 
    class LuaEntity {
 
-
       protected:
 
          /*

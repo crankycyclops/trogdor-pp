@@ -13,6 +13,8 @@ extern "C" {
 #include "luatype.h"
 #include "luatable.h"
 
+#include "api/luagame.h"
+
 #include "api/entities/luaentity.h"
 #include "api/entities/luaplace.h"
 #include "api/entities/luaroom.h"
@@ -109,7 +111,10 @@ namespace trogdor {
             // load standard library
             luaL_openlibs(L);
 
-            // register global entity types
+            // register Game type
+            LuaGame::registerLuaType(L);
+
+            // register Entity types
             entity::LuaEntity::registerLuaType(L);
             entity::LuaPlace::registerLuaType(L);
             entity::LuaRoom::registerLuaType(L);
