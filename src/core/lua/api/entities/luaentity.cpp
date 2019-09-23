@@ -26,14 +26,14 @@ namespace trogdor { namespace entity {
 
    // Non-object oriented functions that can't be called with the colon
    // operator or passed an instance of self as the first argument.
-   static const luaL_reg functions[] = {
+   static const luaL_Reg functions[] = {
       {0, 0}
    };
 
    // Lua Entity methods that bind to C++ Entity methods. These should be called
    // with the colon operator or passed an instance of self as the first
    // argument.
-   static const luaL_reg methods[] = {
+   static const luaL_Reg methods[] = {
       {"input",        LuaEntity::in},
       {"out",          LuaEntity::out},
       {"getMeta",      LuaEntity::getMeta},
@@ -59,14 +59,14 @@ namespace trogdor { namespace entity {
 
    /***************************************************************************/
 
-   const luaL_reg *LuaEntity::getFunctions() {
+   const luaL_Reg *LuaEntity::getFunctions() {
 
       return functions;
    }
 
    /***************************************************************************/
 
-   const luaL_reg *LuaEntity::getMethods() {
+   const luaL_Reg *LuaEntity::getMethods() {
 
       return methods;
    }
@@ -81,8 +81,13 @@ namespace trogdor { namespace entity {
       lua_pushvalue(L, -1);
       lua_setfield(L, -2, "__index");
 
-      luaL_register(L, 0, methods);
-      luaL_register(L, MetatableName, functions);
+      // This creates a metatable for operating on userdata (Entity *)
+      LuaState::luaL_register_wrapper(L, 0, methods);
+
+      // This creates a SEPARATE package that just so happens to have the same
+      // name as the metatable which function similar to static class methods in
+      // C++
+      LuaState::luaL_register_wrapper(L, MetatableName, functions);
    }
 
    /***************************************************************************/

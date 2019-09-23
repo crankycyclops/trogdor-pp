@@ -7,10 +7,14 @@ For this project, you'll require the following tools:
 	- GNU Make (if you want to use a different build tool, you're also on your own)
 	- The boost libraries (libboost-all-dev package on Ubuntu)
 	- LibXML2 (libxml2-dev package on Ubuntu)
-	- Lua 5.1 (lua5.1-dev package on Ubuntu)
+	- Lua 5.1+ (lua5.x-dev package on Ubuntu, where 5.x is the version you're compiling against)
+
+By default, trogdor-pp compiles against Lua 5.1, but I've written glue code that enables it to also compile against Lua 5.2+. To set the lua version to something higher than 5.1, just prefix your make command with "LUA_VERSION=5.x".
+
+Build has been tested against Lua 5.1, 5.2, and 5.3.
 
 To install all dependencies in one fell swoop (on Ubuntu 12.04 and up):
-$ apt-get install make g++ libxml2-dev lua5.1-dev libboost-all-dev
+$ apt-get install make g++ libxml2-dev lua5.x-dev libboost-all-dev (where 5.x is your preferred Lua version)
 
 To build a single player wrapper around the core engine, type:
 

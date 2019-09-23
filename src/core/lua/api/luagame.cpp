@@ -11,28 +11,28 @@ namespace trogdor {
 
    // Non-object oriented functions that can't be called with the colon
    // operator or passed an instance of self as the first argument.
-   static const luaL_reg functions[] = {
+   static const luaL_Reg functions[] = {
       {0, 0}
    };
 
    // Lua Game methods that bind to C++ Game methods. These should be called
    // with the colon operator or passed an instance of self as the first
    // argument.
-   static const luaL_reg methods[] = {
+   static const luaL_Reg methods[] = {
       {"getTime", LuaGame::getTime},
       {0, 0}
    };
 
    /***************************************************************************/
 
-   const luaL_reg *LuaGame::getFunctions() {
+   const luaL_Reg *LuaGame::getFunctions() {
 
       return functions;
    }
 
    /***************************************************************************/
 
-   const luaL_reg *LuaGame::getMethods() {
+   const luaL_Reg *LuaGame::getMethods() {
 
       return methods;
    }
@@ -47,8 +47,13 @@ namespace trogdor {
       lua_pushvalue(L, -1);
       lua_setfield(L, -2, "__index");
 
-      luaL_register(L, 0, methods);
-      luaL_register(L, MetatableName, functions);
+      // This creates a metatable for operating on userdata (Game *)
+      LuaState::luaL_register_wrapper(L, 0, methods);
+
+      // This creates a SEPARATE package that just so happens to have the same
+      // name as the metatable which function similar to static class methods in
+      // C++
+      LuaState::luaL_register_wrapper(L, MetatableName, functions);
    }
 
    /***************************************************************************/
@@ -75,7 +80,13 @@ namespace trogdor {
          return luaL_error(L, "Game object is nil");
       }
 
-      lua_pushnumber(L, g->getTime());
+      // Lua 5.3 introduced an integer type
+      #if LUA_VERSION_NUM > 502
+         lua_pushinteger(L, g->getTime());
+      #else
+         lua_pushnumber(L, g->getTime());
+      #endif
+
       return 1;
    }
 }

@@ -17,26 +17,26 @@ namespace trogdor { namespace entity {
 
    // functions that take a Player as an input (new, get, etc.)
    // format of call: Player.new(p), where p is a Player
-   static const luaL_reg functions[] = {
+   static const luaL_Reg functions[] = {
       {0, 0}
    };
 
    // Lua Player methods that bind to C++ Player methods
    // also includes meta methods
-   static const luaL_reg methods[] = {
+   static const luaL_Reg methods[] = {
       {0, 0}
    };
 
    /***************************************************************************/
 
-   const luaL_reg *LuaPlayer::getFunctions() {
+   const luaL_Reg *LuaPlayer::getFunctions() {
 
       return functions;
    }
 
    /***************************************************************************/
 
-   const luaL_reg *LuaPlayer::getMethods() {
+   const luaL_Reg *LuaPlayer::getMethods() {
 
       return methods;
    }
@@ -51,14 +51,14 @@ namespace trogdor { namespace entity {
       lua_pushvalue(L, -1);
       lua_setfield(L, -2, "__index");
 
-      luaL_register(L, 0, LuaEntity::getMethods());
-      luaL_register(L, 0, LuaThing::getMethods());
-      luaL_register(L, 0, LuaBeing::getMethods());
-      luaL_register(L, 0, methods);
-      luaL_register(L, MetatableName, LuaEntity::getFunctions());
-      luaL_register(L, MetatableName, LuaThing::getFunctions());
-      luaL_register(L, MetatableName, LuaBeing::getFunctions());
-      luaL_register(L, MetatableName, functions);
+      LuaState::luaL_register_wrapper(L, 0, LuaEntity::getMethods());
+      LuaState::luaL_register_wrapper(L, 0, LuaThing::getMethods());
+      LuaState::luaL_register_wrapper(L, 0, LuaBeing::getMethods());
+      LuaState::luaL_register_wrapper(L, 0, methods);
+      LuaState::luaL_register_wrapper(L, MetatableName, LuaEntity::getFunctions());
+      LuaState::luaL_register_wrapper(L, MetatableName, LuaThing::getFunctions());
+      LuaState::luaL_register_wrapper(L, MetatableName, LuaBeing::getFunctions());
+      LuaState::luaL_register_wrapper(L, MetatableName, functions);
    }
 
    /***************************************************************************/

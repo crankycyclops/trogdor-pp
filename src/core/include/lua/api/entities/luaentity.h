@@ -26,9 +26,9 @@ namespace trogdor { namespace entity {
                (none)
 
             Output:
-               Methods (luaL_reg[])
+               Methods (luaL_Reg[])
          */
-         static const luaL_reg *getFunctions();
+         static const luaL_Reg *getFunctions();
 
          /*
             Returns all methods to be registered to our Lua wrapper around
@@ -38,9 +38,9 @@ namespace trogdor { namespace entity {
                (none)
 
             Output:
-               Methods (luaL_reg[])
+               Methods (luaL_Reg[])
          */
-         static const luaL_reg *getMethods();
+         static const luaL_Reg *getMethods();
 
       public:
 

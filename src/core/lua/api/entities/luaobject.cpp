@@ -17,26 +17,26 @@ namespace trogdor { namespace entity {
 
    // functions that take an Object as an input (new, get, etc.)
    // format of call: Object.new(e), where e is an Object
-   static const luaL_reg functions[] = {
+   static const luaL_Reg functions[] = {
       {0, 0}
    };
 
    // Lua Object methods that bind to C++ Object methods
    // also includes meta methods
-   static const luaL_reg methods[] = {
+   static const luaL_Reg methods[] = {
       {0, 0}
    };
 
    /***************************************************************************/
 
-   const luaL_reg *LuaObject::getFunctions() {
+   const luaL_Reg *LuaObject::getFunctions() {
 
       return functions;
    }
 
    /***************************************************************************/
 
-   const luaL_reg *LuaObject::getMethods() {
+   const luaL_Reg *LuaObject::getMethods() {
 
       return methods;
    }
@@ -51,12 +51,12 @@ namespace trogdor { namespace entity {
       lua_pushvalue(L, -1);
       lua_setfield(L, -2, "__index");
 
-      luaL_register(L, 0, LuaEntity::getMethods());
-      luaL_register(L, 0, LuaThing::getMethods());
-      luaL_register(L, 0, methods);
-      luaL_register(L, MetatableName, LuaEntity::getFunctions());
-      luaL_register(L, MetatableName, LuaThing::getFunctions());
-      luaL_register(L, MetatableName, functions);
+      LuaState::luaL_register_wrapper(L, 0, LuaEntity::getMethods());
+      LuaState::luaL_register_wrapper(L, 0, LuaThing::getMethods());
+      LuaState::luaL_register_wrapper(L, 0, methods);
+      LuaState::luaL_register_wrapper(L, MetatableName, LuaEntity::getFunctions());
+      LuaState::luaL_register_wrapper(L, MetatableName, LuaThing::getFunctions());
+      LuaState::luaL_register_wrapper(L, MetatableName, functions);
    }
 
    /***************************************************************************/

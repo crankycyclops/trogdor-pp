@@ -161,6 +161,61 @@ namespace trogdor {
       public:
 
          /*
+            Wraps around luaL_register and provides equivalent functionality
+            for Lua versions 5.2+, which deprecated and later removed this
+            function.
+
+            Adapted from this: https://trac.videolan.org/vlc/ticket/14695, which
+            references this:
+            http://lua.2524044.n2.nabble.com/Why-did-luaL-openlib-luaL-register-go-td7649023.html
+
+            Input:
+               Lua state
+               Library name
+               List of functions to register
+         */
+         inline static void luaL_register_wrapper(lua_State *L,
+         const char *libname, const luaL_Reg *l) {
+
+            if (0 == libname) {
+
+               // Lua 5.2+ discourages the use of globals and therefore removed
+               // luaL_register. These function calls accomplish the same thing.
+               // See: http://www.lua.org/manual/5.2/manual.html#8.3
+               #if LUA_VERSION_NUM > 501
+
+                  luaL_setfuncs(L, l, 0);
+
+               #else
+
+                  // Registers methods with metatable at the top of the stack
+                  luaL_register(L, 0, l);
+
+               #endif
+            }
+
+            else {
+
+               #if LUA_VERSION_NUM > 501
+
+                  // lua_setglobal pops the table from the stack, which is why
+                  // we push a copy of it below (so the table remains on the
+                  // stack after, just like the now defunct call to luaL_register.
+                  lua_newtable(L);
+                  luaL_setfuncs(L, l, 0);
+                  lua_pushvalue(L, -1);
+                  lua_setglobal(L, libname);
+
+               #else
+
+                  // See: https://www.lua.org/manual/5.1/manual.html
+                  luaL_register(L, libname, l);
+
+               #endif
+            }
+         }
+
+         /*
             Like luaL_checkudata, except that it accepts an array of possible
             types instead of just one. Shamelessly stolen from:
             http://lua-users.org/lists/lua-l/2007-04/msg00324.html
@@ -217,7 +272,20 @@ namespace trogdor {
                }
 
                luaL_pushresult(&B);
-               luaL_typerror(L, ud, lua_tostring(L, -1));
+
+               #if LUA_VERSION_NUM > 501
+
+                  // Replaces call to luaL_typerror, which died after Lua 5.1
+                  const char *errmsg = lua_pushfstring(L, "%s expected, got %s",
+                     lua_tostring(L, -1), luaL_typename(L, ud));
+                  luaL_argerror(L, ud, errmsg);
+
+               #else
+
+                  luaL_typerror(L, ud, lua_tostring(L, -1));
+
+               #endif
+
                return NULL; /* to avoid warnings */
             }
          }
