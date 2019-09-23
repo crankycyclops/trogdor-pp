@@ -1,4 +1,6 @@
 #include "../../../include/game.h"
+#include "../../../include/iostream/placeout.h"
+
 #include "../../../include/entities/room.h"
 #include "../../../include/lua/api/entities/luaroom.h"
 
@@ -23,6 +25,7 @@ namespace trogdor { namespace entity {
    // functions that take a Room as an input (new, get, etc.)
    // format of call: Room.new(e), where e is a Room
    static const luaL_Reg functions[] = {
+      {"new", LuaRoom::newRoom},
       {"get", LuaRoom::getRoom},
       {0, 0}
    };
@@ -70,6 +73,35 @@ namespace trogdor { namespace entity {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Room **)LuaState::luaL_checkudata_ex(L, i, roomTypes);
+   }
+
+   /***************************************************************************/
+
+   int LuaRoom::newRoom(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (n < 1) {
+         return luaL_error(L, "room name required");
+      }
+
+      // TODO: remove this once instantiating via a class is supported
+      else if (n > 1) {
+         return luaL_error(L, "room class argument not yet supported");
+      }
+
+      string name = luaL_checkstring(L, -1);
+      lua_getglobal(L, LuaGame::globalName);
+      Game *g = LuaGame::checkGame(L, -1);
+
+      // Room does not exist in the game unless it's manually inserted
+      Room *r = new Room(nullptr, name, std::make_unique<PlaceOut>(), g->err().clone());
+
+      // TODO: replace with class name once I support that
+      r->setClass(Entity::typeToStr(entity::ENTITY_ROOM));
+      LuaState::pushEntity(L, r);
+
+      return 1;
    }
 
    /***************************************************************************/

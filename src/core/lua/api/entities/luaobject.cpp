@@ -1,4 +1,6 @@
 #include "../../../include/game.h"
+#include "../../../include/iostream/nullout.h"
+
 #include "../../../include/entities/object.h"
 #include "../../../include/lua/api/entities/luaobject.h"
 
@@ -23,6 +25,7 @@ namespace trogdor { namespace entity {
    // functions that take an Object as an input (new, get, etc.)
    // format of call: Object.new(e), where e is an Object
    static const luaL_Reg functions[] = {
+      {"new", LuaObject::newObject},
       {"get", LuaObject::getObject},
       {0, 0}
    };
@@ -70,6 +73,35 @@ namespace trogdor { namespace entity {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Object **)LuaState::luaL_checkudata_ex(L, i, objectTypes);
+   }
+
+   /***************************************************************************/
+
+   int LuaObject::newObject(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (n < 1) {
+         return luaL_error(L, "object name required");
+      }
+
+      // TODO: remove this once instantiating via a class is supported
+      else if (n > 1) {
+         return luaL_error(L, "object class argument not yet supported");
+      }
+
+      string name = luaL_checkstring(L, -1);
+      lua_getglobal(L, LuaGame::globalName);
+      Game *g = LuaGame::checkGame(L, -1);
+
+      // Object does not exist in the game unless it's manually inserted
+      Object *o = new Object(nullptr, name, std::make_unique<NullOut>(), g->err().clone());
+
+      // TODO: replace with class name once I support that
+      o->setClass(Entity::typeToStr(entity::ENTITY_OBJECT));
+      LuaState::pushEntity(L, o);
+
+      return 1;
    }
 
    /***************************************************************************/

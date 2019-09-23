@@ -73,6 +73,19 @@ namespace trogdor { namespace entity {
          static Room *checkRoom(lua_State *L, int i);
 
          /*
+            Returns a new Room identified by the given name.
+
+            Lua input:
+               Room name (string)
+               TODO: add support for optional second class name argument
+                  (requires classes to be stored outside the instantiator.)
+
+            Lua output:
+               Instance of Room or nil on error
+         */
+         static int newRoom(lua_State *L);
+
+         /*
             Gets the Room from the global game object referenced by the given
             name. If the Room doesn't exist, returns nil.
 

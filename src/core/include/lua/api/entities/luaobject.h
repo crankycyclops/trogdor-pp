@@ -73,6 +73,19 @@ namespace trogdor { namespace entity {
          static Object *checkObject(lua_State *L, int i);
 
          /*
+            Returns a new Object identified by the given name.
+
+            Lua input:
+               Object name (string)
+               TODO: add support for optional second class name argument
+                  (requires classes to be stored outside the instantiator.)
+
+            Lua output:
+               Instance of Object or nil on error
+         */
+         static int newObject(lua_State *L);
+
+         /*
             Gets the Object from the global game object referenced by the given
             name. If the Object doesn't exist, returns nil.
 

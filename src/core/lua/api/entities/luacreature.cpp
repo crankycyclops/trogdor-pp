@@ -1,4 +1,6 @@
 #include "../../../include/game.h"
+#include "../../../include/iostream/nullout.h"
+
 #include "../../../include/entities/creature.h"
 #include "../../../include/lua/api/entities/luacreature.h"
 
@@ -23,6 +25,7 @@ namespace trogdor { namespace entity {
    // functions that take a Creature as an input (new, get, etc.)
    // format of call: Creature.new(e), where e is a Creature
    static const luaL_Reg functions[] = {
+      {"new", LuaCreature::newCreature},
       {"get", LuaCreature::getCreature},
       {0, 0}
    };
@@ -71,6 +74,35 @@ namespace trogdor { namespace entity {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Creature **)LuaState::luaL_checkudata_ex(L, i, creatureTypes);
+   }
+
+   /***************************************************************************/
+
+   int LuaCreature::newCreature(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (n < 1) {
+         return luaL_error(L, "creature name required");
+      }
+
+      // TODO: remove this once instantiating via a class is supported
+      else if (n > 1) {
+         return luaL_error(L, "creature class argument not yet supported");
+      }
+
+      string name = luaL_checkstring(L, -1);
+      lua_getglobal(L, LuaGame::globalName);
+      Game *g = LuaGame::checkGame(L, -1);
+
+      // Creature does not exist in the game unless it's manually inserted
+      Creature *c = new Creature(nullptr, name, std::make_unique<NullOut>(), g->err().clone());
+
+      // TODO: replace if necessary with actual class name once I support that
+      c->setClass(Entity::typeToStr(entity::ENTITY_CREATURE));
+      LuaState::pushEntity(L, c);
+
+      return 1;
    }
 
    /***************************************************************************/
