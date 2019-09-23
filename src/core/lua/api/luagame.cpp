@@ -9,6 +9,10 @@ namespace trogdor {
    // This is the metatable name for our global Lua Game object
    const char *LuaGame::MetatableName = "Game";
 
+   // This is the name of the library that contains functions related to the Lua
+   // Game object
+   const char *LuaGame::PackageName = "Game";
+
    // Non-object oriented functions that can't be called with the colon
    // operator or passed an instance of self as the first argument.
    static const luaL_Reg functions[] = {
@@ -47,13 +51,8 @@ namespace trogdor {
       lua_pushvalue(L, -1);
       lua_setfield(L, -2, "__index");
 
-      // This creates a metatable for operating on userdata (Game *)
       LuaState::luaL_register_wrapper(L, 0, methods);
-
-      // This creates a SEPARATE package that just so happens to have the same
-      // name as the metatable which function similar to static class methods in
-      // C++
-      LuaState::luaL_register_wrapper(L, MetatableName, functions);
+      LuaState::luaL_register_wrapper(L, PackageName, functions);
    }
 
    /***************************************************************************/

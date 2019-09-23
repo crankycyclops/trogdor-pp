@@ -14,6 +14,10 @@ namespace trogdor { namespace entity {
    // The name of the metatable that represents the Place metatable
    const char *LuaPlace::MetatableName = "Place";
 
+   // This is the name of the library that contains functions related to Places
+   // in the game
+   const char *LuaPlace::PackageName = "Place";
+
    // Types which are considered valid by checkPlace()
    static const char *placeTypes[] = {
       "Place",
@@ -61,8 +65,8 @@ namespace trogdor { namespace entity {
 
       LuaState::luaL_register_wrapper(L, 0, LuaEntity::getMethods());
       LuaState::luaL_register_wrapper(L, 0, methods);
-      LuaState::luaL_register_wrapper(L, MetatableName, LuaEntity::getFunctions());
-      LuaState::luaL_register_wrapper(L, MetatableName, functions);
+
+      LuaState::luaL_register_wrapper(L, PackageName, functions);
    }
 
    /***************************************************************************/

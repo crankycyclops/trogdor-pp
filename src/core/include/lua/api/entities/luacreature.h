@@ -50,6 +50,10 @@ namespace trogdor { namespace entity {
          // The name of the metatable that represents the Creature metatable
          static const char *MetatableName;
 
+         // This is the name of the library that contains functions related to
+         // Creatures in the game
+         static const char *PackageName;
+
          /*
             Registers the Creature type and its associated operations in Lua.
          */

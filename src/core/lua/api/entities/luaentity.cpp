@@ -11,6 +11,10 @@ namespace trogdor { namespace entity {
    // The name of the metatable that represents the Entity metatable
    const char *LuaEntity::MetatableName = "Entity";
 
+   // This is the name of the library that contains functions related to
+   // Entities in the game
+   const char *LuaEntity::PackageName = "Entity";
+
    // Types which are considered valid by checkEntity()
    static const char *entityTypes[] = {
       "Entity",
@@ -81,13 +85,8 @@ namespace trogdor { namespace entity {
       lua_pushvalue(L, -1);
       lua_setfield(L, -2, "__index");
 
-      // This creates a metatable for operating on userdata (Entity *)
       LuaState::luaL_register_wrapper(L, 0, methods);
-
-      // This creates a SEPARATE package that just so happens to have the same
-      // name as the metatable which function similar to static class methods in
-      // C++
-      LuaState::luaL_register_wrapper(L, MetatableName, functions);
+      LuaState::luaL_register_wrapper(L, PackageName, functions);
    }
 
    /***************************************************************************/

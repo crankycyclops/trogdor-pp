@@ -48,6 +48,10 @@ namespace trogdor {
          // The name of the metatable that represents our global Lua Game object
          static const char *MetatableName;
 
+         // This is the name of the library that contains functions related to
+         // the Lua Game object
+         static const char *PackageName;
+
          /*
             Registers the Entity type and its associated operations in Lua.
          */

@@ -50,6 +50,10 @@ namespace trogdor { namespace entity {
          // The name of the metatable that represents the Being metatable
          static const char *MetatableName;
 
+         // This is the name of the library that contains functions related to
+         // Beings in the game
+         static const char *PackageName;
+
          /*
             Registers the Being type and its associated operations in Lua.
          */

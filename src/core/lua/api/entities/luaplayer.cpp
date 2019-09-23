@@ -9,6 +9,10 @@ namespace trogdor { namespace entity {
    // The name of the metatable that represents the Player metatable
    const char *LuaPlayer::MetatableName = "Player";
 
+   // This is the name of the library that contains functions related to Players
+   // in the game
+   const char *LuaPlayer::PackageName = "Player";
+
    // Types which are considered valid by checkPlayer()
    static const char *playerTypes[] = {
       "Player",
@@ -55,10 +59,8 @@ namespace trogdor { namespace entity {
       LuaState::luaL_register_wrapper(L, 0, LuaThing::getMethods());
       LuaState::luaL_register_wrapper(L, 0, LuaBeing::getMethods());
       LuaState::luaL_register_wrapper(L, 0, methods);
-      LuaState::luaL_register_wrapper(L, MetatableName, LuaEntity::getFunctions());
-      LuaState::luaL_register_wrapper(L, MetatableName, LuaThing::getFunctions());
-      LuaState::luaL_register_wrapper(L, MetatableName, LuaBeing::getFunctions());
-      LuaState::luaL_register_wrapper(L, MetatableName, functions);
+
+      LuaState::luaL_register_wrapper(L, PackageName, functions);
    }
 
    /***************************************************************************/
