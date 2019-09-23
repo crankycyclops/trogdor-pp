@@ -284,6 +284,18 @@ namespace trogdor { namespace entity {
          inline Game *getGame() {return game;}
 
          /*
+            Should only be called when an Entity created by Lua is later
+            inserted into a running game.
+
+            Input:
+               Game *
+
+            Output:
+               (none)
+         */
+         void setGame(Game *g);
+
+         /*
             Returns the Entity's most specific type.
 
             Input:

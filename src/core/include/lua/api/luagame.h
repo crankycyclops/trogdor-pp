@@ -74,6 +74,20 @@ namespace trogdor {
          static Game *checkGame(lua_State *L, int i);
 
          /*
+            Inserts an Entity created by a Lua script into the game. If an
+            Entity OF ANY TYPE already exists in the game, this function will
+            return boolean false to indicate failure. Otherwise, it will return
+            boolean true to indicate success.
+
+            Lua input:
+               Entity to insert (Entity)
+
+            Lua output:
+               Boolean true if the operation is successful and false if it's not
+         */
+         static int insertEntity(lua_State *L);
+
+         /*
             Lua binding to Game->getTiem().
 
             Lua input:

@@ -671,6 +671,8 @@ namespace trogdor {
                default:
                   throw "Game.insertEntity: Unsupported entity type";
             }
+
+            entity->setGame(this);
          }
 
          /*
@@ -683,6 +685,10 @@ namespace trogdor {
                (none)
          */
          inline void insertEntity(string name, std::shared_ptr<entity::Player> player) {
+
+            if (entities.isset(name)) {
+               throw string("Entity '") + name + "' already exists";
+            }
 
             entities.set(name, player);
             things.set(name, player);
@@ -701,6 +707,10 @@ namespace trogdor {
          */
          inline void insertEntity(string name, std::shared_ptr<entity::Creature> creature) {
 
+            if (entities.isset(name)) {
+               throw string("Entity '") + name + "' already exists";
+            }
+
             entities.set(name, creature);
             things.set(name, creature);
             beings.set(name, creature);
@@ -718,6 +728,10 @@ namespace trogdor {
          */
          inline void insertEntity(string name, std::shared_ptr<entity::Object> object) {
 
+            if (entities.isset(name)) {
+               throw string("Entity '") + name + "' already exists";
+            }
+
             entities.set(name, object);
             things.set(name, object);
             objects.set(name, object);
@@ -733,6 +747,10 @@ namespace trogdor {
                (none)
          */
          inline void insertEntity(string name, std::shared_ptr<entity::Room> room) {
+
+            if (entities.isset(name)) {
+               throw string("Entity '") + name + "' already exists";
+            }
 
             entities.set(name, room);
             places.set(name, room);

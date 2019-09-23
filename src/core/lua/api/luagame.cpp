@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "../../include/game.h"
 #include "../../include/lua/api/luagame.h"
 
@@ -26,6 +28,7 @@ namespace trogdor {
    // with the colon operator or passed an instance of self as the first
    // argument.
    static const luaL_Reg methods[] = {
+      {"insert",  LuaGame::insertEntity},
       {"getTime", LuaGame::getTime},
       {0, 0}
    };
@@ -64,6 +67,31 @@ namespace trogdor {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Game **)luaL_checkudata(L, i, MetatableName);
+   }
+
+   /***************************************************************************/
+
+   int LuaGame::insertEntity(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (2 != n) {
+         return luaL_error(L, "requires entity argument");
+      }
+
+      Game *g = checkGame(L, -2);
+      Entity *e = LuaEntity::checkEntity(L, -1);
+
+      try {
+         g->insertEntity(e->getName(), std::shared_ptr<Entity>(e));
+         lua_pushboolean(L, 1);
+      }
+
+      catch (string error) {
+         lua_pushboolean(L, 0);
+      }
+
+      return 1;
    }
 
    /***************************************************************************/
