@@ -70,6 +70,20 @@ namespace trogdor { namespace entity {
          static Entity *checkEntity(lua_State *L, int i);
 
          /*
+            This method is called by the garbage collector to delete an Entity
+            allocated by a Lua call. This method does nothing if the Entity
+            belongs to a Game (in which case it's a smart pointer and managed
+            outside the scope of Lua.)
+
+            Lua input:
+               The entity to be deleted (Entity)
+
+            Lua output:
+               (none)
+         */
+         static int gcEntity(lua_State *L);
+
+         /*
             Gets the Entity from the global game object referenced by the given
             name. If the Entity doesn't exist, returns nil.
 

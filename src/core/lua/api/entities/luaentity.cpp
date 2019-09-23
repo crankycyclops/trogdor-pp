@@ -62,6 +62,7 @@ namespace trogdor { namespace entity {
       {"observedBy",   LuaEntity::observedBy},
       {"glancedBy",    LuaEntity::glancedBy},
       {"__tostring",   LuaEntity::getName},
+      {"__gc",         LuaEntity::gcEntity},
       {0, 0}
    };
 
@@ -99,6 +100,40 @@ namespace trogdor { namespace entity {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Entity **)LuaState::luaL_checkudata_ex(L, i, entityTypes);
+   }
+
+   /***************************************************************************/
+
+   int LuaEntity::gcEntity(lua_State *L) {
+
+      Entity *e = checkEntity(L, -1);
+
+      // Entity is not owned by a game, so its allocation is managed solely by
+      // Lua and should therefore be subject to garbage collection
+      if (!e->getGame()) {
+
+         // Make sure to call the appropriate destructor
+         switch (e->getType()) {
+
+            case ENTITY_ROOM:
+               delete static_cast<Room *>(e);
+               break;
+
+            case ENTITY_OBJECT:
+               delete static_cast<Object *>(e);
+               break;
+
+            case ENTITY_PLAYER:
+               delete static_cast<Player *>(e);
+               break;
+
+            case ENTITY_CREATURE:
+               delete static_cast<Creature *>(e);
+               break;
+         }
+      }
+
+      return 0;
    }
 
    /***************************************************************************/
