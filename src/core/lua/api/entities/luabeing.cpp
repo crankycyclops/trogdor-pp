@@ -1,3 +1,4 @@
+#include "../../../include/game.h"
 #include "../../../include/entities/being.h"
 #include "../../../include/lua/api/entities/luabeing.h"
 
@@ -24,6 +25,7 @@ namespace trogdor { namespace entity {
    // functions that take a Being as an input (new, get, etc.)
    // format of call: Being.new(e), where e is a Being
    static const luaL_Reg functions[] = {
+      {"get", LuaBeing::getBeing},
       {0, 0}
    };
 
@@ -70,6 +72,25 @@ namespace trogdor { namespace entity {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Being **)LuaState::luaL_checkudata_ex(L, i, beingTypes);
+   }
+
+   /***************************************************************************/
+
+   int LuaBeing::getBeing(lua_State *L) {
+
+      string name = luaL_checkstring(L, -1);
+
+      lua_getglobal(L, LuaGame::globalName);
+      Game *g = LuaGame::checkGame(L, -1);
+
+      try {
+         Being *b = g->getBeing(name);
+         LuaState::pushEntity(L, b);
+      } catch (string error) {
+         lua_pushnil(L);
+      }
+
+      return 1;
    }
 }}
 

@@ -1,3 +1,4 @@
+#include "../../../include/game.h"
 #include "../../../include/entities/creature.h"
 #include "../../../include/lua/api/entities/luacreature.h"
 
@@ -22,6 +23,7 @@ namespace trogdor { namespace entity {
    // functions that take a Creature as an input (new, get, etc.)
    // format of call: Creature.new(e), where e is a Creature
    static const luaL_Reg functions[] = {
+      {"get", LuaCreature::getCreature},
       {0, 0}
    };
 
@@ -69,6 +71,25 @@ namespace trogdor { namespace entity {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Creature **)LuaState::luaL_checkudata_ex(L, i, creatureTypes);
+   }
+
+   /***************************************************************************/
+
+   int LuaCreature::getCreature(lua_State *L) {
+
+      string name = luaL_checkstring(L, -1);
+
+      lua_getglobal(L, LuaGame::globalName);
+      Game *g = LuaGame::checkGame(L, -1);
+
+      try {
+         Creature *c = g->getCreature(name);
+         LuaState::pushEntity(L, c);
+      } catch (string error) {
+         lua_pushnil(L);
+      }
+
+      return 1;
    }
 }}
 

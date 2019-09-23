@@ -1,3 +1,4 @@
+#include "../../../include/game.h"
 #include "../../../include/entities/object.h"
 #include "../../../include/lua/api/entities/luaobject.h"
 
@@ -22,6 +23,7 @@ namespace trogdor { namespace entity {
    // functions that take an Object as an input (new, get, etc.)
    // format of call: Object.new(e), where e is an Object
    static const luaL_Reg functions[] = {
+      {"get", LuaObject::getObject},
       {0, 0}
    };
 
@@ -68,6 +70,25 @@ namespace trogdor { namespace entity {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Object **)LuaState::luaL_checkudata_ex(L, i, objectTypes);
+   }
+
+   /***************************************************************************/
+
+   int LuaObject::getObject(lua_State *L) {
+
+      string name = luaL_checkstring(L, -1);
+
+      lua_getglobal(L, LuaGame::globalName);
+      Game *g = LuaGame::checkGame(L, -1);
+
+      try {
+         Object *o = g->getObject(name);
+         LuaState::pushEntity(L, o);
+      } catch (string error) {
+         lua_pushnil(L);
+      }
+
+      return 1;
    }
 }}
 

@@ -71,6 +71,18 @@ namespace trogdor { namespace entity {
                Being * (or 0 if type doesn't match or doesn't exist)
          */
          static Being *checkBeing(lua_State *L, int i);
+
+         /*
+            Gets the Being from the global game object referenced by the given
+            name. If the Being doesn't exist, returns nil.
+
+            Lua input:
+               Being's name (string)
+
+            Lua output:
+               Being or nil if it doesn't exist
+         */
+         static int getBeing(lua_State *L);
    };
 }}
 

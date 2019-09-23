@@ -1,6 +1,8 @@
 #include "../../../include/game.h"
+
 #include "../../../include/entities/entity.h"
 #include "../../../include/entities/being.h"
+
 #include "../../../include/lua/api/entities/luaentity.h"
 #include "../../../include/lua/api/entities/luabeing.h"
 
@@ -111,7 +113,7 @@ namespace trogdor { namespace entity {
       try {
          Entity *e = g->getEntity(name);
          LuaState::pushEntity(L, e);
-      } catch (string e) {
+      } catch (string error) {
          lua_pushnil(L);
       }
 

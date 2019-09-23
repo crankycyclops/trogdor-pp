@@ -73,6 +73,18 @@ namespace trogdor { namespace entity {
          static Thing *checkThing(lua_State *L, int i);
 
          /*
+            Gets the Thing from the global game object referenced by the given
+            name. If the Thing doesn't exist, returns nil.
+
+            Lua input:
+               Thing's name (string)
+
+            Lua output:
+               Thing or nil if it doesn't exist
+         */
+         static int getThing(lua_State *L);
+
+         /*
             Wraps around Thing::getAliases.
 
             Input:

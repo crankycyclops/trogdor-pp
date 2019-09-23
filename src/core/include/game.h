@@ -394,6 +394,41 @@ namespace trogdor {
          inline auto const entitiesEnd() {return entities.end();}
 
         /*
+            Returns the Place object associated with the specified name. Throws
+            an exception if the Place doesn't exist.
+
+            Input:
+               Name of Place (string)
+
+            Output:
+               Place *
+         */
+         inline Place *getPlace(const string name) {
+
+            if (!things.isset(name)) {
+               stringstream s;
+               s << "Place with name '" << name << "' doesn't exist";
+               throw s.str();
+            }
+
+            return places.get(name);
+         }
+
+         /*
+            Returns a pair of iterators covering all Places in the game. The
+            underline pointers are of type shared_ptr<Entity> and must be cast
+            to shared_ptr<Place> when accessing Place-specific methods.
+
+            Input:
+               (none)
+
+            Output:
+               Places iterator
+         */
+         inline auto const placesBegin() {return places.begin();}
+         inline auto const placesEnd() {return places.end();}
+
+        /*
             Returns the Thing object associated with the specified name. Throws
             an exception if the Thing doesn't exist.
 
@@ -427,6 +462,41 @@ namespace trogdor {
          */
          inline auto const thingsBegin() {return things.begin();}
          inline auto const thingsEnd() {return things.end();}
+
+         /*
+            Returns the Being object associated with the specified being name.
+            Throws an exception if the specified being name doesn't exist.
+
+            Input:
+               Name of being (string)
+
+            Output:
+               Being *
+         */
+         inline Being *getBeing(const string name) {
+
+            if (!beings.isset(name)) {
+               stringstream s;
+               s << "Being with name '" << name << "' doesn't exist";
+               throw s.str();
+            }
+
+            return beings.get(name);
+         }
+
+         /*
+            Returns a pair of iterators covering all Beings in the game. The
+            underline pointers are of type shared_ptr<Entity> and must be cast
+            to shared_ptr<Being> when accessing Being-specific methods.
+
+            Input:
+               (none)
+
+            Output:
+               Beings iterator
+         */
+         inline auto const beingsBegin() {return beings.begin();}
+         inline auto const beingsEnd() {return beings.end();}
 
          /*
             Returns the Player object associated with the specified player name.

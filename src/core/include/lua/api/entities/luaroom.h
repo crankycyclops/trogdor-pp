@@ -71,6 +71,18 @@ namespace trogdor { namespace entity {
                Room * (or 0 if type doesn't match or doesn't exist)
          */
          static Room *checkRoom(lua_State *L, int i);
+
+         /*
+            Gets the Room from the global game object referenced by the given
+            name. If the Room doesn't exist, returns nil.
+
+            Lua input:
+               Room's name (string)
+
+            Lua output:
+               Room or nil if it doesn't exist
+         */
+         static int getRoom(lua_State *L);
    };
 }}
 

@@ -1,3 +1,4 @@
+#include "../../../include/game.h"
 #include "../../../include/entities/room.h"
 #include "../../../include/lua/api/entities/luaroom.h"
 
@@ -22,6 +23,7 @@ namespace trogdor { namespace entity {
    // functions that take a Room as an input (new, get, etc.)
    // format of call: Room.new(e), where e is a Room
    static const luaL_Reg functions[] = {
+      {"get", LuaRoom::getRoom},
       {0, 0}
    };
 
@@ -68,6 +70,25 @@ namespace trogdor { namespace entity {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Room **)LuaState::luaL_checkudata_ex(L, i, roomTypes);
+   }
+
+   /***************************************************************************/
+
+   int LuaRoom::getRoom(lua_State *L) {
+
+      string name = luaL_checkstring(L, -1);
+
+      lua_getglobal(L, LuaGame::globalName);
+      Game *g = LuaGame::checkGame(L, -1);
+
+      try {
+         Room *r = g->getRoom(name);
+         LuaState::pushEntity(L, r);
+      } catch (string error) {
+         lua_pushnil(L);
+      }
+
+      return 1;
    }
 }}
 

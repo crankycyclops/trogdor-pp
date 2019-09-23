@@ -73,6 +73,18 @@ namespace trogdor { namespace entity {
          static Place *checkPlace(lua_State *L, int i);
 
          /*
+            Gets the Place from the global game object referenced by the given
+            name. If the Place doesn't exist, returns nil.
+
+            Lua input:
+               Place's name (string)
+
+            Lua output:
+               Place or nil if it doesn't exist
+         */
+         static int getPlace(lua_State *L);
+
+         /*
             Wraps around Place::insertThing().
 
             Input:

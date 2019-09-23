@@ -1,9 +1,12 @@
 #include <vector>
 
+#include "../../../include/game.h"
+
 #include "../../../include/entities/thing.h"
 #include "../../../include/entities/place.h"
 #include "../../../include/entities/object.h"
 #include "../../../include/entities/being.h"
+
 #include "../../../include/lua/api/entities/luathing.h"
 #include "../../../include/lua/api/entities/luaplace.h"
 
@@ -32,6 +35,7 @@ namespace trogdor { namespace entity {
    // functions that take an Thing as an input (new, get, etc.)
    // format of call: Thing.new(e), where e is an Thing
    static const luaL_Reg functions[] = {
+      {"get", LuaThing::getThing},
       {0, 0}
    };
 
@@ -82,6 +86,25 @@ namespace trogdor { namespace entity {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Thing **)LuaState::luaL_checkudata_ex(L, i, thingTypes);
+   }
+
+   /***************************************************************************/
+
+   int LuaThing::getThing(lua_State *L) {
+
+      string name = luaL_checkstring(L, -1);
+
+      lua_getglobal(L, LuaGame::globalName);
+      Game *g = LuaGame::checkGame(L, -1);
+
+      try {
+         Thing *t = g->getThing(name);
+         LuaState::pushEntity(L, t);
+      } catch (string error) {
+         lua_pushnil(L);
+      }
+
+      return 1;
    }
 
    /***************************************************************************/

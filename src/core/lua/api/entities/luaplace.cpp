@@ -1,3 +1,5 @@
+#include "../../../include/game.h"
+
 #include "../../../include/entities/place.h"
 #include "../../../include/entities/thing.h"
 #include "../../../include/entities/object.h"
@@ -28,6 +30,7 @@ namespace trogdor { namespace entity {
    // functions that take a Place as an input (new, get, etc.)
    // format of call: Place.new(e), where e is a Place
    static const luaL_Reg functions[] = {
+      {"get", LuaPlace::getPlace},
       {0, 0}
    };
 
@@ -75,6 +78,25 @@ namespace trogdor { namespace entity {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Place **)LuaState::luaL_checkudata_ex(L, i, placeTypes);
+   }
+
+   /***************************************************************************/
+
+   int LuaPlace::getPlace(lua_State *L) {
+
+      string name = luaL_checkstring(L, -1);
+
+      lua_getglobal(L, LuaGame::globalName);
+      Game *g = LuaGame::checkGame(L, -1);
+
+      try {
+         Place *p = g->getPlace(name);
+         LuaState::pushEntity(L, p);
+      } catch (string error) {
+         lua_pushnil(L);
+      }
+
+      return 1;
    }
 
    /***************************************************************************/

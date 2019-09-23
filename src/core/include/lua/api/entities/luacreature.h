@@ -71,6 +71,18 @@ namespace trogdor { namespace entity {
                Creature * (or 0 if type doesn't match or doesn't exist)
          */
          static Creature *checkCreature(lua_State *L, int i);
+
+         /*
+            Gets the Creature from the global game object referenced by the given
+            name. If the Creature doesn't exist, returns nil.
+
+            Lua input:
+               Creature's name (string)
+
+            Lua output:
+               Creature or nil if it doesn't exist
+         */
+         static int getCreature(lua_State *L);
    };
 }}
 
