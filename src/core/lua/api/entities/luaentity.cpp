@@ -108,12 +108,11 @@ namespace trogdor { namespace entity {
       lua_getglobal(L, LuaGame::globalName);
       Game *g = LuaGame::checkGame(L, -1);
 
-      Entity *e = g->getEntity(name);
-
-      if (!e) {
-         lua_pushnil(L);
-      } else {
+      try {
+         Entity *e = g->getEntity(name);
          LuaState::pushEntity(L, e);
+      } catch (string e) {
+         lua_pushnil(L);
       }
 
       return 1;
