@@ -29,42 +29,50 @@ namespace trogdor {
 
       try {
 
-         // Entity classes are represented as model Entity objects that can be copied
-         std::unique_ptr<Entity> entity;
-
-         switch (entityType) {
-
-            case entity::ENTITY_ROOM:
-               entity = make_unique<Room>(
-                  game, className, std::make_unique<PlaceOut>(), game->err().clone()
-               );
-               break;
-
-            case entity::ENTITY_OBJECT:
-               entity = make_unique<Object>(
-                  game, className, std::make_unique<NullOut>(), game->err().clone()
-               );
-               break;
-
-            case entity::ENTITY_CREATURE:
-               // TODO: should Creatures have some kind of special input stream?
-               entity = make_unique<Creature>(
-                  game, className, std::make_unique<NullOut>(), game->err().clone()
-               );
-               break;
-
-            case entity::ENTITY_PLAYER:
-               throw string("Class cannot be defined for type Player");
-
-            default:
-               throw string("Runtime::makeEntityClass: class defined for unsupported entity type. This is a bug.");
+         if (entityClassExists(className, entityType)) {
+            throw string("Cannot redefine existing ") + entity::Entity::typeToStr(entityType)
+               + " class '" + className + "'";
          }
 
-         // for type checking
-         entity->setClass(className);
-         entity->setTitle(className);
+         else {
 
-         typeClasses[className] = std::move(entity);
+            // Entity classes are represented as model Entity objects that can be copied
+            std::unique_ptr<Entity> entity;
+
+            switch (entityType) {
+
+               case entity::ENTITY_ROOM:
+                  entity = make_unique<Room>(
+                     game, className, std::make_unique<PlaceOut>(), game->err().clone()
+                  );
+                  break;
+
+               case entity::ENTITY_OBJECT:
+                  entity = make_unique<Object>(
+                     game, className, std::make_unique<NullOut>(), game->err().clone()
+                  );
+                  break;
+
+               case entity::ENTITY_CREATURE:
+                  // TODO: should Creatures have some kind of special input stream?
+                  entity = make_unique<Creature>(
+                     game, className, std::make_unique<NullOut>(), game->err().clone()
+                  );
+                  break;
+
+               case entity::ENTITY_PLAYER:
+                  throw string("Class cannot be defined for type Player");
+
+               default:
+                  throw string("Runtime::makeEntityClass: class defined for unsupported entity type. This is a bug.");
+            }
+
+            // for type checking
+            entity->setClass(className);
+            entity->setTitle(className);
+
+            typeClasses[className] = std::move(entity);
+         }
       }
 
       catch (string error) {
@@ -166,16 +174,12 @@ namespace trogdor {
          std::unique_ptr<Entity> entity;
 
          // Check to see if another entity with the same name already exists
-         try {
-            Entity *existingEntity = game->getEntity(entityName);
-            stringstream s;
-            s << "Cannot define " << existingEntity->getTypeName()
-               << " '" << entityName << "': an entity with that name already exists";
-            throw s.str();
+         if (entityExists(entityName)) {
+            throw string("Cannot redefine existing entity '") + entityName
+               + "'";
          }
 
-         // In this case, an exception is actually a good thing ;)
-         catch (string error) {
+         else {
 
             std::shared_ptr<Entity> entity;
 

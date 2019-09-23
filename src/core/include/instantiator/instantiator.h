@@ -195,6 +195,9 @@ namespace trogdor {
             Creates an entity class that can be used to instantiate one or
             more entities of a specific type.
 
+            IMPORTANT: It is the implementor's responsibility to ensure the
+            uniqueness of the class name per type.
+
             Input:
                Entity class's name (string)
                Entity class type (Room, Creature, or Object.)
@@ -328,6 +331,9 @@ namespace trogdor {
             Instantiates an entity (Room, Creature, or Object.) If a class is
             specified, the entity will be configured according to that class's
             properties.
+
+            IMPORTANT: It is the implementor's responsibility to ensure that no
+            other Entity exists with the same name.
 
             Input:
                Entity's name (string)
