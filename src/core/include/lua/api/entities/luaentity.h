@@ -70,6 +70,18 @@ namespace trogdor { namespace entity {
          static Entity *checkEntity(lua_State *L, int i);
 
          /*
+            Gets the Entity from the global game object referenced by the given
+            name. If the Entity doesn't exist, returns nil.
+
+            Lua input:
+               Entity's name (string)
+
+            Lua output:
+               Entity or nil if it doesn't exist
+         */
+         static int getEntity(lua_State *L);
+
+         /*
             Wraps around an Entity's input stream to read a string, and returns
             that string.
 

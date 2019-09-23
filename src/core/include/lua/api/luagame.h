@@ -52,6 +52,9 @@ namespace trogdor {
          // the Lua Game object
          static const char *PackageName;
 
+         // This is the variable name of the global instance of Game
+         static const char *globalName;
+
          /*
             Registers the Entity type and its associated operations in Lua.
          */

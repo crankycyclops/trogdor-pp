@@ -1,3 +1,4 @@
+#include "../../../include/game.h"
 #include "../../../include/entities/entity.h"
 #include "../../../include/entities/being.h"
 #include "../../../include/lua/api/entities/luaentity.h"
@@ -31,6 +32,7 @@ namespace trogdor { namespace entity {
    // Non-object oriented functions that can't be called with the colon
    // operator or passed an instance of self as the first argument.
    static const luaL_Reg functions[] = {
+      {"get", LuaEntity::getEntity},
       {0, 0}
    };
 
@@ -95,6 +97,26 @@ namespace trogdor { namespace entity {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Entity **)LuaState::luaL_checkudata_ex(L, i, entityTypes);
+   }
+
+   /***************************************************************************/
+
+   int LuaEntity::getEntity(lua_State *L) {
+
+      string name = luaL_checkstring(L, -1);
+
+      lua_getglobal(L, LuaGame::globalName);
+      Game *g = LuaGame::checkGame(L, -1);
+
+      Entity *e = g->getEntity(name);
+
+      if (!e) {
+         lua_pushnil(L);
+      } else {
+         LuaState::pushEntity(L, e);
+      }
+
+      return 1;
    }
 
    /***************************************************************************/

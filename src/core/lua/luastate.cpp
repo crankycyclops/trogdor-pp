@@ -22,7 +22,7 @@ namespace trogdor {
       lua_setmetatable(L, -2);
 
       // Scripts can access the Game object through the global variable "game"
-      lua_setglobal(L, "game");
+      lua_setglobal(L, LuaGame::globalName);
    }
 
    /***************************************************************************/

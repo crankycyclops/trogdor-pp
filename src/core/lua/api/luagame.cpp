@@ -13,6 +13,9 @@ namespace trogdor {
    // Game object
    const char *LuaGame::PackageName = "Game";
 
+   // This is the variable name of the global instance of Game
+   const char *LuaGame::globalName = "game";
+
    // Non-object oriented functions that can't be called with the colon
    // operator or passed an instance of self as the first argument.
    static const luaL_Reg functions[] = {
