@@ -373,9 +373,7 @@ namespace trogdor {
          inline Entity *getEntity(const string name) {
 
             if (!entities.isset(name)) {
-               stringstream s;
-               s << "Entity with name '" << name << "' doesn't exist";
-               throw s.str();
+               return nullptr;
             }
 
             return entities.get(name);
@@ -406,9 +404,7 @@ namespace trogdor {
          inline Place *getPlace(const string name) {
 
             if (!things.isset(name)) {
-               stringstream s;
-               s << "Place with name '" << name << "' doesn't exist";
-               throw s.str();
+               return nullptr;
             }
 
             return places.get(name);
@@ -441,9 +437,7 @@ namespace trogdor {
          inline Thing *getThing(const string name) {
 
             if (!things.isset(name)) {
-               stringstream s;
-               s << "Thing with name '" << name << "' doesn't exist";
-               throw s.str();
+               return nullptr;
             }
 
             return things.get(name);
@@ -476,9 +470,7 @@ namespace trogdor {
          inline Being *getBeing(const string name) {
 
             if (!beings.isset(name)) {
-               stringstream s;
-               s << "Being with name '" << name << "' doesn't exist";
-               throw s.str();
+               return nullptr;
             }
 
             return beings.get(name);
@@ -511,9 +503,7 @@ namespace trogdor {
          inline Player *getPlayer(const string name) {
 
             if (!players.isset(name)) {
-               stringstream s;
-               s << "Player with name '" << name << "' doesn't exist";
-               throw s.str();
+               return nullptr;
             }
 
             return players.get(name);
@@ -546,9 +536,7 @@ namespace trogdor {
          inline Creature *getCreature(const string name) {
 
             if (!creatures.isset(name)) {
-               stringstream s;
-               s << "Creature with name '" << name << "' doesn't exist";
-               throw s.str();
+               return nullptr;
             }
 
             return creatures.get(name);
@@ -581,9 +569,7 @@ namespace trogdor {
          inline Object *getObject(const string name) {
 
             if (!objects.isset(name)) {
-               stringstream s;
-               s << "Object with name '" << name << "' doesn't exist";
-               throw s.str();
+               return nullptr;
             }
 
             return objects.get(name);
@@ -616,9 +602,7 @@ namespace trogdor {
          inline Room *getRoom(const string name) {
 
             if (!rooms.isset(name)) {
-               stringstream s;
-               s << "Room with name '" << name << "' doesn't exist";
-               throw s.str();
+               return nullptr;
             }
 
             return rooms.get(name);

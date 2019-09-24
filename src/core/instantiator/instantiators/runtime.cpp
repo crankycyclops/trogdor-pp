@@ -287,14 +287,7 @@ namespace trogdor {
 
    bool Runtime::entityExists(string entityName) {
 
-      try {
-         game->getEntity(entityName);
-         return true;
-      }
-
-      catch (string e) {
-         return false;
-      }
+      return game->getEntity(entityName) ? true : false;
    }
 
    /***************************************************************************/
@@ -316,13 +309,9 @@ namespace trogdor {
    void Runtime::loadEntityScript(string entityName, string script,
    enum LoadScriptMethod method) {
 
-      entity::Entity *entity;
+      entity::Entity *entity = game->getEntity(entityName);
 
-      try {
-         entity = game->getEntity(entityName);
-      }
-
-      catch (string e) {
+      if (!entity) {
          throw string("Runtime::loadEntityScript: entity '") + entityName + "' does not exist. This is a bug.";
       }
 
@@ -338,13 +327,9 @@ namespace trogdor {
    void Runtime::setEntityEvent(string entityName, string eventName,
    string function) {
 
-      entity::Entity *entity;
+      entity::Entity *entity = game->getEntity(entityName);
 
-      try {
-         entity = game->getEntity(entityName);
-      }
-
-      catch (string e) {
+      if (!entity) {
          throw string("Runtime::setEntityEvent: entity '") + entityName + "' does not exist. This is a bug.";
       }
 
@@ -357,13 +342,9 @@ namespace trogdor {
    void Runtime::setEntityMessage(string entityName, string messageName,
    string message) {
 
-      Entity *entity;
+      Entity *entity = game->getEntity(entityName);
 
-      try {
-         entity = game->getEntity(entityName);
-      }
-
-      catch (string e) {
+      if (!entity) {
          throw entityName + "' does not exist";
       }
 
@@ -660,13 +641,9 @@ namespace trogdor {
       propSetters["player"]["inventory.object"] = [](Game *game, entity::Entity *being,
       string value) {
 
-         Object *object;
+         Object *object = game->getObject(value);
 
-         try {
-            object = game->getObject(value);
-         }
-
-         catch (string error) {
+         if (!object) {
             throw string("object '") + value + "' doesn't exist";
          }
 
@@ -810,16 +787,12 @@ namespace trogdor {
       propSetters["room"]["connection"] = [](Game *game, entity::Entity *room,
       string value) {
 
-         Room *connectToRoom;
-
          string direction = value.substr(0, value.find(":"));
          string connectToName = value.substr(value.find(":") + 1, value.length());
 
-         try {
-            connectToRoom = game->getRoom(connectToName);
-         }
+         Room *connectToRoom = game->getRoom(connectToName);
 
-         catch (string e) {
+         if (!connectToRoom) {
             throw string ("setting ") + room->getName() + "->" + value
                + ": room '" + value + "' does not exist";
          }
@@ -833,13 +806,9 @@ namespace trogdor {
       propSetters["room"]["contains"] = [](Game *game, entity::Entity *room,
       string value) {
 
-         entity::Thing *thing;
+         entity::Thing *thing = game->getThing(value);
 
-         try {
-            thing = game->getThing(value);
-         }
-
-         catch (string error) {
+         if (!thing) {
             throw string("Thing '") + value + "' doesn't exist";
          }
 
