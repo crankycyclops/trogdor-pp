@@ -317,8 +317,8 @@ namespace trogdor {
          }
 
          /*
-            Removes a player from the game.  Throws an exception if the player
-            given by the specified name doesn't exist.
+            Removes a player from the game.  Does nothing if the player with the
+            specified name doesn't exist.
 
             Input:
                Name of player (string)
@@ -329,20 +329,17 @@ namespace trogdor {
          */
          inline void removePlayer(const string name, const string message = "") {
 
-            if (!players.isset(name)) {
-               stringstream s;
-               s << "Player with name '" << name << "' doesn't exist";
-               throw s.str();
-            }
+            if (players.isset(name)) {
 
-            if (message.length()) {
-               players.get(name)->out("notifications") << message << endl;
-            }
+               if (message.length()) {
+                  players.get(name)->out("notifications") << message << endl;
+               }
 
-            entities.erase(name);
-            things.erase(name);
-            beings.erase(name);
-            players.erase(name);
+               entities.erase(name);
+               things.erase(name);
+               beings.erase(name);
+               players.erase(name);
+            }
          }
 
          /*
