@@ -25,7 +25,7 @@ namespace trogdor { namespace event {
       public:
 
          /*
-            Constructor for the LuaEventTrigger class.  Takes as input the name
+            Constructor for the LuaEventTrigger class. Takes as input the name
             of the Lua function to execute and a LuaState object which should
             contain the function.
          */
@@ -36,9 +36,9 @@ namespace trogdor { namespace event {
          }
 
          /*
-            Executes the function specified by the controller.  WARNING: this
-            method will throw a string exception containing an error message if
-            it fails to execute the given Lua function.  Make sure to catch this!
+            Executes the function specified by the controller. WARNING: this
+            method will throw an exception if it fails to execute the given Lua
+            function. Make sure to catch this!
 
             Input:
                list of arguments to pass to the Lua function
