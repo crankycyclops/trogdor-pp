@@ -14,6 +14,8 @@
 #include "place.h"
 #include "object.h"
 
+#include "../exception/undefinedexception.h"
+
 
 namespace trogdor { namespace entity {
 
@@ -37,15 +39,6 @@ namespace trogdor { namespace entity {
 
          static const bool DEFAULT_ATTACKABLE = true;
          static const int DEFAULT_DAMAGE_BARE_HANDS = 5;
-
-         enum takeError {
-            TAKE_TOO_HEAVY,
-            TAKE_UNTAKEABLE
-         };
-
-         enum dropError {
-            DROP_UNDROPPABLE
-         };
 
       protected:
 
@@ -416,9 +409,7 @@ namespace trogdor { namespace entity {
          inline int getAttribute(string key) const {
 
             if (attributes.values.find(key) == attributes.values.end()) {
-               stringstream s;
-               s << "attribute '" << key << "' not set!";
-               throw s.str();
+               throw UndefinedException(string("attribute '") + key + "' not set!");
             }
 
             return attributes.values.find(key)->second;

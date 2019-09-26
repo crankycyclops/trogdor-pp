@@ -24,6 +24,8 @@ extern "C" {
 #include "api/entities/luacreature.h"
 #include "api/entities/luaplayer.h"
 
+#include "../exception/luaexception.h"
+
 
 using namespace std;
 
@@ -56,10 +58,9 @@ namespace trogdor {
       }
 
       // handle errors
-      catch (string error) {
-         cout << error << endl;
+      catch (const LuaException &e) {
+         cout << e.what() << endl;
       }
-
    */
    class LuaState {
 
@@ -494,10 +495,10 @@ namespace trogdor {
 
          /*
             Primes the Lua state by parsing it so that recently added scripts,
-            global variables, etc. will be seen by the interpreter.  This gets
+            global variables, etc. will be seen by the interpreter. This gets
             called automatically by loadScriptFromFile() and
             loadScriptFromString(), but may also be called manually if desired.
-            Throws an exception with a message (string) if there's an error.
+            Throws an exception if there's an error.
 
             Input:
                (none)
@@ -508,8 +509,7 @@ namespace trogdor {
          inline void prime() {
 
             if (lua_pcall(L, 0, 0, 0)) {
-               string s = "error: " + string(lua_tostring(L, -1));
-               throw s;
+               throw LuaException(string("error: ") + lua_tostring(L, -1));
             }
          }
 

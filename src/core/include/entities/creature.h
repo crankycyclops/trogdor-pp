@@ -8,6 +8,7 @@
 #include "being.h"
 
 #include "../iostream/nullin.h"
+#include "../exception/validationexception.h"
 
 
 namespace trogdor { namespace entity {
@@ -280,7 +281,9 @@ namespace trogdor { namespace entity {
          inline void setWanderInterval(int i) {
 
             if (i < 1) {
-               throw "Wander interval must be greater than or equal to 1";
+               throw ValidationException(
+                  "Wander interval must be greater than or equal to 1"
+               );
             }
 
             wanderSettings.interval = i;
@@ -300,7 +303,7 @@ namespace trogdor { namespace entity {
          inline void setWanderLust(double d) {
 
             if (d < 0.0 || d  > 1.0) {
-               throw "Probability must be between 0 and 1";
+               throw ValidationException("Probability must be between 0 and 1");
             }
 
             wanderSettings.wanderlust = d;

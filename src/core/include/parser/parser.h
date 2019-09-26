@@ -17,6 +17,7 @@
 #include "../entities/player.h"
 #include "../lua/luastate.h"
 #include "../instantiator/instantiator.h"
+#include "../exception/undefinedexception.h"
 
 #include "data.h"
 
@@ -88,7 +89,7 @@ namespace trogdor {
                   break;
 
                default:
-                  throw string("Parser::entitySetter: invalid mode. This is a bug.");
+                  throw UndefinedException("Parser::entitySetter: invalid mode. This is a bug.");
             }
          }
 
@@ -122,7 +123,7 @@ namespace trogdor {
                   break;
 
                default:
-                  throw string("Parser::setEntityMessage: invalid parse mode. This is a bug.");
+                  throw UndefinedException("Parser::setEntityMessage: invalid parse mode. This is a bug.");
             }
          }
 
@@ -157,7 +158,7 @@ namespace trogdor {
                   break;
 
                default:
-                  throw string("Parser::loadScript: invalid parse mode. This is a bug.");
+                  throw UndefinedException("Parser::loadScript: invalid parse mode. This is a bug.");
             }
          }
 
@@ -190,7 +191,7 @@ namespace trogdor {
                   break;
 
                default:
-                  throw string("Parser::setEvent: invalid parse mode. This is a bug.");
+                  throw UndefinedException("Parser::setEvent: invalid parse mode. This is a bug.");
             }
          }
 

@@ -10,6 +10,8 @@
 #include "../entities/creature.h"
 #include "../entities/player.h"
 
+#include "../exception/undefinedexception.h"
+
 
 using namespace std;
 
@@ -263,21 +265,27 @@ namespace trogdor {
             string classType;
 
             if (!entityClassExists(className)) {
-               throw string("Instantiator::entityClassSetter: Entity class '")
-                  + className + "' does not exist. This is a bug.";
+               throw UndefinedException(
+                  string("Instantiator::entityClassSetter: Entity class '")
+                  + className + "' does not exist. This is a bug."
+               );
             }
 
             classType = entity::Entity::typeToStr(getEntityClassType(className));
 
             if (entityPropValidators.find(classType) == entityPropValidators.end()) {
-               throw string("Instantiator::entityClassSetter: Setting property ")
-                  + "on Entity with unsupported type. This is a bug.";
+               throw UndefinedException(
+                  string("Instantiator::entityClassSetter: Setting property ")
+                  + "on Entity with unsupported type. This is a bug."
+               );
             }
 
             else if (entityPropValidators[classType].end() ==
             entityPropValidators[classType].find(property)) {
-               throw string("Instantiator::entityClassSetter: Setting unsupported ")
-                  + classType + " property '" + property + "'. This is a bug.";
+               throw UndefinedException(
+                  string("Instantiator::entityClassSetter: Setting unsupported ")
+                  + classType + " property '" + property + "'. This is a bug."
+               );
             }
 
             entityPropValidators[classType][property](value);
@@ -403,22 +411,28 @@ namespace trogdor {
             string entityType;
 
             if (!entityExists(entityName)) {
-               throw string("Instantiator::entitySetter: Entity '") + entityName
-                  + "' does not exist. This is a bug.";
+               throw UndefinedException(
+                  string("Instantiator::entitySetter: Entity '") + entityName
+                  + "' does not exist. This is a bug."
+               );
             }
 
             entityType = entity::Entity::typeToStr(getEntityType(entityName));
 
             if (entityPropValidators.find(entityType) ==
             entityPropValidators.end()) {
-               throw string("Instantiator::entitySetter: Setting property on ")
-                  + "unsupported Entity type. This is a bug.";
+               throw UndefinedException(
+                  string("Instantiator::entitySetter: Setting property on ")
+                  + "unsupported Entity type. This is a bug."
+               );
             }
 
             else if (entityPropValidators[entityType].end() ==
             entityPropValidators[entityType].find(property)) {
-               throw string("Instantiator::entitySetter: Setting unsupported ")
-                  + entityType + " property '" + property + "'. This is a bug.";
+               throw UndefinedException(
+                  string("Instantiator::entitySetter: Setting unsupported ")
+                  + entityType + " property '" + property + "'. This is a bug."
+               );
             }
 
             entityPropValidators[entityType][property](value);
@@ -483,8 +497,10 @@ namespace trogdor {
 
             if (entityPropValidators["player"].end() ==
             entityPropValidators["player"].find(property)) {
-               throw string("Instantiator::defaultPlayerSetter: Setting unsupported ")
-                  + "player property '" + property + "'. This is a bug.";
+               throw UndefinedException(
+                  string("Instantiator::defaultPlayerSetter: Setting unsupported ")
+                  + "player property '" + property + "'. This is a bug."
+               );
             }
 
             entityPropValidators["player"][property](value);
@@ -517,8 +533,10 @@ namespace trogdor {
          inline void gameSetter(string property, string value) {
 
             if (gamePropValidators.end() == gamePropValidators.find(property)) {
-               throw string("Instantiator::gameSetter: Setting unsupported ")
-                  + "game property '" + property + "'. This is a bug.";
+               throw UndefinedException(
+                  string("Instantiator::gameSetter: Setting unsupported ")
+                  + "game property '" + property + "'. This is a bug."
+               );
             }
 
             gamePropValidators[property](value);

@@ -2,6 +2,7 @@
 
 #include "../include/game.h"
 #include "../include/event/eventlistener.h"
+#include "../include/exception/validationexception.h"
 
 
 using namespace std;
@@ -27,7 +28,9 @@ namespace trogdor { namespace entity {
    outStream(std::move(o)), errStream(std::move(e)), inStream(std::move(i)), title(n) {
 
       if (!isNameValid(n)) {
-         throw string("name '") + n + "' is invalid (must contain only letters, numbers, underscores, and dashes.)";
+         throw ValidationException(string("name '") + n
+            + "' is invalid (must contain only letters, numbers, underscores, "
+            + "and dashes.)");
       }
 
       types.push_back(ENTITY_ENTITY);
@@ -44,7 +47,9 @@ namespace trogdor { namespace entity {
    Entity::Entity(const Entity &e, string n) {
 
       if (!isNameValid(n)) {
-         throw string("name '") + n + "' is invalid (must contain only letters, numbers, underscores, and dashes.)";
+         throw ValidationException(string("name '") + n
+            + "' is invalid (must contain only letters, numbers, underscores, "
+            "and dashes.)");
       }
 
       name = n;

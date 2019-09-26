@@ -5,6 +5,8 @@
 #include "../include/iostream/nullin.h"
 #include "../include/iostream/placeout.h"
 
+#include "../include/exception/parseexception.h"
+
 
 using namespace std;
 
@@ -19,7 +21,7 @@ namespace trogdor {
 
       reader = xmlReaderForFile(gameFile.c_str(), NULL, XML_PARSE_NOBLANKS);
       if (NULL == reader) {
-         throw "failed to open " + gameFile + "!\n";
+         throw ParseException("failed to open " + gameFile + "!\n");
       }
    }
 
@@ -34,27 +36,26 @@ namespace trogdor {
 
    void Parser::parse() {
 
-      if (!nextTag()) {
-         throw filename + ": empty XML file";
-      }
-
-      if (0 != getTagName().compare("game")) {
-         throw filename + ": expected <game> (line " +
-            to_string(xmlTextReaderGetParserLineNumber(reader)) + ")";
-      }
-
       try {
+
+         // This has to be inside a try block because if the XML file is
+         // malformatted (like, for example, there being more than one root
+         // element), nextTag() will throw an exception that would otherwise
+         // go uncaught.
+         if (!nextTag()) {
+            throw ParseException(filename + ": empty XML file");
+         }
+
+         else if (0 != getTagName().compare("game")) {
+            throw ParseException("expected <game>");
+         }
+
          parseGame();
       }
 
-      // TODO: When I convert this to a thrown object, set filename and line
-      // number as separate fields, and then what() for that exception type
-      // will automatically append these to the error when it's caught.
-      // I'll need to catch a generic Exception here to make sure I get
-      // everything.
-      catch (string error) {
-         throw filename + ": " + error + " (line " +
-            to_string(xmlTextReaderGetParserLineNumber(reader)) + ")";
+      catch (const Exception &e) {
+         throw ParseException(e.what(), filename,
+            xmlTextReaderGetParserLineNumber(reader));
       }
 
       instantiator->instantiate();
@@ -81,7 +82,7 @@ namespace trogdor {
          }
 
          else {
-            throw string("expected <manifest> or <classes>");
+            throw ParseException("expected <manifest> or <classes>");
          }
       }
 
@@ -121,11 +122,11 @@ namespace trogdor {
          }
 
          else if (0 != getTagName().compare("classes")) {
-            throw string("<classes> must appear before manifest");
+            throw ParseException("<classes> must appear before manifest");
          }
 
          else {
-            throw string("invalid section <") + getTagName() + ">";
+            throw ParseException(string("invalid section <") + getTagName() + ">");
          }
       }
 
@@ -151,7 +152,7 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName() + "> in <classes>";
+            throw ParseException(string("invalid tag <") + getTagName() + "> in <classes>");
          }
       }
 
@@ -169,8 +170,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName()
-               + "> in rooms section of <classes>";
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in rooms section of <classes>");
          }
       }
 
@@ -184,7 +185,7 @@ namespace trogdor {
       string name = getAttribute("class");
 
       if (isClassNameReserved(name)) {
-         throw string("class name '") + name + "' is reserved";
+         throw ParseException(string("class name '") + name + "' is reserved");
       }
 
       instantiator->makeEntityClass(name, entity::ENTITY_ROOM);
@@ -204,8 +205,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName()
-               + "> in objects section of <classes>";
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in objects section of <classes>");
          }
       }
 
@@ -219,7 +220,7 @@ namespace trogdor {
       string name = getAttribute("class");
 
       if (isClassNameReserved(name)) {
-         throw string("class name '") + name + "' is reserved";
+         throw ParseException(string("class name '") + name + "' is reserved");
       }
 
       instantiator->makeEntityClass(name, entity::ENTITY_OBJECT);
@@ -240,8 +241,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName()
-               + "> in creatures section of <classes>";
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in creatures section of <classes>");
          }
       }
 
@@ -255,7 +256,7 @@ namespace trogdor {
       string name = getAttribute("class");
 
       if (isClassNameReserved(name)) {
-         throw string("class name '") + name + "' is reserved";
+         throw ParseException(string("class name '") + name + "' is reserved");
       }
 
       instantiator->makeEntityClass(name, entity::ENTITY_CREATURE);
@@ -285,7 +286,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + tag + "> in <introduction>";
+            throw ParseException(string("invalid tag <") + tag
+               + "> in <introduction>");
          }
       }
 
@@ -335,7 +337,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName() + "> in <synonyms>";
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in <synonyms>");
          }
       }
 
@@ -361,7 +364,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName() + "> in <manifest>";
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in <manifest>");
          }
       }
 
@@ -387,13 +391,13 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName()
-               + "> in rooms section of <manifest>";
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in rooms section of <manifest>");
          }
       }
 
       if (!startExists) {
-         throw string("at least one room named \"start\" is required");
+         throw ParseException("at least one room named \"start\" is required");
       }
 
       checkClosingTag("rooms");
@@ -424,8 +428,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("<") + getTagName() + "> is not an object "
-               + "class in objects section of <manifest>";
+            throw ParseException(string("<") + getTagName()
+               + "> is not an object class in objects section of <manifest>");
          }
       }
 
@@ -456,8 +460,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName()
-               + "> in creatures section of <manifest>";
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in creatures section of <manifest>");
          }
       }
 
@@ -490,7 +494,7 @@ namespace trogdor {
          }
 
          else {
-            throw string("expected <message> in <messages>");
+            throw ParseException("expected <message> in <messages>");
          }
       }
 
@@ -512,7 +516,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName() + "> in <events>";
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in <events>");
          }
       }
 
@@ -531,7 +536,9 @@ namespace trogdor {
          method = Instantiator::FILE;
       }
 
-      catch (string error) {
+      // There's no src attribute, so we're either parsing an inline script or
+      // we're about to encounter an error ;)
+      catch (const ParseException &e) {
          script = parseString();
          method = Instantiator::STRING;
       }
@@ -566,7 +573,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName() + "> in <objects>";
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in <objects>");
          }
       }
 
@@ -578,26 +586,26 @@ namespace trogdor {
    void Parser::parseObject(string className) {
 
       if (!instantiator->entityExists(getAttribute("name"))) {
-         throw string("object '") + getAttribute("name") + "' was not "
-            + "declared in <manifest>";
+         throw ParseException(string("object '") + getAttribute("name")
+            + "' was not declared in <manifest>");
       }
 
       // Make sure entity is an object
       enum entity::EntityType type = instantiator->getEntityType(getAttribute("name"));
 
       if (entity::ENTITY_OBJECT != type) {
-         throw string("object type mismatch: '") + getAttribute("name")
-            + "' is of type " + Entity::typeToStr(type) + ", but was declared in "
-            + "<objects>";
+         throw ParseException(string("object type mismatch: '")
+            + getAttribute("name") + "' is of type " + Entity::typeToStr(type)
+            + ", but was declared in <objects>");
       }
 
       // Make sure object is the correct class
       string entityClass = instantiator->getEntityClass(getAttribute("name"));
 
       if (className != entityClass) {
-         throw string("object type mismatch: '") + getAttribute("name")
-            + "' is of class " + entityClass + ", but was declared in "
-            + "<objects> to be of class " + className;
+         throw ParseException(string("object type mismatch: '")
+            + getAttribute("name") + "' is of class " + entityClass
+            + ", but was declared in <objects> to be of class " + className);
       }
 
       // set the object's default title
@@ -645,8 +653,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + tag
-               + "> in object or object class definition";
+            throw ParseException(string("invalid tag <") + tag
+               + "> in object or object class definition");
          }
       }
    }
@@ -662,7 +670,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName() + "> in <player>";
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in <player>");
          }
       }
 
@@ -706,7 +715,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + tag + "> in default section of <player>";
+            throw ParseException(string("invalid tag <") + tag
+               + "> in default section of <player>");
          }
       }
 
@@ -728,7 +738,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName() + "> in <creatures>";
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in <creatures>");
          }
       }
 
@@ -740,26 +751,26 @@ namespace trogdor {
    void Parser::parseCreature(string className) {
 
       if (!instantiator->entityExists(getAttribute("name"))) {
-         throw string("creature '") + getAttribute("name") + "' was not "
-            + "declared in <manifest>";
+         throw ParseException(string("creature '") + getAttribute("name")
+            + "' was not declared in <manifest>");
       }
 
       // Make sure entity is a creature
       enum entity::EntityType type = instantiator->getEntityType(getAttribute("name"));
 
       if (entity::ENTITY_CREATURE != type) {
-         throw string("creature type mismatch: '") + getAttribute("name")
-            + "' is of type " + Entity::typeToStr(type) + ", but was declared in "
-            + "<creatures>";
+         throw ParseException(string("creature type mismatch: '")
+            + getAttribute("name") + "' is of type " + Entity::typeToStr(type)
+            + ", but was declared in <creatures>");
       }
 
       // Make sure creature is the correct class
       string entityClass = instantiator->getEntityClass(getAttribute("name"));
 
       if (className != entityClass) {
-         throw string("creature type mismatch: '") + getAttribute("name")
-            + "' is of class " + entityClass + ", but was declared in "
-            + "<creatures> to be of class " + className;
+         throw ParseException(string("creature type mismatch: '")
+            + getAttribute("name") + "' is of class " + entityClass
+            + ", but was declared in <creatures> to be of class " + className);
       }
 
       // set the creature's default title and parse the rest of its properties
@@ -829,7 +840,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + tag + "> in creature definition";
+            throw ParseException(string("invalid tag <") + tag
+               + "> in creature definition");
          }
       }
 
@@ -854,7 +866,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName() + "> in <rooms>";
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in <rooms>");
          }
       }
 
@@ -866,26 +879,26 @@ namespace trogdor {
    void Parser::parseRoom(string className) {
 
       if (!instantiator->entityExists(getAttribute("name"))) {
-         throw string("room '") + getAttribute("name") + "' was not "
-            + "declared in <manifest>";
+         throw ParseException(string("room '") + getAttribute("name")
+            + "' was not declared in <manifest>");
       }
 
       // Make sure entity is a room
       enum entity::EntityType type = instantiator->getEntityType(getAttribute("name"));
 
       if (entity::ENTITY_ROOM != type) {
-         throw string("room type mismatch: '") + getAttribute("name")
-            + "' is of type " + Entity::typeToStr(type) + ", but was declared in "
-            + "<rooms>";
+         throw ParseException(string("room type mismatch: '")
+            + getAttribute("name") + "' is of type " + Entity::typeToStr(type)
+            + ", but was declared in <rooms>");
       }
 
       // Make sure room is the correct class
       string entityClass = instantiator->getEntityClass(getAttribute("name"));
 
       if (className != entityClass) {
-         throw string("room type mismatch: '") + getAttribute("name")
-            + "' is of class " + entityClass + ", but was declared in "
-            + "<rooms> to be of type " + className;
+         throw ParseException(string("room type mismatch: '")
+            + getAttribute("name") + "' is of class " + entityClass
+            + ", but was declared in <rooms> to be of type " + className);
       }
 
       // set Room's default title and parse remaining properties
@@ -934,7 +947,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + tag + "> in room or class definition";
+            throw ParseException(string("invalid tag <") + tag
+               + "> in room or class definition");
          }
       }
    }
@@ -961,7 +975,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName() + "> in <rooms>";
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in <rooms>");
          }
 
          checkClosingTag(tag);
@@ -991,8 +1006,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName()
-               + "> in creature autoattack section";
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in creature autoattack section");
          }
       }
 
@@ -1019,8 +1034,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + tag
-               + "> in creature wandering settings";
+            throw ParseException(string("invalid tag <") + tag
+               + "> in creature wandering settings");
          }
       }
 
@@ -1047,7 +1062,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + tag + "> in being respawn section";
+            throw ParseException(string("invalid tag <") + tag
+               + "> in being respawn section");
          }
       }
 
@@ -1074,7 +1090,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + tag + "> in inventory settings";
+            throw ParseException(string("invalid tag <") + tag
+               + "> in inventory settings");
          }
       }
 
@@ -1104,8 +1121,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + tag
-               + "> in default player's inventory settings";
+            throw ParseException(string("invalid tag <") + tag
+               + "> in default player's inventory settings");
          }
       }
 
@@ -1125,7 +1142,8 @@ namespace trogdor {
          }
 
          else {
-            throw string("invalid tag <") + getTagName() + "> in <aliases>";
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in <aliases>");
          }
       }
 
@@ -1144,7 +1162,7 @@ namespace trogdor {
       }
 
       else {
-         throw string("Tag requires a value");
+         throw ParseException("Tag requires a value");
       }
    }
 
@@ -1167,11 +1185,11 @@ namespace trogdor {
 
       // we're supposed to be getting an opening tag
       else if (XML_ELEMENT_NODE != xmlTextReaderNodeType(reader)) {
-         throw string("expected opening tag");
+         throw ParseException("expected opening tag");
       }
 
       if (status < 0) {
-         throw string("unknown error reading ") + filename;
+         throw ParseException(string("unknown error reading ") + filename);
       }
 
       // we've reached the end of the XML file
@@ -1194,7 +1212,7 @@ namespace trogdor {
       attr = (const char *)xmlTextReaderGetAttribute(reader, (xmlChar *)name);
 
       if (!attr) {
-         throw string("missing attribute '") + name;
+         throw ParseException(string("missing attribute '") + name);
       }
 
       return attr;
@@ -1206,11 +1224,11 @@ namespace trogdor {
 
       // get the corresponding #text node for the value
       if (xmlTextReaderRead(reader) < 0) {
-         throw string("Unknown error reading ") + filename;
+         throw ParseException(string("Unknown error reading ") + filename);
       }
 
       else if (0 != strcmp("#text", (const char *)xmlTextReaderConstName(reader))) {
-         throw string("tag must have a value");
+         throw ParseException("tag must have a value");
       }
 
       return (const char *)xmlTextReaderValue(reader);
@@ -1224,7 +1242,7 @@ namespace trogdor {
       if (lastClosedTag.length() > 0) {
 
          if (0 != lastClosedTag.compare(tag)) {
-            throw string("expected closing </") + tag + ">";
+            throw ParseException(string("expected closing </") + tag + ">");
          }
 
          lastClosedTag = "";
@@ -1234,12 +1252,12 @@ namespace trogdor {
       // TODO: skip over XML comments (right now, we'll get an error!)
 
       if (xmlTextReaderRead(reader) < 0) {
-         throw string("Unknown error reading ") + filename;
+         throw ParseException(string("Unknown error reading ") + filename);
       }
 
       else if (XML_ELEMENT_DECL != xmlTextReaderNodeType(reader) ||
       0 != tag.compare(strToLower((const char *)xmlTextReaderConstName(reader)))) {
-         throw string("missing closing </") + tag + ">";
+         throw ParseException(string("missing closing </") + tag + ">");
       }
    }
 }

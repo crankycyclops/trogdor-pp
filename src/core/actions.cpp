@@ -7,6 +7,8 @@
 #include "include/vocabulary.h"
 #include "include/actions.h"
 
+#include "include/exception/beingexception.h"
+
 using namespace std;
 using namespace trogdor::entity;
 
@@ -192,7 +194,7 @@ namespace trogdor {
             thing->observe(player, true, true);
          }
 
-         catch (string name) {
+         catch (const string &name) {
             player->out("display") << "There is no " << name << " here!" << endl;
          }
       }
@@ -252,18 +254,18 @@ namespace trogdor {
                }
             }
 
-            catch (enum Being::takeError error) {
+            catch (const entity::BeingException &e) {
 
                // TODO: consider custom messages
-               switch (error) {
+               switch (e.getErrorCode()) {
 
-                  case Being::TAKE_TOO_HEAVY:
+                  case entity::BeingException::TAKE_TOO_HEAVY:
                      player->out("display") << command->getDirectObject()
                         << " is too heavy.  Try dropping something first."
                         << endl;
                      break;
 
-                  case Being::TAKE_UNTAKEABLE:
+                  case entity::BeingException::TAKE_UNTAKEABLE:
                      player->out("display") << "You can't take that!" << endl;
                      break;
 
@@ -276,7 +278,7 @@ namespace trogdor {
          }
       }
 
-      catch (string name) {
+      catch (const string &name) {
          player->out("display") << "There is no " << name << " here!" << endl;
       }
    }
@@ -332,11 +334,11 @@ namespace trogdor {
             }
          }
 
-         catch (enum Being::dropError error) {
+         catch (const entity::BeingException &e) {
 
-            switch (error) {
+            switch (e.getErrorCode()) {
 
-               case Being::DROP_UNDROPPABLE:
+               case entity::BeingException::DROP_UNDROPPABLE:
                   // TODO: add message for this (named undroppable)
                   player->out("display") << "You can't drop that!" << endl;
                   break;
@@ -349,7 +351,7 @@ namespace trogdor {
          }
       }
 
-      catch (string name) {
+      catch (const string &name) {
          player->out("display") << "You don't have a " << name << "!" << endl;
       }
    }
@@ -498,7 +500,7 @@ namespace trogdor {
                }
             }
 
-            catch (string name) {
+            catch (const string &name) {
                player->out("display") << "You don't have a " << weaponName << "!" << endl;
                return;
             }
@@ -507,7 +509,7 @@ namespace trogdor {
          player->attack(defender, weapon);
       }
 
-      catch (string name) {
+      catch (const string &name) {
          player->out("display") << "There is no " << name << " here!" << endl;
       }
    }

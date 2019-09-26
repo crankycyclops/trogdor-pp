@@ -11,6 +11,8 @@
 #include "../include/iostream/nullin.h"
 #include "../include/iostream/placeout.h"
 
+#include "../include/exception/undefinedexception.h"
+
 
 using namespace std;
 
@@ -126,10 +128,9 @@ namespace trogdor { namespace entity {
 
          default:
 
-            stringstream s;
-            s << "Place::insertThing(): attempting to insert unsupported type "
-               << thing->getType();
-            throw s.str();
+            throw UndefinedException(
+               string("Place::insertThing(): attempting to insert unsupported type '")
+               + thing->getTypeName() + "'");
       }
 
       things.insert(things.end(), thing);
@@ -182,8 +183,9 @@ namespace trogdor { namespace entity {
                break;
 
             default:
-               throw string("RemoveThingByName called on unsupported Entity type '") +
-                  thing->getTypeName() + "'. This is a bug.";
+               throw UndefinedException(
+                  string("RemoveThingByName called on unsupported Entity type '")
+                  + thing->getTypeName() + "'. This is a bug.");
          }
 
          if (thingsByName.find(aliases[i]) != thingsByName.end()) {
@@ -217,10 +219,9 @@ namespace trogdor { namespace entity {
 
          default:
 
-            stringstream s;
-            s << "Place::removeThing(): attempting to remove unsupported type "
-               << thing->getType();
-            throw s.str();
+            throw UndefinedException(
+            string("Place::removeThing(): attempting to remove unsupported type '")
+               + thing->getTypeName() + "'");
       }
 
       things.remove(thing);

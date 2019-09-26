@@ -146,7 +146,7 @@ namespace trogdor { namespace entity {
 
             try {
                return dynamic_cast<Place *>(EntityMap::getSharedPtr(name).get());
-            } catch (bool e) {
+            } catch (const bool &e) {
                return nullptr;
             }
          }
@@ -162,7 +162,7 @@ namespace trogdor { namespace entity {
 
             try {
                return dynamic_cast<Room *>(EntityMap::getSharedPtr(name).get());
-            } catch (bool e) {
+            } catch (const bool &e) {
                return nullptr;
             }
          }
@@ -178,7 +178,7 @@ namespace trogdor { namespace entity {
 
             try {
                return dynamic_cast<Thing *>(EntityMap::getSharedPtr(name).get());
-            } catch (bool e) {
+            } catch (const bool &e) {
                return nullptr;
             }
          }
@@ -194,7 +194,7 @@ namespace trogdor { namespace entity {
 
             try {
                return dynamic_cast<Being *>(EntityMap::getSharedPtr(name).get());
-            } catch (bool e) {
+            } catch (const bool &e) {
                return nullptr;
             }
          }
@@ -210,7 +210,7 @@ namespace trogdor { namespace entity {
 
             try {
                return dynamic_cast<Player *>(EntityMap::getSharedPtr(name).get());
-            } catch (bool e) {
+            } catch (const bool &e) {
                return nullptr;
             }
          }
@@ -226,7 +226,7 @@ namespace trogdor { namespace entity {
 
             try {
                return dynamic_cast<Creature *>(EntityMap::getSharedPtr(name).get());
-            } catch (bool e) {
+            } catch (const bool &e) {
                return nullptr;
             }
          }
@@ -242,7 +242,7 @@ namespace trogdor { namespace entity {
 
             try {
                return dynamic_cast<Object *>(EntityMap::getSharedPtr(name).get());
-            } catch (bool e) {
+            } catch (const bool &e) {
                return nullptr;
             }
          }

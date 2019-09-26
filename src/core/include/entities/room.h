@@ -7,6 +7,8 @@
 #include <unordered_map>
 
 #include "../vocabulary.h"
+#include "../exception/validationexception.h"
+
 #include "place.h"
 
 
@@ -129,9 +131,10 @@ namespace trogdor { namespace entity {
             }
 
             else {
-               s << "error: attempt to connect to Room using invalid direction '"
-                  << direction << "'";
-               throw s.str();
+               throw ValidationException(
+                  string("error: attempt to connect to Room using invalid ")
+                  + "direction '" + direction + "'"
+               );
             }
          }
    };

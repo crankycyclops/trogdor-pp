@@ -5,6 +5,7 @@
 #include "../include/entities/object.h"
 
 #include "../include/game.h"
+#include "../include/exception/beingexception.h"
 
 
 using namespace std;
@@ -181,7 +182,7 @@ namespace trogdor { namespace entity {
             game->event("takeUntakeable", eventArgs);
          }
 
-         throw TAKE_UNTAKEABLE;
+         throw BeingException("", BeingException::TAKE_UNTAKEABLE);
       }
 
       if (!insertIntoInventory(object)) {
@@ -193,7 +194,7 @@ namespace trogdor { namespace entity {
             game->event("takeTooHeavy", eventArgs);
          }
 
-         throw TAKE_TOO_HEAVY;
+         throw BeingException("", BeingException::TAKE_TOO_HEAVY);
       }
 
       else {
@@ -238,7 +239,7 @@ namespace trogdor { namespace entity {
             game->event("dropUndroppable", eventArgs);
          }
 
-         throw DROP_UNDROPPABLE;
+         throw BeingException("", BeingException::DROP_UNDROPPABLE);
       }
 
       location->out("notifications") << getTitle() << " drops "

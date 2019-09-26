@@ -6,6 +6,9 @@
 #include "../include/lua/luastate.h"
 #include "../include/entities/entity.h"
 
+#include "../include/exception/luaexception.h"
+#include "../include/exception/undefinedexception.h"
+
 using namespace std;
 
 namespace trogdor {
@@ -52,11 +55,11 @@ namespace trogdor {
             break;
 
          case LUA_TYPE_FUNCTION:
-            // TODO: add support for function type
+            throw UndefinedException("TODO: add support for function type");
             break;
 
          default:
-            throw "LuaState::pushTable: invalid type: wtf happened...?";
+            throw UndefinedException("LuaState::pushTable: invalid value type");
       }
    }
 
@@ -154,17 +157,17 @@ namespace trogdor {
 
             case LUA_ERRFILE:
                lastErrorMsg = "lua error: could not open " + filename;
-               throw lastErrorMsg;
+               throw LuaException(lastErrorMsg);
                break;
 
             case LUA_ERRSYNTAX:
                lastErrorMsg = filename + ": " + lua_tostring(L, -1);
-               throw lastErrorMsg;
+               throw LuaException(lastErrorMsg);
                break;
 
             case LUA_ERRMEM:
                lastErrorMsg = "lua error: out of memory";
-               throw lastErrorMsg;
+               throw LuaException(lastErrorMsg);
                break;
 
             default:
@@ -195,12 +198,12 @@ namespace trogdor {
             case LUA_ERRSYNTAX:
                lastErrorMsg = "lua error: ";
                lastErrorMsg += lua_tostring(L, -1);
-               throw lastErrorMsg;
+               throw LuaException(lastErrorMsg);
                break;
 
             case LUA_ERRMEM:
                lastErrorMsg = "lua error: out of memory";
-               throw lastErrorMsg;
+               throw LuaException(lastErrorMsg);
                break;
 
             default:
@@ -224,7 +227,7 @@ namespace trogdor {
       // only get ready to execute function if it exists
       if (!lua_isfunction(L, lua_gettop(L))) {
          lastErrorMsg = "function '" + function + "' does not exist";
-         throw lastErrorMsg;
+         throw LuaException(lastErrorMsg);
       }
    }
 
@@ -236,7 +239,7 @@ namespace trogdor {
          lastErrorMsg = "script error: ";
          lastErrorMsg += lua_tostring(L, -1);
          nArgs = 0;
-         throw lastErrorMsg;
+         throw LuaException(lastErrorMsg);
       }
 
       nArgs = 0;

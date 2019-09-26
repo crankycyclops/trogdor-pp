@@ -3,6 +3,9 @@
 #include "../include/instantiator/instantiator.h"
 #include "../include/utility.h"
 
+#include "../include/exception/validationexception.h"
+#include "../include/exception/undefinedexception.h"
+
 using namespace std;
 
 namespace trogdor {
@@ -20,7 +23,7 @@ namespace trogdor {
 
       // TODO: also allow strings "false" and "true"
       if (value != "1" && value != "0") {
-         throw string("value must be 1 for true or 0 for false");
+         throw ValidationException("value must be 1 for true or 0 for false");
       }
    }
 
@@ -29,7 +32,7 @@ namespace trogdor {
    void Instantiator::assertInt(string value) {
 
       if (!isValidInteger(value)) {
-         throw string("value is not a valid integer");
+         throw ValidationException("value is not a valid integer");
       }
    }
 
@@ -38,7 +41,7 @@ namespace trogdor {
    void Instantiator::assertDouble(string value) {
 
       if (!isValidDouble(value)) {
-         throw string("value is not a valid number");
+         throw ValidationException("value is not a valid number");
       }
    }
 
@@ -49,13 +52,13 @@ namespace trogdor {
       string errorMsg = "value is not a valid probability (must be between 0 and 1)";
 
       if (!isValidDouble(value)) {
-         throw errorMsg;
+         throw ValidationException(errorMsg);
       }
 
       double dValue = stod(value);
 
       if (dValue < 0 || dValue > 1) {
-         throw errorMsg;
+         throw ValidationException(errorMsg);
       }
    }
 
@@ -99,7 +102,7 @@ namespace trogdor {
          string metaValue = value.substr(value.find(":") + 1, value.length());
 
          if (!metaKey.length() || !metaValue.length()) {
-            throw ("not a valid meta -> value pair (this is a bug)");
+            throw UndefinedException("not a valid meta -> value pair (this is a bug)");
          }
       };
 
@@ -167,12 +170,11 @@ namespace trogdor {
          string attrValue = value.substr(value.find(":") + 1, value.length());
 
          if (!attr.length() || !attrValue.length()) {
-            throw string("Call to set creature or player attribute is ")
-               + "invalid. This is a bug.";
+            throw UndefinedException("Call to set creature or player attribute is invalid. This is a bug.");
          }
 
          else if (!isValidInteger(attrValue)) {
-            throw string("attribute '") + attr + "' is not a valid integer";
+            throw ValidationException(string("attribute '") + attr + "' is not a valid integer");
          }
       };
 
@@ -192,7 +194,7 @@ namespace trogdor {
             0 == value.compare("neutral") &&
             0 == value.compare("enemy")
          ) {
-            throw string("allegiance should be one of 'friend', 'neutral', or 'enemy.'");
+            throw ValidationException("allegiance should be one of 'friend', 'neutral', or 'enemy.'");
          }
       };
 
@@ -224,7 +226,7 @@ namespace trogdor {
 
          // TODO: also validate that connectToName is a valid Entity name
          if (!direction.length() || !connectToName.length()) {
-            throw string("Invalid room connection. This is a bug.");
+            throw UndefinedException("Invalid room connection. This is a bug.");
          }
       };
 
@@ -273,7 +275,7 @@ namespace trogdor {
          string metaValue = value.substr(value.find(":") + 1, value.length());
 
          if (!metaKey.length() || !metaValue.length()) {
-            throw ("not a valid meta -> value pair (this is a bug)");
+            throw UndefinedException("not a valid meta -> value pair (this is a bug)");
          }
       };
 
@@ -285,7 +287,7 @@ namespace trogdor {
          string action = value.substr(value.find(":") + 1, value.length());
 
          if (!synonym.length() || !action.length()) {
-            throw string("not a valid synonym -> action pair (this is a bug)");
+            throw UndefinedException("not a valid synonym -> action pair (this is a bug)");
          }
       };
    }

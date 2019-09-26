@@ -10,6 +10,8 @@
 #include "../../../include/lua/api/entities/luathing.h"
 #include "../../../include/lua/api/entities/luaplace.h"
 
+#include "../../../include/exception/exception.h"
+
 using namespace std;
 
 namespace trogdor { namespace entity {
@@ -165,8 +167,8 @@ namespace trogdor { namespace entity {
          return 0;
       }
 
-      catch (string error) {
-         return luaL_error(L, error.c_str());
+      catch (const Exception &e) {
+         return luaL_error(L, e.what());
       }
    }
 
@@ -230,8 +232,8 @@ namespace trogdor { namespace entity {
          return 0;
       }
 
-      catch (string error) {
-         return luaL_error(L, error.c_str());
+      catch (const Exception &e) {
+         return luaL_error(L, e.what());
       }
    }
 
@@ -262,8 +264,8 @@ namespace trogdor { namespace entity {
          return 0;
       }
 
-      catch (string error) {
-         return luaL_error(L, error.c_str());
+      catch (const Exception &e) {
+         return luaL_error(L, e.what());
       }
    }
 }}

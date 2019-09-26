@@ -17,6 +17,9 @@
 #include "iostream/trogout.h"
 #include "instantiator/instantiators/runtime.h"
 
+#include "exception/entityexception.h"
+#include "exception/undefinedexception.h"
+
 
 using namespace std;
 
@@ -650,7 +653,7 @@ namespace trogdor {
                   break;
 
                default:
-                  throw "Game.insertEntity: Unsupported entity type";
+                  throw UndefinedException("Game::insertEntity: unsupported entity type");
             }
 
             entity->setGame(this);
@@ -668,7 +671,7 @@ namespace trogdor {
          inline void insertEntity(string name, std::shared_ptr<entity::Player> player) {
 
             if (entities.isset(name)) {
-               throw string("Entity '") + name + "' already exists";
+               throw entity::EntityException(string("Entity '") + name + "' already exists");
             }
 
             entities.set(name, player);
@@ -689,7 +692,7 @@ namespace trogdor {
          inline void insertEntity(string name, std::shared_ptr<entity::Creature> creature) {
 
             if (entities.isset(name)) {
-               throw string("Entity '") + name + "' already exists";
+               throw entity::EntityException(string("Entity '") + name + "' already exists");
             }
 
             entities.set(name, creature);
@@ -710,7 +713,7 @@ namespace trogdor {
          inline void insertEntity(string name, std::shared_ptr<entity::Object> object) {
 
             if (entities.isset(name)) {
-               throw string("Entity '") + name + "' already exists";
+               throw entity::EntityException(string("Entity '") + name + "' already exists");
             }
 
             entities.set(name, object);
@@ -730,7 +733,7 @@ namespace trogdor {
          inline void insertEntity(string name, std::shared_ptr<entity::Room> room) {
 
             if (entities.isset(name)) {
-               throw string("Entity '") + name + "' already exists";
+               throw entity::EntityException(string("Entity '") + name + "' already exists");
             }
 
             entities.set(name, room);

@@ -63,7 +63,7 @@ namespace trogdor {
          }
 
          // check for a dangling preposition, which is a syntax error
-         catch (string preposition) {
+         catch (const string &preposition) {
 
             // Hackety hack: "in" and "out" are also considered to be
             // directions, so they should alternatively be treated like direct

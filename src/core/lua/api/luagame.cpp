@@ -3,6 +3,8 @@
 #include "../../include/game.h"
 #include "../../include/lua/api/luagame.h"
 
+#include "../../include/exception/entityexception.h"
+
 using namespace std;
 
 namespace trogdor {
@@ -87,7 +89,7 @@ namespace trogdor {
          lua_pushboolean(L, 1);
       }
 
-      catch (string error) {
+      catch (const entity::EntityException &e) {
          lua_pushboolean(L, 0);
       }
 

@@ -10,6 +10,10 @@
 #include "../../include/timer/jobs/wander.h"
 #include "../../include/instantiator/instantiators/runtime.h"
 
+#include "../../include/exception/entityexception.h"
+#include "../../include/exception/undefinedexception.h"
+#include "../../include/exception/validationexception.h"
+
 
 using namespace std;
 
@@ -28,8 +32,8 @@ namespace trogdor {
    void Runtime::makeEntityClass(string className, enum entity::EntityType entityType) {
 
       if (entityClassExists(className, entityType)) {
-         throw string("Cannot redefine existing ") + entity::Entity::typeToStr(entityType)
-            + " class '" + className + "'";
+         throw entity::EntityException(string("Cannot redefine existing ") +
+            entity::Entity::typeToStr(entityType) + " class '" + className + "'");
       }
 
       else {
@@ -59,10 +63,10 @@ namespace trogdor {
                break;
 
             case entity::ENTITY_PLAYER:
-               throw string("Class cannot be defined for type Player");
+               throw UndefinedException("Class cannot be defined for type Player");
 
             default:
-               throw string("Runtime::makeEntityClass: class defined for unsupported entity type. This is a bug.");
+               throw UndefinedException("Runtime::makeEntityClass: class defined for unsupported entity type. This is a bug.");
          }
 
          // for type checking
@@ -109,7 +113,7 @@ namespace trogdor {
    enum entity::EntityType Runtime::getEntityClassType(string className) {
 
       if (typeClasses.end() == typeClasses.find(className)) {
-         throw string("Runtime::getEntityClassType: Entity class does not exist");
+         throw UndefinedException("Runtime::getEntityClassType: Entity class does not exist");
       }
 
       return typeClasses[className]->getType();
@@ -121,7 +125,7 @@ namespace trogdor {
    enum LoadScriptMethod method) {
 
       if (typeClasses.end() == typeClasses.find(entityClass)) {
-         throw string("Runtime::loadEntityClassScript: Entity class does not exist");
+         throw UndefinedException("Runtime::loadEntityClassScript: Entity class does not exist");
       }
 
       if (FILE == method) {
@@ -137,7 +141,7 @@ namespace trogdor {
    string function) {
 
       if (typeClasses.end() == typeClasses.find(entityClass)) {
-         throw string("Runtime::setEntityClassEvent: Entity class does not exist");
+         throw UndefinedException("Runtime::setEntityClassEvent: Entity class does not exist");
       }
 
       LuaEventTrigger *trigger = new LuaEventTrigger(function, typeClasses[entityClass].get()->getLuaState());
@@ -150,7 +154,7 @@ namespace trogdor {
    string message) {
 
       if (typeClasses.end() == typeClasses.find(className)) {
-         throw string("Entity class does not exist");
+         throw entity::EntityException("Entity class does not exist");
       }
 
       typeClasses[className]->setMessage(messageName, message);
@@ -166,8 +170,8 @@ namespace trogdor {
 
       // Check to see if another entity with the same name already exists
       if (entityExists(entityName)) {
-         throw Entity::typeToStr(entityType) + ": "
-            + string("Cannot redefine existing entity '") + entityName + "'";
+         throw entity::EntityException(Entity::typeToStr(entityType) + ": "
+            + string("Cannot redefine existing entity '") + entityName + "'");
       }
 
       else {
@@ -192,7 +196,8 @@ namespace trogdor {
                else {
 
                   if (!entityClassExists(className, entity::ENTITY_ROOM)) {
-                     throw string("room class ") + className + " was not defined";
+                     throw entity::EntityException(string("room class ")
+                        + className + " was not defined");
                   }
 
                   else {
@@ -218,7 +223,8 @@ namespace trogdor {
                else {
 
                   if (!entityClassExists(className, entity::ENTITY_OBJECT)) {
-                     throw string("object class ") + className + " was not defined";
+                     throw entity::EntityException(string("object class ")
+                        + className + " was not defined");
                   }
 
                   else {
@@ -245,7 +251,8 @@ namespace trogdor {
                else {
 
                   if (!entityClassExists(className, entity::ENTITY_CREATURE)) {
-                     throw string("creature class ") + className + " was not defined";
+                     throw entity::EntityException(string("creature class ")
+                        + className + " was not defined");
                   }
 
                   else {
@@ -258,10 +265,10 @@ namespace trogdor {
                break;
 
             case entity::ENTITY_PLAYER:
-               throw string("TODO: haven't had a reason to instantiate Player objects yet.");
+               throw UndefinedException("TODO: haven't had a reason to instantiate Player objects yet.");
 
             default:
-               throw string("Runtime::makeEntity: unsupported entity type. This is a bug.");
+               throw UndefinedException("Runtime::makeEntity: unsupported entity type. This is a bug.");
          }
 
          entity->setClass(0 == className.compare("") ? entity->getTypeName() : className);
@@ -298,7 +305,8 @@ namespace trogdor {
       entity::Entity *entity = game->getEntity(entityName);
 
       if (!entity) {
-         throw string("Runtime::loadEntityScript: entity '") + entityName + "' does not exist. This is a bug.";
+         throw UndefinedException(string("Runtime::loadEntityScript: entity '")
+            + entityName + "' does not exist. This is a bug.");
       }
 
       if (FILE == method) {
@@ -316,7 +324,8 @@ namespace trogdor {
       entity::Entity *entity = game->getEntity(entityName);
 
       if (!entity) {
-         throw string("Runtime::setEntityEvent: entity '") + entityName + "' does not exist. This is a bug.";
+         throw UndefinedException(string("Runtime::setEntityEvent: entity '")
+            + entityName + "' does not exist. This is a bug.");
       }
 
       LuaEventTrigger *trigger = new LuaEventTrigger(function, entity->getLuaState());
@@ -331,7 +340,7 @@ namespace trogdor {
       Entity *entity = game->getEntity(entityName);
 
       if (!entity) {
-         throw entityName + "' does not exist";
+         throw entity::EntityException(entityName + "' does not exist");
       }
 
       entity->setMessage(messageName, message);
@@ -630,17 +639,19 @@ namespace trogdor {
          Object *object = game->getObject(value);
 
          if (!object) {
-            throw string("object '") + value + "' doesn't exist";
+            throw entity::EntityException(string("object '") + value
+               + "' doesn't exist");
          }
 
          if (0 != object->getOwner()) {
-            throw string("object '") + value + "' is already owned by '"
-               + object->getOwner()->getName();
+            throw entity::EntityException(string("object '") + value
+               + "' is already owned by '" + object->getOwner()->getName());
          }
 
          else if (0 != object->getLocation()) {
-            throw string("object '") + value + "' was already placed "
-               + "in room '" + object->getLocation()->getName();
+            throw entity::EntityException(string("object '") + value
+               + "' was already placed in room '"
+               + object->getLocation()->getName());
          }
 
          dynamic_cast<entity::Being *>(being)->insertIntoInventory(object, false);
@@ -711,7 +722,7 @@ namespace trogdor {
          }
 
          else {
-            throw string("creature allegiance: must be 'friend', 'neutral' or 'enemy'");
+            throw ValidationException("allegiance must be 'friend', 'neutral' or 'enemy'");
          }
 
          dynamic_cast<entity::Creature *>(creature)->setAllegiance(allegiance);
@@ -779,8 +790,8 @@ namespace trogdor {
          Room *connectToRoom = game->getRoom(connectToName);
 
          if (!connectToRoom) {
-            throw string ("setting ") + room->getName() + "->" + value
-               + ": room '" + value + "' does not exist";
+            throw ValidationException(string("setting ") + room->getName()
+               + "->" + value + ": room '" + value + "' does not exist");
          }
 
          dynamic_cast<entity::Room *>(room)->setConnection(direction, connectToRoom);
@@ -795,7 +806,7 @@ namespace trogdor {
          entity::Thing *thing = game->getThing(value);
 
          if (!thing) {
-            throw string("Thing '") + value + "' doesn't exist";
+            throw ValidationException(string("Thing '") + value + "' doesn't exist");
          }
 
          dynamic_cast<entity::Room *>(room)->insertThing(thing);

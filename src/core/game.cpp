@@ -23,6 +23,8 @@
 #include "include/iostream/nullin.h"
 #include "include/iostream/trogout.h"
 
+#include "include/exception/entityexception.h"
+
 
 using namespace std;
 
@@ -56,12 +58,14 @@ namespace trogdor {
       lastCommand = nullptr;
    }
 
+   /***************************************************************************/
 
    // Empty destructor required here, where parser.h has been included and the
    // parser class has been defined. If I don't include this, the compiler will
    // choke.
    Game::~Game() {}
 
+   /***************************************************************************/
 
    void Game::initActions() {
 
@@ -116,6 +120,7 @@ namespace trogdor {
       actions->setAction("quit", std::make_unique<QuitAction>());
    }
 
+   /***************************************************************************/
 
    // NOTE: order is important!
    // TODO: does it make more sense for these events to be added via the trigger
@@ -127,6 +132,7 @@ namespace trogdor {
       eventListener->add("afterDie", new RespawnEventTrigger());
    }
 
+   /***************************************************************************/
 
    bool Game::initialize(string gameXML) {
 
@@ -135,8 +141,8 @@ namespace trogdor {
          parser->parse();
       }
 
-      catch (string error) {
-         *errStream << error << endl;
+      catch (const Exception &e) {
+         *errStream << e.what() << endl;
          return false;
       }
 
@@ -146,6 +152,7 @@ namespace trogdor {
       return true;
    }
 
+   /***************************************************************************/
 
    void Game::start() {
 
@@ -155,6 +162,7 @@ namespace trogdor {
       resourceMutex.unlock();
    }
 
+   /***************************************************************************/
 
    void Game::stop() {
 
@@ -164,14 +172,15 @@ namespace trogdor {
       resourceMutex.unlock();
    }
 
+   /***************************************************************************/
 
    Player *Game::createPlayer(string name, std::unique_ptr<Trogout> outStream,
    std::unique_ptr<Trogin> inStream, std::unique_ptr<Trogout> errStream) {
 
       if (entities.isset(name)) {
-         stringstream s;
-         s << "Entity with name '" << name << "' already exists";
-         throw s.str();
+         throw entity::EntityException(
+            string("Entity with name '") + name + "' already exists"
+         );
       }
 
       // clone the default player, giving it the specified name
@@ -218,24 +227,28 @@ namespace trogdor {
       return player.get();
    }
 
+   /***************************************************************************/
 
    void Game::insertTimerJob(std::shared_ptr<TimerJob> j) {
 
       timer->insertJob(j);
    }
 
+   /***************************************************************************/
 
    void Game::removeTimerJob(std::shared_ptr<TimerJob> j) {
 
       timer->removeJob(j);
    }
 
+   /***************************************************************************/
 
    unsigned long Game::getTime() const {
 
       return timer->getTime();
    }
 
+   /***************************************************************************/
 
    void Game::processCommand(Player *player) {
 
@@ -292,6 +305,7 @@ namespace trogdor {
       lastCommand = command;
    }
 
+   /***************************************************************************/
 
    void Game::setAction(string verb, std::unique_ptr<Action> action) {
 
