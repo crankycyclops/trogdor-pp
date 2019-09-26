@@ -196,12 +196,6 @@ namespace trogdor {
          instantiator->makeEntityClass(name, entity::ENTITY_ROOM);
       }
 
-      catch (bool e) {
-         s << filename << ": room class '" << name << "' already defined (line "
-            << xmlTextReaderGetParserLineNumber(reader) << ")";
-         throw s.str();
-      }
-
       catch (string e) {
          s << filename << ": " << e << " (line "
             << xmlTextReaderGetParserLineNumber(reader) << ")";
@@ -250,12 +244,6 @@ namespace trogdor {
 
       try {
          instantiator->makeEntityClass(name, entity::ENTITY_OBJECT);
-      }
-
-      catch (bool e) {
-            s << filename << ": object class '" << name << "' already defined (line "
-               << xmlTextReaderGetParserLineNumber(reader) << ")";
-            throw s.str();
       }
 
       catch (string error) {
@@ -307,12 +295,6 @@ namespace trogdor {
 
       try {
          instantiator->makeEntityClass(name, entity::ENTITY_CREATURE);
-      }
-
-      catch (bool e) {
-            s << filename << ": creature class '" << name << "' already defined (line "
-               << xmlTextReaderGetParserLineNumber(reader) << ")";
-            throw s.str();
       }
 
       catch (string e) {
