@@ -27,56 +27,49 @@ namespace trogdor {
 
    void Runtime::makeEntityClass(string className, enum entity::EntityType entityType) {
 
-      try {
-
-         if (entityClassExists(className, entityType)) {
-            throw string("Cannot redefine existing ") + entity::Entity::typeToStr(entityType)
-               + " class '" + className + "'";
-         }
-
-         else {
-
-            // Entity classes are represented as model Entity objects that can be copied
-            std::unique_ptr<Entity> entity;
-
-            switch (entityType) {
-
-               case entity::ENTITY_ROOM:
-                  entity = make_unique<Room>(
-                     game, className, std::make_unique<PlaceOut>(), game->err().clone()
-                  );
-                  break;
-
-               case entity::ENTITY_OBJECT:
-                  entity = make_unique<Object>(
-                     game, className, std::make_unique<NullOut>(), game->err().clone()
-                  );
-                  break;
-
-               case entity::ENTITY_CREATURE:
-                  // TODO: should Creatures have some kind of special input stream?
-                  entity = make_unique<Creature>(
-                     game, className, std::make_unique<NullOut>(), game->err().clone()
-                  );
-                  break;
-
-               case entity::ENTITY_PLAYER:
-                  throw string("Class cannot be defined for type Player");
-
-               default:
-                  throw string("Runtime::makeEntityClass: class defined for unsupported entity type. This is a bug.");
-            }
-
-            // for type checking
-            entity->setClass(className);
-            entity->setTitle(className);
-
-            typeClasses[className] = std::move(entity);
-         }
+      if (entityClassExists(className, entityType)) {
+         throw string("Cannot redefine existing ") + entity::Entity::typeToStr(entityType)
+            + " class '" + className + "'";
       }
 
-      catch (string error) {
-         throw Entity::typeToStr(entityType) + " class: " + error;
+      else {
+
+         // Entity classes are represented as model Entity objects that can be copied
+         std::unique_ptr<Entity> entity;
+
+         switch (entityType) {
+
+            case entity::ENTITY_ROOM:
+               entity = make_unique<Room>(
+                  game, className, std::make_unique<PlaceOut>(), game->err().clone()
+               );
+               break;
+
+            case entity::ENTITY_OBJECT:
+               entity = make_unique<Object>(
+                  game, className, std::make_unique<NullOut>(), game->err().clone()
+               );
+               break;
+
+            case entity::ENTITY_CREATURE:
+               // TODO: should Creatures have some kind of special input stream?
+               entity = make_unique<Creature>(
+                  game, className, std::make_unique<NullOut>(), game->err().clone()
+               );
+               break;
+
+            case entity::ENTITY_PLAYER:
+               throw string("Class cannot be defined for type Player");
+
+            default:
+               throw string("Runtime::makeEntityClass: class defined for unsupported entity type. This is a bug.");
+         }
+
+         // for type checking
+         entity->setClass(className);
+         entity->setTitle(className);
+
+         typeClasses[className] = std::move(entity);
       }
    }
 
