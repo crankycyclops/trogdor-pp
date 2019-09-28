@@ -9,6 +9,7 @@
 #include "include/network/tcpserver.h"
 
 #include "../../core/include/game.h"
+#include "../../core/include/parser/parsers/xmlparser.h"
 #include "../../core/include/iostream/nullout.h"
 
 #define SERVER_PORT 1040 // config that should be moved outside
@@ -61,8 +62,11 @@ int main(int argc, char **argv) {
 	// errors to a file
 	std::shared_ptr<NullOut> errStream = make_shared<NullOut>();
 	std::unique_ptr<trogdor::Game> currentGame = make_unique<trogdor::Game>(errStream);
+	std::unique_ptr<trogdor::XMLParser> parser = make_unique<trogdor::XMLParser>(
+		std::move(currentGame->makeInstantiator())
+	);
 
-	if (currentGame->initialize(gameXML)) {
+	if (currentGame->initialize(parser, gameXML)) {
 		currentGame->start();
 	} else {
 		cerr << "\nFailed to initialize the game :'(\n\n" << endl;
