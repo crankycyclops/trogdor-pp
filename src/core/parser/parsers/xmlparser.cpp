@@ -1,40 +1,35 @@
 #include <memory>
 
-#include "../include/parser/parser.h"
-#include "../include/iostream/nullout.h"
-#include "../include/iostream/nullin.h"
-#include "../include/iostream/placeout.h"
+#include "../../include/iostream/nullout.h"
+#include "../../include/iostream/nullin.h"
+#include "../../include/iostream/placeout.h"
 
-#include "../include/exception/parseexception.h"
-
-
-using namespace std;
+#include "../../include/parser/parsers/xmlparser.h"
+#include "../../include/exception/parseexception.h"
 
 namespace trogdor {
 
 
-   Parser::Parser(std::unique_ptr<Instantiator> i, string gameFile) {
+   XMLParser::~XMLParser() {
 
-      instantiator = std::move(i);
-
-      filename = gameFile;
-
-      reader = xmlReaderForFile(gameFile.c_str(), NULL, XML_PARSE_NOBLANKS);
-      if (NULL == reader) {
-         throw ParseException("failed to open " + gameFile + "!\n");
+      if (reader) {
+         xmlFreeTextReader(reader);
       }
    }
 
    /***************************************************************************/
 
-   Parser::~Parser() {
+   void XMLParser::parse(string filename) {
 
-      xmlFreeTextReader(reader);
-   }
+      if (reader) {
+         xmlFreeTextReader(reader);
+         reader = nullptr;
+      }
 
-   /***************************************************************************/
-
-   void Parser::parse() {
+      reader = xmlReaderForFile(filename.c_str(), NULL, XML_PARSE_NOBLANKS);
+      if (NULL == reader) {
+         throw ParseException("failed to open " + filename + "!\n");
+      }
 
       try {
 
@@ -63,7 +58,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseGame() {
+   void XMLParser::parseGame() {
 
       bool manifestParsed = false;
 
@@ -135,7 +130,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseClasses() {
+   void XMLParser::parseClasses() {
 
       while (nextTag() && 2 == getDepth()) {
 
@@ -161,7 +156,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseClassesRooms() {
+   void XMLParser::parseClassesRooms() {
 
       while (nextTag() && 3 == getDepth()) {
 
@@ -180,7 +175,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseClassesRoom() {
+   void XMLParser::parseClassesRoom() {
 
       string name = getAttribute("class");
 
@@ -196,7 +191,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseClassesObjects() {
+   void XMLParser::parseClassesObjects() {
 
       while (nextTag() && 3 == getDepth()) {
 
@@ -215,7 +210,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseClassesObject() {
+   void XMLParser::parseClassesObject() {
 
       string name = getAttribute("class");
 
@@ -232,7 +227,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseClassesCreatures() {
+   void XMLParser::parseClassesCreatures() {
 
       while (nextTag() && 3 == getDepth()) {
 
@@ -251,7 +246,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseClassesCreature() {
+   void XMLParser::parseClassesCreature() {
 
       string name = getAttribute("class");
 
@@ -268,7 +263,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseIntroduction() {
+   void XMLParser::parseIntroduction() {
 
       static unordered_map<string, string> tagToProperty({
          {"enabled", "introduction.enabled"}, {"pause", "introduction.pause"},
@@ -296,7 +291,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseGameMeta() {
+   void XMLParser::parseGameMeta() {
 
       while (nextTag() && 2 == getDepth()) {
          string key = getTagName();
@@ -310,7 +305,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseEntityMeta(string entityName, enum ParseMode mode, int depth) {
+   void XMLParser::parseEntityMeta(string entityName, enum ParseMode mode, int depth) {
 
       while (nextTag() && depth == getDepth()) {
          string key = getTagName();
@@ -324,7 +319,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseSynonyms() {
+   void XMLParser::parseSynonyms() {
 
       while (nextTag() && 2 == getDepth()) {
 
@@ -347,7 +342,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseManifest() {
+   void XMLParser::parseManifest() {
 
       while (nextTag() && 2 == getDepth()) {
 
@@ -374,7 +369,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseManifestRooms() {
+   void XMLParser::parseManifestRooms() {
 
       bool startExists = false;  // true if room "start" exists
 
@@ -405,7 +400,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   bool Parser::parseManifestRoom(string className) {
+   bool XMLParser::parseManifestRoom(string className) {
 
       string name = getAttribute("name");
       instantiator->makeEntity(name, entity::ENTITY_ROOM, className);
@@ -415,7 +410,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseManifestObjects() {
+   void XMLParser::parseManifestObjects() {
 
       while (nextTag() && 3 == getDepth()) {
 
@@ -438,7 +433,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseManifestObject(string className) {
+   void XMLParser::parseManifestObject(string className) {
 
       string name = getAttribute("name");
       instantiator->makeEntity(name, entity::ENTITY_OBJECT, className);
@@ -447,7 +442,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseManifestCreatures() {
+   void XMLParser::parseManifestCreatures() {
 
       while (nextTag() && 3 == getDepth()) {
 
@@ -470,7 +465,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseManifestCreature(string className) {
+   void XMLParser::parseManifestCreature(string className) {
 
       string name = getAttribute("name");
       instantiator->makeEntity(name, entity::ENTITY_CREATURE, className);
@@ -479,7 +474,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseMessages(string entityName, enum ParseMode mode, int depth) {
+   void XMLParser::parseMessages(string entityName, enum ParseMode mode, int depth) {
 
       while (nextTag() && depth == getDepth()) {
 
@@ -503,7 +498,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseEvents(string entityName, enum ParseMode mode, int depth) {
+   void XMLParser::parseEvents(string entityName, enum ParseMode mode, int depth) {
 
       while (nextTag() && depth == getDepth()) {
 
@@ -526,7 +521,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseScript(string entityName, enum ParseMode mode) {
+   void XMLParser::parseScript(string entityName, enum ParseMode mode) {
 
       string script;
       enum Instantiator::LoadScriptMethod method;
@@ -549,7 +544,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseEvent(string entityName, enum ParseMode mode) {
+   void XMLParser::parseEvent(string entityName, enum ParseMode mode) {
 
       string name = getAttribute("name");
       string function = parseString();
@@ -560,7 +555,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseObjects() {
+   void XMLParser::parseObjects() {
 
       while (nextTag() && 2 == getDepth()) {
 
@@ -583,7 +578,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseObject(string className) {
+   void XMLParser::parseObject(string className) {
 
       if (!instantiator->entityExists(getAttribute("name"))) {
          throw ParseException(string("object '") + getAttribute("name")
@@ -618,7 +613,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseObjectProperties(string name, enum ParseMode mode, int depth) {
+   void XMLParser::parseObjectProperties(string name, enum ParseMode mode, int depth) {
 
       static unordered_map<string, string> tagToProperty({
          {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"},
@@ -661,7 +656,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parsePlayer() {
+   void XMLParser::parsePlayer() {
 
       while (nextTag() && 2 == getDepth()) {
 
@@ -680,7 +675,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseDefaultPlayer() {
+   void XMLParser::parseDefaultPlayer() {
 
       static unordered_map<string, string> tagToProperty({
          {"alive", "alive"}, {"health", "health"}, {"maxhealth", "maxhealth"},
@@ -725,7 +720,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseCreatures() {
+   void XMLParser::parseCreatures() {
 
       while (nextTag() && 2 == getDepth()) {
 
@@ -748,7 +743,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseCreature(string className) {
+   void XMLParser::parseCreature(string className) {
 
       if (!instantiator->entityExists(getAttribute("name"))) {
          throw ParseException(string("creature '") + getAttribute("name")
@@ -781,7 +776,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseCreatureProperties(string name, enum ParseMode mode, int depth) {
+   void XMLParser::parseCreatureProperties(string name, enum ParseMode mode, int depth) {
 
       bool counterAttackParsed = false;
 
@@ -853,7 +848,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseRooms() {
+   void XMLParser::parseRooms() {
 
       while (nextTag() && 2 == getDepth()) {
 
@@ -876,7 +871,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseRoom(string className) {
+   void XMLParser::parseRoom(string className) {
 
       if (!instantiator->entityExists(getAttribute("name"))) {
          throw ParseException(string("room '") + getAttribute("name")
@@ -909,7 +904,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseRoomProperties(string name, enum ParseMode mode, int depth) {
+   void XMLParser::parseRoomProperties(string name, enum ParseMode mode, int depth) {
 
       static unordered_map<string, string> tagToProperty({
          {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"}
@@ -955,7 +950,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseRoomConnection(string direction, string roomName,
+   void XMLParser::parseRoomConnection(string direction, string roomName,
    string connectTo, enum ParseMode mode) {
 
       entitySetter(roomName, "connection", direction + ":" + connectTo, mode);
@@ -964,7 +959,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseRoomContains(string roomName, enum ParseMode mode) {
+   void XMLParser::parseRoomContains(string roomName, enum ParseMode mode) {
 
       while (nextTag() && 4 == getDepth()) {
 
@@ -987,7 +982,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseCreatureAutoAttack(string creatureName, enum ParseMode mode,
+   void XMLParser::parseCreatureAutoAttack(string creatureName, enum ParseMode mode,
    int depth) {
 
       static unordered_map<string, string> tagToProperty({
@@ -1016,7 +1011,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseCreatureWandering(string creatureName, enum ParseMode mode) {
+   void XMLParser::parseCreatureWandering(string creatureName, enum ParseMode mode) {
 
       static unordered_map<string, string> tagToProperty({
          {"enabled", "wandering.enabled"}, {"interval", "wandering.interval"},
@@ -1044,7 +1039,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseBeingRespawn(string beingName, enum ParseMode mode, int depth) {
+   void XMLParser::parseBeingRespawn(string beingName, enum ParseMode mode, int depth) {
 
       static unordered_map<string, string> tagToProperty({
          {"enabled", "respawn.enabled"}, {"interval", "respawn.interval"},
@@ -1072,7 +1067,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseBeingInventory(string beingName, enum ParseMode mode,
+   void XMLParser::parseBeingInventory(string beingName, enum ParseMode mode,
    bool allowObjects) {
 
       static unordered_map<string, string> tagToProperty({
@@ -1100,7 +1095,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseBeingAttributes(string beingName, enum ParseMode mode) {
+   void XMLParser::parseBeingAttributes(string beingName, enum ParseMode mode) {
 
       while (nextTag() && 4 == getDepth()) {
 
@@ -1131,7 +1126,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::parseThingAliases(string entityName, enum ParseMode mode, int depth) {
+   void XMLParser::parseThingAliases(string entityName, enum ParseMode mode, int depth) {
 
       while (nextTag() && depth == getDepth()) {
 
@@ -1152,7 +1147,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   string Parser::parseString() {
+   string XMLParser::parseString() {
 
       string value = getNodeValue();
       value = trim(value);
@@ -1168,7 +1163,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   bool Parser::nextTag() {
+   bool XMLParser::nextTag() {
 
       int status = xmlTextReaderRead(reader);
 
@@ -1189,7 +1184,7 @@ namespace trogdor {
       }
 
       if (status < 0) {
-         throw ParseException(string("unknown error reading ") + filename);
+         throw ParseException("unknown error when getting next tag");
       }
 
       // we've reached the end of the XML file
@@ -1205,7 +1200,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   string Parser::getAttribute(const char *name) {
+   string XMLParser::getAttribute(const char *name) {
 
       const char *attr;
 
@@ -1220,11 +1215,11 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   const char *Parser::getNodeValue() {
+   const char *XMLParser::getNodeValue() {
 
       // get the corresponding #text node for the value
       if (xmlTextReaderRead(reader) < 0) {
-         throw ParseException(string("Unknown error reading ") + filename);
+         throw ParseException("Unknown error when getting current node's value");
       }
 
       else if (0 != strcmp("#text", (const char *)xmlTextReaderConstName(reader))) {
@@ -1236,7 +1231,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Parser::checkClosingTag(string tag) {
+   void XMLParser::checkClosingTag(string tag) {
 
       // check to see if nextTag() encountered a closing tag
       if (lastClosedTag.length() > 0) {
@@ -1252,7 +1247,7 @@ namespace trogdor {
       // TODO: skip over XML comments (right now, we'll get an error!)
 
       if (xmlTextReaderRead(reader) < 0) {
-         throw ParseException(string("Unknown error reading ") + filename);
+         throw ParseException(string("Unknown error when checking closing tag </") + tag + ">");
       }
 
       else if (XML_ELEMENT_DECL != xmlTextReaderNodeType(reader) ||

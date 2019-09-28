@@ -9,6 +9,7 @@
 #include <cstdlib>
 
 #include "../core/include/game.h"
+#include "../core/include/parser/parsers/xmlparser.h"
 
 #include "include/streamout.h"
 #include "include/streamin.h"
@@ -37,14 +38,23 @@ int main(int argc, char **argv) {
       make_unique<StreamOut>(&cerr)
    );
 
+   // The client can either choose from a parser type that's been implemented in
+   // core or from a custom class that inherits from trogdor::Parser. Meanwhile,
+   // the Game object is responsible for choosing an implementation of
+   // trogdor::Instantiator.
+   std::unique_ptr<trogdor::XMLParser> parser = make_unique<trogdor::XMLParser>(
+      std::move(currentGame->makeInstantiator())
+   );
+
    // The client can add its own synonyms for built-in verbs
    currentGame->setSynonym("escape", "quit");
 
    // The client can also write and set its own custom game actions
    currentGame->setAction("time", std::make_unique<TimeAction>());
 
-   if (currentGame->initialize(gameXML)) {
+   if (currentGame->initialize(parser.get(), gameXML)) {
 
+      // Demonstrates the retrieval of Game metadata
 	  string title = currentGame->getMeta("title");
 	  string author = currentGame->getMeta("author");
 

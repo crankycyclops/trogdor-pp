@@ -39,9 +39,10 @@ namespace trogdor {
       game-related data.  A standard lifecycle of a game object--assuming it
       exists in main()--might look something like:
 
-      Game currentGame = std::make_unique<Game>();
+      // errStream's type = std::unique_ptr<StreamOut>
+      Game currentGame = std::make_unique<Game>(errStream);
 
-      currentGame->initialize();
+      currentGame->initialize(Parser *parser, string gameFile);
       currentGame->start();
 
       while (currentGame->inProgress()) {
@@ -71,9 +72,6 @@ namespace trogdor {
 
          // whether or not a game is in progress
          bool inGame;
-
-         // parses game.xml and constructs entities
-         std::unique_ptr<Parser> parser;
 
          // maps verbs to actions
          std::unique_ptr<ActionMap> actions;
@@ -164,9 +162,25 @@ namespace trogdor {
 
          /*
             Empty destructor defined in game.cpp. If this isn't defined, the
-            compiler will choke on the parser's unique_ptr.
+            compiler will choke (God knows why.) In unique_ptr.h, I get this
+            error message from GCC: error: invalid application of ‘sizeof’ to
+            incomplete type 'trogdor::ActionMap'.
          */
          ~Game();
+
+         /*
+            Returns an instance of the Runtime instantiator.
+
+            Input:
+               (none)
+
+            Output:
+               New instance of Runtime instantiator (std::unique_ptr<Runtime>)
+         */
+         inline std::unique_ptr<Runtime> makeInstantiator() {
+
+            return make_unique<Runtime>(this);
+         }
 
          /*
             Returns a reference to Game instance's LuaState object. This should
@@ -305,8 +319,8 @@ namespace trogdor {
          inline void setIntroductionText(string t) {introduction.text = t;}
 
          /*
-            Gets the default player. Used by Parser to initialize settings for
-            default player as defined in game.xml.
+            Gets the default player. Used to initialize default settings for
+            new players.
 
             Input:
                (none)
@@ -745,10 +759,14 @@ namespace trogdor {
             Initializes the game, including the event handler, timer and all game
             entities.
 
-            Input: Game definition XML file (default is game.xml)
-            Output: True if initialization was successful and false if not.
+            Input:
+               Pointer to an instance of Parser (Parser *)
+               Game definition filename (string)
+
+            Output:
+               True if initialization was successful and false if not (bool)
          */
-         bool initialize(string gameXML = "game.xml");
+         bool initialize(Parser *parser, string gamefile);
 
          /*
             Puts the game into a running state. In a running state, the timer is

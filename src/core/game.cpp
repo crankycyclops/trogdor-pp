@@ -33,36 +33,42 @@ namespace trogdor {
 
    Game::Game(std::unique_ptr<Trogout> e) {
 
-      errStream = std::move(e);
+      try {
 
-      inGame = false;
-      actions = make_unique<ActionMap>(this);
-      timer = make_unique<Timer>(this);
-      events = make_unique<event::EventHandler>();
+         errStream = std::move(e);
 
-      introduction.enabled           = DEFAULT_INTRODUCTION_ENABLED;
-      introduction.pauseWhileReading = DEFAULT_INTRODUCTION_PAUSE;
-      introduction.text              = "";
+         inGame = false;
+         actions = make_unique<ActionMap>(this);
+         timer = make_unique<Timer>(this);
+         events = make_unique<event::EventHandler>();
 
-      defaultPlayer = make_unique<entity::Player>(
-         this,
-         "default",
-         make_unique<NullOut>(),
-         make_unique<NullIn>(),
-         make_unique<NullOut>()
-      );
+         introduction.enabled           = DEFAULT_INTRODUCTION_ENABLED;
+         introduction.pauseWhileReading = DEFAULT_INTRODUCTION_PAUSE;
+         introduction.text              = "";
 
-      L = std::make_shared<LuaState>(this);
-      eventListener = std::make_unique<event::EventListener>();
+         defaultPlayer = make_unique<entity::Player>(
+            this,
+            "default",
+            make_unique<NullOut>(),
+            make_unique<NullIn>(),
+            make_unique<NullOut>()
+         );
 
-      lastCommand = nullptr;
+         L = std::make_shared<LuaState>(this);
+         eventListener = std::make_unique<event::EventListener>();
+
+         lastCommand = nullptr;
+      }
+
+      catch (const Exception &e) {
+         *errStream << e.what() << endl;
+      }
    }
 
    /***************************************************************************/
 
-   // Empty destructor required here, where parser.h has been included and the
-   // parser class has been defined. If I don't include this, the compiler will
-   // choke.
+   // Empty destructor required here (if I don't include this, the compiler will
+   // choke.)
    Game::~Game() {}
 
    /***************************************************************************/
@@ -134,11 +140,10 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   bool Game::initialize(string gameXML) {
+   bool Game::initialize(Parser *parser, string gamefile) {
 
       try {
-         parser = make_unique<Parser>(make_unique<Runtime>(this), gameXML);
-         parser->parse();
+         parser->parse(gamefile);
       }
 
       catch (const Exception &e) {
