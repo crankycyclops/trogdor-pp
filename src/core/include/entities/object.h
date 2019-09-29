@@ -20,13 +20,15 @@ namespace trogdor { namespace entity {
          // This tag determines whether or not an Object is a weapon
          static const char *WeaponTag;
 
+         // This tag determines whether or not an Object is untakeable
+         static const char *UntakeableTag;
+
+         // This tag determines whether or not an Object is undroppable
+         static const char *UndroppableTag;
+
          static const bool DEFAULT_IS_WEAPON = false;
          static const int  DEFAULT_DAMAGE = 1;
          static const int DEFAULT_WEIGHT = 0;
-
-         // by default, a Being can take and drop the Object
-         static const bool DEFAULT_TAKEABLE = true;
-         static const bool DEFAULT_DROPPABLE = true;
 
       private:
 
@@ -52,9 +54,6 @@ namespace trogdor { namespace entity {
          int weight;       // how much weight Object uses in a Being's inventory
          int damage;       // how much damage Object does if it's a weapon
 
-         bool takeable;    // whether or not a Being can take the Object
-         bool droppable;   // whether or not a Being can drop the Object
-
       public:
 
          /*
@@ -64,8 +63,7 @@ namespace trogdor { namespace entity {
          inline Object(Game *g, string n, std::unique_ptr<Trogout> o,
          std::unique_ptr<Trogout> e): Thing(g, n, std::move(o),
          std::make_unique<NullIn>(), std::move(e)), owner(nullptr),
-         weight(DEFAULT_WEIGHT), takeable(DEFAULT_TAKEABLE),
-         droppable(DEFAULT_DROPPABLE), damage(DEFAULT_DAMAGE) {
+         weight(DEFAULT_WEIGHT), damage(DEFAULT_DAMAGE) {
 
             if (DEFAULT_IS_WEAPON) {
                setTag(WeaponTag);
@@ -82,8 +80,6 @@ namespace trogdor { namespace entity {
 
             owner = o.owner;
             weight = o.weight;
-            takeable = o.takeable;
-            droppable = o.droppable;
             damage = o.damage;
          }
 
@@ -109,28 +105,6 @@ namespace trogdor { namespace entity {
                The weight (int)
          */
          inline int getWeight() {return weight;}
-
-         /*
-            Returns whether or not the Object can be taken.
-
-            Input:
-               (none)
-
-            Output:
-               bool
-         */
-         inline bool getTakeable() {return takeable;}
-
-         /*
-            Returns whether or not the Object can be dropped.
-
-            Input:
-               (none)
-
-            Output:
-               bool
-         */
-         inline bool getDroppable() {return droppable;}
 
          /*
             Returns damage Object does if it's a weapon, measured in hit points.
@@ -165,29 +139,6 @@ namespace trogdor { namespace entity {
                (none)
          */
          inline void setWeight(int w) {weight = w;}
-
-
-         /*
-            Sets whether or not a Being can take the object.
-
-            Input:
-               bool
-
-            Output:
-               (none)
-         */
-         inline void setTakeable(bool t) {takeable = t;}
-
-         /*
-            Sets whether or not a Being can drop the object.
-
-            Input:
-               bool
-
-            Output:
-               (none)
-         */
-         inline void setDroppable(bool d) {droppable = d;}
 
          /*
             Wraps around Entity::setTag to see if any object-specific behavior

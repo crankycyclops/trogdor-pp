@@ -246,12 +246,6 @@ namespace trogdor {
       // An Object's weight
       entityPropValidators["object"]["weight"] = assertInt;
 
-      // Whether or not an Object can be taken
-      entityPropValidators["object"]["takeable"] = assertBool;
-
-      // Whether or not an Object can be dropped
-      entityPropValidators["object"]["droppable"] = assertBool;
-
       // How much damage the Object inflicts if it's a weapon
       entityPropValidators["object"]["damage"] = assertInt;
    }

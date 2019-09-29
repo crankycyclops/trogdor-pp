@@ -173,7 +173,7 @@ namespace trogdor { namespace entity {
          }
       }
 
-      if (checkUntakeable && !object->getTakeable()) {
+      if (checkUntakeable && object->isTagSet(Object::UntakeableTag)) {
 
          if (doEvents) {
             game->setupEventHandler();
@@ -230,7 +230,7 @@ namespace trogdor { namespace entity {
          }
       }
 
-      if (checkUndroppable && !object->getDroppable()) {
+      if (checkUndroppable && object->isTagSet(Object::UndroppableTag)) {
 
          if (doEvents) {
             game->setupEventHandler();

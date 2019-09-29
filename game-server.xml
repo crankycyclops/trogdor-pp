@@ -296,11 +296,11 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
          <description>
 It's nothing special.  It's gray, bumpy and a little lopsided.
          </description>
-
-         <!-- this optional tag allows you to turn off the ability for the
-              player to drop an object.  An object is droppable by default (you
-              can achieve the same effect manually by setting this to 1.) -->
-         <droppable>0</droppable>
+         <!-- If the undroppable tag is set on an object, it means that a player
+              or creature will not be able to drop it during gameplay -->
+         <tags>
+            <tag>undroppable</tag>
+         </tags>
 
          <aliases>
             <alias>stone</alias>
@@ -315,10 +315,11 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
          </description>
          <weight>1</weight>
 
-         <!-- This optional tag allows you to turn off the player's ability to
-              take an object.  An object is takeable by default (you can
-              achieve the same effect manually by setting this to 1.)-->
-         <takeable>0</takeable>
+         <!-- If the untakeable tag is set on an object, then a player or
+              creature will not be able to take it. -->
+         <tags>
+            <tag>untakeable</tag>
+         </tags>
 
          <aliases>
             <alias>rock</alias>

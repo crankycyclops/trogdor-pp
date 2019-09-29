@@ -639,8 +639,7 @@ namespace trogdor {
 
       static unordered_map<string, string> tagToProperty({
          {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"},
-         {"weight", "weight"}, {"takeable", "takeable"}, {"droppable", "droppable"},
-         {"damage", "damage"}
+         {"weight", "weight"}, {"damage", "damage"}
       });
 
       while (nextTag() && depth == getDepth()) {

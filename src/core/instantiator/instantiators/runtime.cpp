@@ -834,22 +834,6 @@ namespace trogdor {
 
       /**********/
 
-      // Set whether the Object can be taken
-      propSetters["object"]["takeable"] = [](Game *game, entity::Entity *object,
-      string value) {
-         dynamic_cast<entity::Object *>(object)->setTakeable(stoi(value));
-      };
-
-      /**********/
-
-      // Set whether the Object can be dropped
-      propSetters["object"]["droppable"] = [](Game *game, entity::Entity *object,
-      string value) {
-         dynamic_cast<entity::Object *>(object)->setDroppable(stoi(value));
-      };
-
-      /**********/
-
       // Set how much damage the Object inflicts if it's a weapon
       propSetters["object"]["damage"] = [](Game *game, entity::Entity *object,
       string value) {
