@@ -80,7 +80,7 @@ namespace trogdor { namespace entity {
 
    void Entity::setTag(string tag) {
 
-      tags[tag] = true;
+      tags.insert(tag);
    }
 
    /***************************************************************************/
@@ -113,7 +113,7 @@ namespace trogdor { namespace entity {
          displayShort(observer);
       }
 
-      observedByMap[observer] = true;
+      observedByMap.insert(observer);
    }
 
    /***************************************************************************/
@@ -146,7 +146,7 @@ namespace trogdor { namespace entity {
       }
 
       display(observer, displayFull);
-      observedByMap[observer] = true;
+      observedByMap.insert(observer);
 
       if (triggerEvents) {
          game->setupEventHandler();
@@ -176,7 +176,7 @@ namespace trogdor { namespace entity {
       }
 
       displayShort(observer);
-      glancedByMap[observer] = true;
+      glancedByMap.insert(observer);
 
       if (triggerEvents) {
          game->setupEventHandler();

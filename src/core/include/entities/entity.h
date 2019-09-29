@@ -7,6 +7,7 @@
 #include <memory>
 #include <algorithm>
 #include <regex>
+#include <unordered_set>
 
 #include "../messages.h"
 #include "../lua/luatable.h"
@@ -68,14 +69,14 @@ namespace trogdor { namespace entity {
 
          // maintains a list of all Beings that have glanced at but not fully
          // observed the Entity
-         unordered_map<Being *, bool> glancedByMap;
+         unordered_set<Being *> glancedByMap;
 
          // maintains a list of all Beings that have observed the Entity
-         unordered_map<Being *, bool> observedByMap;
+         unordered_set<Being *> observedByMap;
 
          // Entity tags are labels that are either set or not set and are an
          // easy method of categorization
-         unordered_map<string, bool> tags;
+         unordered_set<string> tags;
 
          // meta data associated with the entity
          unordered_map<string, string> meta;
