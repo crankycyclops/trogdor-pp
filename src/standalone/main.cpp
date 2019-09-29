@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
    // the Game object is responsible for choosing an implementation of
    // trogdor::Instantiator.
    std::unique_ptr<trogdor::XMLParser> parser = make_unique<trogdor::XMLParser>(
-      std::move(currentGame->makeInstantiator())
+      std::move(currentGame->makeInstantiator()), currentGame->getVocabulary()
    );
 
    // The client can add its own synonyms for built-in verbs

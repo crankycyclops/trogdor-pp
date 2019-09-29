@@ -376,18 +376,13 @@ namespace trogdor {
       // no direct or indirect object were given, so the direction, if valid,
       // must've been specified directly by the "verb"
       if (0 == dobj.length() && 0 == iobj.length()) {
-
-         for (int i = 0; g_directions[i] != 0; i++) {
-            if (0 == strcmp(verb.c_str(), g_directions[i])) {
-               return true;
-            }
-         }
-
-         return false;
+         return command->getVocabulary().isDirection(verb);
       }
 
       // make sure the direction specified by the object was valid
-      return isDirection(dobj.length() > 0 ? dobj : iobj);
+      else {
+         return command->getVocabulary().isDirection(dobj.length() > 0 ? dobj : iobj);
+      }
    }
 
 
@@ -397,7 +392,7 @@ namespace trogdor {
       string direction = "";
 
       // direction is implied in the verb
-      if (isDirection(command->getVerb())) {
+      if (command->getVocabulary().isDirection(command->getVerb())) {
          direction = command->getVerb();
       }
 

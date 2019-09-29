@@ -11,6 +11,7 @@
 #include <thread>
 #include <mutex>
 
+#include "vocabulary.h"
 #include "command.h"
 #include "event/eventhandler.h"
 #include "entitymap.h"
@@ -84,6 +85,9 @@ namespace trogdor {
 
          // game meta data (like title, description, etc.)
          StringMap meta;
+
+         // Maintains the game's vocabulary
+         Vocabulary vocabulary;
 
          // verb synonyms
          StringMap synonyms;
@@ -251,6 +255,20 @@ namespace trogdor {
                (none)
          */
          inline void setMeta(string key, string value) {meta[key] = value;}
+
+         /*
+            Returns a const reference to the game's vocabulary for lookups.
+
+            Input:
+               (none)
+
+            Output:
+               const Vocabulary &
+         */
+         inline const Vocabulary &getVocabulary() const {
+
+            return vocabulary;
+         }
 
          /*
             Gets a synonym.  If the value isn't set, an empty string is returned.

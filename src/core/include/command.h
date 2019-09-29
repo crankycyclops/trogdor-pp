@@ -16,11 +16,15 @@ using namespace trogdor::entity;
 
 namespace trogdor {
 
+
    class Game; // resolves circular dependency Game <-> Command
 
    class Command {
 
       private:
+
+         // Reference to the game's vocabulary (used for lookups)
+         const Vocabulary &vocabulary;
 
          // Note that a command is presumed invalid until successfully parsed
          bool invalid;
@@ -36,16 +40,12 @@ namespace trogdor {
 
          int parseIndirectObject(Tokenizer &tokenizer);
 
-         bool isPreposition(const string word);
-
-         bool isFillerWord(const string word);
-
       public:
 
          /*
             Constructor for the Command class.
          */
-         Command();
+         Command(const Vocabulary &v);
 
          /*
             Returns true if the command is invalid.
@@ -54,6 +54,11 @@ namespace trogdor {
             Output: (none)
          */
          inline bool isInvalid() const {return invalid;}
+
+         /*
+            Returns const reference to the vocabulary.
+         */
+         inline const Vocabulary &getVocabulary() {return vocabulary;}
 
          /*
             Getters for the syntactic components of a command.

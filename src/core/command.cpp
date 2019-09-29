@@ -10,7 +10,8 @@ using namespace trogdor::entity;
 namespace trogdor {
 
 
-   Command::Command() {
+   Command::Command(const Vocabulary &v):
+   vocabulary(v) {
 
       verb = "";
       directObject = "";
@@ -94,10 +95,10 @@ namespace trogdor {
       string dobj = "";
       string token = tokenizer.getCurToken();
 
-      while (!token.empty() && !tokenizer.isEnd() && !isPreposition(token)) {
+      while (!token.empty() && !tokenizer.isEnd() && !vocabulary.isPreposition(token)) {
 
          // ignore filler words such as articles like "the" or "a"
-         if (isFillerWord(token)) {
+         if (vocabulary.isFillerWord(token)) {
             tokenizer.next();
             token = tokenizer.getCurToken();
             continue;
@@ -129,7 +130,7 @@ namespace trogdor {
       string token = tokenizer.getCurToken();
 
       // an indirect object must be preceded by a preposition
-      if (tokenizer.isEnd() || !isPreposition(token)) {
+      if (tokenizer.isEnd() || !vocabulary.isPreposition(token)) {
          return 0;
       }
 
@@ -141,7 +142,7 @@ namespace trogdor {
       while (!tokenizer.isEnd()) {
 
          // ignore filler words
-         if (isFillerWord(token)) {
+         if (vocabulary.isFillerWord(token)) {
             tokenizer.next();
             token = tokenizer.getCurToken();
             continue;
@@ -174,32 +175,6 @@ namespace trogdor {
          indirectObject = strToLower(idobj);
          return 1;
       }
-   }
-
-
-   bool Command::isPreposition(const string word) {
-
-      // g_prepositions defined in vocabulary.cpp
-      for (int i = 0; g_prepositions[i] != 0; i++) {
-         if (0 == strcmp(word.c_str(), g_prepositions[i])) {
-            return 1;
-         }
-      }
-
-      return 0;
-   }
-
-
-   bool Command::isFillerWord(const string word) {
-
-      // g_fillerWords defined in vocabulary.cpp
-      for (int i = 0; g_fillerWords[i] != 0; i++) {
-         if (0 == strcmp(word.c_str(), g_fillerWords[i])) {
-            return 1;
-         }
-      }
-
-      return 0;
    }
 
 

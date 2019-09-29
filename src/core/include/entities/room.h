@@ -121,22 +121,15 @@ namespace trogdor { namespace entity {
 
          /*
             Connects Room to another Room at the specified direction.
+
+            Input:
+               Direction where the connection is made (string)
+               Room direction connects to (Room *)
+
+            Output:
+               (none)
          */
-         inline void setConnection(string direction, Room *connectTo) {
-
-            stringstream s;
-
-            if (isDirection(direction)) {
-               connections[direction] = connectTo;
-            }
-
-            else {
-               throw ValidationException(
-                  string("error: attempt to connect to Room using invalid ")
-                  + "direction '" + direction + "'"
-               );
-            }
-         }
+         void setConnection(string direction, Room *connectTo);
    };
 }}
 

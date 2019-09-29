@@ -951,7 +951,7 @@ namespace trogdor {
 
          string tag = getTagName();
 
-         if (isDirection(tag)) {
+         if (vocabulary.isDirection(tag)) {
             string connection = parseString();
             parseRoomConnection(tag, name, connection, mode);
          }

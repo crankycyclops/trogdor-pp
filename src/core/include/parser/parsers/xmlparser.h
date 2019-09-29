@@ -427,8 +427,8 @@ namespace trogdor {
          /*
             Constructor
          */
-         inline XMLParser(std::unique_ptr<Instantiator> i):
-         Parser(std::move(i)) {
+         inline XMLParser(std::unique_ptr<Instantiator> i, const Vocabulary &v):
+         Parser(std::move(i), v) {
 
             reader = nullptr;
          }

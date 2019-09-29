@@ -257,7 +257,7 @@ namespace trogdor {
 
    void Game::processCommand(Player *player) {
 
-      std::shared_ptr<Command> command = make_shared<Command>();
+      std::shared_ptr<Command> command = make_shared<Command>(vocabulary);
       command->read(player);
 
       // do nothing if we're not in a running state

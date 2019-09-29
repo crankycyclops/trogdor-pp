@@ -1,12 +1,25 @@
 #include "../include/game.h"
 #include "../include/entities/room.h"
+#include "../include/exception/validationexception.h"
 
 
 using namespace std;
-using namespace boost;
 
 namespace trogdor { namespace entity {
 
-   // TODO: keeping this file just in case I ever need it again...
+
+   void Room::setConnection(string direction, Room *connectTo) {
+
+      if (game->getVocabulary().isDirection(direction)) {
+         connections[direction] = connectTo;
+      }
+
+      else {
+         throw ValidationException(
+            string("error: attempt to connect to Room using invalid ")
+            + "direction '" + direction + "'"
+         );
+      }
+   }
 }}
 

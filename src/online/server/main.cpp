@@ -42,8 +42,8 @@ static void shutdownHandler(const boost::system::error_code& error, int signal_n
 int main(int argc, char **argv) {
 
 	/******************************\
-    * Step 1. Bootstrap the game *
-   \******************************/
+	 * Step 1. Bootstrap the game *
+	\******************************/
 
 	// default game filename
 	string gameXML = "game-server.xml";
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 	std::shared_ptr<NullOut> errStream = make_shared<NullOut>();
 	std::unique_ptr<trogdor::Game> currentGame = make_unique<trogdor::Game>(errStream);
 	std::unique_ptr<trogdor::XMLParser> parser = make_unique<trogdor::XMLParser>(
-		std::move(currentGame->makeInstantiator())
+		std::move(currentGame->makeInstantiator()), currentGame->getVocabulary()
 	);
 
 	if (currentGame->initialize(parser, gameXML)) {

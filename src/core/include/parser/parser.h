@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "../vocabulary.h"
 #include "../instantiator/instantiator.h"
 #include "../exception/undefinedexception.h"
 
@@ -24,6 +25,9 @@ namespace trogdor {
    class Parser {
 
       protected:
+
+         // Reference to the game's vocabulary (for lookups)
+         const Vocabulary &vocabulary;
 
          // When passed to a function, determines if we're parsing for an entity
          // class, an entity object, the default player, or the game. This makes
@@ -182,7 +186,8 @@ namespace trogdor {
             Input:
                Instantiator instance (std::unique_ptr<Intantiator>)
          */
-         inline Parser(std::unique_ptr<Instantiator> i) {
+         inline Parser(std::unique_ptr<Instantiator> i, const Vocabulary &v):
+         vocabulary(v) {
 
             instantiator = std::move(i);
          }
