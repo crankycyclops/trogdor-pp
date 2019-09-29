@@ -13,7 +13,7 @@ namespace trogdor {
          return;
       }
 
-      else if (!defender->isAttackable()) {
+      else if (!defender->isTagSet(Being::AttackableTag)) {
          setExecutions(0);
          return;
       }

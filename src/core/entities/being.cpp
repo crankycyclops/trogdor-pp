@@ -13,6 +13,11 @@ using namespace std;
 namespace trogdor { namespace entity {
 
 
+   // Tag is set if the Being is attackable
+   const char *Being::AttackableTag = "attackable";
+
+   /***************************************************************************/
+
    void Being::display(Being *observer, bool displayFull) {
 
       if (ENTITY_PLAYER == observer->getType()) {
@@ -348,12 +353,31 @@ namespace trogdor { namespace entity {
             game->addEventListener(weapon->getEventListener());
          }
 
-         if (!game->event("attackDefenderImmortal", eventArgs)) {
+         if (!game->event("attackDefenderIsImmortal", eventArgs)) {
             return;
          }
 
          out("combat") << defender->getTitle()
             << " is immortal and cannot die." << endl;
+         return;
+      }
+
+      // Defender isn't attackable
+      else if (!defender->isTagSet(Being::AttackableTag)) {
+
+         game->setupEventHandler();
+         game->addEventListener(triggers.get());
+         game->addEventListener(defender->getEventListener());
+         if (0 != weapon) {
+            game->addEventListener(weapon->getEventListener());
+         }
+
+         if (!game->event("attackDefenderNotAttackable", eventArgs)) {
+            return;
+         }
+
+         out("combat") << defender->getTitle()
+            << " cannot be attacked." << endl;
          return;
       }
 
@@ -414,8 +438,12 @@ namespace trogdor { namespace entity {
          defender->out("combat") << getTitle() << "'s attack failed." << endl;
       }
 
-      if (ENTITY_CREATURE == defender->getType() &&
-      static_cast<Creature *>(defender)->getCounterAttack() && allowCounterAttack) {
+      if (
+         ENTITY_CREATURE == defender->getType() &&
+         Creature::FRIEND != static_cast<Creature *>(defender)->getAllegiance() &&
+         static_cast<Creature *>(defender)->getCounterAttack() &&
+         allowCounterAttack
+      ) {
          defender->attack(this, static_cast<Creature *>(defender)->selectWeapon(), false);
       }
 

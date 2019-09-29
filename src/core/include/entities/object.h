@@ -17,13 +17,13 @@ namespace trogdor { namespace entity {
 
       public:
 
-         // This tag determines whether or not an Object is a weapon
+         // Tag is set if the Object is a weapon
          static const char *WeaponTag;
 
-         // This tag determines whether or not an Object is untakeable
+         // Tag is set if the Object is untakeable
          static const char *UntakeableTag;
 
-         // This tag determines whether or not an Object is undroppable
+         // Tag is set if the Object is undroppable
          static const char *UndroppableTag;
 
          static const bool DEFAULT_IS_WEAPON = false;

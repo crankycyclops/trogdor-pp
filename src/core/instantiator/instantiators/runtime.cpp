@@ -530,11 +530,23 @@ namespace trogdor {
 
       /**********/
 
+      // Removes an Entity tag
+      propSetters["room"]["tag.remove"] =
+      propSetters["object"]["tag.remove"] =
+      propSetters["creature"]["tag.remove"] =
+      propSetters["player"]["tag.remove"] = [](Game *game, entity::Entity *entity,
+      string value) {
+
+         entity->removeTag(value);
+      };
+
+      /**********/
+
       // Set an Entity tag
-      propSetters["room"]["tag"] =
-      propSetters["object"]["tag"] =
-      propSetters["creature"]["tag"] =
-      propSetters["player"]["tag"] = [](Game *game, entity::Entity *entity,
+      propSetters["room"]["tag.set"] =
+      propSetters["object"]["tag.set"] =
+      propSetters["creature"]["tag.set"] =
+      propSetters["player"]["tag.set"] = [](Game *game, entity::Entity *entity,
       string value) {
 
          entity->setTag(value);
@@ -575,15 +587,6 @@ namespace trogdor {
       propSetters["player"]["maxhealth"] = [](Game *game, entity::Entity *being,
       string value) {
          dynamic_cast<entity::Being *>(being)->setMaxHealth(stoi(value));
-      };
-
-      /**********/
-
-      // Set whether or not a Being is attackable
-      propSetters["creature"]["attackable"] =
-      propSetters["player"]["attackable"] = [](Game *game, entity::Entity *being,
-      string value) {
-         dynamic_cast<entity::Being *>(being)->setAttackable(stoi(value));
       };
 
       /**********/

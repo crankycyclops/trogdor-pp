@@ -26,8 +26,6 @@ namespace trogdor { namespace entity {
          std::move(o), std::move(i), std::move(e)) {
 
             types.push_back(ENTITY_PLAYER);
-            attackable = true;
-
             setClass("player");
          }
 

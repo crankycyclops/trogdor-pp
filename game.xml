@@ -214,7 +214,8 @@ This is an introduction. If introductions are enabled, new players will have to 
 
          <!-- settings governing player's ability to respawn when killed.  This
               section is optional, and if it doesn't exist, default behavior is
-              for respawn to be disabled. -->
+              for respawn to be disabled. Both players and creatures can have
+              this section. -->
          <respawn>
 
             <!-- 0 = false and 1 = true.  If enabled, the player will come back
@@ -247,10 +248,6 @@ This is an introduction. If introductions are enabled, new players will have to 
          <!-- default maximum probability of being hit during combat
               (optional: default is 0.5) -->
          <woundrate>0.5</woundrate>
-
-         <!-- whether or not players, by default, are attackable.  By default,
-              players are attackable -->
-         <attackable>1</attackable>
 
          <!-- this number, when multiplied by the player's strength factor
               (strength points / total attribute points) and rounded to the
@@ -395,11 +392,10 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
             He stands 8 feet tall and breathes fire from his nostrils.
          </description>
 
+         <!-- This makes the creature an enemy to all players in the game,
+              indicating that it will attack if attacked (or if autoattack is
+              enabled) -->
          <allegiance>enemy</allegiance>
-
-         <!-- even if a creature is an enemy, we may or may not be allowed to
-              attack it (optional) -->
-         <attackable>1</attackable>
 
          <!-- whether or not the creature will return each attack against it
               with one of its own.  (optional: default is 1 for true) -->
@@ -490,7 +486,17 @@ He's white, transparent and floating six or seven feet off the ground.  He smile
 
          <alive>1</alive>
 
+         <!-- Indicates that the creature is a friend to all players. Friends
+              will not automatically retaliate when attacked, whereas creatures
+              with an allegiance of neutral or enemy will. -->
          <allegiance>friend</allegiance>
+
+         <!-- By default, players and creatures have the attackable tag set,
+              meaning they can be attacked. This tag (and other defaults) can be
+              removed, indicating that the creature cannot be attacked. -->
+         <tags>
+            <remove>attackable</remove>
+         </tags>
 
          <!-- optional settings to configure a creature's ability to wander from
               room to room.  This is disabled by default. -->

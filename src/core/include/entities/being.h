@@ -27,6 +27,9 @@ namespace trogdor { namespace entity {
 
       public:
 
+         // Tag is set if the Being is attackable
+         static const char *AttackableTag;
+
          static const int DEFAULT_ATTRIBUTE_STRENGTH     = 10;
          static const int DEFAULT_ATTRIBUTE_DEXTERITY    = 10;
          static const int DEFAULT_ATTRIBUTE_INTELLIGENCE = 10;
@@ -40,13 +43,16 @@ namespace trogdor { namespace entity {
          static const bool DEFAULT_ATTACKABLE = true;
          static const int DEFAULT_DAMAGE_BARE_HANDS = 5;
 
+         // By default, Beings are immortal (a maximum health needs to be
+         // set explicitly)
+         static const int DEFAULT_MAX_HEALTH = 0;
+
       protected:
 
          int health;            // number of health points the being currently has
          int maxHealth;         // maximum number of health points (0 for immortal)
          bool alive;            // whether or not the being is alive
 
-         bool attackable;       // whether or not being can be attacked
          double woundRate;      // max probability of being hit when attacked
          int damageBareHands;   // damage done during combat without a weapon
 
@@ -188,8 +194,9 @@ namespace trogdor { namespace entity {
          */
          inline Being(Game *g, string n, std::unique_ptr<Trogout> o,
          std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e): Thing(g, n,
-         std::move(o), std::move(i), std::move(e)), attackable(DEFAULT_ATTACKABLE),
-         damageBareHands(DEFAULT_DAMAGE_BARE_HANDS) {
+         std::move(o), std::move(i), std::move(e)),
+         damageBareHands(DEFAULT_DAMAGE_BARE_HANDS),
+         maxHealth(DEFAULT_MAX_HEALTH) {
 
             respawnSettings.enabled  = DEFAULT_RESPAWN_ENABLED;
             respawnSettings.interval = DEFAULT_RESPAWN_INTERVAL;
@@ -205,6 +212,10 @@ namespace trogdor { namespace entity {
             inventory.currentWeight = 0;
 
             types.push_back(ENTITY_BEING);
+
+            if (DEFAULT_ATTACKABLE) {
+               setTag(AttackableTag);
+            }
          }
 
          /*
@@ -221,7 +232,6 @@ namespace trogdor { namespace entity {
             health = b.health;
             maxHealth = b.maxHealth;
             alive = b.alive;
-            attackable = b.attackable;
             woundRate = b.woundRate;
             damageBareHands = b.damageBareHands;
 
@@ -297,17 +307,6 @@ namespace trogdor { namespace entity {
                bool
          */
          inline bool isImmortal() const {return maxHealth == 0 ? true : false;}
-
-         /*
-            Returns true if the Being can be attacked and false if it can't.
-
-            Input:
-               (none)
-
-            Output:
-               bool
-         */
-         inline bool isAttackable() const {return attackable;}
 
          /*
             Indicates whether or not respawning is enabled for this Being.
@@ -465,17 +464,6 @@ namespace trogdor { namespace entity {
                (none)
          */
          inline void setMaxHealth(int h) {maxHealth = h;}
-
-         /*
-            Sets whether or not Being can be attacked.
-
-            Input:
-               Boolean
-
-            Output:
-               (none)
-         */
-         inline void setAttackable(bool a) {attackable = a;}
 
          /*
             Sets Being's wound rate, which is a factor in how likely it is to be

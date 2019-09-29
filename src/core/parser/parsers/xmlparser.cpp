@@ -506,12 +506,18 @@ namespace trogdor {
 
          if (0 == getTagName().compare("tag")) {
             string tag = parseString();
-            entitySetter(entityName, "tag", tag, mode);
+            entitySetter(entityName, "tag.set", tag, mode);
             checkClosingTag("tag");
          }
 
+         else if (0 == getTagName().compare("remove")) {
+            string tag = parseString();
+            entitySetter(entityName, "tag.remove", tag, mode);
+            checkClosingTag("remove");
+         }
+
          else {
-            throw ParseException("expected <tag> in <tags>");
+            throw ParseException("expected <tag> or <remove> in <tags>");
          }
       }
 
@@ -704,8 +710,7 @@ namespace trogdor {
 
       static unordered_map<string, string> tagToProperty({
          {"alive", "alive"}, {"health", "health"}, {"maxhealth", "maxhealth"},
-         {"attackable", "attackable"}, {"woundrate", "woundrate"},
-         {"damagebarehands", "damagebarehands"}
+         {"woundrate", "woundrate"}, {"damagebarehands", "damagebarehands"}
       });
 
       while (nextTag() && 3 == getDepth()) {
@@ -812,9 +817,8 @@ namespace trogdor {
       static unordered_map<string, string> tagToProperty({
          {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"},
          {"alive", "alive"}, {"health", "health"}, {"maxhealth", "maxhealth"},
-         {"attackable", "attackable"}, {"woundrate", "woundrate"},
-         {"damagebarehands", "damagebarehands"}, {"counterattack", "counterattack"},
-         {"allegiance", "allegiance"}
+         {"woundrate", "woundrate"}, {"damagebarehands", "damagebarehands"},
+         {"counterattack", "counterattack"}, {"allegiance", "allegiance"}
       });
 
       while (nextTag() && depth == getDepth()) {

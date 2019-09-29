@@ -107,10 +107,16 @@ namespace trogdor {
       };
 
       // Special "property" that sets a tag for an Entity
-      entityPropValidators["room"]["tag"] =
-      entityPropValidators["object"]["tag"] =
-      entityPropValidators["creature"]["tag"] =
-      entityPropValidators["player"]["tag"] = assertString;
+      entityPropValidators["room"]["tag.set"] =
+      entityPropValidators["object"]["tag.set"] =
+      entityPropValidators["creature"]["tag.set"] =
+      entityPropValidators["player"]["tag.set"] = assertString;
+
+      // Special "property" that removes a tag for an Entity
+      entityPropValidators["room"]["tag.remove"] =
+      entityPropValidators["object"]["tag.remove"] =
+      entityPropValidators["creature"]["tag.remove"] =
+      entityPropValidators["player"]["tag.remove"] = assertString;
 
       // Special "property" that sets an alias for a Thing
       // TODO: validate this the exact same way I validate an Entity's name
@@ -129,10 +135,6 @@ namespace trogdor {
       // A Being's maximum health
       entityPropValidators["creature"]["maxhealth"] =
       entityPropValidators["player"]["maxhealth"] = assertInt;
-
-      // Whether or not a Being is attackable
-      entityPropValidators["creature"]["attackable"] =
-      entityPropValidators["player"]["attackable"] = assertBool;
 
       // The probability that a Being will be wounded when it's attacked
       entityPropValidators["creature"]["woundrate"] =

@@ -7,13 +7,13 @@ using namespace std;
 namespace trogdor { namespace entity {
 
 
-   // This tag determines whether or not an Object is a weapon
+   // Tag is set if the Object is a weapon
    const char *Object::WeaponTag = "weapon";
 
-   // This tag determines whether or not an Object is untakeable
+   // Tag is set if the Object is untakeable
    const char *Object::UntakeableTag = "untakeable";
 
-   // This tag determines whether or not an Object is undroppable
+   // Tag is set if the Object is undroppable
    const char *Object::UndroppableTag = "undroppable";
 
    /***************************************************************************/
