@@ -20,8 +20,14 @@
          <!-- Any defined objects of type "weapon" will assume these attributes. -->
          <object class="weapon">
 
-            <!-- If set to 1, the object is a weapon (optional: default 0) -->
-            <weapon>1</weapon>
+            <!-- One or more arbitrary tags can be applied to an Entity. A few,
+                 such as "weapon" (objects only) are used to define an Entity's
+                 properties. -->
+            <tags>
+               <!-- Any object with this tag can be used to attack other players
+                    or creatures in the game -->
+               <tag>weapon</tag>
+            </tags>
 
             <!-- Amount of damage object does as a weapon (optional: default 1) -->
             <damage>1</damage>

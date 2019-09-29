@@ -494,7 +494,7 @@ namespace trogdor {
 
                // TODO: this check should be made inside Being (we'd have an
                // exception to catch)
-               if (!weapon->isTagSet("weapon")) {
+               if (!weapon->isTagSet(Object::WeaponTag)) {
                   player->out("display") << "The " << weaponName << " isn't a weapon!" << endl;
                   return;
                }

@@ -252,9 +252,6 @@ namespace trogdor {
       // Whether or not an Object can be dropped
       entityPropValidators["object"]["droppable"] = assertBool;
 
-      // Whether or not the Object is a weapon
-      entityPropValidators["object"]["weapon"] = assertBool;
-
       // How much damage the Object inflicts if it's a weapon
       entityPropValidators["object"]["damage"] = assertInt;
    }

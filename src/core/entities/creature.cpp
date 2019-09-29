@@ -16,7 +16,7 @@ namespace trogdor { namespace entity {
 
       for_each(objs.begin, objs.end, [&](Object * const &object) {
 
-         if (object->isTagSet("weapon")) {
+         if (object->isTagSet(Object::WeaponTag)) {
 
             bool inserted = false;
 

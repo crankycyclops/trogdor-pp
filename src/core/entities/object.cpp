@@ -7,6 +7,11 @@ using namespace std;
 namespace trogdor { namespace entity {
 
 
+   // This tag determines whether or not an Object is a weapon
+   const char *Object::WeaponTag = "weapon";
+
+   /***************************************************************************/
+
    void Object::updateOwnerWeaponCache() {
 
       if (owner != nullptr && owner->isType(ENTITY_CREATURE)) {
@@ -31,7 +36,7 @@ namespace trogdor { namespace entity {
 
       Entity::setTag(tag);
 
-      if ("weapon" == tag) {
+      if (WeaponTag == tag) {
          updateOwnerWeaponCache();
       }
    }
@@ -40,7 +45,7 @@ namespace trogdor { namespace entity {
 
    void Object::removeTag(string tag) {
 
-      if ("weapon" == tag) {
+      if (WeaponTag == tag) {
          updateOwnerWeaponCache();
       }
    }

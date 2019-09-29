@@ -17,6 +17,9 @@ namespace trogdor { namespace entity {
 
       public:
 
+         // This tag determines whether or not an Object is a weapon
+         static const char *WeaponTag;
+
          static const bool DEFAULT_IS_WEAPON = false;
          static const int  DEFAULT_DAMAGE = 1;
          static const int DEFAULT_WEIGHT = 0;
@@ -65,7 +68,7 @@ namespace trogdor { namespace entity {
          droppable(DEFAULT_DROPPABLE), damage(DEFAULT_DAMAGE) {
 
             if (DEFAULT_IS_WEAPON) {
-               setTag("weapon");
+               setTag(WeaponTag);
             }
 
             types.push_back(ENTITY_OBJECT);
