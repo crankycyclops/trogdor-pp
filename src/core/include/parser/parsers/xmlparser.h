@@ -250,9 +250,22 @@ namespace trogdor {
                XML Depth--how deeply nested <message> tags will be (int)
 
             Output:
-               Messages object containing the parsed messages
+               (none)
          */
          void parseMessages(string entityName, enum ParseMode mode, int depth);
+
+         /*
+            Parses tags that should be applied to an Entity.
+
+            Input:
+               Name of Entity we're parsing messages for (string)
+               Whether we're parsing an Entity or an Entity class (enum ParseMode)
+               XML Depth--how deeply nested <message> tags will be (int)
+
+            Output:
+               (none)
+         */
+         void parseEntityTags(string entityName, enum ParseMode mode, int depth);
 
          /*
             Parses an <events> section for Entities, Entity classes, and Game.

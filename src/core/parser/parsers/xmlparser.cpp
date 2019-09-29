@@ -3,8 +3,10 @@
 #include "../../include/iostream/nullout.h"
 #include "../../include/iostream/nullin.h"
 #include "../../include/iostream/placeout.h"
+#include "../../include/utility.h"
 
 #include "../../include/parser/parsers/xmlparser.h"
+#include "../../include/exception/validationexception.h"
 #include "../../include/exception/parseexception.h"
 
 namespace trogdor {
@@ -498,6 +500,26 @@ namespace trogdor {
 
    /***************************************************************************/
 
+   void XMLParser::parseEntityTags(string entityName, enum ParseMode mode, int depth) {
+
+      while (nextTag() && depth == getDepth()) {
+
+         if (0 == getTagName().compare("tag")) {
+            string tag = parseString();
+            entitySetter(entityName, "tag", tag, mode);
+            checkClosingTag("tag");
+         }
+
+         else {
+            throw ParseException("expected <tag> in <tags>");
+         }
+      }
+
+      checkClosingTag("tags");
+   }
+
+   /***************************************************************************/
+
    void XMLParser::parseEvents(string entityName, enum ParseMode mode, int depth) {
 
       while (nextTag() && depth == getDepth()) {
@@ -618,7 +640,7 @@ namespace trogdor {
       static unordered_map<string, string> tagToProperty({
          {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"},
          {"weight", "weight"}, {"takeable", "takeable"}, {"droppable", "droppable"},
-         {"weapon", "weapon"}, {"damage", "damage"}
+         {"damage", "damage"}
       });
 
       while (nextTag() && depth == getDepth()) {
@@ -635,6 +657,10 @@ namespace trogdor {
 
          else if (0 == tag.compare("aliases")) {
             parseThingAliases(name, mode, depth + 1);
+         }
+
+         else if (0 == tag.compare("tags")) {
+            parseEntityTags(name, mode, depth + 1);
          }
 
          else if (0 == tag.compare("events")) {
@@ -689,6 +715,10 @@ namespace trogdor {
 
          if (0 == tag.compare("messages")) {
             parseMessages("", PARSE_DEFAULT_PLAYER, 4);
+         }
+
+         else if (0 == tag.compare("tags")) {
+            parseEntityTags("", PARSE_DEFAULT_PLAYER, 4);
          }
 
          else if (0 == tag.compare("inventory")) {
@@ -824,6 +854,10 @@ namespace trogdor {
             parseThingAliases(name, mode, depth + 1);
          }
 
+         else if (0 == tag.compare("tags")) {
+            parseEntityTags(name, mode, depth + 1);
+         }
+
          else if (0 == tag.compare("events")) {
             parseEvents(name, mode, depth + 1);
          }
@@ -929,6 +963,10 @@ namespace trogdor {
 
          else if (0 == tag.compare("messages")) {
             parseMessages(name, mode, depth + 1);
+         }
+
+         else if (0 == tag.compare("tags")) {
+            parseEntityTags(name, mode, depth + 1);
          }
 
          else if (0 == tag.compare("events")) {

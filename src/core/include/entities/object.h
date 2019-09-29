@@ -25,6 +25,23 @@ namespace trogdor { namespace entity {
          static const bool DEFAULT_TAKEABLE = true;
          static const bool DEFAULT_DROPPABLE = true;
 
+      private:
+
+         /*
+            Call this whenever the "weapon" tag is set or removed for an Object.
+            That way, if some runtime behavior changes an Object to or from a
+            weapon, and it's owned by a Creature, we can tell that Creature it
+            has to rebuild its weapons cache so it can properly choose a weapon
+            during combat.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void updateOwnerWeaponCache();
+
       protected:
 
          Being *owner;     // a Being might own the object
@@ -34,7 +51,6 @@ namespace trogdor { namespace entity {
 
          bool takeable;    // whether or not a Being can take the Object
          bool droppable;   // whether or not a Being can drop the Object
-         bool weapon;      // whether or not Object is a weapon
 
       public:
 
@@ -46,8 +62,11 @@ namespace trogdor { namespace entity {
          std::unique_ptr<Trogout> e): Thing(g, n, std::move(o),
          std::make_unique<NullIn>(), std::move(e)), owner(nullptr),
          weight(DEFAULT_WEIGHT), takeable(DEFAULT_TAKEABLE),
-         droppable(DEFAULT_DROPPABLE), weapon(DEFAULT_IS_WEAPON),
-         damage(DEFAULT_DAMAGE) {
+         droppable(DEFAULT_DROPPABLE), damage(DEFAULT_DAMAGE) {
+
+            if (DEFAULT_IS_WEAPON) {
+               setTag("weapon");
+            }
 
             types.push_back(ENTITY_OBJECT);
             setClass("object");
@@ -62,7 +81,6 @@ namespace trogdor { namespace entity {
             weight = o.weight;
             takeable = o.takeable;
             droppable = o.droppable;
-            weapon = o.weapon;
             damage = o.damage;
          }
 
@@ -110,17 +128,6 @@ namespace trogdor { namespace entity {
                bool
          */
          inline bool getDroppable() {return droppable;}
-
-         /*
-            Returns whether or not Object is a weapon.
-
-            Input:
-               (none)
-
-            Output:
-               Bool
-         */
-         inline bool isWeapon() {return weapon;}
 
          /*
             Returns damage Object does if it's a weapon, measured in hit points.
@@ -180,15 +187,28 @@ namespace trogdor { namespace entity {
          inline void setDroppable(bool d) {droppable = d;}
 
          /*
-            Sets whether or not Object is a weapon.
+            Wraps around Entity::setTag to see if any object-specific behavior
+            needs to be invoked afterward.
 
             Input:
-               Bool
+               Tag (string)
 
             Output:
                (none)
          */
-         void setIsWeapon(bool w);
+         virtual void setTag(string tag);
+
+         /*
+            Wraps around Entity::removeTag to see if any object-specific behavior
+            needs to be invoked afterward.
+
+            Input:
+               Tag (string)
+
+            Output:
+               (none)
+         */
+         virtual void removeTag(string tag);
 
          /*
             Sets amount of damage Object does if it's a weapon (measured in hit

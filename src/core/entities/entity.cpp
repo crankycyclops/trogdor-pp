@@ -61,6 +61,7 @@ namespace trogdor { namespace entity {
       longDesc = e.longDesc;
       shortDesc = e.shortDesc;
       msgs = e.msgs;
+      tags = e.tags;
       outStream = e.outStream->clone();
       errStream = e.errStream->clone();
       inStream = e.inStream->clone();
@@ -74,6 +75,22 @@ namespace trogdor { namespace entity {
 
    // For some reason that mystifies me, this is required to compile successfully
    Entity::~Entity() {}
+
+   /***************************************************************************/
+
+   void Entity::setTag(string tag) {
+
+      tags[tag] = true;
+   }
+
+   /***************************************************************************/
+
+   void Entity::removeTag(string tag) {
+
+      if (tags.end() != tags.find(tag)) {
+         tags.erase(tag);
+      }
+   }
 
    /***************************************************************************/
 

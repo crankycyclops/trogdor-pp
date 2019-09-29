@@ -96,8 +96,8 @@ namespace trogdor { namespace entity {
             Clears the cached sorted list of weapons in the Creature's inventory.
             The interface needs to be public so that if an Object in the
             Creature's inventory has its weapon attribute turned off, perhaps by
-            a script, then Object::setWeapon() can signal the Creature that its
-            cache needs to be rebuilt.
+            a script, then setting the "weapon" tag on the Object can signal the
+            Creature that its cache needs to be rebuilt.
 
             Input:
                (none)

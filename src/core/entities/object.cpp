@@ -7,6 +7,15 @@ using namespace std;
 namespace trogdor { namespace entity {
 
 
+   void Object::updateOwnerWeaponCache() {
+
+      if (owner != nullptr && owner->isType(ENTITY_CREATURE)) {
+         static_cast<Creature *>(owner)->clearWeaponCache();
+      }
+   }
+
+   /***************************************************************************/
+
    void Object::addAlias(string alias) {
 
       Thing::addAlias(alias);
@@ -16,19 +25,23 @@ namespace trogdor { namespace entity {
       }
    }
 
-   void Object::setIsWeapon(bool w) {
+   /***************************************************************************/
 
-      if (weapon != w) {
+   void Object::setTag(string tag) {
 
-         // if a script ever changes an Object to or from a weapon, and
-         // it's owned by a Creature, then tell that Creature it has to
-         // rebuild its weapons cache so it can properly choose a weapon
-         // during combat.
-         if (owner != 0 && owner->isType(ENTITY_CREATURE)) {
-            static_cast<Creature *>(owner)->clearWeaponCache();
-         }
+      Entity::setTag(tag);
 
-         weapon = w;
+      if ("weapon" == tag) {
+         updateOwnerWeaponCache();
+      }
+   }
+
+   /***************************************************************************/
+
+   void Object::removeTag(string tag) {
+
+      if ("weapon" == tag) {
+         updateOwnerWeaponCache();
       }
    }
 }}

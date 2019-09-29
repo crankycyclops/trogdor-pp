@@ -19,7 +19,7 @@ namespace trogdor { namespace entity {
 
          if (!alive) {
 
-            string descDead = msgs.get("description_dead");
+            string descDead = getMessage("description_dead");
 
             if (descDead.length() > 0) {
                observer->out("display") << descDead << endl;
@@ -46,7 +46,7 @@ namespace trogdor { namespace entity {
 
             observer->out("display") << "You see the corpse of " << getTitle() << '.';
 
-            string descDead = msgs.get("descshort_dead");
+            string descDead = getMessage("descshort_dead");
 
             if (descDead.length() > 0) {
                observer->out("display") << ' ' << descDead;
@@ -84,7 +84,7 @@ namespace trogdor { namespace entity {
       inventory.count++;
       object->setOwner(this);
 
-      if (isType(ENTITY_CREATURE) && object->isWeapon()) {
+      if (isType(ENTITY_CREATURE) && object->isTagSet("weapon")) {
          static_cast<Creature *>(this)->clearWeaponCache();
       }
 
@@ -106,7 +106,7 @@ namespace trogdor { namespace entity {
       inventory.currentWeight -= object->getWeight();
       object->setOwner(0);
 
-      if (isType(ENTITY_CREATURE) && object->isWeapon()) {
+      if (isType(ENTITY_CREATURE) && object->isTagSet("weapon")) {
          static_cast<Creature *>(this)->clearWeaponCache();
       }
    }
@@ -266,7 +266,7 @@ namespace trogdor { namespace entity {
       // make sure we always do at least 1 point damage
       damage = damage > 0 ? damage : 1;
 
-      if (0 != weapon && weapon->isWeapon()) {
+      if (0 != weapon && weapon->isTagSet("weapon")) {
          damage += weapon->getDamage();
       }
 

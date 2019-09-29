@@ -106,6 +106,12 @@ namespace trogdor {
          }
       };
 
+      // Special "property" that sets a tag for an Entity
+      entityPropValidators["room"]["tag"] =
+      entityPropValidators["object"]["tag"] =
+      entityPropValidators["creature"]["tag"] =
+      entityPropValidators["player"]["tag"] = assertString;
+
       // Special "property" that sets an alias for a Thing
       // TODO: validate this the exact same way I validate an Entity's name
       entityPropValidators["object"]["alias"] =

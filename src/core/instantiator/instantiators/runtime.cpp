@@ -530,6 +530,18 @@ namespace trogdor {
 
       /**********/
 
+      // Set an Entity tag
+      propSetters["room"]["tag"] =
+      propSetters["object"]["tag"] =
+      propSetters["creature"]["tag"] =
+      propSetters["player"]["tag"] = [](Game *game, entity::Entity *entity,
+      string value) {
+
+         entity->setTag(value);
+      };
+
+      /**********/
+
       // Set an alias for a Thing (all types that inherit from Thing)
       propSetters["object"]["alias"] =
       propSetters["creature"]["alias"] =
@@ -834,14 +846,6 @@ namespace trogdor {
       propSetters["object"]["droppable"] = [](Game *game, entity::Entity *object,
       string value) {
          dynamic_cast<entity::Object *>(object)->setDroppable(stoi(value));
-      };
-
-      /**********/
-
-      // Set whether or not the Object is a weapon
-      propSetters["object"]["weapon"] = [](Game *game, entity::Entity *object,
-      string value) {
-         dynamic_cast<entity::Object *>(object)->setIsWeapon(stoi(value));
       };
 
       /**********/

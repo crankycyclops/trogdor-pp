@@ -60,27 +60,11 @@ namespace trogdor { namespace entity {
 
    class Entity {
 
-      protected:
+      private:
 
-         // every kind of Entity that we are by virtue of inheritance
-         list<enum EntityType> types;
-
-         Game *game;
-
-         std::unique_ptr<Trogout> outStream;
-         std::unique_ptr<Trogout> errStream;
-         std::unique_ptr<Trogin> inStream;
-
-         string className;
-         string name;
-         string title;
-         string longDesc;
-         string shortDesc;
-
+         // Custom messages that should be displayed for certain events that act
+         // on or with the Entity
          Messages msgs;
-
-         std::shared_ptr<LuaState> L;
-         std::unique_ptr<EventListener> triggers;
 
          // maintains a list of all Beings that have glanced at but not fully
          // observed the Entity
@@ -89,8 +73,35 @@ namespace trogdor { namespace entity {
          // maintains a list of all Beings that have observed the Entity
          unordered_map<Being *, bool> observedByMap;
 
+         // Entity tags are labels that are either set or not set and are an
+         // easy method of categorization
+         unordered_map<string, bool> tags;
+
          // meta data associated with the entity
          unordered_map<string, string> meta;
+
+      protected:
+
+         // every kind of Entity that we are by virtue of inheritance
+         list<enum EntityType> types;
+
+         // Pointer to the Game that contains the Entity
+         Game *game;
+
+         string name;
+         string className;
+
+         string title;
+         string longDesc;
+         string shortDesc;
+
+         std::shared_ptr<LuaState> L;
+         std::unique_ptr<EventListener> triggers;
+
+         // Input and output streams
+         std::unique_ptr<Trogout> outStream;
+         std::unique_ptr<Trogout> errStream;
+         std::unique_ptr<Trogin> inStream;
 
          /*
             Displays an Entity.  This may be overridden by Entity types that
@@ -339,6 +350,20 @@ namespace trogdor { namespace entity {
          }
 
          /*
+            Returns true if the given tag is set and false otherwise.
+
+            Input:
+               Tag (string)
+
+            Output:
+               Whether or not the tag is set (bool)
+         */
+         inline bool isTagSet(string tag) const {
+
+            return tags.end() != tags.find(tag) ? true : false;
+         }
+
+         /*
             Gets a meta data value.  If the value isn't set, an empty string is
             returned.
 
@@ -424,7 +449,7 @@ namespace trogdor { namespace entity {
             Output:
                Game's Lua State (const &LuaState)
          */
-         std::shared_ptr<LuaState> &getLuaState() {return L;}
+         inline std::shared_ptr<LuaState> &getLuaState() {return L;}
 
          /*
             Returns raw pointer to Entity's EventListener.
@@ -561,6 +586,31 @@ namespace trogdor { namespace entity {
                (none)
          */
          inline void setShortDescription(string d) {shortDesc = d;}
+
+         /*
+            Sets a tag. This is virtual so that other Entity's can wrap around
+            it and monitor for changes in tags that are relevant to their state.
+
+            Input:
+               Tag (string)
+
+            Output:
+               (none)
+         */
+         virtual void setTag(string tag);
+
+         /*
+            Removes a tag. This is virtual so that other Entity's can wrap
+            around it and monitor for changes in tags that are relevant to their
+            state.
+
+            Input:
+               Tag (string)
+
+            Output:
+               (none)
+         */
+         virtual void removeTag(string tag);
 
          /*
             Gives a Being the ability to observe an Entity.  If the Being is a
