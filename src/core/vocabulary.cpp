@@ -18,10 +18,14 @@ namespace trogdor {
       directions.insert("south");
       directions.insert("east");
       directions.insert("west");
+      directions.insert("northeast");
+      directions.insert("northwest");
+      directions.insert("southeast");
+      directions.insert("southwest");
       directions.insert("up");
       directions.insert("down");
-      directions.insert("in");
-      directions.insert("out");
+      directions.insert("inside");
+      directions.insert("outside");
 
       // Filler words that we ignore during command parsing
       fillerWords.insert("the");

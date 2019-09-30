@@ -148,7 +148,7 @@ This is an introduction. If introductions are enabled, new players will have to 
 
       <!-- Allows you to define custom directions. Built-in directions include
            north, south, east, west, northeast, northwest, southeast, southwest,
-           inside, and outside -->
+           up, down, inside, and outside -->
       <directions>
 
          <!-- Defines a whimsical direction called "sideways." With this, we
