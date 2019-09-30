@@ -89,14 +89,10 @@ namespace trogdor {
 
       actions->setAction("move", std::make_unique<MoveAction>());
       setSynonym("go", "move");
-      setSynonym("north", "move");
-      setSynonym("south", "move");
-      setSynonym("east", "move");
-      setSynonym("west", "move");
-      setSynonym("up", "move");
-      setSynonym("down", "move");
-      setSynonym("in", "move");
-      setSynonym("out", "move");
+      for (auto dIt = vocabulary.directionsBegin(); dIt != vocabulary.directionsEnd();
+      dIt++) {
+         setSynonym(*dIt, "move");
+      }
 
       actions->setAction("look", std::make_unique<LookAction>());
       setSynonym("observe", "look");

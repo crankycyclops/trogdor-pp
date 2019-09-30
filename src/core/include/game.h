@@ -271,6 +271,25 @@ namespace trogdor {
          }
 
          /*
+            Wraps around vocabulary.insertDirection. The reasoning behind this
+            is that getVocabulary only returns a const reference for lookups to
+            objects that aren't supposed to have much access to Game and
+            therefore shouldn't be changing any of its values. By contrast, an
+            object that has access to Game might have a good reason to modify
+            its vocabulary.
+
+            Input:
+               New direction (string)
+
+            Output:
+               (none)
+         */
+         inline void insertDirection(string direction) {
+
+            vocabulary.insertDirection(direction);
+         }
+
+         /*
             Gets a synonym.  If the value isn't set, an empty string is returned.
 
             Input:

@@ -86,8 +86,8 @@ namespace trogdor {
       // parse the remaining sections
       while (nextTag() && 1 == getDepth()) {
 
-         if (0 == getTagName().compare("synonyms")) {
-            parseSynonyms();
+         if (0 == getTagName().compare("vocabulary")) {
+              parseVocabulary();
          }
 
          else if (0 == getTagName().compare("events")) {
@@ -321,9 +321,52 @@ namespace trogdor {
 
    /***************************************************************************/
 
+   void XMLParser::parseVocabulary() {
+
+      // parse the remaining sections
+      while (nextTag() && 2 == getDepth()) {
+
+         if (0 == getTagName().compare("directions")) {
+            parseDirections();
+         }
+
+         else if (0 == getTagName().compare("synonyms")) {
+            parseSynonyms();
+         }
+
+         else {
+            throw ParseException(string("invalid section <") + getTagName() + ">");
+         }
+      }
+
+      checkClosingTag("vocabulary");
+   }
+
+   /***************************************************************************/
+
+   void XMLParser::parseDirections() {
+
+      while (nextTag() && 3 == getDepth()) {
+
+         if (0 == getTagName().compare("direction")) {
+            instantiator->gameSetter("direction", parseString());
+            checkClosingTag("direction");
+         }
+
+         else {
+            throw ParseException(string("invalid tag <") + getTagName()
+               + "> in <directions>");
+         }
+      }
+
+      checkClosingTag("directions");
+   }
+
+   /***************************************************************************/
+
    void XMLParser::parseSynonyms() {
 
-      while (nextTag() && 2 == getDepth()) {
+      while (nextTag() && 3 == getDepth()) {
 
          if (0 == getTagName().compare("verb")) {
             string action = getAttribute("action");

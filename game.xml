@@ -72,6 +72,7 @@
       <!-- every game must include at least one room named "start" -->
       <rooms>
          <room name="start"></room>
+         <room name="mysticalhall"></room>
          <room name="cave"></room>
          <room name="chamber"></room>
       </rooms>
@@ -130,17 +131,33 @@ This is an introduction. If introductions are enabled, new players will have to 
 
 
 
-   <!-- Optional section that allows you to map new words to existing verbs.
-        Verbs take precedence over synonyms, so if you specify, for example,
-        "take" as a synonym of "drop," since "take" is already defined as a
-        verb, that action will be executed instead of "drop." -->
-   <synonyms>
+   <!-- Optional section that allows you to modify the game's vocabulary -->
+   <vocabulary>
 
-      <!-- this example maps the new word "shutdown" to the existing verb
-           "quit." -->
-      <verb action="quit">shutdown</verb>
+      <!-- Map new words to existing verbs. Verbs take precedence over synonyms,
+           so if you specify, for example, "take" as a synonym of "drop," since
+           "take" is already defined as a built-in verb, that action will be
+           executed instead of "drop." -->
+      <synonyms>
 
-   </synonyms>
+         <!-- this example maps the new word "shutdown" to the existing verb
+              "quit." -->
+         <verb action="quit">shutdown</verb>
+
+      </synonyms>
+
+      <!-- Allows you to define custom directions. Built-in directions include
+           north, south, east, west, northeast, northwest, southeast, southwest,
+           inside, and outside -->
+      <directions>
+
+         <!-- Defines a whimsical direction called "sideways." With this, we
+              can define room connections below using this custom direction. -->
+         <direction>sideways</direction>
+
+      </directions>
+
+   </vocabulary>
 
 
 
@@ -540,13 +557,14 @@ He's white, transparent and floating six or seven feet off the ground.  He smile
 
          <!-- user will see the room's description when they enter -->
          <description>
-You're standing in the middle of a sprawling white marble castle, the walls lined with portraits of long deceased ancestors of some forgotten king.  Servants are bustling about, rushing around with steaming plates of meats and cooked vegetables, rushing in and out of rooms to serve princes and heads of state.
+You're standing in the middle of a sprawling white marble castle, the walls lined with portraits of long deceased ancestors of some forgotten king.  Servants are bustling about, rushing around with steaming plates of meats and cooked vegetables, rushing in and out of rooms to serve princes and heads of state. Legend has it that going sideways can transport you to a strange and mystical land.
 
-You peer off into the distance and notice a dark hole in the wall a little ways to the north.
+To the north, you see a dark hole in the wall big enough to walk through.
          </description>
 
-         <!-- name of the room north of this one -->
+         <!-- names of the rooms "north" and "sideways" of this one -->
          <north>cave</north>
+         <sideways>mysticalhall</sideways>
 
          <events>
             <script src="script/room/start.lua"></script>
@@ -560,6 +578,7 @@ You peer off into the distance and notice a dark hole in the wall a little ways 
             <message name="gonorth">Transitioning to the cave!</message>
             <!-- we're ENTERING this room by going south from another room -->
             <message name="entersouth">Back to start from the cave!</message>
+            <message name="gosideways">The legends are true! You turn sideways and are consumed by light!</message>
          </messages>
 
          <!-- Creatures and objects that are contained inside a room should be
@@ -570,6 +589,20 @@ You peer off into the distance and notice a dark hole in the wall a little ways 
             <object>candle</object>
             <object>sword</object>
          </contains>
+
+      </room>
+
+      <room name="mysticalhall">
+
+         <title>Mystical Hall</title>
+
+         <description>
+You find yourself in a mystical hall that seems to extend from one horizon to the next. The room is filled with clouds, and if you strain your ears carefully, you think you might hear the sound of an angelic choir.
+
+You can't say for sure, but you suspect that going sideways will return you to the castle.
+         </description>
+
+         <sideways>start</sideways>
 
       </room>
 

@@ -475,6 +475,14 @@ namespace trogdor {
 
          game->setSynonym(synonym, action);
       };
+
+      /**********/
+
+      // Inserts a new direction into the game's vocabulary.
+      gameSetters["direction"] = [](Game *game, string value) {
+
+         game->insertDirection(value);
+      };
    }
 
    /***************************************************************************/

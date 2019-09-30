@@ -53,6 +53,36 @@ namespace trogdor {
          }
 
          /*
+            Returns a const_iterator that can be used to iterate through all
+            currently defined directions.
+
+            Input:
+               (none)
+
+            Output:
+               const_iterator
+         */
+         inline unordered_set<string>::const_iterator directionsBegin() const {
+
+            return directions.begin();
+         }
+
+         /*
+            Returns a const_iterator representing the end of all currently
+            defined directions.
+
+            Input:
+               (none)
+
+            Output:
+               const_iterator
+         */
+         inline unordered_set<string>::const_iterator directionsEnd() const {
+
+            return directions.end();
+         }
+
+         /*
             Inserts a new valid direction.
 
             Input:
@@ -82,6 +112,36 @@ namespace trogdor {
          }
 
          /*
+            Returns a const_iterator that can be used to iterate through all
+            currently defined filler words.
+
+            Input:
+               (none)
+
+            Output:
+               const_iterator
+         */
+         inline unordered_set<string>::const_iterator fillerWordsBegin() const {
+
+            return fillerWords.begin();
+         }
+
+         /*
+            Returns a const_iterator representing the end of all currently
+            defined filler words.
+
+            Input:
+               (none)
+
+            Output:
+               const_iterator
+         */
+         inline unordered_set<string>::const_iterator fillerWordsEnd() const {
+
+            return fillerWords.end();
+         }
+
+         /*
             Inserts a new filler word.
 
             Input:
@@ -108,6 +168,36 @@ namespace trogdor {
          inline bool isPreposition(string str) const {
 
             return prepositions.find(str) != prepositions.end() ? true : false;
+         }
+
+         /*
+            Returns a const_iterator that can be used to iterate through all
+            currently defined prepositions.
+
+            Input:
+               (none)
+
+            Output:
+               const_iterator
+         */
+         inline unordered_set<string>::const_iterator prepositionsBegin() const {
+
+            return prepositions.begin();
+         }
+
+         /*
+            Returns a const_iterator representing the end of all currently
+            defined prepositions.
+
+            Input:
+               (none)
+
+            Output:
+               const_iterator
+         */
+         inline unordered_set<string>::const_iterator prepositionsEnd() const {
+
+            return prepositions.end();
          }
 
          /*

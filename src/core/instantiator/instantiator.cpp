@@ -106,17 +106,17 @@ namespace trogdor {
          }
       };
 
-      // Special "property" that sets a tag for an Entity
-      entityPropValidators["room"]["tag.set"] =
-      entityPropValidators["object"]["tag.set"] =
-      entityPropValidators["creature"]["tag.set"] =
-      entityPropValidators["player"]["tag.set"] = assertString;
-
       // Special "property" that removes a tag for an Entity
       entityPropValidators["room"]["tag.remove"] =
       entityPropValidators["object"]["tag.remove"] =
       entityPropValidators["creature"]["tag.remove"] =
       entityPropValidators["player"]["tag.remove"] = assertString;
+
+      // Special "property" that sets a tag for an Entity
+      entityPropValidators["room"]["tag.set"] =
+      entityPropValidators["object"]["tag.set"] =
+      entityPropValidators["creature"]["tag.set"] =
+      entityPropValidators["player"]["tag.set"] = assertString;
 
       // Special "property" that sets an alias for a Thing
       // TODO: validate this the exact same way I validate an Entity's name
@@ -289,6 +289,9 @@ namespace trogdor {
             throw UndefinedException("not a valid synonym -> action pair (this is a bug)");
          }
       };
+
+      // Insert a new direction into the game's vocabulary
+      gamePropValidators["direction"] = assertString;
    }
 }
 

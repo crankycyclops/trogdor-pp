@@ -344,6 +344,37 @@ namespace trogdor {
          void parseGameMeta();
          void parseEntityMeta(string entityName, enum ParseMode mode, int depth);
 
+         /*
+            Parses the vocabulary section of game.xml.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseVocabulary();
+
+         /*
+            Parses new custom directions (like north, south, east, etc.)
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseDirections();
+
+         /*
+            Parses verb synonyms.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
          void parseSynonyms();
 
          /*
