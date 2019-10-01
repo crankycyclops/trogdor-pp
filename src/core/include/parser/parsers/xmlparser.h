@@ -470,7 +470,7 @@ namespace trogdor {
          ~XMLParser();
 
          /*
-            Parses an XML game definition and passes the dataa off to an
+            Parses an XML game definition and passes the data off to an
             instance of Instantiator, which creates the corresponding data
             structures.
 

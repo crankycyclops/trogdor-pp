@@ -193,7 +193,7 @@ namespace trogdor {
          }
 
          /*
-            Parses a game definition and passes the dataa off to an instance of
+            Parses a game definition and passes the data off to an instance of
             Instantiator, which creates the corresponding data structures.
 
             Input:

@@ -7,9 +7,11 @@
 #include <memory>
 #include <iostream>
 #include <cstdlib>
+#include <cstring>
 
 #include "../core/include/game.h"
 #include "../core/include/parser/parsers/xmlparser.h"
+#include "../core/include/parser/parsers/inform7parser.h"
 
 #include "include/streamout.h"
 #include "include/streamin.h"
@@ -24,8 +26,8 @@ int main(int argc, char **argv) {
    // default game filename
    string gameXML = "game.xml";
 
-   if (argc > 2) {
-	  cerr << "Usage: trogdor [game_filename.xml]\n" << endl;
+   if (argc > 3) {
+	  cerr << "Usage: trogdor [game_file] [xml (default) | inform7]\n" << endl;
 	  return EXIT_FAILURE;
    }
 
@@ -41,10 +43,22 @@ int main(int argc, char **argv) {
    // The client can either choose from a parser type that's been implemented in
    // core or from a custom class that inherits from trogdor::Parser. Meanwhile,
    // the Game object is responsible for choosing an implementation of
-   // trogdor::Instantiator.
-   std::unique_ptr<trogdor::XMLParser> parser = make_unique<trogdor::XMLParser>(
-      std::move(currentGame->makeInstantiator()), currentGame->getVocabulary()
-   );
+   // trogdor::Instantiator. In the case of the standalone example, there are
+   // only the two built-in parsers available: XML and Inform 7.
+   std::unique_ptr<trogdor::Parser> parser;
+
+   // user wants to parse Inform 7 instead of XML, the default
+   if (argc > 2 && 0 == strcmp("inform7", argv[2])) {
+      parser = make_unique<trogdor::Inform7Parser>(
+         std::move(currentGame->makeInstantiator()), currentGame->getVocabulary()
+      );
+   }
+
+   else {
+      parser = make_unique<trogdor::XMLParser>(
+         std::move(currentGame->makeInstantiator()), currentGame->getVocabulary()
+      );
+   }
 
    // The client can add its own synonyms for built-in verbs
    currentGame->setSynonym("escape", "quit");
