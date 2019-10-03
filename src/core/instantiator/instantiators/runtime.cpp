@@ -473,7 +473,7 @@ namespace trogdor {
          string synonym = value.substr(0, value.find(":"));
          string action = value.substr(value.find(":") + 1, value.length());
 
-         game->setSynonym(synonym, action);
+         game->insertVerbSynonym(synonym, action);
       };
 
       /**********/

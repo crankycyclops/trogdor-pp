@@ -5,6 +5,7 @@
 #include <unordered_set>
 
 #include "include/vocabulary.h"
+#include "include/action.h"
 
 using namespace std;
 
@@ -13,7 +14,55 @@ namespace trogdor {
 
    Vocabulary::Vocabulary() {
 
-      // Built-in directions
+      initBuiltinDirections();
+      initBuiltinFillerWords();
+      initBuiltinPrepositions();
+   }
+
+   /**************************************************************************/
+
+   // Advanced stuff happens here...
+   Vocabulary::~Vocabulary() {}
+
+   /**************************************************************************/
+
+   void Vocabulary::insertVerbAction(string verb, std::unique_ptr<Action> action) {
+
+      verbActions[verb] = std::move(action);
+   }
+
+   /**************************************************************************/
+
+   void Vocabulary::removeVerbAction(string verb) {
+
+      verbActions.erase(verb);
+   }
+
+   /**************************************************************************/
+
+   Action *Vocabulary::getVerbAction(string verb) const {
+
+      if (verbActions.find(verb) == verbActions.end()) {
+
+         // If the verb isn't found, see if it can be mapped via synonym
+         if (
+            verbSynonyms.find(verb) != verbSynonyms.end() &&
+            verbActions.find(verbSynonyms.find(verb)->second) != verbActions.end()
+         ) {
+            return verbActions.find(verbSynonyms.find(verb)->second)->second.get();
+         }
+
+         // We got nuttin' :(
+         return nullptr;
+      }
+
+      return verbActions.find(verb)->second.get();
+   }
+
+   /**************************************************************************/
+
+   void Vocabulary::initBuiltinDirections() {
+
       directions.insert("north");
       directions.insert("south");
       directions.insert("east");
@@ -26,11 +75,19 @@ namespace trogdor {
       directions.insert("down");
       directions.insert("inside");
       directions.insert("outside");
+   }
 
-      // Filler words that we ignore during command parsing
+   /**************************************************************************/
+
+   void Vocabulary::initBuiltinFillerWords() {
+
       fillerWords.insert("the");
+   }
 
-      // Built-in prepositions
+   /**************************************************************************/
+
+   void Vocabulary::initBuiltinPrepositions() {
+
       prepositions.insert("about");
       prepositions.insert("after");
       prepositions.insert("against");

@@ -47,10 +47,10 @@ int main(int argc, char **argv) {
    );
 
    // The client can add its own synonyms for built-in verbs
-   currentGame->setSynonym("escape", "quit");
+   currentGame->insertVerbSynonym("escape", "quit");
 
    // The client can also write and set its own custom game actions
-   currentGame->setAction("time", std::make_unique<TimeAction>());
+   currentGame->insertVerbAction("time", std::make_unique<TimeAction>());
 
    if (currentGame->initialize(parser.get(), gameXML)) {
 

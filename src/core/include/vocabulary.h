@@ -3,12 +3,18 @@
 
 
 #include <string>
+#include <memory>
 #include <unordered_set>
+#include <unordered_map>
 
 using namespace std;
 
 namespace trogdor {
 
+
+   // Forward declare Action so I don't have to include action.h, which also
+   // includes vocabulary.h
+   class Action;
 
    class Vocabulary {
 
@@ -23,12 +29,59 @@ namespace trogdor {
          // Built-in prepositions
          unordered_set<string> prepositions;
 
+         // Maps verbs to Actions
+         unordered_map<string, std::unique_ptr<Action>> verbActions;
+
+         // Maps verb synonyms to verbs with actions
+         unordered_map<string, string> verbSynonyms;
+
+         /*
+            Setup filler words that the engine recognizes and skips over during
+            command parsing by default.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void initBuiltinFillerWords();
+
+         /*
+            Setup built-in directions that the engine recognizes by default.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void initBuiltinDirections();
+
+         /*
+            Setup prepositions that the engine recognizes by default.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void initBuiltinPrepositions();
+
       public:
 
          /*
             Constructor
          */
          Vocabulary();
+
+         /*
+            Empty destructor that satisfies Ye Olde Compiler Gods (otherwise, I
+            get this error: unique_ptr.h: error: invalid application of 'sizeof'
+            to incomplete type 'trogdor::Action.'
+         */
+         ~Vocabulary();
 
          /*
             Don't allow copying Vocabulary objects (there's no point, and there
@@ -212,6 +265,62 @@ namespace trogdor {
          inline void insertPreposition(string prep) {
 
             prepositions.insert(prep);
+         }
+
+         /*
+            Inserts a new Action object identified by the specified verb.
+
+            Input:
+               Verb (string)
+               Action to execute when the verb is used as a command (Action)
+
+            Output:
+               (none)
+         */
+         void insertVerbAction(string verb, std::unique_ptr<Action> action);
+
+         /*
+            Removes the specified verb and its corresponding Action from the
+            verbActions table so that it can no longer be used in the game.
+
+            Input:
+               Verb (string)
+
+            Output:
+               (none)
+         */
+         void removeVerbAction(string verb);
+
+         /*
+            Retrieves the Action object identified by the specified verb. If the
+            Action is not found, it next tries to locate the appropriate verb
+            using a verb synonym. If a suitable verb with action still isn't
+            found, nullptr is returned.
+
+            Note that actual verbs take precedence over synonyms in situations
+            where a synonym also matches a verb action.
+
+            Input:
+               Verb (string)
+
+            Output:
+               Pointer to the Action object or nullptr (Action *)
+         */
+         Action *getVerbAction(string verb) const;
+
+         /*
+            Sets a synonym => verb association.
+
+            Input:
+               Synonym (string)
+               Verb (string)
+
+            Output:
+               (none)
+         */
+         inline void insertVerbSynonym(string synonym, string verb) {
+
+            verbSynonyms[synonym] = verb;
          }
    };
 }

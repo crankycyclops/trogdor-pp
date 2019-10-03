@@ -1,6 +1,5 @@
 #include "include/command.h"
 #include "include/game.h"
-#include "include/actionmap.h"
 #include "include/action.h"
 #include "include/utility.h"
 
@@ -48,6 +47,8 @@ namespace trogdor {
       }
 
       // the first token will always be considered the "verb"
+      // TODO: I should keep adding tokens until i can no longer match a verb
+      // (requires storing actions inside the Vocabulary instance.)
       verb = strToLower(tokenizer.getCurToken());
 
       // we may have a direct and/or indirect object to look at

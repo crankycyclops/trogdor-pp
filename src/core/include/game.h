@@ -29,7 +29,6 @@ namespace trogdor {
 
    // Resolve circular dependencies
    class Action;
-   class ActionMap;
    class Parser;
    class Timer;
    class TimerJob;
@@ -58,8 +57,6 @@ namespace trogdor {
 
       public:
 
-         typedef unordered_map<string, string> StringMap;
-
          static const bool DEFAULT_INTRODUCTION_ENABLED = false;
          static const bool DEFAULT_INTRODUCTION_PAUSE   = false;
 
@@ -74,9 +71,6 @@ namespace trogdor {
          // whether or not a game is in progress
          bool inGame;
 
-         // maps verbs to actions
-         std::unique_ptr<ActionMap> actions;
-
          // Keeps time in the game and executes scheduled jobs
          std::unique_ptr<Timer> timer;
 
@@ -84,13 +78,10 @@ namespace trogdor {
          std::shared_ptr<Command> lastCommand;
 
          // game meta data (like title, description, etc.)
-         StringMap meta;
+         unordered_map<string, string> meta;
 
          // Maintains the game's vocabulary
          Vocabulary vocabulary;
-
-         // verb synonyms
-         StringMap synonyms;
 
          // used to call subscribed event listeners
          std::unique_ptr<event::EventHandler> events;
@@ -168,7 +159,7 @@ namespace trogdor {
             Empty destructor defined in game.cpp. If this isn't defined, the
             compiler will choke (God knows why.) In unique_ptr.h, I get this
             error message from GCC: error: invalid application of ‘sizeof’ to
-            incomplete type 'trogdor::ActionMap'.
+            incomplete type 'trogdor::Timer'.
          */
          ~Game();
 
@@ -288,36 +279,6 @@ namespace trogdor {
 
             vocabulary.insertDirection(direction);
          }
-
-         /*
-            Gets a synonym.  If the value isn't set, an empty string is returned.
-
-            Input:
-               synonym (string)
-
-            Output:
-               associated verb (string)
-         */
-         inline string getSynonym(string synonym) const {
-
-            if (synonyms.find(synonym) == synonyms.end()) {
-               return "";
-            }
-
-            return synonyms.find(synonym)->second;
-         }
-
-         /*
-            Sets a synonym => verb association.
-
-            Input:
-               synonym (string)
-               verb (string)
-
-            Output:
-               (none)
-         */
-         inline void setSynonym(string synonym, string verb) {synonyms[synonym] = verb;}
 
          /*
             Sets whether or not new player introductions are enabled.
@@ -874,10 +835,19 @@ namespace trogdor {
          void processCommand(Player *player);
 
          /*
-            Wraps around ActionMap::setAction, allowing the client to supply its
-            own custom actions. See actionmap.h for documentation.
+            Wraps around Vocabulary::insertVerbAction, allowing the client to
+            supply its own custom actions. See vocabulary.h for documentation.
          */
-         void setAction(string verb, std::unique_ptr<Action> action);
+         void insertVerbAction(string verb, std::unique_ptr<Action> action);
+
+         /*
+            Wraps around Vocabulary::insertSynonym, allowing the client to
+            supply its own verb synonyms. See vocabulary.h for documentation.
+         */
+         inline void insertVerbSynonym(string synonym, string verb) {
+
+            vocabulary.insertVerbSynonym(synonym, verb);
+         }
 
          /*
             Wraps around EventHandler API.  See eventhandler.h for documentation.
