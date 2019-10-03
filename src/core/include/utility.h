@@ -48,6 +48,20 @@ extern string &rtrim(std::string &s);
 extern string &trim(std::string &s);
 
 /*
+   Replaces all instances of search with replace in str. Returns a new string
+   and leaves the original unmodified.
+
+   Input:
+      String to modify
+      Substring search
+      Substring replacement
+
+   Output:
+      (none)
+*/
+string replaceAll(const string &str, const string &search, const string &replace);
+
+/*
    Checks if a string represents a valid integer.
 
    Input: string

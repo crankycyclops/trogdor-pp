@@ -45,6 +45,20 @@ string &rtrim(std::string &s);
 string &trim(std::string &s);
 
 /*
+   Replaces all instances of search with replace in str. Returns a new string
+   and leaves the original unmodified.
+
+   Input:
+      String to modify
+      Substring search
+      Substring replacement
+
+   Output:
+      (none)
+*/
+string replaceAll(const string &str, const string &search, const string &replace);
+
+/*
    Checks if a string represents a valid integer.
 
    Input: string
@@ -86,6 +100,18 @@ string &rtrim(std::string &s) {
 
 string &trim(std::string &s) {
         return ltrim(rtrim(s));
+}
+
+
+string replaceAll(const string &str, const string &search, const string &replace) {
+
+   string strCopy = string(str);
+
+   for (int i = strCopy.find(search); i != string::npos; i = strCopy.find(search, i + replace.length())) {
+      strCopy.replace(i, search.length(), replace);
+   }
+
+   return strCopy;
 }
 
 

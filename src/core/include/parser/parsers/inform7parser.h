@@ -31,15 +31,33 @@ namespace trogdor {
       <statement>            ::= <assertion>
       <assertion>            ::= <definition> [<description>] | <adjective assignment>
       <description>          ::= "\""/^[\"]+/".\""["."] | "\""/^[\"]+/["."]"\"."
-      <definition>           ::= ([<article>] <noun> "is" [<article>] [<adjective>] <class> | [<article>] <noun>{"," [<article>] <noun>}[","] "and" [<article>] <noun> "are" [<adjective>] <plural class>) ["in" [<article>] <noun>] | [<article>] <noun> "is" <direction> ("of" | "from") [<article>] <noun>
-      <adjective assignment> ::= [<article>] <noun> is <adjective> | [<article>] <noun>{"," [<article>] <noun>}[","] and [<article>] <noun> are <adjective>
+      <definition>           ::= ([<article>] <noun> "is" [<article>]
+                                 [<adjective>] <class> | [<article>] <noun>{","
+                                 [<article>] <noun>}[","] "and" [<article>]
+                                 <noun> "are" [<adjective>] <plural class>)
+                                 ["in" [<article>] <noun>] | [<article>] <noun>
+                                 "is" <direction> ("of" | "from") [<article>] <noun>
+      <adjective assignment> ::= [<article>] <noun> is <adjective> | [<article>]
+                                 <noun>{"," [<article>] <noun>}[","] and
+                                 [<article>] <noun> are <adjective>
       <noun>                 ::= /[A-Za-z ']+/
       <adjective>            ::= /[A-Za-z ]+/
-      <assertion verb>       ::= "has" | "carries" | "is carrying" | "wears" | "is wearing" | "contains" | "supports" | "is supporting"
+      <assertion verb>       ::= "has" | "carries" | "is carrying" | "wears" |
+                                 "is wearing" | "contains" | "supports" |
+                                 "is supporting"
       <article>              ::= "a" | "an" | "the"
-      <direction>            ::= "north" | "northeast" | "east" | "southeast" | "south" | "southwest" | "west" | "northwest" | "up" | "down" | "inside" | "outside"
-      <class>                ::= "object" | "direction" | "room" | "region" | "thing" | "door" | "container" | "vehicle" | "player's holdall" | "supporter" | "backdrop" | "device" | "person" | "man" | "woman" | "animal"
-      <plural class>         ::= "objects" | "directions" | "rooms" | "regions" | "things" | "doors" | "containers" | "vehicles" | "player's holdalls" | "supporters" | "backdrops" | "devices" | "people" | "men" | "women" | "animals"
+      <direction>            ::= "north" | "northeast" | "east" | "southeast" |
+                                 "south" | "southwest" | "west" | "northwest" |
+                                 "up" | "down" | "inside" | "outside"
+      <class>                ::= "object" | "direction" | "room" | "region" |
+                                 "thing" | "door" | "container" | "vehicle" |
+                                 "player's holdall" | "supporter" | "backdrop" |
+                                 "device" | "person" | "man" | "woman" | "animal"
+      <plural class>         ::= "objects" | "directions" | "rooms" |
+                                 "regions" | "things" | "doors" | "containers" |
+                                 "vehicles" | "player's holdalls" |
+                                 "supporters" | "backdrops" | "devices" |
+                                 "people" | "men" | "women" | "animals"
 
       * Classes included above are those that are built into Inform 7. Once I
       add support for custom classes, I'll also have to be able to parse those.
@@ -66,14 +84,7 @@ namespace trogdor {
          ~Inform7Parser();
 
          /*
-            Parses an Inform 7 source file and uses it to instantiate the game.
-            This is an experimental work in progress, and since Trogdor-pp and
-            Inform are different projects with different goals, this will likely
-            never support the entire language.
-
-            I'm writing this to learn more about grammars and parsing and
-            because I think it will be a fun project :) Don't expect this to be
-            particularly useful.
+            Parses an Inform 7 source file.
 
             Input:
                Filename where the i7 source file is saved (string)
