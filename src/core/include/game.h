@@ -120,15 +120,6 @@ namespace trogdor {
          std::unique_ptr<Trogout> errStream;
 
          /*
-            Called by initialize().  This initializes game actions and maps
-            them to verbs.
-
-            Input: (none)
-            Output: (none)
-         */
-         void initActions();
-
-         /*
             Called by initialize().  This initializes event handling in the game.
 
             Input: (none)

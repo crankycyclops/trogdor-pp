@@ -1,6 +1,5 @@
 #include "include/game.h"
 #include "include/action.h"
-#include "include/actions.h"
 #include "include/timer/timer.h"
 #include "include/parser/parser.h"
 #include "include/instantiator/instantiators/runtime.h"
@@ -71,57 +70,6 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Game::initActions() {
-
-      vocabulary.insertVerbAction("fuck", std::make_unique<CussAction>());
-      vocabulary.insertVerbSynonym("shit", "fuck");
-      vocabulary.insertVerbSynonym("bitch", "fuck");
-      vocabulary.insertVerbSynonym("damn", "fuck");
-      vocabulary.insertVerbSynonym("damnit", "fuck");
-      vocabulary.insertVerbSynonym("asshole", "fuck");
-      vocabulary.insertVerbSynonym("asshat", "fuck");
-
-      vocabulary.insertVerbAction("inv", std::make_unique<InventoryAction>());
-      vocabulary.insertVerbSynonym("inventory", "inv");
-      vocabulary.insertVerbSynonym("list", "inv");
-
-      vocabulary.insertVerbAction("move", std::make_unique<MoveAction>());
-      vocabulary.insertVerbSynonym("go", "move");
-      for (auto dIt = vocabulary.directionsBegin(); dIt != vocabulary.directionsEnd();
-      dIt++) {
-         vocabulary.insertVerbSynonym(*dIt, "move");
-      }
-
-      vocabulary.insertVerbAction("look", std::make_unique<LookAction>());
-      vocabulary.insertVerbSynonym("observe", "look");
-      vocabulary.insertVerbSynonym("see", "look");
-      vocabulary.insertVerbSynonym("show", "look");
-      vocabulary.insertVerbSynonym("describe", "look");
-      vocabulary.insertVerbSynonym("examine", "look");
-
-      vocabulary.insertVerbAction("take", std::make_unique<TakeAction>());
-      vocabulary.insertVerbSynonym("acquire", "take");
-      vocabulary.insertVerbSynonym("get", "take");
-      vocabulary.insertVerbSynonym("grab", "take");
-      vocabulary.insertVerbSynonym("own", "take");
-      vocabulary.insertVerbSynonym("claim", "take");
-      vocabulary.insertVerbSynonym("carry", "take");
-
-      vocabulary.insertVerbAction("drop", std::make_unique<DropAction>());
-
-      vocabulary.insertVerbAction("attack", std::make_unique<AttackAction>());
-      vocabulary.insertVerbSynonym("hit", "attack");
-      vocabulary.insertVerbSynonym("harm", "attack");
-      vocabulary.insertVerbSynonym("kill", "attack");
-      vocabulary.insertVerbSynonym("injure", "attack");
-      vocabulary.insertVerbSynonym("maim", "attack");
-      vocabulary.insertVerbSynonym("fight", "attack");
-
-      vocabulary.insertVerbAction("quit", std::make_unique<QuitAction>());
-   }
-
-   /***************************************************************************/
-
    // NOTE: order is important!
    // TODO: does it make more sense for these events to be added via the trigger
    // objects themselves?
@@ -145,7 +93,6 @@ namespace trogdor {
          return false;
       }
 
-      initActions();
       initEvents();
 
       return true;

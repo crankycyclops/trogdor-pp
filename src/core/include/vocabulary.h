@@ -69,6 +69,17 @@ namespace trogdor {
          */
          void initBuiltinPrepositions();
 
+         /*
+            Sets up verb actions that the engine recognizes by default.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void initBuiltinVerbs();
+
       public:
 
          /*

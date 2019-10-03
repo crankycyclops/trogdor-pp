@@ -6,6 +6,7 @@
 
 #include "include/vocabulary.h"
 #include "include/action.h"
+#include "include/actions.h"
 
 using namespace std;
 
@@ -17,6 +18,7 @@ namespace trogdor {
       initBuiltinDirections();
       initBuiltinFillerWords();
       initBuiltinPrepositions();
+      initBuiltinVerbs();
    }
 
    /**************************************************************************/
@@ -133,6 +135,62 @@ namespace trogdor {
       prepositions.insert("with");
       prepositions.insert("within");
       prepositions.insert("without");
+   }
+
+   /**************************************************************************/
+
+   void Vocabulary::initBuiltinVerbs() {
+
+      insertVerbAction("fuck", std::make_unique<CussAction>());
+
+      insertVerbSynonym("shit", "fuck");
+      insertVerbSynonym("bitch", "fuck");
+      insertVerbSynonym("damn", "fuck");
+      insertVerbSynonym("damnit", "fuck");
+      insertVerbSynonym("asshole", "fuck");
+      insertVerbSynonym("asshat", "fuck");
+
+      insertVerbAction("inv", std::make_unique<InventoryAction>());
+
+      insertVerbSynonym("inventory", "inv");
+      insertVerbSynonym("list", "inv");
+
+      insertVerbAction("move", std::make_unique<MoveAction>());
+
+      insertVerbSynonym("go", "move");
+      for (auto dIt = directionsBegin(); dIt != directionsEnd(); dIt++) {
+         insertVerbSynonym(*dIt, "move");
+      }
+
+      insertVerbAction("look", std::make_unique<LookAction>());
+
+      insertVerbSynonym("observe", "look");
+      insertVerbSynonym("see", "look");
+      insertVerbSynonym("show", "look");
+      insertVerbSynonym("describe", "look");
+      insertVerbSynonym("examine", "look");
+
+      insertVerbAction("take", std::make_unique<TakeAction>());
+
+      insertVerbSynonym("acquire", "take");
+      insertVerbSynonym("get", "take");
+      insertVerbSynonym("grab", "take");
+      insertVerbSynonym("own", "take");
+      insertVerbSynonym("claim", "take");
+      insertVerbSynonym("carry", "take");
+
+      insertVerbAction("drop", std::make_unique<DropAction>());
+
+      insertVerbAction("attack", std::make_unique<AttackAction>());
+
+      insertVerbSynonym("hit", "attack");
+      insertVerbSynonym("harm", "attack");
+      insertVerbSynonym("kill", "attack");
+      insertVerbSynonym("injure", "attack");
+      insertVerbSynonym("maim", "attack");
+      insertVerbSynonym("fight", "attack");
+
+      insertVerbAction("quit", std::make_unique<QuitAction>());
    }
 }
 
