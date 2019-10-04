@@ -226,7 +226,7 @@ namespace trogdor {
          string verb = command->getVerb();
          Action *action = vocabulary.getVerbAction(verb);
 
-         if (0 == action || !action->checkSyntax(command)) {
+         if (nullptr == action || !action->checkSyntax(command)) {
             player->out() << "Sorry, I don't understand you." << endl;
          }
 

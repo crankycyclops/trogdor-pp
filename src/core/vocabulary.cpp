@@ -207,6 +207,11 @@ namespace trogdor {
       insertVerbSynonym("fight", "attack");
 
       insertVerbAction("quit", std::make_unique<QuitAction>());
+
+      // This is a special verb that doesn't actually have an action associated
+      // with it, but which instructs the game to re-execute the last command
+      insertVerbAction("again", nullptr);
+      insertVerbSynonym("a", "again");
    }
 }
 
