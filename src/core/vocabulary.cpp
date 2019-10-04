@@ -5,6 +5,8 @@
 #include <unordered_set>
 
 #include "include/vocabulary.h"
+#include "include/action.h"
+#include "include/actions.h"
 
 using namespace std;
 
@@ -13,7 +15,56 @@ namespace trogdor {
 
    Vocabulary::Vocabulary() {
 
-      // Built-in directions
+      initBuiltinDirections();
+      initBuiltinFillerWords();
+      initBuiltinPrepositions();
+      initBuiltinVerbs();
+   }
+
+   /**************************************************************************/
+
+   // Advanced stuff happens here...
+   Vocabulary::~Vocabulary() {}
+
+   /**************************************************************************/
+
+   void Vocabulary::insertVerbAction(string verb, std::unique_ptr<Action> action) {
+
+      verbActions[verb] = std::move(action);
+   }
+
+   /**************************************************************************/
+
+   void Vocabulary::removeVerbAction(string verb) {
+
+      verbActions.erase(verb);
+   }
+
+   /**************************************************************************/
+
+   Action *Vocabulary::getVerbAction(string verb) const {
+
+      if (verbActions.find(verb) == verbActions.end()) {
+
+         // If the verb isn't found, see if it can be mapped via synonym
+         if (
+            verbSynonyms.find(verb) != verbSynonyms.end() &&
+            verbActions.find(verbSynonyms.find(verb)->second) != verbActions.end()
+         ) {
+            return verbActions.find(verbSynonyms.find(verb)->second)->second.get();
+         }
+
+         // We got nuttin' :(
+         return nullptr;
+      }
+
+      return verbActions.find(verb)->second.get();
+   }
+
+   /**************************************************************************/
+
+   void Vocabulary::initBuiltinDirections() {
+
       directions.insert("north");
       directions.insert("south");
       directions.insert("east");
@@ -27,10 +78,29 @@ namespace trogdor {
       directions.insert("inside");
       directions.insert("outside");
 
-      // Filler words that we ignore during command parsing
-      fillerWords.insert("the");
+      directionSynonyms["n"]   = "north";
+      directionSynonyms["s"]   = "south";
+      directionSynonyms["e"]   = "east";
+      directionSynonyms["w"]   = "west";
+      directionSynonyms["ne"]  = "northeast";
+      directionSynonyms["nw"]  = "northwest";
+      directionSynonyms["se"]  = "southeast";
+      directionSynonyms["sw"]  = "southwest";
+      directionSynonyms["in"]  = "inside";
+      directionSynonyms["out"] = "outside";
+   }
 
-      // Built-in prepositions
+   /**************************************************************************/
+
+   void Vocabulary::initBuiltinFillerWords() {
+
+      fillerWords.insert("the");
+   }
+
+   /**************************************************************************/
+
+   void Vocabulary::initBuiltinPrepositions() {
+
       prepositions.insert("about");
       prepositions.insert("after");
       prepositions.insert("against");
@@ -76,6 +146,72 @@ namespace trogdor {
       prepositions.insert("with");
       prepositions.insert("within");
       prepositions.insert("without");
+   }
+
+   /**************************************************************************/
+
+   void Vocabulary::initBuiltinVerbs() {
+
+      insertVerbAction("fuck", std::make_unique<CussAction>());
+
+      insertVerbSynonym("shit", "fuck");
+      insertVerbSynonym("bitch", "fuck");
+      insertVerbSynonym("damn", "fuck");
+      insertVerbSynonym("damnit", "fuck");
+      insertVerbSynonym("asshole", "fuck");
+      insertVerbSynonym("asshat", "fuck");
+
+      insertVerbAction("inv", std::make_unique<InventoryAction>());
+
+      insertVerbSynonym("inventory", "inv");
+      insertVerbSynonym("list", "inv");
+
+      insertVerbAction("move", std::make_unique<MoveAction>());
+
+      insertVerbSynonym("go", "move");
+      insertVerbSynonym("walk", "move");
+      for (auto dIt = directions.begin(); dIt != directions.end(); dIt++) {
+         insertVerbSynonym(*dIt, "move");
+      }
+      for (auto dSynIt = directionSynonyms.begin();
+      dSynIt != directionSynonyms.end(); dSynIt++) {
+         insertVerbSynonym(dSynIt->first, "move");
+      }
+
+      insertVerbAction("look", std::make_unique<LookAction>());
+
+      insertVerbSynonym("observe", "look");
+      insertVerbSynonym("see", "look");
+      insertVerbSynonym("show", "look");
+      insertVerbSynonym("describe", "look");
+      insertVerbSynonym("examine", "look");
+
+      insertVerbAction("take", std::make_unique<TakeAction>());
+
+      insertVerbSynonym("acquire", "take");
+      insertVerbSynonym("get", "take");
+      insertVerbSynonym("grab", "take");
+      insertVerbSynonym("own", "take");
+      insertVerbSynonym("claim", "take");
+      insertVerbSynonym("carry", "take");
+
+      insertVerbAction("drop", std::make_unique<DropAction>());
+
+      insertVerbAction("attack", std::make_unique<AttackAction>());
+
+      insertVerbSynonym("hit", "attack");
+      insertVerbSynonym("harm", "attack");
+      insertVerbSynonym("kill", "attack");
+      insertVerbSynonym("injure", "attack");
+      insertVerbSynonym("maim", "attack");
+      insertVerbSynonym("fight", "attack");
+
+      insertVerbAction("quit", std::make_unique<QuitAction>());
+
+      // This is a special verb that doesn't actually have an action associated
+      // with it, but which instructs the game to re-execute the last command
+      insertVerbAction("again", nullptr);
+      insertVerbSynonym("a", "again");
    }
 }
 

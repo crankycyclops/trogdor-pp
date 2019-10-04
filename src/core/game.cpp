@@ -1,7 +1,5 @@
 #include "include/game.h"
-#include "include/actionmap.h"
 #include "include/action.h"
-#include "include/actions.h"
 #include "include/timer/timer.h"
 #include "include/parser/parser.h"
 #include "include/instantiator/instantiators/runtime.h"
@@ -38,7 +36,6 @@ namespace trogdor {
          errStream = std::move(e);
 
          inGame = false;
-         actions = make_unique<ActionMap>(this);
          timer = make_unique<Timer>(this);
          events = make_unique<event::EventHandler>();
 
@@ -73,57 +70,6 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Game::initActions() {
-
-      actions->setAction("fuck", std::make_unique<CussAction>());
-      setSynonym("shit", "fuck");
-      setSynonym("bitch", "fuck");
-      setSynonym("damn", "fuck");
-      setSynonym("damnit", "fuck");
-      setSynonym("asshole", "fuck");
-      setSynonym("asshat", "fuck");
-
-      actions->setAction("inv", std::make_unique<InventoryAction>());
-      setSynonym("inventory", "inv");
-      setSynonym("list", "inv");
-
-      actions->setAction("move", std::make_unique<MoveAction>());
-      setSynonym("go", "move");
-      for (auto dIt = vocabulary.directionsBegin(); dIt != vocabulary.directionsEnd();
-      dIt++) {
-         setSynonym(*dIt, "move");
-      }
-
-      actions->setAction("look", std::make_unique<LookAction>());
-      setSynonym("observe", "look");
-      setSynonym("see", "look");
-      setSynonym("show", "look");
-      setSynonym("describe", "look");
-      setSynonym("examine", "look");
-
-      actions->setAction("take", std::make_unique<TakeAction>());
-      setSynonym("acquire", "take");
-      setSynonym("get", "take");
-      setSynonym("grab", "take");
-      setSynonym("own", "take");
-      setSynonym("claim", "take");
-      setSynonym("carry", "take");
-
-      actions->setAction("drop", std::make_unique<DropAction>());
-
-      actions->setAction("attack", std::make_unique<AttackAction>());
-      setSynonym("hit", "attack");
-      setSynonym("harm", "attack");
-      setSynonym("kill", "attack");
-      setSynonym("injure", "attack");
-      setSynonym("maim", "attack");
-      setSynonym("fight", "attack");
-
-      actions->setAction("quit", std::make_unique<QuitAction>());
-   }
-
-   /***************************************************************************/
-
    // NOTE: order is important!
    // TODO: does it make more sense for these events to be added via the trigger
    // objects themselves?
@@ -147,7 +93,6 @@ namespace trogdor {
          return false;
       }
 
-      initActions();
       initEvents();
 
       return true;
@@ -279,16 +224,9 @@ namespace trogdor {
          }
 
          string verb = command->getVerb();
+         Action *action = vocabulary.getVerbAction(verb);
 
-         Action *action = actions->getAction(verb);
-
-         // if the action doesn't exist, check if the verb is a synonym
-         if (0 == action) {
-            verb = getSynonym(verb);
-            action = actions->getAction(verb);
-         }
-
-         if (0 == action || !action->checkSyntax(command)) {
+         if (nullptr == action || !action->checkSyntax(command)) {
             player->out() << "Sorry, I don't understand you." << endl;
          }
 
@@ -308,9 +246,9 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Game::setAction(string verb, std::unique_ptr<Action> action) {
+   void Game::insertVerbAction(string verb, std::unique_ptr<Action> action) {
 
-      actions->setAction(verb, std::move(action));
+      vocabulary.insertVerbAction(verb, std::move(action));
    }
 }
 

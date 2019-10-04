@@ -38,12 +38,37 @@ namespace trogdor {
          inline string getCurToken() const {return isEnd() ? string() : tokens[curTokenIndex];}
 
          /*
+            Consumes all tokens in a single call.
+
+            Input: (none)
+            Output: Vector containing all tokens (vector<string>)
+         */
+         inline vector<string> consumeAll() {
+
+            curTokenIndex = tokens.size();
+            return tokens;
+         }
+
+         /*
             Advances the current token.
 
             Input: (none)
             Output: (none)
          */
          inline void next() {curTokenIndex++;}
+
+         /*
+            Backtracks the current token.
+
+            Input: (none)
+            Output: (none)
+         */
+         inline void previous() {
+
+            if (curTokenIndex > 0) {
+               curTokenIndex--;
+            }
+         }
 
          /*
             Rewinds the tokenizer to the beginning of the string.

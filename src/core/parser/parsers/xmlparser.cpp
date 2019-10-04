@@ -369,11 +369,21 @@ namespace trogdor {
       while (nextTag() && 3 == getDepth()) {
 
          if (0 == getTagName().compare("verb")) {
-            string action = getAttribute("action");
+            string action = getAttribute("verb");
             action = trim(action);
             string synonym = parseString();
-            instantiator->gameSetter("synonym", synonym + ":" + action);
+            synonym = trim(synonym);
+            instantiator->gameSetter("synonym.verb", synonym + ":" + action);
             checkClosingTag("verb");
+         }
+
+         else if (0 == getTagName().compare("direction")) {
+            string direction = getAttribute("direction");
+            direction = trim(direction);
+            string synonym = parseString();
+            synonym = trim(synonym);
+            instantiator->gameSetter("synonym.direction", synonym + ":" + direction);
+            checkClosingTag("direction");
          }
 
          else {

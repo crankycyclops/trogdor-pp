@@ -128,7 +128,7 @@ namespace trogdor {
          */
          Runtime() = delete;
          Runtime(const Runtime &) = delete;
-         Runtime(Game *g);
+         Runtime(const Vocabulary &v, Game *g);
 
          /*
             Creates an entity class that can be used to instantiate one or

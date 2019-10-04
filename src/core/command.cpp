@@ -1,6 +1,5 @@
 #include "include/command.h"
 #include "include/game.h"
-#include "include/actionmap.h"
 #include "include/action.h"
 #include "include/utility.h"
 
@@ -47,12 +46,44 @@ namespace trogdor {
         return;
       }
 
-      // the first token will always be considered the "verb"
-      verb = strToLower(tokenizer.getCurToken());
+      // Start by attempting to match the entire sentence to a verb. Then,
+      // continue reducing the number of words in our potential verb until
+      // either we find a match or exhaust all tokens (in which case, there are
+      // no verb matches and sentence validation fails.)
+      string verbStr;
+      bool verbMatched = false;
+
+      vector<string> tokens = tokenizer.consumeAll();
+
+      for (int numWords = tokens.size(); numWords > 0; numWords--) {
+
+         verbStr = "";
+
+         for (int i = 0; i < tokens.size(); i++) {
+            verbStr += tokens[i] + (i < tokens.size() - 1 ? " " : "");
+         }
+
+         // Yay, we matched a verb!
+         if (vocabulary.isVerb(verbStr)) {
+            verb = verbStr;
+            verbMatched = true;
+            break;
+         }
+
+         // Haven't matched a verb yet, so backtrack by one token and try again
+         else {
+            tokens.pop_back();
+            tokenizer.previous();
+         }
+      }
+
+      // We weren't able to match a verb, so consider this command invalid
+      if (!verbMatched) {
+         invalid = true;
+         return;
+      }
 
       // we may have a direct and/or indirect object to look at
-      tokenizer.next();
-
       if (!tokenizer.isEnd()) {
 
          int status;
