@@ -134,18 +134,6 @@ This is an introduction. If introductions are enabled, new players will have to 
    <!-- Optional section that allows you to modify the game's vocabulary -->
    <vocabulary>
 
-      <!-- Map new words to existing verbs. Verbs take precedence over synonyms,
-           so if you specify, for example, "take" as a synonym of "drop," since
-           "take" is already defined as a built-in verb, that action will be
-           executed instead of "drop." -->
-      <synonyms>
-
-         <!-- this example maps the new word "shutdown" to the existing verb
-              "quit." -->
-         <verb original="quit">shutdown</verb>
-
-      </synonyms>
-
       <!-- Allows you to define custom directions. Built-in directions include
            north, south, east, west, northeast, northwest, southeast, southwest,
            up, down, inside, and outside -->
@@ -156,6 +144,24 @@ This is an introduction. If introductions are enabled, new players will have to 
          <direction>sideways</direction>
 
       </directions>
+
+      <!-- Map new words to existing verbs. Verbs take precedence over synonyms,
+           so if you specify, for example, "take" as a synonym of "drop," since
+           "take" is already defined as a built-in verb, that action will be
+           executed instead of "drop." -->
+      <synonyms>
+
+         <!-- this example maps the new word "shutdown" to the existing verb
+              "quit." -->
+         <verb verb="quit">shutdown</verb>
+
+         <!-- this example maps the new synonym "sideway" to the direction
+              "sideways," which we defined above. Note that this synonym must
+              either be for a built-in direction or appear AFTER a custom
+              direction's definition. -->
+         <direction direction="sideways">sideway</direction>
+
+      </synonyms>
 
    </vocabulary>
 

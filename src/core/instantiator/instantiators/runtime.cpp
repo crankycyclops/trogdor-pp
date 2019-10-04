@@ -19,7 +19,7 @@ using namespace std;
 
 namespace trogdor {
 
-   Runtime::Runtime(Game *g): Instantiator() {
+   Runtime::Runtime(const Vocabulary &v, Game *g): Instantiator(v) {
 
       game = g;
 
@@ -468,12 +468,24 @@ namespace trogdor {
 
       // Sets an action synonym for the game (for example, "shutdown" might be
       // a synonym for "quit")
-      gameSetters["synonym"] = [](Game *game, string value) {
+      gameSetters["synonym.verb"] = [](Game *game, string value) {
 
          string synonym = value.substr(0, value.find(":"));
          string action = value.substr(value.find(":") + 1, value.length());
 
          game->insertVerbSynonym(synonym, action);
+      };
+
+      /**********/
+
+      // Sets a direction synonym for the game (for example, "n" is a built-in
+      // synonym for "north")
+      gameSetters["synonym.direction"] = [](Game *game, string value) {
+
+         string synonym = value.substr(0, value.find(":"));
+         string direction = value.substr(value.find(":") + 1, value.length());
+
+         game->insertDirectionSynonym(synonym, direction);
       };
 
       /**********/

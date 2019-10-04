@@ -165,7 +165,7 @@ namespace trogdor {
          */
          inline std::unique_ptr<Runtime> makeInstantiator() {
 
-            return make_unique<Runtime>(this);
+            return make_unique<Runtime>(getVocabulary(), this);
          }
 
          /*
@@ -269,6 +269,27 @@ namespace trogdor {
          inline void insertDirection(string direction) {
 
             vocabulary.insertDirection(direction);
+         }
+
+
+         /*
+            Wraps around vocabulary.insertDirectionSynonym. The reasoning behind
+            this is that getVocabulary only returns a const reference for
+            lookups to objects that aren't supposed to have much access to Game
+            and therefore shouldn't be changing any of its values. By contrast,
+            an object that has access to Game might have a good reason to modify
+            its vocabulary.
+
+            Input:
+               New direction synonym (string)
+               Actual direction synonym references (string)
+
+            Output:
+               (none)
+         */
+         inline void insertDirectionSynonym(string synonym, string direction) {
+
+            vocabulary.insertDirectionSynonym(synonym, direction);
          }
 
          /*

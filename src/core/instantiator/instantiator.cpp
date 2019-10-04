@@ -1,6 +1,7 @@
 #include <string>
 
 #include "../include/instantiator/instantiator.h"
+#include "../include/vocabulary.h"
 #include "../include/utility.h"
 
 #include "../include/exception/validationexception.h"
@@ -11,7 +12,7 @@ using namespace std;
 namespace trogdor {
 
 
-   Instantiator::Instantiator() {
+   Instantiator::Instantiator(const Vocabulary &v): vocabulary(v) {
 
       mapEntityPropValidators();
       mapGamePropValidators();
@@ -19,7 +20,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Instantiator::assertBool(string value) {
+   void Instantiator::assertBool(const Vocabulary &vocabulary, string value) {
 
       // TODO: also allow strings "false" and "true"
       if (value != "1" && value != "0") {
@@ -29,7 +30,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Instantiator::assertInt(string value) {
+   void Instantiator::assertInt(const Vocabulary &vocabulary, string value) {
 
       if (!isValidInteger(value)) {
          throw ValidationException("value is not a valid integer");
@@ -38,7 +39,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Instantiator::assertDouble(string value) {
+   void Instantiator::assertDouble(const Vocabulary &vocabulary, string value) {
 
       if (!isValidDouble(value)) {
          throw ValidationException("value is not a valid number");
@@ -47,7 +48,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Instantiator::assertProbability(string value) {
+   void Instantiator::assertProbability(const Vocabulary &vocabulary, string value) {
 
       string errorMsg = "value is not a valid probability (must be between 0 and 1)";
 
@@ -64,7 +65,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Instantiator::assertString(string value) {
+   void Instantiator::assertString(const Vocabulary &vocabulary, string value) {
 
       // Any string is valid, so never throw an exception
       return;
@@ -96,7 +97,8 @@ namespace trogdor {
       entityPropValidators["room"]["meta"] =
       entityPropValidators["object"]["meta"] =
       entityPropValidators["creature"]["meta"] =
-      entityPropValidators["player"]["meta"] = [](string value) {
+      entityPropValidators["player"]["meta"] = [](const Vocabulary &vocabulary,
+      string value) {
 
          string metaKey = value.substr(0, value.find(":"));
          string metaValue = value.substr(value.find(":") + 1, value.length());
@@ -163,7 +165,8 @@ namespace trogdor {
 
       // Special "property" that inserts an Object into a Being's inventory
       entityPropValidators["creature"]["inventory.object"] =
-      entityPropValidators["player"]["inventory.object"] = [](string value) {
+      entityPropValidators["player"]["inventory.object"] = [](const Vocabulary &vocabulary,
+      string value) {
 
          // TODO: throw error if it's not a valid name (maybe this should be
          // built-in.)
@@ -172,7 +175,8 @@ namespace trogdor {
 
       // Special "property" that sets a value for a Being's particular attribute
       entityPropValidators["creature"]["attribute"] =
-      entityPropValidators["player"]["attribute"] = [](string value) {
+      entityPropValidators["player"]["attribute"] = [](const Vocabulary &vocabulary,
+      string value) {
 
          string attr = value.substr(0, value.find(":"));
          string attrValue = value.substr(value.find(":") + 1, value.length());
@@ -195,7 +199,8 @@ namespace trogdor {
       entityPropValidators["creature"]["counterattack.default"] = assertString;
 
       // A creature's allegiance (friend, neutral, or enemy)
-      entityPropValidators["creature"]["allegiance"] = [](string value) {
+      entityPropValidators["creature"]["allegiance"] = [](const Vocabulary &vocabulary,
+      string value) {
 
          if (
             0 == value.compare("friend") &&
@@ -227,7 +232,8 @@ namespace trogdor {
       entityPropValidators["creature"]["wandering.wanderlust"] = assertProbability;
 
       // Special "property" that sets a connection between two rooms.
-      entityPropValidators["room"]["connection"] = [](string value) {
+      entityPropValidators["room"]["connection"] = [](const Vocabulary &vocabulary,
+      string value) {
 
          string direction = value.substr(0, value.find(":"));
          string connectToName = value.substr(value.find(":") + 1, value.length());
@@ -239,7 +245,8 @@ namespace trogdor {
       };
 
       // Special "property" that inserts a Thing into a Room.
-      entityPropValidators["room"]["contains"] = [](string value) {
+      entityPropValidators["room"]["contains"] = [](const Vocabulary &vocabulary,
+      string value) {
 
          // TODO: validate that value is a valid Entity name
          return;
@@ -268,7 +275,7 @@ namespace trogdor {
       gamePropValidators["introduction.pause"] = assertBool;
 
       // Special "property" that sets a meta data value for the game
-      gamePropValidators["meta"] = [](string value) {
+      gamePropValidators["meta"] = [](const Vocabulary &vocabulary, string value) {
 
          string metaKey = value.substr(0, value.find(":"));
          string metaValue = value.substr(value.find(":") + 1, value.length());
@@ -280,7 +287,8 @@ namespace trogdor {
 
       // Special "property" that sets an action synonym for the game (for
       // example, "shutdown" might be a synonym for "quit")
-      gamePropValidators["synonym"] = [](string value) {
+      gamePropValidators["synonym.verb"] = [](const Vocabulary &vocabulary,
+      string value) {
 
          string synonym = value.substr(0, value.find(":"));
          string action = value.substr(value.find(":") + 1, value.length());
@@ -292,6 +300,23 @@ namespace trogdor {
 
       // Insert a new direction into the game's vocabulary
       gamePropValidators["direction"] = assertString;
+
+      // Special "property" that sets a direction synonym for the game (for
+      // example, "n" is a built-in synonym for "north")
+      gamePropValidators["synonym.direction"] = [](const Vocabulary &vocabulary,
+      string value) {
+
+         string synonym = value.substr(0, value.find(":"));
+         string direction = value.substr(value.find(":") + 1, value.length());
+
+         if (!synonym.length() || !direction.length()) {
+            throw UndefinedException("not a valid synonym -> direction pair (this is a bug)");
+         }
+
+         else if (!vocabulary.isDirection(direction)) {
+            throw ValidationException(string("'") + direction + "' is not a valid direction.");
+         }
+      };
    }
 }
 

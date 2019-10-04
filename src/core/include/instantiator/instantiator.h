@@ -10,6 +10,7 @@
 #include "../entities/creature.h"
 #include "../entities/player.h"
 
+#include "../vocabulary.h"
 #include "../exception/undefinedexception.h"
 
 
@@ -32,7 +33,7 @@ namespace trogdor {
       private:
 
          // Function type used to check if a property value is valid
-         typedef void (*validatorFunc) (string value);
+         typedef void (*validatorFunc) (const Vocabulary &vocabulary, string value);
 
          // Maintains a list of valid Entity and Entity class properties (second
          // list's keys), along with a validator function for each (second
@@ -47,57 +48,62 @@ namespace trogdor {
             Throws an exception if the value is not a valid boolean.
 
             Input:
+               Reference to vocabulary (unused)
                Property value (string)
 
             Output:
                (none)
          */
-         static void assertBool(string value);
+         static void assertBool(const Vocabulary &vocabulary, string value);
 
          /*
             Throws an exception if the value is not a valid integer.
 
             Input:
+               Reference to vocabulary (unused)
                Property value (string)
 
             Output:
                (none)
          */
-         static void assertInt(string value);
+         static void assertInt(const Vocabulary &vocabulary, string value);
 
          /*
             Throws an exception if value is not a valid double precision number.
 
             Input:
+               Reference to vocabulary (unused)
                Property value (string)
 
             Output:
                (none)
          */
-         static void assertDouble(string value);
+         static void assertDouble(const Vocabulary &vocabulary, string value);
 
          /*
             Throws an exception if value does not represent a valid probability
             (number between 0 and 1.)
 
             Input:
+               Reference to vocabulary (unused)
                Property value (string)
 
             Output:
                (none)
          */
-         static void assertProbability(string value);
+         static void assertProbability(const Vocabulary &vocabulary, string value);
 
          /*
             A dummy validator that whitelists all strings.
 
             Input:
+               Reference to vocabulary (unused)
                Property value (string)
 
             Output:
                Always returns true
          */
-         static void assertString(string value);
+         static void assertString(const Vocabulary &vocabulary, string value);
 
          /*
             Maps Entity type -> Entity property name -> Validator function.
@@ -122,6 +128,9 @@ namespace trogdor {
          void mapGamePropValidators();
 
       protected:
+
+         // Reference to the game's vocabulary (read-only)
+         const Vocabulary &vocabulary;
 
          /*
             Does the actual setting of the Entity class's property value and
@@ -191,7 +200,8 @@ namespace trogdor {
          // Constructor and assignment operator
          Instantiator& operator=(const Instantiator &) = delete;
          Instantiator(const Instantiator &) = delete;
-         Instantiator();
+         Instantiator() = delete;
+         Instantiator(const Vocabulary &v);
 
          /*
             Creates an entity class that can be used to instantiate one or
@@ -288,7 +298,7 @@ namespace trogdor {
                );
             }
 
-            entityPropValidators[classType][property](value);
+            entityPropValidators[classType][property](vocabulary, value);
             entityClassSetterDriver(className, property, value);
          }
 
@@ -435,7 +445,7 @@ namespace trogdor {
                );
             }
 
-            entityPropValidators[entityType][property](value);
+            entityPropValidators[entityType][property](vocabulary, value);
             entitySetterDriver(entityName, property, value);
          }
 
@@ -503,7 +513,7 @@ namespace trogdor {
                );
             }
 
-            entityPropValidators["player"][property](value);
+            entityPropValidators["player"][property](vocabulary, value);
             defaultPlayerSetterDriver(property, value);
          }
 
@@ -539,7 +549,7 @@ namespace trogdor {
                );
             }
 
-            gamePropValidators[property](value);
+            gamePropValidators[property](vocabulary, value);
             gameSetterDriver(property, value);
          }
 
