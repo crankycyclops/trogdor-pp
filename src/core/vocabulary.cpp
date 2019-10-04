@@ -77,6 +77,17 @@ namespace trogdor {
       directions.insert("down");
       directions.insert("inside");
       directions.insert("outside");
+
+      directionSynonyms["n"]   = "north";
+      directionSynonyms["s"]   = "south";
+      directionSynonyms["e"]   = "east";
+      directionSynonyms["w"]   = "west";
+      directionSynonyms["ne"]  = "northeast";
+      directionSynonyms["nw"]  = "northwest";
+      directionSynonyms["se"]  = "southeast";
+      directionSynonyms["sw"]  = "southwest";
+      directionSynonyms["in"]  = "inside";
+      directionSynonyms["out"] = "outside";
    }
 
    /**************************************************************************/
@@ -158,8 +169,13 @@ namespace trogdor {
       insertVerbAction("move", std::make_unique<MoveAction>());
 
       insertVerbSynonym("go", "move");
-      for (auto dIt = directionsBegin(); dIt != directionsEnd(); dIt++) {
+      insertVerbSynonym("walk", "move");
+      for (auto dIt = directions.begin(); dIt != directions.end(); dIt++) {
          insertVerbSynonym(*dIt, "move");
+      }
+      for (auto dSynIt = directionSynonyms.begin();
+      dSynIt != directionSynonyms.end(); dSynIt++) {
+         insertVerbSynonym(dSynIt->first, "move");
       }
 
       insertVerbAction("look", std::make_unique<LookAction>());

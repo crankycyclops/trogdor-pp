@@ -364,6 +364,8 @@ namespace trogdor {
 
    bool MoveAction::checkSyntax(const std::shared_ptr<Command> &command) {
 
+      auto &vocab = command->getVocabulary();
+
       string verb = command->getVerb();
       string dobj = command->getDirectObject();
       string iobj = command->getIndirectObject();
@@ -375,32 +377,27 @@ namespace trogdor {
 
       // no direct or indirect object were given, so the direction, if valid,
       // must've been specified directly by the "verb"
-      if (0 == dobj.length() && 0 == iobj.length()) {
-         return command->getVocabulary().isDirection(verb);
-      }
-
-      // make sure the direction specified by the object was valid
-      else {
-         return command->getVocabulary().isDirection(dobj.length() > 0 ? dobj : iobj);
-      }
+      string dir = ((0 == dobj.length() && 0 == iobj.length()) ? verb :
+         (dobj.length() > 0 ? dobj : iobj));
+      return (vocab.isDirection(dir) || vocab.isDirectionSynonym(dir));
    }
 
 
-   // TODO: consider custom messages for transitions
    void MoveAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
+      auto &vocab = command->getVocabulary();
       string direction = "";
 
       // direction is implied in the verb
-      if (command->getVocabulary().isDirection(command->getVerb())) {
-         direction = command->getVerb();
+      if (vocab.isDirection(command->getVerb()) || vocab.isDirectionSynonym(command->getVerb())) {
+         direction = vocab.getDirection(command->getVerb());
       }
 
       // direction was supplied as the direct or indirect object of another
       // verb like "move" or "go"
       if (0 == direction.length()) {
-         direction = command->getDirectObject().length() > 0 ?
-            command->getDirectObject() : command->getIndirectObject();
+         direction = vocab.getDirection(command->getDirectObject().length() > 0 ?
+            command->getDirectObject() : command->getIndirectObject());
       }
 
       // only Rooms have connections to eachother

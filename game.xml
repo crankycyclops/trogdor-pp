@@ -142,7 +142,7 @@ This is an introduction. If introductions are enabled, new players will have to 
 
          <!-- this example maps the new word "shutdown" to the existing verb
               "quit." -->
-         <verb action="quit">shutdown</verb>
+         <verb original="quit">shutdown</verb>
 
       </synonyms>
 

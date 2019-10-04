@@ -7,6 +7,8 @@
 #include <unordered_set>
 #include <unordered_map>
 
+#include "exception/validationexception.h"
+
 using namespace std;
 
 namespace trogdor {
@@ -31,6 +33,9 @@ namespace trogdor {
 
          // Maps verbs to Actions
          unordered_map<string, std::unique_ptr<Action>> verbActions;
+
+         // Maps direction synonyms to actual directions
+         unordered_map<string, string> directionSynonyms;
 
          // Maps verb synonyms to verbs with actions
          unordered_map<string, string> verbSynonyms;
@@ -117,6 +122,21 @@ namespace trogdor {
          }
 
          /*
+            Returns true if the specified word is a direction synonym and false
+            if it's not.
+
+            Input:
+               string
+
+            Output:
+               bool
+         */
+         inline bool isDirectionSynonym(string str) const {
+
+            return directionSynonyms.find(str) != directionSynonyms.end() ? true : false;
+         }
+
+         /*
             Returns a const_iterator that can be used to iterate through all
             currently defined directions.
 
@@ -158,6 +178,54 @@ namespace trogdor {
          inline void insertDirection(string dir) {
 
             directions.insert(dir);
+            insertVerbSynonym(dir, "move");
+         }
+
+         /*
+            Inserts a new direction synonym.
+
+            Input:
+               Synonym (string)
+               Original direction name (string)
+
+            Output:
+               (none)
+         */
+         inline void insertDirectionSynonym(string synonym, string direction) {
+
+            if (directions.find(direction) == directions.end()) {
+               throw ValidationException(string("Direction '") + direction + "' does not exist");
+            }
+
+            directionSynonyms[synonym] = direction;
+            insertVerbSynonym(synonym, "move");
+         }
+
+         /*
+            Returns the direction referenced either by its name or, if a
+            direction by that name doesn't exist, the direction referenced by
+            the synonym. If neither references a valid direction, an empty
+            string is returned.
+
+            Input:
+               Direction or Direction synonym (string)
+
+            Output:
+               Direction if one exists or an empty string if not (string)
+         */
+         inline string getDirection(string dirOrSyn) const {
+
+            if (directions.find(dirOrSyn) != directions.end()) {
+               return dirOrSyn;
+            }
+
+            else if (directionSynonyms.find(dirOrSyn) != directionSynonyms.end()) {
+               return directionSynonyms.find(dirOrSyn)->second;
+            }
+
+            else {
+               return "";
+            }
          }
 
          /*
@@ -279,6 +347,34 @@ namespace trogdor {
          }
 
          /*
+            Returns true if the specified word is a verb or a verb synonym and
+            false if it's not.
+
+            Input:
+               string
+
+            Output:
+               bool
+         */
+         inline bool isVerb(string str) const {
+
+            bool found = false;
+
+            if (verbActions.find(str) != verbActions.end()) {
+               found = true;
+            }
+
+            else if (
+               verbSynonyms.find(str) != verbSynonyms.end() &&
+               verbActions.find(verbSynonyms.find(str)->second) != verbActions.end()
+            ) {
+               found = true;
+            }
+
+            return found;
+         }
+
+         /*
             Inserts a new Action object identified by the specified verb.
 
             Input:
@@ -330,6 +426,10 @@ namespace trogdor {
                (none)
          */
          inline void insertVerbSynonym(string synonym, string verb) {
+
+            if (verbActions.find(verb) == verbActions.end()) {
+               throw ValidationException(string("Verb '") + verb + "' does not exist");
+            }
 
             verbSynonyms[synonym] = verb;
          }

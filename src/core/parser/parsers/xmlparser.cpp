@@ -369,7 +369,7 @@ namespace trogdor {
       while (nextTag() && 3 == getDepth()) {
 
          if (0 == getTagName().compare("verb")) {
-            string action = getAttribute("action");
+            string action = getAttribute("original");
             action = trim(action);
             string synonym = parseString();
             instantiator->gameSetter("synonym", synonym + ":" + action);

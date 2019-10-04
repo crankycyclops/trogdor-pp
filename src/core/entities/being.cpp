@@ -142,7 +142,6 @@ namespace trogdor { namespace entity {
          oldLoc->removeThing(this);
       }
 
-      // TODO: custom messaging
       // I do this first, and the other message second so that the Being that's
       // leaving won't see messages about its own departure and arrival ;)
       l->out("notifications") << getTitle() << " arrives." << endl;
@@ -151,7 +150,6 @@ namespace trogdor { namespace entity {
       setLocation(l);
       l->observe(this);
 
-      // TODO: custom messaging
       oldLoc->out("notifications") << getTitle() << " leaves." << endl;
 
       game->setupEventHandler();
