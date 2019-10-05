@@ -37,7 +37,7 @@ namespace trogdor { namespace event {
 
                entity::Entity *arg = boost::get<entity::Entity *>(args[i]);
 
-               if (0 == arg) {
+               if (nullptr == arg) {
                   L->pushNilArgument();
                }
 

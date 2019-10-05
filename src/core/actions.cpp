@@ -409,12 +409,12 @@ namespace trogdor {
 
       Room *next = (dynamic_cast<Room *>(player->getLocation()))->getConnection(direction);
 
-      if (0 == next) {
+      if (nullptr == next) {
          player->out("display") << "You can't go that way." << endl;
          // TODO: fire can't go that way event?
          return;
       }
-      
+
       string enterMessage = next->getMessage("enter" + direction);
       string goMessage = player->getLocation()->getMessage("go" + direction);
 

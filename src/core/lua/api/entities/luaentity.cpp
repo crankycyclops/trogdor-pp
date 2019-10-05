@@ -170,7 +170,7 @@ namespace trogdor { namespace entity {
 
       Entity *e = checkEntity(L, -n);
 
-      if (0 == e) {
+      if (nullptr == e) {
          return luaL_error(L, "not an Entity!");
       }
 
@@ -207,7 +207,7 @@ namespace trogdor { namespace entity {
 
       Entity *e = checkEntity(L, -n);
 
-      if (0 == e) {
+      if (nullptr == e) {
          return luaL_error(L, "not an Entity!");
       }
 
@@ -229,7 +229,7 @@ namespace trogdor { namespace entity {
 
       Entity *e = checkEntity(L, -2);
 
-      if (0 == e) {
+      if (nullptr == e) {
          return luaL_error(L, "not an Entity!");
       }
 
@@ -249,7 +249,7 @@ namespace trogdor { namespace entity {
 
       Entity *e = checkEntity(L, -3);
 
-      if (0 == e) {
+      if (nullptr == e) {
          return luaL_error(L, "not an Entity!");
       }
 
@@ -269,7 +269,7 @@ namespace trogdor { namespace entity {
 
       Entity *e = checkEntity(L, -2);
 
-      if (0 == e) {
+      if (nullptr == e) {
          return luaL_error(L, "not an Entity!");
       }
 
@@ -289,7 +289,7 @@ namespace trogdor { namespace entity {
 
       Entity *e = checkEntity(L, -3);
 
-      if (0 == e) {
+      if (nullptr == e) {
          return luaL_error(L, "not an Entity!");
       }
 
@@ -309,7 +309,7 @@ namespace trogdor { namespace entity {
 
       Entity *e = checkEntity(L, -2);
 
-      if (0 == e) {
+      if (nullptr == e) {
          return luaL_error(L, "not an Entity!");
       }
 
@@ -331,7 +331,7 @@ namespace trogdor { namespace entity {
 
       Entity *e = checkEntity(L, 1);
 
-      if (0 == e) {
+      if (nullptr == e) {
          return luaL_error(L, "not an Entity!");
       }
 
@@ -351,7 +351,7 @@ namespace trogdor { namespace entity {
 
       Entity *e = checkEntity(L, 1);
 
-      if (0 == e) {
+      if (nullptr == e) {
          return luaL_error(L, "not an Entity!");
       }
 
@@ -371,7 +371,7 @@ namespace trogdor { namespace entity {
 
       Entity *e = checkEntity(L, 1);
 
-      if (0 == e) {
+      if (nullptr == e) {
          return luaL_error(L, "not an Entity!");
       }
 
@@ -391,7 +391,7 @@ namespace trogdor { namespace entity {
 
       Entity *e = checkEntity(L, -n);
 
-      if (0 == e) {
+      if (nullptr == e) {
          return luaL_error(L, "not an Entity!");
       }
 
@@ -413,7 +413,7 @@ namespace trogdor { namespace entity {
 
       Entity *e = checkEntity(L, 1);
 
-      if (0 == e) {
+      if (nullptr == e) {
          return luaL_error(L, "not an Entity!");
       }
 
@@ -433,7 +433,7 @@ namespace trogdor { namespace entity {
 
       Entity *e = checkEntity(L, -2);
 
-      if (0 == e) {
+      if (nullptr == e) {
          return luaL_error(L, "not an Entity!");
       }
 
@@ -455,7 +455,7 @@ namespace trogdor { namespace entity {
 
       Entity *e = checkEntity(L, 1);
 
-      if (0 == e) {
+      if (nullptr == e) {
          return luaL_error(L, "not an Entity!");
       }
 
@@ -475,7 +475,7 @@ namespace trogdor { namespace entity {
 
       Entity *e = checkEntity(L, -2);
 
-      if (0 == e) {
+      if (nullptr == e) {
          return luaL_error(L, "not an Entity!");
       }
 
