@@ -108,7 +108,7 @@ namespace trogdor {
 
       Game *g = checkGame(L, -1);
 
-      if (0 == g) {
+      if (nullptr == g) {
          return luaL_error(L, "Game object is nil");
       }
 

@@ -67,7 +67,7 @@ namespace trogdor {
 
    void LuaState::pushEntity(lua_State *L, entity::Entity *e) {
 
-      if (0 == e) {
+      if (nullptr == e) {
          lua_pushnil(L);
       }
 

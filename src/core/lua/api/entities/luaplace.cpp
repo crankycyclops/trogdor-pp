@@ -113,11 +113,11 @@ namespace trogdor { namespace entity {
       Place *p = checkPlace(L, -2);
       Thing *t = LuaThing::checkThing(L, -1);
 
-      if (0 == t) {
+      if (nullptr == t) {
          return luaL_error(L, "not a Thing!");
       }
 
-      else if (0 == p) {
+      else if (nullptr == p) {
          return luaL_error(L, "not a Place!");
       }
 
@@ -153,11 +153,11 @@ namespace trogdor { namespace entity {
       Place *p = checkPlace(L, -2);
       Thing *t = LuaThing::checkThing(L, -1);
 
-      if (0 == t) {
+      if (nullptr == t) {
          return luaL_error(L, "not a Thing!");
       }
 
-      else if (0 == p) {
+      else if (nullptr == p) {
          return luaL_error(L, "not a Place!");
       }
 

@@ -178,7 +178,7 @@ namespace trogdor {
          inline static void luaL_register_wrapper(lua_State *L,
          const char *libname, const luaL_Reg *l) {
 
-            if (0 == libname) {
+            if (nullptr == libname) {
 
                // Lua 5.2+ discourages the use of globals and therefore removed
                // luaL_register. These function calls accomplish the same thing.
