@@ -720,40 +720,40 @@ namespace trogdor { namespace entity {
    typedef CreatureList::const_iterator CreatureListCIt;
    typedef ObjectList::const_iterator   ObjectListCIt;
 
-   typedef struct {
+   struct PlaceListCItPair {
       PlaceListCIt begin;
       PlaceListCIt end;
-   } PlaceListCItPair;
+   };
 
-   typedef struct {
+   struct RoomListCItPair {
       RoomListCIt begin;
       RoomListCIt end;
-   } RoomListCItPair;
+   };
 
-   typedef struct {
+   struct ThingListCItPair {
       ThingListCIt begin;
       ThingListCIt end;
-   } ThingListCItPair;
+   };
 
-   typedef struct {
+   struct BeingListCItPair {
       BeingListCIt begin;
       BeingListCIt end;
-   } BeingListCItPair;
+   };
 
-   typedef struct {
+   struct PlayerListCItPair {
       PlayerListCIt begin;
       PlayerListCIt end;
-   } PlayerListCItPair;
+   };
 
-   typedef struct {
+   struct CreatureListCItPair {
       CreatureListCIt begin;
       CreatureListCIt end;
-   } CreatureListCItPair;
+   };
 
-   typedef struct {
+   struct ObjectListCItPair {
       ObjectListCIt begin;
       ObjectListCIt end;
-   } ObjectListCItPair;
+   };
 
    typedef PlaceList::iterator    PlaceListIt;
    typedef RoomList::iterator     RoomListIt;
@@ -779,10 +779,10 @@ namespace trogdor { namespace entity {
    typedef CreatureSet::const_iterator CreatureSetCIt;
    typedef ObjectSet::const_iterator   ObjectSetCIt;
 
-   typedef struct {
+   struct ObjectSetCItPair {
       ObjectSetCIt begin;
       ObjectSetCIt end;
-   } ObjectSetCItPair;
+   };
 
    typedef unordered_map<string, ThingList>    ThingsByNameMap;
    typedef unordered_map<string, BeingList>    BeingsByNameMap;

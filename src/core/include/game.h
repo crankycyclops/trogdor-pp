@@ -129,8 +129,6 @@ namespace trogdor {
 
       public:
 
-         //typedef EntityMap::entityUnorderedMap::const_iterator creatureIterator;
-
          /*
             Constructor for the Game class (require the error stream as an
             argument.)
