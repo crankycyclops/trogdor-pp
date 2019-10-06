@@ -28,20 +28,24 @@ namespace trogdor {
       Here's the current subset of the language I'm parsing in EBNF format (I'll
       keep this updated as support for additional language features grows):
 
-      <statement>            ::= <assertion>
-      <assertion>            ::= <definition> [<description>] | <adjective assignment>
+      <sentence>             ::= <rule>
+      <rule>                 ::= <singular definition> | <plural definition> |
+                                 <adjective assignment>
+      <singular definition>  ::= [<article>] <noun> <equality> ([<article>]
+                                 [<adjective>] <class> [<in clause>] |
+                                 <direction> ("of" | "from") [<article>] <noun>)
+                                 "." [<description>
+      <plural definition>    ::= [<article>] <noun>{"," [<article>] <noun>}[","]
+                                 "and" [<article>] <noun> <equality> [<adjective>]
+                                 <plural class> [<in clause>] "."
+      <adjective assignment> ::= [<article>] <noun> <equality> <adjective> | [<article>]
+                                 <noun>{"," [<article>] <noun>}[","] "and"
+                                 [<article>] <noun> <equality> <adjective>
+      <in clause>            ::= "in" [<article>] <noun>
       <description>          ::= "\""/^[\"]+/".\""["."] | "\""/^[\"]+/["."]"\"."
-      <definition>           ::= ([<article>] <noun> "is" [<article>]
-                                 [<adjective>] <class> | [<article>] <noun>{","
-                                 [<article>] <noun>}[","] "and" [<article>]
-                                 <noun> "are" [<adjective>] <plural class>)
-                                 ["in" [<article>] <noun>] | [<article>] <noun>
-                                 "is" <direction> ("of" | "from") [<article>] <noun>
-      <adjective assignment> ::= [<article>] <noun> is <adjective> | [<article>]
-                                 <noun>{"," [<article>] <noun>}[","] and
-                                 [<article>] <noun> are <adjective>
       <noun>                 ::= /[A-Za-z ']+/
       <adjective>            ::= /[A-Za-z ]+/
+      <equality>             ::= "is" | "are"
       <assertion verb>       ::= "has" | "carries" | "is carrying" | "wears" |
                                  "is wearing" | "contains" | "supports" |
                                  "is supporting"
