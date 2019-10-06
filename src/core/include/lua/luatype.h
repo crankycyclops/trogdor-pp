@@ -13,27 +13,27 @@ using namespace boost;
 namespace trogdor {
 
 
-   struct _LuaValue;
+   struct LuaValue;
    class LuaTable;
 
 
-   typedef enum {
+   enum LuaDataType {
       LUA_TYPE_STRING,
       LUA_TYPE_NUMBER,
       LUA_TYPE_BOOLEAN,
       LUA_TYPE_TABLE,
       LUA_TYPE_ARRAY,
       LUA_TYPE_FUNCTION
-   } LuaDataType;
+   };
 
    // I couldn't forward declare the vector, so pay attention to this if LuaArray changes
-   typedef boost::variant<string, double, bool, vector<struct _LuaValue> *, LuaTable *> LuaValueContent;
+   typedef boost::variant<string, double, bool, vector<LuaValue> *, LuaTable *> LuaValueContent;
 
    // Represents a single value
-   typedef struct _LuaValue {
+   struct LuaValue {
        LuaDataType      type;
        LuaValueContent  value;
-   } LuaValue;
+   };
 
    typedef vector<LuaValue> LuaArray;
 }
