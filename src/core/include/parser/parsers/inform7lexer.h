@@ -139,8 +139,8 @@ namespace trogdor {
       public:
 
          /*
-            Constructor. Attempts to read the file and populate source with its
-            contents. Throws a ParseException if the file cannot be read.
+            Attempts to read the file and populate source with its contents.
+            Throws a ParseException if the file cannot be read.
 
             Input:
                Filename (string)
@@ -148,8 +148,7 @@ namespace trogdor {
             Output:
                (none)
          */
-         Inform7Lexer(string filename);
-         Inform7Lexer() = delete;
+         void open(string filename);
 
          /*
             Returns the source code currently being tokenized.

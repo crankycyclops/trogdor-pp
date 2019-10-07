@@ -9,6 +9,7 @@
 #include "../../vocabulary.h"
 
 #include "../parser.h"
+#include "inform7lexer.h"
 
 
 using namespace std;
@@ -80,6 +81,11 @@ namespace trogdor {
       http://www.ifwiki.org/index.php/Inform_7_for_Programmers
    */
    class Inform7Parser: public Parser {
+
+      private:
+
+         // Breaks Inform 7 source down into a token stream
+         Inform7Lexer lexer;
 
       public:
 

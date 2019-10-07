@@ -2,11 +2,9 @@
 
 #include "../../include/utility.h"
 #include "../../include/vocabulary.h"
+#include "../../include/exception/parseexception.h"
 
 #include "../../include/parser/parsers/inform7parser.h"
-#include "../../include/parser/parsers/inform7lexer.h"
-
-#include "../../include/exception/parseexception.h"
 
 namespace trogdor {
 
@@ -28,7 +26,7 @@ namespace trogdor {
 
    void Inform7Parser::parse(string filename) {
 
-      Inform7Lexer lexer(filename);
+      lexer.open(filename);
 
       // TODO: Just sample code right now to demonstrate that the lexer can break
       // the source code up into tokens

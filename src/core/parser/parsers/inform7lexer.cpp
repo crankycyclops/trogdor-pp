@@ -14,7 +14,7 @@ using namespace std;
 namespace trogdor {
 
 
-   Inform7Lexer::Inform7Lexer(string filename) {
+   void Inform7Lexer::open(string filename) {
 
       ifstream file;
       stringstream s;
@@ -29,6 +29,13 @@ namespace trogdor {
 
       s << file.rdbuf();
       source = s.str();
+
+      // Reset state each time a new file is loaded
+      sourceIndex = 0;
+      sourceLine = 1;
+      while (!tokenBuffer.empty()) {
+         tokenBuffer.pop();
+      }
    }
 
    /**************************************************************************/
