@@ -28,23 +28,25 @@ namespace trogdor {
       Here's the current subset of the language I'm parsing in EBNF format (I'll
       keep this updated as support for additional language features grows):
 
-      <sentence>             ::= <rule>
+      <program>              ::= [<bibliographic>] {<rule>}
+      <bibliographic>        ::=  <quoted string> ["by" <author name>]
+      <author name>          ::= /[A-Za-z ']+/ | <quoted string>
       <rule>                 ::= <singular definition> | <plural definition> |
                                  <adjective assignment>
-      <singular definition>  ::= [<article>] <noun> <equality> ([<article>]
+      <singular definition>  ::= {<article>} <noun> <equality> ({<article>}
                                  [<adjective>] <class> [<in clause>] |
-                                 <direction> ("of" | "from") [<article>] <noun>)
-                                 "." [<description>
-      <plural definition>    ::= [<article>] <noun>{"," [<article>] <noun>}[","]
-                                 "and" [<article>] <noun> <equality> [<adjective>]
-                                 <plural class> [<in clause>] "."
-      <adjective assignment> ::= [<article>] <noun> <equality> <adjective> | [<article>]
-                                 <noun>{"," [<article>] <noun>}[","] "and"
-                                 [<article>] <noun> <equality> <adjective>
-      <in clause>            ::= "in" [<article>] <noun>
-      <description>          ::= "\""/^[\"]+/".\""["."] | "\""/^[\"]+/["."]"\"."
-      <noun>                 ::= /[A-Za-z ']+/
-      <adjective>            ::= /[A-Za-z ]+/
+                                 <direction> ("of" | "from") {<article>} <noun>)
+                                 <sentence terminator> [<description>]
+      <plural definition>    ::= {<article>} <noun>{"," {<article>} <noun>}[","]
+                                 "and" {<article>} <noun> <equality> [<adjective>]
+                                 <plural class> [<in clause>] <sentence terminator>
+      <adjective assignment> ::= {<article>} <noun> <equality> <adjective> | {<article>}
+                                 <noun>{"," {<article>} <noun>}[","] "and"
+                                 {<article>} <noun> <equality> <adjective>
+                                 <sentence terminator>
+      <in clause>            ::= "in" {<article>} <noun>
+      <description>          ::= "\"" "/^[\"]+/" ".\"" [<sentence terminator>] |
+                                 "\"" "/^[\"]+/\"" <sentence terminator>
       <equality>             ::= "is" | "are"
       <assertion verb>       ::= "has" | "carries" | "is carrying" | "wears" |
                                  "is wearing" | "contains" | "supports" |
@@ -62,6 +64,10 @@ namespace trogdor {
                                  "vehicles" | "player's holdalls" |
                                  "supporters" | "backdrops" | "devices" |
                                  "people" | "men" | "women" | "animals"
+      <noun>                 ::= /[A-Za-z ']+/
+      <adjective>            ::= /[A-Za-z ]+/
+      <quoted string>        ::= "\" "/^[\"]+/" \""
+      <sentence terminator>  ::= "." | "\n\n"
 
       * Classes included above are those that are built into Inform 7. Once I
       add support for custom classes, I'll also have to be able to parse those.
