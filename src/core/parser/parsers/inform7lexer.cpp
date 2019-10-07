@@ -56,10 +56,11 @@ namespace trogdor {
 
          if (sourceIndex < source.length()) {
 
-            if ('\n' == source.at(sourceIndex)) {
-               t.value = "\n";
-               t.type = NEWLINE;
-               sourceLine++;
+            string terminator = getSentenceTerminator();
+
+            if (terminator.length()) {
+               t.value = terminator;
+               t.type = SENTENCE_TERMINATOR;
             }
 
             else if (isPunctuation(source.at(sourceIndex))) {
@@ -123,6 +124,42 @@ namespace trogdor {
 
          sourceIndex++;
       }
+   }
+
+   /**************************************************************************/
+
+   string Inform7Lexer::getSentenceTerminator() {
+
+      string terminator = "";
+
+      if ('.' == source.at(sourceIndex)) {
+         terminator += source.at(sourceIndex);
+         sourceIndex++;
+      }
+
+      skipWhitespace();
+      int newLineCount = 0;
+
+      // If there's just one newline, then we have the desired side-effect of
+      // skipping over it as whitespace
+      while (sourceIndex < source.length() && '\n' == source.at(sourceIndex)) {
+
+         newLineCount++;
+         sourceLine++;
+
+         if (newLineCount > 1) {
+            terminator += source.at(sourceIndex);
+         }
+
+         sourceIndex++;
+         skipWhitespace();
+      }
+
+      if (terminator.length()) {
+         sourceIndex--;
+      }
+
+      return terminator;
    }
 
    /**************************************************************************/

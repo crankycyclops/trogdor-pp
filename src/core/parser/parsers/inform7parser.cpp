@@ -52,8 +52,8 @@ namespace trogdor {
                cout << "QUOTED_STRING";
                break;
 
-            case NEWLINE:
-               cout << "NEWLINE";
+            case SENTENCE_TERMINATOR:
+               cout << "SENTENCE_TERMINATOR";
                break;
 
             case EQUALITY:

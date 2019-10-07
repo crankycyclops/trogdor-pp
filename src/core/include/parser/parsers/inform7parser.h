@@ -30,7 +30,8 @@ namespace trogdor {
       keep this updated as support for additional language features grows):
 
       <program>              ::= [<bibliographic>] {<rule>}
-      <bibliographic>        ::=  <quoted string> ["by" <author name>]
+      <bibliographic>        ::= <quoted string> ["by" <author name>]
+                                 <sentence terminator>
       <author name>          ::= /[A-Za-z ']+/ | <quoted string>
       <rule>                 ::= <singular definition> | <plural definition> |
                                  <adjective assignment>
@@ -68,7 +69,7 @@ namespace trogdor {
       <noun>                 ::= /[A-Za-z ']+/
       <adjective>            ::= /[A-Za-z ]+/
       <quoted string>        ::= "\" "/^[\"]+/" \""
-      <sentence terminator>  ::= "." | "\n\n"
+      <sentence terminator>  ::= ("." | "\n\n") {"\n"}
 
       * Classes included above are those that are built into Inform 7. Once I
       add support for custom classes, I'll also have to be able to parse those.

@@ -12,13 +12,13 @@ namespace trogdor {
 
 
    enum TokenType {
-      PUNCTUATION   = 1,
-      NEWLINE       = 2,
-      WORD          = 3,
-      ARTICLE       = 4,
-      EQUALITY      = 5,
-      QUOTED_STRING = 6,
-      SOURCE_EOF    = 7
+      PUNCTUATION         = 1,
+      SENTENCE_TERMINATOR = 2,
+      WORD                = 3,
+      ARTICLE             = 4,
+      EQUALITY            = 5,
+      QUOTED_STRING       = 6,
+      SOURCE_EOF          = 7
    };
 
    struct Token {
@@ -100,7 +100,7 @@ namespace trogdor {
          */
          inline bool isPunctuation(const char c) const {
 
-            return (',' == c || '.' == c || ';' == c || ':' == c) ? true : false;
+            return (',' == c || ';' == c || ':' == c) ? true : false;
          }
 
          /*
@@ -113,6 +113,18 @@ namespace trogdor {
                (none)
          */
          void skipWhitespace();
+
+         /*
+            Reads a sentence terminator (if one exists.) Returns an empty string
+            if there isn't one at the current source index.
+
+            Input:
+               (none)
+
+            Output:
+               Sentence terminator or empty string (string)
+         */
+         string getSentenceTerminator();
 
          /*
             Reads a quoted string from the source.
@@ -160,6 +172,17 @@ namespace trogdor {
                Source code (string)
          */
          inline const string getSource() const {return source;}
+
+         /*
+            Returns the current line in the source code.
+
+            Input:
+               (none)
+
+            Output:
+               Current line (int)
+         */
+         inline const int getSourceLine() const {return sourceLine;}
 
          /*
             Pushes back a token that's already been read so it can be read again
