@@ -88,6 +88,43 @@ namespace trogdor {
          // Breaks Inform 7 source down into a token stream
          Inform7Lexer lexer;
 
+         /*
+            Parses the optional bibliographic sentence at the beginning of the
+            source code. Corresponds to the <bibliographic> production in the
+            EBNF above.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseBibliographic();
+
+         /*
+            Parses a rule. Corresponds to the <rule> production in the EBNF
+            above.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseRule();
+
+         /*
+            Parses an Inform 7 program. Corresponds to the <program> production
+            in the EBNF above.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseProgram();
+
       public:
 
          /*

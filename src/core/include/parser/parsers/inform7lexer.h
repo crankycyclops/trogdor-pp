@@ -12,13 +12,15 @@ namespace trogdor {
 
 
    enum TokenType {
-      PUNCTUATION         = 1,
-      SENTENCE_TERMINATOR = 2,
-      WORD                = 3,
-      ARTICLE             = 4,
-      EQUALITY            = 5,
-      QUOTED_STRING       = 6,
-      SOURCE_EOF          = 7
+      SOURCE_EOF          = 0,
+      SENTENCE_TERMINATOR = 1,
+      COMMA               = 2,
+      COLON               = 3,
+      SEMICOLON           = 4,
+      WORD                = 5,
+      ARTICLE             = 6,
+      EQUALITY            = 7,
+      QUOTED_STRING       = 8
    };
 
    struct Token {
@@ -86,21 +88,6 @@ namespace trogdor {
          inline bool isWordChar(const char c) const {
 
             return (isalnum(c) || '-' == c || '_' == c) ? true : false;
-         }
-
-         /*
-            Returns true if the given character is punctuation and false
-            otherwise.
-
-            Input:
-               Character (char)
-
-            Output:
-               True if c is punctuation and false otherwise (bool)
-         */
-         inline bool isPunctuation(const char c) const {
-
-            return (',' == c || ';' == c || ':' == c) ? true : false;
          }
 
          /*

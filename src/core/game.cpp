@@ -95,7 +95,11 @@ namespace trogdor {
 
       initEvents();
 
-      return true;
+      // Only return true if we've successfully parsed and instantiated one or
+      // more entities
+      // TODO: add more rigorous tests, like Room with name "start" exists, and
+      // other important sanity checks.
+      return entities.size() > 0 ? true : false;
    }
 
    /***************************************************************************/

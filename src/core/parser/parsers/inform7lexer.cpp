@@ -63,9 +63,19 @@ namespace trogdor {
                t.type = SENTENCE_TERMINATOR;
             }
 
-            else if (isPunctuation(source.at(sourceIndex))) {
+            else if (';' == source.at(sourceIndex)) {
                t.value += source.at(sourceIndex);
-               t.type = PUNCTUATION;
+               t.type = SEMICOLON;
+            }
+
+            else if (':' == source.at(sourceIndex)) {
+               t.value += source.at(sourceIndex);
+               t.type = COLON;
+            }
+
+            else if (',' == source.at(sourceIndex)) {
+               t.value += source.at(sourceIndex);
+               t.type = COMMA;
             }
 
             else if ('"' == source.at(sourceIndex)) {

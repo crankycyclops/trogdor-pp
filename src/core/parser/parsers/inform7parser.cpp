@@ -24,59 +24,73 @@ namespace trogdor {
 
    /**************************************************************************/
 
+   void Inform7Parser::parseBibliographic() {
+
+      Token t = lexer.next();
+
+      string author;
+      string title = t.value;
+
+      t = lexer.next();
+
+      if (0 == t.value.compare("by")) {
+
+         for (t = lexer.next(); (
+            t.type != SOURCE_EOF &&
+            t.type != SENTENCE_TERMINATOR &&
+            t.type != COLON &&
+            t.type != SEMICOLON
+         ); t = lexer.next()) {
+
+            if (author.length()) {
+               author += " ";
+            }
+
+            author += t.value;
+         }
+      }
+
+      else if (SENTENCE_TERMINATOR != t.type) {
+         throw ParseException(string("Initial bibliographic sentence can only be a title in double quotes, possibly followed with 'by' and the name of the author (line ") + to_string(lexer.getSourceLine()));
+      }
+
+      // TODO
+      cout << "Stub: Title is \"" + title + "\" and author is \"" + (author.length() ? author : "(undefined)") << '\"' << endl;
+   }
+
+   /**************************************************************************/
+
+   void Inform7Parser::parseRule() {
+
+      // TODO: actually do something
+      lexer.next();
+   }
+
+   /**************************************************************************/
+
+   void Inform7Parser::parseProgram() {
+
+      Token t = lexer.next();
+      lexer.push(t);
+
+      if (QUOTED_STRING == t.type) {
+         parseBibliographic();
+      }
+
+      for (t = lexer.next(); SOURCE_EOF != t.type; t = lexer.next()) {
+         lexer.push(t);
+         parseRule();
+      }
+   }
+
+   /**************************************************************************/
+
    void Inform7Parser::parse(string filename) {
 
       lexer.open(filename);
+      parseProgram();
 
-      // TODO: Just sample code right now to demonstrate that the lexer can break
-      // the source code up into tokens
-      cout << "Source text before tokenization: \n" << endl;
-
-      cout << replaceAll(lexer.getSource(), "\n", "\\n\n") << endl << endl;
-
-      cout << "Token stream: " << endl << endl;
-
-      for (Token t = lexer.next(); t.type != SOURCE_EOF; t = lexer.next()) {
-
-         cout << "Value: " << (0 == t.value.compare("\n") ? "\\n" : t.value) << endl;
-         cout << "Value length: " << t.value.length() << endl;
-         cout << "Type: ";
-
-         switch (t.type) {
-
-            case PUNCTUATION:
-               cout << "PUNCTUATION";
-               break;
-
-            case QUOTED_STRING:
-               cout << "QUOTED_STRING";
-               break;
-
-            case SENTENCE_TERMINATOR:
-               cout << "SENTENCE_TERMINATOR";
-               break;
-
-            case EQUALITY:
-               cout << "EQUALITY";
-               break;
-
-            case ARTICLE:
-               cout << "ARTICLE";
-               break;
-
-            case WORD:
-               cout << "WORD";
-               break;
-
-            default:
-               cout << "UNDEFINED (this is a bug)";
-               break;
-         }
-
-         cout << endl << endl;
-      }
-
-      throw ParseException("Inform 7 support not yet implemented.");
+      // TODO: start using the AST (undefined so far) to populate the game
    }
 }
 

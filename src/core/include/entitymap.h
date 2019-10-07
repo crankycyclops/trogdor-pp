@@ -68,6 +68,14 @@ namespace trogdor { namespace entity {
          */
          inline ~EntityMap() {clear();}
 
+         /*
+            Returns the number of entities currently stored in the map.
+
+            Input: (none)
+            Output: (none)
+         */
+         inline int size() const {return entities.size();}
+
          /* Returns true if the entity with the given name is set and false if
             it's not.
 
