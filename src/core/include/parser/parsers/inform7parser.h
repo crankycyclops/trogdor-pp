@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
 
 #include "../../utility.h"
 #include "../../vocabulary.h"
@@ -33,20 +34,20 @@ namespace trogdor {
 
       <program>              ::= [<bibliographic>] {<rule>}
       <bibliographic>        ::= <quoted string> ["by" <author name>]
-                                 <sentence terminator>
+                                 <phrase terminator>
       <author name>          ::= /[A-Za-z ']+/ | <quoted string>
       <phrase>               ::= <definition> | <adjective assignment>
       <definition>           ::= <identifier list> <equality> ({<article>}
                                  [<adjective>] <class> [<in clause>] |
                                  <direction> ("of" | "from") {<article>} <noun>)
-                                 <sentence terminator> [<description>]
+                                 <phrase terminator> [<description>]
       <adjective assignment> ::= <identifier list> <equality> <adjective>
-                                 <sentence terminator>
+                                 <phrase terminator>
       <identifier list>      ::= {<article>} <noun> {("," | [","] "and")
                                  {<article>} <noun>}
       <in clause>            ::= "in" {<article>} <noun>
-      <description>          ::= "\"" "/^[\"]+/" ".\"" [<sentence terminator>] |
-                                 "\"" "/^[\"]+/\"" <sentence terminator>
+      <description>          ::= "\"" "/^[\"]+/" ".\"" [<phrase terminator>] |
+                                 "\"" "/^[\"]+/\"" <phrase terminator>
       <equality>             ::= "is" | "are"
       <assertion verb>       ::= "has" | "carries" | "is carrying" | "wears" |
                                  "is wearing" | "contains" | "supports" |
@@ -64,16 +65,27 @@ namespace trogdor {
                                  "vehicles" | "player's holdalls" |
                                  "supporters" | "backdrops" | "devices" |
                                  "people" | "men" | "women" | "animals"
-      <adjective>            ::= ["not"] ("visible" | "visited" | "touchable" |
-                                 "open" | "closed" | "dark" | "empty" | "non-empty")
+      <adjective>            ::= ["not"] ("adjacent" | "visible" | "invisible" |
+                                 "visited" | "touchable" | "untouchable" |
+                                 "lighted" | "dark" | "open" | "closed" |
+                                 "empty" | "non-empty" | "lit" | "unlit" |
+                                 "transparent" | "opaque" | "fixed in place" |
+                                 "portable" | "openable" | "unopenable" |
+                                 "enterable" | "pushable between rooms" |
+                                 "wearable" | "edible" | "inedible" |
+                                 "described" | "undescribed" | "male" |
+                                 "female" | "neuter" | "locked" | "unlocked" |
+                                 "lockable" | "unlockable" | "switched on" |
+                                 "switched off" | "positive" | "negative" |
+                                 "even" | "odd")
       <noun>                 ::= /[A-Za-z ']+/
       <quoted string>        ::= "\" "/^[\"]+/" \""
-      <sentence terminator>  ::= ("." | "\n\n") {"\n"}
+      <phrase terminator>    ::= ("." | "\n\n") {"\n"}
 
-      * Classes and adjectives listed in the above EBNF are those that are built
-      into Inform 7. I'll eventually add support for parsing custom classes and
-      adjectives, in which case the grammar should also consider those, once
-      inserted, as their respective types (the same goes for custom directions.)
+      * Directions, classes, and adjectives listed in the above EBNF are those
+      that are built into Inform 7. I'll eventually add support for parsing
+      custom classes and adjectives, in which case the grammar should also
+      consider those, once inserted, as their respective types.
 
       Note that I had to cobble together the EBNF above myself using examples
       from the official documentation along with other supplemental sources.
@@ -94,8 +106,10 @@ namespace trogdor {
          // Breaks Inform 7 source down into a token stream
          Inform7Lexer lexer;
 
-         // Set of directions recognized by Inform 7 (list can be extended)
-         unordered_set<string> directions;
+         // Set of directions recognized by Inform 7 (list can be extended.)
+         // Keys are the direction and values are the opposite. For example,
+         // directions["north"] = "south".
+         unordered_map<string, string> directions;
 
          // Set of classes recognized by Inform 7 (list can be extended)
          unordered_set<string> classes;

@@ -5,6 +5,7 @@
 #include <string>
 #include <stack>
 #include <unordered_set>
+#include <unordered_map>
 
 #include "../../utility.h"
 
@@ -55,7 +56,7 @@ namespace trogdor {
          const int maxCompoundWordLength = 4;
 
          // Reference to parser's list of defined directions
-         const unordered_set<string> &directions;
+         const unordered_map<string, string> &directions;
 
          // Reference to parser's list of defined classes
          const unordered_set<string> &classes;
@@ -185,7 +186,7 @@ namespace trogdor {
             Constructor
          */
          inline Inform7Lexer(
-            const unordered_set<string> &dirs,
+            const unordered_map<string, string> &dirs,
             const unordered_set<string> &cls,
             const unordered_set<string> &adjs
          ): directions(dirs), classes(cls), adjectives(adjs),

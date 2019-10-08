@@ -14,19 +14,19 @@ namespace trogdor {
    const Vocabulary &v): Parser(std::move(i), v), lexer(directions, classes, adjectives) {
 
       // Built-in directions that Inform 7 recognizes by default. List can be
-      // extended later.
-      directions.insert("north");
-      directions.insert("south");
-      directions.insert("east");
-      directions.insert("west");
-      directions.insert("northwest");
-      directions.insert("northeast");
-      directions.insert("southwest");
-      directions.insert("southeast");
-      directions.insert("up");
-      directions.insert("down");
-      directions.insert("inside");
-      directions.insert("outside");
+      // extended later. This structure maps directions to their opposites.
+      directions["up"] = "down";
+      directions["down"] = "up";
+      directions["inside"] = "outside";
+      directions["outside"] = "inside";
+      directions["north"] = "south";
+      directions["south"] = "north";
+      directions["east"] = "west";
+      directions["west"] = "east";
+      directions["northwest"] = "southeast";
+      directions["northeast"] = "southwest";
+      directions["southwest"] = "northeast";
+      directions["southeast"] = "northwest";
 
       // Built-in classes that Inform 7 recognizes by default. List can be
       // extended later.
