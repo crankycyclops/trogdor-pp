@@ -123,7 +123,7 @@ namespace trogdor {
 
          for (t = lexer.next(); (
             t.type != SOURCE_EOF &&
-            t.type != SENTENCE_TERMINATOR &&
+            t.type != PHRASE_TERMINATOR &&
             t.type != COLON &&
             t.type != SEMICOLON
          ); t = lexer.next()) {
@@ -140,7 +140,7 @@ namespace trogdor {
          }
       }
 
-      else if (SENTENCE_TERMINATOR != t.type) {
+      else if (PHRASE_TERMINATOR != t.type) {
          throw ParseException(string("Initial bibliographic sentence can only be a title in double quotes, possibly followed with 'by' and the name of the author (line ") + to_string(t.lineno) + ')');
       }
 
@@ -210,7 +210,7 @@ namespace trogdor {
 
       // TODO: this is just skipping past the rest of the phrase until I implement
       // the rest
-      for (Token t = lexer.next(); SOURCE_EOF != t.type && SENTENCE_TERMINATOR != t.type;
+      for (Token t = lexer.next(); SOURCE_EOF != t.type && PHRASE_TERMINATOR != t.type;
       t = lexer.next());
    }
 

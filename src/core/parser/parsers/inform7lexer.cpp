@@ -63,7 +63,7 @@ namespace trogdor {
 
             if (terminator.length()) {
                t.value = terminator;
-               t.type = SENTENCE_TERMINATOR;
+               t.type = PHRASE_TERMINATOR;
             }
 
             else if (sourceIndex < source.length()) {
@@ -107,7 +107,7 @@ namespace trogdor {
                      Should I clean this up a little by moving it into a
                      separate function? Probably. Am I just grateful it works
                      and not willing to risk breaking it by refactoring? Hell
-                     yes.
+                     yeah.
 
                      Until I decide to refactor this, I'll conveniently offset
                      the awkward block of code using comments.
