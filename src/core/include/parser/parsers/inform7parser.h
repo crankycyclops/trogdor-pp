@@ -4,6 +4,8 @@
 
 #include <memory>
 #include <string>
+#include <vector>
+#include <unordered_set>
 
 #include "../../utility.h"
 #include "../../vocabulary.h"
@@ -33,19 +35,15 @@ namespace trogdor {
       <bibliographic>        ::= <quoted string> ["by" <author name>]
                                  <sentence terminator>
       <author name>          ::= /[A-Za-z ']+/ | <quoted string>
-      <rule>                 ::= <singular definition> | <plural definition> |
-                                 <adjective assignment>
-      <singular definition>  ::= {<article>} <noun> <equality> ({<article>}
+      <rule>                 ::= <definition> | <adjective assignment>
+      <definition>           ::= <identifier list> <equality> ({<article>}
                                  [<adjective>] <class> [<in clause>] |
                                  <direction> ("of" | "from") {<article>} <noun>)
                                  <sentence terminator> [<description>]
-      <plural definition>    ::= {<article>} <noun>{"," {<article>} <noun>}[","]
-                                 "and" {<article>} <noun> <equality> [<adjective>]
-                                 <plural class> [<in clause>] <sentence terminator>
-      <adjective assignment> ::= {<article>} <noun> <equality> <adjective> | {<article>}
-                                 <noun>{"," {<article>} <noun>}[","] "and"
-                                 {<article>} <noun> <equality> <adjective>
+      <adjective assignment> ::= <identifier list> <equality> <adjective>
                                  <sentence terminator>
+      <identifier list>      ::= {<article>} <noun> {("," | [","] "and")
+                                 {<article>} <noun>}
       <in clause>            ::= "in" {<article>} <noun>
       <description>          ::= "\"" "/^[\"]+/" ".\"" [<sentence terminator>] |
                                  "\"" "/^[\"]+/\"" <sentence terminator>
@@ -87,6 +85,29 @@ namespace trogdor {
 
          // Breaks Inform 7 source down into a token stream
          Inform7Lexer lexer;
+
+         // Set of directions recognized by Inform 7 (list can be extended)
+         unordered_set<string> directions;
+
+         // Set of classes recognized by Inform 7 (list can be extended)
+         unordered_set<string> classes;
+
+         /*
+            Parses one or more identifiers on the left hand side of an equality.
+            Matches the <identifiers list> production in the EBNF above. This
+            method is kind of a cheat and deviates from the LL parsing pattern.
+            If I don't do this, I'll have far too much lookahead. The result of
+            this method will either be passed to parseDefinition() or
+            parseAdjectiveAssignment(), depending on which rule ends up being
+            matched.
+
+            Input:
+               (none)
+
+            Output:
+               Vector containing one or more identifiers.
+         */
+         vector<string> parseIdentifiersList();
 
          /*
             Parses the optional bibliographic sentence at the beginning of the

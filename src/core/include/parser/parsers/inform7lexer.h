@@ -5,6 +5,8 @@
 #include <string>
 #include <stack>
 
+#include "../../utility.h"
+
 
 using namespace std;
 
@@ -20,12 +22,14 @@ namespace trogdor {
       WORD                = 5,
       ARTICLE             = 6,
       EQUALITY            = 7,
-      QUOTED_STRING       = 8
+      AND                 = 8,
+      QUOTED_STRING       = 9
    };
 
    struct Token {
       string value;
       TokenType type;
+      int lineno;
    };
 
    /**************************************************************************/
@@ -46,6 +50,9 @@ namespace trogdor {
          // Tokens that were read ahead to make a decision and then "pushed back"
          stack<Token> tokenBuffer;
 
+         // The most recently lexed token
+         Token currentToken;
+
          /*
             Returns true if the string is a form of the verb to be and false if
             not.
@@ -58,7 +65,12 @@ namespace trogdor {
          */
          inline bool isEquality(string s) const {
 
-            return (0 == s.compare("is") || 0 == s.compare("are")) ? true : false;
+            s = strToLower(s);
+
+            return (
+               0 == s.compare("is")  ||
+               0 == s.compare("are")
+            ) ? true : false;
          }
 
          /*
@@ -72,7 +84,13 @@ namespace trogdor {
          */
          inline bool isArticle(string s) const {
 
-            return (0 == s.compare("a") || 0 == s.compare("an") || 0 == s.compare("the")) ? true : false;
+            s = strToLower(s);
+
+            return (
+               0 == s.compare("a")  ||
+               0 == s.compare("an") ||
+               0 == s.compare("the")
+            ) ? true : false;
          }
 
          /*
@@ -138,6 +156,11 @@ namespace trogdor {
       public:
 
          /*
+            Constructor
+         */
+         inline Inform7Lexer(): currentToken({"", SOURCE_EOF, 0}) {}
+
+         /*
             Attempts to read the file and populate source with its contents.
             Throws a ParseException if the file cannot be read.
 
@@ -170,6 +193,19 @@ namespace trogdor {
                Current line (int)
          */
          inline const int getSourceLine() const {return sourceLine;}
+
+         /*
+            Peek at the current token without advancing the token stream. If we
+            haven't called next() at least once before calling this method, an
+            empty token with type SOURCE_EOF is returned.
+
+            Input:
+               (none)
+
+            Output:
+               Current token (Token)
+         */
+         inline Token peek() const {return currentToken;}
 
          /*
             Pushes back a token that's already been read so it can be read again

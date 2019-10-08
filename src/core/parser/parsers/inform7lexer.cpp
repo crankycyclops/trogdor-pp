@@ -47,12 +47,15 @@ namespace trogdor {
       if (!tokenBuffer.empty()) {
          t = tokenBuffer.top();
          tokenBuffer.pop();
-         return t;
       }
 
       else {
 
          skipWhitespace();
+
+         // This way the token knows what line it came from (useful for
+         // reporting errors)
+         t.lineno = sourceLine;
 
          if (sourceIndex < source.length()) {
 
@@ -63,49 +66,60 @@ namespace trogdor {
                t.type = SENTENCE_TERMINATOR;
             }
 
-            else if (';' == source.at(sourceIndex)) {
-               t.value += source.at(sourceIndex);
-               t.type = SEMICOLON;
-            }
+            else if (sourceIndex < source.length()) {
 
-            else if (':' == source.at(sourceIndex)) {
-               t.value += source.at(sourceIndex);
-               t.type = COLON;
-            }
-
-            else if (',' == source.at(sourceIndex)) {
-               t.value += source.at(sourceIndex);
-               t.type = COMMA;
-            }
-
-            else if ('"' == source.at(sourceIndex)) {
-               t.value = getQuotedString();
-               t.type = QUOTED_STRING;
-            }
-
-            else if (isWordChar(source.at(sourceIndex))) {
-
-               t.value = getWord();
-
-               if (isEquality(t.value)) {
-                  t.type = EQUALITY;
+               if (';' == source.at(sourceIndex)) {
+                  t.value += source.at(sourceIndex);
+                  t.type = SEMICOLON;
                }
 
-               else if (isArticle(t.value)) {
-                  t.type = ARTICLE;
+               else if (':' == source.at(sourceIndex)) {
+                  t.value += source.at(sourceIndex);
+                  t.type = COLON;
+               }
+
+               else if (',' == source.at(sourceIndex)) {
+                  t.value += source.at(sourceIndex);
+                  t.type = COMMA;
+               }
+
+               else if ('"' == source.at(sourceIndex)) {
+                  t.value = getQuotedString();
+                  t.type = QUOTED_STRING;
+               }
+
+               else if (isWordChar(source.at(sourceIndex))) {
+
+                  t.value = getWord();
+
+                  if (isEquality(t.value)) {
+                     t.type = EQUALITY;
+                  }
+
+                  else if (isArticle(t.value)) {
+                     t.type = ARTICLE;
+                  }
+
+                  else if (0 == strToLower(t.value).compare("and")) {
+                     t.type = AND;
+                  }
+
+                  else {
+                     t.type = WORD;
+                  }
                }
 
                else {
-                  t.type = WORD;
+                  throw ParseException(string("illegal character '") +
+                     source.at(sourceIndex) + "' on line " + to_string(sourceLine));
                }
+
+               sourceIndex++;
             }
 
             else {
-               throw ParseException(string("illegal character '") +
-                  source.at(sourceIndex) + "' on line " + to_string(sourceLine));
+               t.type = SOURCE_EOF;
             }
-
-            sourceIndex++;
          }
 
          else {
@@ -113,6 +127,7 @@ namespace trogdor {
          }
       }
 
+      currentToken = t;
       return t;
    }
 
