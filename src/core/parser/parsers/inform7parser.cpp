@@ -46,6 +46,12 @@ namespace trogdor {
       classes.insert("man");
       classes.insert("woman");
       classes.insert("animal");
+
+      // Built-in adjectives that Inform 7 recognizes by default. List can be
+      // extended later.
+      adjectives.insert("visible");
+      adjectives.insert("visited");
+      adjectives.insert("touchable");
    }
 
    /**************************************************************************/
@@ -126,12 +132,13 @@ namespace trogdor {
          }
       } while (COMMA == t.type || AND == t.type);
 
+      lexer.push(t);
       return identifiers;
    }
 
    /**************************************************************************/
 
-   void Inform7Parser::parseRule() {
+   void Inform7Parser::parsePhrase() {
 
       // We're going to break away from strict LL parsing for a bit, because
       // otherwise there would be too much lookahead
@@ -142,10 +149,10 @@ namespace trogdor {
          cout << identifiers[i] << endl;
       }
 
-      Token t = lexer.peek();
-      while (SOURCE_EOF != t.type && SENTENCE_TERMINATOR != t.type) {
-         t = lexer.next();
-      }
+      // TODO: this is just skipping past the rest of the phrase until I implement
+      // the rest
+      for (Token t = lexer.next(); SOURCE_EOF != t.type && SENTENCE_TERMINATOR != t.type;
+      t = lexer.next());
    }
 
    /**************************************************************************/
@@ -161,7 +168,7 @@ namespace trogdor {
 
       for (t = lexer.next(); SOURCE_EOF != t.type; t = lexer.next()) {
          lexer.push(t);
-         parseRule();
+         parsePhrase();
       }
    }
 

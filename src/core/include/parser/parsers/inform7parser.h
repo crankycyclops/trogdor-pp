@@ -35,7 +35,7 @@ namespace trogdor {
       <bibliographic>        ::= <quoted string> ["by" <author name>]
                                  <sentence terminator>
       <author name>          ::= /[A-Za-z ']+/ | <quoted string>
-      <rule>                 ::= <definition> | <adjective assignment>
+      <phrase>               ::= <definition> | <adjective assignment>
       <definition>           ::= <identifier list> <equality> ({<article>}
                                  [<adjective>] <class> [<in clause>] |
                                  <direction> ("of" | "from") {<article>} <noun>)
@@ -64,20 +64,24 @@ namespace trogdor {
                                  "vehicles" | "player's holdalls" |
                                  "supporters" | "backdrops" | "devices" |
                                  "people" | "men" | "women" | "animals"
+      <adjective>            ::= "visible" | "visited" | "touchable"
       <noun>                 ::= /[A-Za-z ']+/
-      <adjective>            ::= /[A-Za-z ]+/
       <quoted string>        ::= "\" "/^[\"]+/" \""
       <sentence terminator>  ::= ("." | "\n\n") {"\n"}
 
-      * Classes included above are those that are built into Inform 7. Once I
-      add support for custom classes, I'll also have to be able to parse those.
-      The same goes for custom directions, synonyms, etc.
+      * Classes and adjectives listed in the above EBNF are those that are built
+      into Inform 7. I'll eventually add support for parsing custom classes and
+      adjectives, in which case the grammar should also consider those, once
+      inserted, as their respective types (the same goes for custom directions.)
 
       Note that I had to cobble together the EBNF above myself using examples
       from the official documentation along with other supplemental sources.
 
       This one in particular helped a lot:
       http://www.ifwiki.org/index.php/Inform_7_for_Programmers
+
+      And this one:
+      http://mirrors.ibiblio.org/interactive-fiction/programming/inform7/manuals/Inform7_CheatSheet.pdf
    */
    class Inform7Parser: public Parser {
 
@@ -92,13 +96,16 @@ namespace trogdor {
          // Set of classes recognized by Inform 7 (list can be extended)
          unordered_set<string> classes;
 
+        // Set of adjectives recognized by Inform 7 (list can be extended)
+         unordered_set<string> adjectives;
+
          /*
             Parses one or more identifiers on the left hand side of an equality.
             Matches the <identifiers list> production in the EBNF above. This
             method is kind of a cheat and deviates from the LL parsing pattern.
             If I don't do this, I'll have far too much lookahead. The result of
             this method will either be passed to parseDefinition() or
-            parseAdjectiveAssignment(), depending on which rule ends up being
+            parseAdjectiveAssignment(), depending on which phrase ends up being
             matched.
 
             Input:
@@ -123,7 +130,7 @@ namespace trogdor {
          void parseBibliographic();
 
          /*
-            Parses a rule. Corresponds to the <rule> production in the EBNF
+            Parses a phrase. Corresponds to the <phrase> production in the EBNF
             above.
 
             Input:
@@ -132,7 +139,7 @@ namespace trogdor {
             Output:
                (none)
          */
-         void parseRule();
+         void parsePhrase();
 
          /*
             Parses an Inform 7 program. Corresponds to the <program> production
