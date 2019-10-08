@@ -64,7 +64,8 @@ namespace trogdor {
                                  "vehicles" | "player's holdalls" |
                                  "supporters" | "backdrops" | "devices" |
                                  "people" | "men" | "women" | "animals"
-      <adjective>            ::= "visible" | "visited" | "touchable"
+      <adjective>            ::= ["not"] ("visible" | "visited" | "touchable" |
+                                 "open" | "closed" | "dark" | "empty" | "non-empty")
       <noun>                 ::= /[A-Za-z ']+/
       <quoted string>        ::= "\" "/^[\"]+/" \""
       <sentence terminator>  ::= ("." | "\n\n") {"\n"}
@@ -82,6 +83,9 @@ namespace trogdor {
 
       And this one:
       http://mirrors.ibiblio.org/interactive-fiction/programming/inform7/manuals/Inform7_CheatSheet.pdf
+
+      Where possible, I try to throw the same (or similar) error messages as
+      those returned by the original Inform 7 compiler.
    */
    class Inform7Parser: public Parser {
 

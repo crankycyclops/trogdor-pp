@@ -87,9 +87,10 @@ namespace trogdor {
             s = strToLower(s);
 
             return (
-               0 == s.compare("a")  ||
-               0 == s.compare("an") ||
-               0 == s.compare("the")
+               0 == s.compare("a")    ||
+               0 == s.compare("an")   ||
+               0 == s.compare("the")  ||
+               0 == s.compare("some")
             ) ? true : false;
          }
 

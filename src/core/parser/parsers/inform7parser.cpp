@@ -49,9 +49,56 @@ namespace trogdor {
 
       // Built-in adjectives that Inform 7 recognizes by default. List can be
       // extended later.
+      adjectives.insert("adjacent");
       adjectives.insert("visible");
+      adjectives.insert("invisible");
       adjectives.insert("visited");
       adjectives.insert("touchable");
+      adjectives.insert("untouchable");
+      adjectives.insert("lighted");
+      adjectives.insert("dark");
+      adjectives.insert("open");
+      adjectives.insert("closed");
+      adjectives.insert("empty");
+      adjectives.insert("non-empty");
+
+      // These adjectives (properties) can only be set on things
+      adjectives.insert("lit");
+      adjectives.insert("unlit");
+      adjectives.insert("transparent");
+      adjectives.insert("opaque");
+      adjectives.insert("fixed in place");
+      adjectives.insert("portable");
+      adjectives.insert("openable");
+      adjectives.insert("unopenable");
+      adjectives.insert("enterable");
+      adjectives.insert("pushable between rooms");
+      adjectives.insert("wearable");
+      adjectives.insert("edible");
+      adjectives.insert("inedible");
+      adjectives.insert("described");
+      adjectives.insert("undescribed");
+
+      // These adjectives can only be set on people or animals
+      adjectives.insert("male");
+      adjectives.insert("female");
+      adjectives.insert("neuter"); // as opposed to male or female
+
+      // These adjectives can only be set on doors
+      adjectives.insert("locked");
+      adjectives.insert("unlocked");
+      adjectives.insert("lockable");
+      adjectives.insert("unlockable");
+
+      // These adjectives apply only to devices
+      adjectives.insert("switched on");
+      adjectives.insert("switched off");
+
+      // These special adjectives are for numerical values only
+      adjectives.insert("positive");
+      adjectives.insert("negative");
+      adjectives.insert("even");
+      adjectives.insert("odd");
    }
 
    /**************************************************************************/
@@ -113,6 +160,9 @@ namespace trogdor {
          string noun;
 
          // Skip past articles
+         // TODO: need to keep track of whether or not an article was used; if
+         // one was, then it's a proper noun. Otherwise, it's not. This effects
+         // things like whether or not a room is visited when an object is in it.
          for (t = lexer.next(); ARTICLE == t.type; t = lexer.next());
 
          // Sometimes, we have a comma followed by and. In that case, skip over
@@ -140,10 +190,19 @@ namespace trogdor {
 
    void Inform7Parser::parsePhrase() {
 
+      Token t;
+
       // We're going to break away from strict LL parsing for a bit, because
       // otherwise there would be too much lookahead
       vector<string> identifiers = parseIdentifiersList();
 
+      t = lexer.next();
+
+/* This breaks because I don't handle descriptions right after definitions yet.
+      if (EQUALITY != t.type) {
+         throw ParseException(string("I can't find a verb that I know how to deal with. (line ") + to_string(t.lineno) + ')');
+      }
+*/
       // TODO: actually do something
       for (int i = 0; i < identifiers.size(); i++) {
          cout << identifiers[i] << endl;
