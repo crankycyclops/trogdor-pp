@@ -4,6 +4,7 @@
 
 #include <string>
 #include <stack>
+#include <unordered_set>
 
 #include "../../utility.h"
 
@@ -37,6 +38,30 @@ namespace trogdor {
    class Inform7Lexer {
 
       private:
+
+         // Some words are actually composites of more than one word. For
+         // example: "player's carryall" is treated as one word, but is actually
+         // composed of two. In the lexer's current implementation, when parsing
+         // a word, we start by temporarily lexing as many words as we can
+         // before the end of a statement and attempting to match them to
+         // entries in directions, classes, and adjectives. If no match is found,
+         // we reduce the compound word by one less word and try matching again
+         // until either we found a match or we only have one word left (in
+         // which case we return just the one word.) The problem is, the source
+         // file might be malformatted, in which case we'll continue reading
+         // words until EOF, potentially causing memory issues. To mitigate
+         // that, I'm only going to allow a maximum compound word length of
+         // this size.
+         const int maxCompoundWordLength = 4;
+
+         // Reference to parser's list of defined directions
+         const unordered_set<string> &directions;
+
+         // Reference to parser's list of defined classes
+         const unordered_set<string> &classes;
+
+         // Reference to parser's list of defined adjectives
+         const unordered_set<string> &adjectives;
 
          // Inform 7 source code
          string source;
@@ -106,7 +131,7 @@ namespace trogdor {
          */
          inline bool isWordChar(const char c) const {
 
-            return (isalnum(c) || '-' == c || '_' == c) ? true : false;
+            return (isalnum(c) || '-' == c || '_' == c || '\'' == c) ? true : false;
          }
 
          /*
@@ -159,7 +184,14 @@ namespace trogdor {
          /*
             Constructor
          */
-         inline Inform7Lexer(): currentToken({"", SOURCE_EOF, 0}) {}
+         inline Inform7Lexer(
+            const unordered_set<string> &dirs,
+            const unordered_set<string> &cls,
+            const unordered_set<string> &adjs
+         ): directions(dirs), classes(cls), adjectives(adjs),
+         currentToken({"", SOURCE_EOF, 0}) {}
+
+         Inform7Lexer() = delete;
 
          /*
             Attempts to read the file and populate source with its contents.

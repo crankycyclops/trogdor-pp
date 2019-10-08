@@ -90,7 +90,69 @@ namespace trogdor {
 
                else if (isWordChar(source.at(sourceIndex))) {
 
-                  t.value = getWord();
+                  /*
+                     Okay, so let me explain the apparent yuckiness... Some
+                     words are actually composites of more than one word. For
+                     example: "player's carryall" is treated as one word, but is
+                     actually composed of two. This code starts by temporarily
+                     lexing as many words as it can before the end of a
+                     statement (or before the maximum depth is reached) and
+                     attempts to match the result to entries in directions,
+                     classes, and adjectives. If no match is found, we truncate
+                     the last single word from the compound and try matching
+                     again. This continues until either a match is found or we
+                     reach a base case length of 1, in which case it's just a
+                     single non-compound word.
+
+                     Should I clean this up a little by moving it into a
+                     separate function? Probably. Am I just grateful it works
+                     and not willing to risk breaking it by refactoring? Hell
+                     yes.
+
+                     Until I decide to refactor this, I'll conveniently offset
+                     the awkward block of code using comments.
+                  */
+                  // BEGIN AWKWARD BLOCK OF CODE
+                  string potentialWord;
+                  stack<int> tokenSourceIndices;
+
+                  for (int compoundWordLength = 0;
+                  compoundWordLength < maxCompoundWordLength; compoundWordLength++) {
+
+                     potentialWord += (compoundWordLength > 0 ? " " : "");
+                     potentialWord += getWord();
+                     tokenSourceIndices.push(sourceIndex);
+
+                     sourceIndex++;
+
+                     if (0 != getSentenceTerminator().length()) {
+                        break;
+                     }
+                  }
+
+                  while (tokenSourceIndices.size() > 1) {
+
+                     if (
+                        // TODO: when I introduce verb synonyms that can be
+                        // more than one word, I'll have to include a check for
+                        // those, too
+                        directions.end() == directions.find(potentialWord) &&
+                        classes.end()    == classes.find(potentialWord) &&
+                        adjectives.end() == adjectives.find(potentialWord)
+                     ) {
+                        potentialWord.erase(potentialWord.rfind(' '));
+                        tokenSourceIndices.pop();
+                     }
+
+                     else {
+                        break;
+                     }
+                  }
+
+                  sourceIndex = tokenSourceIndices.top();
+                  tokenSourceIndices.pop();
+                  t.value = potentialWord;
+                  // END AWKWARD BLOCK OF CODE
 
                   if (isEquality(t.value)) {
                      t.type = EQUALITY;
