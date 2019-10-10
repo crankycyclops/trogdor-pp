@@ -276,22 +276,9 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   void Inform7Parser::parsePhrase() {
+   void Inform7Parser::parseEquality(vector<string> identifiers) {
 
       Token t;
-
-      // We're going to break away from strict LL parsing for a moment, because
-      // otherwise there would be too much lookahead
-      vector<string> identifiers = parseIdentifiersList();
-      t = lexer.next();
-
-      if (!identifiers.size()) {
-         throw ParseException(string("You've used a verb ('" + t.value + "') without a subject (line ") + to_string(t.lineno) + ')');
-      }
-
-      else if (EQUALITY != t.type) {
-         throw ParseException(string("I can't find a verb that I know how to deal with. (line ") + to_string(t.lineno) + ')');
-      }
 
       // Skip past any articles that might be present
       for (t = lexer.next(); ARTICLE == t.type; t = lexer.next());
@@ -301,9 +288,9 @@ namespace trogdor {
 
          vector<string> adjectiveList;
 
-         // If we have a list of adjectives, parse them. Once again, we're
-         // breaking away from a standard recursive descent in order to avoid
-         // too much lookahead.
+         // If we have a list of adjectives, parse them. We're breaking away
+         // from a standard recursive descent in order to avoid too much
+         // lookahead.
          adjectiveList = parseAdjectivesList();
 
          t = lexer.next();
@@ -326,9 +313,9 @@ namespace trogdor {
       }
 
       // We can define something in one of two ways. Either we can explicitly
-      // say that one or more things are of a certain type, or we can instantiate
-      // a room implicitly by saying that the name of a room is in a certain
-      // direction from another already defined room.
+      // say that one or more things are of a certain type, or we can
+      // instantiate a room implicitly by saying that the name of a room is in a
+      // certain direction from another already defined room.
       else if (
          classes.end() != classes.find(strToLower(t.value)) ||
          directions.end() != directions.find(strToLower(t.value))
@@ -342,6 +329,31 @@ namespace trogdor {
 
       else if (QUOTED_STRING == t.type) {
          throw ParseException(string("The sentence on line ") + to_string(t.lineno) + "appears to say that one or more things are equal to a value, but that makes no sense.");
+      }
+
+      else {
+         throw ParseException(string("I can't find a verb that I know how to deal with. (line ") + to_string(t.lineno) + ')');
+      }
+   }
+
+   /**************************************************************************/
+
+   void Inform7Parser::parsePhrase() {
+
+      Token t;
+
+      // We're going to break away from strict LL parsing for a moment, because
+      // otherwise there would be too much lookahead
+      vector<string> identifiers = parseIdentifiersList();
+      t = lexer.next();
+
+      if (!identifiers.size()) {
+         throw ParseException(string("You've used a verb ('" + t.value + "') without a subject (line ") + to_string(t.lineno) + ')');
+      }
+
+      // We're parsing an expression with an "is" or "are" verb
+      if (EQUALITY == t.type) {
+         parseEquality(identifiers);
       }
 
       else {

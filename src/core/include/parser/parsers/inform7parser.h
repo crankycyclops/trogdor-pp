@@ -36,7 +36,8 @@ namespace trogdor {
       <bibliographic>        ::= <quoted string> ["by" <author name>]
                                  <phrase terminator>
       <author name>          ::= /[A-Za-z ']+/ | <quoted string>
-      <phrase>               ::= <definition> | <adjective assignment>
+      <phrase>               ::= <equality>
+      <equality>             ::= <definition> | <adjective assignment>
       <definition>           ::= <identifier list> <equality> {<article>} (
                                  [<adjective list>] <class> [<in clause>] |
                                  <direction> ("of" | "from") {<article>} <noun>)
@@ -179,6 +180,19 @@ namespace trogdor {
          */
          void parseAdjectiveAssignment(vector<string> identifiers,
          vector<string> adjectiveList);
+
+         /*
+            Parses an equality phrase, or any phrase that uses the present tense
+            of the verb "to be." Matches the <equality> production in the EBNF
+            above.
+
+            Input:
+               One or more identifiers as the subject (vector<string>)
+
+            Output:
+               (none)
+         */
+         void parseEquality(vector<string> identifiers);
 
          /*
             Parses the optional bibliographic sentence at the beginning of the
