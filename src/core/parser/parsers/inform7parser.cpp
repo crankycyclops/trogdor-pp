@@ -166,7 +166,7 @@ namespace trogdor {
          for (t = lexer.next(); ARTICLE == t.type; t = lexer.next());
 
          // Sometimes, we have a comma followed by and. In that case, skip over
-         // the and.
+         // the extraneous "and."
          if (AND == t.type) {
             t = lexer.next();
          }
@@ -188,30 +188,165 @@ namespace trogdor {
 
    /**************************************************************************/
 
+   vector<string> Inform7Parser::parseAdjectivesList() {
+
+      Token t = lexer.next();
+      vector<string> adjectiveList;
+
+      while (adjectives.end() != adjectives.find(strToLower(t.value))) {
+
+         adjectiveList.push_back(t.value);
+
+         t = lexer.next();
+
+         // Adjectives might be delimited by a comma and/or "and" rather than
+         // just a space
+         if (COMMA == t.type) {
+            t = lexer.next();
+         }
+
+         if (AND == t.type) {
+            t = lexer.next();
+         }
+      }
+
+      lexer.push(t);
+      return adjectiveList;
+   }
+
+   /**************************************************************************/
+
+   void Inform7Parser::parseDefinition(vector<string> identifiers,
+   vector<string> adjectiveList) {
+
+      // TODO
+      cout << endl << "parseDefinition stub!" << endl << endl;
+
+      cout << "Identifiers: " << endl;
+      for (auto i = identifiers.begin(); i != identifiers.end(); i++) {
+         cout << *i << endl;
+      }
+
+      cout << endl;
+      if (adjectiveList.size()) {
+         cout << "Adjectives: " << endl << endl;
+         for (auto i = adjectiveList.begin(); i != adjectiveList.end(); i++) {
+            cout << *i << endl;
+         }
+      } else {
+         cout << "(No adjectives.)" << endl;
+      }
+
+      // Skip past the rest of the definition until I actually implement this
+      Token t;
+
+      for (t = lexer.next(); PHRASE_TERMINATOR != t.type; t = lexer.next());
+
+      t = lexer.next();
+
+      if (QUOTED_STRING == t.type) {
+         for (t = lexer.next(); PHRASE_TERMINATOR != t.type; t = lexer.next());
+      } else {
+         lexer.push(t);
+      }
+   }
+
+   /**************************************************************************/
+
+   void Inform7Parser::parseAdjectiveAssignment(vector<string> identifiers,
+   vector<string> adjectiveList) {
+
+      // TODO
+      cout << endl << "parseAdjectiveAssignment stub!" << endl << endl;
+
+      cout << "Identifiers: " << endl;
+      for (auto i = identifiers.begin(); i != identifiers.end(); i++) {
+         cout << *i << endl;
+      }
+
+      cout << endl << "Adjectives: " << endl << endl;
+      for (auto i = adjectiveList.begin(); i != adjectiveList.end(); i++) {
+         cout << *i << endl;
+      }
+
+      // Skip past the rest of the definition until I actually implement this
+      Token t;
+      for (t = lexer.next(); PHRASE_TERMINATOR != t.type; t = lexer.next());
+   }
+
+   /**************************************************************************/
+
    void Inform7Parser::parsePhrase() {
 
       Token t;
 
-      // We're going to break away from strict LL parsing for a bit, because
+      // We're going to break away from strict LL parsing for a moment, because
       // otherwise there would be too much lookahead
       vector<string> identifiers = parseIdentifiersList();
-
       t = lexer.next();
 
-/* This breaks because I don't handle descriptions right after definitions yet.
-      if (EQUALITY != t.type) {
-         throw ParseException(string("I can't find a verb that I know how to deal with. (line ") + to_string(t.lineno) + ')');
-      }
-*/
-      // TODO: actually do something
-      for (int i = 0; i < identifiers.size(); i++) {
-         cout << identifiers[i] << endl;
+      if (!identifiers.size()) {
+         throw ParseException(string("You've used a verb ('" + t.value + "') without a subject (line ") + to_string(t.lineno) + ')');
       }
 
-      // TODO: this is just skipping past the rest of the phrase until I implement
-      // the rest
-      for (Token t = lexer.next(); SOURCE_EOF != t.type && PHRASE_TERMINATOR != t.type;
-      t = lexer.next());
+      else if (EQUALITY != t.type) {
+         throw ParseException(string("I can't find a verb that I know how to deal with. (line ") + to_string(t.lineno) + ')');
+      }
+
+      // Skip past any articles that might be present
+      for (t = lexer.next(); ARTICLE == t.type; t = lexer.next());
+      lexer.push(t);
+
+      if (adjectives.end() != adjectives.find(strToLower(t.value))) {
+
+         vector<string> adjectiveList;
+
+         // If we have a list of adjectives, parse them. Once again, we're
+         // breaking away from a standard recursive descent in order to avoid
+         // too much lookahead.
+         adjectiveList = parseAdjectivesList();
+
+         t = lexer.next();
+
+         if (PHRASE_TERMINATOR == t.type) {
+            parseAdjectiveAssignment(identifiers, adjectiveList);
+         }
+
+         else if (WORD == t.type) {
+            parseDefinition(identifiers, adjectiveList);
+         }
+
+         else if (COMMA == t.type) {
+            throw ParseException(string("Your sentence on line ") + to_string(t.lineno) + " seems to refer to something whose name begins with a comma, which is forbidden.");
+         }
+
+         else {
+            throw ParseException(string("Illegal character on line ") + to_string(t.lineno) + ".");
+         }
+      }
+
+      // We can define something in one of two ways. Either we can explicitly
+      // say that one or more things are of a certain type, or we can instantiate
+      // a room implicitly by saying that the name of a room is in a certain
+      // direction from another already defined room.
+      else if (
+         classes.end() != classes.find(strToLower(t.value)) ||
+         directions.end() != directions.find(strToLower(t.value))
+      ) {
+         parseDefinition(identifiers);
+      }
+
+      else if (WORD == t.type || EQUALITY == t.type || AND == t.type) {
+         throw ParseException(string("'") + t.value + "' is not a known adjective, kind of thing, or property of a thing (line " + to_string(t.lineno) + ')');
+      }
+
+      else if (QUOTED_STRING == t.type) {
+         throw ParseException(string("The sentence on line ") + to_string(t.lineno) + "appears to say that one or more things are equal to a value, but that makes no sense.");
+      }
+
+      else {
+         throw ParseException(string("I can't find a verb that I know how to deal with. (line ") + to_string(t.lineno) + ')');
+      }
    }
 
    /**************************************************************************/

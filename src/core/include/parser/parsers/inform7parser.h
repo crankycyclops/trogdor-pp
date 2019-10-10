@@ -37,11 +37,12 @@ namespace trogdor {
                                  <phrase terminator>
       <author name>          ::= /[A-Za-z ']+/ | <quoted string>
       <phrase>               ::= <definition> | <adjective assignment>
-      <definition>           ::= <identifier list> <equality> ({<article>}
-                                 [<adjective>] <class> [<in clause>] |
+      <definition>           ::= <identifier list> <equality> {<article>} (
+                                 [<adjective list>] <class> [<in clause>] |
                                  <direction> ("of" | "from") {<article>} <noun>)
                                  <phrase terminator> [<description>]
-      <adjective assignment> ::= <identifier list> <equality> <adjective>
+      <adjective assignment> ::= <identifier list> <equality> {<article>}
+                                 <adjective list>
                                  <phrase terminator>
       <identifier list>      ::= {<article>} <noun> {("," | [","] "and")
                                  {<article>} <noun>}
@@ -65,6 +66,7 @@ namespace trogdor {
                                  "vehicles" | "player's holdalls" |
                                  "supporters" | "backdrops" | "devices" |
                                  "people" | "men" | "women" | "animals"
+      <adjective list>       ::= <adjective> {[","] ["and"] <adjective>}
       <adjective>            ::= ["not"] ("adjacent" | "visible" | "invisible" |
                                  "visited" | "touchable" | "untouchable" |
                                  "lighted" | "dark" | "open" | "closed" |
@@ -133,6 +135,50 @@ namespace trogdor {
                Vector containing one or more identifiers.
          */
          vector<string> parseIdentifiersList();
+
+         /*
+            Parses one or more adjectives on the left hand side of an equality.
+            Matches the <adjective list> production in the EBNF above. Like
+            parseIdentifiersList(), this method is kind of a cheat. It deviates
+            from the LL parsing pattern so that I won't have too much
+            lookahead.
+
+            Input:
+               (none)
+
+            Output:
+               Vector containing one or more adjectives.
+         */
+         vector<string> parseAdjectivesList();
+
+         /*
+            Parses the definition of one or more things. Matches the
+            <definition> production in the EBNF above.
+
+            Input:
+               One or more identifiers (vector<string>)
+               One or more optional adjectives (vector<string>)
+
+            Output:
+               (none)
+         */
+         void parseDefinition(vector<string> identifiers,
+         vector<string> adjectiveList = vector<string>());
+
+         /*
+            Parses the assignment of one or more adjectives to one or more
+            identifiers. Matches the <adjective assignment> production in the
+            EBNF above.
+
+            Input:
+               One or more identifiers (vector<string>)
+               One or more adjectives (vector<string>)
+
+            Output:
+               (none)
+         */
+         void parseAdjectiveAssignment(vector<string> identifiers,
+         vector<string> adjectiveList);
 
          /*
             Parses the optional bibliographic sentence at the beginning of the

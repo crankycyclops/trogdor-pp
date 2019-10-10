@@ -40,6 +40,9 @@ namespace trogdor {
 
       private:
 
+         // String representations of each token type for debugging
+         unordered_map<TokenType, string, std::hash<int>> tokenTypeToStr;
+
          // Some words are actually composites of more than one word. For
          // example: "player's carryall" is treated as one word, but is actually
          // composed of two. In the lexer's current implementation, when parsing
@@ -190,9 +193,35 @@ namespace trogdor {
             const unordered_set<string> &cls,
             const unordered_set<string> &adjs
          ): directions(dirs), classes(cls), adjectives(adjs),
+         tokenTypeToStr({
+            {SOURCE_EOF, "SOURCE_EOF"},
+            {PHRASE_TERMINATOR, "PHRASE_TERMINATOR"},
+            {COMMA, "COMMA"},
+            {COLON, "COLON"},
+            {SEMICOLON, "SEMICOLON"},
+            {WORD, "WORD"},
+            {ARTICLE, "ARTICLE"},
+            {EQUALITY, "EQUALITY"},
+            {AND, "AND"},
+            {QUOTED_STRING, "QUOTED_STRING"}
+         }),
          currentToken({"", SOURCE_EOF, 0}) {}
 
          Inform7Lexer() = delete;
+
+         /*
+            Get a string representation of a token type. Useful for debugging.
+
+            Input:
+               Token type (TokenType)
+
+            Output:
+               String representation of the type (string)
+         */
+         inline string getTokenTypeStr(TokenType type) const {
+
+            return tokenTypeToStr.find(type)->second;
+         }
 
          /*
             Attempts to read the file and populate source with its contents.
