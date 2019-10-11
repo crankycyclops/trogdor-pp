@@ -4,6 +4,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "../language.h"
 
@@ -13,9 +14,17 @@ using namespace std;
 namespace trogdor {
 
 
+   // Represents a regex replacement rule for pluralization
+   struct RegexReplacement {
+      string regex;
+      string replacement;
+   };
+
+   /**************************************************************************/
+
    /*
       The pluralization rules, though influenced by other sources, are adapted
-      in large part from the paper here:
+      in large part from this paper:
       http://users.monash.edu/~damian/papers/HTML/Plurals.html
    */
    class English: public Language {
@@ -27,7 +36,7 @@ namespace trogdor {
 
          // Plurals that can be regularly changed according to simple regex
          // substitution rules (ex: the suffix "ouse$" => "ice")
-         unordered_map<string, string> regexReplacements;
+         vector<RegexReplacement> regexReplacements;
 
       public:
 

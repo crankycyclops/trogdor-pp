@@ -236,7 +236,7 @@ namespace trogdor {
 
       cout << endl;
       if (adjectiveList.size()) {
-         cout << "Adjectives: " << endl << endl;
+         cout << "Adjectives: " << endl;
          for (auto i = adjectiveList.begin(); i != adjectiveList.end(); i++) {
             cout << *i << endl;
          }

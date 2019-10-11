@@ -26,6 +26,59 @@ namespace trogdor {
       pluralNounExceptions["soliloquy"] = "soliloquies";
       pluralNounExceptions["trilby"] = "trilbys";
 
+      // Most nouns ending in -a get an 's' stuck at the end, but these retain
+      // their original latin plural endings
+      pluralNounExceptions["alumna"] = "alumnae";
+      pluralNounExceptions["alga"] = "algae";
+      pluralNounExceptions["vertebra"] = "vertebrae";
+
+      // Most nouns ending in -ex get an "es" stuck at the end, but these retain
+      // their original latin plural endings
+      pluralNounExceptions["codex"] = "codices";
+      pluralNounExceptions["murex"] = "murices";
+      pluralNounExceptions["silex"] = "silices";
+
+      // Most nouns ending in -is get an "es" stuck at the end, but these retain
+      // their original latin plural endings
+      pluralNounExceptions["iris"] = "irises";
+      pluralNounExceptions["clitoris"] = "clitorises";
+      pluralNounExceptions["penis"] = "penises";
+
+      // Most nouns ending in -o and not preceded by a vowel end in oes.
+      // However, there are some exceptions.
+      pluralNounExceptions["albino"] = "albinos";
+      pluralNounExceptions["alto"] = "altos";
+      pluralNounExceptions["archipelago"] = "archipelagos";
+      pluralNounExceptions["armadillo"] = "armadillos";
+      pluralNounExceptions["basso"] = "bassos";
+      pluralNounExceptions["canto"] = "cantos";
+      pluralNounExceptions["commando"] = "commandos";
+      pluralNounExceptions["contralto"] = "contraltos";
+      pluralNounExceptions["crescendo"] = "crescendos";
+      pluralNounExceptions["ditto"] = "dittos";
+      pluralNounExceptions["dynamo"] = "dynamos";
+      pluralNounExceptions["embryo"] = "embryos";
+      pluralNounExceptions["fiasco"] = "fiascos";
+      pluralNounExceptions["generalissimo"] = "generalissimos";
+      pluralNounExceptions["ghetto"] = "ghettos";
+      pluralNounExceptions["guano"] = "guanos";
+      pluralNounExceptions["inferno"] = "infernos";
+      pluralNounExceptions["jumbo"] = "jumbos";
+      pluralNounExceptions["lingo"] = "lingos";
+      pluralNounExceptions["lumbago"] = "lumbagos";
+      pluralNounExceptions["magneto"] = "magnetos";
+      pluralNounExceptions["manifesto"] = "manifestos";
+      pluralNounExceptions["medico"] = "medicos";
+      pluralNounExceptions["octavo"] = "octavos";
+      pluralNounExceptions["photo"] = "photos";
+      pluralNounExceptions["pro"] = "pros";
+      pluralNounExceptions["quarto"] = "quartos";
+      pluralNounExceptions["rhino"] = "rhinos";
+      pluralNounExceptions["solo"] = "solos";
+      pluralNounExceptions["soprano"] = "sopranos";
+      pluralNounExceptions["stylo"] = "stylos";
+      pluralNounExceptions["tempo"] = "tempos";
+
       // Individual nouns that don't change when made plural
       pluralNounExceptions["advice"] = "advice";
       pluralNounExceptions["aircraft"] = "aircraft";
@@ -123,52 +176,40 @@ namespace trogdor {
       pluralNounExceptions["wood"] = "wood";
       pluralNounExceptions["woods"] = "woods";
 
-      // Most verbs ending in -a get an 's' stuck at the end, but these retain
-      // their original latin plural endings
-      pluralNounExceptions["alumna"] = "alumnae";
-      pluralNounExceptions["alga"] = "algae";
-      pluralNounExceptions["vertebra"] = "vertebrae";
-
-      // Most verbs ending in -ex get an "es" stuck at the end, but these retain
-      // their original latin plural endings
-      pluralNounExceptions["codex"] = "codices";
-      pluralNounExceptions["murex"] = "murices";
-      pluralNounExceptions["silex"] = "silices";
-
-      // Most verbs ending in -is get an "es" stuck at the end, but these retain
-      // their original latin plural endings
-      pluralNounExceptions["iris"] = "irises";
-      pluralNounExceptions["clitoris"] = "clitorises";
-      pluralNounExceptions["penis"] = "penises";
-
       // Simple regex replacements that achieve proper pluralization for some
-      // nouns
-      regexReplacements["man$"] = "men";
-      regexReplacements["([lm])ouse$"] = "$1ice";
-      regexReplacements["tooth$"] = "tooth";
-      regexReplacements["foot$"] = "feet";
-      regexReplacements["goose$"] = "geese";
-      regexReplacements["zoon$"] = "zoa";
-      regexReplacements["([csx])is$"] = "$1es";
-      regexReplacements["([ein])x$"] = "$1xes";
-      regexReplacements["is$"] = "es";
-      regexReplacements["([cs]h)$"] = "$1es";
-      regexReplacements["ss$"] = "sses";
-      regexReplacements["ss$"] = "sses";
-      regexReplacements["([aeo]l)f$"] = "$1ves";
-      regexReplacements["([^d]ea)f$"] = "$1ves";
-      regexReplacements["([nlw]i)fe$"] = "$1ves";
-      regexReplacements["arf$"] = "arves";
+      // nouns. Be careful! The order in which these rules are inserted is
+      // important!
+      regexReplacements.push_back(RegexReplacement({"man$", "men"}));
+      regexReplacements.push_back(RegexReplacement({"([lm])ouse$", "$1ice"}));
+      regexReplacements.push_back(RegexReplacement({"tooth$", "tooth"}));
+      regexReplacements.push_back(RegexReplacement({"foot$", "feet"}));
+      regexReplacements.push_back(RegexReplacement({"goose$", "geese"}));
+      regexReplacements.push_back(RegexReplacement({"zoon$", "zoa"}));
+      regexReplacements.push_back(RegexReplacement({"([csx])is$", "$1es"}));
+      regexReplacements.push_back(RegexReplacement({"([ein])x$", "$1xes"}));
+      regexReplacements.push_back(RegexReplacement({"es$", "eses"}));
+      regexReplacements.push_back(RegexReplacement({"is$", "es"}));
+      regexReplacements.push_back(RegexReplacement({"([cs]h)$", "$1es"}));
+      regexReplacements.push_back(RegexReplacement({"ss$", "sses"}));
+      regexReplacements.push_back(RegexReplacement({"ss$", "sses"}));
+      regexReplacements.push_back(RegexReplacement({"([aeo]l)f$", "$1ves"}));
+      regexReplacements.push_back(RegexReplacement({"([^d]ea)f$", "$1ves"}));
+      regexReplacements.push_back(RegexReplacement({"([nlw]i)fe$", "$1ves"}));
+      regexReplacements.push_back(RegexReplacement({"arf$", "arves"}));
+      regexReplacements.push_back(RegexReplacement({"(^[A-Z].*?)y$", "$1ys"}));
+      regexReplacements.push_back(RegexReplacement({"([aeiou])y$", "$1ys"}));
+      regexReplacements.push_back(RegexReplacement({"([^aeiou])y$", "$1ies"}));
+      regexReplacements.push_back(RegexReplacement({"([^aeiou])o$", "$1oes"}));
 
       // Categories of regex-matchable nouns that don't change when made plural
-      regexReplacements["bait$"] = "bait";
-      regexReplacements["fish$"] = "fish";
-      regexReplacements["ois$"]  = "ois";
-      regexReplacements["sheep$"] = "sheep";
-      regexReplacements["deer$"] = "deer";
-      regexReplacements["pox$"] = "pox";
-      regexReplacements["itis$"] = "itis";
-      regexReplacements["clippers$"] = "clippers";
+      regexReplacements.push_back(RegexReplacement({"bait$", "bait"}));
+      regexReplacements.push_back(RegexReplacement({"fish$", "fish"}));
+      regexReplacements.push_back(RegexReplacement({"ois$", "ois"}));
+      regexReplacements.push_back(RegexReplacement({"sheep$", "sheep"}));
+      regexReplacements.push_back(RegexReplacement({"deer$", "deer"}));
+      regexReplacements.push_back(RegexReplacement({"pox$", "pox"}));
+      regexReplacements.push_back(RegexReplacement({"itis$", "itis"}));
+      regexReplacements.push_back(RegexReplacement({"clippers$", "clippers"}));
    }
 
    /**************************************************************************/
@@ -186,10 +227,10 @@ namespace trogdor {
       for (auto transform = regexReplacements.begin();
       regexReplacements.end() != transform; transform++) {
 
-         regex r(transform->first);
+         regex r(transform->regex);
 
          if (regex_search(noun, r)) {
-            return regex_replace(noun, r, transform->second);
+            return regex_replace(noun, r, transform->replacement);
          }
       }
 
