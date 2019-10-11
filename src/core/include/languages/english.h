@@ -20,7 +20,17 @@ namespace trogdor {
    */
    class English: public Language {
 
+      private:
+
+         // Maps one-off exceptions to the pluralization rules (ex: die => dice)
+         unordered_map<string, string> pluralNounExceptions;
+
       public:
+
+         /*
+            Constructor
+         */
+         English();
 
          /*
             Takes as input a singular noun and makes it plural according to the
