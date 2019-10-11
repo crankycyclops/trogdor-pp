@@ -39,10 +39,17 @@ namespace trogdor {
       pluralNounExceptions["silex"] = "silices";
 
       // Most nouns ending in -is get an "es" stuck at the end, but these retain
-      // their original latin plural endings
+      // their original Latin plural endings
       pluralNounExceptions["iris"] = "irises";
       pluralNounExceptions["clitoris"] = "clitorises";
       pluralNounExceptions["penis"] = "penises";
+
+      // Most nouns ending in -us get an "es" stuck at the end, but these retain
+      // their original Latin plural endings
+      pluralNounExceptions["genus"] = "genera";
+      pluralNounExceptions["stimulus"] = "stimuli";
+      pluralNounExceptions["radius"] = "radii";
+      pluralNounExceptions["alumnus"] = "alumni";
 
       // Most nouns ending in -o and not preceded by a vowel end in oes.
       // However, there are some exceptions.
@@ -79,8 +86,22 @@ namespace trogdor {
       pluralNounExceptions["stylo"] = "stylos";
       pluralNounExceptions["tempo"] = "tempos";
 
+      // Most nouns ending in -um get an 's' stuck at the end, but a few retain
+      // their original Latin suffixes
+      pluralNounExceptions["agendum"] = "agenda";
+      pluralNounExceptions["bacterium"] = "bacteria";
+      pluralNounExceptions["candelabrum"] = "candelabra";
+      pluralNounExceptions["datum"] = "data";
+      pluralNounExceptions["desideratum"] = "desiderata";
+      pluralNounExceptions["erratum"] = "errata";
+      pluralNounExceptions["extremum"] = "extrema";
+      pluralNounExceptions["stratum"] = "strata";
+      pluralNounExceptions["ovum"] = "ova";
+
       // Individual nouns that don't change when made plural
       pluralNounExceptions["advice"] = "advice";
+      pluralNounExceptions["afreet"] = "afreeti";
+      pluralNounExceptions["afrit"] = "afriti";
       pluralNounExceptions["aircraft"] = "aircraft";
       pluralNounExceptions["alms"] = "alms";
       pluralNounExceptions["alumimum"] = "alumimum";
@@ -96,6 +117,7 @@ namespace trogdor {
       pluralNounExceptions["cattle"] = "cattle";
       pluralNounExceptions["chalk"] = "chalk";
       pluralNounExceptions["chassis"] = "chassis";
+      pluralNounExceptions["cherub"] = "cherubim";
       pluralNounExceptions["chinos"] = "chinos";
       pluralNounExceptions["clothing"] = "clothing";
       pluralNounExceptions["cod"] = "cod";
@@ -110,6 +132,7 @@ namespace trogdor {
       pluralNounExceptions["doldrums"] = "doldrums";
       pluralNounExceptions["dungarees"] = "dungarees";
       pluralNounExceptions["education"] = "education";
+      pluralNounExceptions["efreet"] = "efreeti";
       pluralNounExceptions["eland"] = "eland";
       pluralNounExceptions["elk"] = "elk";
       pluralNounExceptions["eyeglasses"] = "eyeglasses";
@@ -118,6 +141,7 @@ namespace trogdor {
       pluralNounExceptions["foramen"] = "foramens";
       pluralNounExceptions["furniture"] = "furniture";
       pluralNounExceptions["gallows"] = "gallows";
+      pluralNounExceptions["goy"] = "goyim";
       pluralNounExceptions["graffiti"] = "graffiti";
       pluralNounExceptions["haddock"] = "haddock";
       pluralNounExceptions["halibut"] = "halibut";
@@ -154,6 +178,7 @@ namespace trogdor {
       pluralNounExceptions["rendezvous"] = "rendezvous";
       pluralNounExceptions["salmon"] = "salmon";
       pluralNounExceptions["scissors"] = "scissors";
+      pluralNounExceptions["seraph"] = "seraphum";
       pluralNounExceptions["series"] = "series";
       pluralNounExceptions["shambles"] = "shambles";
       pluralNounExceptions["shears"] = "shears";
@@ -176,6 +201,17 @@ namespace trogdor {
       pluralNounExceptions["wood"] = "wood";
       pluralNounExceptions["woods"] = "woods";
 
+      // Categories of regex-matchable nouns that don't change when made plural.
+      // Be careful! The order in which these rules are inserted is important!
+      regexReplacements.push_back(RegexReplacement({"bait$", "bait"}));
+      regexReplacements.push_back(RegexReplacement({"fish$", "fish"}));
+      regexReplacements.push_back(RegexReplacement({"ois$", "ois"}));
+      regexReplacements.push_back(RegexReplacement({"sheep$", "sheep"}));
+      regexReplacements.push_back(RegexReplacement({"deer$", "deer"}));
+      regexReplacements.push_back(RegexReplacement({"pox$", "pox"}));
+      regexReplacements.push_back(RegexReplacement({"itis$", "itis"}));
+      regexReplacements.push_back(RegexReplacement({"clippers$", "clippers"}));
+
       // Simple regex replacements that achieve proper pluralization for some
       // nouns. Be careful! The order in which these rules are inserted is
       // important!
@@ -187,7 +223,8 @@ namespace trogdor {
       regexReplacements.push_back(RegexReplacement({"zoon$", "zoa"}));
       regexReplacements.push_back(RegexReplacement({"([csx])is$", "$1es"}));
       regexReplacements.push_back(RegexReplacement({"([ein])x$", "$1xes"}));
-      regexReplacements.push_back(RegexReplacement({"es$", "eses"}));
+      regexReplacements.push_back(RegexReplacement({"x$", "xes"}));
+      regexReplacements.push_back(RegexReplacement({"(e|u)s$", "$1ses"}));
       regexReplacements.push_back(RegexReplacement({"is$", "es"}));
       regexReplacements.push_back(RegexReplacement({"([cs]h)$", "$1es"}));
       regexReplacements.push_back(RegexReplacement({"ss$", "sses"}));
@@ -200,16 +237,6 @@ namespace trogdor {
       regexReplacements.push_back(RegexReplacement({"([aeiou])y$", "$1ys"}));
       regexReplacements.push_back(RegexReplacement({"([^aeiou])y$", "$1ies"}));
       regexReplacements.push_back(RegexReplacement({"([^aeiou])o$", "$1oes"}));
-
-      // Categories of regex-matchable nouns that don't change when made plural
-      regexReplacements.push_back(RegexReplacement({"bait$", "bait"}));
-      regexReplacements.push_back(RegexReplacement({"fish$", "fish"}));
-      regexReplacements.push_back(RegexReplacement({"ois$", "ois"}));
-      regexReplacements.push_back(RegexReplacement({"sheep$", "sheep"}));
-      regexReplacements.push_back(RegexReplacement({"deer$", "deer"}));
-      regexReplacements.push_back(RegexReplacement({"pox$", "pox"}));
-      regexReplacements.push_back(RegexReplacement({"itis$", "itis"}));
-      regexReplacements.push_back(RegexReplacement({"clippers$", "clippers"}));
    }
 
    /**************************************************************************/
