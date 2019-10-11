@@ -25,6 +25,10 @@ namespace trogdor {
          // Maps one-off exceptions to the pluralization rules (ex: die => dice)
          unordered_map<string, string> pluralNounExceptions;
 
+         // Plurals that can be regularly changed according to simple regex
+         // substitution rules (ex: the suffix /ouse$/ => "ice")
+         unordered_map<string, string> regexReplacements;
+
       public:
 
          /*
@@ -35,6 +39,9 @@ namespace trogdor {
          /*
             Takes as input a singular noun and makes it plural according to the
             rules of English.
+
+            This method DOES NOT handle pronouns, and the result of passing in
+            a pronoun is undefined.
 
             Input:
                Singular noun (string)
