@@ -139,6 +139,7 @@ namespace trogdor {
       // their original latin plural endings
       pluralNounExceptions["iris"] = "irises";
       pluralNounExceptions["clitoris"] = "clitorises";
+      pluralNounExceptions["penis"] = "penises";
 
       // Simple regex replacements that achieve proper pluralization for some
       // nouns
@@ -151,6 +152,13 @@ namespace trogdor {
       regexReplacements["([csx])is$"] = "$1es";
       regexReplacements["([ein])x$"] = "$1xes";
       regexReplacements["is$"] = "es";
+      regexReplacements["([cs]h)$"] = "$1es";
+      regexReplacements["ss$"] = "sses";
+      regexReplacements["ss$"] = "sses";
+      regexReplacements["([aeo]l)f$"] = "$1ves";
+      regexReplacements["([^d]ea)f$"] = "$1ves";
+      regexReplacements["([nlw]i)fe$"] = "$1ves";
+      regexReplacements["arf$"] = "arves";
 
       // Categories of regex-matchable nouns that don't change when made plural
       regexReplacements["bait$"] = "bait";
