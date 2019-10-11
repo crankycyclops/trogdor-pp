@@ -10,6 +10,7 @@
 
 #include "../../utility.h"
 #include "../../vocabulary.h"
+#include "../../languages/english.h"
 
 #include "../parser.h"
 #include "inform7lexer.h"
@@ -109,6 +110,9 @@ namespace trogdor {
          // Breaks Inform 7 source down into a token stream
          Inform7Lexer lexer;
 
+         // All language rules are based on English
+         English language;
+
          // Set of directions recognized by Inform 7 (list can be extended.)
          // Keys are the direction and values are the opposite. For example,
          // directions["north"] = "south".
@@ -117,7 +121,10 @@ namespace trogdor {
          // Set of classes recognized by Inform 7 (list can be extended)
          unordered_set<string> classes;
 
-        // Set of adjectives recognized by Inform 7 (list can be extended)
+         // Plural lookup mapping classes to their plurals
+         unordered_map<string, string> classPlurals;
+
+         // Set of adjectives recognized by Inform 7 (list can be extended)
          unordered_set<string> adjectives;
 
          /*

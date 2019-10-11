@@ -47,6 +47,13 @@ namespace trogdor {
       classes.insert("woman");
       classes.insert("animal");
 
+      // Build a lookup table mapping each class to its plural equivalent. This
+      // table should be updated whenever a class is added, either one that's
+      // built-in or one that's defined later in Inform 7 source code.
+      for (auto i = classes.begin(); classes.end() != i; i++) {
+         classPlurals[*i] = language.pluralizeNoun(*i);
+      }
+
       // Built-in adjectives that Inform 7 recognizes by default. List can be
       // extended later.
       adjectives.insert("adjacent");
