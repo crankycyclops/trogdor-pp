@@ -26,7 +26,7 @@ namespace trogdor {
          unordered_map<string, string> pluralNounExceptions;
 
          // Plurals that can be regularly changed according to simple regex
-         // substitution rules (ex: the suffix /ouse$/ => "ice")
+         // substitution rules (ex: the suffix "ouse$" => "ice")
          unordered_map<string, string> regexReplacements;
 
       public:

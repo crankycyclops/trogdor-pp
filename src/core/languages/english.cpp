@@ -11,9 +11,6 @@ namespace trogdor {
    English::English() {
 
       // One-off exceptions to the rules
-      pluralNounExceptions["foot"] = "feet";
-      pluralNounExceptions["tooth"] = "teeth";
-      pluralNounExceptions["goose"] = "geese";
       pluralNounExceptions["mongoose"] = "mongooses";
       pluralNounExceptions["die"] = "dice";
       pluralNounExceptions["ox"] = "oxen";
@@ -65,6 +62,7 @@ namespace trogdor {
       pluralNounExceptions["eyeglasses"] = "eyeglasses";
       pluralNounExceptions["flounder"] = "flounder";
       pluralNounExceptions["flour"] = "flour";
+      pluralNounExceptions["foramen"] = "foramens";
       pluralNounExceptions["furniture"] = "furniture";
       pluralNounExceptions["gallows"] = "gallows";
       pluralNounExceptions["graffiti"] = "graffiti";
@@ -84,6 +82,7 @@ namespace trogdor {
       pluralNounExceptions["knowledge"] = "knowledge";
       pluralNounExceptions["kudos"] = "kudos";
       pluralNounExceptions["leggins"] = "leggins";
+      pluralNounExceptions["lumen"] = "lumens";
       pluralNounExceptions["mackerel"] = "mackerel";
       pluralNounExceptions["measles"] = "measles";
       pluralNounExceptions["mews"] = "mews";
@@ -110,6 +109,7 @@ namespace trogdor {
       pluralNounExceptions["smithereens"] = "smithereens";
       pluralNounExceptions["species"] = "species";
       pluralNounExceptions["squid"] = "squid";
+      pluralNounExceptions["stamen"] = "stamens";
       pluralNounExceptions["sugar"] = "sugar";
       pluralNounExceptions["swine"] = "swine";
       pluralNounExceptions["tongs"] = "tongs";
@@ -123,9 +123,34 @@ namespace trogdor {
       pluralNounExceptions["wood"] = "wood";
       pluralNounExceptions["woods"] = "woods";
 
+      // Most verbs ending in -a get an 's' stuck at the end, but these retain
+      // their original latin plural endings
+      pluralNounExceptions["alumna"] = "alumnae";
+      pluralNounExceptions["alga"] = "algae";
+      pluralNounExceptions["vertebra"] = "vertebrae";
+
+      // Most verbs ending in -ex get an "es" stuck at the end, but these retain
+      // their original latin plural endings
+      pluralNounExceptions["codex"] = "codices";
+      pluralNounExceptions["murex"] = "murices";
+      pluralNounExceptions["silex"] = "silices";
+
+      // Most verbs ending in -is get an "es" stuck at the end, but these retain
+      // their original latin plural endings
+      pluralNounExceptions["iris"] = "irises";
+      pluralNounExceptions["clitoris"] = "clitorises";
+
       // Simple regex replacements that achieve proper pluralization for some
       // nouns
-      regexReplacements["ouse$"] = "ice";
+      regexReplacements["man$"] = "men";
+      regexReplacements["([lm])ouse$"] = "$1ice";
+      regexReplacements["tooth$"] = "tooth";
+      regexReplacements["foot$"] = "feet";
+      regexReplacements["goose$"] = "geese";
+      regexReplacements["zoon$"] = "zoa";
+      regexReplacements["([csx])is$"] = "$1es";
+      regexReplacements["([ein])x$"] = "$1xes";
+      regexReplacements["is$"] = "es";
 
       // Categories of regex-matchable nouns that don't change when made plural
       regexReplacements["bait$"] = "bait";
