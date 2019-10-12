@@ -15,97 +15,84 @@ namespace trogdor {
 
       // Built-in directions that Inform 7 recognizes by default. List can be
       // extended later. This structure maps directions to their opposites.
-      directions["up"] = "down";
-      directions["down"] = "up";
-      directions["inside"] = "outside";
-      directions["outside"] = "inside";
-      directions["north"] = "south";
-      directions["south"] = "north";
-      directions["east"] = "west";
-      directions["west"] = "east";
-      directions["northwest"] = "southeast";
-      directions["northeast"] = "southwest";
-      directions["southwest"] = "northeast";
-      directions["southeast"] = "northwest";
+      insertDirection("up", "down");
+      insertDirection("inside", "outside");
+      insertDirection("north", "south");
+      insertDirection("east", "west");
+      insertDirection("northwest", "southeast");
+      insertDirection("northeast", "southwest");
 
       // Built-in classes that Inform 7 recognizes by default. List can be
       // extended later.
-      classes.insert("object");
-      classes.insert("direction");
-      classes.insert("room");
-      classes.insert("region");
-      classes.insert("thing");
-      classes.insert("door");
-      classes.insert("container");
-      classes.insert("vehicle");
-      classes.insert("player's holdall");
-      classes.insert("supporter");
-      classes.insert("backdrop");
-      classes.insert("device");
-      classes.insert("person");
-      classes.insert("man");
-      classes.insert("woman");
-      classes.insert("animal");
-
-      // Build a lookup table mapping each class to its plural equivalent. This
-      // table should be updated whenever a class is added, either one that's
-      // built-in or one that's defined later in Inform 7 source code.
-      for (auto i = classes.begin(); classes.end() != i; i++) {
-         classPlurals[*i] = language.pluralizeNoun(*i);
-      }
+      insertClass("object");
+      insertClass("direction");
+      insertClass("room");
+      insertClass("region");
+      insertClass("thing");
+      insertClass("door");
+      insertClass("container");
+      insertClass("vehicle");
+      insertClass("player's holdall");
+      insertClass("supporter");
+      insertClass("backdrop");
+      insertClass("device");
+      insertClass("person");
+      insertClass("man");
+      insertClass("woman");
+      insertClass("animal");
 
       // Built-in adjectives that Inform 7 recognizes by default. List can be
       // extended later.
-      adjectives.insert("adjacent");
-      adjectives.insert("visible");
-      adjectives.insert("invisible");
-      adjectives.insert("visited");
-      adjectives.insert("touchable");
-      adjectives.insert("untouchable");
-      adjectives.insert("lighted");
-      adjectives.insert("dark");
-      adjectives.insert("open");
-      adjectives.insert("closed");
-      adjectives.insert("empty");
-      adjectives.insert("non-empty");
+      insertAdjective("adjacent");
+      insertAdjective("visible");
+      insertAdjective("invisible");
+      insertAdjective("visited");
+      insertAdjective("touchable");
+      insertAdjective("untouchable");
+      insertAdjective("lighted");
+      insertAdjective("dark");
+      insertAdjective("open");
+      insertAdjective("closed");
+      insertAdjective("empty");
+      insertAdjective("non-empty");
 
       // These adjectives (properties) can only be set on things
-      adjectives.insert("lit");
-      adjectives.insert("unlit");
-      adjectives.insert("transparent");
-      adjectives.insert("opaque");
-      adjectives.insert("fixed in place");
-      adjectives.insert("portable");
-      adjectives.insert("openable");
-      adjectives.insert("unopenable");
-      adjectives.insert("enterable");
-      adjectives.insert("pushable between rooms");
-      adjectives.insert("wearable");
-      adjectives.insert("edible");
-      adjectives.insert("inedible");
-      adjectives.insert("described");
-      adjectives.insert("undescribed");
+      insertAdjective("lit");
+      insertAdjective("unlit");
+      insertAdjective("transparent");
+      insertAdjective("opaque");
+      insertAdjective("fixed in place");
+      insertAdjective("portable");
+      insertAdjective("openable");
+      insertAdjective("unopenable");
+      insertAdjective("enterable");
+      insertAdjective("pushable between rooms");
+      insertAdjective("wearable");
+      insertAdjective("edible");
+      insertAdjective("inedible");
+      insertAdjective("described");
+      insertAdjective("undescribed");
 
       // These adjectives can only be set on people or animals
-      adjectives.insert("male");
-      adjectives.insert("female");
-      adjectives.insert("neuter"); // as opposed to male or female
+      insertAdjective("male");
+      insertAdjective("female");
+      insertAdjective("neuter"); // as opposed to male or female
 
       // These adjectives can only be set on doors
-      adjectives.insert("locked");
-      adjectives.insert("unlocked");
-      adjectives.insert("lockable");
-      adjectives.insert("unlockable");
+      insertAdjective("locked");
+      insertAdjective("unlocked");
+      insertAdjective("lockable");
+      insertAdjective("unlockable");
 
       // These adjectives apply only to devices
-      adjectives.insert("switched on");
-      adjectives.insert("switched off");
+      insertAdjective("switched on");
+      insertAdjective("switched off");
 
       // These special adjectives are for numerical values only
-      adjectives.insert("positive");
-      adjectives.insert("negative");
-      adjectives.insert("even");
-      adjectives.insert("odd");
+      insertAdjective("positive");
+      insertAdjective("negative");
+      insertAdjective("even");
+      insertAdjective("odd");
    }
 
    /**************************************************************************/

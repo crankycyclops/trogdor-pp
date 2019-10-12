@@ -11,6 +11,7 @@
 #include "../../utility.h"
 #include "../../vocabulary.h"
 #include "../../languages/english.h"
+#include "../../exception/parseexception.h"
 
 #include "../parser.h"
 #include "inform7lexer.h"
@@ -237,6 +238,68 @@ namespace trogdor {
                (none)
          */
          void parseProgram();
+
+      protected:
+
+         /*
+            Inserts a direction recognized by Inform 7. Takes as input both the
+            new direction and its opposite. If the opposite direction doesn't
+            exist, it will be inserted, too, and the new direction will be set
+            as its opposite.
+
+            Example call: insertDirection("north", "south");
+
+            Input:
+               New direction (string)
+               New direction's opposite (string)
+
+            Output:
+               (none)
+         */
+         inline void insertDirection(string direction, string opposite) {
+
+            if (directions.end() != directions.find(direction)) {
+               throw ParseException(string("Direction '") + direction +
+                  "' has already been defined.");
+            }
+
+            directions[direction] = opposite;
+
+            if (directions.end() == directions.find(opposite)) {
+               directions[opposite] = direction;
+            }
+         }
+
+         /*
+            Inserts an Inform 7 class.
+
+            Input:
+               Class name (string)
+
+            Output:
+               (none)
+         */
+         inline void insertClass(string className) {
+
+            classes.insert(className);
+            classPlurals[className] = language.pluralizeNoun(className);
+         }
+
+         /*
+            Inserts an Inform 7 adjective.
+
+            Input:
+               Adjective (string)
+
+            Output:
+               (none)
+         */
+         inline void insertAdjective(string adjective) {
+
+            if (adjectives.end() == adjectives.find(adjective)) {
+               adjectives.insert(adjective);
+            }
+         }
 
       public:
 
