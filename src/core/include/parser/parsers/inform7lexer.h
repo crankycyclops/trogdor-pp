@@ -48,14 +48,14 @@ namespace trogdor {
          // composed of two. In the lexer's current implementation, when parsing
          // a word, we start by temporarily lexing as many words as we can
          // before the end of a statement and attempting to match them to
-         // entries in directions, classes, and adjectives. If no match is found,
-         // we reduce the compound word by one less word and try matching again
-         // until either we found a match or we only have one word left (in
-         // which case we return just the one word.) The problem is, the source
-         // file might be malformatted, in which case we'll continue reading
-         // words until EOF, potentially causing memory issues. To mitigate
-         // that, I'm only going to allow a maximum compound word length of
-         // this size.
+         // entries in directions, classes, properties, and adjectives. If no
+         // match is found, we reduce the compound word by one less word and try
+         // matching again until either we found a match or we only have one
+         // word left (in which case we return just the one word.) The problem
+         // is, the source file might be malformatted, in which case we'll
+         // continue reading words until EOF, potentially causing memory issues.
+         // To mitigate that, I'm only going to allow a maximum compound word
+         // length of this size.
          const int maxCompoundWordLength = 4;
 
          // Reference to parser's list of defined directions
@@ -64,7 +64,10 @@ namespace trogdor {
          // Reference to parser's list of defined classes
          const unordered_set<string> &classes;
 
-         // Reference to parser's list of defined adjectives
+         // Reference to parser's list of defined properties
+         const unordered_set<string> &properties;
+
+         // Reference to parser's list of defined non-property adjectives
          const unordered_set<string> &adjectives;
 
          // Inform 7 source code
@@ -191,8 +194,9 @@ namespace trogdor {
          inline Inform7Lexer(
             const unordered_map<string, string> &dirs,
             const unordered_set<string> &cls,
+            const unordered_set<string> &props,
             const unordered_set<string> &adjs
-         ): directions(dirs), classes(cls), adjectives(adjs),
+         ): directions(dirs), classes(cls), properties(props), adjectives(adjs),
          tokenTypeToStr({
             {SOURCE_EOF, "SOURCE_EOF"},
             {PHRASE_TERMINATOR, "PHRASE_TERMINATOR"},

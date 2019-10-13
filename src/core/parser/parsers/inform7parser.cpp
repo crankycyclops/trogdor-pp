@@ -11,7 +11,8 @@ namespace trogdor {
 
 
    Inform7Parser::Inform7Parser(std::unique_ptr<Instantiator> i,
-   const Vocabulary &v): Parser(std::move(i), v), lexer(directions, classes, adjectives) {
+   const Vocabulary &v): Parser(std::move(i), v), lexer(directions, classes,
+   properties, adjectives) {
 
       // Built-in directions that Inform 7 recognizes by default. List can be
       // extended later. This structure maps directions to their opposites.
@@ -22,8 +23,7 @@ namespace trogdor {
       insertDirection("northwest", "southeast");
       insertDirection("northeast", "southwest");
 
-      // Built-in classes that Inform 7 recognizes by default. List can be
-      // extended later.
+      // Built-in classes that Inform 7 recognizes by default.
       insertClass("object");
       insertClass("direction");
       insertClass("room");
@@ -41,52 +41,56 @@ namespace trogdor {
       insertClass("woman");
       insertClass("animal");
 
+      // Built-in properties that Inform 7 recognizes for certain classes by
+      // default.
+      insertProperty("touchable");
+      insertProperty("untouchable");
+      insertProperty("lighted");
+      insertProperty("dark");
+      insertProperty("open");
+      insertProperty("closed");
+
+      // These properties can only be set on things
+      insertProperty("lit");
+      insertProperty("unlit");
+      insertProperty("transparent");
+      insertProperty("opaque");
+      insertProperty("fixed in place");
+      insertProperty("portable");
+      insertProperty("openable");
+      insertProperty("unopenable");
+      insertProperty("enterable");
+      insertProperty("pushable between rooms");
+      insertProperty("wearable");
+      insertProperty("edible");
+      insertProperty("inedible");
+      insertProperty("described");
+      insertProperty("undescribed");
+
+      // These properties can only be set on doors
+      insertProperty("locked");
+      insertProperty("unlocked");
+      insertProperty("lockable");
+      insertProperty("unlockable");
+
+      // These properties can only be set on people or animals
+      insertProperty("male");
+      insertProperty("female");
+      insertProperty("neuter"); // as opposed to male or female
+
+      // These properties can only be set on devices
+      insertProperty("switched on");
+      insertProperty("switched off");
+
       // Built-in adjectives that Inform 7 recognizes by default. List can be
       // extended later.
       insertAdjective("adjacent");
       insertAdjective("visible");
       insertAdjective("invisible");
       insertAdjective("visited");
-      insertAdjective("touchable");
-      insertAdjective("untouchable");
-      insertAdjective("lighted");
-      insertAdjective("dark");
-      insertAdjective("open");
-      insertAdjective("closed");
       insertAdjective("empty");
       insertAdjective("non-empty");
-
-      // These adjectives (properties) can only be set on things
-      insertAdjective("lit");
-      insertAdjective("unlit");
-      insertAdjective("transparent");
-      insertAdjective("opaque");
-      insertAdjective("fixed in place");
-      insertAdjective("portable");
-      insertAdjective("openable");
-      insertAdjective("unopenable");
-      insertAdjective("enterable");
-      insertAdjective("pushable between rooms");
-      insertAdjective("wearable");
-      insertAdjective("edible");
-      insertAdjective("inedible");
-      insertAdjective("described");
-      insertAdjective("undescribed");
-
-      // These adjectives can only be set on people or animals
-      insertAdjective("male");
-      insertAdjective("female");
-      insertAdjective("neuter"); // as opposed to male or female
-
-      // These adjectives can only be set on doors
-      insertAdjective("locked");
-      insertAdjective("unlocked");
-      insertAdjective("lockable");
-      insertAdjective("unlockable");
-
-      // These adjectives apply only to devices
-      insertAdjective("switched on");
-      insertAdjective("switched off");
+      insertAdjective("carried");
 
       // These special adjectives are for numerical values only
       insertAdjective("positive");
@@ -182,18 +186,18 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   vector<string> Inform7Parser::parseAdjectivesList() {
+   vector<string> Inform7Parser::parsePropertiesList() {
 
       Token t = lexer.next();
-      vector<string> adjectiveList;
+      vector<string> propertyList;
 
-      while (adjectives.end() != adjectives.find(strToLower(t.value))) {
+      while (properties.end() != properties.find(strToLower(t.value))) {
 
-         adjectiveList.push_back(t.value);
+         propertyList.push_back(t.value);
 
          t = lexer.next();
 
-         // Adjectives might be delimited by a comma and/or "and" rather than
+         // Properties might be delimited by a comma and/or "and" rather than
          // just a space
          if (COMMA == t.type) {
             t = lexer.next();
@@ -205,13 +209,13 @@ namespace trogdor {
       }
 
       lexer.push(t);
-      return adjectiveList;
+      return propertyList;
    }
 
    /**************************************************************************/
 
    void Inform7Parser::parseDefinition(vector<string> identifiers,
-   vector<string> adjectiveList) {
+   vector<string> propertyList) {
 
       // TODO
       cout << endl << "parseDefinition stub!" << endl << endl;
@@ -222,13 +226,13 @@ namespace trogdor {
       }
 
       cout << endl;
-      if (adjectiveList.size()) {
-         cout << "Adjectives: " << endl;
-         for (auto i = adjectiveList.begin(); i != adjectiveList.end(); i++) {
+      if (propertyList.size()) {
+         cout << "Properties: " << endl;
+         for (auto i = propertyList.begin(); i != propertyList.end(); i++) {
             cout << *i << endl;
          }
       } else {
-         cout << "(No adjectives.)" << endl;
+         cout << "(No properties.)" << endl;
       }
 
       // Skip past the rest of the definition until I actually implement this
@@ -247,25 +251,21 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   void Inform7Parser::parseAdjectiveAssignment(vector<string> identifiers,
-   vector<string> adjectiveList) {
+   void Inform7Parser::parsePropertyAssignment(vector<string> identifiers,
+   vector<string> propertyList) {
 
       // TODO
-      cout << endl << "parseAdjectiveAssignment stub!" << endl << endl;
+      cout << endl << "parsePropertyAssignment stub!" << endl << endl;
 
       cout << "Identifiers: " << endl;
       for (auto i = identifiers.begin(); i != identifiers.end(); i++) {
          cout << *i << endl;
       }
 
-      cout << endl << "Adjectives: " << endl << endl;
-      for (auto i = adjectiveList.begin(); i != adjectiveList.end(); i++) {
+      cout << endl << "Properties: " << endl;
+      for (auto i = propertyList.begin(); i != propertyList.end(); i++) {
          cout << *i << endl;
       }
-
-      // Skip past the rest of the definition until I actually implement this
-      Token t;
-      for (t = lexer.next(); PHRASE_TERMINATOR != t.type; t = lexer.next());
    }
 
    /**************************************************************************/
@@ -278,23 +278,23 @@ namespace trogdor {
       for (t = lexer.next(); ARTICLE == t.type; t = lexer.next());
       lexer.push(t);
 
-      if (adjectives.end() != adjectives.find(strToLower(t.value))) {
+      if (properties.end() != properties.find(strToLower(t.value))) {
 
-         vector<string> adjectiveList;
+         vector<string> propertyList;
 
-         // If we have a list of adjectives, parse them. We're breaking away
+         // If we have a list of properties, parse them. We're breaking away
          // from a standard recursive descent in order to avoid too much
          // lookahead.
-         adjectiveList = parseAdjectivesList();
+         propertyList = parsePropertiesList();
 
          t = lexer.next();
 
          if (PHRASE_TERMINATOR == t.type) {
-            parseAdjectiveAssignment(identifiers, adjectiveList);
+            parsePropertyAssignment(identifiers, propertyList);
          }
 
          else if (WORD == t.type) {
-            parseDefinition(identifiers, adjectiveList);
+            parseDefinition(identifiers, propertyList);
          }
 
          else if (COMMA == t.type) {
@@ -312,13 +312,14 @@ namespace trogdor {
       // certain direction from another already defined room.
       else if (
          classes.end() != classes.find(strToLower(t.value)) ||
+         classPlurals.end() != classPlurals.find(strToLower(t.value)) ||
          directions.end() != directions.find(strToLower(t.value))
       ) {
          parseDefinition(identifiers);
       }
 
       else if (WORD == t.type || EQUALITY == t.type || AND == t.type) {
-         throw ParseException(string("'") + t.value + "' is not a known adjective, kind of thing, or property of a thing (line " + to_string(t.lineno) + ')');
+         throw ParseException(string("'") + t.value + "' is not a known kind of thing or property of a thing (line " + to_string(t.lineno) + ')');
       }
 
       else if (QUOTED_STRING == t.type) {

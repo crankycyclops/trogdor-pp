@@ -98,11 +98,11 @@ namespace trogdor {
                      lexing as many words as it can before the end of a
                      statement (or before the maximum depth is reached) and
                      attempts to match the result to entries in directions,
-                     classes, and adjectives. If no match is found, we truncate
-                     the last single word from the compound and try matching
-                     again. This continues until either a match is found or we
-                     reach a base case length of 1, in which case it's just a
-                     single non-compound word.
+                     classes, properties, and adjectives. If no match is found,
+                     we truncate the last single word from the compound and try
+                     matching again. This continues until either a match is
+                     found or we reach a base case length of 1, in which case
+                     it's just a single non-compound word.
 
                      Should I clean this up a little by moving it into a
                      separate function? Probably. Am I just grateful it works
@@ -138,6 +138,7 @@ namespace trogdor {
                         // those, too
                         directions.end() == directions.find(potentialWord) &&
                         classes.end()    == classes.find(potentialWord) &&
+                        properties.end() == properties.find(potentialWord) &&
                         adjectives.end() == adjectives.find(potentialWord)
                      ) {
                         potentialWord.erase(potentialWord.rfind(' '));

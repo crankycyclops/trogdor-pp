@@ -39,13 +39,13 @@ namespace trogdor {
                                  <phrase terminator>
       <author name>          ::= /[A-Za-z ']+/ | <quoted string>
       <phrase>               ::= <equality>
-      <equality>             ::= <definition> | <adjective assignment>
+      <equality>             ::= <definition> | <property assignment>
       <definition>           ::= <identifier list> <equality> {<article>} (
-                                 [<adjective list>] <class> [<in clause>] |
+                                 [<property list>] <class> [<in clause>] |
                                  <direction> ("of" | "from") {<article>} <noun>)
                                  <phrase terminator> [<description>]
-      <adjective assignment> ::= <identifier list> <equality> {<article>}
-                                 <adjective list>
+      <property assignment>  ::= <identifier list> <equality> {<article>}
+                                 <property list>
                                  <phrase terminator>
       <identifier list>      ::= {<article>} <noun> {("," | [","] "and")
                                  {<article>} <noun>}
@@ -70,30 +70,33 @@ namespace trogdor {
                                  "supporters" | "backdrops" | "devices" |
                                  "people" | "men" | "women" | "animals"
       <adjective list>       ::= <adjective> {[","] ["and"] <adjective>}
-      <adjective>            ::= ["not"] ("adjacent" | "visible" | "invisible" |
-                                 "visited" | "touchable" | "untouchable" |
+      <adjective>            ::= ["not"] (<property> | ("adjacent" | "visible" |
+                                 "invisible" | "visited" | "empty" |
+                                 "non-empty" | "carried" | "positive" |
+                                 "negative" | "even" | "odd"))
+      <property list>        ::= <property> {[","] ["and"] <property>}
+      <property>             ::= ["not"] ("touchable" | "untouchable" |
                                  "lighted" | "dark" | "open" | "closed" |
-                                 "empty" | "non-empty" | "lit" | "unlit" |
-                                 "transparent" | "opaque" | "fixed in place" |
-                                 "portable" | "openable" | "unopenable" |
-                                 "enterable" | "pushable between rooms" |
-                                 "wearable" | "edible" | "inedible" |
-                                 "described" | "undescribed" | "male" |
-                                 "female" | "neuter" | "locked" | "unlocked" |
-                                 "lockable" | "unlockable" | "switched on" |
-                                 "switched off" | "positive" | "negative" |
-                                 "even" | "odd")
+                                 "lit" | "unlit" | "transparent" | "opaque" |
+                                 "fixed in place" | "portable" | "openable" |
+                                 "unopenable" | "enterable" | "wearable" |
+                                 "edible" | "inedible" | "described" |
+                                 "undescribed" | "male" | "female" | "neuter" |
+                                 "pushable between rooms" | "locked" |
+                                 "unlocked" | "lockable" | "unlockable" |
+                                 "switched on" | "switched off")
       <noun>                 ::= /[A-Za-z ']+/
       <quoted string>        ::= "\" "/^[\"]+/" \""
       <phrase terminator>    ::= ("." | "\n\n") {"\n"}
 
-      * Directions, classes, and adjectives listed in the above EBNF are those
-      that are built into Inform 7. I'll eventually add support for parsing
-      custom classes and adjectives, in which case the grammar should also
-      consider those, once inserted, as their respective types.
+      * Directions, classes, properties, and adjectives listed in the above EBNF
+      are those that are built into Inform 7. I'll eventually add support for
+      parsing custom classes and adjectives, in which case the grammar should
+      also consider those, once inserted, as their respective types.
 
       Note that I had to cobble together the EBNF above myself using examples
-      from the official documentation along with other supplemental sources.
+      from the official documentation (http://inform7.com/book/WI_1_1.html)
+      along with other supplemental sources.
 
       This one in particular helped a lot:
       http://www.ifwiki.org/index.php/Inform_7_for_Programmers
@@ -119,13 +122,16 @@ namespace trogdor {
          // directions["north"] = "south".
          unordered_map<string, string> directions;
 
-         // Set of classes recognized by Inform 7 (list can be extended)
+         // Set of classes recognized by Inform 7
          unordered_set<string> classes;
 
-         // Plural lookup mapping classes to their plurals
+         // Plural lookup mapping plural classes to their singular equivalents
          unordered_map<string, string> classPlurals;
 
-         // Set of adjectives recognized by Inform 7 (list can be extended)
+         // Set of properties (both either/or and value) recognized by Inform 7
+         unordered_set<string> properties;
+
+         // Set of non-property adjectives recognized by Inform 7
          unordered_set<string> adjectives;
 
          /*
@@ -134,7 +140,7 @@ namespace trogdor {
             method is kind of a cheat and deviates from the LL parsing pattern.
             If I don't do this, I'll have far too much lookahead. The result of
             this method will either be passed to parseDefinition() or
-            parseAdjectiveAssignment(), depending on which phrase ends up being
+            parsePropertyAssignment(), depending on which phrase ends up being
             matched.
 
             Input:
@@ -146,8 +152,8 @@ namespace trogdor {
          vector<string> parseIdentifiersList();
 
          /*
-            Parses one or more adjectives on the left hand side of an equality.
-            Matches the <adjective list> production in the EBNF above. Like
+            Parses one or more properties on the left hand side of an equality.
+            Matches the <property list> production in the EBNF above. Like
             parseIdentifiersList(), this method is kind of a cheat. It deviates
             from the LL parsing pattern so that I won't have too much
             lookahead.
@@ -156,9 +162,9 @@ namespace trogdor {
                (none)
 
             Output:
-               Vector containing one or more adjectives.
+               Vector containing one or more properties.
          */
-         vector<string> parseAdjectivesList();
+         vector<string> parsePropertiesList();
 
          /*
             Parses the definition of one or more things. Matches the
@@ -166,28 +172,28 @@ namespace trogdor {
 
             Input:
                One or more identifiers (vector<string>)
-               One or more optional adjectives (vector<string>)
+               One or more optional properties (vector<string>)
 
             Output:
                (none)
          */
          void parseDefinition(vector<string> identifiers,
-         vector<string> adjectiveList = vector<string>());
+         vector<string> propertyList = vector<string>());
 
          /*
-            Parses the assignment of one or more adjectives to one or more
-            identifiers. Matches the <adjective assignment> production in the
+            Parses the assignment of one or more properties to one or more
+            identifiers. Matches the <property assignment> production in the
             EBNF above.
 
             Input:
                One or more identifiers (vector<string>)
-               One or more adjectives (vector<string>)
+               One or more properties (vector<string>)
 
             Output:
                (none)
          */
-         void parseAdjectiveAssignment(vector<string> identifiers,
-         vector<string> adjectiveList);
+         void parsePropertyAssignment(vector<string> identifiers,
+         vector<string> propertyList);
 
          /*
             Parses an equality phrase, or any phrase that uses the present tense
@@ -282,7 +288,24 @@ namespace trogdor {
          inline void insertClass(string className) {
 
             classes.insert(className);
-            classPlurals[className] = language.pluralizeNoun(className);
+            classPlurals[language.pluralizeNoun(className)] = className;
+         }
+
+         /*
+            Inserts an Inform 7 property that can be assigned to an instance of
+            a certain class.
+
+            Input:
+               Property (string)
+
+            Output:
+               (none)
+         */
+         inline void insertProperty(string property) {
+
+            if (properties.end() == properties.find(property)) {
+               properties.insert(property);
+            }
          }
 
          /*
