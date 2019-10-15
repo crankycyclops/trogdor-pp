@@ -186,15 +186,28 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   vector<string> Inform7Parser::parsePropertiesList() {
+   vector<Inform7Parser::ParsedProperty> Inform7Parser::parsePropertyList() {
 
       Token t = lexer.next();
-      vector<string> propertyList;
+      vector<Inform7Parser::ParsedProperty> propertyList;
 
-      while (properties.end() != properties.find(strToLower(t.value))) {
+      // Flags whether or not an adjective is preceded by "not"
+      bool negated = false;
 
-         propertyList.push_back(t.value);
+      while (
+         properties.end() != properties.find(strToLower(t.value)) ||
+         0 == strToLower(t.value).compare("not")
+      ) {
 
+         // If a property is preceded by not, flag it so we can record the
+         // negation when the property is parsed
+         if (0 == strToLower(t.value).compare("not")) {
+            negated = true;
+            t = lexer.next();
+            continue;
+         }
+
+         propertyList.push_back({t.value, negated});
          t = lexer.next();
 
          // Properties might be delimited by a comma and/or "and" rather than
@@ -206,6 +219,11 @@ namespace trogdor {
          if (AND == t.type) {
             t = lexer.next();
          }
+
+         // Reset the negated flag for the next property
+         if (0 != strToLower(t.value).compare("not")) {
+            negated = false;
+         }
       }
 
       lexer.push(t);
@@ -215,7 +233,7 @@ namespace trogdor {
    /**************************************************************************/
 
    void Inform7Parser::parseDefinition(vector<string> identifiers,
-   vector<string> propertyList) {
+   vector<Inform7Parser::ParsedProperty> propertyList) {
 
       // TODO
       cout << endl << "parseDefinition stub!" << endl << endl;
@@ -229,7 +247,7 @@ namespace trogdor {
       if (propertyList.size()) {
          cout << "Properties: " << endl;
          for (auto i = propertyList.begin(); i != propertyList.end(); i++) {
-            cout << *i << endl;
+            cout << i->value + (i->negated ? " (negated)" : "") << endl;
          }
       } else {
          cout << "(No properties.)" << endl;
@@ -252,7 +270,7 @@ namespace trogdor {
    /**************************************************************************/
 
    void Inform7Parser::parsePropertyAssignment(vector<string> identifiers,
-   vector<string> propertyList) {
+   vector<Inform7Parser::ParsedProperty> propertyList) {
 
       // TODO
       cout << endl << "parsePropertyAssignment stub!" << endl << endl;
@@ -264,7 +282,7 @@ namespace trogdor {
 
       cout << endl << "Properties: " << endl;
       for (auto i = propertyList.begin(); i != propertyList.end(); i++) {
-         cout << *i << endl;
+         cout << i->value + (i->negated ? " (negated)" : "") << endl;
       }
    }
 
@@ -278,14 +296,17 @@ namespace trogdor {
       for (t = lexer.next(); ARTICLE == t.type; t = lexer.next());
       lexer.push(t);
 
-      if (properties.end() != properties.find(strToLower(t.value))) {
+      if (
+         properties.end() != properties.find(strToLower(t.value)) ||
+         0 == strToLower(t.value).compare("not")
+      ) {
 
-         vector<string> propertyList;
+         vector<Inform7Parser::ParsedProperty> propertyList;
 
          // If we have a list of properties, parse them. We're breaking away
          // from a standard recursive descent in order to avoid too much
          // lookahead.
-         propertyList = parsePropertiesList();
+         propertyList = parsePropertyList();
 
          t = lexer.next();
 

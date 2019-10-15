@@ -111,6 +111,13 @@ namespace trogdor {
 
       private:
 
+         // Data type that stores a parsed property and whether or not it's
+         // negated (prefixed by "not")
+         struct ParsedProperty {
+            string value;
+            bool negated;
+         };
+
          // Breaks Inform 7 source down into a token stream
          Inform7Lexer lexer;
 
@@ -162,9 +169,9 @@ namespace trogdor {
                (none)
 
             Output:
-               Vector containing one or more properties.
+               Vector containing one or more properties
          */
-         vector<string> parsePropertiesList();
+         vector<ParsedProperty> parsePropertyList();
 
          /*
             Parses the definition of one or more things. Matches the
@@ -172,13 +179,13 @@ namespace trogdor {
 
             Input:
                One or more identifiers (vector<string>)
-               One or more optional properties (vector<string>)
+               One or more optional properties (vector<ParsedProperty>)
 
             Output:
                (none)
          */
          void parseDefinition(vector<string> identifiers,
-         vector<string> propertyList = vector<string>());
+         vector<ParsedProperty> propertyList = vector<ParsedProperty>());
 
          /*
             Parses the assignment of one or more properties to one or more
@@ -187,13 +194,13 @@ namespace trogdor {
 
             Input:
                One or more identifiers (vector<string>)
-               One or more properties (vector<string>)
+               One or more properties (vector<ParsedProperty>)
 
             Output:
                (none)
          */
          void parsePropertyAssignment(vector<string> identifiers,
-         vector<string> propertyList);
+         vector<ParsedProperty> propertyList);
 
          /*
             Parses an equality phrase, or any phrase that uses the present tense
