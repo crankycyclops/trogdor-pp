@@ -232,8 +232,34 @@ namespace trogdor {
 
    /**************************************************************************/
 
+   void Inform7Parser::parseInClause() {
+
+      Token t;
+
+      // TODO skip to end of phrase until we implement this
+      cout << endl << "parseInClause stub!" << endl;
+      for (t = lexer.peek(); PHRASE_TERMINATOR != t.type; t = lexer.next());
+      lexer.push(t);
+   }
+
+   /**************************************************************************/
+
+   void Inform7Parser::parseLocationClause() {
+
+      Token t;
+
+      // TODO skip to end of phrase until we implement this
+      cout << endl << "parseLocationClause stub!" << endl;
+      for (t = lexer.peek(); PHRASE_TERMINATOR != t.type; t = lexer.next());
+      lexer.push(t);
+   }
+
+   /**************************************************************************/
+
    void Inform7Parser::parseDefinition(vector<string> identifiers,
    vector<Inform7Parser::ParsedProperty> propertyList) {
+
+      Token t = lexer.peek();
 
       // TODO
       cout << endl << "parseDefinition stub!" << endl << endl;
@@ -244,6 +270,7 @@ namespace trogdor {
       }
 
       cout << endl;
+
       if (propertyList.size()) {
          cout << "Properties: " << endl;
          for (auto i = propertyList.begin(); i != propertyList.end(); i++) {
@@ -253,17 +280,43 @@ namespace trogdor {
          cout << "(No properties.)" << endl;
       }
 
-      // Skip past the rest of the definition until I actually implement this
-      Token t;
+      if (
+         classes.end() != classes.find(strToLower(t.value)) ||
+         classPlurals.end() != classPlurals.find(strToLower(t.value))
+      ) {      
 
-      for (t = lexer.next(); PHRASE_TERMINATOR != t.type; t = lexer.next());
+         string className = classPlurals.end() != classPlurals.find(strToLower(t.value)) ?
+            classPlurals[strToLower(t.value)] : strToLower(t.value);
+
+         // TODO
+         cout << endl << "Identifiers are of type '" << className << "'" << endl;
+
+         t = lexer.next();
+
+         if (0 == strToLower(t.value).compare("in")) {
+            parseInClause();
+         } else {
+            lexer.push(t);
+         }
+      }
+
+      else if (directions.end() != directions.find(strToLower(t.value))) {
+         parseLocationClause();
+      }
 
       t = lexer.next();
 
-      if (QUOTED_STRING == t.type) {
-         for (t = lexer.next(); PHRASE_TERMINATOR != t.type; t = lexer.next());
-      } else {
-         lexer.push(t);
+      if (PHRASE_TERMINATOR == t.type) {
+
+         t = lexer.next();
+
+         // TODO: we're skipping past the description part of the definition (if
+         // it exists) for now until we actually implement this
+         if (QUOTED_STRING == t.type) {
+            for (t = lexer.next(); PHRASE_TERMINATOR != t.type; t = lexer.next());
+         } else {
+            lexer.push(t);
+         }
       }
    }
 
@@ -336,6 +389,7 @@ namespace trogdor {
          classPlurals.end() != classPlurals.find(strToLower(t.value)) ||
          directions.end() != directions.find(strToLower(t.value))
       ) {
+         lexer.next();
          parseDefinition(identifiers);
       }
 

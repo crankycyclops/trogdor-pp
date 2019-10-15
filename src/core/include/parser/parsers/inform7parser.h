@@ -42,7 +42,7 @@ namespace trogdor {
       <equality>             ::= <definition> | <property assignment>
       <definition>           ::= <identifier list> <equality> {<article>} (
                                  [<property list>] <class> [<in clause>] |
-                                 <direction> ("of" | "from") {<article>} <noun>)
+                                 <location clause>)
                                  <phrase terminator> [<description>]
       <property assignment>  ::= <identifier list> <equality> {<article>}
                                  <property list>
@@ -50,6 +50,7 @@ namespace trogdor {
       <identifier list>      ::= {<article>} <noun> {("," | [","] "and")
                                  {<article>} <noun>}
       <in clause>            ::= "in" {<article>} <noun>
+      <location clause>      ::= <direction> ("of" | "from") {<article>} <noun>
       <description>          ::= "\"" "/^[\"]+/" ".\"" [<phrase terminator>] |
                                  "\"" "/^[\"]+/\"" <phrase terminator>
       <equality>             ::= "is" | "are"
@@ -172,6 +173,30 @@ namespace trogdor {
                Vector containing one or more properties
          */
          vector<ParsedProperty> parsePropertyList();
+
+         /*
+            Parses the in clause of a definition. Matches the <in clause>
+            production in the EBNF above.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseInClause();
+
+         /*
+            Parses the location clause of a definition. Matches the <location
+            clause> production in the EBNF above.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseLocationClause();
 
          /*
             Parses the definition of one or more things. Matches the

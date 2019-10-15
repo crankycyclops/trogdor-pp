@@ -138,6 +138,7 @@ namespace trogdor {
                         // those, too
                         directions.end() == directions.find(potentialWord) &&
                         classes.end()    == classes.find(potentialWord) &&
+                        // TODO: also search plural forms of classes
                         properties.end() == properties.find(potentialWord) &&
                         adjectives.end() == adjectives.find(potentialWord)
                      ) {
