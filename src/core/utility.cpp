@@ -5,6 +5,7 @@
 #include <algorithm> 
 #include <functional>
 #include <locale>
+#include <vector>
 
 using namespace std;
 
@@ -57,6 +58,17 @@ string &trim(std::string &s);
       (none)
 */
 string replaceAll(const string &str, const string &search, const string &replace);
+
+/*
+   Utility method that converts a vector of strings into a comma-delimited list.
+
+   Input:
+      Vector of strings (vector<string>)
+
+   Output:
+      Comma-delimited list (string)
+*/
+string vectorToStr(vector<string> list);
 
 /*
    Checks if a string represents a valid integer.
@@ -112,6 +124,27 @@ string replaceAll(const string &str, const string &search, const string &replace
    }
 
    return strCopy;
+}
+
+
+string vectorToStr(vector<string> list) {
+
+   string str;
+
+   for (int i = 0; i < list.size(); i++) {
+
+      str += list[i];
+
+      if (list.size() > 1 && i < list.size() - 2) {
+         str += ", ";
+      }
+
+      else if (i < list.size() - 1) {
+         str += " and ";
+      }
+   }
+
+   return str;
 }
 
 

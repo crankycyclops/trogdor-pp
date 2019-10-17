@@ -232,14 +232,37 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   void Inform7Parser::parseInClause() {
+   void Inform7Parser::parseInClause(vector<string> subjects) {
 
       Token t;
 
-      // TODO skip to end of phrase until we implement this
-      cout << endl << "parseInClause stub!" << endl;
-      for (t = lexer.peek(); PHRASE_TERMINATOR != t.type; t = lexer.next());
-      lexer.push(t);
+      // Grab list of containers or places where the subject(s) should go (there
+      // should only be one, and if there are more we'll report it as an error)
+      vector<string> containersOrPlaces = parseIdentifiersList();
+
+      if (!containersOrPlaces.size()) {
+         throw ParseException(string("You said ") + vectorToStr(subjects) +
+            " " + (subjects.size() > 1 ? "are" : "is") +
+            " in a container or a place without saying what that container or " +
+            "place is (line " + to_string(t.lineno) + ')');
+      }
+
+      else if (containersOrPlaces.size() > 1) {
+         throw ParseException(string("You said ") + vectorToStr(subjects) +
+            (subjects.size() > 1 ? " are" : " is") +
+            " in " + vectorToStr(containersOrPlaces) + ", but " +
+            (subjects.size() > 1 ? "they" : "it") +
+            " can only be in one container or place at a time (line " +
+            to_string(t.lineno) + ')');
+      }
+
+      else {
+         // TODO
+         cout << "parseInClause stub!" << endl << endl;
+         cout << vectorToStr(subjects) << " " <<
+            (subjects.size() > 1 ? "are" : "is") << " in " <<
+            containersOrPlaces[0] << "." << endl << endl;
+      }
    }
 
    /**************************************************************************/
@@ -294,7 +317,7 @@ namespace trogdor {
          t = lexer.next();
 
          if (0 == strToLower(t.value).compare("in")) {
-            parseInClause();
+            parseInClause(identifiers);
          } else {
             lexer.push(t);
          }

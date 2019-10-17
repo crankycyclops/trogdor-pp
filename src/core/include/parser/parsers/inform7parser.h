@@ -41,8 +41,8 @@ namespace trogdor {
       <phrase>               ::= <equality>
       <equality>             ::= <definition> | <property assignment>
       <definition>           ::= <identifier list> <equality> {<article>} (
-                                 [<property list>] <class> [<in clause>] |
-                                 <location clause>)
+                                 [<property list>] <class> [<in clause> | 
+                                 <on clause>] | <location clause>)
                                  <phrase terminator> [<description>]
       <property assignment>  ::= <identifier list> <equality> {<article>}
                                  <property list>
@@ -50,6 +50,7 @@ namespace trogdor {
       <identifier list>      ::= {<article>} <noun> {("," | [","] "and")
                                  {<article>} <noun>}
       <in clause>            ::= "in" {<article>} <noun>
+      <on clause>            ::= "on" {<article>} <noun>
       <location clause>      ::= <direction> ("of" | "from") {<article>} <noun>
       <description>          ::= "\"" "/^[\"]+/" ".\"" [<phrase terminator>] |
                                  "\"" "/^[\"]+/\"" <phrase terminator>
@@ -179,12 +180,12 @@ namespace trogdor {
             production in the EBNF above.
 
             Input:
-               (none)
+               One or more things that are in a container or place (vector<string>)
 
             Output:
                (none)
          */
-         void parseInClause();
+         void parseInClause(vector<string> subjects);
 
          /*
             Parses the location clause of a definition. Matches the <location

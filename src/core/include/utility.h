@@ -4,6 +4,7 @@
 
 #include <string>
 #include <cctype>
+#include <vector>
 
 /* macro to clip a value within a given range */
 #define CLAMP(V, MIN, MAX)  (((V) > (MAX)) ? (MAX) : (((V) < (MIN)) ? (MIN) : (V)))
@@ -60,6 +61,17 @@ extern string &trim(std::string &s);
       (none)
 */
 string replaceAll(const string &str, const string &search, const string &replace);
+
+/*
+   Utility method that converts a vector of strings into a comma-delimited list.
+
+   Input:
+      Vector of strings (vector<string>)
+
+   Output:
+      Comma-delimited list (string)
+*/
+string vectorToStr(vector<string> list);
 
 /*
    Checks if a string represents a valid integer.
