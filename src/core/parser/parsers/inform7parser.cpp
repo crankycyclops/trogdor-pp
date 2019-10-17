@@ -153,6 +153,10 @@ namespace trogdor {
       Token t;
       vector<string> identifiers;
 
+      // Use this to make sure we only skip past articles if they really
+      // function as articles by appearing before an identifier name
+      bool startingNewNoun = true;
+
       do {
 
          string noun;
@@ -161,7 +165,8 @@ namespace trogdor {
          // TODO: need to keep track of whether or not an article was used; if
          // one was, then it's a proper noun. Otherwise, it's not. This effects
          // things like whether or not a room is visited when an object is in it.
-         for (t = lexer.next(); ARTICLE == t.type; t = lexer.next());
+         for (t = lexer.next(); startingNewNoun && ARTICLE == t.type; t = lexer.next());
+         startingNewNoun = false;
 
          // Sometimes, we have a comma followed by and. In that case, skip over
          // the extraneous "and."
@@ -170,13 +175,18 @@ namespace trogdor {
          }
 
          // Grab the next identifier
-         for (; WORD == t.type; t = lexer.next()) {
+         for (; WORD == t.type || ARTICLE == t.type; t = lexer.next()) {
             noun += (noun.length() ? " " : "");
             noun += t.value;
          }
 
          if (noun.length()) {
             identifiers.push_back(noun);
+            startingNewNoun = true;
+         }
+
+         else {
+            throw ParseException(string("Sentence does not follow a valid syntax. Did you end with a dangling comma or \"and\"? (line ") + to_string(t.lineno) + ')');
          }
       } while (COMMA == t.type || AND == t.type);
 
