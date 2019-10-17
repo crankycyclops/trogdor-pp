@@ -38,15 +38,18 @@ namespace trogdor {
       <bibliographic>        ::= <quoted string> ["by" <author name>]
                                  <phrase terminator>
       <author name>          ::= /[A-Za-z ']+/ | <quoted string>
-      <phrase>               ::= <equality>
-      <equality>             ::= <definition> | <property assignment>
-      <definition>           ::= <identifier list> <equality> {<article>} (
+      <phrase>               ::= <equality statement>
+      <equality statement>   ::= <definition> | <property assignment> |
+                                 <placement>
+      <definition>           ::= <identifier list> <equality verb> {<article>} (
                                  [<property list>] <class> [<in clause> | 
                                  <on clause>] | <location clause>)
                                  <phrase terminator> [<description>]
-      <property assignment>  ::= <identifier list> <equality> {<article>}
+      <property assignment>  ::= <identifier list> <equality verb> {<article>}
                                  <property list>
                                  <phrase terminator>
+      <placement>            ::= <identifier list> <equality verb> ("in" | "on")
+                                 {<article>} <noun>
       <identifier list>      ::= {<article>} <noun> {("," | [","] "and")
                                  {<article>} <noun>}
       <in clause>            ::= "in" {<article>} <noun>
@@ -54,7 +57,7 @@ namespace trogdor {
       <location clause>      ::= <direction> ("of" | "from") {<article>} <noun>
       <description>          ::= "\"" "/^[\"]+/" ".\"" [<phrase terminator>] |
                                  "\"" "/^[\"]+/\"" <phrase terminator>
-      <equality>             ::= "is" | "are"
+      <equality verb>        ::= "is" | "are"
       <assertion verb>       ::= "has" | "carries" | "is carrying" | "wears" |
                                  "is wearing" | "contains" | "supports" |
                                  "is supporting"
@@ -188,6 +191,18 @@ namespace trogdor {
          void parseInClause(vector<string> subjects);
 
          /*
+            Parses the on clause of a definition. Matches the <on clause>
+            production in the EBNF above.
+
+            Input:
+               One or more things that are on a supporter (vector<string>)
+
+            Output:
+               (none)
+         */
+         void parseOnClause(vector<string> subjects);
+
+         /*
             Parses the location clause of a definition. Matches the <location
             clause> production in the EBNF above.
 
@@ -229,9 +244,22 @@ namespace trogdor {
          vector<ParsedProperty> propertyList);
 
          /*
+            Parses the placement of one or more things into or onto a room,
+            container, or supporter. Matches the <placement> production in the
+            EBNF above.
+
+            Input:
+               One or more identifiers (vector<string>)
+
+            Output:
+               (none)
+         */
+         void parsePlacement(vector<string> subjects);
+
+         /*
             Parses an equality phrase, or any phrase that uses the present tense
-            of the verb "to be." Matches the <equality> production in the EBNF
-            above.
+            of the verb "to be." Matches the <equality statement> production in
+            the EBNF above.
 
             Input:
                One or more identifiers as the subject (vector<string>)

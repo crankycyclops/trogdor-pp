@@ -267,6 +267,41 @@ namespace trogdor {
 
    /**************************************************************************/
 
+   void Inform7Parser::parseOnClause(vector<string> subjects) {
+
+      Token t;
+
+      // Grab list of supports where the subject(s) should go (there should only
+      // be one, and if there are more we'll report it as an error)
+      vector<string> supporters = parseIdentifiersList();
+
+      if (!supporters.size()) {
+         throw ParseException(string("You said ") + vectorToStr(subjects) +
+            " " + (subjects.size() > 1 ? "are" : "is") +
+            " on a supporter without saying what that supporter is (line " +
+            to_string(t.lineno) + ')');
+      }
+
+      else if (supporters.size() > 1) {
+         throw ParseException(string("You said ") + vectorToStr(subjects) +
+            (subjects.size() > 1 ? " are" : " is") +
+            " on " + vectorToStr(supporters) + ", but " +
+            (subjects.size() > 1 ? "they" : "it") +
+            " can only be on one supporter at a time (line " +
+            to_string(t.lineno) + ')');
+      }
+
+      else {
+         // TODO
+         cout << "parseOnClause stub!" << endl << endl;
+         cout << vectorToStr(subjects) << " " <<
+            (subjects.size() > 1 ? "are" : "is") << " on " <<
+            supporters[0] << "." << endl << endl;
+      }
+   }
+
+   /**************************************************************************/
+
    void Inform7Parser::parseLocationClause() {
 
       Token t;
@@ -318,7 +353,13 @@ namespace trogdor {
 
          if (0 == strToLower(t.value).compare("in")) {
             parseInClause(identifiers);
-         } else {
+         }
+
+         else if (0 == strToLower(t.value).compare("on")) {
+            parseOnClause(identifiers);
+         }
+
+         else {
             lexer.push(t);
          }
       }
@@ -360,6 +401,23 @@ namespace trogdor {
       for (auto i = propertyList.begin(); i != propertyList.end(); i++) {
          cout << i->value + (i->negated ? " (negated)" : "") << endl;
       }
+   }
+
+   /**************************************************************************/
+
+   void Inform7Parser::parsePlacement(vector<string> subjects) {
+
+      Token t;
+
+      if (0 == strToLower(t.value).compare("in")) {
+         parseInClause(subjects);
+      }
+
+      else {
+         parseOnClause(subjects);
+      }
+
+      lexer.next();
    }
 
    /**************************************************************************/
@@ -414,6 +472,12 @@ namespace trogdor {
       ) {
          lexer.next();
          parseDefinition(identifiers);
+      }
+
+      else if (0 == strToLower(t.value).compare("in") ||
+      0 == strToLower(t.value).compare("on")) {
+         lexer.next();
+         parsePlacement(identifiers);
       }
 
       else if (WORD == t.type || EQUALITY == t.type || AND == t.type) {
