@@ -67,11 +67,12 @@ string replaceAll(const string &str, const string &search, const string &replace
 
    Input:
       Vector of strings (vector<string>)
+      Conjunction (string)
 
    Output:
       Comma-delimited list (string)
 */
-string vectorToStr(vector<string> list);
+string vectorToStr(vector<string> list, string conjunction = "and");
 
 /*
    Checks if a string represents a valid integer.

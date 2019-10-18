@@ -384,10 +384,51 @@ namespace trogdor {
 
          t = lexer.next();
 
-         // TODO: we're skipping past the description part of the definition (if
-         // it exists) for now until we actually implement this
+         // A description of the thing being described was included
          if (QUOTED_STRING == t.type) {
-            for (t = lexer.next(); PHRASE_TERMINATOR != t.type; t = lexer.next());
+
+            string description = t.value;
+
+            if (identifiers.size() > 1) {
+            throw ParseException(string("You wrote '") + description +
+               "' (line " + to_string(t.lineno) + "): but I don't know if " +
+               "you're trying to describe " + vectorToStr(identifiers, "or") +
+               ".");
+            }
+
+            t = lexer.next();
+
+            if (PHRASE_TERMINATOR != t.type) {
+
+               string combined = "\"" + description + "\"";
+
+               for (; t.type != PHRASE_TERMINATOR; t = lexer.next()) {
+
+                  if (COMMA != t.type && COLON != t.type && SEMICOLON != t.type) {
+                     combined += " ";
+                  }
+
+                  combined += t.value;
+               }
+
+               throw ParseException(string("You wrote '") + combined +
+                  "' (line " + to_string(t.lineno) + "): but it looks as if " +
+                  "perhaps you did not intend that to read as a single " +
+                  "sentence, and possibly the text in quotes was supposed to " +
+                  "stand as as a sentence on its own? (The convention is " +
+                  "that if text ends in a full stop, exclamation or question " +
+                  "mark, perhaps with a close bracket or quotation mark " +
+                  "involved as well, then that punctuation mark also closes " +
+                  "the sentence to which the text belongs: but otherwise the " +
+                  "words following the quoted text are considered part of " +
+                  "the same sentence.");
+            }
+
+            else {
+               // TODO
+               cout << "Description of " + identifiers[0] + ": " << description
+                  << endl << endl;
+            }
          } else {
             lexer.push(t);
          }

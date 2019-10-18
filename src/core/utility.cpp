@@ -64,11 +64,12 @@ string replaceAll(const string &str, const string &search, const string &replace
 
    Input:
       Vector of strings (vector<string>)
+      Conjunction (string)
 
    Output:
       Comma-delimited list (string)
 */
-string vectorToStr(vector<string> list);
+string vectorToStr(vector<string> list, string conjunction = "and");
 
 /*
    Checks if a string represents a valid integer.
@@ -127,7 +128,7 @@ string replaceAll(const string &str, const string &search, const string &replace
 }
 
 
-string vectorToStr(vector<string> list) {
+string vectorToStr(vector<string> list, string conjunction) {
 
    string str;
 
@@ -140,7 +141,7 @@ string vectorToStr(vector<string> list) {
       }
 
       else if (i < list.size() - 1) {
-         str += " and ";
+         str += " " + conjunction + " ";
       }
    }
 
