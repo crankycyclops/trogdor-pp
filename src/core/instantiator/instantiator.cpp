@@ -1,4 +1,5 @@
 #include <string>
+#include <fstream>
 
 #include "../include/instantiator/instantiator.h"
 #include "../include/vocabulary.h"
@@ -7,6 +8,7 @@
 #include "../include/exception/validationexception.h"
 #include "../include/exception/undefinedexception.h"
 
+
 using namespace std;
 
 namespace trogdor {
@@ -14,8 +16,15 @@ namespace trogdor {
 
    Instantiator::Instantiator(const Vocabulary &v): vocabulary(v) {
 
+      mapPreOperations();
       mapEntityPropValidators();
       mapGamePropValidators();
+
+      // Default Entity classes that should always exist
+      symbols.entityClasses["room"] = entity::ENTITY_ROOM;
+      symbols.entityClasses["object"] = entity::ENTITY_OBJECT;
+      symbols.entityClasses["creature"] = entity::ENTITY_CREATURE;
+      symbols.entityClasses["player"] = entity::ENTITY_PLAYER;
    }
 
    /***************************************************************************/
@@ -73,6 +82,675 @@ namespace trogdor {
 
    /***************************************************************************/
 
+   void Instantiator::assertValidASTArguments(const std::shared_ptr<ASTOperationNode> &operation,
+   int numArgs) {
+
+      if (operation->size() != numArgs) {
+         throw ValidationException(operation->getOperation() +
+            ": invalid number of arguments. This is a bug.");
+      }
+   }
+
+   /***************************************************************************/
+
+   void Instantiator::assertValidASTArguments(const std::shared_ptr<ASTOperationNode> &operation,
+   int minArgs, unordered_map<string, int> targetTypeToNumArgs) {
+
+      if (operation->size() < minArgs) {
+         throw ValidationException(operation->getOperation() +
+            ": invalid number of arguments. This is a bug.");
+      }
+
+      string targetType = operation->getChildren()[0]->getValue();
+
+      if (targetTypeToNumArgs.end() == targetTypeToNumArgs.find(targetType)) {
+         throw ValidationException(string(operation->getOperation() +
+            ": invalid target type '") + targetType + "'. This is a bug.");
+      }
+
+      else if (operation->size() != targetTypeToNumArgs[targetType]) {
+         throw ValidationException(operation->getOperation() +
+            ": invalid number of arguments. This is a bug.");
+      }
+   }
+
+   /***************************************************************************/
+
+   void Instantiator::assertTargetExists(string targetType, string targetName,
+   string action, int lineNumber) {
+
+      if (0 == targetType.compare("entity")) {
+
+         if (symbols.entities.end() == symbols.entities.find(targetName)) {
+            throw ValidationException(
+               string("cannot " + action + " '") + targetName +
+               "' because it hasn't been defined" +
+               (lineNumber ? " (line " + to_string(lineNumber) + ")" : "")
+            );
+         }
+      }
+
+      else if (0 == targetType.compare("class")) {
+
+         if (symbols.entityClasses.end() == symbols.entityClasses.find(targetName)) {
+            throw ValidationException(
+               string("cannot " + action + " class '") + targetName +
+               "' because it hasn't been defined" +
+               (lineNumber ? " (line " + to_string(lineNumber) + ")" : "")
+            );
+         }
+      }
+   }
+
+   /***************************************************************************/
+
+   void Instantiator::mapPreOperations() {
+
+      // Validates and records the definition of custom directions
+      preOperations[DEFINE_DIRECTION] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 1);
+
+         string direction = operation->getChildren()[0]->getValue();
+
+         if (vocabulary.isDirection(direction)) {
+            throw ValidationException(
+               string("cannot redefine built-in direction '") + direction + "'" +
+                  (operation->getLineNumber() ? " (line " +
+                  to_string(operation->getLineNumber()) + ")" : "")
+            );
+         }
+
+         else if (customVocabulary.directions.end() != customVocabulary.directions.find(direction)
+         ) {
+            throw ValidationException(
+               string("custom direction '") + direction + "' has already been defined" +
+                  (operation->getLineNumber() ? " (line " +
+                  to_string(operation->getLineNumber()) + ")" : "")
+            );
+         }
+
+         else {
+            customVocabulary.directions.insert(direction);
+         }
+      };
+
+      /**********/
+
+      // Validates and records the definition of custom direction synonyms
+      preOperations[DEFINE_DIRECTION_SYNONYM] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 2);
+
+         string direction = operation->getChildren()[0]->getValue();
+         string synonym = operation->getChildren()[1]->getValue();
+
+         if (vocabulary.isDirection(synonym)) {
+            throw ValidationException(
+               string("cannot set built-in direction '") + synonym +
+                  "' as a synonym for another direction" +
+                  (operation->getLineNumber() ? " (line " +
+                  to_string(operation->getLineNumber()) + ")" : "")
+            );
+         }
+
+         else if (customVocabulary.directions.end() != customVocabulary.directions.find(synonym)) {
+            throw ValidationException(
+               string("cannot set custom direction '") + synonym +
+                  "' as a synonym for another direction" +
+                  (operation->getLineNumber() ? " (line " +
+                  to_string(operation->getLineNumber()) + ")" : "")
+            );
+         }
+
+         else if (
+            !vocabulary.isDirection(direction) &&
+            customVocabulary.directions.end() == customVocabulary.directions.find(direction)
+         ) {
+            throw ValidationException(
+               string("'") + synonym + "' cannot be set as a synonym for '" +
+                  direction + "' because that direction hasn't been defined" +
+                  (operation->getLineNumber() ? " (line " +
+                  to_string(operation->getLineNumber()) + ")" : "")
+            );
+         }
+
+         else {
+            customVocabulary.directionSynonyms[synonym] = direction;
+         }
+      };
+
+      /**********/
+
+      // Validates and adds newly defined Entities to the symbol table
+      preOperations[DEFINE_VERB_SYNONYM] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 2);
+
+         string verb = operation->getChildren()[0]->getValue();
+         string synonym = operation->getChildren()[1]->getValue();
+
+         if (vocabulary.isVerb(synonym) && !vocabulary.isVerbSynonym(synonym)) {
+            throw ValidationException(
+               string("cannot set '") + synonym +
+                  "' as a synonym for a verb because it's already a verb" +
+                  (operation->getLineNumber() ? " (line " +
+                  to_string(operation->getLineNumber()) + ")" : "")
+            );
+         }
+
+         else {
+            customVocabulary.verbSynonyms[synonym] = verb;
+         }
+      };
+
+      /**********/
+
+      // Validates and adds newly defined Entities to the symbol table
+      preOperations[DEFINE_ENTITY] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 3);
+
+         string name = operation->getChildren()[0]->getValue();
+         string className = operation->getChildren()[2]->getValue();
+         string typeStr = operation->getChildren()[1]->getValue();
+         entity::EntityType type = entity::Entity::strToType(typeStr);
+
+         if (entity::ENTITY_UNDEFINED == type) {
+            throw ValidationException(string("invalid entity type '") +
+               operation->getChildren()[1]->getValue() + "'.");
+         }
+
+         else if (symbols.entities.end() != symbols.entities.find(name)) {
+            throw ValidationException(
+               typeStr + " named '" + name + "' was already previously defined" +
+                  (operation->getLineNumber() ? " (line " +
+                  to_string(operation->getLineNumber()) + ")" : "")
+            );
+         }
+
+         else if (symbols.entityClasses.end() == symbols.entityClasses.find(className)) {
+            throw ValidationException(
+               typeStr + " class '" + className + "' hasn't been defined" +
+               (operation->getLineNumber() ?
+                  " (line " + to_string(operation->getLineNumber()) + ")" : "")
+            );
+         }
+
+         else {
+            symbols.entities[name] = {
+               name,
+               className,
+               type
+            };
+         }
+      };
+
+      /**********/
+
+      // Validates and adds new Entity classes to the symbol table
+      preOperations[DEFINE_ENTITY_CLASS] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 2);
+
+         string className = operation->getChildren()[0]->getValue();
+         string classTypeStr = operation->getChildren()[1]->getValue();
+         entity::EntityType classType = entity::Entity::strToType(classTypeStr);
+
+         if (symbols.entityClasses.end() != symbols.entityClasses.find(className)) {
+            throw ValidationException(string("class '") + className +
+               "' already defines a type of " +
+               entity::Entity::typeToStr(symbols.entityClasses[className]));
+         }
+
+         else {
+            symbols.entityClasses[className] = classType;
+         }
+      };
+
+      /**********/
+
+      // Validation
+      preOperations[SET_MESSAGE] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 3, {
+            {"entity", 4},
+            {"class", 4},
+            {"defaultPlayer", 3}
+         });
+
+         string targetType = operation->getChildren()[0]->getValue();
+
+         if (
+            0 == targetType.compare("entity") ||
+            0 == targetType.compare("class")
+         ) {
+            assertTargetExists(
+               targetType,
+               operation->getChildren()[3]->getValue(),
+               "set a message for",
+               operation->getLineNumber()
+            );
+         }
+      };
+
+      /**********/
+
+      // Validation
+      preOperations[SET_TAG] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 2, {
+            {"entity", 3},
+            {"class", 3},
+            {"defaultPlayer", 2}
+         });
+
+         string targetType = operation->getChildren()[0]->getValue();
+
+         if (
+            0 == targetType.compare("entity") ||
+            0 == targetType.compare("class")
+         ) {
+            assertTargetExists(
+               targetType,
+               operation->getChildren()[2]->getValue(),
+               "set a tag on",
+               operation->getLineNumber()
+            );
+         }
+      };
+
+      /**********/
+
+      // Validation
+      preOperations[REMOVE_TAG] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 2, {
+            {"entity", 3},
+            {"class", 3},
+            {"defaultPlayer", 2}
+         });
+
+         string targetType = operation->getChildren()[0]->getValue();
+
+         if (
+            0 == targetType.compare("entity") ||
+            0 == targetType.compare("class")
+         ) {
+            assertTargetExists(
+               targetType,
+               operation->getChildren()[2]->getValue(),
+               "remove a tag from",
+               operation->getLineNumber()
+            );
+         }
+      };
+
+      /**********/
+
+      // Validation
+      preOperations[LOAD_SCRIPT] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 3, {
+            {"entity", 4},
+            {"class", 4},
+            {"game", 3}
+         });
+
+         string targetType = operation->getChildren()[0]->getValue();
+         string scriptMode = operation->getChildren()[1]->getValue();
+
+         if (0 != scriptMode.compare("file") && 0 != scriptMode.compare("string")) {
+            throw ValidationException("LOAD_SCRIPT: invalid script mode '" + scriptMode + "'. Should be either 'file' or 'string'. This is a bug.");
+         }
+
+         else if (0 == scriptMode.compare("file")) {
+
+            string filename = operation->getChildren()[2]->getValue();
+            std::ifstream scriptFile(filename.c_str());
+
+            if (!scriptFile) {
+               throw ValidationException(
+                  "cannot open " + filename + (operation->getLineNumber() ?
+                     " (line " + to_string(operation->getLineNumber()) + ")" : "")
+               );
+            }
+         }
+
+         if (
+            0 == targetType.compare("entity") ||
+            0 == targetType.compare("class")
+         ) {
+            assertTargetExists(
+               targetType,
+               operation->getChildren()[3]->getValue(),
+               "parse script for",
+               operation->getLineNumber()
+            );
+         }
+      };
+
+      /**********/
+
+      // Validation
+      preOperations[SET_EVENT] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 3, {
+            {"entity", 4},
+            {"class", 4},
+            {"game", 3}
+         });
+
+         string targetType = operation->getChildren()[0]->getValue();
+
+         if (
+            0 == targetType.compare("entity") ||
+            0 == targetType.compare("class")
+         ) {
+            assertTargetExists(
+               targetType,
+               operation->getChildren()[3]->getValue(),
+               "set event for",
+               operation->getLineNumber()
+            );
+         }
+      };
+
+      /**********/
+
+      // Validation
+      preOperations[SET_ALIAS] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 3);
+
+         string targetType = operation->getChildren()[0]->getValue();
+
+         if (0 != targetType.compare("entity") && 0 != targetType.compare("class")) {
+            throw ValidationException(string("SET_ALIAS: invalid target type '") +
+               targetType + "'. This is a bug.");
+         }
+
+         if (
+            0 == targetType.compare("entity") ||
+            0 == targetType.compare("class")
+         ) {
+
+            string entityOrClassName = operation->getChildren()[2]->getValue();
+
+            assertTargetExists(
+               targetType,
+               entityOrClassName,
+               "set alias for",
+               operation->getLineNumber()
+            );
+
+            entity::EntityType entityOrClassType =
+               0 == targetType.compare("entity") ?
+                  symbols.entities[entityOrClassName].type :
+                  symbols.entityClasses[entityOrClassName];
+
+            // TODO: having a function that returns whether or not a certain
+            // entity type is also another (in this case, ENTITY_THING) would
+            // clean up my code here and possibly elsewhere
+            if (
+               entity::ENTITY_CREATURE != entityOrClassType &&
+               entity::ENTITY_PLAYER != entityOrClassType &&
+               entity::ENTITY_OBJECT != entityOrClassType
+            ) {
+               throw ValidationException(
+                  string("aliases can only be set for creatures, players, or objects") +
+                  (operation->getLineNumber() ?
+                     " (line " + to_string(operation->getLineNumber()) + ")" : "")
+               );
+            }
+         }
+      };
+
+      /**********/
+
+      // Validation
+      preOperations[SET_META] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 3, {
+            {"entity", 4},
+            {"class", 4},
+            {"game", 3}
+         });
+
+         string targetType = operation->getChildren()[0]->getValue();
+
+         if (
+            0 == targetType.compare("entity") ||
+            0 == targetType.compare("class")
+         ) {
+            assertTargetExists(
+               targetType,
+               operation->getChildren()[3]->getValue(),
+               "set meta value for",
+               operation->getLineNumber()
+            );
+         }
+      };
+
+      /**********/
+
+      // Validation
+      preOperations[SET_ATTRIBUTE] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 3, {
+            {"entity", 4},
+            {"class", 4},
+            {"defaultPlayer", 3}
+         });
+
+         string targetType = operation->getChildren()[0]->getValue();
+         string attribute = operation->getChildren()[1]->getValue();
+         string value = operation->getChildren()[2]->getValue();
+
+         if (!isValidInteger(value)) {
+            throw ValidationException(string("attribute '") + attribute + "' is not a valid integer");
+         }
+
+         if (
+            0 == targetType.compare("entity") ||
+            0 == targetType.compare("class")
+         ) {
+
+            string entityOrClassName = operation->getChildren()[3]->getValue();
+
+            assertTargetExists(
+               targetType,
+               entityOrClassName,
+               "set attribute for",
+               operation->getLineNumber()
+            );
+
+            entity::EntityType entityOrClassType =
+               0 == targetType.compare("entity") ?
+                  symbols.entities[entityOrClassName].type :
+                  symbols.entityClasses[entityOrClassName];
+
+            // TODO: having a function that returns whether or not a certain
+            // entity type is also another (in this case, ENTITY_THING) would
+            // clean up my code here and possibly elsewhere
+            if (
+               entity::ENTITY_CREATURE != entityOrClassType &&
+               entity::ENTITY_PLAYER != entityOrClassType
+            ) {
+               throw ValidationException(
+                  string("attributes can only be set for creatures or players") +
+                  (operation->getLineNumber() ?
+                     " (line " + to_string(operation->getLineNumber()) + ")" : "")
+               );
+            }
+         }
+      };
+
+      /**********/
+
+      // Validation
+      preOperations[SET_PROPERTY] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 3, {
+            {"entity", 4},
+            {"class", 4},
+            {"defaultPlayer", 3},
+            {"game", 3}
+         });
+
+         string targetType = operation->getChildren()[0]->getValue();
+         string property = operation->getChildren()[1]->getValue();
+         string value = operation->getChildren()[2]->getValue();
+
+         if (
+            0 == targetType.compare("entity") ||
+            0 == targetType.compare("class")
+         ) {
+
+            string entityOrClassName = operation->getChildren()[3]->getValue();
+
+            assertTargetExists(
+               targetType,
+               entityOrClassName,
+               "set property for",
+               operation->getLineNumber()
+            );
+
+            string entityTypeStr = entity::Entity::typeToStr(
+               0 == targetType.compare("entity") ?
+                  symbols.entities[entityOrClassName].type :
+                  symbols.entityClasses[entityOrClassName]
+            );
+
+            // TODO: entity type is a string for historical reasons, but I'd
+            // rather be hashing the enum value instead, so go back and
+            // refactor this later
+            entityPropValidators[entityTypeStr][property](vocabulary, value);
+         }
+
+         else if (0 == targetType.compare("defaultPlayer")) {
+            // TODO: entity type is a string for historical reasons, but I'd
+            // rather be hashing the enum value instead, so go back and
+            // refactor this later
+            entityPropValidators["player"][property](vocabulary, value);
+         }
+
+         else {
+            gamePropValidators[property](vocabulary, value);
+         }
+      };
+
+      /**********/
+
+      // Validation
+      preOperations[INSERT_INTO_INVENTORY] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 2);
+
+         string objectName = operation->getChildren()[0]->getValue();
+         string beingName = operation->getChildren()[1]->getValue();
+
+         if (
+            symbols.entities.end() == symbols.entities.find(objectName) ||
+            entity::ENTITY_OBJECT != symbols.entities[objectName].type
+         ) {
+            throw ValidationException(objectName +
+               " doesn't exist or is not an object" +
+               (operation->getLineNumber() ?
+                  " (line " + to_string(operation->getLineNumber()) + ")" : ""));
+         }
+
+         else if (
+            symbols.entities.end() == symbols.entities.find(beingName) || (
+               entity::ENTITY_PLAYER != symbols.entities[beingName].type &&
+               entity::ENTITY_CREATURE != symbols.entities[beingName].type
+            )
+         ) {
+            throw ValidationException(beingName +
+               " doesn't exist or is not a player or creature" +
+               (operation->getLineNumber() ?
+                  " (line " + to_string(operation->getLineNumber()) + ")" : ""));
+         }
+      };
+
+      /**********/
+
+      // Validation
+      preOperations[INSERT_INTO_PLACE] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 2);
+
+         string thingName = operation->getChildren()[0]->getValue();
+         string roomName = operation->getChildren()[1]->getValue();
+
+         if (
+            symbols.entities.end() == symbols.entities.find(thingName) || (
+               entity::ENTITY_OBJECT != symbols.entities[thingName].type &&
+               entity::ENTITY_PLAYER != symbols.entities[thingName].type &&
+               entity::ENTITY_CREATURE != symbols.entities[thingName].type
+            )
+         ) {
+            throw ValidationException(thingName +
+               " is a " +
+               entity::Entity::typeToStr(symbols.entities[thingName].type) +
+               ", but you can only insert creatures, players, or objects into a room" +
+               (operation->getLineNumber() ?
+                  " (line " + to_string(operation->getLineNumber()) + ")" : ""));
+         }
+
+         else if (
+            symbols.entities.end() == symbols.entities.find(roomName) ||
+            entity::ENTITY_ROOM != symbols.entities[roomName].type
+         ) {
+            throw ValidationException(roomName +
+               " doesn't exist or is not a room" +
+               (operation->getLineNumber() ?
+                  " (line " + to_string(operation->getLineNumber()) + ")" : ""));
+         }
+      };
+
+      /**********/
+
+      // Validation
+      preOperations[CONNECT_ROOMS] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 4);
+
+         string targetType = operation->getChildren()[0]->getValue();
+         string sourceRoomOrClass = operation->getChildren()[1]->getValue();
+         string connectToRoom = operation->getChildren()[2]->getValue();
+         string direction = operation->getChildren()[3]->getValue();
+
+         assertTargetExists(
+            targetType,
+            sourceRoomOrClass,
+            "connect a room to",
+            operation->getLineNumber()
+         );
+
+         if (
+            symbols.entities.end() == symbols.entities.find(connectToRoom) ||
+            entity::ENTITY_ROOM != symbols.entities[connectToRoom].type
+         ) {
+            throw ValidationException(connectToRoom +
+               " doesn't exist or is not a room" +
+               (operation->getLineNumber() ?
+                  " (line " + to_string(operation->getLineNumber()) + ")" : ""));
+         }
+
+         else if (
+            !vocabulary.isDirection(direction) &&
+            customVocabulary.directions.end() == customVocabulary.directions.find(direction)
+         ) {
+            throw ValidationException(direction + " is not a valid direction" +
+               (operation->getLineNumber() ?
+                  " (line " + to_string(operation->getLineNumber()) + ")" : ""));
+         }
+      };
+   }
+
+   /***************************************************************************/
+
    void Instantiator::mapEntityPropValidators() {
 
       // An Entity's title
@@ -92,39 +770,6 @@ namespace trogdor {
       entityPropValidators["object"]["shortDesc"] =
       entityPropValidators["creature"]["shortDesc"] =
       entityPropValidators["player"]["shortDesc"] = assertString;
-
-      // Special "property" that sets a meta value for an Entity
-      entityPropValidators["room"]["meta"] =
-      entityPropValidators["object"]["meta"] =
-      entityPropValidators["creature"]["meta"] =
-      entityPropValidators["player"]["meta"] = [](const Vocabulary &vocabulary,
-      string value) {
-
-         string metaKey = value.substr(0, value.find(":"));
-         string metaValue = value.substr(value.find(":") + 1, value.length());
-
-         if (!metaKey.length() || !metaValue.length()) {
-            throw UndefinedException("not a valid meta -> value pair (this is a bug)");
-         }
-      };
-
-      // Special "property" that removes a tag for an Entity
-      entityPropValidators["room"]["tag.remove"] =
-      entityPropValidators["object"]["tag.remove"] =
-      entityPropValidators["creature"]["tag.remove"] =
-      entityPropValidators["player"]["tag.remove"] = assertString;
-
-      // Special "property" that sets a tag for an Entity
-      entityPropValidators["room"]["tag.set"] =
-      entityPropValidators["object"]["tag.set"] =
-      entityPropValidators["creature"]["tag.set"] =
-      entityPropValidators["player"]["tag.set"] = assertString;
-
-      // Special "property" that sets an alias for a Thing
-      // TODO: validate this the exact same way I validate an Entity's name
-      entityPropValidators["object"]["alias"] =
-      entityPropValidators["creature"]["alias"] =
-      entityPropValidators["player"]["alias"] = assertString;
 
       // Whether or not a Being starts out alive
       entityPropValidators["creature"]["alive"] =
@@ -162,33 +807,6 @@ namespace trogdor {
       // How much total weight a Being's inventory can contain
       entityPropValidators["creature"]["inventory.weight"] =
       entityPropValidators["player"]["inventory.weight"] = assertInt;
-
-      // Special "property" that inserts an Object into a Being's inventory
-      entityPropValidators["creature"]["inventory.object"] =
-      entityPropValidators["player"]["inventory.object"] = [](const Vocabulary &vocabulary,
-      string value) {
-
-         // TODO: throw error if it's not a valid name (maybe this should be
-         // built-in.)
-         return;
-      };
-
-      // Special "property" that sets a value for a Being's particular attribute
-      entityPropValidators["creature"]["attribute"] =
-      entityPropValidators["player"]["attribute"] = [](const Vocabulary &vocabulary,
-      string value) {
-
-         string attr = value.substr(0, value.find(":"));
-         string attrValue = value.substr(value.find(":") + 1, value.length());
-
-         if (!attr.length() || !attrValue.length()) {
-            throw UndefinedException("Call to set creature or player attribute is invalid. This is a bug.");
-         }
-
-         else if (!isValidInteger(attrValue)) {
-            throw ValidationException(string("attribute '") + attr + "' is not a valid integer");
-         }
-      };
 
       // Whether or not a Creature will respond to an attack with one of its own
       entityPropValidators["creature"]["counterattack"] = assertBool;
@@ -231,27 +849,6 @@ namespace trogdor {
       // considers moving
       entityPropValidators["creature"]["wandering.wanderlust"] = assertProbability;
 
-      // Special "property" that sets a connection between two rooms.
-      entityPropValidators["room"]["connection"] = [](const Vocabulary &vocabulary,
-      string value) {
-
-         string direction = value.substr(0, value.find(":"));
-         string connectToName = value.substr(value.find(":") + 1, value.length());
-
-         // TODO: also validate that connectToName is a valid Entity name
-         if (!direction.length() || !connectToName.length()) {
-            throw UndefinedException("Invalid room connection. This is a bug.");
-         }
-      };
-
-      // Special "property" that inserts a Thing into a Room.
-      entityPropValidators["room"]["contains"] = [](const Vocabulary &vocabulary,
-      string value) {
-
-         // TODO: validate that value is a valid Entity name
-         return;
-      };
-
       // An Object's weight
       entityPropValidators["object"]["weight"] = assertInt;
 
@@ -273,50 +870,54 @@ namespace trogdor {
       // Whether or not the game should pause after the introduction before
       // continuing (if the introduction is enabled)
       gamePropValidators["introduction.pause"] = assertBool;
-
-      // Special "property" that sets a meta data value for the game
-      gamePropValidators["meta"] = [](const Vocabulary &vocabulary, string value) {
-
-         string metaKey = value.substr(0, value.find(":"));
-         string metaValue = value.substr(value.find(":") + 1, value.length());
-
-         if (!metaKey.length() || !metaValue.length()) {
-            throw UndefinedException("not a valid meta -> value pair (this is a bug)");
-         }
-      };
-
-      // Special "property" that sets an action synonym for the game (for
-      // example, "shutdown" might be a synonym for "quit")
-      gamePropValidators["synonym.verb"] = [](const Vocabulary &vocabulary,
-      string value) {
-
-         string synonym = value.substr(0, value.find(":"));
-         string action = value.substr(value.find(":") + 1, value.length());
-
-         if (!synonym.length() || !action.length()) {
-            throw UndefinedException("not a valid synonym -> action pair (this is a bug)");
-         }
-      };
-
-      // Insert a new direction into the game's vocabulary
-      gamePropValidators["direction"] = assertString;
-
-      // Special "property" that sets a direction synonym for the game (for
-      // example, "n" is a built-in synonym for "north")
-      gamePropValidators["synonym.direction"] = [](const Vocabulary &vocabulary,
-      string value) {
-
-         string synonym = value.substr(0, value.find(":"));
-         string direction = value.substr(value.find(":") + 1, value.length());
-
-         if (!synonym.length() || !direction.length()) {
-            throw UndefinedException("not a valid synonym -> direction pair (this is a bug)");
-         }
-
-         else if (!vocabulary.isDirection(direction)) {
-            throw ValidationException(string("'") + direction + "' is not a valid direction.");
-         }
-      };
    }
+
+   /***************************************************************************/
+
+   void Instantiator::registerOperation(ASTOperation operation,
+   std::function<void(const std::shared_ptr<ASTOperationNode> &operation)> opFunc) {
+
+      operations[operation] = opFunc;
+   }
+
+   /***************************************************************************/
+
+   void Instantiator::executeOperation(const std::shared_ptr<ASTOperationNode> &operation) {
+
+      if (operations.end() == operations.find(operation->getOperation())) {
+         throw UndefinedException(string("Undefined operation: ") +
+            ASTOperationNode::getOperationStr(operation->getOperation()));
+      }
+
+      // If a preoperation function was defined, execute that first
+      if (preOperations.end() != preOperations.find(operation->getOperation())) {
+         preOperations[operation->getOperation()](operation);
+      }
+
+      operations[operation->getOperation()](operation);
+   }
+
+   /***************************************************************************/
+
+   void Instantiator::instantiate(const std::shared_ptr<ASTNode> &ast) {
+
+      // For now, we assume that each child of the root ASTNode is an operation.
+      // This might very well change as the AST becomes more complex.
+      for (const auto &operation: ast->getChildren()) {
+         if (AST_OPERATION == operation->getType()) {
+            executeOperation(std::dynamic_pointer_cast<ASTOperationNode>(operation));
+         } else {
+            throw UndefinedException("Attempted to execute nonoperable AST node. This is a bug.");
+         }
+      }
+
+      // If implemented in child, this will be like a hook at the end of instantiate()
+      afterInstantiate();
+   }
+
+   /***************************************************************************/
+
+   // Does nothing unless implemented in a derived class
+   void Instantiator::afterInstantiate() {}
 }
 

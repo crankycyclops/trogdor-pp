@@ -375,6 +375,21 @@ namespace trogdor {
          }
 
          /*
+            Returns true if the specified word is a verb synonym and false if
+            it's an actual verb or not defined at all.
+
+            Input:
+               string
+
+            Output:
+               bool
+         */
+         inline bool isVerbSynonym(string str) const {
+
+            return verbSynonyms.end() != verbSynonyms.find(str) ? true : false;
+         }
+
+         /*
             Inserts a new Action object identified by the specified verb.
 
             Input:

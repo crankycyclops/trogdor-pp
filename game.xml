@@ -145,10 +145,10 @@ This is an introduction. If introductions are enabled, new players will have to 
 
       </directions>
 
-      <!-- Map new words to existing verbs. Verbs take precedence over synonyms,
-           so if you specify, for example, "take" as a synonym of "drop," since
-           "take" is already defined as a built-in verb, that action will be
-           executed instead of "drop." -->
+      <!-- Map new words to existing verbs. Synonyms cannot be defined if they
+           already exist as verbs, so if you specify, for example, "take" as a
+           synonym of "drop," you'll get an error. It is okay (though pointless)
+           to redefine an existing synonym. -->
       <synonyms>
 
          <!-- this example maps the new word "shutdown" to the existing verb
@@ -300,8 +300,8 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
          <weight>1</weight>
 
          <messages>
-            <message name="take">The candle jumps up into the air, does a backflip and turns into a spoon.</message>
-            <message name="drop">You hesitate before dropping that awesome waxy goodness.</message>
+            <message name="take">The candle jumps into the air, does a backflip, and turns into a spoon.</message>
+            <message name="drop">You hesitate before dropping that waxy goodness.</message>
          </messages>
 
          <!-- define object's event handlers and attached scripts here -->

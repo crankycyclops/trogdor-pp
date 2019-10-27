@@ -8,6 +8,8 @@
 #include <string>
 #include <cstring>
 #include <cstdlib>
+#include <unordered_map>
+#include <unordered_set>
 
 #include <libxml/xmlreader.h>
 
@@ -31,6 +33,13 @@ namespace trogdor {
 
       private:
 
+         // Record corresponding to an Entity declared in <manifest>
+         struct DeclaredEntity {
+            string name;
+            string className;
+            entity::EntityType type;
+         };
+
          // handles the actual XML parsing
          xmlTextReaderPtr reader;
 
@@ -38,6 +47,48 @@ namespace trogdor {
          // if this has a value, checkClosingTag() will use it instead of
          // walking the XML tree.
          string lastClosedTag;
+
+         // Keeps track of Entities that were declared in <manifest>
+         unordered_map<string, DeclaredEntity> declaredEntities;
+
+         // Keeps track of Entity classes that were defined in <classes>
+         unordered_map<string, entity::EntityType> declaredEntityClasses;
+
+         // Keeps track of custom directions and direction synonyms
+         unordered_set<string> customDirections;
+
+         /*
+            Returns true if the specified Entity was declared and false if not.
+
+            Input:
+               (none)
+
+            Output:
+               Whether or not the Entity exists (bool)
+         */
+         inline bool entityDeclared(string name) {
+
+            return declaredEntities.end() != declaredEntities.find(name) ? true : false;
+         }
+
+         /*
+            Returns true if the specified Entity class was declared and is of
+            the specified type and false if not.
+
+            Input:
+               (none)
+
+            Output:
+               Whether or not the Entity class of the specified type exists (bool)
+         */
+         inline bool entityClassDeclared(string name, entity::EntityType type) {
+
+            if (declaredEntityClasses.end() == declaredEntityClasses.find(name)) {
+               return false;
+            }
+
+            return type == declaredEntityClasses[name] ? true : false;
+         }
 
          /*
             Returns the name of the current XML tag.  Characters in the tag name
@@ -142,26 +193,26 @@ namespace trogdor {
 
             Input:
                Name of Thing (string)
-               Whether we're parsing aliases for Entity of Entity class (enum ParseMode)
+               Type of thing we're parsing--one of "entity" or "class" (string)
                Parse depth in XML file
 
             Output:
                (none)
          */
-         void parseThingAliases(string entityName, enum ParseMode mode, int depth);
+         void parseThingAliases(string entityName, string targetType, int depth);
 
          /*
             Parses auto-attack settings for a Creature.
 
             Input:
                Name of Creature (string)
-               Are we parsing an entity or entity class? enum ParseMode mode)
+               Type of thing we're parsing--"entity" or "class" (string)
                depth in the XML tree (int)
 
             Output:
                (none)
          */
-         void parseCreatureAutoAttack(string creatureName, enum ParseMode mode,
+         void parseCreatureAutoAttack(string creatureName, string targetType,
          int depth);
 
          /*
@@ -169,50 +220,51 @@ namespace trogdor {
 
             Input:
                Name of Creature (string)
-               Whether we're parsing an Entity of Entity class (enum ParseMode)
+               Type of thing we're parsing--"entity" or "class" (string)
 
             Output:
                (none)
          */
-         void parseCreatureWandering(string creatureName, enum ParseMode mode);
+         void parseCreatureWandering(string creatureName, string targetType);
 
          /*
             Parses a Being's respawn settings.
 
             Input:
                Name of being whose respawn settings are being configured
-               Whether we're parsing for an Entity, Entity class, or default player
+               Type of thing we're parsing--"entity" or "class" (string)
                Depth in the XML tree
 
             Output:
                (none)
          */
-         void parseBeingRespawn(string beingName, enum ParseMode mode, int depth);
+         void parseBeingRespawn(string beingName, string targetType, int depth);
 
          /*
             Parses a Being's inventory settings.
 
             Input:
                Name of being whose respawn settings are being configured
-               Whether we're parsing for an Entity, Entity class, or default player
+               Type of thing we're parsing--"entity", "class", or "defaultPlayer"
                Whether or not to allow a set of objects initialized in game.xml
 
             Output:
                (none)
          */
-         void parseBeingInventory(string beingName, enum ParseMode mode, bool allowObjects);
+         void parseBeingInventory(string beingName, string targetType,
+         bool allowObjects);
 
          /*
             Parses a Being's Attributes.
 
             Input:
                Name of Being whose attributes are being set
-               Whether we're parsing an Entity or an Entity class (enum ParseMode)
+               Type of thing we're parsing--"entity" or "class" (string)
 
             Output:
                (none)
          */
-         void parseBeingAttributes(string beingName, enum ParseMode mode);
+         void parseBeingAttributes(string beingName, string targetType);
 
          /*
             Takes tags such as <north>, <south>, etc. in a room definition and
@@ -222,67 +274,67 @@ namespace trogdor {
                direction (string)
                Name of room where the connection should be made (string)
                Name of room that we want to connect to (string)
-               Whether we're parsing an Entity or an Entity class (enum ParseMode)
+               Type of thing we're parsing--"entity" or "class" (string)
 
             Output:
                (none)
          */
-         void parseRoomConnection(string direction, string roomName, string connectTo, enum ParseMode mode);
+         void parseRoomConnection(string direction, string roomName,
+         string connectTo, string targetType);
 
          /*
             Parses a Room's version of the <contains> section.
 
             Input:
                Name of room into which we're inserting the object (string)
-               Whether we're parsing an Entity or an Entity class (enum ParseMode)
+               Type of thing we're parsing--"entity" or "class" (string)
 
             Output:
                (none)
          */
-         void parseRoomContains(string roomName, enum ParseMode mode);
+         void parseRoomContains(string roomName, string targetType);
 
          /*
             Parse the contents of a Messages object from XML.
 
             Input:
                Name of Entity we're parsing messages for (string)
-               Whether we're parsing an Entity or an Entity class (enum ParseMode)
+               Type of thing we're parsing--"entity" or "class" (string)
                XML Depth--how deeply nested <message> tags will be (int)
 
             Output:
                (none)
          */
-         void parseMessages(string entityName, enum ParseMode mode, int depth);
+         void parseMessages(string entityName, string targetType, int depth);
 
          /*
             Parses tags that should be applied to an Entity.
 
             Input:
                Name of Entity we're parsing messages for (string)
-               Whether we're parsing an Entity or an Entity class (enum ParseMode)
+               Type of thing we're parsing--"entity" or "class" (string)
                XML Depth--how deeply nested <message> tags will be (int)
 
             Output:
                (none)
          */
-         void parseEntityTags(string entityName, enum ParseMode mode, int depth);
+         void parseEntityTags(string entityName, string targetType, int depth);
 
          /*
             Parses an <events> section for Entities, Entity classes, and Game.
             Throws an exception if there's an error.
 
             Input:
-               Entity or Entity class name (string -- ignored if mode = PARSE_GAME)
-               Whether we're parsing an Entity, an Entity class, or Game (enum ParseMode)
-                  . Valid values are PARSE_ENTITY, PARSE_CLASS, and PARSE_GAME
+               Entity or Entity class name (string -- ignored if targetType = "game")
+               Type of thing we're parsing--"entity", "class", or "game" (string)
                Depth in XML tree (int)
 
             Output:
                (none)
          */
-         void parseEvents(string entityName, enum ParseMode mode, int depth);
-         void parseScript(string entityName, enum ParseMode mode);
-         void parseEvent(string entityName, enum ParseMode mode);
+         void parseEvents(string entityName, string targetType, int depth);
+         void parseScript(string entityName, string targetType);
+         void parseEvent(string entityName, string targetType);
 
          /*
             This group of functions parses the <classes> section of the XML
@@ -326,7 +378,7 @@ namespace trogdor {
          */
          void parseManifest();
          void parseManifestRooms();
-         bool parseManifestRoom(string className = "room");  // returns true if room's name is "start"
+         void parseManifestRoom(string className = "room");
          void parseManifestCreatures();
          void parseManifestCreature(string className = "creature");
          void parseManifestObjects();
@@ -342,7 +394,7 @@ namespace trogdor {
                (none)
          */
          void parseGameMeta();
-         void parseEntityMeta(string entityName, enum ParseMode mode, int depth);
+         void parseEntityMeta(string entityName, string targetType, int depth);
 
          /*
             Parses the vocabulary section of game.xml.
@@ -413,7 +465,7 @@ namespace trogdor {
          */
          void parseObjects();
          void parseObject(string className = "object");
-         void parseObjectProperties(string name, enum ParseMode mode, int depth);
+         void parseObjectProperties(string name, string targetType, int depth);
 
          /*
             Parses the creatures section of game.xml.
@@ -426,7 +478,7 @@ namespace trogdor {
          */
          void parseCreatures();
          void parseCreature(string className = "creature");
-         void parseCreatureProperties(string name, enum ParseMode mode, int depth);
+         void parseCreatureProperties(string name, string targetType, int depth);
 
          /*
             Parses room definitions in game.xml.
@@ -439,7 +491,7 @@ namespace trogdor {
          */
          void parseRooms();
          void parseRoom(string className = "room");
-         void parseRoomProperties(string name, enum ParseMode mode, int depth);
+         void parseRoomProperties(string name, string targetType, int depth);
 
          /*
             Parses the <game> section of the XML file.  Throws an exception if
