@@ -23,25 +23,161 @@ namespace trogdor {
 
       game = g;
 
+      registerOperations();
       mapGameSetters();
       mapEntitySetters();
    }
 
    /***************************************************************************/
 
-   void Runtime::makeEntityClass(string className, enum entity::EntityType entityType) {
+   void Runtime::afterInstantiate() {
 
-      if (entityClassExists(className, entityType)) {
-         throw entity::EntityException(string("Cannot redefine existing ") +
-            entity::Entity::typeToStr(entityType) + " class '" + className + "'");
-      }
+      // For each creature, check if wandering was enabled, and if so, insert a
+      // timer job for it
+      for_each(game->creaturesBegin(), game->creaturesEnd(), [&](auto creatureMapEntry) {
 
-      else {
+         Creature *creature = dynamic_cast<Creature *>(creatureMapEntry.second.get());
+
+         if (creature->getWanderEnabled()) {
+            game->insertTimerJob(std::make_shared<WanderTimerJob>(game, creature->getWanderInterval(),
+               -1, creature->getWanderInterval(), creature));
+         }
+      });
+   }
+
+   /***************************************************************************/
+
+   // Private method
+   void Runtime::registerOperations() {
+
+      registerOperation(DEFINE_DIRECTION, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         game->insertDirection(operation->getChildren()[0]->getValue());
+      });
+
+      /**********/
+
+      registerOperation(DEFINE_DIRECTION_SYNONYM, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         string originalDirection = operation->getChildren()[0]->getValue();
+         string synonym = operation->getChildren()[1]->getValue();
+
+         game->insertDirectionSynonym(synonym, originalDirection);
+      });
+
+      /**********/
+
+      registerOperation(DEFINE_VERB_SYNONYM, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         string verb = operation->getChildren()[0]->getValue();
+         string synonym = operation->getChildren()[1]->getValue();
+
+         game->insertVerbSynonym(synonym, verb);
+      });
+
+      /**********/
+
+      registerOperation(DEFINE_ENTITY, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         std::shared_ptr<Entity> entity;
+
+         string entityName = operation->getChildren()[0]->getValue();
+         string className = operation->getChildren()[2]->getValue();
+         entity::EntityType entityType = entity::Entity::strToType(
+            operation->getChildren()[1]->getValue()
+         );
+
+         switch (entityType) {
+
+            case entity::ENTITY_ROOM:
+
+               // Entity has no class, so create a blank Entity
+               if (
+                  0 == className.compare("") ||
+                  0 == className.compare(Entity::typeToStr(entity::ENTITY_ROOM))
+               ) {
+                  entity = std::make_shared<entity::Room>(
+                     game, entityName, std::make_unique<PlaceOut>(), game->err().clone()
+                 );
+               }
+
+               // Entity has a class, so copy the class's prototype
+               else {
+                  entity = std::make_shared<entity::Room>(
+                     *(dynamic_cast<entity::Room *>(typeClasses[className].get())), entityName
+                  );
+               }
+
+               break;
+
+            case entity::ENTITY_OBJECT:
+
+               if (
+                  0 == className.compare("") ||
+                  0 == className.compare(Entity::typeToStr(entity::ENTITY_OBJECT))
+               ) {
+                  entity = std::make_shared<entity::Object>(
+                     game, entityName, std::make_unique<NullOut>(), game->err().clone()
+                  );
+               }
+
+               else {
+                  entity = make_shared<entity::Object>(
+                     *(dynamic_cast<entity::Object *>(typeClasses[className].get())), entityName
+                  );
+               }
+
+               break;
+
+            case entity::ENTITY_CREATURE:
+
+               if (
+                  0 == className.compare("") ||
+                  0 == className.compare(Entity::typeToStr(entity::ENTITY_CREATURE))
+               ) {
+                  // TODO: should Creatures have some kind of special input stream?
+                  entity = make_shared<entity::Creature>(
+                     game, entityName, std::make_unique<NullOut>(), game->err().clone()
+                  );
+               }
+
+               else {
+                  entity = make_shared<entity::Creature>(
+                     *(dynamic_cast<entity::Creature *>(typeClasses[className].get())), entityName
+                  );
+               }
+
+               break;
+
+            case entity::ENTITY_PLAYER:
+               throw UndefinedException("TODO: haven't had a reason to instantiate Player objects yet.");
+
+            default:
+               throw UndefinedException("DEFINE_ENTITY: unsupported entity type. This is a bug.");
+         }
+
+         entity->setClass(0 == className.compare("") ? entity->getTypeName() : className);
+         game->insertEntity(entityName, entity);
+      });
+
+      /**********/
+
+      registerOperation(DEFINE_ENTITY_CLASS, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
 
          // Entity classes are represented as model Entity objects that can be copied
          std::unique_ptr<Entity> entity;
 
-         switch (entityType) {
+         string className = operation->getChildren()[0]->getValue();
+         entity::EntityType classType = entity::Entity::strToType(
+            operation->getChildren()[1]->getValue()
+         );
+
+         switch (classType) {
 
             case entity::ENTITY_ROOM:
                entity = make_unique<Room>(
@@ -63,10 +199,10 @@ namespace trogdor {
                break;
 
             case entity::ENTITY_PLAYER:
-               throw UndefinedException("Class cannot be defined for type Player");
+               throw UndefinedException("Class cannot be defined for type Player (yet)");
 
             default:
-               throw UndefinedException("Runtime::makeEntityClass: class defined for unsupported entity type. This is a bug.");
+               throw UndefinedException("DEFINE_ENTITY_CLASS: class defined for unsupported entity type. This is a bug.");
          }
 
          // for type checking
@@ -74,357 +210,308 @@ namespace trogdor {
          entity->setTitle(className);
 
          typeClasses[className] = std::move(entity);
-      }
-   }
+      });
 
-   /***************************************************************************/
+      /**********/
 
-   bool Runtime::entityClassExists(string className,
-   enum entity::EntityType entityType) {
+      registerOperation(SET_MESSAGE, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
 
-      // Entity class does not exist
-      if (typeClasses.find(className) == typeClasses.end()) {
-         return false;
-      }
+         string targetType = operation->getChildren()[0]->getValue();
+         string messageName = operation->getChildren()[1]->getValue();
+         string message = operation->getChildren()[2]->getValue();
 
-      // Entity class exists, but isn't the correct type
-      else if (entityType != typeClasses[className]->getType()) {
-         return false;
-      }
-
-      // ZOMG CAN HAZ ENTITY CLASS!
-      return true;
-   }
-
-   /***************************************************************************/
-
-   bool Runtime::entityClassExists(string className) {
-
-      // Entity class does not exist
-      if (typeClasses.find(className) == typeClasses.end()) {
-         return false;
-      }
-
-      return true;
-   }
-
-   /***************************************************************************/
-
-   enum entity::EntityType Runtime::getEntityClassType(string className) {
-
-      if (typeClasses.end() == typeClasses.find(className)) {
-         throw UndefinedException("Runtime::getEntityClassType: Entity class does not exist");
-      }
-
-      return typeClasses[className]->getType();
-   }
-
-   /***************************************************************************/
-
-   void Runtime::loadEntityClassScript(string entityClass, string script,
-   enum LoadScriptMethod method) {
-
-      if (typeClasses.end() == typeClasses.find(entityClass)) {
-         throw UndefinedException("Runtime::loadEntityClassScript: Entity class does not exist");
-      }
-
-      if (FILE == method) {
-         typeClasses[entityClass].get()->getLuaState()->loadScriptFromFile(script);
-      } else {
-         typeClasses[entityClass].get()->getLuaState()->loadScriptFromString(script);
-      }
-   }
-
-   /***************************************************************************/
-
-   void Runtime::setEntityClassEvent(string entityClass, string eventName,
-   string function) {
-
-      if (typeClasses.end() == typeClasses.find(entityClass)) {
-         throw UndefinedException("Runtime::setEntityClassEvent: Entity class does not exist");
-      }
-
-      LuaEventTrigger *trigger = new LuaEventTrigger(function, typeClasses[entityClass].get()->getLuaState());
-      typeClasses[entityClass].get()->getEventListener()->add(eventName.c_str(), trigger);
-   }
-
-   /***************************************************************************/
-
-   void Runtime::setEntityClassMessage(string className, string messageName,
-   string message) {
-
-      if (typeClasses.end() == typeClasses.find(className)) {
-         throw entity::EntityException("Entity class does not exist");
-      }
-
-      typeClasses[className]->setMessage(messageName, message);
-   }
-
-   /***************************************************************************/
-
-   void Runtime::makeEntity(string entityName, enum entity::EntityType entityType,
-   string className) {
-
-      // Entity classes are represented as model Entity objects that can be copied
-      std::unique_ptr<Entity> entity;
-
-      // Check to see if another entity with the same name already exists
-      if (entityExists(entityName)) {
-         throw entity::EntityException(Entity::typeToStr(entityType) + ": "
-            + string("Cannot redefine existing entity '") + entityName + "'");
-      }
-
-      else {
-
-         std::shared_ptr<Entity> entity;
-
-         switch (entityType) {
-
-            case entity::ENTITY_ROOM:
-
-               // Entity has no class, so create a blank Entity
-               if (
-                  0 == className.compare("") ||
-                  0 == className.compare(Entity::typeToStr(entity::ENTITY_ROOM))
-               ) {
-                  entity = std::make_shared<entity::Room>(
-                     game, entityName, std::make_unique<PlaceOut>(), game->err().clone()
-                 );
-               }
-
-               // Entity has a class, so copy the class's prototype
-               else {
-
-                  if (!entityClassExists(className, entity::ENTITY_ROOM)) {
-                     throw entity::EntityException(string("room class ")
-                        + className + " was not defined");
-                  }
-
-                  else {
-                     entity = std::make_shared<entity::Room>(
-                        *(dynamic_cast<entity::Room *>(typeClasses[className].get())), entityName
-                     );
-                  }
-               }
-
-               break;
-
-            case entity::ENTITY_OBJECT:
-
-               if (
-                  0 == className.compare("") ||
-                  0 == className.compare(Entity::typeToStr(entity::ENTITY_OBJECT))
-               ) {
-                  entity = std::make_shared<entity::Object>(
-                     game, entityName, std::make_unique<NullOut>(), game->err().clone()
-                  );
-               }
-
-               else {
-
-                  if (!entityClassExists(className, entity::ENTITY_OBJECT)) {
-                     throw entity::EntityException(string("object class ")
-                        + className + " was not defined");
-                  }
-
-                  else {
-                     entity = make_shared<entity::Object>(
-                        *(dynamic_cast<entity::Object *>(typeClasses[className].get())), entityName
-                     );
-                  }
-               }
-
-               break;
-
-            case entity::ENTITY_CREATURE:
-
-               if (
-                  0 == className.compare("") ||
-                  0 == className.compare(Entity::typeToStr(entity::ENTITY_CREATURE))
-               ) {
-                  // TODO: should Creatures have some kind of special input stream?
-                  entity = make_shared<entity::Creature>(
-                     game, entityName, std::make_unique<NullOut>(), game->err().clone()
-                  );
-               }
-
-               else {
-
-                  if (!entityClassExists(className, entity::ENTITY_CREATURE)) {
-                     throw entity::EntityException(string("creature class ")
-                        + className + " was not defined");
-                  }
-
-                  else {
-                     entity = make_shared<entity::Creature>(
-                        *(dynamic_cast<entity::Creature *>(typeClasses[className].get())), entityName
-                     );
-                  }
-               }
-
-               break;
-
-            case entity::ENTITY_PLAYER:
-               throw UndefinedException("TODO: haven't had a reason to instantiate Player objects yet.");
-
-            default:
-               throw UndefinedException("Runtime::makeEntity: unsupported entity type. This is a bug.");
+         if (0 == targetType.compare("entity")) {
+            game->getEntity(
+               operation->getChildren()[3]->getValue()
+            )->setMessage(messageName, message);
          }
 
-         entity->setClass(0 == className.compare("") ? entity->getTypeName() : className);
-         game->insertEntity(entityName, entity);
-      }
-   }
+         else if (0 == targetType.compare("class")) {
+            typeClasses[operation->getChildren()[3]->getValue()]->setMessage(messageName, message);
+         }
 
-   /***************************************************************************/
-
-   bool Runtime::entityExists(string entityName) {
-
-      return game->getEntity(entityName) ? true : false;
-   }
-
-   /***************************************************************************/
-
-   enum entity::EntityType Runtime::getEntityType(string entityName) {
-
-      return game->getEntity(entityName)->getType();
-   }
-
-   /***************************************************************************/
-
-   string Runtime::getEntityClass(string entityName) {
-
-      return game->getEntity(entityName)->getClass();
-   }
-
-   /***************************************************************************/
-
-   void Runtime::loadEntityScript(string entityName, string script,
-   enum LoadScriptMethod method) {
-
-      entity::Entity *entity = game->getEntity(entityName);
-
-      if (!entity) {
-         throw UndefinedException(string("Runtime::loadEntityScript: entity '")
-            + entityName + "' does not exist. This is a bug.");
-      }
-
-      if (FILE == method) {
-         entity->getLuaState()->loadScriptFromFile(script);
-      } else {
-         entity->getLuaState()->loadScriptFromString(script);
-      }
-   }
-
-   /***************************************************************************/
-
-   void Runtime::setEntityEvent(string entityName, string eventName,
-   string function) {
-
-      entity::Entity *entity = game->getEntity(entityName);
-
-      if (!entity) {
-         throw UndefinedException(string("Runtime::setEntityEvent: entity '")
-            + entityName + "' does not exist. This is a bug.");
-      }
-
-      LuaEventTrigger *trigger = new LuaEventTrigger(function, entity->getLuaState());
-      entity->getEventListener()->add(eventName.c_str(), trigger);
-   }
-
-   /***************************************************************************/
-
-   void Runtime::setEntityMessage(string entityName, string messageName,
-   string message) {
-
-      Entity *entity = game->getEntity(entityName);
-
-      if (!entity) {
-         throw entity::EntityException(entityName + "' does not exist");
-      }
-
-      entity->setMessage(messageName, message);
-   }
-
-   /***************************************************************************/
-
-   void Runtime::setDefaultPlayerMessage(string messageName, string message) {
-
-      game->getDefaultPlayer()->setMessage(messageName, message);
-   }
-
-   /***************************************************************************/
-
-   void Runtime::loadGameScript(string script, enum LoadScriptMethod method) {
-
-      if (FILE == method) {
-         game->getLuaState()->loadScriptFromFile(script);
-      } else {
-         game->getLuaState()->loadScriptFromString(script);
-      }
-   }
-
-   /***************************************************************************/
-
-   void Runtime::setGameEvent(string eventName, string function) {
-
-      // TODO: modify Lua and event code so I can use smart pointers
-      LuaEventTrigger *LEventTrigger = new LuaEventTrigger(function, game->getLuaState());
-      game->getEventListener()->add(eventName.c_str(), LEventTrigger);
-   }
-
-   /***************************************************************************/
-
-   void Runtime::instantiate() {
-
-      // For each creature, check if wandering was enabled, and if so, insert a
-      // timer job for it
-      for_each(game->creaturesBegin(), game->creaturesEnd(), [&](auto creatureMapEntry) {
-
-         Creature *creature = dynamic_cast<Creature *>(creatureMapEntry.second.get());
-
-         if (creature->getWanderEnabled()) {
-            game->insertTimerJob(std::make_shared<WanderTimerJob>(game, creature->getWanderInterval(),
-               -1, creature->getWanderInterval(), creature));
+         else {
+            game->getDefaultPlayer()->setMessage(messageName, message);
          }
       });
-   }
 
-   /***************************************************************************/
+      /**********/
 
-   void Runtime::entityClassSetterDriver(string className, string property,
-   string value) {
+      registerOperation(SET_TAG, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
 
-      propSetters[typeClasses[className]->getTypeName()][property](
-         game, typeClasses[className].get(), value
-      );
-   }
+         string targetType = operation->getChildren()[0]->getValue();
+         string tag = operation->getChildren()[1]->getValue();
 
-   /***************************************************************************/
+         if (0 == targetType.compare("entity")) {
+            game->getEntity(
+               operation->getChildren()[2]->getValue()
+            )->setTag(tag);
+         }
 
-   // Protected method
-   void Runtime::entitySetterDriver(string entityName, string property, string value) {
+         else if (0 == targetType.compare("class")) {
+            typeClasses[operation->getChildren()[2]->getValue()]->setTag(tag);
+         }
 
-      entity::Entity *entity = game->getEntity(entityName);
-      propSetters[entity->getTypeName()][property](game, entity, value);
-   }
+         else {
+            game->getDefaultPlayer()->setTag(tag);
+         }
+      });
 
-   /***************************************************************************/
+      /**********/
 
-   // Protected method
-   void Runtime::defaultPlayerSetterDriver(string property, string value) {
+      registerOperation(REMOVE_TAG, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
 
-      propSetters[game->getDefaultPlayer()->getTypeName()][property](
-         game, game->getDefaultPlayer().get(), value
-      );
-   }
+         string targetType = operation->getChildren()[0]->getValue();
+         string tag = operation->getChildren()[1]->getValue();
 
-   /***************************************************************************/
+         if (0 == targetType.compare("entity")) {
+            game->getEntity(
+               operation->getChildren()[2]->getValue()
+            )->removeTag(tag);
+         }
 
-   // Protected method
-   void Runtime::gameSetterDriver(string property, string value) {
+         else if (0 == targetType.compare("class")) {
+            typeClasses[operation->getChildren()[2]->getValue()]->removeTag(tag);
+         }
 
-      gameSetters[property](game, value);
+         else {
+            game->getDefaultPlayer()->removeTag(tag);
+         }
+      });
+
+      /**********/
+
+      registerOperation(LOAD_SCRIPT, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         string targetType = operation->getChildren()[0]->getValue();
+         string scriptMode = operation->getChildren()[1]->getValue();
+         string script = operation->getChildren()[2]->getValue();
+
+         if (0 == targetType.compare("entity")) {
+
+            string entityName = operation->getChildren()[3]->getValue();
+
+            if (0 == scriptMode.compare("file")) {
+               game->getEntity(entityName)->getLuaState()->loadScriptFromFile(script);
+            } else {
+               game->getEntity(entityName)->getLuaState()->loadScriptFromString(script);
+            }
+         }
+
+         else if (0 == targetType.compare("class")) {
+
+            string className = operation->getChildren()[3]->getValue();
+
+            if (0 == scriptMode.compare("file")) {
+               typeClasses[className].get()->getLuaState()->loadScriptFromFile(script);
+            } else {
+               typeClasses[className].get()->getLuaState()->loadScriptFromString(script);
+            }
+         }
+
+         else {
+            if (0 == scriptMode.compare("file")) {
+               game->getLuaState()->loadScriptFromFile(script);
+            } else {
+               game->getLuaState()->loadScriptFromString(script);
+            }
+         }
+      });
+
+      /**********/
+
+      registerOperation(SET_EVENT, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         string targetType = operation->getChildren()[0]->getValue();
+         string event = operation->getChildren()[1]->getValue();
+         string function = operation->getChildren()[2]->getValue();
+
+         if (0 == targetType.compare("entity")) {
+
+            entity::Entity *entity = game->getEntity(
+               operation->getChildren()[3]->getValue()
+            );
+
+            LuaEventTrigger *trigger = new LuaEventTrigger(function, entity->getLuaState());
+            entity->getEventListener()->add(event.c_str(), trigger);
+         }
+
+         else if (0 == targetType.compare("class")) {
+
+            entity::Entity *entityClass = typeClasses[operation->getChildren()[3]->getValue()].get();
+
+            LuaEventTrigger *trigger = new LuaEventTrigger(function, entityClass->getLuaState());
+            entityClass->getEventListener()->add(event.c_str(), trigger);
+         }
+
+         else {
+            // TODO: modify Lua and event code so I can use smart pointers
+            LuaEventTrigger *trigger = new LuaEventTrigger(function, game->getLuaState());
+            game->getEventListener()->add(event.c_str(), trigger);
+         }
+      });
+
+      /**********/
+
+      registerOperation(SET_ALIAS, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         entity::Entity *thing;
+
+         string targetType = operation->getChildren()[0]->getValue();
+         string alias = operation->getChildren()[1]->getValue();
+
+         if (0 == targetType.compare("entity")) {
+            thing = game->getEntity(
+               operation->getChildren()[2]->getValue()
+            );
+         }
+
+         else {
+            thing = typeClasses[operation->getChildren()[2]->getValue()].get();
+         }
+
+         dynamic_cast<entity::Thing *>(thing)->addAlias(alias);
+      });
+
+      /**********/
+
+      registerOperation(SET_META, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         string targetType = operation->getChildren()[0]->getValue();
+         string metaKey = operation->getChildren()[1]->getValue();
+         string metaValue = operation->getChildren()[2]->getValue();
+
+         if (0 == targetType.compare("entity")) {
+            game->getEntity(
+               operation->getChildren()[3]->getValue()
+            )->setMeta(metaKey, metaValue);
+         }
+
+         else if (0 == targetType.compare("class")) {
+            typeClasses[operation->getChildren()[3]->getValue()]->setMeta(
+               metaKey, metaValue
+            );
+         }
+
+         else {
+            game->setMeta(metaKey, metaValue);
+         }
+      });
+
+      /**********/
+
+      registerOperation(SET_ATTRIBUTE, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         entity::Entity *being;
+
+         string targetType = operation->getChildren()[0]->getValue();
+         string attribute = operation->getChildren()[1]->getValue();
+         string value = operation->getChildren()[2]->getValue();
+
+         if (0 == targetType.compare("entity")) {
+            being = game->getEntity(
+               operation->getChildren()[3]->getValue()
+            );
+         }
+
+         else if (0 == targetType.compare("class")) {
+            being = typeClasses[operation->getChildren()[3]->getValue()].get();
+         }
+
+         else {
+            being = game->getDefaultPlayer().get();
+         }
+
+         dynamic_cast<entity::Being *>(being)->setAttribute(attribute, stoi(value));
+         dynamic_cast<entity::Being *>(being)->setAttributesInitialTotal();
+      });
+
+      /**********/
+
+      registerOperation(SET_PROPERTY, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         entity::Entity *entity;
+
+         string targetType = operation->getChildren()[0]->getValue();
+         string property = operation->getChildren()[1]->getValue();
+         string value = operation->getChildren()[2]->getValue();
+
+         if (0 == targetType.compare("entity")) {
+            entity = game->getEntity(
+               operation->getChildren()[3]->getValue()
+            );
+            propSetters[entity->getTypeName()][property](game, entity, value);
+         }
+
+         else if (0 == targetType.compare("class")) {
+            entity = typeClasses[operation->getChildren()[3]->getValue()].get();
+            propSetters[entity->getTypeName()][property](game, entity, value);
+         }
+
+         else if (0 == targetType.compare("defaultPlayer")) {
+            propSetters[game->getDefaultPlayer()->getTypeName()][property](
+               game, game->getDefaultPlayer().get(), value
+            );
+         }
+
+         else {
+            gameSetters[property](game, value);
+         }
+      });
+
+      /**********/
+
+      registerOperation(INSERT_INTO_INVENTORY, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         Object *object = game->getObject(operation->getChildren()[0]->getValue());
+         Being *owner = game->getBeing(operation->getChildren()[1]->getValue());
+
+         owner->insertIntoInventory(object, false);
+      });
+
+      /**********/
+
+      registerOperation(INSERT_INTO_PLACE, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         Thing *thing = game->getThing(operation->getChildren()[0]->getValue());
+         Room *room = game->getRoom(operation->getChildren()[1]->getValue());
+
+         room->insertThing(thing);
+      });
+
+      /**********/
+
+      registerOperation(CONNECT_ROOMS, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         Room *room;
+         Room *connectToRoom = game->getRoom(operation->getChildren()[2]->getValue());
+
+         string targetType = operation->getChildren()[0]->getValue();
+         string sourceRoomOrClass = operation->getChildren()[1]->getValue();
+         string direction = operation->getChildren()[3]->getValue();
+
+         if (0 == targetType.compare("entity")) {
+            room = game->getRoom(sourceRoomOrClass);
+         }
+
+         else {
+            room = dynamic_cast<Room *>(typeClasses[sourceRoomOrClass].get());
+         }
+
+         room->setConnection(direction, connectToRoom);
+      });
    }
 
    /***************************************************************************/
@@ -451,49 +538,6 @@ namespace trogdor {
       // continuing (if the introduction is enabled)
       gameSetters["introduction.pause"] = [](Game *game, string value) {
          game->setIntroductionPause(stoi(value));
-      };
-
-      /**********/
-
-      // Sets a meta data value for the game
-      gameSetters["meta"] = [](Game *game, string value) {
-
-         string metaKey = value.substr(0, value.find(":"));
-         string metaValue = value.substr(value.find(":") + 1, value.length());
-
-         game->setMeta(metaKey, metaValue);
-      };
-
-      /**********/
-
-      // Sets an action synonym for the game (for example, "shutdown" might be
-      // a synonym for "quit")
-      gameSetters["synonym.verb"] = [](Game *game, string value) {
-
-         string synonym = value.substr(0, value.find(":"));
-         string action = value.substr(value.find(":") + 1, value.length());
-
-         game->insertVerbSynonym(synonym, action);
-      };
-
-      /**********/
-
-      // Sets a direction synonym for the game (for example, "n" is a built-in
-      // synonym for "north")
-      gameSetters["synonym.direction"] = [](Game *game, string value) {
-
-         string synonym = value.substr(0, value.find(":"));
-         string direction = value.substr(value.find(":") + 1, value.length());
-
-         game->insertDirectionSynonym(synonym, direction);
-      };
-
-      /**********/
-
-      // Inserts a new direction into the game's vocabulary.
-      gameSetters["direction"] = [](Game *game, string value) {
-
-         game->insertDirection(value);
       };
    }
 
@@ -531,55 +575,6 @@ namespace trogdor {
       propSetters["player"]["shortDesc"] = [](Game *game, entity::Entity *entity,
       string value) {
          entity->setShortDescription(value);
-      };
-
-      /**********/
-
-      // Set meta value for Entity (all types)
-      propSetters["room"]["meta"] =
-      propSetters["object"]["meta"] =
-      propSetters["creature"]["meta"] =
-      propSetters["player"]["meta"] = [](Game *game, entity::Entity *entity,
-      string value) {
-
-         string metaKey = value.substr(0, value.find(":"));
-         string metaValue = value.substr(value.find(":") + 1, value.length());
-
-         entity->setMeta(metaKey, metaValue);
-      };
-
-      /**********/
-
-      // Removes an Entity tag
-      propSetters["room"]["tag.remove"] =
-      propSetters["object"]["tag.remove"] =
-      propSetters["creature"]["tag.remove"] =
-      propSetters["player"]["tag.remove"] = [](Game *game, entity::Entity *entity,
-      string value) {
-
-         entity->removeTag(value);
-      };
-
-      /**********/
-
-      // Set an Entity tag
-      propSetters["room"]["tag.set"] =
-      propSetters["object"]["tag.set"] =
-      propSetters["creature"]["tag.set"] =
-      propSetters["player"]["tag.set"] = [](Game *game, entity::Entity *entity,
-      string value) {
-
-         entity->setTag(value);
-      };
-
-      /**********/
-
-      // Set an alias for a Thing (all types that inherit from Thing)
-      propSetters["object"]["alias"] =
-      propSetters["creature"]["alias"] =
-      propSetters["player"]["alias"] = [](Game *game, entity::Entity *thing,
-      string value) {
-         dynamic_cast<entity::Thing *>(thing)->addAlias(value);
       };
 
       /**********/
@@ -666,48 +661,6 @@ namespace trogdor {
 
       /**********/
 
-      // Inserts an Object into a Being's inventory
-      propSetters["creature"]["inventory.object"] =
-      propSetters["player"]["inventory.object"] = [](Game *game, entity::Entity *being,
-      string value) {
-
-         Object *object = game->getObject(value);
-
-         if (!object) {
-            throw entity::EntityException(string("object '") + value
-               + "' doesn't exist");
-         }
-
-         if (0 != object->getOwner()) {
-            throw entity::EntityException(string("object '") + value
-               + "' is already owned by '" + object->getOwner()->getName());
-         }
-
-         else if (0 != object->getLocation()) {
-            throw entity::EntityException(string("object '") + value
-               + "' was already placed in room '"
-               + object->getLocation()->getName());
-         }
-
-         dynamic_cast<entity::Being *>(being)->insertIntoInventory(object, false);
-      };
-
-      /**********/
-
-      // Set a Being's attribute
-      propSetters["creature"]["attribute"] =
-      propSetters["player"]["attribute"] = [](Game *game, entity::Entity *being,
-      string value) {
-
-         string attr = value.substr(0, value.find(":"));
-         string attrValue = value.substr(value.find(":") + 1, value.length());
-
-         dynamic_cast<entity::Being *>(being)->setAttribute(attr, stoi(attrValue));
-         dynamic_cast<entity::Being *>(being)->setAttributesInitialTotal();
-      };
-
-      /**********/
-
       // Whether or not a Creature will respond to an attack with one of its own
       propSetters["creature"]["counterattack"] = [](Game *game, entity::Entity *creature,
       string value) {
@@ -719,6 +672,11 @@ namespace trogdor {
       // Sets the default value of counterattack for a Creature, which depends on
       // its allegiance. This should only be called if the setter for
       // counterattack wasn't called.
+      // TODO: I really don't like this property. It'll stay for now, but I should
+      // eventually change this with some sort of observer thing where, when
+      // the allegiance property is changed, it triggers a re-evaluation of the
+      // counterattack (only if counterattack was never set explicitly. Will need
+      // to think about the architecture of this...)
       propSetters["creature"]["counterattack.default"] = [](Game *game, entity::Entity *creature,
       string value) {
 
@@ -811,40 +769,6 @@ namespace trogdor {
       propSetters["creature"]["wandering.wanderlust"] = [](Game *game, entity::Entity *creature,
       string value) {
          dynamic_cast<entity::Creature *>(creature)->setWanderLust(stod(value));
-      };
-
-      /**********/
-
-      // Connect one room to another
-      propSetters["room"]["connection"] = [](Game *game, entity::Entity *room,
-      string value) {
-
-         string direction = value.substr(0, value.find(":"));
-         string connectToName = value.substr(value.find(":") + 1, value.length());
-
-         Room *connectToRoom = game->getRoom(connectToName);
-
-         if (!connectToRoom) {
-            throw ValidationException(string("setting ") + room->getName()
-               + "->" + value + ": room '" + value + "' does not exist");
-         }
-
-         dynamic_cast<entity::Room *>(room)->setConnection(direction, connectToRoom);
-      };
-
-      /**********/
-
-      // Insert a Thing into a room
-      propSetters["room"]["contains"] = [](Game *game, entity::Entity *room,
-      string value) {
-
-         entity::Thing *thing = game->getThing(value);
-
-         if (!thing) {
-            throw ValidationException(string("Thing '") + value + "' doesn't exist");
-         }
-
-         dynamic_cast<entity::Room *>(room)->insertThing(thing);
       };
 
       /**********/

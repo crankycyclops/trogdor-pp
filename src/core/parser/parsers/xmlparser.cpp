@@ -55,7 +55,7 @@ namespace trogdor {
             xmlTextReaderGetParserLineNumber(reader));
       }
 
-      instantiator->instantiate();
+      instantiator->instantiate(ast);
    }
 
    /***************************************************************************/
@@ -91,7 +91,7 @@ namespace trogdor {
          }
 
          else if (0 == getTagName().compare("events")) {
-              parseEvents("", PARSE_GAME, 2);
+              parseEvents("", "game", 2);
          }
 
          else if (0 == getTagName().compare("introduction")) {
@@ -185,9 +185,15 @@ namespace trogdor {
          throw ParseException(string("class name '") + name + "' is reserved");
       }
 
-      instantiator->makeEntityClass(name, entity::ENTITY_ROOM);
+      declaredEntityClasses[name] = entity::ENTITY_ROOM;
 
-      parseRoomProperties(name, PARSE_CLASS, 4);
+      ast->appendChild(ASTDefineEntityClass(
+         name,
+         entity::Entity::typeToStr(entity::ENTITY_ROOM),
+         xmlTextReaderGetParserLineNumber(reader)
+      ));
+
+      parseRoomProperties(name, "class", 4);
       checkClosingTag("room");
    }
 
@@ -220,10 +226,16 @@ namespace trogdor {
          throw ParseException(string("class name '") + name + "' is reserved");
       }
 
-      instantiator->makeEntityClass(name, entity::ENTITY_OBJECT);
+      declaredEntityClasses[name] = entity::ENTITY_OBJECT;
+
+      ast->appendChild(ASTDefineEntityClass(
+         name,
+         entity::Entity::typeToStr(entity::ENTITY_OBJECT),
+         xmlTextReaderGetParserLineNumber(reader)
+      ));
 
       // Don't pass object! It's been moved and is no longer a valid pointer.
-      parseObjectProperties(name, PARSE_CLASS, 4);
+      parseObjectProperties(name, "class", 4);
       checkClosingTag("object");
    }
 
@@ -256,10 +268,16 @@ namespace trogdor {
          throw ParseException(string("class name '") + name + "' is reserved");
       }
 
-      instantiator->makeEntityClass(name, entity::ENTITY_CREATURE);
+      declaredEntityClasses[name] = entity::ENTITY_CREATURE;
+
+      ast->appendChild(ASTDefineEntityClass(
+         name,
+         entity::Entity::typeToStr(entity::ENTITY_CREATURE),
+         xmlTextReaderGetParserLineNumber(reader)
+      ));
 
       // Don't pass creature! It's been moved and is no longer a valid pointer.
-      parseCreatureProperties(name, PARSE_CLASS, 4);
+      parseCreatureProperties(name, "class", 4);
       checkClosingTag("creature");
    }
 
@@ -277,8 +295,16 @@ namespace trogdor {
          string tag = getTagName();
 
          if (tagToProperty.find(tag) != tagToProperty.end()) {
+
             string value = parseString();
-            instantiator->gameSetter(tagToProperty[tag], value);
+
+            ast->appendChild(ASTSetProperty(
+               "game",
+               tagToProperty[tag],
+               value,
+               xmlTextReaderGetParserLineNumber(reader)
+            ));
+
             checkClosingTag(tag);
          }
 
@@ -296,9 +322,17 @@ namespace trogdor {
    void XMLParser::parseGameMeta() {
 
       while (nextTag() && 2 == getDepth()) {
+
          string key = getTagName();
          string value = parseString();
-         instantiator->gameSetter("meta", key + ":" + value);
+
+         ast->appendChild(ASTSetMeta(
+            "game",
+            key,
+            value,
+            xmlTextReaderGetParserLineNumber(reader)
+         ));
+
          checkClosingTag(key);
       }
 
@@ -307,12 +341,21 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseEntityMeta(string entityName, enum ParseMode mode, int depth) {
+   void XMLParser::parseEntityMeta(string entityName, string targetType, int depth) {
 
       while (nextTag() && depth == getDepth()) {
+
          string key = getTagName();
          string value = parseString();
-         entitySetter(entityName, "meta", key + ":" + value, mode);
+
+         ast->appendChild(ASTSetMeta(
+            targetType,
+            key,
+            value,
+            xmlTextReaderGetParserLineNumber(reader),
+            entityName
+         ));
+
          checkClosingTag(key);
       }
 
@@ -349,7 +392,15 @@ namespace trogdor {
       while (nextTag() && 3 == getDepth()) {
 
          if (0 == getTagName().compare("direction")) {
-            instantiator->gameSetter("direction", parseString());
+
+            string direction = parseString();
+
+            ast->appendChild(ASTDefineDirection(
+               direction,
+               xmlTextReaderGetParserLineNumber(reader)
+            ));
+
+            customDirections.insert(direction);
             checkClosingTag("direction");
          }
 
@@ -369,20 +420,35 @@ namespace trogdor {
       while (nextTag() && 3 == getDepth()) {
 
          if (0 == getTagName().compare("verb")) {
+
             string action = getAttribute("verb");
             action = trim(action);
             string synonym = parseString();
             synonym = trim(synonym);
-            instantiator->gameSetter("synonym.verb", synonym + ":" + action);
+
+            ast->appendChild(ASTDefineVerbSynonym(
+               action,
+               synonym,
+               xmlTextReaderGetParserLineNumber(reader)
+            ));
+
             checkClosingTag("verb");
          }
 
          else if (0 == getTagName().compare("direction")) {
+
             string direction = getAttribute("direction");
             direction = trim(direction);
             string synonym = parseString();
             synonym = trim(synonym);
-            instantiator->gameSetter("synonym.direction", synonym + ":" + direction);
+
+            ast->appendChild(ASTDefineDirectionSynonym(
+               direction,
+               synonym,
+               xmlTextReaderGetParserLineNumber(reader)
+            ));
+
+            customDirections.insert(synonym);
             checkClosingTag("direction");
          }
 
@@ -426,17 +492,13 @@ namespace trogdor {
 
    void XMLParser::parseManifestRooms() {
 
-      bool startExists = false;  // true if room "start" exists
-
       while (nextTag() && 3 == getDepth()) {
 
          if (0 == getTagName().compare("room")) {
-            if (parseManifestRoom()) {
-               startExists = true;
-            }
+            parseManifestRoom();
          }
 
-         else if (instantiator->entityClassExists(getTagName(), entity::ENTITY_ROOM)) {
+         else if (entityClassDeclared(getTagName(), entity::ENTITY_ROOM)) {
             parseManifestRoom(getTagName());
          }
 
@@ -446,21 +508,29 @@ namespace trogdor {
          }
       }
 
-      if (!startExists) {
-         throw ParseException("at least one room named \"start\" is required");
-      }
-
       checkClosingTag("rooms");
    }
 
    /***************************************************************************/
 
-   bool XMLParser::parseManifestRoom(string className) {
+   void XMLParser::parseManifestRoom(string className) {
 
       string name = getAttribute("name");
-      instantiator->makeEntity(name, entity::ENTITY_ROOM, className);
+
+      declaredEntities[name] = {
+         name,
+         className,
+         entity::ENTITY_ROOM
+      };
+
+      ast->appendChild(ASTDefineEntity(
+         name,
+         entity::Entity::typeToStr(entity::ENTITY_ROOM),
+         className,
+         xmlTextReaderGetParserLineNumber(reader)
+      ));
+
       checkClosingTag(className);
-      return 0 == name.compare("start") ? true : false;
    }
 
    /***************************************************************************/
@@ -473,7 +543,7 @@ namespace trogdor {
             parseManifestObject();
          }
 
-         else if (instantiator->entityClassExists(getTagName(), entity::ENTITY_OBJECT)) {
+         else if (entityClassDeclared(getTagName(), entity::ENTITY_OBJECT)) {
             parseManifestObject(getTagName());
          }
 
@@ -491,7 +561,20 @@ namespace trogdor {
    void XMLParser::parseManifestObject(string className) {
 
       string name = getAttribute("name");
-      instantiator->makeEntity(name, entity::ENTITY_OBJECT, className);
+
+      declaredEntities[name] = {
+         name,
+         className,
+         entity::ENTITY_OBJECT
+      };
+
+      ast->appendChild(ASTDefineEntity(
+         name,
+         entity::Entity::typeToStr(entity::ENTITY_OBJECT),
+         className,
+         xmlTextReaderGetParserLineNumber(reader)
+      ));
+
       checkClosingTag(className);
    }
 
@@ -505,7 +588,7 @@ namespace trogdor {
             parseManifestCreature();
          }
 
-         else if (instantiator->entityClassExists(getTagName(), entity::ENTITY_CREATURE)) {
+         else if (entityClassDeclared(getTagName(), entity::ENTITY_CREATURE)) {
             parseManifestCreature(getTagName());
          }
 
@@ -523,13 +606,26 @@ namespace trogdor {
    void XMLParser::parseManifestCreature(string className) {
 
       string name = getAttribute("name");
-      instantiator->makeEntity(name, entity::ENTITY_CREATURE, className);
+
+      declaredEntities[name] = {
+         name,
+         className,
+         entity::ENTITY_CREATURE
+      };
+
+      ast->appendChild(ASTDefineEntity(
+         name,
+         entity::Entity::typeToStr(entity::ENTITY_CREATURE),
+         className,
+         xmlTextReaderGetParserLineNumber(reader)
+      ));
+
       checkClosingTag(className);
    }
 
    /***************************************************************************/
 
-   void XMLParser::parseMessages(string entityName, enum ParseMode mode, int depth) {
+   void XMLParser::parseMessages(string entityName, string targetType, int depth) {
 
       while (nextTag() && depth == getDepth()) {
 
@@ -539,7 +635,14 @@ namespace trogdor {
             messageName = trim(messageName);
             string message = parseString();
 
-            setEntityMessage(entityName, messageName, message, mode);
+            ast->appendChild(ASTSetMessage(
+               targetType,
+               messageName,
+               message,
+               xmlTextReaderGetParserLineNumber(reader),
+               entityName
+            ));
+
             checkClosingTag("message");
          }
 
@@ -553,19 +656,35 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseEntityTags(string entityName, enum ParseMode mode, int depth) {
+   void XMLParser::parseEntityTags(string entityName, string targetType, int depth) {
 
       while (nextTag() && depth == getDepth()) {
 
          if (0 == getTagName().compare("tag")) {
+
             string tag = parseString();
-            entitySetter(entityName, "tag.set", tag, mode);
+
+            ast->appendChild(ASTSetTag(
+               targetType,
+               tag,
+               xmlTextReaderGetParserLineNumber(reader),
+               entityName
+            ));
+
             checkClosingTag("tag");
          }
 
          else if (0 == getTagName().compare("remove")) {
+
             string tag = parseString();
-            entitySetter(entityName, "tag.remove", tag, mode);
+
+            ast->appendChild(ASTRemoveTag(
+               targetType,
+               tag,
+               xmlTextReaderGetParserLineNumber(reader),
+               entityName
+            ));
+
             checkClosingTag("remove");
          }
 
@@ -579,16 +698,16 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseEvents(string entityName, enum ParseMode mode, int depth) {
+   void XMLParser::parseEvents(string entityName, string targetType, int depth) {
 
       while (nextTag() && depth == getDepth()) {
 
          if (0 == getTagName().compare("script")) {
-            parseScript(entityName, mode);
+            parseScript(entityName, targetType);
          }
 
          else if (0 == getTagName().compare("event")) {
-            parseEvent(entityName, mode);
+            parseEvent(entityName, targetType);
          }
 
          else {
@@ -602,35 +721,49 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseScript(string entityName, enum ParseMode mode) {
+   void XMLParser::parseScript(string entityName, string targetType) {
 
       string script;
-      enum Instantiator::LoadScriptMethod method;
+      string scriptMode;
 
       try {
          script = getAttribute("src");
-         method = Instantiator::FILE;
+         scriptMode = "file";
       }
 
       // There's no src attribute, so we're either parsing an inline script or
       // we're about to encounter an error ;)
       catch (const ParseException &e) {
          script = parseString();
-         method = Instantiator::STRING;
+         scriptMode = "string";
       }
 
-      loadScript(mode, script, method, entityName);
+      ast->appendChild(ASTLoadScript(
+         targetType,
+         scriptMode,
+         script,
+         xmlTextReaderGetParserLineNumber(reader),
+         entityName
+      ));
+
       checkClosingTag("script");
    }
 
    /***************************************************************************/
 
-   void XMLParser::parseEvent(string entityName, enum ParseMode mode) {
+   void XMLParser::parseEvent(string entityName, string targetType) {
 
       string name = getAttribute("name");
       string function = parseString();
 
-      setEvent(mode, name, function, entityName);
+      ast->appendChild(ASTSetEvent(
+         targetType,
+         name,
+         function,
+         xmlTextReaderGetParserLineNumber(reader),
+         entityName
+      ));
+
       checkClosingTag("event");
    }
 
@@ -644,7 +777,7 @@ namespace trogdor {
             parseObject();
          }
 
-         else if (instantiator->entityClassExists(getTagName(), entity::ENTITY_OBJECT)) {
+         else if (entityClassDeclared(getTagName(), entity::ENTITY_OBJECT)) {
             parseObject(getTagName());
          }
 
@@ -661,40 +794,46 @@ namespace trogdor {
 
    void XMLParser::parseObject(string className) {
 
-      if (!instantiator->entityExists(getAttribute("name"))) {
-         throw ParseException(string("object '") + getAttribute("name")
+      string name = getAttribute("name");
+
+      // Make sure entity exists
+      if (!entityDeclared(name)) {
+         throw ParseException(string("object '") + name
             + "' was not declared in <manifest>");
       }
 
       // Make sure entity is an object
-      enum entity::EntityType type = instantiator->getEntityType(getAttribute("name"));
-
-      if (entity::ENTITY_OBJECT != type) {
+      else if (entity::ENTITY_OBJECT != declaredEntities[name].type) {
          throw ParseException(string("object type mismatch: '")
-            + getAttribute("name") + "' is of type " + Entity::typeToStr(type)
+            + name + "' is of type "
+            + Entity::typeToStr(declaredEntities[name].type)
             + ", but was declared in <objects>");
       }
 
       // Make sure object is the correct class
-      string entityClass = instantiator->getEntityClass(getAttribute("name"));
-
-      if (className != entityClass) {
+      else if (className != declaredEntities[name].className) {
          throw ParseException(string("object type mismatch: '")
-            + getAttribute("name") + "' is of class " + entityClass
+            + name + "' is of class "
+            + declaredEntities[name].className
             + ", but was declared in <objects> to be of class " + className);
       }
 
       // set the object's default title
-      entitySetter(getAttribute("name"), "title",
-         string("a ") + getAttribute("name"), PARSE_ENTITY);
+      ast->appendChild(ASTSetProperty(
+         "entity",
+         "title",
+         string("a ") + name,
+         xmlTextReaderGetParserLineNumber(reader),
+         name
+      ));
 
-      parseObjectProperties(getAttribute("name"), PARSE_ENTITY, 3);
+      parseObjectProperties(name, "entity", 3);
       checkClosingTag(className);
    }
 
    /***************************************************************************/
 
-   void XMLParser::parseObjectProperties(string name, enum ParseMode mode, int depth) {
+   void XMLParser::parseObjectProperties(string name, string targetType, int depth) {
 
       static unordered_map<string, string> tagToProperty({
          {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"},
@@ -706,28 +845,37 @@ namespace trogdor {
          string tag = getTagName();
 
          if (0 == tag.compare("meta")) {
-            parseEntityMeta(name, mode, depth + 1);
+            parseEntityMeta(name, targetType, depth + 1);
          }
 
          else if (0 == tag.compare("messages")) {
-            parseMessages(name, mode, depth + 1);
+            parseMessages(name, targetType, depth + 1);
          }
 
          else if (0 == tag.compare("aliases")) {
-            parseThingAliases(name, mode, depth + 1);
+            parseThingAliases(name, targetType, depth + 1);
          }
 
          else if (0 == tag.compare("tags")) {
-            parseEntityTags(name, mode, depth + 1);
+            parseEntityTags(name, targetType, depth + 1);
          }
 
          else if (0 == tag.compare("events")) {
-            parseEvents(name, mode, depth + 1);
+            parseEvents(name, targetType, depth + 1);
          }
 
          else if (tagToProperty.find(tag) != tagToProperty.end()) {
+
             string value = parseString();
-            entitySetter(name, tagToProperty[tag], value, mode);
+
+            ast->appendChild(ASTSetProperty(
+               targetType,
+               tagToProperty[tag],
+               value,
+               xmlTextReaderGetParserLineNumber(reader),
+               name
+            ));
+
             checkClosingTag(tag);
          }
 
@@ -771,28 +919,36 @@ namespace trogdor {
          string tag = getTagName();
 
          if (0 == tag.compare("messages")) {
-            parseMessages("", PARSE_DEFAULT_PLAYER, 4);
+            parseMessages("", "defaultPlayer", 4);
          }
 
          else if (0 == tag.compare("tags")) {
-            parseEntityTags("", PARSE_DEFAULT_PLAYER, 4);
+            parseEntityTags("", "defaultPlayer", 4);
          }
 
          else if (0 == tag.compare("inventory")) {
-            parseBeingInventory("", PARSE_DEFAULT_PLAYER, false);
+            parseBeingInventory("", "defaultPlayer", false);
          }
 
          else if (0 == tag.compare("respawn")) {
-            parseBeingRespawn("", PARSE_DEFAULT_PLAYER, 4);
+            parseBeingRespawn("", "defaultPlayer", 4);
          }
 
          else if (0 == tag.compare("attributes")) {
-            parseBeingAttributes("", PARSE_DEFAULT_PLAYER);
+            parseBeingAttributes("", "defaultPlayer");
          }
 
          else if (tagToProperty.find(tag) != tagToProperty.end()) {
+
             string value = parseString();
-            entitySetter("", tagToProperty[tag], value, PARSE_DEFAULT_PLAYER);
+
+            ast->appendChild(ASTSetProperty(
+               "defaultPlayer",
+               tagToProperty[tag],
+               value,
+               xmlTextReaderGetParserLineNumber(reader)
+            ));
+
             checkClosingTag(tag);
          }
 
@@ -815,7 +971,7 @@ namespace trogdor {
             parseCreature();
          }
 
-         else if (instantiator->entityClassExists(getTagName(), entity::ENTITY_CREATURE)) {
+         else if (entityClassDeclared(getTagName(), entity::ENTITY_CREATURE)) {
             parseCreature(getTagName());
          }
 
@@ -832,38 +988,43 @@ namespace trogdor {
 
    void XMLParser::parseCreature(string className) {
 
-      if (!instantiator->entityExists(getAttribute("name"))) {
-         throw ParseException(string("creature '") + getAttribute("name")
+      string name = getAttribute("name");
+
+      if (!entityDeclared(name)) {
+         throw ParseException(string("creature '") + name
             + "' was not declared in <manifest>");
       }
 
       // Make sure entity is a creature
-      enum entity::EntityType type = instantiator->getEntityType(getAttribute("name"));
-
-      if (entity::ENTITY_CREATURE != type) {
+      else if (entity::ENTITY_CREATURE != declaredEntities[name].type) {
          throw ParseException(string("creature type mismatch: '")
-            + getAttribute("name") + "' is of type " + Entity::typeToStr(type)
+            + name + "' is of type " + Entity::typeToStr(declaredEntities[name].type)
             + ", but was declared in <creatures>");
       }
 
       // Make sure creature is the correct class
-      string entityClass = instantiator->getEntityClass(getAttribute("name"));
-
-      if (className != entityClass) {
+      else if (className != declaredEntities[name].className) {
          throw ParseException(string("creature type mismatch: '")
-            + getAttribute("name") + "' is of class " + entityClass
+            + name + "' is of class " + declaredEntities[name].className
             + ", but was declared in <creatures> to be of class " + className);
       }
 
       // set the creature's default title and parse the rest of its properties
-      entitySetter(getAttribute("name"), "title", getAttribute("name"), PARSE_ENTITY);
-      parseCreatureProperties(getAttribute("name"), PARSE_ENTITY, 3);
+      ast->appendChild(ASTSetProperty(
+         "entity",
+         "title",
+         name,
+         xmlTextReaderGetParserLineNumber(reader),
+         name
+      ));
+
+      parseCreatureProperties(name, "entity", 3);
       checkClosingTag(className);
    }
 
    /***************************************************************************/
 
-   void XMLParser::parseCreatureProperties(string name, enum ParseMode mode, int depth) {
+   void XMLParser::parseCreatureProperties(string name, string targetType, int depth) {
 
       bool counterAttackParsed = false;
 
@@ -879,48 +1040,57 @@ namespace trogdor {
          string tag = getTagName();
 
          if (0 == tag.compare("inventory")) {
-            parseBeingInventory(name, mode, true);
+            parseBeingInventory(name, targetType, true);
          }
 
          else if (0 == tag.compare("respawn")) {
-            parseBeingRespawn(name, mode, depth + 1);
+            parseBeingRespawn(name, targetType, depth + 1);
          }
 
          else if (0 == tag.compare("autoattack")) {
-            parseCreatureAutoAttack(name, mode, depth + 1);
+            parseCreatureAutoAttack(name, targetType, depth + 1);
          }
 
          else if (0 == tag.compare("wandering")) {
-            parseCreatureWandering(name, mode);
+            parseCreatureWandering(name, targetType);
          }
 
          else if (0 == tag.compare("attributes")) {
-            parseBeingAttributes(name, mode);
+            parseBeingAttributes(name, targetType);
          }
 
          else if (0 == tag.compare("meta")) {
-            parseEntityMeta(name, mode, depth + 1);
+            parseEntityMeta(name, targetType, depth + 1);
          }
 
          else if (0 == tag.compare("messages")) {
-            parseMessages(name, mode, depth + 1);
+            parseMessages(name, targetType, depth + 1);
          }
 
          else if (0 == tag.compare("aliases")) {
-            parseThingAliases(name, mode, depth + 1);
+            parseThingAliases(name, targetType, depth + 1);
          }
 
          else if (0 == tag.compare("tags")) {
-            parseEntityTags(name, mode, depth + 1);
+            parseEntityTags(name, targetType, depth + 1);
          }
 
          else if (0 == tag.compare("events")) {
-            parseEvents(name, mode, depth + 1);
+            parseEvents(name, targetType, depth + 1);
          }
 
          else if (tagToProperty.find(tag) != tagToProperty.end()) {
+
             string value = parseString();
-            entitySetter(name, tagToProperty[tag], value, mode);
+
+            ast->appendChild(ASTSetProperty(
+               targetType,
+               tagToProperty[tag],
+               value,
+               xmlTextReaderGetParserLineNumber(reader),
+               name
+            ));
+
             checkClosingTag(tag);
          }
 
@@ -931,8 +1101,20 @@ namespace trogdor {
       }
 
       // Set default counter-attack rules
+      // TODO: I really don't like this property. It'll stay for now, but I should
+      // eventually change this with some sort of observer thing where, when
+      // the allegiance property is changed, it triggers a re-evaluation of the
+      // counterattack (only if counterattack was never set explicitly. Will need
+      // to think about the architecture of this...)
       if (!counterAttackParsed) {
-         entitySetter(name, "counterattack.default", "", mode);
+
+         ast->appendChild(ASTSetProperty(
+            targetType,
+            "counterattack.default",
+            "",
+            xmlTextReaderGetParserLineNumber(reader),
+            name
+         ));
       }
    }
 
@@ -946,7 +1128,7 @@ namespace trogdor {
             parseRoom();
          }
 
-         else if (instantiator->entityClassExists(getTagName(), entity::ENTITY_ROOM)) {
+         else if (entityClassDeclared(getTagName(), entity::ENTITY_ROOM)) {
             parseRoom(getTagName());
          }
 
@@ -963,38 +1145,45 @@ namespace trogdor {
 
    void XMLParser::parseRoom(string className) {
 
-      if (!instantiator->entityExists(getAttribute("name"))) {
-         throw ParseException(string("room '") + getAttribute("name")
+      string name = getAttribute("name");
+
+      if (!entityDeclared(name)) {
+         throw ParseException(string("room '") + name
             + "' was not declared in <manifest>");
       }
 
       // Make sure entity is a room
-      enum entity::EntityType type = instantiator->getEntityType(getAttribute("name"));
-
-      if (entity::ENTITY_ROOM != type) {
+      else if (entity::ENTITY_ROOM != declaredEntities[name].type) {
          throw ParseException(string("room type mismatch: '")
-            + getAttribute("name") + "' is of type " + Entity::typeToStr(type)
+            + name + "' is of type "
+            + Entity::typeToStr(declaredEntities[name].type)
             + ", but was declared in <rooms>");
       }
 
       // Make sure room is the correct class
-      string entityClass = instantiator->getEntityClass(getAttribute("name"));
-
-      if (className != entityClass) {
+      else if (className != declaredEntities[name].className) {
          throw ParseException(string("room type mismatch: '")
-            + getAttribute("name") + "' is of class " + entityClass
+            + name + "' is of class "
+            + declaredEntities[name].className
             + ", but was declared in <rooms> to be of type " + className);
       }
 
       // set Room's default title and parse remaining properties
-      entitySetter(getAttribute("name"), "title", getAttribute("name"), PARSE_ENTITY);
-      parseRoomProperties(getAttribute("name"), PARSE_ENTITY, 3);
+      ast->appendChild(ASTSetProperty(
+         "entity",
+         "title",
+         name,
+         xmlTextReaderGetParserLineNumber(reader),
+         name
+      ));
+
+      parseRoomProperties(name, "entity", 3);
       checkClosingTag(className);
    }
 
    /***************************************************************************/
 
-   void XMLParser::parseRoomProperties(string name, enum ParseMode mode, int depth) {
+   void XMLParser::parseRoomProperties(string name, string targetType, int depth) {
 
       static unordered_map<string, string> tagToProperty({
          {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"}
@@ -1004,34 +1193,46 @@ namespace trogdor {
 
          string tag = getTagName();
 
-         if (vocabulary.isDirection(tag)) {
+         if (
+            vocabulary.isDirection(tag) ||
+            customDirections.end() != customDirections.find(tag)
+         ) {
             string connection = parseString();
-            parseRoomConnection(tag, name, connection, mode);
+            parseRoomConnection(tag, name, connection, targetType);
          }
 
          else if (0 == tag.compare("contains")) {
-            parseRoomContains(name, mode);
+            parseRoomContains(name, targetType);
          }
 
          else if (0 == tag.compare("meta")) {
-            parseEntityMeta(name, mode, depth + 1);
+            parseEntityMeta(name, targetType, depth + 1);
          }
 
          else if (0 == tag.compare("messages")) {
-            parseMessages(name, mode, depth + 1);
+            parseMessages(name, targetType, depth + 1);
          }
 
          else if (0 == tag.compare("tags")) {
-            parseEntityTags(name, mode, depth + 1);
+            parseEntityTags(name, targetType, depth + 1);
          }
 
          else if (0 == tag.compare("events")) {
-            parseEvents(name, mode, depth + 1);
+            parseEvents(name, targetType, depth + 1);
          }
 
          else if (tagToProperty.find(tag) != tagToProperty.end()) {
+
             string value = parseString();
-            entitySetter(name, tagToProperty[tag], value, mode);
+
+            ast->appendChild(ASTSetProperty(
+               targetType,
+               tagToProperty[tag],
+               value,
+               xmlTextReaderGetParserLineNumber(reader),
+               name
+            ));
+
             checkClosingTag(tag);
          }
 
@@ -1045,22 +1246,46 @@ namespace trogdor {
    /***************************************************************************/
 
    void XMLParser::parseRoomConnection(string direction, string roomName,
-   string connectTo, enum ParseMode mode) {
+   string connectTo, string targetType) {
 
-      entitySetter(roomName, "connection", direction + ":" + connectTo, mode);
+      ast->appendChild(ASTConnectRooms(
+         targetType,
+         roomName,
+         connectTo,
+         direction,
+         xmlTextReaderGetParserLineNumber(reader)
+      ));
+
       checkClosingTag(direction);
    }
 
    /***************************************************************************/
 
-   void XMLParser::parseRoomContains(string roomName, enum ParseMode mode) {
+   void XMLParser::parseRoomContains(string roomName, string targetType) {
 
       while (nextTag() && 4 == getDepth()) {
 
          string tag = getTagName();
 
          if (0 == tag.compare("object") || 0 == tag.compare("creature")) {
-               entitySetter(roomName, "contains", parseString(), mode);
+
+            // We can't add objects or creatures to a room class because that
+            // doesn't make sense (can only be inserted into a single specific
+            // room.)
+            if (0 == targetType.compare("entity")) {
+
+               string thingName = parseString();
+
+               ast->appendChild(ASTInsertIntoRoom(
+                  thingName,
+                  roomName,
+                  xmlTextReaderGetParserLineNumber(reader)
+               ));
+            }
+
+            else {
+               throw ParseException("Objects and creatures must be placed into a room and cannot be inserted into a room class.");
+            }
          }
 
          else {
@@ -1076,7 +1301,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseCreatureAutoAttack(string creatureName, enum ParseMode mode,
+   void XMLParser::parseCreatureAutoAttack(string creatureName, string targetType,
    int depth) {
 
       static unordered_map<string, string> tagToProperty({
@@ -1089,8 +1314,17 @@ namespace trogdor {
          string tag = getTagName();
 
          if (tagToProperty.find(tag) != tagToProperty.end()) {
+
             string value = parseString();
-            entitySetter(creatureName, tagToProperty[tag], value, mode);
+
+            ast->appendChild(ASTSetProperty(
+               targetType,
+               tagToProperty[tag],
+               value,
+               xmlTextReaderGetParserLineNumber(reader),
+               creatureName
+            ));
+
             checkClosingTag(tag);
          }
 
@@ -1105,7 +1339,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseCreatureWandering(string creatureName, enum ParseMode mode) {
+   void XMLParser::parseCreatureWandering(string creatureName, string targetType) {
 
       static unordered_map<string, string> tagToProperty({
          {"enabled", "wandering.enabled"}, {"interval", "wandering.interval"},
@@ -1117,8 +1351,17 @@ namespace trogdor {
          string tag = getTagName();
 
          if (tagToProperty.find(tag) != tagToProperty.end()) {
+
             string value = parseString();
-            entitySetter(creatureName, tagToProperty[tag], value, mode);
+
+            ast->appendChild(ASTSetProperty(
+               targetType,
+               tagToProperty[tag],
+               value,
+               xmlTextReaderGetParserLineNumber(reader),
+               creatureName
+            ));
+
             checkClosingTag(tag);
          }
 
@@ -1133,7 +1376,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseBeingRespawn(string beingName, enum ParseMode mode, int depth) {
+   void XMLParser::parseBeingRespawn(string beingName, string targetType, int depth) {
 
       static unordered_map<string, string> tagToProperty({
          {"enabled", "respawn.enabled"}, {"interval", "respawn.interval"},
@@ -1145,8 +1388,17 @@ namespace trogdor {
          string tag = getTagName();
 
          if (tagToProperty.find(tag) != tagToProperty.end()) {
+
             string value = parseString();
-            entitySetter(beingName, tagToProperty[tag], value, mode);
+
+            ast->appendChild(ASTSetProperty(
+               targetType,
+               tagToProperty[tag],
+               value,
+               xmlTextReaderGetParserLineNumber(reader),
+               beingName
+            ));
+
             checkClosingTag(tag);
          }
 
@@ -1161,20 +1413,58 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseBeingInventory(string beingName, enum ParseMode mode,
+   void XMLParser::parseBeingInventory(string beingName, string targetType,
    bool allowObjects) {
 
       static unordered_map<string, string> tagToProperty({
-         {"weight", "inventory.weight"}, {"object", "inventory.object"}
+         {"weight", "inventory.weight"}
       });
 
       while (nextTag() && 4 == getDepth()) {
 
          string tag = getTagName();
 
-         if (tagToProperty.find(tag) != tagToProperty.end()) {
+         if (0 == tag.compare("object")) {
+
             string value = parseString();
-            entitySetter(beingName, tagToProperty[tag], value, mode);
+
+            if (0 == targetType.compare("entity")) {
+
+               ast->appendChild(ASTInsertIntoInventory(
+                  value,
+                  beingName,
+                  xmlTextReaderGetParserLineNumber(reader)
+               ));
+
+               checkClosingTag(tag);
+            }
+
+            // We can't add items to a Being class's inventory because multiple
+            // Beings can be instantiated from it and an Object can only be in
+            // one Being's inventory at a time.
+            else if (0 == targetType.compare("class")) {
+               throw ParseException("Objects cannot be placed into a class's inventory.");
+            }
+
+            // We can't add items to the default player's inventory for the same
+            // reason as above.
+            else {
+               throw ParseException("Objects cannot be placed into the default player's inventory.");
+            }
+         }
+
+         else if (tagToProperty.find(tag) != tagToProperty.end()) {
+
+            string value = parseString();
+
+            ast->appendChild(ASTSetProperty(
+               targetType,
+               tagToProperty[tag],
+               value,
+               xmlTextReaderGetParserLineNumber(reader),
+               beingName
+            ));
+
             checkClosingTag(tag);
          }
 
@@ -1189,7 +1479,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseBeingAttributes(string beingName, enum ParseMode mode) {
+   void XMLParser::parseBeingAttributes(string beingName, string targetType) {
 
       while (nextTag() && 4 == getDepth()) {
 
@@ -1204,8 +1494,17 @@ namespace trogdor {
             0 == tag.compare("dexterity") ||
             0 == tag.compare("intelligence")
          ) {
+
             string value = parseString();
-            entitySetter(beingName, string("attribute"), tag + ":" + value, mode);
+
+            ast->appendChild(ASTSetAttribute(
+               targetType,
+               tag,
+               value,
+               xmlTextReaderGetParserLineNumber(reader),
+               beingName
+            ));
+
             checkClosingTag(tag);
          }
 
@@ -1220,13 +1519,21 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseThingAliases(string entityName, enum ParseMode mode, int depth) {
+   void XMLParser::parseThingAliases(string entityName, string targetType, int depth) {
 
       while (nextTag() && depth == getDepth()) {
 
          if (0 == getTagName().compare("alias")) {
+
             string alias = parseString();
-            entitySetter(entityName, "alias", alias, mode);
+
+            ast->appendChild(ASTSetAlias(
+               targetType,
+               alias,
+               entityName,
+               xmlTextReaderGetParserLineNumber(reader)
+            ));
+
             checkClosingTag("alias");
          }
 

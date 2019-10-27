@@ -10,6 +10,7 @@
 #include "../exception/undefinedexception.h"
 
 #include "data.h"
+#include "ast.h"
 
 
 using namespace std;
@@ -29,154 +30,301 @@ namespace trogdor {
          // Reference to the game's vocabulary (for lookups)
          const Vocabulary &vocabulary;
 
-         // When passed to a function, determines if we're parsing for an entity
-         // class, an entity object, the default player, or the game. This makes
-         // sure that we can call the proper instantiator method using wrapper
-         // methods like entitySetter().
-         enum ParseMode {
-            PARSE_CLASS = 0,
-            PARSE_ENTITY = 1,
-            PARSE_DEFAULT_PLAYER = 2,
-            PARSE_GAME = 3
-         };
-
          // Used to instantiate entities and events
          std::unique_ptr<Instantiator> instantiator;
 
+         // The game gets parsed into an abstract syntax, which is then used to
+         // instantiate the game
+         std::shared_ptr<ASTNode> ast;
+
          /*
-            Sets an Entity or Entity class's property via the instantiator.
+            Returns an AST subtree representing a defineDirection operation.
 
             Input:
-               Entity name (string, ignored if mode = PARSE_DEFAULT_PLAYER)
+               New direction (string)
+               Current line number in the source being parsed (int)
+
+            Output:
+               ASTOperationNode
+         */
+         std::shared_ptr<ASTOperationNode> ASTDefineDirection(string direction,
+         int lineNumber = 0);
+
+         /*
+            Returns an AST subtree representing a defineDirectionSynonym
+            operation.
+
+            Input:
+               Direction (string)
+               Synonym (string)
+               Current line number in the source being parsed (int)
+
+            Output:
+               ASTOperationNode
+         */
+         std::shared_ptr<ASTOperationNode> ASTDefineDirectionSynonym(string direction,
+         string synonym, int lineNumber = 0);
+
+         /*
+            Returns an AST subtree representing a defineVerbSynonym operation.
+
+            Input:
+               Original verb (string)
+               Synonym (string)
+               Current line number in the source being parsed (int)
+
+            Output:
+               ASTOperationNode
+         */
+         std::shared_ptr<ASTOperationNode> ASTDefineVerbSynonym(string verb,
+         string synonym, int lineNumber = 0);
+
+         /*
+            Returns an AST subtree representing a defineEntityClass operation.
+
+            Input:
+               Class name (string)
+               Entity type (string)
+               Current line number in the source being parsed (int)
+
+            Output:
+               ASTOperationNode
+         */
+         std::shared_ptr<ASTOperationNode> ASTDefineEntityClass(string className,
+         string entityType, int lineNumber = 0);
+
+         /*
+            Returns an AST subtree representing a defineEntity operation.
+
+            Input:
+               Entity name (string)
+               Entity type (string)
+               Class name (string)
+               Current line number in the source being parsed (int)
+
+            Output:
+               ASTOperationNode
+         */
+         std::shared_ptr<ASTOperationNode> ASTDefineEntity(string entityName,
+         string entityType, string className, int lineNumber = 0);
+
+         /*
+            Returns an AST subtree representing a setMessage operation.
+
+            Input:
+               Target type: the kind of thing we're setting a message on (string)
+                  . One of: "entity", "class", or "defaultPlayer"
+               Message name (string)
+               Message value (string)
+               Current line number in the source being parsed (int)
+               Entity or entity class name (string)
+                  . Do not pass if target type is "defaultPlayer"
+
+            Output:
+               ASTOperationNode
+         */
+         std::shared_ptr<ASTOperationNode> ASTSetMessage(string targetType,
+         string messageName, string message, int lineNumber = 0,
+         string entityOrClassName = "");
+
+         /*
+            Returns an AST subtree representing a setTag operation.
+
+            Input:
+               Target type: the kind of thing we're setting a tag on (string)
+                  . One of: "entity", "class", or "defaultPlayer"
+               Tag (string)
+               Current line number in the source being parsed (int)
+               Entity or entity class name (string)
+                  . Do not pass if target type is "defaultPlayer"
+
+            Output:
+               ASTOperationNode
+         */
+         std::shared_ptr<ASTOperationNode> ASTSetTag(string targetType,
+         string tag, int lineNumber = 0, string entityOrClassName = "");
+
+         /*
+            Returns an AST subtree representing a removeTag operation.
+
+            Input:
+               Target type: the kind of thing we're removing the tag on (string)
+                  . One of: "entity", "class", or "defaultPlayer"
+               Tag (string)
+               Current line number in the source being parsed (int)
+               Entity or entity class name (string)
+                  . Do not pass if target type is "defaultPlayer"
+
+            Output:
+               ASTOperationNode
+         */
+         std::shared_ptr<ASTOperationNode> ASTRemoveTag(string targetType,
+         string tag, int lineNumber = 0, string entityOrClassName = "");
+
+         /*
+            Returns an AST subtree representing a loadScript operation.
+
+            Input:
+               Target type: the kind of thing we're removing the tag on (string)
+                  . One of: "entity", "class", or "game"
+               Script mode (string)
+                  . One of: "file" (to load a file) or "string" (to read a raw script)
+               Script (string)
+                  . Either a filename or the script itself, depending on scriptMode
+               Current line number in the source being parsed (int)
+               Entity or entity class name (string)
+                  . Do not pass if target type is "game"
+
+            Output:
+               ASTOperationNode
+         */
+         std::shared_ptr<ASTOperationNode> ASTLoadScript(string targetType,
+         string scriptMode, string script, int lineNumber = 0,
+         string entityOrClassName = "");
+
+         /*
+            Returns an AST subtree representing a setEvent operation.
+
+            Input:
+               Target type: the kind of thing we're removing the tag on (string)
+                  . One of: "entity", "class", or "game"
+               Event that triggers the Lua function (string)
+               Lua function to trigger (string)
+               Current line number in the source being parsed (int)
+               Entity or entity class name (string)
+                  . Do not pass if target type is "game"
+
+            Output:
+               ASTOperationNode
+         */
+         std::shared_ptr<ASTOperationNode> ASTSetEvent(string targetType,
+         string eventName, string luaFunction, int lineNumber = 0,
+         string entityOrClassName = "");
+
+         /*
+            Returns an AST subtree representing a setAlias operation.
+
+            Input:
+               Target type: the kind of thing we're setting a meta value on (string)
+                  . One of: "entity" or "class"
+               Alias (string)
+               Entity or entity class name (string)
+               Current line number in the source being parsed (int)
+
+            Output:
+               ASTOperationNode
+         */
+         std::shared_ptr<ASTOperationNode> ASTSetAlias(string targetType,
+         string alias, string thingOrClassName, int lineNumber = 0);
+
+         /*
+            Returns an AST subtree representing a setMeta operation.
+
+            Input:
+               Target type: the kind of thing we're setting a meta value on (string)
+                  . One of: "entity", "class", "defaultPlayer", or "game"
+               Meta key (string)
+               Meta value (string)
+               Current line number in the source being parsed (int)
+               Entity or entity class name (string)
+                  . Do not pass if target type is "game" or "defaultPlayer"
+
+            Output:
+               ASTOperationNode
+         */
+         std::shared_ptr<ASTOperationNode> ASTSetMeta(string targetType,
+         string metaKey, string metaValue, int lineNumber = 0,
+         string entityOrClassName = "");
+
+         /*
+            Returns an AST subtree representing a setAttribute operation.
+
+            Input:
+               Target type: the kind of thing we're setting a property on (string)
+                  . One of: "entity", "class", or "game"
+               Attribute name (string)
+               Attribute value (string)
+               Current line number in the source being parsed (int)
+               Entity or entity class name (string)
+                  . Do not pass if target type is "game"
+
+            Output:
+               ASTOperationNode
+         */
+         std::shared_ptr<ASTOperationNode> ASTSetAttribute(string targetType,
+         string attribute, string value, int lineNumber = 0,
+         string entityOrClassName = "");
+
+         /*
+            Returns an AST subtree representing a setProperty operation.
+
+            Input:
+               Target type: the kind of thing we're setting a property on (string)
+                  . One of: "entity", "class", or "game"
                Property name (string)
                Property value (string)
-               Whether we're parsing aliases for Entity of Entity class (enum ParseMode mode)
-                  . Possible values are: PARSE_ENTITY, PARSE_ENTITY_CLASS, and
-                    PARSE_DEFAULT_PLAYER
+               Current line number in the source being parsed (int)
+               Entity or entity class name (string)
+                  . Do not pass if target type is "game"
+
+            Output:
+               ASTOperationNode
          */
-         inline void entitySetter(string entity, string property,
-         string value, enum ParseMode mode) {
-
-            switch (mode) {
-
-               case PARSE_ENTITY:
-                  instantiator->entitySetter(entity, property, value);
-                  break;
-
-               case PARSE_CLASS:
-                  instantiator->entityClassSetter(entity, property, value);
-                  break;
-
-               case PARSE_DEFAULT_PLAYER:
-                  instantiator->defaultPlayerSetter(property, value);
-                  break;
-
-               default:
-                  throw UndefinedException("Parser::entitySetter: invalid mode. This is a bug.");
-            }
-         }
+         std::shared_ptr<ASTOperationNode> ASTSetProperty(string targetType,
+         string property, string value, int lineNumber = 0,
+         string entityOrClassName = "");
 
          /*
-            Sets a message for the specified Entity or Entity class via the
-            instantiator.
+            Returns an AST subtree representing an insertIntoInventory operation.
+
+            Please note that inserting an item into the default player's
+            inventory is not allowed, since multiple players can be cloned from
+            defaultPlayer and an Object can only be in one inventory at a time.
+            The same reasoning also makes it illegal to place an Object into
+            a Being class's inventory.
 
             Input:
-               Entity name (string, ignored if mode = PARSE_DEFAULT_PLAYER)
-               Property name (string)
-               Property value (string)
-               Whether we're parsing aliases for Entity of Entity class (enum ParseMode)
-                  . Possible values for mode are PARSE_ENTITY, PARSE_CLASS, or
-                    PARSE_DEFAULT_PLAYER.
+               Object name (string)
+               Being name (string) -- classes not allowed
+               Current line number in the source being parsed (int)
+
+            Output:
+               ASTOperationNode
          */
-         inline void setEntityMessage(string entity, string messageName,
-         string message, enum ParseMode mode) {
-
-            switch (mode) {
-
-               case PARSE_ENTITY:
-                  instantiator->setEntityMessage(entity, messageName, message);
-                  break;
-
-               case PARSE_CLASS:
-                  instantiator->setEntityClassMessage(entity, messageName, message);
-                  break;
-
-               case PARSE_DEFAULT_PLAYER:
-                  instantiator->setDefaultPlayerMessage(messageName, message);
-                  break;
-
-               default:
-                  throw UndefinedException("Parser::setEntityMessage: invalid parse mode. This is a bug.");
-            }
-         }
+         std::shared_ptr<ASTOperationNode> ASTInsertIntoInventory(string objectName,
+         string beingName, int lineNumber = 0);
 
          /*
-            Loads a Lua script into a Lua state belonging either to an entity,
-            an entity class, or an instance of Game.
+            Returns an AST subtree representing an insertIntoRoom operation.
 
             Input:
-               What kind of object we're loading the script into (enum ParseMode)
-                  . Possible values are PARSE_ENTITY, PARSE_CLASS, or PARSE_GAME
-               Script filename or content (string)
-               Whether we're loading the script from a file or a string
-                  (enum Instantiator::LoadScriptMethod)
-               Entity or Entity class name (ignored if mode = PARSE_GAME)
+               Object, Player, or Creature name (string) -- classes not allowed
+               Room name (string)
+               Current line number in the source being parsed (int)
+
+            Output:
+               ASTOperationNode
          */
-         inline void loadScript(enum ParseMode mode, string script,
-         enum Instantiator::LoadScriptMethod scriptMethod = Instantiator::FILE,
-         string entityName = "") {
-
-            switch (mode) {
-
-               case PARSE_ENTITY:
-                  instantiator->loadEntityScript(entityName, script, scriptMethod);
-                  break;
-
-               case PARSE_CLASS:
-                  instantiator->loadEntityClassScript(entityName, script, scriptMethod);
-                  break;
-
-               case PARSE_GAME:
-                  instantiator->loadGameScript(script, scriptMethod);
-                  break;
-
-               default:
-                  throw UndefinedException("Parser::loadScript: invalid parse mode. This is a bug.");
-            }
-         }
+         std::shared_ptr<ASTOperationNode> ASTInsertIntoRoom(string thing,
+         string room, int lineNumber = 0);
 
          /*
-            Sets an event for Game, an Entity, or an Entity class using the
-            Instantiator.
+            Returns an AST subtree representing a connectRooms operation.
 
             Input:
-               What kind of object we're loading the script into (enum ParseMode)
-                  . Possible values are PARSE_ENTITY, PARSE_CLASS, or PARSE_GAME
-               Event name (string)
-               Lua function to call for the event (string)
-               Entity or Entity class name (ignored if mode = PARSE_GAME)
+               Target type: the kind of thing we're setting the connection on (string)
+                  . One of: "entity" or "class"
+               Source room (string)
+               Room source connects to (string)
+               Direction where connection should be made (string)
+               Current line number in the source being parsed (int)
+
+            Output:
+               ASTOperationNode
          */
-         inline void setEvent(enum ParseMode mode, string eventName, string function,
-         string entityName = "") {
-
-            switch (mode) {
-
-               case PARSE_ENTITY:
-                  instantiator->setEntityEvent(entityName, eventName, function);
-                  break;
-
-               case PARSE_CLASS:
-                  instantiator->setEntityClassEvent(entityName, eventName, function);
-                  break;
-
-               case PARSE_GAME:
-                  instantiator->setGameEvent(eventName, function);
-                  break;
-
-               default:
-                  throw UndefinedException("Parser::setEvent: invalid parse mode. This is a bug.");
-            }
-         }
+         std::shared_ptr<ASTOperationNode> ASTConnectRooms(string targetType,
+         string sourceRoomOrClass, string connectTo, string direction,
+         int lineNumber = 0);
 
       public:
 
@@ -189,6 +337,7 @@ namespace trogdor {
          inline Parser(std::unique_ptr<Instantiator> i, const Vocabulary &v):
          vocabulary(v) {
 
+            ast = std::make_shared<ASTNode>();
             instantiator = std::move(i);
          }
 

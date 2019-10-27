@@ -17,7 +17,7 @@ namespace trogdor {
 
       private:
 
-         // Function type used by gameSetters on a Game object
+         // Function type used to set game properties via a SET_PROPERTY operation
          typedef void (*gameSetterFunc) (
             Game *game, string value
          );
@@ -40,6 +40,18 @@ namespace trogdor {
          unordered_map<string, gameSetterFunc> gameSetters;
 
          /*
+            Registers AST operations that the Runtime Instantiator knows how to
+            execute.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void registerOperations();
+
+         /*
             Creates a property -> function map that's used to
             implement gameSetter().
 
@@ -53,7 +65,7 @@ namespace trogdor {
 
          /*
             Creates an entity type -> property -> function map that's used to
-            implement entitySetter() and entityClassSetter().
+            implement the SET_PROPERTY operation.
 
             Input:
                (none)
@@ -62,64 +74,6 @@ namespace trogdor {
                (none)
          */
          void mapEntitySetters();
-
-      protected:
-
-         /*
-            Does the actual setting of the Entity class's property value and
-            throws an exception if there are any errors.
-
-            Input:
-               Entity class's name (string)
-               Property name (string)
-               Property value (string)
-
-            Output:
-               (none)
-         */
-         virtual void entityClassSetterDriver(string className, string property,
-         string value);
-
-         /*
-            Does the actual setting of the Entity's property value and throws an
-            exception if there are any errors.
-
-            Input:
-               Entity's name (string)
-               Property name (string)
-               Property value (string)
-
-            Output:
-               (none)
-         */
-         virtual void entitySetterDriver(string entityName, string property,
-         string value);
-
-         /*
-            Does the actual setting of the default player property value and
-            throws an exception if there are any errors.
-
-            Input:
-               Property name (string)
-               Property value (string)
-
-            Output:
-               (none)
-         */
-         virtual void defaultPlayerSetterDriver(string property, string value);
-
-         /*
-            Does the actual setting of the game property value and throws an
-            exception if there are any errors.
-
-            Input:
-               Property name (string)
-               Property value (string)
-
-            Output:
-               (none)
-         */
-         virtual void gameSetterDriver(string property, string value);
 
       public:
 
@@ -131,239 +85,8 @@ namespace trogdor {
          Runtime(const Vocabulary &v, Game *g);
 
          /*
-            Creates an entity class that can be used to instantiate one or
-            more entities of a specific type.
-
-            Input:
-               Entity class's name (string)
-               Entity class type (Room, Creature, or Object.)
-
-            Output:
-               (none)
-         */
-         virtual void makeEntityClass(string className, enum entity::EntityType classType);
-
-         /*
-            Returns true if the entity class identified by className exists and
-            false if it doesn't.
-
-            Input:
-               Entity class's name (string)
-               Entity class's type (enum entity::EntityType)
-
-            Output:
-               Whether or not the Entity class exists (bool)
-         */
-         virtual bool entityClassExists(string className,
-         enum entity::EntityType entityType);
-
-         /*
-            Same as previous definition of entityClassExists() except that it
-            doesn't take into account the class's type.
-
-            Input:
-               Entity's class name (string)
-
-            Output:
-               Whether or not the Entity class exists (bool)
-         */
-         virtual bool entityClassExists(string className);
-
-         /*
-            Takes as input the name of an Entity class and returns its type.
-
-            Input:
-               Entity class's name (string)
-
-            Output:
-               Entity class's type (enum Entity::EntityType)
-         */
-         virtual enum entity::EntityType getEntityClassType(string className);
-
-         /*
-            Identical to loadGameScript and loadEntityScript, except that the
-            script gets loaded into an Entity class's Lua state.
-
-            Input:
-               Entity class's name (string)
-               Script (filename or script)
-               Load method (FILE = load by filename, STRING = load as string)
-
-            Output:
-               (none)
-         */
-         virtual void loadEntityClassScript(string entityClass, string script,
-         enum LoadScriptMethod method = FILE);
-
-         /*
-            Sets an event for a specific Entity class.
-
-            Input:
-               Entity class name (string)
-               Event name (string)
-               Function to call when event is triggered(string)
-
-            Output:
-               (none)
-         */
-         virtual void setEntityClassEvent(string entityName, string eventName,
-         string function);
-
-         /*
-            Set's a message for an Entity class.
-
-            Input:
-               Entity class's name (string)
-               Message name (string)
-               Message value (string)
-
-            Output:
-               (none)
-         */
-         virtual void setEntityClassMessage(string className, string messageName,
-         string message);
-
-         /*
-            Instantiates an entity (Room, Creature, or Object.) If a class is
-            specified, the entity will be configured according to that class's
-            properties.
-
-            This method should throw an exception if another entity by the same
-            name already exists.
-
-            Input:
-               Entity's name (string)
-               Entity type (Room, Creature, or Object.)
-               Entity's class (string, optional)
-
-            Output:
-               (none)
-         */
-         virtual void makeEntity(string entityName, enum entity::EntityType entityType,
-         string className = "");
-
-         /*
-            Returns true if the entity identified by entityName exists and false
-            if it doesn't.
-
-            Input:
-               Entity's name (string)
-
-            Output:
-               Whether or not the Entity exists (bool)
-         */
-         virtual bool entityExists(string entityName);
-
-         /*
-            Returns the type of Entity referenced by entityName. Throws an
-            exception if the entity doesn't exist.
-
-            Input:
-               Entity's name (string)
-
-            Output:
-               The Entity's type (enum entity::EntityType)
-         */
-         virtual enum entity::EntityType getEntityType(string entityName);
-
-         /*
-            Returns the class of the Entity referenced by entityName. Throws an
-            exception if the Entity doesn't exist.
-
-            Input:
-               Entity's name (string)
-
-            Output:
-               The Entity's class (string)
-         */
-         virtual string getEntityClass(string entityName);
-
-         /*
-            Identical to loadGameScript, except that the script gets loaded into
-            an Entity's Lua state instead of core::Game's.
-
-            Input:
-               Entity's name (string)
-               Script (filename or script)
-               Load method (FILE = load by filename, STRING = load as string)
-
-            Output:
-               (none)
-         */
-         virtual void loadEntityScript(string entityName, string script,
-         enum LoadScriptMethod method = FILE);
-
-         /*
-            Sets an event for a specific Entity.
-
-            Input:
-               Entity name (string)
-               Event name (string)
-               Function to call when event is triggered(string)
-
-            Output:
-               (none)
-         */
-         virtual void setEntityEvent(string entityName, string eventName,
-         string function);
-
-         /*
-            Set's a message for an Entity.
-
-            Input:
-               Entity's name (string)
-               Message name (string)
-               Message value (string)
-
-            Output:
-               (none)
-         */
-         virtual void setEntityMessage(string entityName, string messageName,
-         string message);
-
-         /*
-            Set's a message for the default player.
-
-            Input:
-               Message name (string)
-               Message value (string)
-
-            Output:
-               (none)
-         */
-         virtual void setDefaultPlayerMessage(string messageName, string message);
-
-         /*
-            Loads a Lua script into the game's global Lua state. By default,
-            we load a script by filename, but passing STRING into the second
-            argument will allow you to pass the script into the first parameter
-            as a string.
-
-            Input:
-               Script (filename or script)
-               Load method (FILE = load by filename, STRING = load as string)
-
-            Output:
-               (none)
-         */
-         virtual void loadGameScript(string script, enum LoadScriptMethod method = FILE);
-
-         /*
-            Sets a global event.
-
-            Input:
-               Event name (string)
-               Function to call when event is triggered(string)
-
-            Output:
-               (none)
-         */
-         virtual void setGameEvent(string eventName, string function);
-
-         /*
-            Most of the instantiation is completed already by the above functions,
-            but there are a few things we need to do at the end before the game
-            can be ready to play.
+            There are a few things we need to do after instantiation to get the
+            game ready for play.
 
             Input:
                (none)
@@ -371,7 +94,7 @@ namespace trogdor {
             Output:
                (none)
          */
-         virtual void instantiate();
+         virtual void afterInstantiate();
    };
 }
 
