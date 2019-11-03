@@ -91,20 +91,6 @@ extern bool isValidInteger(const std::string &s);
 */
 extern bool isValidDouble(const std::string &s);
 
-/*
-   The lack of enum support in std::hash was considered a defect in C++11 and
-   fixed in C++14, but my supposedly C++14-supporting compiler (GCC 5.4) doesn't
-   work, so I have to implement this. I'm going to keep this here as long as
-   the code is compiling against C++14 to be safe, but once I switch to C++17,
-   I'll remove it.
-*/
-struct EnumHash {
-
-   template <typename T> inline std::size_t operator()(T t) const {
-      return static_cast<std::size_t>(t);
-   }
-};
-
 
 #endif
 

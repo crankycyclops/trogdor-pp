@@ -4,6 +4,7 @@
 
 #include <string>
 #include <memory>
+#include <algorithm>
 #include <unordered_map>
 #include <functional>
 
@@ -42,12 +43,12 @@ namespace trogdor {
          // actual operation is performed
          unordered_map<ASTOperation,
             std::function<void(const std::shared_ptr<ASTOperationNode> &operation)>,
-            EnumHash> preOperations;
+            std::hash<int>> preOperations;
 
          // Maps operation types to functions that perform the operation
          unordered_map<ASTOperation,
             std::function<void(const std::shared_ptr<ASTOperationNode> &operation)>,
-            EnumHash> operations;
+            std::hash<int>> operations;
 
          // Maintains a list of valid Entity and Entity class properties (second
          // list's keys), along with a validator function for each (second
