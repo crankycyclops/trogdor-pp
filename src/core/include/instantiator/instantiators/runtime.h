@@ -31,7 +31,7 @@ namespace trogdor {
          Game *game;
 
          // User defined Entity classes
-         unordered_map<string, std::unique_ptr<Entity>> typeClasses;
+         unordered_map<string, std::unique_ptr<entity::Entity>> typeClasses;
 
          // A hash mapping of entity type -> property name -> setter function
          unordered_map<string, unordered_map<string, propSetterFunc>> propSetters;
