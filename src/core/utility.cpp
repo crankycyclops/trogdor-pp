@@ -1,6 +1,7 @@
 #include <string>
 #include <cstring>
 #include <cctype>
+#include <cmath>
 #include <regex>
 #include <algorithm> 
 #include <functional>
