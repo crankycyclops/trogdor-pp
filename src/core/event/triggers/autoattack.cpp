@@ -11,9 +11,9 @@ namespace trogdor { namespace event {
 
    void AutoAttackEventTrigger::execute(EventArgumentList args) {
 
-      Game  *game  = boost::get<Game *>(args[0]);
-      Being *being = static_cast<Being *>(boost::get<Entity *>(args[1]));
-      Place *place = static_cast<Place *>(boost::get<Entity *>(args[3]));
+      Game  *game  = std::get<Game *>(args[0]);
+      Being *being = static_cast<Being *>(std::get<Entity *>(args[1]));
+      Place *place = static_cast<Place *>(std::get<Entity *>(args[3]));
 
       entity::CreatureListCItPair creatures = place->getCreatures();
 

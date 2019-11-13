@@ -5,7 +5,7 @@ https://github.com/crankycyclops/trogdor
 For this project, you'll require the following tools:
 	- GNU C++ compiler (if you want to use a different compiler, you're on your own)
 	- GNU Make (if you want to use a different build tool, you're also on your own)
-	- The boost libraries (libboost-all-dev package on Ubuntu)
+	- The boost libraries (libboost-dev package on Ubuntu -- only required for server components)
 	- LibXML2 (libxml2-dev package on Ubuntu)
 	- Lua 5.1+ (lua5.x-dev package on Ubuntu, where 5.x is the version you're compiling against)
 

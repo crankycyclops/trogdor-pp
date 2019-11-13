@@ -4,10 +4,9 @@
 
 #include <string>
 #include <vector>
-#include <boost/variant.hpp>
+#include <variant>
 
 using namespace std;
-using namespace boost;
 
 
 namespace trogdor {
@@ -27,7 +26,7 @@ namespace trogdor {
    };
 
    // I couldn't forward declare the vector, so pay attention to this if LuaArray changes
-   typedef boost::variant<string, double, bool, vector<LuaValue> *, LuaTable *> LuaValueContent;
+   typedef std::variant<string, double, bool, vector<LuaValue> *, LuaTable *> LuaValueContent;
 
    // Represents a single value
    struct LuaValue {

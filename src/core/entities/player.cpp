@@ -3,7 +3,6 @@
 
 
 using namespace std;
-using namespace boost;
 
 namespace trogdor { namespace entity {
 
