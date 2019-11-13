@@ -11,22 +11,22 @@ namespace trogdor { namespace event {
 
       for (int i = 0; i < args.size(); i++) {
 
-         switch (args[i].which()) {
+         switch (args[i].index()) {
 
             case 0: // int
-               L->pushArgument((double)boost::get<int>(args[i]));
+               L->pushArgument((double)std::get<int>(args[i]));
                break;
 
             case 1: // double
-               L->pushArgument(boost::get<double>(args[i]));
+               L->pushArgument(std::get<double>(args[i]));
                break;
 
             case 2: // bool
-               L->pushArgument(boost::get<bool>(args[i]));
+               L->pushArgument(std::get<bool>(args[i]));
                break;
 
             case 3: // string
-               L->pushArgument(boost::get<string>(args[i]));
+               L->pushArgument(std::get<string>(args[i]));
                break;
 
             // TODO: we should pass the Game once we have a Lua object for it
@@ -35,7 +35,7 @@ namespace trogdor { namespace event {
 
             default: // it's some kind of Entity
 
-               entity::Entity *arg = boost::get<entity::Entity *>(args[i]);
+               entity::Entity *arg = std::get<entity::Entity *>(args[i]);
 
                if (nullptr == arg) {
                   L->pushNilArgument();

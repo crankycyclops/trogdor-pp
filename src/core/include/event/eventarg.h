@@ -4,7 +4,7 @@
 
 #include <string>
 #include <vector>
-#include <boost/variant.hpp>
+#include <variant>
 
 #include "../entities/entity.h"
 #include "../entities/place.h"
@@ -22,7 +22,7 @@ namespace trogdor { namespace event {
 
    // Allows us to pass a variable number of unknown type arguments to an
    // EventTrigger via EventHandler::event().
-   typedef boost::variant<int, double, bool, string, Game *, entity::Entity *> EventArgument;
+   typedef std::variant<int, double, bool, string, Game *, entity::Entity *> EventArgument;
    typedef vector<EventArgument> EventArgumentList;
 
 }}

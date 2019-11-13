@@ -10,8 +10,8 @@ namespace trogdor { namespace event {
 
    void RespawnEventTrigger::execute(EventArgumentList args) {
 
-      Game  *game  = boost::get<Game *>(args[0]);
-      Being *being = static_cast<Being *>(boost::get<Entity *>(args[1]));
+      Game  *game  = std::get<Game *>(args[0]);
+      Being *being = static_cast<Being *>(std::get<Entity *>(args[1]));
 
       if (being->getRespawnEnabled()) {
 

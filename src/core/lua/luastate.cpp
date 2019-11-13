@@ -35,23 +35,23 @@ namespace trogdor {
       switch (v.type) {
 
          case LUA_TYPE_STRING:
-            lua_pushstring(L, boost::get<std::string>(v.value).c_str());
+            lua_pushstring(L, std::get<std::string>(v.value).c_str());
             break;
 
          case LUA_TYPE_NUMBER:
-            lua_pushnumber(L, boost::get<double>(v.value));
+            lua_pushnumber(L, std::get<double>(v.value));
             break;
 
          case LUA_TYPE_BOOLEAN:
-            lua_pushboolean(L, boost::get<bool>(v.value));
+            lua_pushboolean(L, std::get<bool>(v.value));
             break;
 
          case LUA_TYPE_ARRAY:
-            pushArray(L, *boost::get<LuaArray *>(v.value));
+            pushArray(L, *std::get<LuaArray *>(v.value));
             break;
 
          case LUA_TYPE_TABLE:
-            pushTable(L, *boost::get<LuaTable *>(v.value));
+            pushTable(L, *std::get<LuaTable *>(v.value));
             break;
 
          case LUA_TYPE_FUNCTION:
