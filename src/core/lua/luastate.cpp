@@ -151,7 +151,7 @@ namespace trogdor {
 
       int status;
 
-      if (status = luaL_loadfile(L, filename.c_str())) {
+      if ((status = luaL_loadfile(L, filename.c_str()))) {
 
          switch (status) {
 
@@ -191,7 +191,7 @@ namespace trogdor {
 
       int status;
 
-      if (status = luaL_loadstring(L, script.c_str())) {
+      if ((status = luaL_loadstring(L, script.c_str()))) {
 
          switch (status) {
 

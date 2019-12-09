@@ -55,6 +55,12 @@ namespace trogdor {
       public:
 
          /*
+            When a class has one or more virtual functions, it should also have
+            a virtual destructor.
+         */
+         virtual ~Trogout() = 0;
+
+         /*
             Returns the currently set channel, which tells the stream where to
             route its output.
 

@@ -21,6 +21,12 @@ namespace trogdor {
       public:
 
          /*
+            When a class has one or more virtual functions, it should also have
+            a virtual destructor.
+         */
+         virtual ~Action() = 0;
+
+         /*
             Checks the syntax of a command.  Returns true if the syntax is valid
             and false if it is not.  It's up to the specific action class to
             implement this method.

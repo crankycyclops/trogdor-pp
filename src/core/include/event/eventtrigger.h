@@ -34,6 +34,12 @@ namespace trogdor { namespace event {
          }
 
          /*
+            When a class has one or more virtual functions, it should also have
+            a virtual destructor.
+         */
+         virtual ~EventTrigger() = 0;
+
+         /*
             Returns the state of the allowAction and continueExecution flags.
          */
          inline bool allowAction() const {return allowActionFlag;}

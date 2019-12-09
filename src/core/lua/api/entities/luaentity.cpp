@@ -130,6 +130,11 @@ namespace trogdor { namespace entity {
             case ENTITY_CREATURE:
                delete static_cast<Creature *>(e);
                break;
+
+            // TODO: we shouldn't ever get here, but if we do, should I display
+            // some kind of warning? I don't think it should be a fatal error.
+            default:
+               break;
          }
       }
 

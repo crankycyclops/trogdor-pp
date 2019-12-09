@@ -86,8 +86,10 @@ namespace trogdor {
    int numArgs) {
 
       if (operation->size() != numArgs) {
-         throw ValidationException(operation->getOperation() +
-            ": invalid number of arguments. This is a bug.");
+         throw ValidationException(
+            ASTOperationNode::getOperationStr(operation->getOperation()) +
+            ": invalid number of arguments. This is a bug."
+         );
       }
    }
 
@@ -97,20 +99,26 @@ namespace trogdor {
    int minArgs, unordered_map<string, int> targetTypeToNumArgs) {
 
       if (operation->size() < minArgs) {
-         throw ValidationException(operation->getOperation() +
-            ": invalid number of arguments. This is a bug.");
+         throw ValidationException(
+            ASTOperationNode::getOperationStr(operation->getOperation()) +
+            ": invalid number of arguments. This is a bug."
+         );
       }
 
       string targetType = operation->getChildren()[0]->getValue();
 
       if (targetTypeToNumArgs.end() == targetTypeToNumArgs.find(targetType)) {
-         throw ValidationException(string(operation->getOperation() +
-            ": invalid target type '") + targetType + "'. This is a bug.");
+         throw ValidationException(
+            ASTOperationNode::getOperationStr(operation->getOperation()) +
+            ": invalid target type '" + targetType + "'. This is a bug."
+         );
       }
 
       else if (operation->size() != targetTypeToNumArgs[targetType]) {
-         throw ValidationException(operation->getOperation() +
-            ": invalid number of arguments. This is a bug.");
+         throw ValidationException(
+            ASTOperationNode::getOperationStr(operation->getOperation()) +
+            ": invalid number of arguments. This is a bug."
+         );
       }
    }
 
