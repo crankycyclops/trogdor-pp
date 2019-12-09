@@ -375,6 +375,8 @@ namespace trogdor {
                initLibs();
                loadScriptFromString(rhs.parsedScriptData);
             }
+
+            return *this;
          }
 
          /*

@@ -41,9 +41,9 @@ trogdor::Trogin &TCPIn::operator>> (string &val) {
 
 		requestMutex = false; // reset this for the next call
 		streamMutex.unlock();
-
-		return *this;
 	}
+
+	return *this;
 }
 
 

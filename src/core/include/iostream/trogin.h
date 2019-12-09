@@ -21,6 +21,12 @@ namespace trogdor {
       public:
 
          /*
+            When a class has one or more virtual functions, it should also have
+            a virtual destructor.
+         */
+         virtual ~Trogin() = 0;
+
+         /*
             Returns a new instance of the input stream.  This is so that Entity
             clone constructors will work properly.
 
