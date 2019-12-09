@@ -24,7 +24,7 @@ To build a version with GDB debug symbols, type:
 
 make debug
 
-By default, g++ is the compiler, but you can change this by setting the CXX environment variable (example, CXX="clang" make would build using clang instead of g++.)
+By default, g++ is the compiler, but you can change this by setting the CXX environment variable (example, CXX="clang" make would build using clang instead of g++.) Build has been tested with both G++ 7 and Clang 8.
 
 Instead of compiling a standalone single-player game, you can also compile a sample (and very poorly written) server/client that allows multi-player network play by typing the commands below. Please be aware that the server and client both use boost::asio, which requires support for pthreads. I had no idea what I was doing when I wrote these components, so use at your own risk ;)
 

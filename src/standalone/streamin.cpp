@@ -8,6 +8,7 @@ using namespace std;
 trogdor::Trogin &StreamIn::operator>> (string &val) {
 
    getline(*stream, val);
+   return *this;
 }
 
 std::unique_ptr<trogdor::Trogin> StreamIn::clone() {

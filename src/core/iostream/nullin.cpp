@@ -9,6 +9,7 @@ namespace trogdor {
    Trogin &NullIn::operator>> (string &val) {
 
       val = "";
+      return *this;
    }
 
    std::unique_ptr<Trogin> NullIn::clone() {
