@@ -3,6 +3,12 @@
 namespace trogdor {
 
 
+   // See note in the comment above the destructor definition in
+   // include/parser/parser.h for an explanation of why this is here.
+   Parser::~Parser() {}
+
+   /**************************************************************************/
+
    std::shared_ptr<ASTOperationNode> Parser::ASTDefineDirection(string direction,
    int lineNumber) {
 
