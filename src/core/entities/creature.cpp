@@ -9,6 +9,8 @@ using namespace std;
 namespace trogdor { namespace entity {
 
 
+   // TODO: I can reimplement this as a BST so I don't have to rebuilt the
+   // whole list each time a weapon is added or removed from an inventory
    void Creature::buildWeaponCache() {
 
       ObjectSetCItPair objs = getInventoryObjects();
@@ -57,11 +59,11 @@ namespace trogdor { namespace entity {
 
          // select the next strongest weapon with some probability determined by
          // intelligence
-         for_each(weaponCache.begin(), weaponCache.end(), [&](Object * const &weapon) {
+         for (auto &weapon: weaponCache) {
             if (d.roll() < pSelectWeapon) {
                return weapon;
             }
-         });
+         }
 
          // we got all the way to the end, so return the weakest weapon
          return weaponCache.back();
