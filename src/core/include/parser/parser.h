@@ -329,6 +329,12 @@ namespace trogdor {
       public:
 
          /*
+            When a class has one or more virtual functions, it should also have
+            a virtual destructor.
+         */
+         virtual ~Parser() = 0;
+
+         /*
             Constructor for the Parser class.
 
             Input:
