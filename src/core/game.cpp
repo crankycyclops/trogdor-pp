@@ -24,8 +24,6 @@
 #include "include/exception/entityexception.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -36,19 +34,19 @@ namespace trogdor {
          errStream = std::move(e);
 
          inGame = false;
-         timer = make_unique<Timer>(this);
-         events = make_unique<event::EventHandler>();
+         timer = std::make_unique<Timer>(this);
+         events = std::make_unique<event::EventHandler>();
 
          introduction.enabled           = DEFAULT_INTRODUCTION_ENABLED;
          introduction.pauseWhileReading = DEFAULT_INTRODUCTION_PAUSE;
          introduction.text              = "";
 
-         defaultPlayer = make_unique<entity::Player>(
+         defaultPlayer = std::make_unique<entity::Player>(
             this,
             "default",
-            make_unique<NullOut>(),
-            make_unique<NullIn>(),
-            make_unique<NullOut>()
+            std::make_unique<NullOut>(),
+            std::make_unique<NullIn>(),
+            std::make_unique<NullOut>()
          );
 
          L = std::make_shared<LuaState>(this);
@@ -58,7 +56,7 @@ namespace trogdor {
       }
 
       catch (const Exception &e) {
-         *errStream << e.what() << endl;
+         *errStream << e.what() << std::endl;
       }
    }
 
@@ -89,7 +87,7 @@ namespace trogdor {
       }
 
       catch (const Exception &e) {
-         *errStream << e.what() << endl;
+         *errStream << e.what() << std::endl;
          return false;
       }
 
@@ -152,10 +150,10 @@ namespace trogdor {
          // we really only need this to give player->in() something to do
          string blah;
 
-         player->out() << introduction.text << endl << endl;
-         player->out() << "Press enter to start." << endl;
+         player->out() << introduction.text << std::endl << std::endl;
+         player->out() << "Press enter to start." << std::endl;
          player->in() >> blah;
-         player->out() << endl;
+         player->out() << std::endl;
 
          if (introduction.pauseWhileReading) {
             start();
@@ -207,7 +205,7 @@ namespace trogdor {
 
       // do nothing if we're not in a running state
       if (!inGame) {
-         player->out() << "Game is stopped and not accepting commands." << endl;
+         player->out() << "Game is stopped and not accepting commands." << std::endl;
          return;
       }
 
@@ -222,7 +220,7 @@ namespace trogdor {
             }
 
             else {
-               player->out() << "You haven't entered any commands yet!" << endl;
+               player->out() << "You haven't entered any commands yet!" << std::endl;
                return;
             }
          }
@@ -231,7 +229,7 @@ namespace trogdor {
          Action *action = vocabulary.getVerbAction(verb);
 
          if (nullptr == action || !action->checkSyntax(command)) {
-            player->out() << "Sorry, I don't understand you." << endl;
+            player->out() << "Sorry, I don't understand you." << std::endl;
          }
 
          else {
@@ -242,7 +240,7 @@ namespace trogdor {
       }
 
       else {
-         player->out() << "Sorry, I don't understand you." << endl;
+         player->out() << "Sorry, I don't understand you." << std::endl;
       }
 
       lastCommand = command;

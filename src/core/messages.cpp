@@ -3,8 +3,6 @@
 
 #include "include/messages.h"
 
-using namespace std;
-
 namespace trogdor {
 
 

@@ -8,8 +8,6 @@
 #include <locale>
 #include <vector>
 
-using namespace std;
-
 
 /*
    Converts a string to lowercase.
@@ -17,7 +15,7 @@ using namespace std;
    Input: string
    Output: lowercase version of string
 */
-string strToLower(string str);
+std::string strToLower(std::string str);
 
 /*
    Trims whitespace from the left of a string.  Shamelessly stolen from:
@@ -26,7 +24,7 @@ string strToLower(string str);
    Input: reference to string
    Output: reference to the same string, which has been modified
 */
-string &ltrim(std::string &s);
+std::string &ltrim(std::string &s);
 
 /*
    Trims whitespace from the right of a string.  Shamelessly stolen from:
@@ -35,7 +33,7 @@ string &ltrim(std::string &s);
    Input: reference to string
    Output: reference to the same string, which has been modified
 */
-string &rtrim(std::string &s);
+std::string &rtrim(std::string &s);
 
 /*
    Trims whitespace from both sides of a string.  Shamelessly stolen from:
@@ -44,7 +42,7 @@ string &rtrim(std::string &s);
    Input: reference to string
    Output: reference to the same string, which has been modified
 */
-string &trim(std::string &s);
+std::string &trim(std::string &s);
 
 /*
    Replaces all instances of search with replace in str. Returns a new string
@@ -90,7 +88,7 @@ bool isValidInteger(const std::string &s);
 bool isValidDouble(const std::string &s);
 
 
-string strToLower(string str) {
+std::string strToLower(std::string str) {
 
    for (int i = 0; i < strlen(str.c_str()); i++) {
       str[i] = tolower(str[i]);
@@ -100,19 +98,19 @@ string strToLower(string str) {
 }
 
 
-string &ltrim(std::string &s) {
+std::string &ltrim(std::string &s) {
         s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
         return s;
 }
 
 
-string &rtrim(std::string &s) {
+std::string &rtrim(std::string &s) {
         s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
         return s;
 }
 
 
-string &trim(std::string &s) {
+std::string &trim(std::string &s) {
         return ltrim(rtrim(s));
 }
 
@@ -152,7 +150,7 @@ string vectorToStr(vector<string> list, string conjunction) {
 
 bool isValidInteger(const std::string &s) {
 
-   return regex_match(s, regex("^\\-?\\d+$")) ? true : false;
+   return std::regex_match(s, std::regex("^\\-?\\d+$")) ? true : false;
 }
 
 

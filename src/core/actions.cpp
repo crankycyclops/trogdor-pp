@@ -9,7 +9,6 @@
 
 #include "include/exception/beingexception.h"
 
-using namespace std;
 using namespace trogdor::entity;
 
 namespace trogdor {
@@ -68,7 +67,7 @@ namespace trogdor {
       }
 
       srand(time(NULL));
-      player->out("display") << responses[i] << endl;
+      player->out("display") << responses[i] << std::endl;
    }
 
 /******************************************************************************/
@@ -95,14 +94,14 @@ namespace trogdor {
       double totalPercent = 0.0;
 
       if (0 == player->getInventoryCount()) {
-         player->out("display") << "You don't have anything!" << endl;
+         player->out("display") << "You don't have anything!" << std::endl;
       }
 
       else {
 
          ObjectSetCItPair invItems = player->getInventoryObjects();
 
-         player->out("display") << "Items in your inventory:" << endl << endl;
+         player->out("display") << "Items in your inventory:" << std::endl << std::endl;
 
          for_each(invItems.begin, invItems.end, [&](Object * const &obj) {
 
@@ -122,12 +121,12 @@ namespace trogdor {
                }
             }
 
-            player->out("display") << endl;
+            player->out("display") << std::endl;
          });
 
          if (player->getInventoryMaxWeight() > 0) {
-            player->out("display") << endl << "You are currently using "
-               << totalPercent << "% of your inventory." << endl;
+            player->out("display") << std::endl << "You are currently using "
+               << totalPercent << "% of your inventory." << std::endl;
          }
       }
    }
@@ -179,7 +178,7 @@ namespace trogdor {
          });
 
          if (0 == items.size()) {
-            player->out("display") << "There is no " << object << " here!" << endl;
+            player->out("display") << "There is no " << object << " here!" << std::endl;
             return;
          }
 
@@ -195,7 +194,7 @@ namespace trogdor {
          }
 
          catch (const string &name) {
-            player->out("display") << "There is no " << name << " here!" << endl;
+            player->out("display") << "There is no " << name << " here!" << std::endl;
          }
       }
    }
@@ -223,7 +222,7 @@ namespace trogdor {
 
       if (roomItems.begin == roomItems.end) {
          player->out("display") << "There is no " << command->getDirectObject()
-            << " here!" << endl;
+            << " here!" << std::endl;
          return;
       }
 
@@ -234,7 +233,7 @@ namespace trogdor {
             player);
 
          if (ENTITY_OBJECT != thing->getType()) {
-            player->out("display") << "You can't take that!" << endl;
+            player->out("display") << "You can't take that!" << std::endl;
          }
 
          else {
@@ -245,12 +244,12 @@ namespace trogdor {
 
                string message = thing->getMessage("take");
                if (message.length() > 0) {
-                  player->out("display") << message << endl;
+                  player->out("display") << message << std::endl;
                }
 
                else {
                   player->out("display") << "You take the " << thing->getName()
-                     << "." << endl;
+                     << "." << std::endl;
                }
             }
 
@@ -262,16 +261,16 @@ namespace trogdor {
                   case entity::BeingException::TAKE_TOO_HEAVY:
                      player->out("display") << command->getDirectObject()
                         << " is too heavy.  Try dropping something first."
-                        << endl;
+                        << std::endl;
                      break;
 
                   case entity::BeingException::TAKE_UNTAKEABLE:
-                     player->out("display") << "You can't take that!" << endl;
+                     player->out("display") << "You can't take that!" << std::endl;
                      break;
 
                   default:
                      player->err() << "Unknown error taking object.  "
-                        << "This is a bug." << endl;
+                        << "This is a bug." << std::endl;
                      break;
                }
             }
@@ -279,7 +278,7 @@ namespace trogdor {
       }
 
       catch (const string &name) {
-         player->out("display") << "There is no " << name << " here!" << endl;
+         player->out("display") << "There is no " << name << " here!" << std::endl;
       }
    }
 
@@ -309,7 +308,7 @@ namespace trogdor {
 
       if (invItems.begin == invItems.end) {
          player->out("display") << "You don't have a " << command->getDirectObject()
-            << "!" << endl;
+            << "!" << std::endl;
          return;
       }
 
@@ -325,12 +324,12 @@ namespace trogdor {
 
             string message = object->getMessage("drop");
             if (message.length() > 0) {
-               player->out("display") << message << endl;
+               player->out("display") << message << std::endl;
             }
 
             else {
                player->out("display") << "You drop the " << object->getName()
-                  << "." << endl;
+                  << "." << std::endl;
             }
          }
 
@@ -340,19 +339,19 @@ namespace trogdor {
 
                case entity::BeingException::DROP_UNDROPPABLE:
                   // TODO: add message for this (named undroppable)
-                  player->out("display") << "You can't drop that!" << endl;
+                  player->out("display") << "You can't drop that!" << std::endl;
                   break;
 
                default:
                   player->err() << "Unknown error dropping object.  This is a "
-                     << "bug." << endl;
+                     << "bug." << std::endl;
                   break;
             }
          }
       }
 
       catch (const string &name) {
-         player->out("display") << "You don't have a " << name << "!" << endl;
+         player->out("display") << "You don't have a " << name << "!" << std::endl;
       }
    }
 
@@ -402,7 +401,7 @@ namespace trogdor {
 
       // only Rooms have connections to eachother
       if (ENTITY_ROOM != player->getLocation()->getType()) {
-         player->out("display") << "You can't go that way." << endl;
+         player->out("display") << "You can't go that way." << std::endl;
          // TODO: fire can't go that way event?
          return;
       }
@@ -410,7 +409,7 @@ namespace trogdor {
       Room *next = (dynamic_cast<Room *>(player->getLocation()))->getConnection(direction);
 
       if (nullptr == next) {
-         player->out("display") << "You can't go that way." << endl;
+         player->out("display") << "You can't go that way." << std::endl;
          // TODO: fire can't go that way event?
          return;
       }
@@ -419,11 +418,11 @@ namespace trogdor {
       string goMessage = player->getLocation()->getMessage("go" + direction);
 
       if (goMessage.length() > 0) {
-         player->out("display") << goMessage << endl << endl;
+         player->out("display") << goMessage << std::endl << std::endl;
       }
 
       if (enterMessage.length() > 0) {
-         player->out("display") << enterMessage << endl << endl;
+         player->out("display") << enterMessage << std::endl << std::endl;
       }
 
       player->gotoLocation(next);
@@ -456,7 +455,7 @@ namespace trogdor {
 
       if (beings.begin == beings.end) {
          player->out("display") << "There is no " << command->getDirectObject()
-            << " here!" << endl;
+            << " here!" << std::endl;
          return;
       }
 
@@ -474,7 +473,7 @@ namespace trogdor {
             ObjectListCItPair items = player->getInventoryObjectsByName(weaponName);
 
             if (items.begin == items.end) {
-               player->out("display") << "You don't have a " << weaponName << "!" << endl;
+               player->out("display") << "You don't have a " << weaponName << "!" << std::endl;
                return;
             }
 
@@ -487,13 +486,13 @@ namespace trogdor {
                // TODO: this check should be made inside Being (we'd have an
                // exception to catch)
                if (!weapon->isTagSet(Object::WeaponTag)) {
-                  player->out("display") << "The " << weaponName << " isn't a weapon!" << endl;
+                  player->out("display") << "The " << weaponName << " isn't a weapon!" << std::endl;
                   return;
                }
             }
 
             catch (const string &name) {
-               player->out("display") << "You don't have a " << weaponName << "!" << endl;
+               player->out("display") << "You don't have a " << weaponName << "!" << std::endl;
                return;
             }
          }
@@ -502,7 +501,7 @@ namespace trogdor {
       }
 
       catch (const string &name) {
-         player->out("display") << "There is no " << name << " here!" << endl;
+         player->out("display") << "There is no " << name << " here!" << std::endl;
       }
    }
 }

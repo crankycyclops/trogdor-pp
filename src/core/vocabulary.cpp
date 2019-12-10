@@ -8,8 +8,6 @@
 #include "include/action.h"
 #include "include/actions.h"
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -23,26 +21,26 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   // Advanced stuff happens here...
+   // Clearly, advanced stuff happens here...
    Vocabulary::~Vocabulary() {}
 
    /**************************************************************************/
 
-   void Vocabulary::insertVerbAction(string verb, std::unique_ptr<Action> action) {
+   void Vocabulary::insertVerbAction(std::string verb, std::unique_ptr<Action> action) {
 
       verbActions[verb] = std::move(action);
    }
 
    /**************************************************************************/
 
-   void Vocabulary::removeVerbAction(string verb) {
+   void Vocabulary::removeVerbAction(std::string verb) {
 
       verbActions.erase(verb);
    }
 
    /**************************************************************************/
 
-   Action *Vocabulary::getVerbAction(string verb) const {
+   Action *Vocabulary::getVerbAction(std::string verb) const {
 
       if (verbActions.find(verb) == verbActions.end()) {
 
