@@ -1,7 +1,5 @@
 #include "../../include/event/triggers/luaeventtrigger.h"
 
-using namespace std;
-
 namespace trogdor { namespace event {
 
 
@@ -26,7 +24,7 @@ namespace trogdor { namespace event {
                break;
 
             case 3: // string
-               L->pushArgument(std::get<string>(args[i]));
+               L->pushArgument(std::get<std::string>(args[i]));
                break;
 
             // TODO: we should pass the Game once we have a Lua object for it

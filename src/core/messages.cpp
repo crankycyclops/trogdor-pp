@@ -6,7 +6,7 @@
 namespace trogdor {
 
 
-   string Messages::get(const string name) const {
+   std::string Messages::get(const std::string &name) const {
 
       if (messageTable.find(name) == messageTable.end()) {
          return "";
@@ -16,16 +16,16 @@ namespace trogdor {
    }
 
 
-   void Messages::set(string name, string message) {
+   void Messages::set(std::string name, std::string message) {
 
       messageTable[name] = message;
       return;
    }
 
 
-   void Messages::display(string name, ostream &out) const {
+   void Messages::display(std::string name, std::ostream &out) const {
 
-      string message = get(name);
+      std::string message = get(name);
 
       out << message;
       if (message.length() > 0) {

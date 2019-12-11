@@ -4,8 +4,6 @@
 #include "../../../include/entities/room.h"
 #include "../../../include/lua/api/entities/luaroom.h"
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -90,7 +88,7 @@ namespace trogdor { namespace entity {
          return luaL_error(L, "room class argument not yet supported");
       }
 
-      string name = luaL_checkstring(L, -1);
+      std::string name = luaL_checkstring(L, -1);
       lua_getglobal(L, LuaGame::globalName);
       Game *g = LuaGame::checkGame(L, -1);
 
@@ -108,7 +106,7 @@ namespace trogdor { namespace entity {
 
    int LuaRoom::getRoom(lua_State *L) {
 
-      string name = luaL_checkstring(L, -1);
+      std::string name = luaL_checkstring(L, -1);
 
       lua_getglobal(L, LuaGame::globalName);
       Game *g = LuaGame::checkGame(L, -1);

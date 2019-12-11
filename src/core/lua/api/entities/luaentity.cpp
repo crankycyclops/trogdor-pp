@@ -6,8 +6,6 @@
 #include "../../../include/lua/api/entities/luaentity.h"
 #include "../../../include/lua/api/entities/luabeing.h"
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -145,7 +143,7 @@ namespace trogdor { namespace entity {
 
    int LuaEntity::getEntity(lua_State *L) {
 
-      string name = luaL_checkstring(L, -1);
+      std::string name = luaL_checkstring(L, -1);
 
       lua_getglobal(L, LuaGame::globalName);
       Game *g = LuaGame::checkGame(L, -1);
@@ -165,7 +163,7 @@ namespace trogdor { namespace entity {
 
    int LuaEntity::in(lua_State *L) {
 
-      string str;
+      std::string str;
 
       int n = lua_gettop(L);
 
@@ -318,7 +316,7 @@ namespace trogdor { namespace entity {
          return luaL_error(L, "not an Entity!");
       }
 
-      enum EntityType type = Entity::strToType(luaL_checkstring(L, -1));
+      EntityType type = Entity::strToType(luaL_checkstring(L, -1));
 
       lua_pushboolean(L, e->isType(type));
       return 1;
@@ -400,7 +398,7 @@ namespace trogdor { namespace entity {
          return luaL_error(L, "not an Entity!");
       }
 
-      string title = luaL_checkstring(L, -1);
+      std::string title = luaL_checkstring(L, -1);
       e->setTitle(title);
 
       return 0;
@@ -442,7 +440,7 @@ namespace trogdor { namespace entity {
          return luaL_error(L, "not an Entity!");
       }
 
-      string desc = luaL_checkstring(L, -1);
+      std::string desc = luaL_checkstring(L, -1);
       e->setLongDescription(desc);
 
       return 0;
@@ -484,7 +482,7 @@ namespace trogdor { namespace entity {
          return luaL_error(L, "not an Entity!");
       }
 
-      string desc = luaL_checkstring(L, -1);
+      std::string desc = luaL_checkstring(L, -1);
       e->setShortDescription(desc);
 
       return 0;

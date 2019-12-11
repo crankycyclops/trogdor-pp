@@ -1,8 +1,6 @@
 #include <cstdarg>
 #include "../include/event/eventhandler.h"
 
-using namespace std;
-
 namespace trogdor { namespace event {
 
 

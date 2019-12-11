@@ -17,8 +17,6 @@
 constexpr int TICK_MILLISECONDS = 1000;
 
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -39,7 +37,7 @@ namespace trogdor {
          unsigned long time;            // current time
 
          // queue of jobs to execute every n ticks
-         list<std::shared_ptr<TimerJob>> queue;
+         std::list<std::shared_ptr<TimerJob>> queue;
 
          /*
             Executes all jobs in the queue and increments the time.  This is
@@ -139,4 +137,3 @@ namespace trogdor {
 
 
 #endif
-

@@ -5,8 +5,6 @@
 #include <memory>
 #include "action.h"
 
-using namespace std;
-
 namespace trogdor {
 
 

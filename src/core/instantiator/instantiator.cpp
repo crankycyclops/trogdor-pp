@@ -9,8 +9,6 @@
 #include "../include/exception/undefinedexception.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -29,7 +27,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Instantiator::assertBool(const Vocabulary &vocabulary, string value) {
+   void Instantiator::assertBool(const Vocabulary &vocabulary, std::string value) {
 
       // TODO: also allow strings "false" and "true"
       if (value != "1" && value != "0") {
@@ -39,7 +37,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Instantiator::assertInt(const Vocabulary &vocabulary, string value) {
+   void Instantiator::assertInt(const Vocabulary &vocabulary, std::string value) {
 
       if (!isValidInteger(value)) {
          throw ValidationException("value is not a valid integer");
@@ -48,7 +46,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Instantiator::assertDouble(const Vocabulary &vocabulary, string value) {
+   void Instantiator::assertDouble(const Vocabulary &vocabulary, std::string value) {
 
       if (!isValidDouble(value)) {
          throw ValidationException("value is not a valid number");
@@ -57,9 +55,9 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Instantiator::assertProbability(const Vocabulary &vocabulary, string value) {
+   void Instantiator::assertProbability(const Vocabulary &vocabulary, std::string value) {
 
-      string errorMsg = "value is not a valid probability (must be between 0 and 1)";
+      std::string errorMsg = "value is not a valid probability (must be between 0 and 1)";
 
       if (!isValidDouble(value)) {
          throw ValidationException(errorMsg);
@@ -74,7 +72,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Instantiator::assertString(const Vocabulary &vocabulary, string value) {
+   void Instantiator::assertString(const Vocabulary &vocabulary, std::string value) {
 
       // Any string is valid, so never throw an exception
       return;
@@ -96,7 +94,7 @@ namespace trogdor {
    /***************************************************************************/
 
    void Instantiator::assertValidASTArguments(const std::shared_ptr<ASTOperationNode> &operation,
-   int minArgs, unordered_map<string, int> targetTypeToNumArgs) {
+   int minArgs, unordered_map<std::string, int> targetTypeToNumArgs) {
 
       if (operation->size() < minArgs) {
          throw ValidationException(
@@ -105,7 +103,7 @@ namespace trogdor {
          );
       }
 
-      string targetType = operation->getChildren()[0]->getValue();
+      std::string targetType = operation->getChildren()[0]->getValue();
 
       if (targetTypeToNumArgs.end() == targetTypeToNumArgs.find(targetType)) {
          throw ValidationException(
@@ -124,16 +122,16 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Instantiator::assertTargetExists(string targetType, string targetName,
-   string action, int lineNumber) {
+   void Instantiator::assertTargetExists(std::string targetType, std::string targetName,
+   std::string action, int lineNumber) {
 
       if (0 == targetType.compare("entity")) {
 
          if (symbols.entities.end() == symbols.entities.find(targetName)) {
             throw ValidationException(
-               string("cannot " + action + " '") + targetName +
+               std::string("cannot " + action + " '") + targetName +
                "' because it hasn't been defined" +
-               (lineNumber ? " (line " + to_string(lineNumber) + ")" : "")
+               (lineNumber ? " (line " + std::to_string(lineNumber) + ")" : "")
             );
          }
       }
@@ -142,9 +140,9 @@ namespace trogdor {
 
          if (symbols.entityClasses.end() == symbols.entityClasses.find(targetName)) {
             throw ValidationException(
-               string("cannot " + action + " class '") + targetName +
+               std::string("cannot " + action + " class '") + targetName +
                "' because it hasn't been defined" +
-               (lineNumber ? " (line " + to_string(lineNumber) + ")" : "")
+               (lineNumber ? " (line " + std::to_string(lineNumber) + ")" : "")
             );
          }
       }
@@ -159,22 +157,22 @@ namespace trogdor {
 
          assertValidASTArguments(operation, 1);
 
-         string direction = operation->getChildren()[0]->getValue();
+         std::string direction = operation->getChildren()[0]->getValue();
 
          if (vocabulary.isDirection(direction)) {
             throw ValidationException(
-               string("cannot redefine built-in direction '") + direction + "'" +
+               std::string("cannot redefine built-in direction '") + direction + "'" +
                   (operation->getLineNumber() ? " (line " +
-                  to_string(operation->getLineNumber()) + ")" : "")
+                  std::to_string(operation->getLineNumber()) + ")" : "")
             );
          }
 
          else if (customVocabulary.directions.end() != customVocabulary.directions.find(direction)
          ) {
             throw ValidationException(
-               string("custom direction '") + direction + "' has already been defined" +
+               std::string("custom direction '") + direction + "' has already been defined" +
                   (operation->getLineNumber() ? " (line " +
-                  to_string(operation->getLineNumber()) + ")" : "")
+                  std::to_string(operation->getLineNumber()) + ")" : "")
             );
          }
 
@@ -190,24 +188,24 @@ namespace trogdor {
 
          assertValidASTArguments(operation, 2);
 
-         string direction = operation->getChildren()[0]->getValue();
-         string synonym = operation->getChildren()[1]->getValue();
+         std::string direction = operation->getChildren()[0]->getValue();
+         std::string synonym = operation->getChildren()[1]->getValue();
 
          if (vocabulary.isDirection(synonym)) {
             throw ValidationException(
-               string("cannot set built-in direction '") + synonym +
+               std::string("cannot set built-in direction '") + synonym +
                   "' as a synonym for another direction" +
                   (operation->getLineNumber() ? " (line " +
-                  to_string(operation->getLineNumber()) + ")" : "")
+                  std::to_string(operation->getLineNumber()) + ")" : "")
             );
          }
 
          else if (customVocabulary.directions.end() != customVocabulary.directions.find(synonym)) {
             throw ValidationException(
-               string("cannot set custom direction '") + synonym +
+               std::string("cannot set custom direction '") + synonym +
                   "' as a synonym for another direction" +
                   (operation->getLineNumber() ? " (line " +
-                  to_string(operation->getLineNumber()) + ")" : "")
+                  std::to_string(operation->getLineNumber()) + ")" : "")
             );
          }
 
@@ -216,10 +214,10 @@ namespace trogdor {
             customVocabulary.directions.end() == customVocabulary.directions.find(direction)
          ) {
             throw ValidationException(
-               string("'") + synonym + "' cannot be set as a synonym for '" +
+               std::string("'") + synonym + "' cannot be set as a synonym for '" +
                   direction + "' because that direction hasn't been defined" +
                   (operation->getLineNumber() ? " (line " +
-                  to_string(operation->getLineNumber()) + ")" : "")
+                  std::to_string(operation->getLineNumber()) + ")" : "")
             );
          }
 
@@ -235,15 +233,15 @@ namespace trogdor {
 
          assertValidASTArguments(operation, 2);
 
-         string verb = operation->getChildren()[0]->getValue();
-         string synonym = operation->getChildren()[1]->getValue();
+         std::string verb = operation->getChildren()[0]->getValue();
+         std::string synonym = operation->getChildren()[1]->getValue();
 
          if (vocabulary.isVerb(synonym) && !vocabulary.isVerbSynonym(synonym)) {
             throw ValidationException(
-               string("cannot set '") + synonym +
+               std::string("cannot set '") + synonym +
                   "' as a synonym for a verb because it's already a verb" +
                   (operation->getLineNumber() ? " (line " +
-                  to_string(operation->getLineNumber()) + ")" : "")
+                  std::to_string(operation->getLineNumber()) + ")" : "")
             );
          }
 
@@ -259,13 +257,13 @@ namespace trogdor {
 
          assertValidASTArguments(operation, 3);
 
-         string name = operation->getChildren()[0]->getValue();
-         string className = operation->getChildren()[2]->getValue();
-         string typeStr = operation->getChildren()[1]->getValue();
+         std::string name = operation->getChildren()[0]->getValue();
+         std::string className = operation->getChildren()[2]->getValue();
+         std::string typeStr = operation->getChildren()[1]->getValue();
          entity::EntityType type = entity::Entity::strToType(typeStr);
 
          if (entity::ENTITY_UNDEFINED == type) {
-            throw ValidationException(string("invalid entity type '") +
+            throw ValidationException(std::string("invalid entity type '") +
                operation->getChildren()[1]->getValue() + "'.");
          }
 
@@ -273,7 +271,7 @@ namespace trogdor {
             throw ValidationException(
                typeStr + " named '" + name + "' was already previously defined" +
                   (operation->getLineNumber() ? " (line " +
-                  to_string(operation->getLineNumber()) + ")" : "")
+                  std::to_string(operation->getLineNumber()) + ")" : "")
             );
          }
 
@@ -281,7 +279,7 @@ namespace trogdor {
             throw ValidationException(
                typeStr + " class '" + className + "' hasn't been defined" +
                (operation->getLineNumber() ?
-                  " (line " + to_string(operation->getLineNumber()) + ")" : "")
+                  " (line " + std::to_string(operation->getLineNumber()) + ")" : "")
             );
          }
 
@@ -301,12 +299,12 @@ namespace trogdor {
 
          assertValidASTArguments(operation, 2);
 
-         string className = operation->getChildren()[0]->getValue();
-         string classTypeStr = operation->getChildren()[1]->getValue();
+         std::string className = operation->getChildren()[0]->getValue();
+         std::string classTypeStr = operation->getChildren()[1]->getValue();
          entity::EntityType classType = entity::Entity::strToType(classTypeStr);
 
          if (symbols.entityClasses.end() != symbols.entityClasses.find(className)) {
-            throw ValidationException(string("class '") + className +
+            throw ValidationException(std::string("class '") + className +
                "' already defines a type of " +
                entity::Entity::typeToStr(symbols.entityClasses[className]));
          }
@@ -327,7 +325,7 @@ namespace trogdor {
             {"defaultPlayer", 3}
          });
 
-         string targetType = operation->getChildren()[0]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
 
          if (
             0 == targetType.compare("entity") ||
@@ -353,7 +351,7 @@ namespace trogdor {
             {"defaultPlayer", 2}
          });
 
-         string targetType = operation->getChildren()[0]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
 
          if (
             0 == targetType.compare("entity") ||
@@ -379,7 +377,7 @@ namespace trogdor {
             {"defaultPlayer", 2}
          });
 
-         string targetType = operation->getChildren()[0]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
 
          if (
             0 == targetType.compare("entity") ||
@@ -405,8 +403,8 @@ namespace trogdor {
             {"game", 3}
          });
 
-         string targetType = operation->getChildren()[0]->getValue();
-         string scriptMode = operation->getChildren()[1]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
+         std::string scriptMode = operation->getChildren()[1]->getValue();
 
          if (0 != scriptMode.compare("file") && 0 != scriptMode.compare("string")) {
             throw ValidationException("LOAD_SCRIPT: invalid script mode '" + scriptMode + "'. Should be either 'file' or 'string'. This is a bug.");
@@ -414,13 +412,13 @@ namespace trogdor {
 
          else if (0 == scriptMode.compare("file")) {
 
-            string filename = operation->getChildren()[2]->getValue();
+            std::string filename = operation->getChildren()[2]->getValue();
             std::ifstream scriptFile(filename.c_str());
 
             if (!scriptFile) {
                throw ValidationException(
                   "cannot open " + filename + (operation->getLineNumber() ?
-                     " (line " + to_string(operation->getLineNumber()) + ")" : "")
+                     " (line " + std::to_string(operation->getLineNumber()) + ")" : "")
                );
             }
          }
@@ -449,7 +447,7 @@ namespace trogdor {
             {"game", 3}
          });
 
-         string targetType = operation->getChildren()[0]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
 
          if (
             0 == targetType.compare("entity") ||
@@ -471,10 +469,10 @@ namespace trogdor {
 
          assertValidASTArguments(operation, 3);
 
-         string targetType = operation->getChildren()[0]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
 
          if (0 != targetType.compare("entity") && 0 != targetType.compare("class")) {
-            throw ValidationException(string("SET_ALIAS: invalid target type '") +
+            throw ValidationException(std::string("SET_ALIAS: invalid target type '") +
                targetType + "'. This is a bug.");
          }
 
@@ -483,7 +481,7 @@ namespace trogdor {
             0 == targetType.compare("class")
          ) {
 
-            string entityOrClassName = operation->getChildren()[2]->getValue();
+            std::string entityOrClassName = operation->getChildren()[2]->getValue();
 
             assertTargetExists(
                targetType,
@@ -506,9 +504,9 @@ namespace trogdor {
                entity::ENTITY_OBJECT != entityOrClassType
             ) {
                throw ValidationException(
-                  string("aliases can only be set for creatures, players, or objects") +
+                  std::string("aliases can only be set for creatures, players, or objects") +
                   (operation->getLineNumber() ?
-                     " (line " + to_string(operation->getLineNumber()) + ")" : "")
+                     " (line " + std::to_string(operation->getLineNumber()) + ")" : "")
                );
             }
          }
@@ -525,7 +523,7 @@ namespace trogdor {
             {"game", 3}
          });
 
-         string targetType = operation->getChildren()[0]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
 
          if (
             0 == targetType.compare("entity") ||
@@ -551,12 +549,12 @@ namespace trogdor {
             {"defaultPlayer", 3}
          });
 
-         string targetType = operation->getChildren()[0]->getValue();
-         string attribute = operation->getChildren()[1]->getValue();
-         string value = operation->getChildren()[2]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
+         std::string attribute = operation->getChildren()[1]->getValue();
+         std::string value = operation->getChildren()[2]->getValue();
 
          if (!isValidInteger(value)) {
-            throw ValidationException(string("attribute '") + attribute + "' is not a valid integer");
+            throw ValidationException(std::string("attribute '") + attribute + "' is not a valid integer");
          }
 
          if (
@@ -564,7 +562,7 @@ namespace trogdor {
             0 == targetType.compare("class")
          ) {
 
-            string entityOrClassName = operation->getChildren()[3]->getValue();
+            std::string entityOrClassName = operation->getChildren()[3]->getValue();
 
             assertTargetExists(
                targetType,
@@ -586,9 +584,9 @@ namespace trogdor {
                entity::ENTITY_PLAYER != entityOrClassType
             ) {
                throw ValidationException(
-                  string("attributes can only be set for creatures or players") +
+                  std::string("attributes can only be set for creatures or players") +
                   (operation->getLineNumber() ?
-                     " (line " + to_string(operation->getLineNumber()) + ")" : "")
+                     " (line " + std::to_string(operation->getLineNumber()) + ")" : "")
                );
             }
          }
@@ -606,16 +604,16 @@ namespace trogdor {
             {"game", 3}
          });
 
-         string targetType = operation->getChildren()[0]->getValue();
-         string property = operation->getChildren()[1]->getValue();
-         string value = operation->getChildren()[2]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
+         std::string property = operation->getChildren()[1]->getValue();
+         std::string value = operation->getChildren()[2]->getValue();
 
          if (
             0 == targetType.compare("entity") ||
             0 == targetType.compare("class")
          ) {
 
-            string entityOrClassName = operation->getChildren()[3]->getValue();
+            std::string entityOrClassName = operation->getChildren()[3]->getValue();
 
             assertTargetExists(
                targetType,
@@ -624,7 +622,7 @@ namespace trogdor {
                operation->getLineNumber()
             );
 
-            string entityTypeStr = entity::Entity::typeToStr(
+            std::string entityTypeStr = entity::Entity::typeToStr(
                0 == targetType.compare("entity") ?
                   symbols.entities[entityOrClassName].type :
                   symbols.entityClasses[entityOrClassName]
@@ -655,8 +653,8 @@ namespace trogdor {
 
          assertValidASTArguments(operation, 2);
 
-         string objectName = operation->getChildren()[0]->getValue();
-         string beingName = operation->getChildren()[1]->getValue();
+         std::string objectName = operation->getChildren()[0]->getValue();
+         std::string beingName = operation->getChildren()[1]->getValue();
 
          if (
             symbols.entities.end() == symbols.entities.find(objectName) ||
@@ -665,7 +663,7 @@ namespace trogdor {
             throw ValidationException(objectName +
                " doesn't exist or is not an object" +
                (operation->getLineNumber() ?
-                  " (line " + to_string(operation->getLineNumber()) + ")" : ""));
+                  " (line " + std::to_string(operation->getLineNumber()) + ")" : ""));
          }
 
          else if (
@@ -677,7 +675,7 @@ namespace trogdor {
             throw ValidationException(beingName +
                " doesn't exist or is not a player or creature" +
                (operation->getLineNumber() ?
-                  " (line " + to_string(operation->getLineNumber()) + ")" : ""));
+                  " (line " + std::to_string(operation->getLineNumber()) + ")" : ""));
          }
       };
 
@@ -688,8 +686,8 @@ namespace trogdor {
 
          assertValidASTArguments(operation, 2);
 
-         string thingName = operation->getChildren()[0]->getValue();
-         string roomName = operation->getChildren()[1]->getValue();
+         std::string thingName = operation->getChildren()[0]->getValue();
+         std::string roomName = operation->getChildren()[1]->getValue();
 
          if (
             symbols.entities.end() == symbols.entities.find(thingName) || (
@@ -703,7 +701,7 @@ namespace trogdor {
                entity::Entity::typeToStr(symbols.entities[thingName].type) +
                ", but you can only insert creatures, players, or objects into a room" +
                (operation->getLineNumber() ?
-                  " (line " + to_string(operation->getLineNumber()) + ")" : ""));
+                  " (line " + std::to_string(operation->getLineNumber()) + ")" : ""));
          }
 
          else if (
@@ -713,7 +711,7 @@ namespace trogdor {
             throw ValidationException(roomName +
                " doesn't exist or is not a room" +
                (operation->getLineNumber() ?
-                  " (line " + to_string(operation->getLineNumber()) + ")" : ""));
+                  " (line " + std::to_string(operation->getLineNumber()) + ")" : ""));
          }
       };
 
@@ -724,10 +722,10 @@ namespace trogdor {
 
          assertValidASTArguments(operation, 4);
 
-         string targetType = operation->getChildren()[0]->getValue();
-         string sourceRoomOrClass = operation->getChildren()[1]->getValue();
-         string connectToRoom = operation->getChildren()[2]->getValue();
-         string direction = operation->getChildren()[3]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
+         std::string sourceRoomOrClass = operation->getChildren()[1]->getValue();
+         std::string connectToRoom = operation->getChildren()[2]->getValue();
+         std::string direction = operation->getChildren()[3]->getValue();
 
          assertTargetExists(
             targetType,
@@ -743,7 +741,7 @@ namespace trogdor {
             throw ValidationException(connectToRoom +
                " doesn't exist or is not a room" +
                (operation->getLineNumber() ?
-                  " (line " + to_string(operation->getLineNumber()) + ")" : ""));
+                  " (line " + std::to_string(operation->getLineNumber()) + ")" : ""));
          }
 
          else if (
@@ -752,7 +750,7 @@ namespace trogdor {
          ) {
             throw ValidationException(direction + " is not a valid direction" +
                (operation->getLineNumber() ?
-                  " (line " + to_string(operation->getLineNumber()) + ")" : ""));
+                  " (line " + std::to_string(operation->getLineNumber()) + ")" : ""));
          }
       };
    }
@@ -826,7 +824,7 @@ namespace trogdor {
 
       // A creature's allegiance (friend, neutral, or enemy)
       entityPropValidators["creature"]["allegiance"] = [](const Vocabulary &vocabulary,
-      string value) {
+      std::string value) {
 
          if (
             0 == value.compare("friend") &&
@@ -893,7 +891,7 @@ namespace trogdor {
    void Instantiator::executeOperation(const std::shared_ptr<ASTOperationNode> &operation) {
 
       if (operations.end() == operations.find(operation->getOperation())) {
-         throw UndefinedException(string("Undefined operation: ") +
+         throw UndefinedException(std::string("Undefined operation: ") +
             ASTOperationNode::getOperationStr(operation->getOperation()));
       }
 

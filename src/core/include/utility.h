@@ -8,8 +8,6 @@
 /* macro to clip a value within a given range */
 #define CLAMP(V, MIN, MAX)  (((V) > (MAX)) ? (MAX) : (((V) < (MIN)) ? (MIN) : (V)))
 
-using namespace std;
-
 
 /*
    Converts a string to lowercase.
@@ -17,7 +15,7 @@ using namespace std;
    Input: string
    Output: lowercase version of string
 */
-extern string strToLower(string str);
+extern std::string strToLower(std::string str);
 
 
 /*
@@ -27,7 +25,7 @@ extern string strToLower(string str);
    Input: reference to string
    Output: reference to the same string, which has been modified
 */
-extern string &ltrim(std::string &s);
+extern std::string &ltrim(std::string &s);
 
 /*
    Trims whitespace from the right of a string.  Shamelessly stolen from:
@@ -36,7 +34,7 @@ extern string &ltrim(std::string &s);
    Input: reference to string
    Output: reference to the same string, which has been modified
 */
-extern string &rtrim(std::string &s);
+extern std::string &rtrim(std::string &s);
 
 /*
    Trims whitespace from both sides of a string.  Shamelessly stolen from:
@@ -45,7 +43,7 @@ extern string &rtrim(std::string &s);
    Input: reference to string
    Output: reference to the same string, which has been modified
 */
-extern string &trim(std::string &s);
+extern std::string &trim(std::string &s);
 
 /*
    Checks if a string represents a valid integer.
@@ -66,4 +64,3 @@ extern bool isValidDouble(const std::string &s);
 
 
 #endif
-

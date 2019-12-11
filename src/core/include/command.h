@@ -11,7 +11,6 @@
 
 #include "entities/entity.h"
 
-using namespace std;
 using namespace trogdor::entity;
 
 namespace trogdor {
@@ -29,12 +28,12 @@ namespace trogdor {
          // Note that a command is presumed invalid until successfully parsed
          bool invalid;
 
-         string verb;
-         string directObject;
-         string indirectObject;
-         string preposition;
+         std::string verb;
+         std::string directObject;
+         std::string indirectObject;
+         std::string preposition;
 
-         void parse(string commandStr);
+         void parse(std::string commandStr);
 
          int parseDirectObject(Tokenizer &tokenizer);
 
@@ -63,10 +62,10 @@ namespace trogdor {
          /*
             Getters for the syntactic components of a command.
          */
-         inline string getVerb() const {return verb;}
-         inline string getDirectObject() const {return directObject;}
-         inline string getIndirectObject() const {return indirectObject;}
-         inline string getPreposition() const {return preposition;}
+         inline std::string getVerb() const {return verb;}
+         inline std::string getDirectObject() const {return directObject;}
+         inline std::string getIndirectObject() const {return indirectObject;}
+         inline std::string getPreposition() const {return preposition;}
 
          /*
             Reads a command from the user.
@@ -79,7 +78,7 @@ namespace trogdor {
          /*
             Makes Command object printable via trogout.
          */
-         friend ostream &operator<<(ostream &out, const Command &c);
+         friend std::ostream &operator<<(std::ostream &out, const Command &c);
    };
 }
 

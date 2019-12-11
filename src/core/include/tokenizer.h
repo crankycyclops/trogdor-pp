@@ -6,20 +6,18 @@
 #include <regex>
 #include <vector>
 
-using namespace std;
-
 namespace trogdor {
 
    class Tokenizer {
 
       private:
 
-         vector<string> tokens;        // tokens parsed from the string
-         unsigned int   curTokenIndex; // current position in the tokens vector
+         std::vector<std::string> tokens;        // tokens parsed from the string
+         unsigned int curTokenIndex;             // current position in the tokens vector
 
       public:
 
-         Tokenizer(string s);
+         Tokenizer(std::string s);
 
          /*
             Returns true if we've reached the end of the string.
@@ -35,7 +33,7 @@ namespace trogdor {
             Input: (none)
             Output: current token (string)
          */
-         inline string getCurToken() const {return isEnd() ? string() : tokens[curTokenIndex];}
+         inline std::string getCurToken() const {return isEnd() ? std::string() : tokens[curTokenIndex];}
 
          /*
             Consumes all tokens in a single call.
@@ -43,7 +41,7 @@ namespace trogdor {
             Input: (none)
             Output: Vector containing all tokens (vector<string>)
          */
-         inline vector<string> consumeAll() {
+         inline std::vector<std::string> consumeAll() {
 
             curTokenIndex = tokens.size();
             return tokens;

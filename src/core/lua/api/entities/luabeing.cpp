@@ -2,8 +2,6 @@
 #include "../../../include/entities/being.h"
 #include "../../../include/lua/api/entities/luabeing.h"
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 

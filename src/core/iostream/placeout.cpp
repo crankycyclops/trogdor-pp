@@ -4,7 +4,6 @@
 #include "../include/entities/thing.h"
 
 
-using namespace std;
 using namespace trogdor::entity;
 
 namespace trogdor {

@@ -3,7 +3,7 @@
 namespace trogdor {
 
 
-   ParseException::ParseException(const string &what_arg): Exception(what_arg) {
+   ParseException::ParseException(const std::string &what_arg): Exception(what_arg) {
 
       filename = "";
       lineno = 0;
@@ -19,7 +19,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   ParseException::ParseException(const string &what_arg, string f, int l):
+   ParseException::ParseException(const std::string &what_arg, std::string f, int l):
    Exception(what_arg) {
 
       filename = f;
@@ -28,7 +28,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   ParseException::ParseException(const char *what_arg, string f, int l):
+   ParseException::ParseException(const char *what_arg, std::string f, int l):
    Exception(what_arg) {
 
       filename = f;
@@ -41,7 +41,7 @@ namespace trogdor {
 
       // Since I'm returning a C string, I need to make sure the combined error
       // message remains in memory after this method returns
-      static string combinedMsg;
+      static std::string combinedMsg;
 
       combinedMsg = "";
 
@@ -52,10 +52,9 @@ namespace trogdor {
       combinedMsg += Exception::what();
 
       if (lineno) {
-         combinedMsg += " (line " + to_string(lineno) + ")";
+         combinedMsg += " (line " + std::to_string(lineno) + ")";
       }
 
       return combinedMsg.c_str();
    }
 }
-

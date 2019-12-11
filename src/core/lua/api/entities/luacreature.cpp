@@ -4,8 +4,6 @@
 #include "../../../include/entities/creature.h"
 #include "../../../include/lua/api/entities/luacreature.h"
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -91,7 +89,7 @@ namespace trogdor { namespace entity {
          return luaL_error(L, "creature class argument not yet supported");
       }
 
-      string name = luaL_checkstring(L, -1);
+      std::string name = luaL_checkstring(L, -1);
       lua_getglobal(L, LuaGame::globalName);
       Game *g = LuaGame::checkGame(L, -1);
 
@@ -109,7 +107,7 @@ namespace trogdor { namespace entity {
 
    int LuaCreature::getCreature(lua_State *L) {
 
-      string name = luaL_checkstring(L, -1);
+      std::string name = luaL_checkstring(L, -1);
 
       lua_getglobal(L, LuaGame::globalName);
       Game *g = LuaGame::checkGame(L, -1);

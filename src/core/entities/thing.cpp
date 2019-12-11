@@ -6,8 +6,6 @@
 #include "../include/game.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 

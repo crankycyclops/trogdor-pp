@@ -4,30 +4,27 @@
 
 #include "../include/parser/ast.h"
 
-using namespace std;
-
 namespace trogdor {
 
 
-   void ASTNode::printNode(string tab) const {
+   void ASTNode::printNode(std::string tab) const {
 
-      cout << tab << "Value: " << (getValue().length() < 80 ? getValue() :
-         getValue().substr(0, 77) + "...") << endl;
-      cout << tab << "Type: " << ASTNode::getTypeStr(getType()) << endl;
-      cout << tab << "Line: " << getLineNumber() << endl;
-      cout << tab << "Children: " << to_string(size()) << endl;
-      cout << endl;
+      std::cout << tab << "Value: " << (getValue().length() < 80 ? getValue() :
+         getValue().substr(0, 77) + "...") << std::endl;
+      std::cout << tab << "Type: " << ASTNode::getTypeStr(getType()) << std::endl;
+      std::cout << tab << "Line: " << getLineNumber() << std::endl;
+      std::cout << tab << "Children: " << std::to_string(size()) << std::endl;
+      std::cout << std::endl;
    }
 
    /**************************************************************************/
 
-   void ASTOperationNode::printNode(string tab) const {
+   void ASTOperationNode::printNode(std::string tab) const {
 
-      cout << tab << "Operation: "
-         << ASTOperationNode::getOperationStr(operation) << endl;
-      cout << tab << "Line: " << getLineNumber() << endl;
-      cout << tab << "Children: " << to_string(size()) << endl;
-      cout << endl;
+      std::cout << tab << "Operation: "
+         << ASTOperationNode::getOperationStr(operation) << std::endl;
+      std::cout << tab << "Line: " << getLineNumber() << std::endl;
+      std::cout << tab << "Children: " << std::to_string(size()) << std::endl;
+      std::cout << std::endl;
    }
 }
-

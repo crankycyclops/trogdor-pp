@@ -4,8 +4,6 @@
 #include "../../include/event/triggers/autoattack.h"
 #include "../../include/timer/jobs/autoattack.h"
 
-using namespace std;
-
 namespace trogdor { namespace event {
 
 
@@ -18,7 +16,7 @@ namespace trogdor { namespace event {
       entity::CreatureListCItPair creatures = place->getCreatures();
 
       // each Creature that has auto-attack enabled should be setup to attack
-      for_each(creatures.begin, creatures.end, [&](entity::Creature * const &creature) {
+      std::for_each(creatures.begin, creatures.end, [&](entity::Creature * const &creature) {
 
          if (creature->getAutoAttackEnabled()) {
 
@@ -35,4 +33,3 @@ namespace trogdor { namespace event {
       allowActionFlag = true;
    }
 }}
-

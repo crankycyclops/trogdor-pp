@@ -4,8 +4,6 @@
 #include "../include/entities/creature.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 

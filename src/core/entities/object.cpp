@@ -2,8 +2,6 @@
 #include "../include/entities/object.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -27,7 +25,7 @@ namespace trogdor { namespace entity {
 
    /***************************************************************************/
 
-   void Object::addAlias(string alias) {
+   void Object::addAlias(std::string alias) {
 
       Thing::addAlias(alias);
 
@@ -38,7 +36,7 @@ namespace trogdor { namespace entity {
 
    /***************************************************************************/
 
-   void Object::setTag(string tag) {
+   void Object::setTag(std::string tag) {
 
       Entity::setTag(tag);
 
@@ -49,7 +47,7 @@ namespace trogdor { namespace entity {
 
    /***************************************************************************/
 
-   void Object::removeTag(string tag) {
+   void Object::removeTag(std::string tag) {
 
       if (WeaponTag == tag) {
          updateOwnerWeaponCache();

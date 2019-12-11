@@ -12,8 +12,6 @@
 
 #include "../../../include/exception/exception.h"
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -94,7 +92,7 @@ namespace trogdor { namespace entity {
 
    int LuaThing::getThing(lua_State *L) {
 
-      string name = luaL_checkstring(L, -1);
+      std::string name = luaL_checkstring(L, -1);
 
       lua_getglobal(L, LuaGame::globalName);
       Game *g = LuaGame::checkGame(L, -1);
@@ -127,14 +125,14 @@ namespace trogdor { namespace entity {
       }
 
       LuaArray luaAliases;
-      vector<string> aliases = t->getAliases();
+      std::vector<std::string> aliases = t->getAliases();
 
-      for (vector<string>::const_iterator i = aliases.begin(); i != aliases.end(); i++) {
+      for (auto &alias: aliases) {
 
          LuaValue v;
 
          v.type = LUA_TYPE_STRING;
-         v.value = *i;
+         v.value = alias;
 
          luaAliases.insert(luaAliases.end(), v);
       }
@@ -161,7 +159,7 @@ namespace trogdor { namespace entity {
 
       try {
 
-         string alias = luaL_checkstring(L, -1);
+         std::string alias = luaL_checkstring(L, -1);
          t->addAlias(alias);
 
          return 0;

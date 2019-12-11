@@ -9,8 +9,8 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   std::shared_ptr<ASTOperationNode> Parser::ASTDefineDirection(string direction,
-   int lineNumber) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTDefineDirection(
+   std::string direction, int lineNumber) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          DEFINE_DIRECTION,
@@ -28,8 +28,8 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   std::shared_ptr<ASTOperationNode> Parser::ASTDefineDirectionSynonym(string direction,
-   string synonym, int lineNumber) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTDefineDirectionSynonym(
+   std::string direction, std::string synonym, int lineNumber) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          DEFINE_DIRECTION_SYNONYM,
@@ -53,8 +53,8 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   std::shared_ptr<ASTOperationNode> Parser::ASTDefineVerbSynonym(string verb,
-   string synonym, int lineNumber) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTDefineVerbSynonym(std::string verb,
+   std::string synonym, int lineNumber) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          DEFINE_VERB_SYNONYM,
@@ -78,8 +78,8 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   std::shared_ptr<ASTOperationNode> Parser::ASTDefineEntityClass(string className,
-   string entityType, int lineNumber) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTDefineEntityClass(
+   std::string className, std::string entityType, int lineNumber) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          DEFINE_ENTITY_CLASS,
@@ -103,8 +103,9 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   std::shared_ptr<ASTOperationNode> Parser::ASTDefineEntity(string entityName,
-   string entityType, string className, int lineNumber) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTDefineEntity(
+   std::string entityName, std::string entityType, std::string className,
+   int lineNumber) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          DEFINE_ENTITY,
@@ -135,8 +136,9 @@ namespace trogdor {
    /**************************************************************************/
 
    // TODO: validate targetType and throw UndefinedException if necessary
-   std::shared_ptr<ASTOperationNode> Parser::ASTSetMessage(string targetType,
-   string messageName, string message, int lineNumber, string entityOrClassName) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTSetMessage(std::string targetType,
+   std::string messageName, std::string message, int lineNumber,
+   std::string entityOrClassName) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          SET_MESSAGE,
@@ -175,8 +177,8 @@ namespace trogdor {
    /**************************************************************************/
 
    // TODO: validate targetType and throw UndefinedException if necessary
-   std::shared_ptr<ASTOperationNode> Parser::ASTSetTag(string targetType,
-   string tag, int lineNumber, string entityOrClassName) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTSetTag(std::string targetType,
+   std::string tag, int lineNumber, std::string entityOrClassName) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          SET_TAG,
@@ -209,8 +211,8 @@ namespace trogdor {
    /**************************************************************************/
 
    // TODO: validate targetType and throw UndefinedException if necessary
-   std::shared_ptr<ASTOperationNode> Parser::ASTRemoveTag(string targetType,
-   string tag, int lineNumber, string entityOrClassName) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTRemoveTag(std::string targetType,
+   std::string tag, int lineNumber, std::string entityOrClassName) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          REMOVE_TAG,
@@ -243,8 +245,9 @@ namespace trogdor {
    /**************************************************************************/
 
    // TODO: validate targetType and throw UndefinedException if necessary
-   std::shared_ptr<ASTOperationNode> Parser::ASTLoadScript(string targetType,
-   string scriptMode, string script, int lineNumber, string entityOrClassName) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTLoadScript(std::string targetType,
+   std::string scriptMode, std::string script, int lineNumber,
+   std::string entityOrClassName) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          LOAD_SCRIPT,
@@ -283,8 +286,9 @@ namespace trogdor {
    /**************************************************************************/
 
    // TODO: validate targetType and throw UndefinedException if necessary
-   std::shared_ptr<ASTOperationNode> Parser::ASTSetEvent(string targetType,
-   string eventName, string luaFunction, int lineNumber, string entityOrClassName) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTSetEvent(std::string targetType,
+   std::string eventName, std::string luaFunction, int lineNumber,
+   std::string entityOrClassName) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          SET_EVENT,
@@ -322,8 +326,8 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   std::shared_ptr<ASTOperationNode> Parser::ASTSetAlias(string targetType,
-   string alias, string thingOrClassName, int lineNumber) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTSetAlias(std::string targetType,
+   std::string alias, std::string thingOrClassName, int lineNumber) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          SET_ALIAS,
@@ -354,8 +358,9 @@ namespace trogdor {
    /**************************************************************************/
 
    // TODO: validate targetType and throw UndefinedException if necessary
-   std::shared_ptr<ASTOperationNode> Parser::ASTSetMeta(string targetType,
-   string metaKey, string metaValue, int lineNumber, string entityOrClassName) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTSetMeta(std::string targetType,
+   std::string metaKey, std::string metaValue, int lineNumber,
+   std::string entityOrClassName) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          SET_META,
@@ -397,8 +402,9 @@ namespace trogdor {
    /**************************************************************************/
 
    // TODO: validate targetType and throw UndefinedException if necessary
-   std::shared_ptr<ASTOperationNode> Parser::ASTSetAttribute(string targetType,
-   string attribute, string value, int lineNumber, string entityOrClassName) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTSetAttribute(std::string targetType,
+   std::string attribute, std::string value, int lineNumber,
+   std::string entityOrClassName) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          SET_ATTRIBUTE,
@@ -440,8 +446,9 @@ namespace trogdor {
    /**************************************************************************/
 
    // TODO: validate targetType and throw UndefinedException if necessary
-   std::shared_ptr<ASTOperationNode> Parser::ASTSetProperty(string targetType,
-   string property, string value, int lineNumber, string entityOrClassName) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTSetProperty(std::string targetType,
+   std::string property, std::string value, int lineNumber,
+   std::string entityOrClassName) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          SET_PROPERTY,
@@ -485,8 +492,8 @@ namespace trogdor {
    // TODO: semantic check to prevent us from inserting items into default
    // player's inventory or into a class (should throw an exception in these
    // cases)
-   std::shared_ptr<ASTOperationNode> Parser::ASTInsertIntoInventory(string objectName,
-   string beingName, int lineNumber) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTInsertIntoInventory(
+   std::string objectName, std::string beingName, int lineNumber) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          INSERT_INTO_INVENTORY,
@@ -510,8 +517,8 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   std::shared_ptr<ASTOperationNode> Parser::ASTInsertIntoRoom(string thing,
-   string room, int lineNumber) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTInsertIntoRoom(std::string thing,
+   std::string room, int lineNumber) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          INSERT_INTO_PLACE,
@@ -535,8 +542,8 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   std::shared_ptr<ASTOperationNode> Parser::ASTConnectRooms(string targetType,
-   string sourceRoomOrClass, string connectTo, string direction,
+   std::shared_ptr<ASTOperationNode> Parser::ASTConnectRooms(std::string targetType,
+   std::string sourceRoomOrClass, std::string connectTo, std::string direction,
    int lineNumber) {
 
       auto operation = std::make_shared<ASTOperationNode>(

@@ -9,8 +9,6 @@
 #include "../include/exception/luaexception.h"
 #include "../include/exception/undefinedexception.h"
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -128,7 +126,7 @@ namespace trogdor {
       for (LuaTable::TableValues::iterator i = values.begin();
       i != values.end(); i++) {
 
-         string key = i->first;
+         std::string key = i->first;
          LuaValue v = i->second;
 
          pushLuaValue(v, L);
@@ -176,8 +174,9 @@ namespace trogdor {
       }
 
       // remember the contents of this script so we can copy it to another state
-      ifstream file(filename.c_str());
-      stringstream fcontents;
+      std::ifstream file(filename.c_str());
+      std::stringstream fcontents;
+
       fcontents << file.rdbuf();
       parsedScriptData += fcontents.str();
       parsedScriptData += "\n";
@@ -187,7 +186,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void LuaState::loadScriptFromString(string script) {
+   void LuaState::loadScriptFromString(std::string script) {
 
       int status;
 
@@ -220,7 +219,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void LuaState::call(string function) {
+   void LuaState::call(std::string function) {
 
       lua_getglobal(L, function.c_str());
 

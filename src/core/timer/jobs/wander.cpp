@@ -2,7 +2,6 @@
 #include "../../include/timer/jobs/wander.h"
 
 
-using namespace std;
 using namespace trogdor::entity;
 
 namespace trogdor {
@@ -48,4 +47,3 @@ namespace trogdor {
       setInterval(wanderer->getWanderInterval());
    }
 }
-

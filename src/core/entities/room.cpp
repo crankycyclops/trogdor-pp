@@ -3,8 +3,6 @@
 #include "../include/exception/validationexception.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -16,7 +14,7 @@ namespace trogdor { namespace entity {
 
       else {
          throw ValidationException(
-            string("error: attempt to connect to Room using invalid ")
+            std::string("error: attempt to connect to Room using invalid ")
             + "direction '" + direction + "'"
          );
       }

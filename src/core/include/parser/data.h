@@ -9,13 +9,12 @@ extern const char *g_reservedClassNames[];
    Determines whether or not a class name is reserved.
 
    Input:
-      class name (string)
+      class name (std::string)
 
    Output:
       true if the word is reserved and false if not
 */
-extern bool isClassNameReserved(string name);
+extern bool isClassNameReserved(std::string name);
 
 
 #endif
-

@@ -4,18 +4,16 @@
 #include "../include/timer/timer.h"
 #include "../include/timer/timerjob.h"
 
-using namespace std;
-
 namespace trogdor {
 
 
    // For debugging purposes; allows us to print a TimerJob object
    ostream &operator<<(ostream &out, const TimerJob &j) {
 
-      cout << "initTime: " << j.getInitTime() << endl;
-      cout << "startTime: " << j.getStartTime() << endl;
-      cout << "interval: " << j.getInterval() << endl;
-      cout << "executions: " << j.getExecutions() << endl;
+      std::cout << "initTime: " << j.getInitTime() << std::endl;
+      std::cout << "startTime: " << j.getStartTime() << std::endl;
+      std::cout << "interval: " << j.getInterval() << std::endl;
+      std::cout << "executions: " << j.getExecutions() << std::endl;
 
       return out;
    }
@@ -42,9 +40,10 @@ namespace trogdor {
       time++;
       game->timerMutex.unlock();
 
-      // I can't use for_each because I have to remove expired jobs from queue
-      // and must be able to manipulate the iterator.
-      for (list<std::shared_ptr<TimerJob>>::iterator i = queue.begin(); i != queue.end(); ++i) {
+      // I can't use for_each or a range-based for loop because I have to remove
+      // expired jobs from queue and must be able to manipulate the iterator.
+      for (list<std::shared_ptr<TimerJob>>::iterator i = queue.begin();
+      i != queue.end(); ++i) {
 
          if ((*i)->getExecutions() != 0) {
 
@@ -134,4 +133,3 @@ namespace trogdor {
    }
 
 }
-

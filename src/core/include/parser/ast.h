@@ -8,8 +8,6 @@
 #include <ostream>
 
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -50,11 +48,11 @@ namespace trogdor {
 
       private:
 
-         string value;
+         std::string value;
          ASTNodeType type;
          int lineno;
 
-         vector<std::shared_ptr<ASTNode>> children;
+         std::vector<std::shared_ptr<ASTNode>> children;
 
       public:
 
@@ -65,9 +63,9 @@ namespace trogdor {
                Node type (ASTNodeType)
 
             Output:
-               String version of the type (string)
+               String version of the type (std::string)
          */
-         static string getTypeStr(ASTNodeType type) {
+         static std::string getTypeStr(ASTNodeType type) {
 
             switch (type) {
 
@@ -89,7 +87,7 @@ namespace trogdor {
             Constructors
          */
          inline ASTNode(): value(""), type(AST_ROOT), lineno(0) {}
-         inline ASTNode(string v, ASTNodeType t, int l = 0): value(v), type(t), lineno(l) {}
+         inline ASTNode(std::string v, ASTNodeType t, int l = 0): value(v), type(t), lineno(l) {}
 
          // Required for dynamic_cast to work
          virtual ~ASTNode() = default;
@@ -101,9 +99,9 @@ namespace trogdor {
                (none)
 
             Output:
-               Value (string)
+               Value (std::string)
          */
-         inline string getValue() const {return value;}
+         inline std::string getValue() const {return value;}
 
          /*
             Get the node's type.
@@ -112,7 +110,7 @@ namespace trogdor {
                (none)
 
             Output:
-               Node Type (enum ASTNodeType)
+               Node Type (ASTNodeType)
          */
          inline ASTNodeType getType() const {return type;}
 
@@ -136,7 +134,7 @@ namespace trogdor {
             Output:
                Tree or substree size (int)
          */
-         inline vector<std::shared_ptr<ASTNode>>::size_type size() const {
+         inline std::vector<std::shared_ptr<ASTNode>>::size_type size() const {
 
             return children.size();
          }
@@ -148,9 +146,9 @@ namespace trogdor {
                (none)
 
             Output:
-               const vector<ASTNode> &
+               const std::vector<ASTNode> &
          */
-         inline const vector<std::shared_ptr<ASTNode>> &getChildren() const {
+         inline const std::vector<std::shared_ptr<ASTNode>> &getChildren() const {
 
             return children;
          }
@@ -174,12 +172,12 @@ namespace trogdor {
             debugging purposes.
 
             Input:
-               Tab space (string)
+               Tab space (std::string)
 
             Output:
                (none)
          */
-         virtual void printNode(string tab = "") const;
+         virtual void printNode(std::string tab = "") const;
    };
 
    /**************************************************************************/
@@ -203,9 +201,9 @@ namespace trogdor {
                Operation (ASTOperation)
 
             Output:
-               String version of the operation (string)
+               String version of the operation (std::string)
          */
-         static string getOperationStr(ASTOperation operation) {
+         static std::string getOperationStr(ASTOperation operation) {
 
             switch (operation) {
 
@@ -287,12 +285,12 @@ namespace trogdor {
             Outputs an operation node for debugging purposes.
 
             Input:
-               Tab space (string)
+               Tab space (std::string)
 
             Output:
                (none)
          */
-         virtual void printNode(string tab = "") const;
+         virtual void printNode(std::string tab = "") const;
    };
 
    /**************************************************************************/
@@ -303,13 +301,13 @@ namespace trogdor {
       refactor this.
 
       Input:
-         Reference to output stream (ostream &)
-         Child node (ASTNode)
+         Child node (std::shared_ptr<ASTNode> &)
+         Amount of tab space to print in front of the node's data (std::string)
 
       Output:
          (none)
    */
-   inline void printAST(const std::shared_ptr<ASTNode> &node, string tab = "") {
+   inline void printAST(const std::shared_ptr<ASTNode> &node, std::string tab = "") {
 
       node->printNode(tab);
 
@@ -326,12 +324,12 @@ namespace trogdor {
 
       Input:
          Reference to output stream (ostream &)
-         Child node (ASTNode)
+         Pointer to child node (std::shared_ptr<ASTNode> &)
 
       Output:
          (none)
    */
-   inline ostream &operator<<(ostream &os, const std::shared_ptr<ASTNode> &node) {
+   inline std::ostream &operator<<(std::ostream &os, const std::shared_ptr<ASTNode> &node) {
 
       printAST(node);
       return os;
@@ -340,4 +338,3 @@ namespace trogdor {
 
 
 #endif
-
