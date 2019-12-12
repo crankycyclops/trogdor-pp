@@ -2,9 +2,6 @@
 #include "include/streamout.h"
 
 
-using namespace std;
-
-
 void StreamOut::flush() {
 
    *stream << getBufferStr();
@@ -16,4 +13,3 @@ std::unique_ptr<trogdor::Trogout> StreamOut::clone() {
 
    return std::make_unique<StreamOut>(stream);
 }
-
