@@ -3,8 +3,6 @@
 #include "../../include/event/triggers/respawn.h"
 #include "../../include/timer/jobs/respawn.h"
 
-using namespace std;
-
 namespace trogdor { namespace event {
 
 

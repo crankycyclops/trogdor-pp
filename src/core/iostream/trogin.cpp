@@ -1,8 +1,6 @@
 #include "../include/iostream/trogin.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
 

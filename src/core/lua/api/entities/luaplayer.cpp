@@ -2,8 +2,6 @@
 #include "../../../include/entities/player.h"
 #include "../../../include/lua/api/entities/luaplayer.h"
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -77,7 +75,7 @@ namespace trogdor { namespace entity {
 
    int LuaPlayer::getPlayer(lua_State *L) {
 
-      string name = luaL_checkstring(L, -1);
+      std::string name = luaL_checkstring(L, -1);
 
       lua_getglobal(L, LuaGame::globalName);
       Game *g = LuaGame::checkGame(L, -1);

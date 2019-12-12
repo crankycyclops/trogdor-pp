@@ -23,7 +23,7 @@ namespace trogdor { namespace entity {
    class Being: public Thing {
 
       // addAlias needs to be able to call indexInventoryItemName()
-      friend void Object::addAlias(string alias);
+      friend void Object::addAlias(std::string alias);
 
       public:
 
@@ -62,7 +62,7 @@ namespace trogdor { namespace entity {
             int  lives;
          } respawnSettings;
 
-         typedef unordered_map<string, int> AttributesMap;
+         typedef std::unordered_map<std::string, int> AttributesMap;
 
          struct {
             AttributesMap values;
@@ -107,13 +107,13 @@ namespace trogdor { namespace entity {
             name.
 
             Input:
-               Alias (string)
+               Alias (std::string)
                Object to be indexed (Object *)
 
             Output:
                (none)
          */
-         inline void indexInventoryItemName(string alias, Object *object) {
+         inline void indexInventoryItemName(std::string alias, Object *object) {
 
             if (inventory.objectsByName.find(alias) == inventory.objectsByName.end()) {
                ObjectList newList;
@@ -192,7 +192,7 @@ namespace trogdor { namespace entity {
             Constructor for creating a new Being.  Requires reference to the
             containing Game object and a name.
          */
-         inline Being(Game *g, string n, std::unique_ptr<Trogout> o,
+         inline Being(Game *g, std::string n, std::unique_ptr<Trogout> o,
          std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e): Thing(g, n,
          std::move(o), std::move(i), std::move(e)),
          damageBareHands(DEFAULT_DAMAGE_BARE_HANDS),
@@ -227,7 +227,7 @@ namespace trogdor { namespace entity {
             sanity -- it doesn't make sense for two Beings to simultaneously
             carry the same object, right? ;)
          */
-         inline Being(const Being &b, string n): Thing(b, n) {
+         inline Being(const Being &b, std::string n): Thing(b, n) {
 
             health = b.health;
             maxHealth = b.maxHealth;
@@ -252,12 +252,12 @@ namespace trogdor { namespace entity {
             Being's inventory.
 
             Input:
-               name (string)
+               name (std::string)
 
             Output:
                Pair of begin and end iterators (ObjectListCItPair)
          */
-         inline ObjectListCItPair getInventoryObjectsByName(string name) const {
+         inline ObjectListCItPair getInventoryObjectsByName(std::string name) const {
 
             ObjectListCItPair objects;
             ObjectsByNameMap::const_iterator i = inventory.objectsByName.find(name);
@@ -405,10 +405,10 @@ namespace trogdor { namespace entity {
             Output:
                Attribute value in points (int)
          */
-         inline int getAttribute(string key) const {
+         inline int getAttribute(std::string key) const {
 
             if (attributes.values.find(key) == attributes.values.end()) {
-               throw UndefinedException(string("attribute '") + key + "' not set!");
+               throw UndefinedException(std::string("attribute '") + key + "' not set!");
             }
 
             return attributes.values.find(key)->second;
@@ -423,7 +423,7 @@ namespace trogdor { namespace entity {
             Ouput:
                Attribute factor (double)
          */
-         inline double getAttributeFactor(string key) const {
+         inline double getAttributeFactor(std::string key) const {
 
             return (double)getAttribute(key) / (double)attributes.initialTotal;
          }
@@ -522,13 +522,13 @@ namespace trogdor { namespace entity {
             Sets an attribute.
 
             Input:
-               Name of the attribute (string)
+               Name of the attribute (std::string)
                Attribute value (int)
 
             Output:
                (none)
          */
-         inline void setAttribute(string key, int s) {attributes.values[key] = s;}
+         inline void setAttribute(std::string key, int s) {attributes.values[key] = s;}
 
          /*
             This should only be called when the Being is first initialized, and

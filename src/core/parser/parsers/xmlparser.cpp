@@ -21,7 +21,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parse(string filename) {
+   void XMLParser::parse(std::string filename) {
 
       if (reader) {
          xmlFreeTextReader(reader);
@@ -123,7 +123,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid section <") + getTagName() + ">");
+            throw ParseException(std::string("invalid section <") + getTagName() + ">");
          }
       }
 
@@ -149,7 +149,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName() + "> in <classes>");
+            throw ParseException(std::string("invalid tag <") + getTagName() + "> in <classes>");
          }
       }
 
@@ -167,7 +167,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in rooms section of <classes>");
          }
       }
@@ -179,10 +179,10 @@ namespace trogdor {
 
    void XMLParser::parseClassesRoom() {
 
-      string name = getAttribute("class");
+      std::string name = getAttribute("class");
 
       if (isClassNameReserved(name)) {
-         throw ParseException(string("class name '") + name + "' is reserved");
+         throw ParseException(std::string("class name '") + name + "' is reserved");
       }
 
       declaredEntityClasses[name] = entity::ENTITY_ROOM;
@@ -208,7 +208,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in objects section of <classes>");
          }
       }
@@ -220,10 +220,10 @@ namespace trogdor {
 
    void XMLParser::parseClassesObject() {
 
-      string name = getAttribute("class");
+      std::string name = getAttribute("class");
 
       if (isClassNameReserved(name)) {
-         throw ParseException(string("class name '") + name + "' is reserved");
+         throw ParseException(std::string("class name '") + name + "' is reserved");
       }
 
       declaredEntityClasses[name] = entity::ENTITY_OBJECT;
@@ -250,7 +250,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in creatures section of <classes>");
          }
       }
@@ -262,10 +262,10 @@ namespace trogdor {
 
    void XMLParser::parseClassesCreature() {
 
-      string name = getAttribute("class");
+      std::string name = getAttribute("class");
 
       if (isClassNameReserved(name)) {
-         throw ParseException(string("class name '") + name + "' is reserved");
+         throw ParseException(std::string("class name '") + name + "' is reserved");
       }
 
       declaredEntityClasses[name] = entity::ENTITY_CREATURE;
@@ -285,18 +285,18 @@ namespace trogdor {
 
    void XMLParser::parseIntroduction() {
 
-      static unordered_map<string, string> tagToProperty({
+      static std::unordered_map<std::string, std::string> tagToProperty({
          {"enabled", "introduction.enabled"}, {"pause", "introduction.pause"},
          {"text", "introduction.text"}
       });
 
       while (nextTag() && 2 == getDepth()) {
 
-         string tag = getTagName();
+         std::string tag = getTagName();
 
          if (tagToProperty.find(tag) != tagToProperty.end()) {
 
-            string value = parseString();
+            std::string value = parseString();
 
             ast->appendChild(ASTSetProperty(
                "game",
@@ -309,7 +309,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + tag
+            throw ParseException(std::string("invalid tag <") + tag
                + "> in <introduction>");
          }
       }
@@ -323,8 +323,8 @@ namespace trogdor {
 
       while (nextTag() && 2 == getDepth()) {
 
-         string key = getTagName();
-         string value = parseString();
+         std::string key = getTagName();
+         std::string value = parseString();
 
          ast->appendChild(ASTSetMeta(
             "game",
@@ -341,12 +341,12 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseEntityMeta(string entityName, string targetType, int depth) {
+   void XMLParser::parseEntityMeta(std::string entityName, std::string targetType, int depth) {
 
       while (nextTag() && depth == getDepth()) {
 
-         string key = getTagName();
-         string value = parseString();
+         std::string key = getTagName();
+         std::string value = parseString();
 
          ast->appendChild(ASTSetMeta(
             targetType,
@@ -378,7 +378,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid section <") + getTagName() + ">");
+            throw ParseException(std::string("invalid section <") + getTagName() + ">");
          }
       }
 
@@ -393,7 +393,7 @@ namespace trogdor {
 
          if (0 == getTagName().compare("direction")) {
 
-            string direction = parseString();
+            std::string direction = parseString();
 
             ast->appendChild(ASTDefineDirection(
                direction,
@@ -405,7 +405,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in <directions>");
          }
       }
@@ -421,9 +421,9 @@ namespace trogdor {
 
          if (0 == getTagName().compare("verb")) {
 
-            string action = getAttribute("verb");
+            std::string action = getAttribute("verb");
             action = trim(action);
-            string synonym = parseString();
+            std::string synonym = parseString();
             synonym = trim(synonym);
 
             ast->appendChild(ASTDefineVerbSynonym(
@@ -437,9 +437,9 @@ namespace trogdor {
 
          else if (0 == getTagName().compare("direction")) {
 
-            string direction = getAttribute("direction");
+            std::string direction = getAttribute("direction");
             direction = trim(direction);
-            string synonym = parseString();
+            std::string synonym = parseString();
             synonym = trim(synonym);
 
             ast->appendChild(ASTDefineDirectionSynonym(
@@ -453,7 +453,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in <synonyms>");
          }
       }
@@ -480,7 +480,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in <manifest>");
          }
       }
@@ -503,7 +503,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in rooms section of <manifest>");
          }
       }
@@ -513,9 +513,9 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseManifestRoom(string className) {
+   void XMLParser::parseManifestRoom(std::string className) {
 
-      string name = getAttribute("name");
+      std::string name = getAttribute("name");
 
       declaredEntities[name] = {
          name,
@@ -548,7 +548,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("<") + getTagName()
+            throw ParseException(std::string("<") + getTagName()
                + "> is not an object class in objects section of <manifest>");
          }
       }
@@ -558,9 +558,9 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseManifestObject(string className) {
+   void XMLParser::parseManifestObject(std::string className) {
 
-      string name = getAttribute("name");
+      std::string name = getAttribute("name");
 
       declaredEntities[name] = {
          name,
@@ -593,7 +593,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in creatures section of <manifest>");
          }
       }
@@ -603,9 +603,9 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseManifestCreature(string className) {
+   void XMLParser::parseManifestCreature(std::string className) {
 
-      string name = getAttribute("name");
+      std::string name = getAttribute("name");
 
       declaredEntities[name] = {
          name,
@@ -625,15 +625,15 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseMessages(string entityName, string targetType, int depth) {
+   void XMLParser::parseMessages(std::string entityName, std::string targetType, int depth) {
 
       while (nextTag() && depth == getDepth()) {
 
          if (0 == getTagName().compare("message")) {
 
-            string messageName = getAttribute("name");
+            std::string messageName = getAttribute("name");
             messageName = trim(messageName);
-            string message = parseString();
+            std::string message = parseString();
 
             ast->appendChild(ASTSetMessage(
                targetType,
@@ -656,13 +656,13 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseEntityTags(string entityName, string targetType, int depth) {
+   void XMLParser::parseEntityTags(std::string entityName, std::string targetType, int depth) {
 
       while (nextTag() && depth == getDepth()) {
 
          if (0 == getTagName().compare("tag")) {
 
-            string tag = parseString();
+            std::string tag = parseString();
 
             ast->appendChild(ASTSetTag(
                targetType,
@@ -676,7 +676,7 @@ namespace trogdor {
 
          else if (0 == getTagName().compare("remove")) {
 
-            string tag = parseString();
+            std::string tag = parseString();
 
             ast->appendChild(ASTRemoveTag(
                targetType,
@@ -698,7 +698,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseEvents(string entityName, string targetType, int depth) {
+   void XMLParser::parseEvents(std::string entityName, std::string targetType, int depth) {
 
       while (nextTag() && depth == getDepth()) {
 
@@ -711,7 +711,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in <events>");
          }
       }
@@ -721,10 +721,10 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseScript(string entityName, string targetType) {
+   void XMLParser::parseScript(std::string entityName, std::string targetType) {
 
-      string script;
-      string scriptMode;
+      std::string script;
+      std::string scriptMode;
 
       try {
          script = getAttribute("src");
@@ -751,10 +751,10 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseEvent(string entityName, string targetType) {
+   void XMLParser::parseEvent(std::string entityName, std::string targetType) {
 
-      string name = getAttribute("name");
-      string function = parseString();
+      std::string name = getAttribute("name");
+      std::string function = parseString();
 
       ast->appendChild(ASTSetEvent(
          targetType,
@@ -782,7 +782,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in <objects>");
          }
       }
@@ -792,19 +792,19 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseObject(string className) {
+   void XMLParser::parseObject(std::string className) {
 
-      string name = getAttribute("name");
+      std::string name = getAttribute("name");
 
       // Make sure entity exists
       if (!entityDeclared(name)) {
-         throw ParseException(string("object '") + name
+         throw ParseException(std::string("object '") + name
             + "' was not declared in <manifest>");
       }
 
       // Make sure entity is an object
       else if (entity::ENTITY_OBJECT != declaredEntities[name].type) {
-         throw ParseException(string("object type mismatch: '")
+         throw ParseException(std::string("object type mismatch: '")
             + name + "' is of type "
             + Entity::typeToStr(declaredEntities[name].type)
             + ", but was declared in <objects>");
@@ -812,7 +812,7 @@ namespace trogdor {
 
       // Make sure object is the correct class
       else if (className != declaredEntities[name].className) {
-         throw ParseException(string("object type mismatch: '")
+         throw ParseException(std::string("object type mismatch: '")
             + name + "' is of class "
             + declaredEntities[name].className
             + ", but was declared in <objects> to be of class " + className);
@@ -822,7 +822,7 @@ namespace trogdor {
       ast->appendChild(ASTSetProperty(
          "entity",
          "title",
-         string("a ") + name,
+         std::string("a ") + name,
          xmlTextReaderGetParserLineNumber(reader),
          name
       ));
@@ -833,16 +833,16 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseObjectProperties(string name, string targetType, int depth) {
+   void XMLParser::parseObjectProperties(std::string name, std::string targetType, int depth) {
 
-      static unordered_map<string, string> tagToProperty({
+      static std::unordered_map<std::string, std::string> tagToProperty({
          {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"},
          {"weight", "weight"}, {"damage", "damage"}
       });
 
       while (nextTag() && depth == getDepth()) {
 
-         string tag = getTagName();
+         std::string tag = getTagName();
 
          if (0 == tag.compare("meta")) {
             parseEntityMeta(name, targetType, depth + 1);
@@ -866,7 +866,7 @@ namespace trogdor {
 
          else if (tagToProperty.find(tag) != tagToProperty.end()) {
 
-            string value = parseString();
+            std::string value = parseString();
 
             ast->appendChild(ASTSetProperty(
                targetType,
@@ -880,7 +880,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + tag
+            throw ParseException(std::string("invalid tag <") + tag
                + "> in object or object class definition");
          }
       }
@@ -897,7 +897,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in <player>");
          }
       }
@@ -909,14 +909,14 @@ namespace trogdor {
 
    void XMLParser::parseDefaultPlayer() {
 
-      static unordered_map<string, string> tagToProperty({
+      static std::unordered_map<std::string, std::string> tagToProperty({
          {"alive", "alive"}, {"health", "health"}, {"maxhealth", "maxhealth"},
          {"woundrate", "woundrate"}, {"damagebarehands", "damagebarehands"}
       });
 
       while (nextTag() && 3 == getDepth()) {
 
-         string tag = getTagName();
+         std::string tag = getTagName();
 
          if (0 == tag.compare("messages")) {
             parseMessages("", "defaultPlayer", 4);
@@ -940,7 +940,7 @@ namespace trogdor {
 
          else if (tagToProperty.find(tag) != tagToProperty.end()) {
 
-            string value = parseString();
+            std::string value = parseString();
 
             ast->appendChild(ASTSetProperty(
                "defaultPlayer",
@@ -953,7 +953,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + tag
+            throw ParseException(std::string("invalid tag <") + tag
                + "> in default section of <player>");
          }
       }
@@ -976,7 +976,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in <creatures>");
          }
       }
@@ -986,25 +986,25 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseCreature(string className) {
+   void XMLParser::parseCreature(std::string className) {
 
-      string name = getAttribute("name");
+      std::string name = getAttribute("name");
 
       if (!entityDeclared(name)) {
-         throw ParseException(string("creature '") + name
+         throw ParseException(std::string("creature '") + name
             + "' was not declared in <manifest>");
       }
 
       // Make sure entity is a creature
       else if (entity::ENTITY_CREATURE != declaredEntities[name].type) {
-         throw ParseException(string("creature type mismatch: '")
+         throw ParseException(std::string("creature type mismatch: '")
             + name + "' is of type " + Entity::typeToStr(declaredEntities[name].type)
             + ", but was declared in <creatures>");
       }
 
       // Make sure creature is the correct class
       else if (className != declaredEntities[name].className) {
-         throw ParseException(string("creature type mismatch: '")
+         throw ParseException(std::string("creature type mismatch: '")
             + name + "' is of class " + declaredEntities[name].className
             + ", but was declared in <creatures> to be of class " + className);
       }
@@ -1024,11 +1024,11 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseCreatureProperties(string name, string targetType, int depth) {
+   void XMLParser::parseCreatureProperties(std::string name, std::string targetType, int depth) {
 
       bool counterAttackParsed = false;
 
-      static unordered_map<string, string> tagToProperty({
+      static std::unordered_map<std::string, std::string> tagToProperty({
          {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"},
          {"alive", "alive"}, {"health", "health"}, {"maxhealth", "maxhealth"},
          {"woundrate", "woundrate"}, {"damagebarehands", "damagebarehands"},
@@ -1037,7 +1037,7 @@ namespace trogdor {
 
       while (nextTag() && depth == getDepth()) {
 
-         string tag = getTagName();
+         std::string tag = getTagName();
 
          if (0 == tag.compare("inventory")) {
             parseBeingInventory(name, targetType, true);
@@ -1081,7 +1081,7 @@ namespace trogdor {
 
          else if (tagToProperty.find(tag) != tagToProperty.end()) {
 
-            string value = parseString();
+            std::string value = parseString();
 
             ast->appendChild(ASTSetProperty(
                targetType,
@@ -1095,7 +1095,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + tag
+            throw ParseException(std::string("invalid tag <") + tag
                + "> in creature definition");
          }
       }
@@ -1133,7 +1133,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in <rooms>");
          }
       }
@@ -1143,18 +1143,18 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseRoom(string className) {
+   void XMLParser::parseRoom(std::string className) {
 
-      string name = getAttribute("name");
+      std::string name = getAttribute("name");
 
       if (!entityDeclared(name)) {
-         throw ParseException(string("room '") + name
+         throw ParseException(std::string("room '") + name
             + "' was not declared in <manifest>");
       }
 
       // Make sure entity is a room
       else if (entity::ENTITY_ROOM != declaredEntities[name].type) {
-         throw ParseException(string("room type mismatch: '")
+         throw ParseException(std::string("room type mismatch: '")
             + name + "' is of type "
             + Entity::typeToStr(declaredEntities[name].type)
             + ", but was declared in <rooms>");
@@ -1162,7 +1162,7 @@ namespace trogdor {
 
       // Make sure room is the correct class
       else if (className != declaredEntities[name].className) {
-         throw ParseException(string("room type mismatch: '")
+         throw ParseException(std::string("room type mismatch: '")
             + name + "' is of class "
             + declaredEntities[name].className
             + ", but was declared in <rooms> to be of type " + className);
@@ -1183,21 +1183,21 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseRoomProperties(string name, string targetType, int depth) {
+   void XMLParser::parseRoomProperties(std::string name, std::string targetType, int depth) {
 
-      static unordered_map<string, string> tagToProperty({
+      static std::unordered_map<std::string, std::string> tagToProperty({
          {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"}
       });
 
       while (nextTag() && depth == getDepth()) {
 
-         string tag = getTagName();
+         std::string tag = getTagName();
 
          if (
             vocabulary.isDirection(tag) ||
             customDirections.end() != customDirections.find(tag)
          ) {
-            string connection = parseString();
+            std::string connection = parseString();
             parseRoomConnection(tag, name, connection, targetType);
          }
 
@@ -1223,7 +1223,7 @@ namespace trogdor {
 
          else if (tagToProperty.find(tag) != tagToProperty.end()) {
 
-            string value = parseString();
+            std::string value = parseString();
 
             ast->appendChild(ASTSetProperty(
                targetType,
@@ -1237,7 +1237,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + tag
+            throw ParseException(std::string("invalid tag <") + tag
                + "> in room or class definition");
          }
       }
@@ -1245,8 +1245,8 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseRoomConnection(string direction, string roomName,
-   string connectTo, string targetType) {
+   void XMLParser::parseRoomConnection(std::string direction, std::string roomName,
+   std::string connectTo, std::string targetType) {
 
       ast->appendChild(ASTConnectRooms(
          targetType,
@@ -1261,11 +1261,11 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseRoomContains(string roomName, string targetType) {
+   void XMLParser::parseRoomContains(std::string roomName, std::string targetType) {
 
       while (nextTag() && 4 == getDepth()) {
 
-         string tag = getTagName();
+         std::string tag = getTagName();
 
          if (0 == tag.compare("object") || 0 == tag.compare("creature")) {
 
@@ -1274,7 +1274,7 @@ namespace trogdor {
             // room.)
             if (0 == targetType.compare("entity")) {
 
-               string thingName = parseString();
+               std::string thingName = parseString();
 
                ast->appendChild(ASTInsertIntoRoom(
                   thingName,
@@ -1289,7 +1289,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in <rooms>");
          }
 
@@ -1301,21 +1301,21 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseCreatureAutoAttack(string creatureName, string targetType,
+   void XMLParser::parseCreatureAutoAttack(std::string creatureName, std::string targetType,
    int depth) {
 
-      static unordered_map<string, string> tagToProperty({
+      static std::unordered_map<std::string, std::string> tagToProperty({
          {"enabled", "autoattack.enabled"}, {"repeat", "autoattack.repeat"},
          {"interval", "autoattack.interval"}
       });
 
       while (nextTag() && depth == getDepth()) {
 
-         string tag = getTagName();
+         std::string tag = getTagName();
 
          if (tagToProperty.find(tag) != tagToProperty.end()) {
 
-            string value = parseString();
+            std::string value = parseString();
 
             ast->appendChild(ASTSetProperty(
                targetType,
@@ -1329,7 +1329,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in creature autoattack section");
          }
       }
@@ -1339,20 +1339,20 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseCreatureWandering(string creatureName, string targetType) {
+   void XMLParser::parseCreatureWandering(std::string creatureName, std::string targetType) {
 
-      static unordered_map<string, string> tagToProperty({
+      static std::unordered_map<std::string, std::string> tagToProperty({
          {"enabled", "wandering.enabled"}, {"interval", "wandering.interval"},
          {"wanderlust", "wandering.wanderlust"}
       });
 
       while (nextTag() && 4 == getDepth()) {
 
-         string tag = getTagName();
+         std::string tag = getTagName();
 
          if (tagToProperty.find(tag) != tagToProperty.end()) {
 
-            string value = parseString();
+            std::string value = parseString();
 
             ast->appendChild(ASTSetProperty(
                targetType,
@@ -1366,7 +1366,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + tag
+            throw ParseException(std::string("invalid tag <") + tag
                + "> in creature wandering settings");
          }
       }
@@ -1376,20 +1376,20 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseBeingRespawn(string beingName, string targetType, int depth) {
+   void XMLParser::parseBeingRespawn(std::string beingName, std::string targetType, int depth) {
 
-      static unordered_map<string, string> tagToProperty({
+      static std::unordered_map<std::string, std::string> tagToProperty({
          {"enabled", "respawn.enabled"}, {"interval", "respawn.interval"},
          {"lives", "respawn.lives"}
       });
 
       while (nextTag() && depth == getDepth()) {
 
-         string tag = getTagName();
+         std::string tag = getTagName();
 
          if (tagToProperty.find(tag) != tagToProperty.end()) {
 
-            string value = parseString();
+            std::string value = parseString();
 
             ast->appendChild(ASTSetProperty(
                targetType,
@@ -1403,7 +1403,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + tag
+            throw ParseException(std::string("invalid tag <") + tag
                + "> in being respawn section");
          }
       }
@@ -1413,20 +1413,20 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseBeingInventory(string beingName, string targetType,
+   void XMLParser::parseBeingInventory(std::string beingName, std::string targetType,
    bool allowObjects) {
 
-      static unordered_map<string, string> tagToProperty({
+      static std::unordered_map<std::string, std::string> tagToProperty({
          {"weight", "inventory.weight"}
       });
 
       while (nextTag() && 4 == getDepth()) {
 
-         string tag = getTagName();
+         std::string tag = getTagName();
 
          if (0 == tag.compare("object")) {
 
-            string value = parseString();
+            std::string value = parseString();
 
             if (0 == targetType.compare("entity")) {
 
@@ -1455,7 +1455,7 @@ namespace trogdor {
 
          else if (tagToProperty.find(tag) != tagToProperty.end()) {
 
-            string value = parseString();
+            std::string value = parseString();
 
             ast->appendChild(ASTSetProperty(
                targetType,
@@ -1469,7 +1469,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + tag
+            throw ParseException(std::string("invalid tag <") + tag
                + "> in inventory settings");
          }
       }
@@ -1479,11 +1479,11 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseBeingAttributes(string beingName, string targetType) {
+   void XMLParser::parseBeingAttributes(std::string beingName, std::string targetType) {
 
       while (nextTag() && 4 == getDepth()) {
 
-        string tag = getTagName();
+        std::string tag = getTagName();
 
          // TODO: should I allow any tag here? Custom attribute values are
          // something I'd like to support in the future, and it would make error
@@ -1495,7 +1495,7 @@ namespace trogdor {
             0 == tag.compare("intelligence")
          ) {
 
-            string value = parseString();
+            std::string value = parseString();
 
             ast->appendChild(ASTSetAttribute(
                targetType,
@@ -1509,7 +1509,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + tag
+            throw ParseException(std::string("invalid tag <") + tag
                + "> in default player's inventory settings");
          }
       }
@@ -1519,13 +1519,13 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseThingAliases(string entityName, string targetType, int depth) {
+   void XMLParser::parseThingAliases(std::string entityName, std::string targetType, int depth) {
 
       while (nextTag() && depth == getDepth()) {
 
          if (0 == getTagName().compare("alias")) {
 
-            string alias = parseString();
+            std::string alias = parseString();
 
             ast->appendChild(ASTSetAlias(
                targetType,
@@ -1538,7 +1538,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("invalid tag <") + getTagName()
+            throw ParseException(std::string("invalid tag <") + getTagName()
                + "> in <aliases>");
          }
       }
@@ -1548,9 +1548,9 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   string XMLParser::parseString() {
+   std::string XMLParser::parseString() {
 
-      string value = getNodeValue();
+      std::string value = getNodeValue();
       value = trim(value);
 
       if (value.length() > 0) {
@@ -1601,14 +1601,14 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   string XMLParser::getAttribute(const char *name) {
+   std::string XMLParser::getAttribute(const char *name) {
 
       const char *attr;
 
       attr = (const char *)xmlTextReaderGetAttribute(reader, (xmlChar *)name);
 
       if (!attr) {
-         throw ParseException(string("missing attribute '") + name);
+         throw ParseException(std::string("missing attribute '") + name);
       }
 
       return attr;
@@ -1632,13 +1632,13 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::checkClosingTag(string tag) {
+   void XMLParser::checkClosingTag(std::string tag) {
 
       // check to see if nextTag() encountered a closing tag
       if (lastClosedTag.length() > 0) {
 
          if (0 != lastClosedTag.compare(tag)) {
-            throw ParseException(string("expected closing </") + tag + ">");
+            throw ParseException(std::string("expected closing </") + tag + ">");
          }
 
          lastClosedTag = "";
@@ -1648,13 +1648,12 @@ namespace trogdor {
       // TODO: skip over XML comments (right now, we'll get an error!)
 
       if (xmlTextReaderRead(reader) < 0) {
-         throw ParseException(string("Unknown error when checking closing tag </") + tag + ">");
+         throw ParseException(std::string("Unknown error when checking closing tag </") + tag + ">");
       }
 
       else if (XML_ELEMENT_DECL != xmlTextReaderNodeType(reader) ||
       0 != tag.compare(strToLower((const char *)xmlTextReaderConstName(reader)))) {
-         throw ParseException(string("missing closing </") + tag + ">");
+         throw ParseException(std::string("missing closing </") + tag + ">");
       }
    }
 }
-

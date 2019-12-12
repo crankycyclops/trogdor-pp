@@ -21,7 +21,7 @@ namespace trogdor { namespace entity {
             Constructor for creating a new Player.  Requires reference to the
             containing Game object and a name.
          */
-         inline Player(Game *g, string n, std::unique_ptr<Trogout> o,
+         inline Player(Game *g, std::string n, std::unique_ptr<Trogout> o,
          std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e): Being(g, n,
          std::move(o), std::move(i), std::move(e)) {
 
@@ -32,7 +32,7 @@ namespace trogdor { namespace entity {
          /*
             Constructor for cloning an existing player.  Requires a unique name.
          */
-         inline Player(const Player &p, string n, std::unique_ptr<Trogout> o,
+         inline Player(const Player &p, std::string n, std::unique_ptr<Trogout> o,
          std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e): Being(p, n) {
 
             title = n;
@@ -46,4 +46,3 @@ namespace trogdor { namespace entity {
 
 
 #endif
-

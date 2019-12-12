@@ -66,7 +66,7 @@ namespace trogdor { namespace entity {
             Constructor for creating a new Creature.  Requires reference to the
             containing Game object and a name.
          */
-         inline Creature(Game *g, string n, std::unique_ptr<Trogout> o,
+         inline Creature(Game *g, std::string n, std::unique_ptr<Trogout> o,
          std::unique_ptr<Trogout> e): Being(g, n, std::move(o),
          std::move(std::make_unique<NullIn>()), std::move(e)),
          allegiance(DEFAULT_ALLEGIANCE), counterAttack(DEFAULT_COUNTER_ATTACK) {
@@ -84,7 +84,7 @@ namespace trogdor { namespace entity {
             Creature with identical properties.  Requires a unique name, which
             won't be copied.
          */
-         inline Creature(const Creature &c, string n): Being(c, n) {
+         inline Creature(const Creature &c, std::string n): Being(c, n) {
 
             autoAttack = c.autoAttack;
             wanderSettings = c.wanderSettings;
@@ -140,7 +140,7 @@ namespace trogdor { namespace entity {
             Output:
                std::string
          */
-         inline string getAllegianceStr() const {
+         inline std::string getAllegianceStr() const {
 
             switch (allegiance) {
 

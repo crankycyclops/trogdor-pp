@@ -1,8 +1,6 @@
 #include <algorithm>
 #include "../../include/event/triggers/deathdrop.h"
 
-using namespace std;
-
 namespace trogdor { namespace event {
 
 
@@ -14,7 +12,7 @@ namespace trogdor { namespace event {
       // TODO: should we only drop with some probability?
       // TODO: right now, we drop undroppable objects; should we?
       entity::ObjectSetCItPair invItems = being->getInventoryObjects();
-      for_each(invItems.begin, invItems.end, [&](entity::Object * const &object) {
+      std::for_each(invItems.begin, invItems.end, [&](entity::Object * const &object) {
          drops.push_back(object);
       });
 
@@ -26,4 +24,3 @@ namespace trogdor { namespace event {
       allowActionFlag = true;
    }
 }}
-

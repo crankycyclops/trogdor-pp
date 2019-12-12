@@ -3,12 +3,10 @@
 #include "../include/exception/validationexception.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
-   void Room::setConnection(string direction, Room *connectTo) {
+   void Room::setConnection(std::string direction, Room *connectTo) {
 
       if (game->getVocabulary().isDirection(direction)) {
          connections[direction] = connectTo;
@@ -16,10 +14,9 @@ namespace trogdor { namespace entity {
 
       else {
          throw ValidationException(
-            string("error: attempt to connect to Room using invalid ")
+            std::string("error: attempt to connect to Room using invalid ")
             + "direction '" + direction + "'"
          );
       }
    }
 }}
-

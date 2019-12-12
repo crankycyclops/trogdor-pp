@@ -5,8 +5,6 @@
 #include "command.h"
 #include "game.h"
 
-using namespace std;
-
 namespace trogdor {
 
 

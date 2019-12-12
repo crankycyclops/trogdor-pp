@@ -1,8 +1,6 @@
 #include <string>
 #include <cstring>
 
-using namespace std;
-
 
 const char *g_reservedClassNames[] = {
    "entity",
@@ -18,7 +16,7 @@ const char *g_reservedClassNames[] = {
 
 /******************************************************************************/
 
-bool isClassNameReserved(string name) {
+bool isClassNameReserved(std::string name) {
 
    for (int i = 0; g_reservedClassNames[i] != 0; i++) {
       if (0 == strcmp(name.c_str(), g_reservedClassNames[i])) {
@@ -28,4 +26,3 @@ bool isClassNameReserved(string name) {
 
    return false;
 }
-

@@ -80,7 +80,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   bool Game::initialize(Parser *parser, string gamefile) {
+   bool Game::initialize(Parser *parser, std::string gamefile) {
 
       try {
          parser->parse(gamefile);
@@ -122,17 +122,17 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   Player *Game::createPlayer(string name, std::unique_ptr<Trogout> outStream,
+   Player *Game::createPlayer(std::string name, std::unique_ptr<Trogout> outStream,
    std::unique_ptr<Trogin> inStream, std::unique_ptr<Trogout> errStream) {
 
       if (entities.isset(name)) {
          throw entity::EntityException(
-            string("Entity with name '") + name + "' already exists"
+            std::string("Entity with name '") + name + "' already exists"
          );
       }
 
       // clone the default player, giving it the specified name
-      std::shared_ptr<Player> player = make_shared<Player>(
+      std::shared_ptr<Player> player = std::make_shared<Player>(
          *defaultPlayer, name, std::move(outStream), std::move(inStream), std::move(errStream)
       );
 
@@ -148,7 +148,7 @@ namespace trogdor {
          }
 
          // we really only need this to give player->in() something to do
-         string blah;
+         std::string blah;
 
          player->out() << introduction.text << std::endl << std::endl;
          player->out() << "Press enter to start." << std::endl;
@@ -200,7 +200,7 @@ namespace trogdor {
 
    void Game::processCommand(Player *player) {
 
-      std::shared_ptr<Command> command = make_shared<Command>(vocabulary);
+      std::shared_ptr<Command> command = std::make_shared<Command>(vocabulary);
       command->read(player);
 
       // do nothing if we're not in a running state
@@ -225,7 +225,7 @@ namespace trogdor {
             }
          }
 
-         string verb = command->getVerb();
+         std::string verb = command->getVerb();
          Action *action = vocabulary.getVerbAction(verb);
 
          if (nullptr == action || !action->checkSyntax(command)) {
@@ -248,7 +248,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Game::insertVerbAction(string verb, std::unique_ptr<Action> action) {
+   void Game::insertVerbAction(std::string verb, std::unique_ptr<Action> action) {
 
       vocabulary.insertVerbAction(verb, std::move(action));
    }

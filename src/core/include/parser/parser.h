@@ -13,8 +13,6 @@
 #include "ast.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -41,13 +39,13 @@ namespace trogdor {
             Returns an AST subtree representing a defineDirection operation.
 
             Input:
-               New direction (string)
+               New direction (std::string)
                Current line number in the source being parsed (int)
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTDefineDirection(string direction,
+         std::shared_ptr<ASTOperationNode> ASTDefineDirection(std::string direction,
          int lineNumber = 0);
 
          /*
@@ -55,224 +53,224 @@ namespace trogdor {
             operation.
 
             Input:
-               Direction (string)
-               Synonym (string)
+               Direction (std::string)
+               Synonym (std::string)
                Current line number in the source being parsed (int)
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTDefineDirectionSynonym(string direction,
-         string synonym, int lineNumber = 0);
+         std::shared_ptr<ASTOperationNode> ASTDefineDirectionSynonym(std::string direction,
+         std::string synonym, int lineNumber = 0);
 
          /*
             Returns an AST subtree representing a defineVerbSynonym operation.
 
             Input:
-               Original verb (string)
-               Synonym (string)
+               Original verb (std::string)
+               Synonym (std::string)
                Current line number in the source being parsed (int)
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTDefineVerbSynonym(string verb,
-         string synonym, int lineNumber = 0);
+         std::shared_ptr<ASTOperationNode> ASTDefineVerbSynonym(std::string verb,
+         std::string synonym, int lineNumber = 0);
 
          /*
             Returns an AST subtree representing a defineEntityClass operation.
 
             Input:
-               Class name (string)
-               Entity type (string)
+               Class name (std::string)
+               Entity type (std::string)
                Current line number in the source being parsed (int)
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTDefineEntityClass(string className,
-         string entityType, int lineNumber = 0);
+         std::shared_ptr<ASTOperationNode> ASTDefineEntityClass(std::string className,
+         std::string entityType, int lineNumber = 0);
 
          /*
             Returns an AST subtree representing a defineEntity operation.
 
             Input:
-               Entity name (string)
-               Entity type (string)
-               Class name (string)
+               Entity name (std::string)
+               Entity type (std::string)
+               Class name (std::string)
                Current line number in the source being parsed (int)
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTDefineEntity(string entityName,
-         string entityType, string className, int lineNumber = 0);
+         std::shared_ptr<ASTOperationNode> ASTDefineEntity(std::string entityName,
+         std::string entityType, std::string className, int lineNumber = 0);
 
          /*
             Returns an AST subtree representing a setMessage operation.
 
             Input:
-               Target type: the kind of thing we're setting a message on (string)
+               Target type: the kind of thing we're setting a message on (std::string)
                   . One of: "entity", "class", or "defaultPlayer"
-               Message name (string)
-               Message value (string)
+               Message name (std::string)
+               Message value (std::string)
                Current line number in the source being parsed (int)
-               Entity or entity class name (string)
+               Entity or entity class name (std::string)
                   . Do not pass if target type is "defaultPlayer"
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTSetMessage(string targetType,
-         string messageName, string message, int lineNumber = 0,
-         string entityOrClassName = "");
+         std::shared_ptr<ASTOperationNode> ASTSetMessage(std::string targetType,
+         std::string messageName, std::string message, int lineNumber = 0,
+         std::string entityOrClassName = "");
 
          /*
             Returns an AST subtree representing a setTag operation.
 
             Input:
-               Target type: the kind of thing we're setting a tag on (string)
+               Target type: the kind of thing we're setting a tag on (std::string)
                   . One of: "entity", "class", or "defaultPlayer"
-               Tag (string)
+               Tag (std::string)
                Current line number in the source being parsed (int)
-               Entity or entity class name (string)
+               Entity or entity class name (std::string)
                   . Do not pass if target type is "defaultPlayer"
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTSetTag(string targetType,
-         string tag, int lineNumber = 0, string entityOrClassName = "");
+         std::shared_ptr<ASTOperationNode> ASTSetTag(std::string targetType,
+         std::string tag, int lineNumber = 0, std::string entityOrClassName = "");
 
          /*
             Returns an AST subtree representing a removeTag operation.
 
             Input:
-               Target type: the kind of thing we're removing the tag on (string)
+               Target type: the kind of thing we're removing the tag on (std::string)
                   . One of: "entity", "class", or "defaultPlayer"
-               Tag (string)
+               Tag (std::string)
                Current line number in the source being parsed (int)
-               Entity or entity class name (string)
+               Entity or entity class name (std::string)
                   . Do not pass if target type is "defaultPlayer"
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTRemoveTag(string targetType,
-         string tag, int lineNumber = 0, string entityOrClassName = "");
+         std::shared_ptr<ASTOperationNode> ASTRemoveTag(std::string targetType,
+         std::string tag, int lineNumber = 0, std::string entityOrClassName = "");
 
          /*
             Returns an AST subtree representing a loadScript operation.
 
             Input:
-               Target type: the kind of thing we're removing the tag on (string)
+               Target type: the kind of thing we're removing the tag on (std::string)
                   . One of: "entity", "class", or "game"
-               Script mode (string)
+               Script mode (std::string)
                   . One of: "file" (to load a file) or "string" (to read a raw script)
-               Script (string)
+               Script (std::string)
                   . Either a filename or the script itself, depending on scriptMode
                Current line number in the source being parsed (int)
-               Entity or entity class name (string)
+               Entity or entity class name (std::string)
                   . Do not pass if target type is "game"
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTLoadScript(string targetType,
-         string scriptMode, string script, int lineNumber = 0,
-         string entityOrClassName = "");
+         std::shared_ptr<ASTOperationNode> ASTLoadScript(std::string targetType,
+         std::string scriptMode, std::string script, int lineNumber = 0,
+         std::string entityOrClassName = "");
 
          /*
             Returns an AST subtree representing a setEvent operation.
 
             Input:
-               Target type: the kind of thing we're removing the tag on (string)
+               Target type: the kind of thing we're removing the tag on (std::string)
                   . One of: "entity", "class", or "game"
-               Event that triggers the Lua function (string)
-               Lua function to trigger (string)
+               Event that triggers the Lua function (std::string)
+               Lua function to trigger (std::string)
                Current line number in the source being parsed (int)
-               Entity or entity class name (string)
+               Entity or entity class name (std::string)
                   . Do not pass if target type is "game"
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTSetEvent(string targetType,
-         string eventName, string luaFunction, int lineNumber = 0,
-         string entityOrClassName = "");
+         std::shared_ptr<ASTOperationNode> ASTSetEvent(std::string targetType,
+         std::string eventName, std::string luaFunction, int lineNumber = 0,
+         std::string entityOrClassName = "");
 
          /*
             Returns an AST subtree representing a setAlias operation.
 
             Input:
-               Target type: the kind of thing we're setting a meta value on (string)
+               Target type: the kind of thing we're setting a meta value on (std::string)
                   . One of: "entity" or "class"
-               Alias (string)
-               Entity or entity class name (string)
+               Alias (std::string)
+               Entity or entity class name (std::string)
                Current line number in the source being parsed (int)
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTSetAlias(string targetType,
-         string alias, string thingOrClassName, int lineNumber = 0);
+         std::shared_ptr<ASTOperationNode> ASTSetAlias(std::string targetType,
+         std::string alias, std::string thingOrClassName, int lineNumber = 0);
 
          /*
             Returns an AST subtree representing a setMeta operation.
 
             Input:
-               Target type: the kind of thing we're setting a meta value on (string)
+               Target type: the kind of thing we're setting a meta value on (std::string)
                   . One of: "entity", "class", "defaultPlayer", or "game"
-               Meta key (string)
-               Meta value (string)
+               Meta key (std::string)
+               Meta value (std::string)
                Current line number in the source being parsed (int)
-               Entity or entity class name (string)
+               Entity or entity class name (std::string)
                   . Do not pass if target type is "game" or "defaultPlayer"
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTSetMeta(string targetType,
-         string metaKey, string metaValue, int lineNumber = 0,
-         string entityOrClassName = "");
+         std::shared_ptr<ASTOperationNode> ASTSetMeta(std::string targetType,
+         std::string metaKey, std::string metaValue, int lineNumber = 0,
+         std::string entityOrClassName = "");
 
          /*
             Returns an AST subtree representing a setAttribute operation.
 
             Input:
-               Target type: the kind of thing we're setting a property on (string)
+               Target type: the kind of thing we're setting a property on (std::string)
                   . One of: "entity", "class", or "game"
-               Attribute name (string)
-               Attribute value (string)
+               Attribute name (std::string)
+               Attribute value (std::string)
                Current line number in the source being parsed (int)
-               Entity or entity class name (string)
+               Entity or entity class name (std::string)
                   . Do not pass if target type is "game"
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTSetAttribute(string targetType,
-         string attribute, string value, int lineNumber = 0,
-         string entityOrClassName = "");
+         std::shared_ptr<ASTOperationNode> ASTSetAttribute(std::string targetType,
+         std::string attribute, std::string value, int lineNumber = 0,
+         std::string entityOrClassName = "");
 
          /*
             Returns an AST subtree representing a setProperty operation.
 
             Input:
-               Target type: the kind of thing we're setting a property on (string)
+               Target type: the kind of thing we're setting a property on (std::string)
                   . One of: "entity", "class", or "game"
-               Property name (string)
-               Property value (string)
+               Property name (std::string)
+               Property value (std::string)
                Current line number in the source being parsed (int)
-               Entity or entity class name (string)
+               Entity or entity class name (std::string)
                   . Do not pass if target type is "game"
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTSetProperty(string targetType,
-         string property, string value, int lineNumber = 0,
-         string entityOrClassName = "");
+         std::shared_ptr<ASTOperationNode> ASTSetProperty(std::string targetType,
+         std::string property, std::string value, int lineNumber = 0,
+         std::string entityOrClassName = "");
 
          /*
             Returns an AST subtree representing an insertIntoInventory operation.
@@ -284,46 +282,46 @@ namespace trogdor {
             a Being class's inventory.
 
             Input:
-               Object name (string)
-               Being name (string) -- classes not allowed
+               Object name (std::string)
+               Being name (std::string) -- classes not allowed
                Current line number in the source being parsed (int)
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTInsertIntoInventory(string objectName,
-         string beingName, int lineNumber = 0);
+         std::shared_ptr<ASTOperationNode> ASTInsertIntoInventory(std::string objectName,
+         std::string beingName, int lineNumber = 0);
 
          /*
             Returns an AST subtree representing an insertIntoRoom operation.
 
             Input:
-               Object, Player, or Creature name (string) -- classes not allowed
-               Room name (string)
+               Object, Player, or Creature name (std::string) -- classes not allowed
+               Room name (std::string)
                Current line number in the source being parsed (int)
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTInsertIntoRoom(string thing,
-         string room, int lineNumber = 0);
+         std::shared_ptr<ASTOperationNode> ASTInsertIntoRoom(std::string thing,
+         std::string room, int lineNumber = 0);
 
          /*
             Returns an AST subtree representing a connectRooms operation.
 
             Input:
-               Target type: the kind of thing we're setting the connection on (string)
+               Target type: the kind of thing we're setting the connection on (std::string)
                   . One of: "entity" or "class"
-               Source room (string)
-               Room source connects to (string)
-               Direction where connection should be made (string)
+               Source room (std::string)
+               Room source connects to (std::string)
+               Direction where connection should be made (std::string)
                Current line number in the source being parsed (int)
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTConnectRooms(string targetType,
-         string sourceRoomOrClass, string connectTo, string direction,
+         std::shared_ptr<ASTOperationNode> ASTConnectRooms(std::string targetType,
+         std::string sourceRoomOrClass, std::string connectTo, std::string direction,
          int lineNumber = 0);
 
       public:
@@ -352,15 +350,14 @@ namespace trogdor {
             Instantiator, which creates the corresponding data structures.
 
             Input:
-               Filename where the game definition is saved (string)
+               Filename where the game definition is saved (std::string)
 
             Output:
                (none)
          */
-         virtual void parse(string filename) = 0;
+         virtual void parse(std::string filename) = 0;
    };
 }
 
 
 #endif
-

@@ -23,7 +23,7 @@ namespace trogdor {
 
    void Command::read(Entity *user) {
 
-      string commandStr;
+      std::string commandStr;
 
       // prompt the user until we get a response
       do {
@@ -36,7 +36,7 @@ namespace trogdor {
    }
 
 
-   void Command::parse(string commandStr) {
+   void Command::parse(std::string commandStr) {
 
       Tokenizer tokenizer(commandStr);
 
@@ -49,10 +49,10 @@ namespace trogdor {
       // continue reducing the number of words in our potential verb until
       // either we find a match or exhaust all tokens (in which case, there are
       // no verb matches and sentence validation fails.)
-      string verbStr;
+      std::string verbStr;
       bool verbMatched = false;
 
-      vector<string> tokens = tokenizer.consumeAll();
+      std::vector<std::string> tokens = tokenizer.consumeAll();
 
       for (int numWords = tokens.size(); numWords > 0; numWords--) {
 
@@ -94,7 +94,7 @@ namespace trogdor {
          }
 
          // check for a dangling preposition, which is a syntax error
-         catch (const string &preposition) {
+         catch (const std::string &preposition) {
 
             // Hackety hack: "in" and "out" are also considered to be
             // directions, so they should alternatively be treated like direct
@@ -122,8 +122,8 @@ namespace trogdor {
 
    int Command::parseDirectObject(Tokenizer &tokenizer) {
 
-      string dobj = "";
-      string token = tokenizer.getCurToken();
+      std::string dobj = "";
+      std::string token = tokenizer.getCurToken();
 
       while (!token.empty() && !tokenizer.isEnd() && !vocabulary.isPreposition(token)) {
 
@@ -156,8 +156,8 @@ namespace trogdor {
 
    int Command::parseIndirectObject(Tokenizer &tokenizer) {
 
-      string idobj = "";
-      string token = tokenizer.getCurToken();
+      std::string idobj = "";
+      std::string token = tokenizer.getCurToken();
 
       // an indirect object must be preceded by a preposition
       if (tokenizer.isEnd() || !vocabulary.isPreposition(token)) {
@@ -209,13 +209,13 @@ namespace trogdor {
 
 
    // For debugging purposes; allows us to print a Command object
-   ostream &operator<<(ostream &out, const Command &c) {
+   std::ostream &operator<<(std::ostream &out, const Command &c) {
 
-      cout << "Verb: " << c.verb << std::endl;
-      cout << "Direct Object: " << c.directObject << std::endl;
-      cout << "Preposition: " << c.preposition << std::endl;
-      cout << "Indirect Object: " << c.indirectObject << std::endl;
-      cout << "Invalid? " << c.invalid << std::endl;
+      std::cout << "Verb: " << c.verb << std::endl;
+      std::cout << "Direct Object: " << c.directObject << std::endl;
+      std::cout << "Preposition: " << c.preposition << std::endl;
+      std::cout << "Indirect Object: " << c.indirectObject << std::endl;
+      std::cout << "Invalid? " << c.invalid << std::endl;
 
       return out;
    }

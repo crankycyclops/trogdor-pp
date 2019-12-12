@@ -2,8 +2,6 @@
 #include "../../../include/entities/being.h"
 #include "../../../include/lua/api/entities/luabeing.h"
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -78,7 +76,7 @@ namespace trogdor { namespace entity {
 
    int LuaBeing::getBeing(lua_State *L) {
 
-      string name = luaL_checkstring(L, -1);
+      std::string name = luaL_checkstring(L, -1);
 
       lua_getglobal(L, LuaGame::globalName);
       Game *g = LuaGame::checkGame(L, -1);

@@ -5,8 +5,6 @@
 #include "../include/exception/validationexception.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -23,12 +21,12 @@ namespace trogdor { namespace entity {
    /***************************************************************************/
 
    // The title property will usually be set to something more descriptive later
-   Entity::Entity(Game *g, string n, std::unique_ptr<Trogout> o,
+   Entity::Entity(Game *g, std::string n, std::unique_ptr<Trogout> o,
    std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e): game(g), name(n),
    outStream(std::move(o)), errStream(std::move(e)), inStream(std::move(i)), title(n) {
 
       if (!isNameValid(n)) {
-         throw ValidationException(string("name '") + n
+         throw ValidationException(std::string("name '") + n
             + "' is invalid (must contain only letters, numbers, underscores, "
             + "and dashes.)");
       }
@@ -44,10 +42,10 @@ namespace trogdor { namespace entity {
 
    /***************************************************************************/
 
-   Entity::Entity(const Entity &e, string n) {
+   Entity::Entity(const Entity &e, std::string n) {
 
       if (!isNameValid(n)) {
-         throw ValidationException(string("name '") + n
+         throw ValidationException(std::string("name '") + n
             + "' is invalid (must contain only letters, numbers, underscores, "
             "and dashes.)");
       }
@@ -66,7 +64,7 @@ namespace trogdor { namespace entity {
       errStream = e.errStream->clone();
       inStream = e.inStream->clone();
 
-      L = make_shared<LuaState>(*e.L);
+      L = std::make_shared<LuaState>(*e.L);
       // TODO: we need to do some kind of intelligent copying for event handlers
       triggers = std::make_unique<event::EventListener>();
    }
@@ -78,14 +76,14 @@ namespace trogdor { namespace entity {
 
    /***************************************************************************/
 
-   void Entity::setTag(string tag) {
+   void Entity::setTag(std::string tag) {
 
       tags.insert(tag);
    }
 
    /***************************************************************************/
 
-   void Entity::removeTag(string tag) {
+   void Entity::removeTag(std::string tag) {
 
       if (tags.end() != tags.find(tag)) {
          tags.erase(tag);
@@ -105,7 +103,7 @@ namespace trogdor { namespace entity {
 
       if (!observedBy(observer) || displayFull) {
          if (ENTITY_PLAYER == observer->getType()) {
-            observer->out("display") << getLongDescription() << endl;
+            observer->out("display") << getLongDescription() << std::endl;
          }
       }
 
@@ -122,7 +120,7 @@ namespace trogdor { namespace entity {
 
       if (ENTITY_PLAYER == observer->getType()
       && getShortDescription().length() > 0) {
-         observer->out("display") << getShortDescription() << endl;
+         observer->out("display") << getShortDescription() << std::endl;
       }
    }
 

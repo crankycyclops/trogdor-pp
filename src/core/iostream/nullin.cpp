@@ -1,12 +1,10 @@
 #include "../include/iostream/nullin.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
 
-   Trogin &NullIn::operator>> (string &val) {
+   Trogin &NullIn::operator>> (std::string &val) {
 
       val = "";
       return *this;
@@ -17,4 +15,3 @@ namespace trogdor {
       return std::make_unique<NullIn>();
    }
 }
-

@@ -1,11 +1,9 @@
 #include "../include/event/eventlistener.h"
 
-using namespace std;
-
 namespace trogdor { namespace event {
 
 
-   void EventListener::add(string event, EventTrigger *trigger) {
+   void EventListener::add(std::string event, EventTrigger *trigger) {
 
       EventTriggerList *triggerList;
 
@@ -25,7 +23,7 @@ namespace trogdor { namespace event {
 
    /***************************************************************************/
 
-   void EventListener::execute(string event, EventArgumentList args) {
+   void EventListener::execute(std::string event, EventArgumentList args) {
 
       EventTriggersMap::const_iterator i = triggers.find(event);
 

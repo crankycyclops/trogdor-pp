@@ -8,8 +8,6 @@
 #include "../../../include/lua/api/entities/luaplace.h"
 #include "../../../include/lua/api/entities/luathing.h"
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -84,7 +82,7 @@ namespace trogdor { namespace entity {
 
    int LuaPlace::getPlace(lua_State *L) {
 
-      string name = luaL_checkstring(L, -1);
+      std::string name = luaL_checkstring(L, -1);
 
       lua_getglobal(L, LuaGame::globalName);
       Game *g = LuaGame::checkGame(L, -1);

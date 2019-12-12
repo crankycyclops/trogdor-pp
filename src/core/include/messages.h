@@ -6,8 +6,6 @@
 #include <unordered_map>
 
 
-using namespace std;
-
 namespace trogdor {
 
    class Messages {
@@ -15,7 +13,7 @@ namespace trogdor {
       private:
 
          // Hash table mapping message names to messages
-         unordered_map<string, string> messageTable;
+         std::unordered_map<std::string, std::string> messageTable;
 
       public:
 
@@ -51,10 +49,10 @@ namespace trogdor {
             Gets a message by name.  If it doesn't exist, an empty string is
             returned.
 
-            Input: string (name)
+            Input: string & (name)
             Output: string (message)
          */
-         string get(const string name) const;
+         std::string get(const std::string &name) const;
 
          /*
             Sets a message.  If the message already exists, it will be
@@ -63,7 +61,7 @@ namespace trogdor {
             Input: string (message name), string (message)
             Output: (none)
          */
-         void set(string name, string message);
+         void set(std::string name, std::string message);
 
          /*
             Displays a message.  If it doesn't exist, nothing is displayed.
@@ -71,7 +69,7 @@ namespace trogdor {
             Input: string (message name), output stream (ostream)
             Output: (none)
          */
-         void display(string name, ostream &out) const;
+         void display(std::string name, std::ostream &out) const;
    };
 }
 

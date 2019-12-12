@@ -9,8 +9,6 @@
 #include "eventlistener.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace event {
 
 
@@ -18,8 +16,8 @@ namespace trogdor { namespace event {
 
       public:
 
-         typedef list<EventListener *>        EventListenerList;
-         typedef vector<EventListenerList *>  EventListStack;
+         typedef std::list<EventListener *>        EventListenerList;
+         typedef std::vector<EventListenerList *>  EventListStack;
 
       private:
 
@@ -86,4 +84,3 @@ namespace trogdor { namespace event {
 
 
 #endif
-

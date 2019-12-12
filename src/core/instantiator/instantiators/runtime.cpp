@@ -15,8 +15,6 @@
 #include "../../include/exception/validationexception.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
    Runtime::Runtime(const Vocabulary &v, Game *g): Instantiator(v) {
@@ -34,7 +32,7 @@ namespace trogdor {
 
       // For each creature, check if wandering was enabled, and if so, insert a
       // timer job for it
-      for_each(game->creaturesBegin(), game->creaturesEnd(), [&](auto creatureMapEntry) {
+      std::for_each(game->creaturesBegin(), game->creaturesEnd(), [&](auto creatureMapEntry) {
 
          Creature *creature = dynamic_cast<Creature *>(creatureMapEntry.second.get());
 
@@ -61,8 +59,8 @@ namespace trogdor {
       registerOperation(DEFINE_DIRECTION_SYNONYM, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         string originalDirection = operation->getChildren()[0]->getValue();
-         string synonym = operation->getChildren()[1]->getValue();
+         std::string originalDirection = operation->getChildren()[0]->getValue();
+         std::string synonym = operation->getChildren()[1]->getValue();
 
          game->insertDirectionSynonym(synonym, originalDirection);
       });
@@ -72,8 +70,8 @@ namespace trogdor {
       registerOperation(DEFINE_VERB_SYNONYM, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         string verb = operation->getChildren()[0]->getValue();
-         string synonym = operation->getChildren()[1]->getValue();
+         std::string verb = operation->getChildren()[0]->getValue();
+         std::string synonym = operation->getChildren()[1]->getValue();
 
          game->insertVerbSynonym(synonym, verb);
       });
@@ -85,8 +83,8 @@ namespace trogdor {
 
          std::shared_ptr<Entity> entity;
 
-         string entityName = operation->getChildren()[0]->getValue();
-         string className = operation->getChildren()[2]->getValue();
+         std::string entityName = operation->getChildren()[0]->getValue();
+         std::string className = operation->getChildren()[2]->getValue();
          entity::EntityType entityType = entity::Entity::strToType(
             operation->getChildren()[1]->getValue()
          );
@@ -126,7 +124,7 @@ namespace trogdor {
                }
 
                else {
-                  entity = make_shared<entity::Object>(
+                  entity = std::make_shared<entity::Object>(
                      *(dynamic_cast<entity::Object *>(typeClasses[className].get())), entityName
                   );
                }
@@ -140,13 +138,13 @@ namespace trogdor {
                   0 == className.compare(Entity::typeToStr(entity::ENTITY_CREATURE))
                ) {
                   // TODO: should Creatures have some kind of special input stream?
-                  entity = make_shared<entity::Creature>(
+                  entity = std::make_shared<entity::Creature>(
                      game, entityName, std::make_unique<NullOut>(), game->err().clone()
                   );
                }
 
                else {
-                  entity = make_shared<entity::Creature>(
+                  entity = std::make_shared<entity::Creature>(
                      *(dynamic_cast<entity::Creature *>(typeClasses[className].get())), entityName
                   );
                }
@@ -172,7 +170,7 @@ namespace trogdor {
          // Entity classes are represented as model Entity objects that can be copied
          std::unique_ptr<Entity> entity;
 
-         string className = operation->getChildren()[0]->getValue();
+         std::string className = operation->getChildren()[0]->getValue();
          entity::EntityType classType = entity::Entity::strToType(
             operation->getChildren()[1]->getValue()
          );
@@ -180,20 +178,20 @@ namespace trogdor {
          switch (classType) {
 
             case entity::ENTITY_ROOM:
-               entity = make_unique<Room>(
+               entity = std::make_unique<Room>(
                   game, className, std::make_unique<PlaceOut>(), game->err().clone()
                );
                break;
 
             case entity::ENTITY_OBJECT:
-               entity = make_unique<Object>(
+               entity = std::make_unique<Object>(
                   game, className, std::make_unique<NullOut>(), game->err().clone()
                );
                break;
 
             case entity::ENTITY_CREATURE:
                // TODO: should Creatures have some kind of special input stream?
-               entity = make_unique<Creature>(
+               entity = std::make_unique<Creature>(
                   game, className, std::make_unique<NullOut>(), game->err().clone()
                );
                break;
@@ -217,9 +215,9 @@ namespace trogdor {
       registerOperation(SET_MESSAGE, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         string targetType = operation->getChildren()[0]->getValue();
-         string messageName = operation->getChildren()[1]->getValue();
-         string message = operation->getChildren()[2]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
+         std::string messageName = operation->getChildren()[1]->getValue();
+         std::string message = operation->getChildren()[2]->getValue();
 
          if (0 == targetType.compare("entity")) {
             game->getEntity(
@@ -241,8 +239,8 @@ namespace trogdor {
       registerOperation(SET_TAG, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         string targetType = operation->getChildren()[0]->getValue();
-         string tag = operation->getChildren()[1]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
+         std::string tag = operation->getChildren()[1]->getValue();
 
          if (0 == targetType.compare("entity")) {
             game->getEntity(
@@ -264,8 +262,8 @@ namespace trogdor {
       registerOperation(REMOVE_TAG, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         string targetType = operation->getChildren()[0]->getValue();
-         string tag = operation->getChildren()[1]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
+         std::string tag = operation->getChildren()[1]->getValue();
 
          if (0 == targetType.compare("entity")) {
             game->getEntity(
@@ -287,13 +285,13 @@ namespace trogdor {
       registerOperation(LOAD_SCRIPT, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         string targetType = operation->getChildren()[0]->getValue();
-         string scriptMode = operation->getChildren()[1]->getValue();
-         string script = operation->getChildren()[2]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
+         std::string scriptMode = operation->getChildren()[1]->getValue();
+         std::string script = operation->getChildren()[2]->getValue();
 
          if (0 == targetType.compare("entity")) {
 
-            string entityName = operation->getChildren()[3]->getValue();
+            std::string entityName = operation->getChildren()[3]->getValue();
 
             if (0 == scriptMode.compare("file")) {
                game->getEntity(entityName)->getLuaState()->loadScriptFromFile(script);
@@ -304,7 +302,7 @@ namespace trogdor {
 
          else if (0 == targetType.compare("class")) {
 
-            string className = operation->getChildren()[3]->getValue();
+            std::string className = operation->getChildren()[3]->getValue();
 
             if (0 == scriptMode.compare("file")) {
                typeClasses[className].get()->getLuaState()->loadScriptFromFile(script);
@@ -327,9 +325,9 @@ namespace trogdor {
       registerOperation(SET_EVENT, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         string targetType = operation->getChildren()[0]->getValue();
-         string event = operation->getChildren()[1]->getValue();
-         string function = operation->getChildren()[2]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
+         std::string event = operation->getChildren()[1]->getValue();
+         std::string function = operation->getChildren()[2]->getValue();
 
          if (0 == targetType.compare("entity")) {
 
@@ -363,8 +361,8 @@ namespace trogdor {
 
          entity::Entity *thing;
 
-         string targetType = operation->getChildren()[0]->getValue();
-         string alias = operation->getChildren()[1]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
+         std::string alias = operation->getChildren()[1]->getValue();
 
          if (0 == targetType.compare("entity")) {
             thing = game->getEntity(
@@ -384,9 +382,9 @@ namespace trogdor {
       registerOperation(SET_META, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         string targetType = operation->getChildren()[0]->getValue();
-         string metaKey = operation->getChildren()[1]->getValue();
-         string metaValue = operation->getChildren()[2]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
+         std::string metaKey = operation->getChildren()[1]->getValue();
+         std::string metaValue = operation->getChildren()[2]->getValue();
 
          if (0 == targetType.compare("entity")) {
             game->getEntity(
@@ -412,9 +410,9 @@ namespace trogdor {
 
          entity::Entity *being;
 
-         string targetType = operation->getChildren()[0]->getValue();
-         string attribute = operation->getChildren()[1]->getValue();
-         string value = operation->getChildren()[2]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
+         std::string attribute = operation->getChildren()[1]->getValue();
+         std::string value = operation->getChildren()[2]->getValue();
 
          if (0 == targetType.compare("entity")) {
             being = game->getEntity(
@@ -441,9 +439,9 @@ namespace trogdor {
 
          entity::Entity *entity;
 
-         string targetType = operation->getChildren()[0]->getValue();
-         string property = operation->getChildren()[1]->getValue();
-         string value = operation->getChildren()[2]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
+         std::string property = operation->getChildren()[1]->getValue();
+         std::string value = operation->getChildren()[2]->getValue();
 
          if (0 == targetType.compare("entity")) {
             entity = game->getEntity(
@@ -498,9 +496,9 @@ namespace trogdor {
          Room *room;
          Room *connectToRoom = game->getRoom(operation->getChildren()[2]->getValue());
 
-         string targetType = operation->getChildren()[0]->getValue();
-         string sourceRoomOrClass = operation->getChildren()[1]->getValue();
-         string direction = operation->getChildren()[3]->getValue();
+         std::string targetType = operation->getChildren()[0]->getValue();
+         std::string sourceRoomOrClass = operation->getChildren()[1]->getValue();
+         std::string direction = operation->getChildren()[3]->getValue();
 
          if (0 == targetType.compare("entity")) {
             room = game->getRoom(sourceRoomOrClass);
@@ -521,14 +519,14 @@ namespace trogdor {
 
       // If a game introduction is enabled, all players will see this text once
       // before beginning the game
-      gameSetters["introduction.text"] = [](Game *game, string value) {
+      gameSetters["introduction.text"] = [](Game *game, std::string value) {
          game->setIntroductionText(value);
       };
 
       /**********/
 
       // Whether or not a game introduction is enabled
-      gameSetters["introduction.enabled"] = [](Game *game, string value) {
+      gameSetters["introduction.enabled"] = [](Game *game, std::string value) {
          game->setIntroductionEnabled(stoi(value));
       };
 
@@ -536,7 +534,7 @@ namespace trogdor {
 
       // Whether or not the game should pause after the introduction before
       // continuing (if the introduction is enabled)
-      gameSetters["introduction.pause"] = [](Game *game, string value) {
+      gameSetters["introduction.pause"] = [](Game *game, std::string value) {
          game->setIntroductionPause(stoi(value));
       };
    }
@@ -551,7 +549,7 @@ namespace trogdor {
       propSetters["object"]["title"] =
       propSetters["creature"]["title"] =
       propSetters["player"]["title"] = [](Game *game, entity::Entity *entity,
-      string value) {
+      std::string value) {
          entity->setTitle(value);
       };
 
@@ -562,7 +560,7 @@ namespace trogdor {
       propSetters["object"]["longDesc"] =
       propSetters["creature"]["longDesc"] =
       propSetters["player"]["longDesc"] = [](Game *game, entity::Entity *entity,
-      string value) {
+      std::string value) {
          entity->setLongDescription(value);
       };
 
@@ -573,7 +571,7 @@ namespace trogdor {
       propSetters["object"]["shortDesc"] =
       propSetters["creature"]["shortDesc"] =
       propSetters["player"]["shortDesc"] = [](Game *game, entity::Entity *entity,
-      string value) {
+      std::string value) {
          entity->setShortDescription(value);
       };
 
@@ -582,7 +580,7 @@ namespace trogdor {
       // Set whether or not a Being is alive
       propSetters["creature"]["alive"] =
       propSetters["player"]["alive"] = [](Game *game, entity::Entity *being,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Being *>(being)->setAlive(stoi(value));
       };
 
@@ -591,7 +589,7 @@ namespace trogdor {
       // Set a Being's default starting health
       propSetters["creature"]["health"] =
       propSetters["player"]["health"] = [](Game *game, entity::Entity *being,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Being *>(being)->setHealth(stoi(value));
       };
 
@@ -600,7 +598,7 @@ namespace trogdor {
       // Set a Being's maximum health
       propSetters["creature"]["maxhealth"] =
       propSetters["player"]["maxhealth"] = [](Game *game, entity::Entity *being,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Being *>(being)->setMaxHealth(stoi(value));
       };
 
@@ -609,7 +607,7 @@ namespace trogdor {
       // Set the probability that a Being will be wounded when it's attacked
       propSetters["creature"]["woundrate"] =
       propSetters["player"]["woundrate"] = [](Game *game, entity::Entity *being,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Being *>(being)->setWoundRate(stod(value));
       };
 
@@ -619,7 +617,7 @@ namespace trogdor {
       // a successful attack
       propSetters["creature"]["damagebarehands"] =
       propSetters["player"]["damagebarehands"] = [](Game *game, entity::Entity *being,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Being *>(being)->setDamageBareHands(stoi(value));
       };
 
@@ -628,7 +626,7 @@ namespace trogdor {
       // Set whether the Being can respawn
       propSetters["creature"]["respawn.enabled"] =
       propSetters["player"]["respawn.enabled"] = [](Game *game, entity::Entity *being,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Being *>(being)->setRespawnEnabled(stoi(value));
       };
 
@@ -637,7 +635,7 @@ namespace trogdor {
       // Set how long it takes before a Being respawns
       propSetters["creature"]["respawn.interval"] =
       propSetters["player"]["respawn.interval"] = [](Game *game, entity::Entity *being,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Being *>(being)->setRespawnInterval(stoi(value));
       };
 
@@ -646,7 +644,7 @@ namespace trogdor {
       // Set how many lives a Being has (how many times it can respawn)
       propSetters["creature"]["respawn.lives"] =
       propSetters["player"]["respawn.lives"] = [](Game *game, entity::Entity *being,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Being *>(being)->setRespawnLives(stoi(value));
       };
 
@@ -655,7 +653,7 @@ namespace trogdor {
       // Set how much total weight a Being's inventory can contain
       propSetters["creature"]["inventory.weight"] =
       propSetters["player"]["inventory.weight"] = [](Game *game, entity::Entity *being,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Being *>(being)->setInventoryWeight(stoi(value));
       };
 
@@ -663,7 +661,7 @@ namespace trogdor {
 
       // Whether or not a Creature will respond to an attack with one of its own
       propSetters["creature"]["counterattack"] = [](Game *game, entity::Entity *creature,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Creature *>(creature)->setCounterAttack(stoi(value));
       };
 
@@ -678,7 +676,7 @@ namespace trogdor {
       // counterattack (only if counterattack was never set explicitly. Will need
       // to think about the architecture of this...)
       propSetters["creature"]["counterattack.default"] = [](Game *game, entity::Entity *creature,
-      string value) {
+      std::string value) {
 
          // By default, Creatures with neutral or enemy allegiances will
          // automatically retaliate when attacked
@@ -698,7 +696,7 @@ namespace trogdor {
 
       // Set a Creature's allegiance
       propSetters["creature"]["allegiance"] = [](Game *game, entity::Entity *creature,
-      string value) {
+      std::string value) {
 
          entity::Creature::AllegianceType allegiance = entity::Creature::DEFAULT_ALLEGIANCE;
 
@@ -725,7 +723,7 @@ namespace trogdor {
 
       // Whether or not autoattack is enabled for a Creature
       propSetters["creature"]["autoattack.enabled"] = [](Game *game, entity::Entity *creature,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Creature *>(creature)->setAutoAttackEnabled(stoi(value));
       };
 
@@ -733,7 +731,7 @@ namespace trogdor {
 
       // Whether or not a Creature's automatic attack should repeat
       propSetters["creature"]["autoattack.repeat"] = [](Game *game, entity::Entity *creature,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Creature *>(creature)->setAutoAttackRepeat(stoi(value));
       };
 
@@ -742,7 +740,7 @@ namespace trogdor {
       // If enabled and repeating, the interval at which a Creature's
       // autoattack is triggered
       propSetters["creature"]["autoattack.interval"] = [](Game *game, entity::Entity *creature,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Creature *>(creature)->setAutoAttackInterval(stoi(value));
       };
 
@@ -750,7 +748,7 @@ namespace trogdor {
 
       // Whether or not a Creature will wander throughout the game
       propSetters["creature"]["wandering.enabled"] = [](Game *game, entity::Entity *creature,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Creature *>(creature)->setWanderEnabled(stoi(value));
       };
 
@@ -758,7 +756,7 @@ namespace trogdor {
 
       // How many clock ticks pass before the Creature considers wanders again
       propSetters["creature"]["wandering.interval"] = [](Game *game, entity::Entity *creature,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Creature *>(creature)->setWanderInterval(stoi(value));
       };
 
@@ -767,7 +765,7 @@ namespace trogdor {
       // The probability that a Creature will actually wander each time it
       // considers moving
       propSetters["creature"]["wandering.wanderlust"] = [](Game *game, entity::Entity *creature,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Creature *>(creature)->setWanderLust(stod(value));
       };
 
@@ -775,7 +773,7 @@ namespace trogdor {
 
       // Set Object's weight
       propSetters["object"]["weight"] = [](Game *game, entity::Entity *object,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Object *>(object)->setWeight(stoi(value));
       };
 
@@ -783,7 +781,7 @@ namespace trogdor {
 
       // Set how much damage the Object inflicts if it's a weapon
       propSetters["object"]["damage"] = [](Game *game, entity::Entity *object,
-      string value) {
+      std::string value) {
          dynamic_cast<entity::Object *>(object)->setDamage(stoi(value));
       };
    }

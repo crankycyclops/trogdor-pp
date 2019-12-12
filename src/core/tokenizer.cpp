@@ -3,7 +3,7 @@
 namespace trogdor {
 
 
-   Tokenizer::Tokenizer(string s) {
+   Tokenizer::Tokenizer(std::string s) {
 
       std::regex re("\\s+");
       std::sregex_token_iterator curToken(s.begin(), s.end(), re, -1);

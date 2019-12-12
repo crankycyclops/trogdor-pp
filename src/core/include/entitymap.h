@@ -16,8 +16,6 @@
 #include "entities/object.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -35,7 +33,7 @@ namespace trogdor { namespace entity {
    class EntityMap {
 
       // What we use internally to store string -> Entity mappings
-      typedef unordered_map<string, std::shared_ptr<Entity>> entityUnorderedMap;
+      typedef std::unordered_map<std::string, std::shared_ptr<Entity>> entityUnorderedMap;
 
       private:
 
@@ -49,10 +47,10 @@ namespace trogdor { namespace entity {
             the raw pointer. This is to grant read-only access to the get()
             method in classes for derived types (Thing, Place, etc.)
 
-            Input: Entity name (string)
+            Input: Entity name (std::string)
             Output: Entity's shared_ptr (or nullptr if it doesn't exist)
          */
-         inline const std::shared_ptr<Entity> &getSharedPtr(string name) {
+         inline const std::shared_ptr<Entity> &getSharedPtr(std::string name) {
 
             if (isset(name)) {
                return entities.find(name)->second;
@@ -79,10 +77,10 @@ namespace trogdor { namespace entity {
          /* Returns true if the entity with the given name is set and false if
             it's not.
 
-            Input: Entity name (string)
+            Input: Entity name (std::string)
             Output: true if it's set and false if it's not
          */
-         inline bool isset(string name) const {
+         inline bool isset(std::string name) const {
 
             return entities.find(name) == entities.end() ? false : true;
          }
@@ -91,10 +89,10 @@ namespace trogdor { namespace entity {
             Gets an entity by name.  If it doesn't exist, NULL will be
             returned.
 
-            Input: Entity name (string)
+            Input: Entity name (std::string)
             Output: Pointer to entity (Entity *)
          */
-         inline Entity *get(const string name) {
+         inline Entity *get(const std::string name) {
 
             return isset(name) ? entities.find(name)->second.get() : nullptr;
          }
@@ -103,10 +101,10 @@ namespace trogdor { namespace entity {
             Sets an entity.  If the entity already exists, it will be
             overwritten.
 
-            Input: Entity name (string), Pointer to entity
+            Input: Entity name (std::string), Pointer to entity
             Output: (none)
          */
-         inline void set(string name, std::shared_ptr<Entity> entity) {entities[name] = entity;}
+         inline void set(std::string name, std::shared_ptr<Entity> entity) {entities[name] = entity;}
 
          /*
             Removes an entity from the hash table.
@@ -114,7 +112,7 @@ namespace trogdor { namespace entity {
             Input: Name of Entity
             Output: (none)
          */
-         inline void erase(string name) {entities.erase(name);}
+         inline void erase(std::string name) {entities.erase(name);}
 
          /*
             Removes all entities from the EntityMap.  The entities themselves
@@ -150,7 +148,7 @@ namespace trogdor { namespace entity {
 
       public:
 
-         inline Place *get(const string name) {
+         inline Place *get(const std::string name) {
 
             try {
                return dynamic_cast<Place *>(EntityMap::getSharedPtr(name).get());
@@ -166,7 +164,7 @@ namespace trogdor { namespace entity {
 
       public:
 
-         inline Room *get(const string name) {
+         inline Room *get(const std::string name) {
 
             try {
                return dynamic_cast<Room *>(EntityMap::getSharedPtr(name).get());
@@ -182,7 +180,7 @@ namespace trogdor { namespace entity {
 
       public:
 
-         inline Thing *get(const string name) {
+         inline Thing *get(const std::string name) {
 
             try {
                return dynamic_cast<Thing *>(EntityMap::getSharedPtr(name).get());
@@ -198,7 +196,7 @@ namespace trogdor { namespace entity {
 
       public:
 
-         inline Being *get(const string name) {
+         inline Being *get(const std::string name) {
 
             try {
                return dynamic_cast<Being *>(EntityMap::getSharedPtr(name).get());
@@ -214,7 +212,7 @@ namespace trogdor { namespace entity {
 
       public:
 
-         inline Player *get(const string name) {
+         inline Player *get(const std::string name) {
 
             try {
                return dynamic_cast<Player *>(EntityMap::getSharedPtr(name).get());
@@ -230,7 +228,7 @@ namespace trogdor { namespace entity {
 
       public:
 
-         inline Creature *get(const string name) {
+         inline Creature *get(const std::string name) {
 
             try {
                return dynamic_cast<Creature *>(EntityMap::getSharedPtr(name).get());
@@ -246,7 +244,7 @@ namespace trogdor { namespace entity {
 
       public:
 
-         inline Object *get(const string name) {
+         inline Object *get(const std::string name) {
 
             try {
                return dynamic_cast<Object *>(EntityMap::getSharedPtr(name).get());

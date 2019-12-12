@@ -5,8 +5,6 @@
 #include "entityexception.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -19,7 +17,7 @@ namespace trogdor { namespace entity {
 
          // When a BeingException occurs, an error code should be set to
          // indicate the nature of the failure
-         enum errorCodeType {
+         enum ErrorCodeType {
             NONE,             // default value if we're not using this
             TAKE_TOO_HEAVY,   // couldn't take an item because it was too heavy
             TAKE_UNTAKEABLE,  // couldn't take an item because it was untakeable
@@ -29,15 +27,15 @@ namespace trogdor { namespace entity {
       protected:
 
          // Error code associated with the exception
-         errorCodeType errorCode;
+         ErrorCodeType errorCode;
 
       public:
 
          // Contructors
-         explicit BeingException(const string &what_arg);
+         explicit BeingException(const std::string &what_arg);
          explicit BeingException(const char *what_arg);
-         explicit BeingException(const string &what_arg, enum errorCodeType code);
-         explicit BeingException(const char *what_arg, enum errorCodeType code);
+         explicit BeingException(const std::string &what_arg, ErrorCodeType code);
+         explicit BeingException(const char *what_arg, ErrorCodeType code);
 
          /*
             Returns the error code associated with the exception.
@@ -46,12 +44,11 @@ namespace trogdor { namespace entity {
                (none)
 
             Output:
-               Error code (enum errorCodeType)
+               Error code (ErrorCodeType)
          */
-         inline const enum errorCodeType getErrorCode() const noexcept {return errorCode;}
+         inline const enum ErrorCodeType getErrorCode() const noexcept {return errorCode;}
    };
 }}
 
 
 #endif
-

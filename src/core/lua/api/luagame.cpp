@@ -5,8 +5,6 @@
 
 #include "../../include/exception/entityexception.h"
 
-using namespace std;
-
 namespace trogdor {
 
 

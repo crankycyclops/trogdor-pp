@@ -1,8 +1,6 @@
 #include "../../include/timer/jobs/autoattack.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -26,4 +24,3 @@ namespace trogdor {
       aggressor->attack(defender, aggressor->selectWeapon());
    }
 }
-

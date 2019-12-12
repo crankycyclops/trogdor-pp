@@ -1,8 +1,6 @@
 #include "../include/iostream/trogout.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
 

@@ -1,7 +1,5 @@
 #include "../include/event/eventtrigger.h"
 
-using namespace std;
-
 namespace trogdor { namespace event {
 
 

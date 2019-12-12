@@ -14,11 +14,9 @@
 #include "../include/exception/undefinedexception.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
-   Place::Place(Game *g, string n, std::unique_ptr<Trogout> o, std::unique_ptr<Trogout> e):
+   Place::Place(Game *g, std::string n, std::unique_ptr<Trogout> o, std::unique_ptr<Trogout> e):
    Entity(g, n, std::move(o), std::move(std::make_unique<NullIn>()), std::move(e)) {
 
       types.push_back(ENTITY_PLACE);
@@ -29,7 +27,7 @@ namespace trogdor { namespace entity {
 
    void Place::insertThingByName(Thing *thing) {
 
-      vector<string> aliases = thing->getAliases();
+      std::vector<std::string> aliases = thing->getAliases();
 
       for (int i = aliases.size() - 1; i >= 0; i--) {
          indexThingName(aliases[i], thing);
@@ -40,7 +38,7 @@ namespace trogdor { namespace entity {
 
    void Place::insertThingByName(Being *being) {
 
-      vector<string> aliases = being->getAliases();
+      std::vector<std::string> aliases = being->getAliases();
 
       for (int i = aliases.size() - 1; i >= 0; i--) {
          indexBeingName(aliases[i], being);
@@ -51,7 +49,7 @@ namespace trogdor { namespace entity {
 
    void Place::insertThingByName(Player *player) {
 
-      vector<string> aliases = player->getAliases();
+      std::vector<std::string> aliases = player->getAliases();
 
       for (int i = aliases.size() - 1; i >= 0; i--) {
 
@@ -68,7 +66,7 @@ namespace trogdor { namespace entity {
 
    void Place::insertThingByName(Creature *creature) {
 
-      vector<string> aliases = creature->getAliases();
+      std::vector<std::string> aliases = creature->getAliases();
 
       for (int i = aliases.size() - 1; i >= 0; i--) {
 
@@ -85,7 +83,7 @@ namespace trogdor { namespace entity {
 
    void Place::insertThingByName(Object *object) {
 
-      vector<string> aliases = object->getAliases();
+      std::vector<std::string> aliases = object->getAliases();
 
       for (int i = aliases.size() - 1; i >= 0; i--) {
 
@@ -129,7 +127,7 @@ namespace trogdor { namespace entity {
          default:
 
             throw UndefinedException(
-               string("Place::insertThing(): attempting to insert unsupported type '")
+               std::string("Place::insertThing(): attempting to insert unsupported type '")
                + thing->getTypeName() + "'");
       }
 
@@ -144,7 +142,7 @@ namespace trogdor { namespace entity {
 
    void Place::removeThingByName(Thing *thing) {
 
-      vector<string> aliases = thing->getAliases();
+      std::vector<std::string> aliases = thing->getAliases();
 
       for (unsigned i = 0; i < aliases.size(); i++) {
 
@@ -184,7 +182,7 @@ namespace trogdor { namespace entity {
 
             default:
                throw UndefinedException(
-                  string("RemoveThingByName called on unsupported Entity type '")
+                  std::string("RemoveThingByName called on unsupported Entity type '")
                   + thing->getTypeName() + "'. This is a bug.");
          }
 
@@ -220,7 +218,7 @@ namespace trogdor { namespace entity {
          default:
 
             throw UndefinedException(
-            string("Place::removeThing(): attempting to remove unsupported type '")
+            std::string("Place::removeThing(): attempting to remove unsupported type '")
                + thing->getTypeName() + "'");
       }
 
@@ -234,15 +232,14 @@ namespace trogdor { namespace entity {
 
    void Place::display(Being *observer, bool displayFull) {
 
-      observer->out("display") << getTitle() << endl << endl;
+      observer->out("display") << getTitle() << std::endl << std::endl;
       Entity::display(observer, displayFull);
 
       for_each(things.begin(), things.end(), [&](Thing *&thing) {
          if (observer != static_cast<Being *>(thing)) { // dirty, but it works
-            observer->out("display") << endl;
+            observer->out("display") << std::endl;
             thing->glance(observer);
          }
       });
    }
 }}
-

@@ -69,32 +69,32 @@ namespace trogdor { namespace entity {
 
          // maintains a list of all Beings that have glanced at but not fully
          // observed the Entity
-         unordered_set<Being *> glancedByMap;
+         std::unordered_set<Being *> glancedByMap;
 
          // maintains a list of all Beings that have observed the Entity
-         unordered_set<Being *> observedByMap;
+         std::unordered_set<Being *> observedByMap;
 
          // Entity tags are labels that are either set or not set and are an
          // easy method of categorization
-         unordered_set<string> tags;
+         std::unordered_set<std::string> tags;
 
          // meta data associated with the entity
-         unordered_map<string, string> meta;
+         std::unordered_map<std::string, std::string> meta;
 
       protected:
 
          // every kind of Entity that we are by virtue of inheritance
-         list<enum EntityType> types;
+         std::list<enum EntityType> types;
 
          // Pointer to the Game that contains the Entity
          Game *game;
 
-         string name;
-         string className;
+         std::string name;
+         std::string className;
 
-         string title;
-         string longDesc;
-         string shortDesc;
+         std::string title;
+         std::string longDesc;
+         std::string shortDesc;
 
          std::shared_ptr<LuaState> L;
          std::unique_ptr<EventListener> triggers;
@@ -138,29 +138,29 @@ namespace trogdor { namespace entity {
             otherwise.
 
             Input:
-               Entity or class name (string)
+               Entity or class name (std::string)
 
             Output:
                True if the name is valid and false if not
          */
-         static inline bool isNameValid(string name) {
+         static inline bool isNameValid(std::string name) {
 
-            return regex_match(name, regex(validEntityNameRegex)) ? true : false;
+            return std::regex_match(name, std::regex(validEntityNameRegex)) ? true : false;
          }
 
          /*
             Returns the EntityType corresponding to the given string.
 
             Input:
-               Entity type name (string)
+               Entity type name (std::string)
 
             Output:
                Entity type (enum EntityType)
          */
-         static inline enum EntityType strToType(string typeName) {
+         static inline enum EntityType strToType(std::string typeName) {
 
             // Maps name of Entity type to enum EntityType (initialized in entity.cpp)
-            static unordered_map<string, enum EntityType> strToTypeMap = {
+            static std::unordered_map<std::string, enum EntityType> strToTypeMap = {
                {"entity", ENTITY_ENTITY},
                {"place", ENTITY_PLACE},
                {"room", ENTITY_ROOM},
@@ -182,15 +182,15 @@ namespace trogdor { namespace entity {
                enum EntityType
 
             Output:
-               Type name (string)
+               Type name (std::string)
          */
-         static inline string typeToStr(enum EntityType e) {
+         static inline std::string typeToStr(enum EntityType e) {
 
             // Maps enum EntityType to its name (initialized in entity.cpp)
             // See that std::hash thing? Yeah, I banged my head against the wall
             // on that for a while. See: 
             // https://stackoverflow.com/questions/18837857/cant-use-enum-class-as-unordered-map-key
-            static unordered_map<enum EntityType, string, std::hash<int>> typeToStrMap = {
+            static std::unordered_map<enum EntityType, std::string, std::hash<int>> typeToStrMap = {
                {ENTITY_ENTITY, "entity"},
                {ENTITY_PLACE, "place"},
                {ENTITY_ROOM, "room"},
@@ -211,12 +211,12 @@ namespace trogdor { namespace entity {
 
             Input:
                Reference to containing Game (Game *)
-               Name (string)
+               Name (std::string)
                Pointer to output stream object (Trogout *)
                Pointer to input stream object (Trogin *)
                Pointer to error stream object (Trogout *)
          */
-         Entity(Game *g, string n, std::unique_ptr<Trogout> o,
+         Entity(Game *g, std::string n, std::unique_ptr<Trogout> o,
          std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e);
 
          /*
@@ -224,9 +224,9 @@ namespace trogdor { namespace entity {
 
             Input:
                Reference to entity to copy
-               Name of copy (string)
+               Name of copy (std::string)
          */
-         Entity(const Entity &e, string n);
+         Entity(const Entity &e, std::string n);
 
          /*
             Entity Destructor. For some reason that mystifies me, this is
@@ -256,7 +256,7 @@ namespace trogdor { namespace entity {
             Returns a reference to the Entity's output stream.  A typical use
             would look something like this:
 
-            entityPtr->out() << "I'm a value!" << endl;
+            entityPtr->out() << "I'm a value!" << std::endl;
 
             Input:
                Output stream channel (default: notifications)
@@ -264,7 +264,7 @@ namespace trogdor { namespace entity {
             Output:
                Trogout &
          */
-         Trogout &out(string channel = "notifications") {
+         Trogout &out(std::string channel = "notifications") {
 
             outStream->setChannel(channel);
             return *outStream;
@@ -274,7 +274,7 @@ namespace trogdor { namespace entity {
             Returns a reference to the Entity's error stream.  A typical use
             would look something like this:
 
-            entityPtr->err() << "I'm a value!" << endl;
+            entityPtr->err() << "I'm a value!" << std::endl;
 
             Input:
                (none)
@@ -325,9 +325,9 @@ namespace trogdor { namespace entity {
                (none)
 
             Output:
-               Type name (string)
+               Type name (std::string)
          */
-         inline string getTypeName() const {return typeToStr(types.back());}
+         inline std::string getTypeName() const {return typeToStr(types.back());}
 
          /*
             Returns true if the Entity is of the given type. Examines the whole
@@ -354,12 +354,12 @@ namespace trogdor { namespace entity {
             Returns true if the given tag is set and false otherwise.
 
             Input:
-               Tag (string)
+               Tag (std::string)
 
             Output:
                Whether or not the tag is set (bool)
          */
-         inline bool isTagSet(string tag) const {
+         inline bool isTagSet(std::string tag) const {
 
             return tags.end() != tags.find(tag) ? true : false;
          }
@@ -369,12 +369,12 @@ namespace trogdor { namespace entity {
             returned.
 
             Input:
-               meta key (string)
+               meta key (std::string)
 
             Output:
-               meta value (string)
+               meta value (std::string)
          */
-         inline string getMeta(string key) const {
+         inline std::string getMeta(std::string key) const {
 
             if (meta.find(key) == meta.end()) {
                return "";
@@ -390,9 +390,9 @@ namespace trogdor { namespace entity {
                (none)
 
             Output:
-               Entity's class (string)
+               Entity's class (std::string)
          */
-         inline string getClass() const {return className;}
+         inline std::string getClass() const {return className;}
 
          /*
             Returns the Entity's name.
@@ -401,9 +401,9 @@ namespace trogdor { namespace entity {
                (none)
 
             Output:
-               Entity's name (string)
+               Entity's name (std::string)
          */
-         inline string getName() const {return name;}
+         inline std::string getName() const {return name;}
 
          /*
             Returns the Entity's title.
@@ -412,9 +412,9 @@ namespace trogdor { namespace entity {
                (none)
 
             Output:
-               Entity's title (string)
+               Entity's title (std::string)
          */
-         inline string getTitle() const {return title;}
+         inline std::string getTitle() const {return title;}
 
          /*
             Returns the Entity's long description.
@@ -423,9 +423,9 @@ namespace trogdor { namespace entity {
                (none)
 
             Output:
-               Entity's long description (string)
+               Entity's long description (std::string)
          */
-         inline string getLongDescription() const {return longDesc;}
+         inline std::string getLongDescription() const {return longDesc;}
 
          /*
             Returns the Entity's short description.
@@ -434,9 +434,9 @@ namespace trogdor { namespace entity {
                (none)
 
             Output:
-               Entity's short description (string)
+               Entity's short description (std::string)
          */
-         inline string getShortDescription() const {return shortDesc;}
+         inline std::string getShortDescription() const {return shortDesc;}
 
          /*
             Returns a reference to Entity's LuaState object. This should ONLY be
@@ -512,93 +512,93 @@ namespace trogdor { namespace entity {
             is returned.
 
             Input:
-               Message name (string)
+               Message name (std::string)
 
             Output:
-               Message (string)
+               Message (std::string)
          */
-         inline string getMessage(string message) {return msgs.get(message.c_str());}
+         inline std::string getMessage(std::string message) {return msgs.get(message.c_str());}
 
          /*
             Passes through to msgs.set()
 
             Input:
-               Message name (string)
-               Message (string)
+               Message name (std::string)
+               Message (std::string)
 
             Output:
                (none)
          */
-         inline void setMessage(string name, string message) {msgs.set(name, message);}
+         inline void setMessage(std::string name, std::string message) {msgs.set(name, message);}
 
          /*
             Sets a meta data value.
 
             Input:
-               meta key (string)
-               value (string)
+               meta key (std::string)
+               value (std::string)
 
             Output:
                (none)
          */
-         inline void setMeta(string key, string value) {meta[key] = value;}
+         inline void setMeta(std::string key, std::string value) {meta[key] = value;}
 
          /*
             Sets the Entity's class.
 
             Input:
-               New class (string)
+               New class (std::string)
 
             Output:
                (none)
          */
          // TODO: virtual in Thing that will remove/add alias for old and new class name
-         inline void setClass(string c) {className = c;}
+         inline void setClass(std::string c) {className = c;}
 
          /*
             Sets the Entity's title.
 
             Input:
-               New title (string)
+               New title (std::string)
 
             Output:
                (none)
          */
-         inline void setTitle(string t) {title = t;}
+         inline void setTitle(std::string t) {title = t;}
 
          /*
             Sets the Entity's long description.
 
             Input:
-               New long description (string)
+               New long description (std::string)
 
             Output:
                (none)
          */
-         inline void setLongDescription(string d) {longDesc = d;}
+         inline void setLongDescription(std::string d) {longDesc = d;}
 
          /*
             Sets the Entity's short description.
 
             Input:
-               New description (string)
+               New description (std::string)
 
             Output:
                (none)
          */
-         inline void setShortDescription(string d) {shortDesc = d;}
+         inline void setShortDescription(std::string d) {shortDesc = d;}
 
          /*
             Sets a tag. This is virtual so that other Entity's can wrap around
             it and monitor for changes in tags that are relevant to their state.
 
             Input:
-               Tag (string)
+               Tag (std::string)
 
             Output:
                (none)
          */
-         virtual void setTag(string tag);
+         virtual void setTag(std::string tag);
 
          /*
             Removes a tag. This is virtual so that other Entity's can wrap
@@ -606,12 +606,12 @@ namespace trogdor { namespace entity {
             state.
 
             Input:
-               Tag (string)
+               Tag (std::string)
 
             Output:
                (none)
          */
-         virtual void removeTag(string tag);
+         virtual void removeTag(std::string tag);
 
          /*
             Gives a Being the ability to observe an Entity.  If the Being is a
@@ -704,13 +704,13 @@ namespace trogdor { namespace entity {
 
    /***************************************************************************/
 
-   typedef list<Place *>    PlaceList;
-   typedef list<Room *>     RoomList;
-   typedef list<Thing *>    ThingList;
-   typedef list<Being *>    BeingList;
-   typedef list<Player *>   PlayerList;
-   typedef list<Creature *> CreatureList;
-   typedef list<Object *>   ObjectList;
+   typedef std::list<Place *>    PlaceList;
+   typedef std::list<Room *>     RoomList;
+   typedef std::list<Thing *>    ThingList;
+   typedef std::list<Being *>    BeingList;
+   typedef std::list<Player *>   PlayerList;
+   typedef std::list<Creature *> CreatureList;
+   typedef std::list<Object *>   ObjectList;
 
    typedef PlaceList::const_iterator    PlaceListCIt;
    typedef RoomList::const_iterator     RoomListCIt;
@@ -763,13 +763,13 @@ namespace trogdor { namespace entity {
    typedef CreatureList::iterator CreatureListIt;
    typedef ObjectList::iterator   ObjectListIt;
 
-   typedef set<Place *, EntityAlphaComparator>    PlaceSet;
-   typedef set<Room *, EntityAlphaComparator>     RoomSet;
-   typedef set<Thing *, EntityAlphaComparator>    ThingSet;
-   typedef set<Being *, EntityAlphaComparator>    BeingSet;
-   typedef set<Player *, EntityAlphaComparator>   PlayerSet;
-   typedef set<Creature *, EntityAlphaComparator> CreatureSet;
-   typedef set<Object *, EntityAlphaComparator>   ObjectSet;
+   typedef std::set<Place *, EntityAlphaComparator>    PlaceSet;
+   typedef std::set<Room *, EntityAlphaComparator>     RoomSet;
+   typedef std::set<Thing *, EntityAlphaComparator>    ThingSet;
+   typedef std::set<Being *, EntityAlphaComparator>    BeingSet;
+   typedef std::set<Player *, EntityAlphaComparator>   PlayerSet;
+   typedef std::set<Creature *, EntityAlphaComparator> CreatureSet;
+   typedef std::set<Object *, EntityAlphaComparator>   ObjectSet;
 
    typedef PlaceSet::const_iterator    PlaceSetCIt;
    typedef RoomSet::const_iterator     RoomSetCIt;
@@ -784,11 +784,11 @@ namespace trogdor { namespace entity {
       ObjectSetCIt end;
    };
 
-   typedef unordered_map<string, ThingList>    ThingsByNameMap;
-   typedef unordered_map<string, BeingList>    BeingsByNameMap;
-   typedef unordered_map<string, PlayerList>   PlayersByNameMap;
-   typedef unordered_map<string, CreatureList> CreaturesByNameMap;
-   typedef unordered_map<string, ObjectList>   ObjectsByNameMap;
+   typedef std::unordered_map<std::string, ThingList>    ThingsByNameMap;
+   typedef std::unordered_map<std::string, BeingList>    BeingsByNameMap;
+   typedef std::unordered_map<std::string, PlayerList>   PlayersByNameMap;
+   typedef std::unordered_map<std::string, CreatureList> CreaturesByNameMap;
+   typedef std::unordered_map<std::string, ObjectList>   ObjectsByNameMap;
 
    /***************************************************************************/
 
@@ -855,7 +855,7 @@ namespace trogdor { namespace entity {
          user->out() << "? \n\n> ";
          user->out().flush();
 
-         string answer;
+         std::string answer;
          user->in() >> answer;
 
          for (i = objects.begin; i != objects.end; i++) {

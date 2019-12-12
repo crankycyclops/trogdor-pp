@@ -60,7 +60,7 @@ namespace trogdor { namespace entity {
             Constructor for creating a new Object.  Requires reference to the
             containing Game object and a name.
          */
-         inline Object(Game *g, string n, std::unique_ptr<Trogout> o,
+         inline Object(Game *g, std::string n, std::unique_ptr<Trogout> o,
          std::unique_ptr<Trogout> e): Thing(g, n, std::move(o),
          std::make_unique<NullIn>(), std::move(e)), owner(nullptr),
          weight(DEFAULT_WEIGHT), damage(DEFAULT_DAMAGE) {
@@ -76,7 +76,7 @@ namespace trogdor { namespace entity {
          /*
             Constructor for cloning an Object.  Requires a unique name.
          */
-         inline Object(const Object &o, string n): Thing(o, n) {
+         inline Object(const Object &o, std::string n): Thing(o, n) {
 
             owner = o.owner;
             weight = o.weight;
@@ -145,24 +145,24 @@ namespace trogdor { namespace entity {
             needs to be invoked afterward.
 
             Input:
-               Tag (string)
+               Tag (std::tring)
 
             Output:
                (none)
          */
-         virtual void setTag(string tag);
+         virtual void setTag(std::string tag);
 
          /*
             Wraps around Entity::removeTag to see if any object-specific behavior
             needs to be invoked afterward.
 
             Input:
-               Tag (string)
+               Tag (std::string)
 
             Output:
                (none)
          */
-         virtual void removeTag(string tag);
+         virtual void removeTag(std::string tag);
 
          /*
             Sets amount of damage Object does if it's a weapon (measured in hit
@@ -181,12 +181,12 @@ namespace trogdor { namespace entity {
             that the owner's inventory's index by name is updated.
 
             Input:
-               New alias (string)
+               New alias (std::string)
 
             Output:
                (none)
          */
-         virtual void addAlias(string alias);
+         virtual void addAlias(std::string alias);
    };
 }}
 

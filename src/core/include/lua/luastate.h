@@ -27,9 +27,6 @@ extern "C" {
 #include "../exception/luaexception.h"
 
 
-using namespace std;
-
-
 namespace trogdor {
 
    class Game;
@@ -54,12 +51,12 @@ namespace trogdor {
          // examples of retrieving return values (0 based from first to last)
          // calling these before L.execute() results in undefined behavior
          double retVal1 = L.getNumber(0); // 1st return value
-         string retVal2 = L.getString(1); // 2nd return value
+         std::string retVal2 = L.getString(1); // 2nd return value
       }
 
       // handle errors
       catch (const LuaException &e) {
-         cout << e.what() << endl;
+         cout << e.what() << std::endl;
       }
    */
    class LuaState {
@@ -79,10 +76,10 @@ namespace trogdor {
          lua_State *L;
 
          // remembers parsed scripts so that we can "copy" them to another state
-         string parsedScriptData;
+         std::string parsedScriptData;
 
          // error message that resulted from the last operation
-         string lastErrorMsg;
+         std::string lastErrorMsg;
 
          /*
             Registers the global Game object that Lua will use to interact with
@@ -386,9 +383,9 @@ namespace trogdor {
                (none)
 
             Output:
-               Error message (string)
+               Error message (std::string)
          */
-         inline string getLastErrorMsg() const {return lastErrorMsg;}
+         inline std::string getLastErrorMsg() const {return lastErrorMsg;}
 
          /*
             Loads a script from the specified file.  If there's an error,
@@ -396,12 +393,12 @@ namespace trogdor {
             will be thrown.
 
             Input:
-               filename (string)
+               filename (std::string)
 
             Output:
                (none)
          */
-         void loadScriptFromFile(string filename);
+         void loadScriptFromFile(std::string filename);
 
          /*
             Loads a script from the specified string.  If there's an error, the
@@ -409,12 +406,12 @@ namespace trogdor {
             throw an exception with that same message as the argument.
 
             Input:
-               script body (string)
+               script body (std::string)
 
             Output:
                (none)
          */
-         void loadScriptFromString(string script);
+         void loadScriptFromString(std::string script);
 
          /*
             Push function arguments onto the Lua state's stack.
@@ -437,7 +434,7 @@ namespace trogdor {
             nArgs++;
          }
 
-         inline void pushArgument(string arg) {
+         inline void pushArgument(std::string arg) {
 
             lua_pushstring(L, arg.c_str());
             nArgs++;
@@ -490,7 +487,7 @@ namespace trogdor {
             return lua_tonumber(L, i - nReturnValues);
          }
 
-         inline string getString(int i) const {
+         inline std::string getString(int i) const {
 
             return lua_tostring(L, i - nReturnValues);
          }
@@ -511,7 +508,7 @@ namespace trogdor {
          inline void prime() {
 
             if (lua_pcall(L, 0, 0, 0)) {
-               throw LuaException(string("error: ") + lua_tostring(L, -1));
+               throw LuaException(std::string("error: ") + lua_tostring(L, -1));
             }
          }
 
@@ -522,12 +519,12 @@ namespace trogdor {
             or if there's an error.
 
             Input:
-               function name (string)
+               function name (std::string)
 
             Output:
                (none)
          */
-         void call(string function);
+         void call(std::string function);
 
          /*
             Executes the function set up by LuaState::call().  If there's an
@@ -545,4 +542,3 @@ namespace trogdor {
 
 
 #endif
-

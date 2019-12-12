@@ -84,13 +84,13 @@ namespace trogdor { namespace entity {
             name.
 
             Input:
-               Alias (string)
+               Alias (std::string)
                Thing to be indexed (Thing *)
 
             Output:
                (none)
          */
-         inline void indexThingName(string alias, Thing *thing) {
+         inline void indexThingName(std::string alias, Thing *thing) {
 
             if (thingsByName.find(alias) == thingsByName.end()) {
                ThingList newList;
@@ -100,7 +100,7 @@ namespace trogdor { namespace entity {
             thingsByName.find(alias)->second.push_back(thing);
          }
 
-         inline void indexThingName(string alias, std::shared_ptr<Thing> thing) {
+         inline void indexThingName(std::string alias, std::shared_ptr<Thing> thing) {
 
             indexThingName(alias, thing.get());
          }
@@ -116,7 +116,7 @@ namespace trogdor { namespace entity {
             Output:
                (none)
          */
-         inline void indexBeingName(string alias, Being *being) {
+         inline void indexBeingName(std::string alias, Being *being) {
 
             if (beingsByName.find(alias) == beingsByName.end()) {
                BeingList newList;
@@ -126,7 +126,7 @@ namespace trogdor { namespace entity {
             beingsByName.find(alias)->second.push_back(being);
          }
 
-         inline void indexBeingName(string alias, std::shared_ptr<Being> being) {
+         inline void indexBeingName(std::string alias, std::shared_ptr<Being> being) {
 
             indexBeingName(alias, being.get());
          }
@@ -137,7 +137,7 @@ namespace trogdor { namespace entity {
             Constructor for creating a new Place.  Requires reference to the
             containing Game object and a name.
          */
-         Place(Game *g, string n, std::unique_ptr<Trogout> o, std::unique_ptr<Trogout> e);
+         Place(Game *g, std::string n, std::unique_ptr<Trogout> o, std::unique_ptr<Trogout> e);
 
          /*
             Constructor for cloning an existing Place.  Requires a unique name.
@@ -145,7 +145,7 @@ namespace trogdor { namespace entity {
             NOTE: Objects that are in a Place will not be copied, in order to
             maintain sanity.
          */
-         inline Place(const Place &p, string n): Entity(p, n) {}
+         inline Place(const Place &p, std::string n): Entity(p, n) {}
 
          /*
             Inserts a Thing that resides inside the Place.  An example would
@@ -177,12 +177,12 @@ namespace trogdor { namespace entity {
             name.  If there are no matches, iterators.begin == iterators.end.
 
             Input:
-               name (string)
+               name (std::string)
 
             Output:
                begin and end iterators over list of Things (ThingListCItPair)
          */
-         inline ThingListCItPair getThingsByName(string name) const {
+         inline ThingListCItPair getThingsByName(std::string name) const {
 
             ThingListCItPair things;
             ThingsByNameMap::const_iterator i = thingsByName.find(name);
@@ -205,12 +205,12 @@ namespace trogdor { namespace entity {
             name.  If there are no matches, iterators.begin == iterators.end.
 
             Input:
-               name (string)
+               name (std::string)
 
             Output:
                begin and end iterators over list of Beings (BeingListCItPair)
          */
-         inline BeingListCItPair getBeingsByName(string name) const {
+         inline BeingListCItPair getBeingsByName(std::string name) const {
 
             BeingListCItPair beings;
             BeingsByNameMap::const_iterator i = beingsByName.find(name);
@@ -234,7 +234,7 @@ namespace trogdor { namespace entity {
             without modifying them.
 
             Input:
-               name (string)
+               (None)
 
             Output:
                things.begin() and things.end() (ThingListCItPair)
@@ -255,7 +255,7 @@ namespace trogdor { namespace entity {
             without modifying them.
 
             Input:
-               name (string)
+               (None)
 
             Output:
                creatures.begin() and creatures.end() (CreatureListCItPair)
@@ -274,4 +274,3 @@ namespace trogdor { namespace entity {
 
 
 #endif
-

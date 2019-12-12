@@ -22,8 +22,6 @@
 #include "exception/undefinedexception.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -39,10 +37,10 @@ namespace trogdor {
       game-related data.  A standard lifecycle of a game object--assuming it
       exists in main()--might look something like:
 
-      // errStream's type = std::unique_ptr<StreamOut>
+      // errStream's type is std::unique_ptr<StreamOut>
       Game currentGame = std::make_unique<Game>(errStream);
 
-      currentGame->initialize(Parser *parser, string gameFile);
+      currentGame->initialize(Parser *parser, std::string gameFile);
       currentGame->start();
 
       while (currentGame->inProgress()) {
@@ -78,7 +76,7 @@ namespace trogdor {
          std::shared_ptr<Command> lastCommand;
 
          // game meta data (like title, description, etc.)
-         unordered_map<string, string> meta;
+         std::unordered_map<std::string, std::string> meta;
 
          // Maintains the game's vocabulary
          Vocabulary vocabulary;
@@ -113,7 +111,7 @@ namespace trogdor {
          struct {
             bool enabled;            // whether to show new players an intro
             bool pauseWhileReading;  // whether to pause the game during the intro
-            string text;             // introduction's content
+            std::string text;             // introduction's content
          } introduction;
 
          /* global error stream */
@@ -163,7 +161,7 @@ namespace trogdor {
          */
          inline std::unique_ptr<Runtime> makeInstantiator() {
 
-            return make_unique<Runtime>(getVocabulary(), this);
+            return std::make_unique<Runtime>(getVocabulary(), this);
          }
 
          /*
@@ -195,7 +193,7 @@ namespace trogdor {
             Returns a reference to the Game's error stream.  A typical use
             would look something like this:
 
-            gamePtr->err() << "I'm an error message!" << endl;
+            gamePtr->err() << "I'm an error message!" << std::endl;
 
             Input:
                (none)
@@ -210,12 +208,12 @@ namespace trogdor {
             returned.
 
             Input:
-               meta key (string)
+               meta key (std::string)
 
             Output:
-               meta value (string)
+               meta value (std::string)
          */
-         inline string getMeta(string key) const {
+         inline std::string getMeta(std::string key) const {
 
             if (meta.find(key) == meta.end()) {
                return "";
@@ -228,13 +226,13 @@ namespace trogdor {
             Sets a meta data value.
 
             Input:
-               meta key (string)
-               value (string)
+               meta key (std::string)
+               value (std::string)
 
             Output:
                (none)
          */
-         inline void setMeta(string key, string value) {meta[key] = value;}
+         inline void setMeta(std::string key, std::string value) {meta[key] = value;}
 
          /*
             Returns a const reference to the game's vocabulary for lookups.
@@ -259,12 +257,12 @@ namespace trogdor {
             its vocabulary.
 
             Input:
-               New direction (string)
+               New direction (std::string)
 
             Output:
                (none)
          */
-         inline void insertDirection(string direction) {
+         inline void insertDirection(std::string direction) {
 
             vocabulary.insertDirection(direction);
          }
@@ -279,13 +277,13 @@ namespace trogdor {
             its vocabulary.
 
             Input:
-               New direction synonym (string)
-               Actual direction synonym references (string)
+               New direction synonym (std::string)
+               Actual direction synonym references (std::string)
 
             Output:
                (none)
          */
-         inline void insertDirectionSynonym(string synonym, string direction) {
+         inline void insertDirectionSynonym(std::string synonym, std::string direction) {
 
             vocabulary.insertDirectionSynonym(synonym, direction);
          }
@@ -319,12 +317,12 @@ namespace trogdor {
             set to true.
 
             Input:
-               Content for new player introductions (string)
+               Content for new player introductions (std::string)
 
             Output:
                (none)
          */
-         inline void setIntroductionText(string t) {introduction.text = t;}
+         inline void setIntroductionText(std::string t) {introduction.text = t;}
 
          /*
             Gets the default player. Used to initialize default settings for
@@ -346,18 +344,18 @@ namespace trogdor {
             specified name doesn't exist.
 
             Input:
-               Name of player (string)
-               Message to output to player before removing (string: default is none)
+               Name of player (std::string)
+               Message to output to player before removing (std::string: default is none)
 
             Output:
                (none)
          */
-         inline void removePlayer(const string name, const string message = "") {
+         inline void removePlayer(const std::string name, const std::string message = "") {
 
             if (players.isset(name)) {
 
                if (message.length()) {
-                  players.get(name)->out("notifications") << message << endl;
+                  players.get(name)->out("notifications") << message << std::endl;
                }
 
                entities.erase(name);
@@ -372,12 +370,12 @@ namespace trogdor {
             game.
 
             Input:
-               Player name (string)
+               Player name (std::string)
 
             Output:
                True if the player is in the game and false if not
          */
-         inline bool playerIsInGame(const string name) const {
+         inline bool playerIsInGame(const std::string name) const {
 
             return players.isset(name);
          }
@@ -387,12 +385,12 @@ namespace trogdor {
             exception if the Entity doesn't exist.
 
             Input:
-               Name of Thing (string)
+               Name of Thing (std::string)
 
             Output:
                Thing *
          */
-         inline Entity *getEntity(const string name) {
+         inline Entity *getEntity(const std::string name) {
 
             if (!entities.isset(name)) {
                return nullptr;
@@ -418,12 +416,12 @@ namespace trogdor {
             an exception if the Place doesn't exist.
 
             Input:
-               Name of Place (string)
+               Name of Place (std::string)
 
             Output:
                Place *
          */
-         inline Place *getPlace(const string name) {
+         inline Place *getPlace(const std::string name) {
 
             if (!things.isset(name)) {
                return nullptr;
@@ -451,12 +449,12 @@ namespace trogdor {
             an exception if the Thing doesn't exist.
 
             Input:
-               Name of Thing (string)
+               Name of Thing (std::string)
 
             Output:
                Thing *
          */
-         inline Thing *getThing(const string name) {
+         inline Thing *getThing(const std::string name) {
 
             if (!things.isset(name)) {
                return nullptr;
@@ -484,12 +482,12 @@ namespace trogdor {
             Throws an exception if the specified being name doesn't exist.
 
             Input:
-               Name of being (string)
+               Name of being (std::string)
 
             Output:
                Being *
          */
-         inline Being *getBeing(const string name) {
+         inline Being *getBeing(const std::string name) {
 
             if (!beings.isset(name)) {
                return nullptr;
@@ -517,12 +515,12 @@ namespace trogdor {
             Throws an exception if the specified player name doesn't exist.
 
             Input:
-               Name of player (string)
+               Name of player (std::string)
 
             Output:
                Player *
          */
-         inline Player *getPlayer(const string name) {
+         inline Player *getPlayer(const std::string name) {
 
             if (!players.isset(name)) {
                return nullptr;
@@ -550,12 +548,12 @@ namespace trogdor {
             Throws an exception if the creature doesn't exist.
 
             Input:
-               Name of creature (string)
+               Name of creature (std::string)
 
             Output:
                Creature *
          */
-         inline Creature *getCreature(const string name) {
+         inline Creature *getCreature(const std::string name) {
 
             if (!creatures.isset(name)) {
                return nullptr;
@@ -583,12 +581,12 @@ namespace trogdor {
             exception if the Object doesn't exist.
 
             Input:
-               Name of Object (string)
+               Name of Object (std::string)
 
             Output:
                Object *
          */
-         inline Object *getObject(const string name) {
+         inline Object *getObject(const std::string name) {
 
             if (!objects.isset(name)) {
                return nullptr;
@@ -616,12 +614,12 @@ namespace trogdor {
             exception if the Room doesn't exist.
 
             Input:
-               Name of Room (string)
+               Name of Room (std::string)
 
             Output:
                Room *
          */
-         inline Room *getRoom(const string name) {
+         inline Room *getRoom(const std::string name) {
 
             if (!rooms.isset(name)) {
                return nullptr;
@@ -654,7 +652,7 @@ namespace trogdor {
             Output:
                (none)
          */
-         inline void insertEntity(string name, std::shared_ptr<entity::Entity> entity) {
+         inline void insertEntity(std::string name, std::shared_ptr<entity::Entity> entity) {
 
             switch (entity->getType()) {
 
@@ -690,10 +688,10 @@ namespace trogdor {
             Output:
                (none)
          */
-         inline void insertEntity(string name, std::shared_ptr<entity::Player> player) {
+         inline void insertEntity(std::string name, std::shared_ptr<entity::Player> player) {
 
             if (entities.isset(name)) {
-               throw entity::EntityException(string("Entity '") + name + "' already exists");
+               throw entity::EntityException(std::string("Entity '") + name + "' already exists");
             }
 
             entities.set(name, player);
@@ -711,10 +709,10 @@ namespace trogdor {
             Output:
                (none)
          */
-         inline void insertEntity(string name, std::shared_ptr<entity::Creature> creature) {
+         inline void insertEntity(std::string name, std::shared_ptr<entity::Creature> creature) {
 
             if (entities.isset(name)) {
-               throw entity::EntityException(string("Entity '") + name + "' already exists");
+               throw entity::EntityException(std::string("Entity '") + name + "' already exists");
             }
 
             entities.set(name, creature);
@@ -732,10 +730,10 @@ namespace trogdor {
             Output:
                (none)
          */
-         inline void insertEntity(string name, std::shared_ptr<entity::Object> object) {
+         inline void insertEntity(std::string name, std::shared_ptr<entity::Object> object) {
 
             if (entities.isset(name)) {
-               throw entity::EntityException(string("Entity '") + name + "' already exists");
+               throw entity::EntityException(std::string("Entity '") + name + "' already exists");
             }
 
             entities.set(name, object);
@@ -752,10 +750,10 @@ namespace trogdor {
             Output:
                (none)
          */
-         inline void insertEntity(string name, std::shared_ptr<entity::Room> room) {
+         inline void insertEntity(std::string name, std::shared_ptr<entity::Room> room) {
 
             if (entities.isset(name)) {
-               throw entity::EntityException(string("Entity '") + name + "' already exists");
+               throw entity::EntityException(std::string("Entity '") + name + "' already exists");
             }
 
             entities.set(name, room);
@@ -769,12 +767,12 @@ namespace trogdor {
 
             Input:
                Pointer to an instance of Parser (Parser *)
-               Game definition filename (string)
+               Game definition filename (std::string)
 
             Output:
                True if initialization was successful and false if not (bool)
          */
-         bool initialize(Parser *parser, string gamefile);
+         bool initialize(Parser *parser, std::string gamefile);
 
          /*
             Puts the game into a running state. In a running state, the timer is
@@ -812,13 +810,13 @@ namespace trogdor {
             exception if an entity with the given name already exists.
 
             Input:
-               Player name (string)
+               Player name (std::string)
                Pointer to an output stream (Trogout *)
 
             Output:
                Player *
          */
-         Player *createPlayer(string name, std::unique_ptr<Trogout> outStream,
+         Player *createPlayer(std::string name, std::unique_ptr<Trogout> outStream,
          std::unique_ptr<Trogin> inStream, std::unique_ptr<Trogout> errStream);
 
          /*
@@ -848,13 +846,13 @@ namespace trogdor {
             Wraps around Vocabulary::insertVerbAction, allowing the client to
             supply its own custom actions. See vocabulary.h for documentation.
          */
-         void insertVerbAction(string verb, std::unique_ptr<Action> action);
+         void insertVerbAction(std::string verb, std::unique_ptr<Action> action);
 
          /*
             Wraps around Vocabulary::insertSynonym, allowing the client to
             supply its own verb synonyms. See vocabulary.h for documentation.
          */
-         inline void insertVerbSynonym(string synonym, string verb) {
+         inline void insertVerbSynonym(std::string synonym, std::string verb) {
 
             vocabulary.insertVerbSynonym(synonym, verb);
          }
@@ -899,4 +897,3 @@ namespace trogdor {
 
 
 #endif
-
