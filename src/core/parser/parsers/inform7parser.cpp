@@ -112,8 +112,8 @@ namespace trogdor {
 
       Token t = lexer.next();
 
-      string author;
-      string title = t.value;
+      std::string author;
+      std::string title = t.value;
 
       t = lexer.next();
 
@@ -134,12 +134,12 @@ namespace trogdor {
          }
 
          if (!author.length()) {
-            throw ParseException(string("Initial bibliographic sentence has 'by' without author (line ") + to_string(t.lineno) + ')');
+            throw ParseException(std::string("Initial bibliographic sentence has 'by' without author (line ") + std::to_string(t.lineno) + ')');
          }
       }
 
       else if (PHRASE_TERMINATOR != t.type) {
-         throw ParseException(string("Initial bibliographic sentence can only be a title in double quotes, possibly followed with 'by' and the name of the author (line ") + to_string(t.lineno) + ')');
+         throw ParseException(std::string("Initial bibliographic sentence can only be a title in double quotes, possibly followed with 'by' and the name of the author (line ") + std::to_string(t.lineno) + ')');
       }
 
       // TODO
@@ -148,10 +148,10 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   vector<string> Inform7Parser::parseIdentifiersList() {
+   std::vector<std::string> Inform7Parser::parseIdentifiersList() {
 
       Token t;
-      vector<string> identifiers;
+      std::vector<std::string> identifiers;
 
       // Use this to make sure we only skip past articles if they really
       // function as articles by appearing before an identifier name
@@ -159,7 +159,7 @@ namespace trogdor {
 
       do {
 
-         string noun;
+         std::string noun;
 
          // Skip past articles
          // TODO: need to keep track of whether or not an article was used; if
@@ -186,7 +186,7 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(string("Sentence does not follow a valid syntax. Did you end with a dangling comma or \"and\"? (line ") + to_string(t.lineno) + ')');
+            throw ParseException(std::string("Sentence does not follow a valid syntax. Did you end with a dangling comma or \"and\"? (line ") + std::to_string(t.lineno) + ')');
          }
       } while (COMMA == t.type || AND == t.type);
 
@@ -196,10 +196,10 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   vector<Inform7Parser::ParsedProperty> Inform7Parser::parsePropertyList() {
+   std::vector<Inform7Parser::ParsedProperty> Inform7Parser::parsePropertyList() {
 
       Token t = lexer.next();
-      vector<Inform7Parser::ParsedProperty> propertyList;
+      std::vector<Inform7Parser::ParsedProperty> propertyList;
 
       // Flags whether or not an adjective is preceded by "not"
       bool negated = false;
@@ -242,28 +242,28 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   void Inform7Parser::parseInClause(vector<string> subjects) {
+   void Inform7Parser::parseInClause(std::vector<std::string> subjects) {
 
       Token t;
 
       // Grab list of containers or places where the subject(s) should go (there
       // should only be one, and if there are more we'll report it as an error)
-      vector<string> containersOrPlaces = parseIdentifiersList();
+      std::vector<std::string> containersOrPlaces = parseIdentifiersList();
 
       if (!containersOrPlaces.size()) {
-         throw ParseException(string("You said ") + vectorToStr(subjects) +
+         throw ParseException(std::string("You said ") + vectorToStr(subjects) +
             " " + (subjects.size() > 1 ? "are" : "is") +
             " in a container or a place without saying what that container or " +
-            "place is (line " + to_string(t.lineno) + ')');
+            "place is (line " + std::to_string(t.lineno) + ')');
       }
 
       else if (containersOrPlaces.size() > 1) {
-         throw ParseException(string("You said ") + vectorToStr(subjects) +
+         throw ParseException(std::string("You said ") + vectorToStr(subjects) +
             (subjects.size() > 1 ? " are" : " is") +
             " in " + vectorToStr(containersOrPlaces) + ", but " +
             (subjects.size() > 1 ? "they" : "it") +
             " can only be in one container or place at a time (line " +
-            to_string(t.lineno) + ')');
+            std::to_string(t.lineno) + ')');
       }
 
       else {
@@ -277,28 +277,28 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   void Inform7Parser::parseOnClause(vector<string> subjects) {
+   void Inform7Parser::parseOnClause(std::vector<std::string> subjects) {
 
       Token t;
 
       // Grab list of supports where the subject(s) should go (there should only
       // be one, and if there are more we'll report it as an error)
-      vector<string> supporters = parseIdentifiersList();
+      std::vector<std::string> supporters = parseIdentifiersList();
 
       if (!supporters.size()) {
-         throw ParseException(string("You said ") + vectorToStr(subjects) +
+         throw ParseException(std::string("You said ") + vectorToStr(subjects) +
             " " + (subjects.size() > 1 ? "are" : "is") +
             " on a supporter without saying what that supporter is (line " +
-            to_string(t.lineno) + ')');
+            std::to_string(t.lineno) + ')');
       }
 
       else if (supporters.size() > 1) {
-         throw ParseException(string("You said ") + vectorToStr(subjects) +
+         throw ParseException(std::string("You said ") + vectorToStr(subjects) +
             (subjects.size() > 1 ? " are" : " is") +
             " on " + vectorToStr(supporters) + ", but " +
             (subjects.size() > 1 ? "they" : "it") +
             " can only be on one supporter at a time (line " +
-            to_string(t.lineno) + ')');
+            std::to_string(t.lineno) + ')');
       }
 
       else {
@@ -324,8 +324,8 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   void Inform7Parser::parseDefinition(vector<string> identifiers,
-   vector<Inform7Parser::ParsedProperty> propertyList) {
+   void Inform7Parser::parseDefinition(std::vector<std::string> identifiers,
+   std::vector<Inform7Parser::ParsedProperty> propertyList) {
 
       Token t = lexer.peek();
 
@@ -353,7 +353,7 @@ namespace trogdor {
          classPlurals.end() != classPlurals.find(strToLower(t.value))
       ) {      
 
-         string className = classPlurals.end() != classPlurals.find(strToLower(t.value)) ?
+         std::string className = classPlurals.end() != classPlurals.find(strToLower(t.value)) ?
             classPlurals[strToLower(t.value)] : strToLower(t.value);
 
          // TODO
@@ -387,11 +387,11 @@ namespace trogdor {
          // A description of the thing being described was included
          if (QUOTED_STRING == t.type) {
 
-            string description = t.value;
+            std::string description = t.value;
 
             if (identifiers.size() > 1) {
-            throw ParseException(string("You wrote '") + description +
-               "' (line " + to_string(t.lineno) + "): but I don't know if " +
+            throw ParseException(std::string("You wrote '") + description +
+               "' (line " + std::to_string(t.lineno) + "): but I don't know if " +
                "you're trying to describe " + vectorToStr(identifiers, "or") +
                ".");
             }
@@ -400,7 +400,7 @@ namespace trogdor {
 
             if (PHRASE_TERMINATOR != t.type) {
 
-               string combined = "\"" + description + "\"";
+               std::string combined = "\"" + description + "\"";
 
                for (; t.type != PHRASE_TERMINATOR; t = lexer.next()) {
 
@@ -411,8 +411,8 @@ namespace trogdor {
                   combined += t.value;
                }
 
-               throw ParseException(string("You wrote '") + combined +
-                  "' (line " + to_string(t.lineno) + "): but it looks as if " +
+               throw ParseException(std::string("You wrote '") + combined +
+                  "' (line " + std::to_string(t.lineno) + "): but it looks as if " +
                   "perhaps you did not intend that to read as a single " +
                   "sentence, and possibly the text in quotes was supposed to " +
                   "stand as as a sentence on its own? (The convention is " +
@@ -437,8 +437,8 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   void Inform7Parser::parsePropertyAssignment(vector<string> identifiers,
-   vector<Inform7Parser::ParsedProperty> propertyList) {
+   void Inform7Parser::parsePropertyAssignment(std::vector<std::string> identifiers,
+   std::vector<Inform7Parser::ParsedProperty> propertyList) {
 
       // TODO
       cout << endl << "parsePropertyAssignment stub!" << endl << endl;
@@ -456,7 +456,7 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   void Inform7Parser::parsePlacement(vector<string> subjects) {
+   void Inform7Parser::parsePlacement(std::vector<std::string> subjects) {
 
       Token t;
 
@@ -473,7 +473,7 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   void Inform7Parser::parseEquality(vector<string> identifiers) {
+   void Inform7Parser::parseEquality(std::vector<std::string> identifiers) {
 
       Token t;
 
@@ -486,7 +486,7 @@ namespace trogdor {
          0 == strToLower(t.value).compare("not")
       ) {
 
-         vector<Inform7Parser::ParsedProperty> propertyList;
+         std::vector<Inform7Parser::ParsedProperty> propertyList;
 
          // If we have a list of properties, parse them. We're breaking away
          // from a standard recursive descent in order to avoid too much
@@ -504,11 +504,11 @@ namespace trogdor {
          }
 
          else if (COMMA == t.type) {
-            throw ParseException(string("Your sentence on line ") + to_string(t.lineno) + " seems to refer to something whose name begins with a comma, which is forbidden.");
+            throw ParseException(std::string("Your sentence on line ") + std::to_string(t.lineno) + " seems to refer to something whose name begins with a comma, which is forbidden.");
          }
 
          else {
-            throw ParseException(string("Illegal character on line ") + to_string(t.lineno) + ".");
+            throw ParseException(std::string("Illegal character on line ") + std::to_string(t.lineno) + ".");
          }
       }
 
@@ -532,15 +532,15 @@ namespace trogdor {
       }
 
       else if (WORD == t.type || EQUALITY == t.type || AND == t.type) {
-         throw ParseException(string("'") + t.value + "' is not a known kind of thing or property of a thing (line " + to_string(t.lineno) + ')');
+         throw ParseException(std::string("'") + t.value + "' is not a known kind of thing or property of a thing (line " + std::to_string(t.lineno) + ')');
       }
 
       else if (QUOTED_STRING == t.type) {
-         throw ParseException(string("The sentence on line ") + to_string(t.lineno) + "appears to say that one or more things are equal to a value, but that makes no sense.");
+         throw ParseException(std::string("The sentence on line ") + std::to_string(t.lineno) + "appears to say that one or more things are equal to a value, but that makes no sense.");
       }
 
       else {
-         throw ParseException(string("I can't find a verb that I know how to deal with. (line ") + to_string(t.lineno) + ')');
+         throw ParseException(std::string("I can't find a verb that I know how to deal with. (line ") + std::to_string(t.lineno) + ')');
       }
    }
 
@@ -552,11 +552,11 @@ namespace trogdor {
 
       // We're going to break away from strict LL parsing for a moment, because
       // otherwise there would be too much lookahead
-      vector<string> identifiers = parseIdentifiersList();
+      std::vector<std::string> identifiers = parseIdentifiersList();
       t = lexer.next();
 
       if (!identifiers.size()) {
-         throw ParseException(string("You've used a verb ('" + t.value + "') without a subject (line ") + to_string(t.lineno) + ')');
+         throw ParseException(std::string("You've used a verb ('" + t.value + "') without a subject (line ") + std::to_string(t.lineno) + ')');
       }
 
       // We're parsing an expression with an "is" or "are" verb
@@ -565,7 +565,7 @@ namespace trogdor {
       }
 
       else {
-         throw ParseException(string("I can't find a verb that I know how to deal with. (line ") + to_string(t.lineno) + ')');
+         throw ParseException(std::string("I can't find a verb that I know how to deal with. (line ") + std::to_string(t.lineno) + ')');
       }
    }
 
@@ -588,7 +588,7 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   void Inform7Parser::parse(string filename) {
+   void Inform7Parser::parse(std::string filename) {
 
       lexer.open(filename);
       parseProgram();
@@ -596,4 +596,3 @@ namespace trogdor {
       // TODO: start using the AST (undefined so far) to populate the game
    }
 }
-

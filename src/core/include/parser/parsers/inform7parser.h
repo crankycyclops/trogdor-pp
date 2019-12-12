@@ -17,8 +17,6 @@
 #include "inform7lexer.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
    /*
@@ -119,7 +117,7 @@ namespace trogdor {
          // Data type that stores a parsed property and whether or not it's
          // negated (prefixed by "not")
          struct ParsedProperty {
-            string value;
+            std::string value;
             bool negated;
          };
 
@@ -132,19 +130,19 @@ namespace trogdor {
          // Set of directions recognized by Inform 7 (list can be extended.)
          // Keys are the direction and values are the opposite. For example,
          // directions["north"] = "south".
-         unordered_map<string, string> directions;
+         std::unordered_map<std::string, std::string> directions;
 
          // Set of classes recognized by Inform 7
-         unordered_set<string> classes;
+         std::unordered_set<std::string> classes;
 
          // Plural lookup mapping plural classes to their singular equivalents
-         unordered_map<string, string> classPlurals;
+         std::unordered_map<std::string, std::string> classPlurals;
 
          // Set of properties (both either/or and value) recognized by Inform 7
-         unordered_set<string> properties;
+         std::unordered_set<std::string> properties;
 
          // Set of non-property adjectives recognized by Inform 7
-         unordered_set<string> adjectives;
+         std::unordered_set<std::string> adjectives;
 
          /*
             Parses one or more identifiers on the left hand side of an equality.
@@ -161,7 +159,7 @@ namespace trogdor {
             Output:
                Vector containing one or more identifiers.
          */
-         vector<string> parseIdentifiersList();
+         std::vector<std::string> parseIdentifiersList();
 
          /*
             Parses one or more properties on the left hand side of an equality.
@@ -176,31 +174,31 @@ namespace trogdor {
             Output:
                Vector containing one or more properties
          */
-         vector<ParsedProperty> parsePropertyList();
+         std::vector<ParsedProperty> parsePropertyList();
 
          /*
             Parses the in clause of a definition. Matches the <in clause>
             production in the EBNF above.
 
             Input:
-               One or more things that are in a container or place (vector<string>)
+               One or more things that are in a container or place (std::vector<std::string>)
 
             Output:
                (none)
          */
-         void parseInClause(vector<string> subjects);
+         void parseInClause(std::vector<std::string> subjects);
 
          /*
             Parses the on clause of a definition. Matches the <on clause>
             production in the EBNF above.
 
             Input:
-               One or more things that are on a supporter (vector<string>)
+               One or more things that are on a supporter (std::vector<std::string>)
 
             Output:
                (none)
          */
-         void parseOnClause(vector<string> subjects);
+         void parseOnClause(std::vector<std::string> subjects);
 
          /*
             Parses the location clause of a definition. Matches the <location
@@ -219,14 +217,14 @@ namespace trogdor {
             <definition> production in the EBNF above.
 
             Input:
-               One or more identifiers (vector<string>)
-               One or more optional properties (vector<ParsedProperty>)
+               One or more identifiers (std::vector<std::string>)
+               One or more optional properties (std::vector<ParsedProperty>)
 
             Output:
                (none)
          */
-         void parseDefinition(vector<string> identifiers,
-         vector<ParsedProperty> propertyList = vector<ParsedProperty>());
+         void parseDefinition(std::vector<std::string> identifiers,
+         std::vector<ParsedProperty> propertyList = std::vector<ParsedProperty>());
 
          /*
             Parses the assignment of one or more properties to one or more
@@ -234,14 +232,14 @@ namespace trogdor {
             EBNF above.
 
             Input:
-               One or more identifiers (vector<string>)
-               One or more properties (vector<ParsedProperty>)
+               One or more identifiers (std::vector<std::string>)
+               One or more properties (std::vector<ParsedProperty>)
 
             Output:
                (none)
          */
-         void parsePropertyAssignment(vector<string> identifiers,
-         vector<ParsedProperty> propertyList);
+         void parsePropertyAssignment(std::vector<std::string> identifiers,
+         std::vector<ParsedProperty> propertyList);
 
          /*
             Parses the placement of one or more things into or onto a room,
@@ -249,12 +247,12 @@ namespace trogdor {
             EBNF above.
 
             Input:
-               One or more identifiers (vector<string>)
+               One or more identifiers (std::vector<std::string>)
 
             Output:
                (none)
          */
-         void parsePlacement(vector<string> subjects);
+         void parsePlacement(std::vector<std::string> subjects);
 
          /*
             Parses an equality phrase, or any phrase that uses the present tense
@@ -262,12 +260,12 @@ namespace trogdor {
             the EBNF above.
 
             Input:
-               One or more identifiers as the subject (vector<string>)
+               One or more identifiers as the subject (std::vector<std::string>)
 
             Output:
                (none)
          */
-         void parseEquality(vector<string> identifiers);
+         void parseEquality(std::vector<std::string> identifiers);
 
          /*
             Parses the optional bibliographic sentence at the beginning of the
@@ -317,16 +315,16 @@ namespace trogdor {
             Example call: insertDirection("north", "south");
 
             Input:
-               New direction (string)
-               New direction's opposite (string)
+               New direction (std::string)
+               New direction's opposite (std::string)
 
             Output:
                (none)
          */
-         inline void insertDirection(string direction, string opposite) {
+         inline void insertDirection(std::string direction, std::string opposite) {
 
             if (directions.end() != directions.find(direction)) {
-               throw ParseException(string("Direction '") + direction +
+               throw ParseException(std::string("Direction '") + direction +
                   "' has already been defined.");
             }
 
@@ -341,12 +339,12 @@ namespace trogdor {
             Inserts an Inform 7 class.
 
             Input:
-               Class name (string)
+               Class name (std::string)
 
             Output:
                (none)
          */
-         inline void insertClass(string className) {
+         inline void insertClass(std::string className) {
 
             classes.insert(className);
             classPlurals[language.pluralizeNoun(className)] = className;
@@ -357,12 +355,12 @@ namespace trogdor {
             a certain class.
 
             Input:
-               Property (string)
+               Property (std::string)
 
             Output:
                (none)
          */
-         inline void insertProperty(string property) {
+         inline void insertProperty(std::string property) {
 
             if (properties.end() == properties.find(property)) {
                properties.insert(property);
@@ -373,12 +371,12 @@ namespace trogdor {
             Inserts an Inform 7 adjective.
 
             Input:
-               Adjective (string)
+               Adjective (std::string)
 
             Output:
                (none)
          */
-         inline void insertAdjective(string adjective) {
+         inline void insertAdjective(std::string adjective) {
 
             if (adjectives.end() == adjectives.find(adjective)) {
                adjectives.insert(adjective);
@@ -401,15 +399,14 @@ namespace trogdor {
             Parses an Inform 7 source file.
 
             Input:
-               Filename where the i7 source file is saved (string)
+               Filename where the i7 source file is saved (std::string)
 
             Output:
                (none)
          */
-         virtual void parse(string filename);
+         virtual void parse(std::string filename);
    };
 }
 
 
 #endif
-

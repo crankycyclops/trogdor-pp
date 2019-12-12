@@ -9,21 +9,19 @@
 #include "../../include/exception/parseexception.h"
 #include "../../include/parser/parsers/inform7lexer.h"
 
-using namespace std;
-
 namespace trogdor {
 
 
-   void Inform7Lexer::open(string filename) {
+   void Inform7Lexer::open(std::string filename) {
 
-      ifstream file;
-      stringstream s;
+      std::ifstream file;
+      std::stringstream s;
 
       file.open(filename);
 
       if (file.fail()) {
          throw ParseException(
-            string("failed to open") + filename + ": " + strerror(errno)
+            std::string("failed to open") + filename + ": " + strerror(errno)
          );
       }
 
@@ -59,7 +57,7 @@ namespace trogdor {
 
          if (sourceIndex < source.length()) {
 
-            string terminator = getSentenceTerminator();
+            std::string terminator = getSentenceTerminator();
 
             if (terminator.length()) {
                t.value = terminator;
@@ -113,8 +111,8 @@ namespace trogdor {
                      the awkward block of code using comments.
                   */
                   // BEGIN AWKWARD BLOCK OF CODE
-                  string potentialWord;
-                  stack<int> tokenSourceIndices;
+                  std::string potentialWord;
+                  std::stack<int> tokenSourceIndices;
 
                   for (int compoundWordLength = 0;
                   compoundWordLength < maxCompoundWordLength; compoundWordLength++) {
@@ -174,8 +172,8 @@ namespace trogdor {
                }
 
                else {
-                  throw ParseException(string("illegal character '") +
-                     source.at(sourceIndex) + "' on line " + to_string(sourceLine));
+                  throw ParseException(std::string("illegal character '") +
+                     source.at(sourceIndex) + "' on line " + std::to_string(sourceLine));
                }
 
                sourceIndex++;
@@ -217,9 +215,9 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   string Inform7Lexer::getSentenceTerminator() {
+   std::string Inform7Lexer::getSentenceTerminator() {
 
-      string terminator = "";
+      std::string terminator = "";
 
       if ('.' == source.at(sourceIndex)) {
          terminator += source.at(sourceIndex);
@@ -253,9 +251,9 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   string Inform7Lexer::getQuotedString() {
+   std::string Inform7Lexer::getQuotedString() {
 
-      string quotedString;
+      std::string quotedString;
 
       // Move past first quotation mark
       sourceIndex++;
@@ -270,9 +268,9 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   string Inform7Lexer::getWord() {
+   std::string Inform7Lexer::getWord() {
 
-      string word;
+      std::string word;
 
       for (; sourceIndex < source.length() && isWordChar(source.at(sourceIndex));
       sourceIndex++) {
@@ -283,4 +281,3 @@ namespace trogdor {
       return word;
    }
 }
-

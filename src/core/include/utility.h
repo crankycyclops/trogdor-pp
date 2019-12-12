@@ -58,19 +58,19 @@ extern std::string &trim(std::string &s);
    Output:
       (none)
 */
-string replaceAll(const string &str, const string &search, const string &replace);
+std::string replaceAll(const std::string &str, const std::string &search, const std::string &replace);
 
 /*
    Utility method that converts a vector of strings into a comma-delimited list.
 
    Input:
-      Vector of strings (vector<string>)
-      Conjunction (string)
+      Vector of strings (std::vector<std::string>)
+      Conjunction (std::string)
 
    Output:
-      Comma-delimited list (string)
+      Comma-delimited list (std::string)
 */
-string vectorToStr(vector<string> list, string conjunction = "and");
+std::string vectorToStr(std::vector<std::string> list, std::string conjunction = "and");
 
 /*
    Checks if a string represents a valid integer.

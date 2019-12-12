@@ -56,7 +56,7 @@ std::string &trim(std::string &s);
    Output:
       (none)
 */
-string replaceAll(const string &str, const string &search, const string &replace);
+std::string replaceAll(const std::string &str, const std::string &search, const std::string &replace);
 
 /*
    Utility method that converts a vector of strings into a comma-delimited list.
@@ -68,7 +68,7 @@ string replaceAll(const string &str, const string &search, const string &replace
    Output:
       Comma-delimited list (string)
 */
-string vectorToStr(vector<string> list, string conjunction = "and");
+std::string vectorToStr(std::vector<std::string> list, std::string conjunction = "and");
 
 /*
    Checks if a string represents a valid integer.
@@ -115,11 +115,11 @@ std::string &trim(std::string &s) {
 }
 
 
-string replaceAll(const string &str, const string &search, const string &replace) {
+std::string replaceAll(const std::string &str, const std::string &search, const std::string &replace) {
 
-   string strCopy = string(str);
+   std::string strCopy = std::string(str);
 
-   for (int i = strCopy.find(search); i != string::npos; i = strCopy.find(search, i + replace.length())) {
+   for (int i = strCopy.find(search); i != std::string::npos; i = strCopy.find(search, i + replace.length())) {
       strCopy.replace(i, search.length(), replace);
    }
 
@@ -127,9 +127,9 @@ string replaceAll(const string &str, const string &search, const string &replace
 }
 
 
-string vectorToStr(vector<string> list, string conjunction) {
+std::string vectorToStr(std::vector<std::string> list, std::string conjunction) {
 
-   string str;
+   std::string str;
 
    for (int i = 0; i < list.size(); i++) {
 

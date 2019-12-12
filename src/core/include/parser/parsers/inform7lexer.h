@@ -10,8 +10,6 @@
 #include "../../utility.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -29,7 +27,7 @@ namespace trogdor {
    };
 
    struct Token {
-      string value;
+      std::string value;
       TokenType type;
       int lineno;
    };
@@ -41,7 +39,7 @@ namespace trogdor {
       private:
 
          // String representations of each token type for debugging
-         unordered_map<TokenType, string, std::hash<int>> tokenTypeToStr;
+         std::unordered_map<TokenType, std::string, std::hash<int>> tokenTypeToStr;
 
          // Some words are actually composites of more than one word. For
          // example: "player's carryall" is treated as one word, but is actually
@@ -59,19 +57,19 @@ namespace trogdor {
          const int maxCompoundWordLength = 4;
 
          // Reference to parser's list of defined directions
-         const unordered_map<string, string> &directions;
+         const std::unordered_map<std::string, std::string> &directions;
 
          // Reference to parser's list of defined classes
-         const unordered_set<string> &classes;
+         const std::unordered_set<std::string> &classes;
 
          // Reference to parser's list of defined properties
-         const unordered_set<string> &properties;
+         const std::unordered_set<std::string> &properties;
 
          // Reference to parser's list of defined non-property adjectives
-         const unordered_set<string> &adjectives;
+         const std::unordered_set<std::string> &adjectives;
 
          // Inform 7 source code
-         string source;
+         std::string source;
 
          // Index to next unparsed character in source
          int sourceIndex = 0;
@@ -80,7 +78,7 @@ namespace trogdor {
          int sourceLine = 1;
 
          // Tokens that were read ahead to make a decision and then "pushed back"
-         stack<Token> tokenBuffer;
+         std::stack<Token> tokenBuffer;
 
          // The most recently lexed token
          Token currentToken;
@@ -90,12 +88,12 @@ namespace trogdor {
             not.
 
             Input:
-               Word (string)
+               Word (std::string)
 
             Output:
                True if word is a form of the verb "to be" and false if not (bool)
          */
-         inline bool isEquality(string s) const {
+         inline bool isEquality(std::string s) const {
 
             s = strToLower(s);
 
@@ -109,12 +107,12 @@ namespace trogdor {
             Returns true if the string is an article and false if not.
 
             Input:
-               Word (string)
+               Word (std::string)
 
             Output:
                True if string is an article and false if not (bool)
          */
-         inline bool isArticle(string s) const {
+         inline bool isArticle(std::string s) const {
 
             s = strToLower(s);
 
@@ -160,9 +158,9 @@ namespace trogdor {
                (none)
 
             Output:
-               Sentence terminator or empty string (string)
+               Sentence terminator or empty string (std::string)
          */
-         string getSentenceTerminator();
+         std::string getSentenceTerminator();
 
          /*
             Reads a quoted string from the source.
@@ -171,9 +169,9 @@ namespace trogdor {
                (none)
 
             Output:
-               Quoted string (string)
+               Quoted string (std::string)
          */
-         string getQuotedString();
+         std::string getQuotedString();
 
          /*
             Reads a word from the source.
@@ -182,9 +180,9 @@ namespace trogdor {
                (none)
 
             Output:
-               Word (string)
+               Word (std::string)
          */
-         string getWord();
+         std::string getWord();
 
       public:
 
@@ -192,10 +190,10 @@ namespace trogdor {
             Constructor
          */
          inline Inform7Lexer(
-            const unordered_map<string, string> &dirs,
-            const unordered_set<string> &cls,
-            const unordered_set<string> &props,
-            const unordered_set<string> &adjs
+            const std::unordered_map<std::string, std::string> &dirs,
+            const std::unordered_set<std::string> &cls,
+            const std::unordered_set<std::string> &props,
+            const std::unordered_set<std::string> &adjs
          ): directions(dirs), classes(cls), properties(props), adjectives(adjs),
          tokenTypeToStr({
             {SOURCE_EOF, "SOURCE_EOF"},
@@ -220,9 +218,9 @@ namespace trogdor {
                Token type (TokenType)
 
             Output:
-               String representation of the type (string)
+               String representation of the type (std::string)
          */
-         inline string getTokenTypeStr(TokenType type) const {
+         inline std::string getTokenTypeStr(TokenType type) const {
 
             return tokenTypeToStr.find(type)->second;
          }
@@ -232,12 +230,12 @@ namespace trogdor {
             Throws a ParseException if the file cannot be read.
 
             Input:
-               Filename (string)
+               Filename (std::string)
 
             Output:
                (none)
          */
-         void open(string filename);
+         void open(std::string filename);
 
          /*
             Returns the source code currently being tokenized.
@@ -246,9 +244,9 @@ namespace trogdor {
                (none)
 
             Output:
-               Source code (string)
+               Source code (std::string)
          */
-         inline const string getSource() const {return source;}
+         inline const std::string getSource() const {return source;}
 
          /*
             Returns the current line in the source code.
@@ -303,4 +301,3 @@ namespace trogdor {
 
 
 #endif
-
