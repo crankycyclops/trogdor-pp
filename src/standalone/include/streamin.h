@@ -6,8 +6,6 @@
 #include "../../core/include/iostream/trogin.h"
 
 
-using namespace std;
-
 
 /*
    Input "stream" that reads from the specified istream.
@@ -16,11 +14,11 @@ class StreamIn: public trogdor::Trogin {
 
    private:
 
-      istream *stream;
+      std::istream *stream;
 
    public:
 
-      inline StreamIn(istream *s) {stream = s;}
+      inline StreamIn(std::istream *s) {stream = s;}
 
    /*
       See include/iostream/trogin.h for details.
@@ -28,7 +26,7 @@ class StreamIn: public trogdor::Trogin {
    virtual std::unique_ptr<trogdor::Trogin> clone();
 
    // For now, I only need to define input for strings
-   virtual trogdor::Trogin &operator>> (string &val);
+   virtual trogdor::Trogin &operator>> (std::string &val);
 };
 
 

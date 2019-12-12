@@ -16,16 +16,13 @@
 #include "include/actions/timeaction.h"
 
 
-using namespace std;
-
-
 int main(int argc, char **argv) {
 
    // default game filename
-   string gameXML = "game.xml";
+   std::string gameXML = "game.xml";
 
    if (argc > 2) {
-	  cerr << "Usage: trogdor [game_filename.xml]\n" << endl;
+	  std::cerr << "Usage: trogdor [game_filename.xml]\n" << std::endl;
 	  return EXIT_FAILURE;
    }
 
@@ -34,15 +31,15 @@ int main(int argc, char **argv) {
 	  gameXML = argv[1];
    }
 
-   std::unique_ptr<trogdor::Game> currentGame = make_unique<trogdor::Game>(
-      make_unique<StreamOut>(&cerr)
+   std::unique_ptr<trogdor::Game> currentGame = std::make_unique<trogdor::Game>(
+      std::make_unique<StreamOut>(&std::cerr)
    );
 
    // The client can either choose from a parser type that's been implemented in
    // core or from a custom class that inherits from trogdor::Parser. Meanwhile,
    // the Game object is responsible for choosing an implementation of
    // trogdor::Instantiator.
-   std::unique_ptr<trogdor::XMLParser> parser = make_unique<trogdor::XMLParser>(
+   std::unique_ptr<trogdor::XMLParser> parser = std::make_unique<trogdor::XMLParser>(
       std::move(currentGame->makeInstantiator()), currentGame->getVocabulary()
    );
 
@@ -55,24 +52,24 @@ int main(int argc, char **argv) {
    if (currentGame->initialize(parser.get(), gameXML)) {
 
       // Demonstrates the retrieval of Game metadata
-	  string title = currentGame->getMeta("title");
-	  string author = currentGame->getMeta("author");
+	  std::string title = currentGame->getMeta("title");
+	  std::string author = currentGame->getMeta("author");
 
-	  cout << endl;
+	  std::cout << std::endl;
 
 	  if (title.length() > 0) {
-	     cout << endl << "Title: " << title << endl;
+	     std::cout << std::endl << "Title: " << title << std::endl;
 	  }
 
 	  if (author.length() > 0) {
-	     cout << "Author: " << author << endl << endl;
+	     std::cout << "Author: " << author << std::endl << std::endl;
 	  }
 
 	  Player *player = currentGame->createPlayer(
          "player",
-         std::make_unique<StreamOut>(&cout),
-         std::make_unique<StreamIn>(&cin),
-         std::make_unique<StreamOut>(&cerr)
+         std::make_unique<StreamOut>(&std::cout),
+         std::make_unique<StreamIn>(&std::cin),
+         std::make_unique<StreamOut>(&std::cerr)
       );
 
 	  currentGame->start();
@@ -83,8 +80,8 @@ int main(int argc, char **argv) {
 
 	  currentGame->stop();
 
-	  cout << "Game lasted for " << currentGame->getTime() + 1
-	     << " seconds.  Goodbye!\n\n";
+	  std::cout << "Game lasted for " << currentGame->getTime() + 1
+	     << " seconds.  Goodbye!\n" << std::endl;
    }
 
    return EXIT_SUCCESS;

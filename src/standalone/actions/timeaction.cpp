@@ -1,8 +1,6 @@
 #include <memory>
 #include "../include/actions/timeaction.h"
 
-using namespace std;
-
 
 /*
   Methods for the Time action.
@@ -22,6 +20,5 @@ bool TimeAction::checkSyntax(const std::shared_ptr<trogdor::Command> &command) {
 void TimeAction::execute(trogdor::entity::Player *player,
 const std::shared_ptr<trogdor::Command> &command, trogdor::Game *game) {
 
-   player->out("display") << "Current game time is " << game->getTime() << " seconds." << endl;
+   player->out("display") << "Current game time is " << game->getTime() << " seconds." << std::endl;
 }
-

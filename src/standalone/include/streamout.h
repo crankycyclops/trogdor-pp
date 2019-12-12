@@ -6,8 +6,6 @@
 #include "../../core/include/iostream/trogout.h"
 
 
-using namespace std;
-
 
 /*
    Output "stream" that wraps around the specified ostream object. This
@@ -17,11 +15,11 @@ class StreamOut: public trogdor::Trogout {
 
    private:
 
-      ostream *stream; // output stream where flush() sends data
+      std::ostream *stream; // output stream where flush() sends data
 
    public:
 
-      inline StreamOut(ostream *s) {stream = s;}
+      inline StreamOut(std::ostream *s) {stream = s;}
 
       /*
          See include/iostream/trogout.h for details.
@@ -36,4 +34,3 @@ class StreamOut: public trogdor::Trogout {
 
 
 #endif
-

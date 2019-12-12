@@ -5,8 +5,6 @@
 #include <memory>
 #include "../../../core/include/action.h"
 
-using namespace std;
-
 
 /*
   TimeAction outputs the current game time to whichever player issues
@@ -29,4 +27,3 @@ class TimeAction: public trogdor::Action {
 
 
 #endif
-
