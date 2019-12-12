@@ -7,8 +7,6 @@
 #include <memory>
 
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -42,10 +40,9 @@ namespace trogdor {
          // cin, this should always return after the user presses enter,
          // whether or not anything was typed.  If the user didn't type anything,
          // this will just be an empty string with a newline.
-         virtual Trogin &operator>> (string &val) = 0;
+         virtual Trogin &operator>> (std::string &val) = 0;
    };
 }
 
 
 #endif
-

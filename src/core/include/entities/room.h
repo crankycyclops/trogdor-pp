@@ -12,8 +12,6 @@
 #include "place.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -23,7 +21,7 @@ namespace trogdor { namespace entity {
 
          // connections to other rooms (implemented as a hash table so that we
          // can later trivially add additional directions)
-         unordered_map<string, Room *> connections;
+         std::unordered_map<std::string, Room *> connections;
 
       public:
 
@@ -31,7 +29,7 @@ namespace trogdor { namespace entity {
             Constructor for creating a new Room.  Requires reference to the
             containing Game object and a name.
          */
-         inline Room(Game *g, string n, std::unique_ptr<Trogout> o,
+         inline Room(Game *g, std::string n, std::unique_ptr<Trogout> o,
          std::unique_ptr<Trogout> e): Place(g, n, std::move(o), std::move(e)) {
 
             types.push_back(ENTITY_ROOM);
@@ -41,7 +39,7 @@ namespace trogdor { namespace entity {
          /*
             Constructor for cloning an existing Room.  Requires a unique name.
          */
-         inline Room(const Room &r, string n): Place(r, n) {
+         inline Room(const Room &r, std::string n): Place(r, n) {
 
             // TODO: trying to decide if this makes sense?
             connections = r.connections;
@@ -52,12 +50,12 @@ namespace trogdor { namespace entity {
             the connection does not exist.
 
             Input:
-               Direction (string)
+               Direction (std::tring)
 
             Output:
                Room *
          */
-         inline Room *getConnection(string direction) const {
+         inline Room *getConnection(std::string direction) const {
 
             if (connections.find(direction) == connections.end()) {
                return 0;
@@ -109,7 +107,7 @@ namespace trogdor { namespace entity {
 
             else {
 
-               unordered_map<string, Room *>::const_iterator c = connections.begin();
+               std::unordered_map<std::string, Room *>::const_iterator c = connections.begin();
 
                for (; i > 0; i--) {
                   c++;
@@ -129,10 +127,9 @@ namespace trogdor { namespace entity {
             Output:
                (none)
          */
-         void setConnection(string direction, Room *connectTo);
+         void setConnection(std::string direction, Room *connectTo);
    };
 }}
 
 
 #endif
-

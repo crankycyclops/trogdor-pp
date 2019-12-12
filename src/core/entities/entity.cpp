@@ -64,7 +64,7 @@ namespace trogdor { namespace entity {
       errStream = e.errStream->clone();
       inStream = e.inStream->clone();
 
-      L = make_shared<LuaState>(*e.L);
+      L = std::make_shared<LuaState>(*e.L);
       // TODO: we need to do some kind of intelligent copying for event handlers
       triggers = std::make_unique<event::EventListener>();
    }
@@ -103,7 +103,7 @@ namespace trogdor { namespace entity {
 
       if (!observedBy(observer) || displayFull) {
          if (ENTITY_PLAYER == observer->getType()) {
-            observer->out("display") << getLongDescription() << endl;
+            observer->out("display") << getLongDescription() << std::endl;
          }
       }
 
@@ -120,7 +120,7 @@ namespace trogdor { namespace entity {
 
       if (ENTITY_PLAYER == observer->getType()
       && getShortDescription().length() > 0) {
-         observer->out("display") << getShortDescription() << endl;
+         observer->out("display") << getShortDescription() << std::endl;
       }
    }
 

@@ -150,7 +150,7 @@ namespace trogdor {
 
    void LookAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
-      string object = command->getDirectObject();
+      std::string object = command->getDirectObject();
 
       if (object.length() == 0) {
          object = command->getIndirectObject();
@@ -193,7 +193,7 @@ namespace trogdor {
             thing->observe(player, true, true);
          }
 
-         catch (const string &name) {
+         catch (const std::string &name) {
             player->out("display") << "There is no " << name << " here!" << std::endl;
          }
       }
@@ -242,7 +242,7 @@ namespace trogdor {
 
                player->take(static_cast<Object *>(thing));
 
-               string message = thing->getMessage("take");
+               std::string message = thing->getMessage("take");
                if (message.length() > 0) {
                   player->out("display") << message << std::endl;
                }
@@ -277,7 +277,7 @@ namespace trogdor {
          }
       }
 
-      catch (const string &name) {
+      catch (const std::string &name) {
          player->out("display") << "There is no " << name << " here!" << std::endl;
       }
    }
@@ -322,7 +322,7 @@ namespace trogdor {
 
             player->drop(object);
 
-            string message = object->getMessage("drop");
+            std::string message = object->getMessage("drop");
             if (message.length() > 0) {
                player->out("display") << message << std::endl;
             }
@@ -350,7 +350,7 @@ namespace trogdor {
          }
       }
 
-      catch (const string &name) {
+      catch (const std::string &name) {
          player->out("display") << "You don't have a " << name << "!" << std::endl;
       }
    }
@@ -365,9 +365,9 @@ namespace trogdor {
 
       auto &vocab = command->getVocabulary();
 
-      string verb = command->getVerb();
-      string dobj = command->getDirectObject();
-      string iobj = command->getIndirectObject();
+      std::string verb = command->getVerb();
+      std::string dobj = command->getDirectObject();
+      std::string iobj = command->getIndirectObject();
 
       // A valid move command should not contain both a direct and indirect object
       if (dobj.length() > 0 && iobj.length() > 0) {
@@ -376,7 +376,7 @@ namespace trogdor {
 
       // no direct or indirect object were given, so the direction, if valid,
       // must've been specified directly by the "verb"
-      string dir = ((0 == dobj.length() && 0 == iobj.length()) ? verb :
+      std::string dir = ((0 == dobj.length() && 0 == iobj.length()) ? verb :
          (dobj.length() > 0 ? dobj : iobj));
       return (vocab.isDirection(dir) || vocab.isDirectionSynonym(dir));
    }
@@ -385,7 +385,7 @@ namespace trogdor {
    void MoveAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
       auto &vocab = command->getVocabulary();
-      string direction = "";
+      std::string direction = "";
 
       // direction is implied in the verb
       if (vocab.isDirection(command->getVerb()) || vocab.isDirectionSynonym(command->getVerb())) {
@@ -414,8 +414,8 @@ namespace trogdor {
          return;
       }
 
-      string enterMessage = next->getMessage("enter" + direction);
-      string goMessage = player->getLocation()->getMessage("go" + direction);
+      std::string enterMessage = next->getMessage("enter" + direction);
+      std::string goMessage = player->getLocation()->getMessage("go" + direction);
 
       if (goMessage.length() > 0) {
          player->out("display") << goMessage << std::endl << std::endl;
@@ -436,9 +436,9 @@ namespace trogdor {
 
    bool AttackAction::checkSyntax(const std::shared_ptr<Command> &command) {
 
-      string verb = command->getVerb();
-      string dobj = command->getDirectObject();
-      string iobj = command->getIndirectObject();
+      std::string verb = command->getVerb();
+      std::string dobj = command->getDirectObject();
+      std::string iobj = command->getIndirectObject();
 
       if (dobj.length() == 0) {
          return false;
@@ -461,7 +461,7 @@ namespace trogdor {
 
       try {
 
-         string weaponName = command->getIndirectObject();
+         std::string weaponName = command->getIndirectObject();
          Object *weapon = 0;
 
          Being *defender =
@@ -491,7 +491,7 @@ namespace trogdor {
                }
             }
 
-            catch (const string &name) {
+            catch (const std::string &name) {
                player->out("display") << "You don't have a " << weaponName << "!" << std::endl;
                return;
             }
@@ -500,7 +500,7 @@ namespace trogdor {
          player->attack(defender, weapon);
       }
 
-      catch (const string &name) {
+      catch (const std::string &name) {
          player->out("display") << "There is no " << name << " here!" << std::endl;
       }
    }

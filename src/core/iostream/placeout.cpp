@@ -16,7 +16,7 @@ namespace trogdor {
          ThingListCItPair things = place->getThings();
 
          for_each(things.begin, things.end, [&](Thing * const &thing) {
-            thing->out(getChannel()) << getBufferStr() << endl;
+            thing->out(getChannel()) << getBufferStr() << std::endl;
          });
       }
    }

@@ -17,7 +17,7 @@ namespace trogdor { namespace entity {
 
    /***************************************************************************/
 
-   BeingException::BeingException(const std::string &what_arg, enum errorCodeType code):
+   BeingException::BeingException(const std::string &what_arg, ErrorCodeType code):
    EntityException(what_arg) {
 
       errorCode = code;
@@ -25,7 +25,7 @@ namespace trogdor { namespace entity {
 
    /***************************************************************************/
 
-   BeingException::BeingException(const char *what_arg, enum errorCodeType code):
+   BeingException::BeingException(const char *what_arg, ErrorCodeType code):
    EntityException(what_arg) {
 
       errorCode = code;

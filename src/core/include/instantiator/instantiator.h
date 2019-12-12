@@ -18,8 +18,6 @@
 #include "../exception/undefinedexception.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -37,63 +35,63 @@ namespace trogdor {
       private:
 
          // Function type used to check if a property value is valid
-         typedef void (*validatorFunc) (const Vocabulary &vocabulary, string value);
+         typedef void (*validatorFunc) (const Vocabulary &vocabulary, std::string value);
 
          // Maps operation types to functions that should be executed before the
          // actual operation is performed
-         unordered_map<ASTOperation,
+         std::unordered_map<ASTOperation,
             std::function<void(const std::shared_ptr<ASTOperationNode> &operation)>,
             std::hash<int>> preOperations;
 
          // Maps operation types to functions that perform the operation
-         unordered_map<ASTOperation,
+         std::unordered_map<ASTOperation,
             std::function<void(const std::shared_ptr<ASTOperationNode> &operation)>,
             std::hash<int>> operations;
 
          // Maintains a list of valid Entity and Entity class properties (second
          // list's keys), along with a validator function for each (second
          // list's values) for each Entity type (first list's keys)
-         unordered_map<string, unordered_map<string, validatorFunc>> entityPropValidators;
+         std::unordered_map<std::string, std::unordered_map<std::string, validatorFunc>> entityPropValidators;
 
          // Maintains a list of valid Game properties (keys), along with a
          // validator function for each (values)
-         unordered_map<string, validatorFunc> gamePropValidators;
+         std::unordered_map<std::string, validatorFunc> gamePropValidators;
 
          /*
             Throws an exception if the value is not a valid boolean.
 
             Input:
                Reference to vocabulary (unused)
-               Property value (string)
+               Property value (std::string)
 
             Output:
                (none)
          */
-         static void assertBool(const Vocabulary &vocabulary, string value);
+         static void assertBool(const Vocabulary &vocabulary, std::string value);
 
          /*
             Throws an exception if the value is not a valid integer.
 
             Input:
                Reference to vocabulary (unused)
-               Property value (string)
+               Property value (std::string)
 
             Output:
                (none)
          */
-         static void assertInt(const Vocabulary &vocabulary, string value);
+         static void assertInt(const Vocabulary &vocabulary, std::string value);
 
          /*
             Throws an exception if value is not a valid double precision number.
 
             Input:
                Reference to vocabulary (unused)
-               Property value (string)
+               Property value (std::string)
 
             Output:
                (none)
          */
-         static void assertDouble(const Vocabulary &vocabulary, string value);
+         static void assertDouble(const Vocabulary &vocabulary, std::string value);
 
          /*
             Throws an exception if value does not represent a valid probability
@@ -101,24 +99,24 @@ namespace trogdor {
 
             Input:
                Reference to vocabulary (unused)
-               Property value (string)
+               Property value (std::string)
 
             Output:
                (none)
          */
-         static void assertProbability(const Vocabulary &vocabulary, string value);
+         static void assertProbability(const Vocabulary &vocabulary, std::string value);
 
          /*
             A dummy validator that whitelists all strings.
 
             Input:
                Reference to vocabulary (unused)
-               Property value (string)
+               Property value (std::string)
 
             Output:
                Always returns true
          */
-         static void assertString(const Vocabulary &vocabulary, string value);
+         static void assertString(const Vocabulary &vocabulary, std::string value);
 
          /*
             Asserts that the correct number of arguments were passed to an AST
@@ -148,24 +146,24 @@ namespace trogdor {
                (none)
          */
          void assertValidASTArguments(const std::shared_ptr<ASTOperationNode> &operation,
-         int minArgs, unordered_map<string, int> targetTypeToNumArgs);
+         int minArgs, std::unordered_map<std::string, int> targetTypeToNumArgs);
 
          /*
             Asserts that the entity or entity class exists in the symbol table
             and throws an exception if not.
 
             Input:
-               Target type: one of "entity" or "class" (string)
-               Target name (string)
+               Target type: one of "entity" or "class" (std::string)
+               Target name (std::string)
                Brief description of the action that was attempted for the error
-                  message (string)
+                  message (std::string)
                Line number in source where operation originated (optional int)
 
             Output:
                (none)
          */
-         void assertTargetExists(string targetType, string targetName,
-         string action, int lineNumber = 0);
+         void assertTargetExists(std::string targetType, std::string targetName,
+         std::string action, int lineNumber = 0);
 
          /*
             Maps AST Operation type -> pre-operation function.
@@ -207,31 +205,31 @@ namespace trogdor {
 
          // Record of a single declared Entity
          struct EntitySymbol {
-            string name;
-            string className;
+            std::string name;
+            std::string className;
             entity::EntityType type;
          };
 
          struct {
 
             // Defined Entities
-            unordered_map<string, EntitySymbol> entities;
+            std::unordered_map<std::string, EntitySymbol> entities;
 
             // Defined Entity classes
-            unordered_map<string, entity::EntityType> entityClasses;
+            std::unordered_map<std::string, entity::EntityType> entityClasses;
 
          } symbols;
 
          struct {
 
             // Custom directions
-            unordered_set<string> directions;
+            std::unordered_set<std::string> directions;
 
             // Maps synonyms to directions
-            unordered_map<string, string> directionSynonyms;
+            std::unordered_map<std::string, std::string> directionSynonyms;
 
             // Maps synonyms to verbs
-            unordered_map<string, string> verbSynonyms;
+            std::unordered_map<std::string, std::string> verbSynonyms;
          } customVocabulary;
 
          /*
@@ -295,4 +293,3 @@ namespace trogdor {
 
 
 #endif
-

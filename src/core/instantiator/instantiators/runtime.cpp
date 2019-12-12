@@ -124,7 +124,7 @@ namespace trogdor {
                }
 
                else {
-                  entity = make_shared<entity::Object>(
+                  entity = std::make_shared<entity::Object>(
                      *(dynamic_cast<entity::Object *>(typeClasses[className].get())), entityName
                   );
                }
@@ -138,13 +138,13 @@ namespace trogdor {
                   0 == className.compare(Entity::typeToStr(entity::ENTITY_CREATURE))
                ) {
                   // TODO: should Creatures have some kind of special input stream?
-                  entity = make_shared<entity::Creature>(
+                  entity = std::make_shared<entity::Creature>(
                      game, entityName, std::make_unique<NullOut>(), game->err().clone()
                   );
                }
 
                else {
-                  entity = make_shared<entity::Creature>(
+                  entity = std::make_shared<entity::Creature>(
                      *(dynamic_cast<entity::Creature *>(typeClasses[className].get())), entityName
                   );
                }
@@ -178,20 +178,20 @@ namespace trogdor {
          switch (classType) {
 
             case entity::ENTITY_ROOM:
-               entity = make_unique<Room>(
+               entity = std::make_unique<Room>(
                   game, className, std::make_unique<PlaceOut>(), game->err().clone()
                );
                break;
 
             case entity::ENTITY_OBJECT:
-               entity = make_unique<Object>(
+               entity = std::make_unique<Object>(
                   game, className, std::make_unique<NullOut>(), game->err().clone()
                );
                break;
 
             case entity::ENTITY_CREATURE:
                // TODO: should Creatures have some kind of special input stream?
-               entity = make_unique<Creature>(
+               entity = std::make_unique<Creature>(
                   game, className, std::make_unique<NullOut>(), game->err().clone()
                );
                break;

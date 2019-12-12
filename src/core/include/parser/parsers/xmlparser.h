@@ -22,8 +22,6 @@
 #include "../parser.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
    /*
@@ -35,8 +33,8 @@ namespace trogdor {
 
          // Record corresponding to an Entity declared in <manifest>
          struct DeclaredEntity {
-            string name;
-            string className;
+            std::string name;
+            std::string className;
             entity::EntityType type;
          };
 
@@ -46,16 +44,16 @@ namespace trogdor {
          // When nextTag() encounters a closing tag, it's stored here.  Later,
          // if this has a value, checkClosingTag() will use it instead of
          // walking the XML tree.
-         string lastClosedTag;
+         std::string lastClosedTag;
 
          // Keeps track of Entities that were declared in <manifest>
-         unordered_map<string, DeclaredEntity> declaredEntities;
+         std::unordered_map<std::string, DeclaredEntity> declaredEntities;
 
          // Keeps track of Entity classes that were defined in <classes>
-         unordered_map<string, entity::EntityType> declaredEntityClasses;
+         std::unordered_map<std::string, entity::EntityType> declaredEntityClasses;
 
          // Keeps track of custom directions and direction synonyms
-         unordered_set<string> customDirections;
+         std::unordered_set<std::string> customDirections;
 
          /*
             Returns true if the specified Entity was declared and false if not.
@@ -66,7 +64,7 @@ namespace trogdor {
             Output:
                Whether or not the Entity exists (bool)
          */
-         inline bool entityDeclared(string name) {
+         inline bool entityDeclared(std::string name) {
 
             return declaredEntities.end() != declaredEntities.find(name) ? true : false;
          }
@@ -81,7 +79,7 @@ namespace trogdor {
             Output:
                Whether or not the Entity class of the specified type exists (bool)
          */
-         inline bool entityClassDeclared(string name, entity::EntityType type) {
+         inline bool entityClassDeclared(std::string name, entity::EntityType type) {
 
             if (declaredEntityClasses.end() == declaredEntityClasses.find(name)) {
                return false;
@@ -100,7 +98,7 @@ namespace trogdor {
             Output:
                name of the tag
          */
-         inline string getTagName() {
+         inline std::string getTagName() {
 
             return strToLower((const char *)xmlTextReaderConstName(reader));
          }
@@ -134,7 +132,7 @@ namespace trogdor {
          */
          bool nextTag();
 
-         string getAttribute(const char *name);
+         std::string getAttribute(const char *name);
 
          /*
             Returns the raw value of an XML tag.  Should not be called directly,
@@ -169,7 +167,7 @@ namespace trogdor {
                Throws exception if the closing tag is not found or there's an
                error
          */
-         void checkClosingTag(string tag);
+         void checkClosingTag(std::string tag);
 
          /*
             Parses a string from the last encountered XML tag and leaves the
@@ -186,59 +184,59 @@ namespace trogdor {
                Throws exception if there's a parsing error or if there's no
                value for the current tag.
          */
-         string parseString();
+         std::string parseString();
 
          /*
             Parses a list of aliases, alternate identifiers for Things.
 
             Input:
-               Name of Thing (string)
-               Type of thing we're parsing--one of "entity" or "class" (string)
+               Name of Thing (std::string)
+               Type of thing we're parsing--one of "entity" or "class" (std::string)
                Parse depth in XML file
 
             Output:
                (none)
          */
-         void parseThingAliases(string entityName, string targetType, int depth);
+         void parseThingAliases(std::string entityName, std::string targetType, int depth);
 
          /*
             Parses auto-attack settings for a Creature.
 
             Input:
-               Name of Creature (string)
-               Type of thing we're parsing--"entity" or "class" (string)
+               Name of Creature (std::string)
+               Type of thing we're parsing--"entity" or "class" (std::string)
                depth in the XML tree (int)
 
             Output:
                (none)
          */
-         void parseCreatureAutoAttack(string creatureName, string targetType,
+         void parseCreatureAutoAttack(std::string creatureName, std::string targetType,
          int depth);
 
          /*
             Parses a Creature's wandering settings.
 
             Input:
-               Name of Creature (string)
-               Type of thing we're parsing--"entity" or "class" (string)
+               Name of Creature (std::string)
+               Type of thing we're parsing--"entity" or "class" (std::string)
 
             Output:
                (none)
          */
-         void parseCreatureWandering(string creatureName, string targetType);
+         void parseCreatureWandering(std::string creatureName, std::string targetType);
 
          /*
             Parses a Being's respawn settings.
 
             Input:
                Name of being whose respawn settings are being configured
-               Type of thing we're parsing--"entity" or "class" (string)
+               Type of thing we're parsing--"entity" or "class" (std::string)
                Depth in the XML tree
 
             Output:
                (none)
          */
-         void parseBeingRespawn(string beingName, string targetType, int depth);
+         void parseBeingRespawn(std::string beingName, std::string targetType, int depth);
 
          /*
             Parses a Being's inventory settings.
@@ -251,7 +249,7 @@ namespace trogdor {
             Output:
                (none)
          */
-         void parseBeingInventory(string beingName, string targetType,
+         void parseBeingInventory(std::string beingName, std::string targetType,
          bool allowObjects);
 
          /*
@@ -259,82 +257,82 @@ namespace trogdor {
 
             Input:
                Name of Being whose attributes are being set
-               Type of thing we're parsing--"entity" or "class" (string)
+               Type of thing we're parsing--"entity" or "class" (std::string)
 
             Output:
                (none)
          */
-         void parseBeingAttributes(string beingName, string targetType);
+         void parseBeingAttributes(std::string beingName, std::string targetType);
 
          /*
             Takes tags such as <north>, <south>, etc. in a room definition and
             forges that connection.
 
             Input:
-               direction (string)
-               Name of room where the connection should be made (string)
-               Name of room that we want to connect to (string)
-               Type of thing we're parsing--"entity" or "class" (string)
+               direction (std::string)
+               Name of room where the connection should be made (std::string)
+               Name of room that we want to connect to (std::string)
+               Type of thing we're parsing--"entity" or "class" (std::string)
 
             Output:
                (none)
          */
-         void parseRoomConnection(string direction, string roomName,
-         string connectTo, string targetType);
+         void parseRoomConnection(std::string direction, std::string roomName,
+         std::string connectTo, std::string targetType);
 
          /*
             Parses a Room's version of the <contains> section.
 
             Input:
-               Name of room into which we're inserting the object (string)
-               Type of thing we're parsing--"entity" or "class" (string)
+               Name of room into which we're inserting the object (std::string)
+               Type of thing we're parsing--"entity" or "class" (std::string)
 
             Output:
                (none)
          */
-         void parseRoomContains(string roomName, string targetType);
+         void parseRoomContains(std::string roomName, std::string targetType);
 
          /*
             Parse the contents of a Messages object from XML.
 
             Input:
-               Name of Entity we're parsing messages for (string)
-               Type of thing we're parsing--"entity" or "class" (string)
+               Name of Entity we're parsing messages for (std::string)
+               Type of thing we're parsing--"entity" or "class" (std::string)
                XML Depth--how deeply nested <message> tags will be (int)
 
             Output:
                (none)
          */
-         void parseMessages(string entityName, string targetType, int depth);
+         void parseMessages(std::string entityName, std::string targetType, int depth);
 
          /*
             Parses tags that should be applied to an Entity.
 
             Input:
-               Name of Entity we're parsing messages for (string)
-               Type of thing we're parsing--"entity" or "class" (string)
+               Name of Entity we're parsing messages for (std::string)
+               Type of thing we're parsing--"entity" or "class" (std::string)
                XML Depth--how deeply nested <message> tags will be (int)
 
             Output:
                (none)
          */
-         void parseEntityTags(string entityName, string targetType, int depth);
+         void parseEntityTags(std::string entityName, std::string targetType, int depth);
 
          /*
             Parses an <events> section for Entities, Entity classes, and Game.
             Throws an exception if there's an error.
 
             Input:
-               Entity or Entity class name (string -- ignored if targetType = "game")
-               Type of thing we're parsing--"entity", "class", or "game" (string)
+               Entity or Entity class name (std::string -- ignored if targetType = "game")
+               Type of thing we're parsing--"entity", "class", or "game" (std::string)
                Depth in XML tree (int)
 
             Output:
                (none)
          */
-         void parseEvents(string entityName, string targetType, int depth);
-         void parseScript(string entityName, string targetType);
-         void parseEvent(string entityName, string targetType);
+         void parseEvents(std::string entityName, std::string targetType, int depth);
+         void parseScript(std::string entityName, std::string targetType);
+         void parseEvent(std::string entityName, std::string targetType);
 
          /*
             This group of functions parses the <classes> section of the XML
@@ -378,11 +376,11 @@ namespace trogdor {
          */
          void parseManifest();
          void parseManifestRooms();
-         void parseManifestRoom(string className = "room");
+         void parseManifestRoom(std::string className = "room");
          void parseManifestCreatures();
-         void parseManifestCreature(string className = "creature");
+         void parseManifestCreature(std::string className = "creature");
          void parseManifestObjects();
-         void parseManifestObject(string className = "object");
+         void parseManifestObject(std::string className = "object");
 
          /*
             Parses meta data for entities or for the game.
@@ -394,7 +392,7 @@ namespace trogdor {
                (none)
          */
          void parseGameMeta();
-         void parseEntityMeta(string entityName, string targetType, int depth);
+         void parseEntityMeta(std::string entityName, std::string targetType, int depth);
 
          /*
             Parses the vocabulary section of game.xml.
@@ -458,14 +456,14 @@ namespace trogdor {
             exception with an error message if there's a problem.
 
             Input:
-               The object's class (string)
+               The object's class (std::string)
 
             Output:
                (none)
          */
          void parseObjects();
-         void parseObject(string className = "object");
-         void parseObjectProperties(string name, string targetType, int depth);
+         void parseObject(std::string className = "object");
+         void parseObjectProperties(std::string name, std::string targetType, int depth);
 
          /*
             Parses the creatures section of game.xml.
@@ -477,8 +475,8 @@ namespace trogdor {
                (none)
          */
          void parseCreatures();
-         void parseCreature(string className = "creature");
-         void parseCreatureProperties(string name, string targetType, int depth);
+         void parseCreature(std::string className = "creature");
+         void parseCreatureProperties(std::string name, std::string targetType, int depth);
 
          /*
             Parses room definitions in game.xml.
@@ -490,8 +488,8 @@ namespace trogdor {
                (none)
          */
          void parseRooms();
-         void parseRoom(string className = "room");
-         void parseRoomProperties(string name, string targetType, int depth);
+         void parseRoom(std::string className = "room");
+         void parseRoomProperties(std::string name, std::string targetType, int depth);
 
          /*
             Parses the <game> section of the XML file.  Throws an exception if
@@ -527,12 +525,12 @@ namespace trogdor {
             structures.
 
             Input:
-               Filename where the game definition is saved (string)
+               Filename where the game definition is saved (std::string)
 
             Output:
                (none)
          */
-         virtual void parse(string filename);
+         virtual void parse(std::string filename);
    };
 }
 

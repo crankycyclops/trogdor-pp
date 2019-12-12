@@ -5,8 +5,6 @@
 #include "exception.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -23,4 +21,3 @@ namespace trogdor { namespace entity {
 
 
 #endif
-

@@ -161,7 +161,7 @@ namespace trogdor {
          */
          inline std::unique_ptr<Runtime> makeInstantiator() {
 
-            return make_unique<Runtime>(getVocabulary(), this);
+            return std::make_unique<Runtime>(getVocabulary(), this);
          }
 
          /*
@@ -193,7 +193,7 @@ namespace trogdor {
             Returns a reference to the Game's error stream.  A typical use
             would look something like this:
 
-            gamePtr->err() << "I'm an error message!" << endl;
+            gamePtr->err() << "I'm an error message!" << std::endl;
 
             Input:
                (none)
@@ -355,7 +355,7 @@ namespace trogdor {
             if (players.isset(name)) {
 
                if (message.length()) {
-                  players.get(name)->out("notifications") << message << endl;
+                  players.get(name)->out("notifications") << message << std::endl;
                }
 
                entities.erase(name);

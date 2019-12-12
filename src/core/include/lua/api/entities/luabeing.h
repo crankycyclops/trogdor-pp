@@ -8,8 +8,6 @@
 #include "luathing.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -77,7 +75,7 @@ namespace trogdor { namespace entity {
             name. If the Being doesn't exist, returns nil.
 
             Lua input:
-               Being's name (string)
+               Being's name (std::string)
 
             Lua output:
                Being or nil if it doesn't exist
@@ -88,4 +86,3 @@ namespace trogdor { namespace entity {
 
 
 #endif
-

@@ -6,8 +6,6 @@
 #include "exception.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -19,16 +17,16 @@ namespace trogdor {
       protected:
 
          // Filename and line number where the parsing error occurred (optional)
-         string filename;
+         std::string filename;
          int lineno;
 
       public:
 
          // Contructors
-         explicit ParseException(const string &what_arg);
+         explicit ParseException(const std::string &what_arg);
          explicit ParseException(const char *what_arg);
-         explicit ParseException(const string &what_arg, string file, int line);
-         explicit ParseException(const char *what_arg, string file, int line);
+         explicit ParseException(const std::string &what_arg, std::string file, int line);
+         explicit ParseException(const char *what_arg, std::string file, int line);
 
          /*
             The same as std::exception::what() except that it prepends the
@@ -51,9 +49,9 @@ namespace trogdor {
                (none)
 
             Output:
-               Filename (string)
+               Filename (std::string)
          */
-         inline const string getFilename() const noexcept {return filename;}
+         inline const std::string getFilename() const noexcept {return filename;}
 
          /*
             Returns the line number in the file being parsed where the exception
@@ -71,4 +69,3 @@ namespace trogdor {
 
 
 #endif
-

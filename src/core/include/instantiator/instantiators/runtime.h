@@ -19,25 +19,25 @@ namespace trogdor {
 
          // Function type used to set game properties via a SET_PROPERTY operation
          typedef void (*gameSetterFunc) (
-            Game *game, string value
+            Game *game, std::string value
          );
 
          // Function type used by propSetters on Entities
          typedef void (*propSetterFunc) (
-            Game *game, entity::Entity * entity, string value
+            Game *game, entity::Entity * entity, std::string value
          );
 
          // Pointer to the game we're populating
          Game *game;
 
          // User defined Entity classes
-         unordered_map<string, std::unique_ptr<entity::Entity>> typeClasses;
+         std::unordered_map<std::string, std::unique_ptr<entity::Entity>> typeClasses;
 
          // A hash mapping of entity type -> property name -> setter function
-         unordered_map<string, unordered_map<string, propSetterFunc>> propSetters;
+         std::unordered_map<std::string, std::unordered_map<std::string, propSetterFunc>> propSetters;
 
          // A hash mapping of game property setter functions
-         unordered_map<string, gameSetterFunc> gameSetters;
+         std::unordered_map<std::string, gameSetterFunc> gameSetters;
 
          /*
             Registers AST operations that the Runtime Instantiator knows how to
@@ -100,4 +100,3 @@ namespace trogdor {
 
 
 #endif
-

@@ -128,7 +128,7 @@ namespace trogdor {
       }
 
       // clone the default player, giving it the specified name
-      std::shared_ptr<Player> player = make_shared<Player>(
+      std::shared_ptr<Player> player = std::make_shared<Player>(
          *defaultPlayer, name, std::move(outStream), std::move(inStream), std::move(errStream)
       );
 
@@ -196,7 +196,7 @@ namespace trogdor {
 
    void Game::processCommand(Player *player) {
 
-      std::shared_ptr<Command> command = make_shared<Command>(vocabulary);
+      std::shared_ptr<Command> command = std::make_shared<Command>(vocabulary);
       command->read(player);
 
       // do nothing if we're not in a running state

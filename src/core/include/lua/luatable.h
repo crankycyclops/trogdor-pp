@@ -8,8 +8,6 @@
 #include "luatype.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -26,7 +24,7 @@ namespace trogdor {
 
       public:
 
-         typedef unordered_map<string, LuaValue> TableValues;
+         typedef std::unordered_map<std::string, LuaValue> TableValues;
 
       private:
 
@@ -38,20 +36,20 @@ namespace trogdor {
             setField() sets a value for the specified key.
 
             Input:
-               key (name of the field -- string)
+               key (name of the field -- std::string)
                value (value to be paired with the key -- varied type)
          */
-         inline void setField(string key, const char *value) {
+         inline void setField(std::string key, const char *value) {
 
             LuaValue v;
             v.type = LUA_TYPE_STRING;
-            string s = value;
+            std::string s = value;
             v.value = s;
 
             values[key] = v;
          }
 
-         inline void setField(string key, string value) {
+         inline void setField(std::string key, std::string value) {
 
             LuaValue v;
             v.type = LUA_TYPE_STRING;
@@ -60,7 +58,7 @@ namespace trogdor {
             values[key] = v;
          }
 
-         inline void setField(string key, int value) {
+         inline void setField(std::string key, int value) {
 
             LuaValue v;
             v.type = LUA_TYPE_NUMBER;
@@ -69,7 +67,7 @@ namespace trogdor {
             values[key] = v;
          }
 
-         inline void setField(string key, double value) {
+         inline void setField(std::string key, double value) {
 
             LuaValue v;
             v.type = LUA_TYPE_NUMBER;
@@ -78,7 +76,7 @@ namespace trogdor {
             values[key] = v;
          }
 
-         inline void setField(string key, bool value) {
+         inline void setField(std::string key, bool value) {
 
             LuaValue v;
             v.type = LUA_TYPE_BOOLEAN;
@@ -87,7 +85,7 @@ namespace trogdor {
             values[key] = v;
          }
 
-         inline void setField(string key, LuaArray &value) {
+         inline void setField(std::string key, LuaArray &value) {
 
             LuaValue v;
             v.type = LUA_TYPE_ARRAY;
@@ -96,7 +94,7 @@ namespace trogdor {
             values[key] = v;
          }
 
-         inline void setField(string key, LuaTable &value) {
+         inline void setField(std::string key, LuaTable &value) {
 
             LuaValue v;
             v.type = LUA_TYPE_TABLE;
@@ -105,7 +103,7 @@ namespace trogdor {
             values[key] = v;
          }
 
-         inline void setFieldFunction(string key, const char *func) {
+         inline void setFieldFunction(std::string key, const char *func) {
 
             LuaValue v;
             v.type = LUA_TYPE_FUNCTION;
@@ -114,7 +112,7 @@ namespace trogdor {
             values[key] = v;
          }
 
-         inline void setFieldFunction(string key, string func) {
+         inline void setFieldFunction(std::string key, std::string func) {
 
             LuaValue v;
             v.type = LUA_TYPE_FUNCTION;
@@ -139,4 +137,3 @@ namespace trogdor {
 
 
 #endif
-

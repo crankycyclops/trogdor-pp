@@ -6,7 +6,7 @@
 namespace trogdor { namespace entity {
 
 
-   void Room::setConnection(string direction, Room *connectTo) {
+   void Room::setConnection(std::string direction, Room *connectTo) {
 
       if (game->getVocabulary().isDirection(direction)) {
          connections[direction] = connectTo;
@@ -20,4 +20,3 @@ namespace trogdor { namespace entity {
       }
    }
 }}
-

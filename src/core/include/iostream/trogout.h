@@ -8,8 +8,6 @@
 #include <memory>
 
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -23,10 +21,10 @@ namespace trogdor {
       private:
 
          // where we want to route our output
-         string        channel;
+         std::string        channel;
 
          // the string we're going to output
-         stringstream  buffer;
+         std::stringstream  buffer;
 
       protected:
 
@@ -39,7 +37,7 @@ namespace trogdor {
             Output:
                string
          */
-         inline string getBufferStr() {return buffer.str();}
+         inline std::string getBufferStr() {return buffer.str();}
 
          /*
             Clears the "buffer."
@@ -70,7 +68,7 @@ namespace trogdor {
             Output:
                A string naming the channel
          */
-         inline string getChannel() {return channel;}
+         inline std::string getChannel() {return channel;}
 
          /*
             Tells the stream where to route the output. The child class is free
@@ -82,7 +80,7 @@ namespace trogdor {
             Output:
                (none)
          */
-         inline void setChannel(string c) {channel = c;}
+         inline void setChannel(std::string c) {channel = c;}
 
          /*
             Returns a new instance of the output stream.  This is so that Entity
@@ -108,7 +106,7 @@ namespace trogdor {
          virtual void flush() = 0;
 
          // character and string output operators
-         inline Trogout& operator<< (string val) {buffer << val; return *this;}
+         inline Trogout& operator<< (std::string val) {buffer << val; return *this;}
          inline Trogout& operator<< (char const *val) {buffer << val; return *this;}
          inline Trogout& operator<< (char val) {buffer << val; return *this;}
 
@@ -125,7 +123,7 @@ namespace trogdor {
          inline Trogout& operator<< (void* val) {buffer << val; return *this;}
 
          // special endl output operator
-         inline Trogout& operator<< (ostream& (*pf)(ostream&)) {
+         inline Trogout& operator<< (std::ostream& (*pf)(std::ostream&)) {
 
             buffer << "\n";
 
@@ -139,4 +137,3 @@ namespace trogdor {
 
 
 #endif
-

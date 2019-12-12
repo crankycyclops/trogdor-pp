@@ -145,7 +145,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void LuaState::loadScriptFromFile(string filename) {
+   void LuaState::loadScriptFromFile(std::string filename) {
 
       int status;
 

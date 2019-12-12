@@ -5,12 +5,10 @@
 #include <stdexcept>
 
 
-using namespace std;
-
 namespace trogdor {
 
 
-   class Exception: public runtime_error {
+   class Exception: public std::runtime_error {
 
       public:
 

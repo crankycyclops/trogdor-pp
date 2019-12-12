@@ -27,7 +27,7 @@ namespace trogdor { namespace entity {
 
    void Place::insertThingByName(Thing *thing) {
 
-      vector<std::string> aliases = thing->getAliases();
+      std::vector<std::string> aliases = thing->getAliases();
 
       for (int i = aliases.size() - 1; i >= 0; i--) {
          indexThingName(aliases[i], thing);
@@ -38,7 +38,7 @@ namespace trogdor { namespace entity {
 
    void Place::insertThingByName(Being *being) {
 
-      vector<std::string> aliases = being->getAliases();
+      std::vector<std::string> aliases = being->getAliases();
 
       for (int i = aliases.size() - 1; i >= 0; i--) {
          indexBeingName(aliases[i], being);
@@ -232,15 +232,14 @@ namespace trogdor { namespace entity {
 
    void Place::display(Being *observer, bool displayFull) {
 
-      observer->out("display") << getTitle() << endl << endl;
+      observer->out("display") << getTitle() << std::endl << std::endl;
       Entity::display(observer, displayFull);
 
       for_each(things.begin(), things.end(), [&](Thing *&thing) {
          if (observer != static_cast<Being *>(thing)) { // dirty, but it works
-            observer->out("display") << endl;
+            observer->out("display") << std::endl;
             thing->glance(observer);
          }
       });
    }
 }}
-

@@ -16,8 +16,8 @@ namespace trogdor { namespace entity {
 
       protected:
 
-         Place          *location;  // where the Thing is located
-         vector<string>  aliases;   // list of aliases
+         Place *location;                     // where the Thing is located
+         std::vector<std::string>  aliases;   // list of aliases
 
          /*
             Overrides Entity::display() and shows a Thing's description in the
@@ -50,7 +50,7 @@ namespace trogdor { namespace entity {
             Constructor for creating a new Thing.  Requires reference to the
             containing Game object and a name.
          */
-         inline Thing(Game *g, string n, std::unique_ptr<Trogout> o,
+         inline Thing(Game *g, std::string n, std::unique_ptr<Trogout> o,
          std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e): Entity(g, n,
          std::move(o), std::move(i), std::move(e)), location(nullptr) {
 
@@ -63,7 +63,7 @@ namespace trogdor { namespace entity {
          /*
             Constructor for cloning a Thing.  Requires a unique name.
          */
-         inline Thing(const Thing &t, string n): Entity(t, n) {
+         inline Thing(const Thing &t, std::string n): Entity(t, n) {
 
 				location = t.location;
 
@@ -93,9 +93,9 @@ namespace trogdor { namespace entity {
                (none)
 
             Output:
-               vector<string>
+               std::vector<std::string>
          */
-         inline vector<string> const getAliases() const {return aliases;}
+         inline std::vector<std::string> const getAliases() const {return aliases;}
 
          /*
             Set's the Thing's current location in the game.
@@ -119,7 +119,7 @@ namespace trogdor { namespace entity {
             Output:
                (none)
          */
-         virtual void addAlias(string alias);
+         virtual void addAlias(std::string alias);
 
          // TODO: virtual void removeAlias(string alias);
    };
@@ -127,4 +127,3 @@ namespace trogdor { namespace entity {
 
 
 #endif
-

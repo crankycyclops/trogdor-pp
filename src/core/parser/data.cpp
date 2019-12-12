@@ -1,8 +1,6 @@
 #include <string>
 #include <cstring>
 
-using namespace std;
-
 
 const char *g_reservedClassNames[] = {
    "entity",

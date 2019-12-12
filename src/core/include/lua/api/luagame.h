@@ -6,8 +6,6 @@
 #include "../luastate.h"
 
 
-using namespace std;
-
 namespace trogdor {
 
 
@@ -102,4 +100,3 @@ namespace trogdor {
 
 
 #endif
-

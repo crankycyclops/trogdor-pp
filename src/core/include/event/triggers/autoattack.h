@@ -5,8 +5,6 @@
 #include "../eventtrigger.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace event {
 
 
@@ -31,4 +29,3 @@ namespace trogdor { namespace event {
 
 
 #endif
-

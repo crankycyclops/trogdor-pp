@@ -9,8 +9,6 @@
 #include "triggers/luaeventtrigger.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace event {
 
 
@@ -18,8 +16,8 @@ namespace trogdor { namespace event {
 
       public:
 
-         typedef list<EventTrigger *> EventTriggerList;
-         typedef unordered_map<string, EventTriggerList *> EventTriggersMap;
+         typedef std::list<EventTrigger *> EventTriggerList;
+         typedef std::unordered_map<std::string, EventTriggerList *> EventTriggersMap;
 
       private:
 
@@ -49,6 +47,7 @@ namespace trogdor { namespace event {
          */
          inline ~EventListener() {
 
+            // TODO: rewrite these for loops as range-based?
             for (EventTriggersMap::iterator i = triggers.begin();
             i != triggers.end(); i++) {
 
@@ -84,7 +83,7 @@ namespace trogdor { namespace event {
             Output:
                (none)
          */
-         void add(string event, EventTrigger *trigger);
+         void add(std::string event, EventTrigger *trigger);
 
          /*
             Executes all EventTriggers for a given event.  
@@ -96,10 +95,9 @@ namespace trogdor { namespace event {
             Output:
                (none)
          */
-         void execute(string event, EventArgumentList args);
+         void execute(std::string event, EventArgumentList args);
    };
 }}
 
 
 #endif
-

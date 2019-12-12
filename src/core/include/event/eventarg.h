@@ -15,18 +15,15 @@
 #include "../entities/object.h"
 #include "../entities/creature.h"
 
-using namespace std;
-
 namespace trogdor { namespace event {
 
 
    // Allows us to pass a variable number of unknown type arguments to an
    // EventTrigger via EventHandler::event().
-   typedef std::variant<int, double, bool, string, Game *, entity::Entity *> EventArgument;
-   typedef vector<EventArgument> EventArgumentList;
+   typedef std::variant<int, double, bool, std::string, Game *, entity::Entity *> EventArgument;
+   typedef std::vector<EventArgument> EventArgumentList;
 
 }}
 
 
 #endif
-

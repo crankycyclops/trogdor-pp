@@ -6,9 +6,6 @@
 #include <vector>
 #include <variant>
 
-using namespace std;
-
-
 namespace trogdor {
 
 
@@ -26,7 +23,7 @@ namespace trogdor {
    };
 
    // I couldn't forward declare the vector, so pay attention to this if LuaArray changes
-   typedef std::variant<string, double, bool, vector<LuaValue> *, LuaTable *> LuaValueContent;
+   typedef std::variant<std::string, double, bool, std::vector<LuaValue> *, LuaTable *> LuaValueContent;
 
    // Represents a single value
    struct LuaValue {
@@ -34,9 +31,8 @@ namespace trogdor {
        LuaValueContent  value;
    };
 
-   typedef vector<LuaValue> LuaArray;
+   typedef std::vector<LuaValue> LuaArray;
 }
 
 
 #endif
-

@@ -8,8 +8,6 @@
 #include "../include/exception/beingexception.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace entity {
 
 
@@ -24,10 +22,10 @@ namespace trogdor { namespace entity {
 
          if (!alive) {
 
-            string descDead = getMessage("description_dead");
+            std::string descDead = getMessage("description_dead");
 
             if (descDead.length() > 0) {
-               observer->out("display") << descDead << endl;
+               observer->out("display") << descDead << std::endl;
             }
 
             else {
@@ -51,13 +49,13 @@ namespace trogdor { namespace entity {
 
             observer->out("display") << "You see the corpse of " << getTitle() << '.';
 
-            string descDead = getMessage("descshort_dead");
+            std::string descDead = getMessage("descshort_dead");
 
             if (descDead.length() > 0) {
                observer->out("display") << ' ' << descDead;
             }
 
-            observer->out("display") << endl;
+            observer->out("display") << std::endl;
          }
 
          else {
@@ -81,7 +79,7 @@ namespace trogdor { namespace entity {
       inventory.currentWeight += object->getWeight();
 
       // allow referencing of inventory Objects by name and aliases
-      vector<string> objAliases = object->getAliases();
+      std::vector<std::string> objAliases = object->getAliases();
       for (int i = objAliases.size() - 1; i >= 0; i--) {
          indexInventoryItemName(objAliases[i], object);
       }
@@ -102,7 +100,7 @@ namespace trogdor { namespace entity {
 
       inventory.objects.erase(object);
 
-      vector<string> objAliases = object->getAliases();
+      std::vector<std::string> objAliases = object->getAliases();
       for (int i = objAliases.size() - 1; i >= 0; i--) {
          inventory.objectsByName.find(objAliases[i])->second.remove(object);
       }
@@ -144,13 +142,13 @@ namespace trogdor { namespace entity {
 
       // I do this first, and the other message second so that the Being that's
       // leaving won't see messages about its own departure and arrival ;)
-      l->out("notifications") << getTitle() << " arrives." << endl;
+      l->out("notifications") << getTitle() << " arrives." << std::endl;
 
       l->insertThing(this);
       setLocation(l);
       l->observe(this);
 
-      oldLoc->out("notifications") << getTitle() << " leaves." << endl;
+      oldLoc->out("notifications") << getTitle() << " leaves." << std::endl;
 
       game->setupEventHandler();
       game->addEventListener(l->getEventListener());
@@ -202,7 +200,7 @@ namespace trogdor { namespace entity {
 
       else {
          object->getLocation()->out("notifications") << getTitle() << " takes "
-            << object->getTitle() << "." << endl;
+            << object->getTitle() << "." << std::endl;
          object->getLocation()->removeThing(object);
       }
 
@@ -246,7 +244,7 @@ namespace trogdor { namespace entity {
       }
 
       location->out("notifications") << getTitle() << " drops "
-         << object->getTitle() << "." << endl;
+         << object->getTitle() << "." << std::endl;
       location->insertThing(object);
       removeFromInventory(object);
 
@@ -320,7 +318,7 @@ namespace trogdor { namespace entity {
             return;
          }
 
-         out("combat") << "You're already dead and cannot fight." << endl;
+         out("combat") << "You're already dead and cannot fight." << std::endl;
          return;
       }
 
@@ -337,7 +335,7 @@ namespace trogdor { namespace entity {
             return;
          }
 
-         out("combat") << defender->getTitle() << " is already dead." << endl;
+         out("combat") << defender->getTitle() << " is already dead." << std::endl;
          return;
       }
 
@@ -356,7 +354,7 @@ namespace trogdor { namespace entity {
          }
 
          out("combat") << defender->getTitle()
-            << " is immortal and cannot die." << endl;
+            << " is immortal and cannot die." << std::endl;
          return;
       }
 
@@ -375,7 +373,7 @@ namespace trogdor { namespace entity {
          }
 
          out("combat") << defender->getTitle()
-            << " cannot be attacked." << endl;
+            << " cannot be attacked." << std::endl;
          return;
       }
 
@@ -394,7 +392,7 @@ namespace trogdor { namespace entity {
          out("combat") << " with " << weapon->getTitle();
       }
 
-      out("combat") << '.' << endl;
+      out("combat") << '.' << std::endl;
 
       // send notification to the defender
       defender->out("combat") << "You're attacked by " << getTitle();
@@ -403,7 +401,7 @@ namespace trogdor { namespace entity {
          defender->out("combat") << " with " << weapon->getTitle();
       }
 
-      defender->out("combat") << '!' << endl;
+      defender->out("combat") << '!' << std::endl;
 
       if (isAttackSuccessful(defender)) {
 
@@ -415,11 +413,11 @@ namespace trogdor { namespace entity {
 
          defender->removeHealth(damage);
 
-         out("combat") << "You dealt a blow to " << defender->getTitle() << "!" << endl;
-         defender->out("combat") << getTitle() << " dealt you a blow!" << endl;
+         out("combat") << "You dealt a blow to " << defender->getTitle() << "!" << std::endl;
+         defender->out("combat") << getTitle() << " dealt you a blow!" << std::endl;
          out("combat") << defender->getTitle() << " loses " << damage <<
-            " health points." << endl;
-         defender->out("combat") << "You lose " << damage << " health points." << endl;
+            " health points." << std::endl;
+         defender->out("combat") << "You lose " << damage << " health points." << std::endl;
 
          if (!defender->isAlive()) {
             return;
@@ -432,8 +430,8 @@ namespace trogdor { namespace entity {
             return;
          }
 
-         out("combat") << "Your attack failed." << endl;
-         defender->out("combat") << getTitle() << "'s attack failed." << endl;
+         out("combat") << "Your attack failed." << std::endl;
+         defender->out("combat") << getTitle() << "'s attack failed." << std::endl;
       }
 
       if (
@@ -533,7 +531,7 @@ namespace trogdor { namespace entity {
       alive = false;
 
       if (showMessage) {
-         getLocation()->out("notifications") << title << " dies." << endl;
+         getLocation()->out("notifications") << title << " dies." << std::endl;
       }
 
       game->setupEventHandler();
@@ -553,13 +551,13 @@ namespace trogdor { namespace entity {
          // back to life, so make sure it did before we send out the message
          if (isAlive()) {
 
-            string msg = getMessage("respawn");
+            std::string msg = getMessage("respawn");
 
             if (0 == msg.length()) {
                msg = name + " comes back to life.";
             }
 
-            getLocation()->out("notifications") << endl << msg << endl;
+            getLocation()->out("notifications") << std::endl << msg << std::endl;
          }
       }
    }

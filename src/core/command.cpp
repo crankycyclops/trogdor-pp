@@ -209,13 +209,13 @@ namespace trogdor {
 
 
    // For debugging purposes; allows us to print a Command object
-   ostream &operator<<(ostream &out, const Command &c) {
+   std::ostream &operator<<(std::ostream &out, const Command &c) {
 
-      cout << "Verb: " << c.verb << std::endl;
-      cout << "Direct Object: " << c.directObject << std::endl;
-      cout << "Preposition: " << c.preposition << std::endl;
-      cout << "Indirect Object: " << c.indirectObject << std::endl;
-      cout << "Invalid? " << c.invalid << std::endl;
+      std::cout << "Verb: " << c.verb << std::endl;
+      std::cout << "Direct Object: " << c.directObject << std::endl;
+      std::cout << "Preposition: " << c.preposition << std::endl;
+      std::cout << "Indirect Object: " << c.indirectObject << std::endl;
+      std::cout << "Invalid? " << c.invalid << std::endl;
 
       return out;
    }

@@ -10,8 +10,6 @@
 #include "../eventtrigger.h"
 
 
-using namespace std;
-
 namespace trogdor { namespace event {
 
 
@@ -19,7 +17,7 @@ namespace trogdor { namespace event {
 
       private:
 
-         string function;              // name of the function to execute
+         std::string function;         // name of the function to execute
          std::shared_ptr<LuaState> L;  // lua state in which we'll execute the function
 
       public:
@@ -29,7 +27,7 @@ namespace trogdor { namespace event {
             of the Lua function to execute and a LuaState object which should
             contain the function.
          */
-         inline LuaEventTrigger(string newfunc, std::shared_ptr<LuaState> newL): EventTrigger() {
+         inline LuaEventTrigger(std::string newfunc, std::shared_ptr<LuaState> newL): EventTrigger() {
 
             function = newfunc;
             L = newL;
@@ -52,4 +50,3 @@ namespace trogdor { namespace event {
 
 
 #endif
-

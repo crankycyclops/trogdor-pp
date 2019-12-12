@@ -11,7 +11,7 @@ namespace trogdor { namespace entity {
 
    void Thing::display(Being *observer, bool displayFull) {
 
-      observer->out("display") << "You see " << getTitle() << '.' << endl;
+      observer->out("display") << "You see " << getTitle() << '.' << std::endl;
       Entity::display(observer, displayFull);
    }
 
@@ -19,13 +19,13 @@ namespace trogdor { namespace entity {
 
    void Thing::displayShort(Being *observer) {
 
-      observer->out("display") << "You see " << getTitle() << '.' << endl;
+      observer->out("display") << "You see " << getTitle() << '.' << std::endl;
       Entity::displayShort(observer);
    }
 
    /***************************************************************************/
 
-   void Thing::addAlias(string alias) {
+   void Thing::addAlias(std::string alias) {
 
       // The number of aliases should be small enough that it's not a big deal
       // to iterate through the vector, and an alias shouldn't appear in the
