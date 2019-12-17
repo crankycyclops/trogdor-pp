@@ -267,7 +267,7 @@ namespace trogdor {
             Constructors
          */
          inline ASTOperationNode(ASTOperation o, int l = 0):
-            operation(o), ASTNode("", AST_OPERATION, l) {}
+            ASTNode("", AST_OPERATION, l), operation(o) {}
          ASTOperationNode() = delete;
 
          /*

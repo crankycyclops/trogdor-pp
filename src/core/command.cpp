@@ -58,7 +58,7 @@ namespace trogdor {
 
          verbStr = "";
 
-         for (int i = 0; i < tokens.size(); i++) {
+         for (unsigned int i = 0; i < tokens.size(); i++) {
             verbStr += tokens[i] + (i < tokens.size() - 1 ? " " : "");
          }
 

@@ -63,7 +63,7 @@ bool isValidDouble(const std::string &s);
 
 std::string strToLower(std::string str) {
 
-   for (int i = 0; i < strlen(str.c_str()); i++) {
+   for (unsigned int i = 0; i < strlen(str.c_str()); i++) {
       str[i] = tolower(str[i]);
    }
 

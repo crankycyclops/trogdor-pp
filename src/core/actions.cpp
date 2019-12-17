@@ -301,7 +301,6 @@ namespace trogdor {
    // TODO: consider custom messages
    void DropAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
-      Place             *location = player->getLocation();
       ObjectListCItPair invItems;
 
       invItems = player->getInventoryObjectsByName(command->getDirectObject());

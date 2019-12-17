@@ -69,7 +69,7 @@ namespace trogdor { namespace entity {
          inline Creature(Game *g, std::string n, std::unique_ptr<Trogout> o,
          std::unique_ptr<Trogout> e): Being(g, n, std::move(o),
          std::move(std::make_unique<NullIn>()), std::move(e)),
-         allegiance(DEFAULT_ALLEGIANCE), counterAttack(DEFAULT_COUNTER_ATTACK) {
+         counterAttack(DEFAULT_COUNTER_ATTACK), allegiance(DEFAULT_ALLEGIANCE) {
 
             types.push_back(ENTITY_CREATURE);
             setClass("creature");

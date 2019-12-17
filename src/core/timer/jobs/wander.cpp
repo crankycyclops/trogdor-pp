@@ -33,14 +33,14 @@ namespace trogdor {
       d.roll();
 
       Room *curLoc = static_cast<Room *>(wanderer->getLocation());
-      int nConnections = curLoc->getNumConnections();
+      unsigned int nConnections = curLoc->getNumConnections();
 
       // don't do anything if Creature is stuck in a room with no exits
       if (0 == nConnections) {
          return;
       }
 
-      int selection = d.getNormalized(nConnections);
+      unsigned int selection = d.getNormalized(nConnections);
       wanderer->gotoLocation(curLoc->getConnectionByIndex(selection));
 
       // if wander interval ever changes, we should make sure it's updated
