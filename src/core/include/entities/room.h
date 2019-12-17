@@ -71,9 +71,9 @@ namespace trogdor { namespace entity {
                (none)
 
             Output:
-               Number of connections (size_t)
+               Number of connections (unsigned int)
          */
-         inline size_t getNumConnections() const {return connections.size();}
+         inline unsigned int getNumConnections() const {return connections.size();}
 
          /*
             Returns a connected room by numeric index (in so far as we iterate
@@ -90,12 +90,12 @@ namespace trogdor { namespace entity {
             connection, which is useful specifically for Creatures that wander.
 
             Input:
-               index (int)
+               index (unsigned int)
 
             Output:
                connected Room (Room *)
          */
-         inline Room *getConnectionByIndex(int i) const {
+         inline Room *getConnectionByIndex(unsigned int i) const {
 
             if (0 == getNumConnections()) {
                return 0;

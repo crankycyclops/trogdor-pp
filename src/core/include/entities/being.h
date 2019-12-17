@@ -195,8 +195,8 @@ namespace trogdor { namespace entity {
          inline Being(Game *g, std::string n, std::unique_ptr<Trogout> o,
          std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e): Thing(g, n,
          std::move(o), std::move(i), std::move(e)),
-         damageBareHands(DEFAULT_DAMAGE_BARE_HANDS),
-         maxHealth(DEFAULT_MAX_HEALTH) {
+         maxHealth(DEFAULT_MAX_HEALTH),
+         damageBareHands(DEFAULT_DAMAGE_BARE_HANDS) {
 
             respawnSettings.enabled  = DEFAULT_RESPAWN_ENABLED;
             respawnSettings.interval = DEFAULT_RESPAWN_INTERVAL;

@@ -54,14 +54,14 @@ namespace trogdor {
             derived from the dice's current value, which remains unchanged.
 
             Input:
-               maximum value (int)
+               maximum value (unsigned int)
 
             Output:
-               number between 0 and maxVal, not including maxVal (int)
+               number between 0 and maxVal, not including maxVal (unsigned int)
          */
-         inline int getNormalized(int maxVal) const {
+         inline unsigned int getNormalized(unsigned int maxVal) const {
 
-            return ((int)(value * RAND_MAX)) % maxVal;
+            return ((unsigned int)(value * RAND_MAX)) % maxVal;
          }
    };
 }
