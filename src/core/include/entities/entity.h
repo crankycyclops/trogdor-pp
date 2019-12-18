@@ -231,12 +231,13 @@ namespace trogdor { namespace entity {
          /*
             Entity Destructor. For some reason that mystifies me, this is
             required to compile successfully, even though it's blank (see
-            entities/entity.cpp.)
+            entities/entity.cpp.) Also, I get compiler warnings unless I make it
+            virtual.
 
             Input:
                (none)
          */
-         ~Entity();
+         virtual ~Entity() = 0;
 
          /*
             Returns a reference to the Entity's input stream.  A typical use

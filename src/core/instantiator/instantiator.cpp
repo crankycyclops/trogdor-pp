@@ -81,7 +81,7 @@ namespace trogdor {
    /***************************************************************************/
 
    void Instantiator::assertValidASTArguments(const std::shared_ptr<ASTOperationNode> &operation,
-   int numArgs) {
+   unsigned int numArgs) {
 
       if (operation->size() != numArgs) {
          throw ValidationException(
@@ -94,7 +94,7 @@ namespace trogdor {
    /***************************************************************************/
 
    void Instantiator::assertValidASTArguments(const std::shared_ptr<ASTOperationNode> &operation,
-   int minArgs, std::unordered_map<std::string, int> targetTypeToNumArgs) {
+   unsigned int minArgs, std::unordered_map<std::string, unsigned int> targetTypeToNumArgs) {
 
       if (operation->size() < minArgs) {
          throw ValidationException(
