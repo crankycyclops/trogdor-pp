@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
    // user wants to parse Inform 7 instead of XML, the default
    if (argc > 2 && 0 == strcmp("inform7", argv[2])) {
       parser = std::make_unique<trogdor::Inform7Parser>(
-         std::move(currentGame->makeInstantiator()), currentGame->getVocabulary()
+         currentGame->makeInstantiator(), currentGame->getVocabulary()
       );
    }
 

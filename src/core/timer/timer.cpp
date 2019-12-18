@@ -131,5 +131,4 @@ namespace trogdor {
 
       insertJobThread.detach();
    }
-
 }

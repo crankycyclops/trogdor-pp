@@ -12,6 +12,11 @@
 namespace trogdor {
 
 
+   // See comment above destructor definition in include/instantiator/instantiator.h.
+   Instantiator::~Instantiator() {}
+
+   /***************************************************************************/
+
    Instantiator::Instantiator(const Vocabulary &v): vocabulary(v) {
 
       mapPreOperations();

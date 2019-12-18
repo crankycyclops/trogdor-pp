@@ -288,6 +288,20 @@ namespace trogdor {
          Instantiator(const Instantiator &) = delete;
          Instantiator() = delete;
          Instantiator(const Vocabulary &v);
+
+         /*
+            Apparently, when a class is polymorphic, you need to make the base
+            class destructor virtual. Otherwise, if delete is called on an object
+            pointed to by a pointer of the base class's type and the derived class
+            has a destructor, the derived class's destructor won't be called.
+
+            See:
+            https://stackoverflow.com/questions/47702776/how-to-properly-delete-pointers-when-using-abstract-classes
+
+            Interestingly, I got a warning about this from Clang -Wall, but not
+            from GCC -Wall.
+         */
+         virtual ~Instantiator() = 0;
    };
 }
 
