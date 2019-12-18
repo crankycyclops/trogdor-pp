@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
 
    else {
       parser = std::make_unique<trogdor::XMLParser>(
-         std::move(currentGame->makeInstantiator()), currentGame->getVocabulary()
+         currentGame->makeInstantiator(), currentGame->getVocabulary()
       );
    }
 

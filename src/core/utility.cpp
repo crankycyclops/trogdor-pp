@@ -119,7 +119,7 @@ std::string replaceAll(const std::string &str, const std::string &search, const 
 
    std::string strCopy = std::string(str);
 
-   for (int i = strCopy.find(search); i != std::string::npos; i = strCopy.find(search, i + replace.length())) {
+   for (unsigned int i = strCopy.find(search); i != std::string::npos; i = strCopy.find(search, i + replace.length())) {
       strCopy.replace(i, search.length(), replace);
    }
 
@@ -131,7 +131,7 @@ std::string vectorToStr(std::vector<std::string> list, std::string conjunction) 
 
    std::string str;
 
-   for (int i = 0; i < list.size(); i++) {
+   for (unsigned int i = 0; i < list.size(); i++) {
 
       str += list[i];
 

@@ -72,10 +72,10 @@ namespace trogdor {
          std::string source;
 
          // Index to next unparsed character in source
-         int sourceIndex = 0;
+         unsigned int sourceIndex = 0;
 
          // Current line number in the source code
-         int sourceLine = 1;
+         unsigned int sourceLine = 1;
 
          // Tokens that were read ahead to make a decision and then "pushed back"
          std::stack<Token> tokenBuffer;
@@ -194,7 +194,7 @@ namespace trogdor {
             const std::unordered_set<std::string> &cls,
             const std::unordered_set<std::string> &props,
             const std::unordered_set<std::string> &adjs
-         ): directions(dirs), classes(cls), properties(props), adjectives(adjs),
+         ):
          tokenTypeToStr({
             {SOURCE_EOF, "SOURCE_EOF"},
             {PHRASE_TERMINATOR, "PHRASE_TERMINATOR"},
@@ -206,7 +206,7 @@ namespace trogdor {
             {EQUALITY, "EQUALITY"},
             {AND, "AND"},
             {QUOTED_STRING, "QUOTED_STRING"}
-         }),
+         }), directions(dirs), classes(cls), properties(props), adjectives(adjs),
          currentToken({"", SOURCE_EOF, 0}) {}
 
          Inform7Lexer() = delete;
