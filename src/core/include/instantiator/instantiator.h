@@ -124,13 +124,13 @@ namespace trogdor {
 
             Input:
                Operation node (const std::shared_ptr<ASTOperationNode> &)
-               Correct number of arguments (int)
+               Correct number of arguments (unsigned int)
 
             Output:
                (none)
          */
          void assertValidASTArguments(const std::shared_ptr<ASTOperationNode> &operation,
-         int numArgs);
+         unsigned int numArgs);
 
          /*
             Asserts that the correct number of arguments were passed to an AST
@@ -146,7 +146,7 @@ namespace trogdor {
                (none)
          */
          void assertValidASTArguments(const std::shared_ptr<ASTOperationNode> &operation,
-         int minArgs, std::unordered_map<std::string, int> targetTypeToNumArgs);
+         unsigned int minArgs, std::unordered_map<std::string, unsigned int> targetTypeToNumArgs);
 
          /*
             Asserts that the entity or entity class exists in the symbol table

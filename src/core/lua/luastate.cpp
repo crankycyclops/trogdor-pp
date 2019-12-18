@@ -108,7 +108,7 @@ namespace trogdor {
 
       lua_newtable(L);
 
-      for (int i = 0; i < arg.size(); i++) {
+      for (unsigned int i = 0; i < arg.size(); i++) {
          LuaValue v = arg[i];
          pushLuaValue(v, L);
          lua_rawseti(L, -2, i + 1);
