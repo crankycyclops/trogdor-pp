@@ -119,7 +119,7 @@ std::string replaceAll(const std::string &str, const std::string &search, const 
 
    std::string strCopy = std::string(str);
 
-   for (unsigned int i = strCopy.find(search); i != std::string::npos; i = strCopy.find(search, i + replace.length())) {
+   for (size_t i = strCopy.find(search); i != std::string::npos; i = strCopy.find(search, i + replace.length())) {
       strCopy.replace(i, search.length(), replace);
    }
 
