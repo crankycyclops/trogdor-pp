@@ -18,7 +18,7 @@ endif()
 
 ###############################################################################
 
-add_library(trogdor-pp SHARED
+add_library(trogdor SHARED
 	src/core/action.cpp
 	src/core/actions.cpp
 	src/core/command.cpp
@@ -72,12 +72,13 @@ add_library(trogdor-pp SHARED
 	src/core/entities/thing.cpp
 )
 
-target_include_directories(trogdor-pp
+target_include_directories(trogdor
 	PUBLIC /usr/include/libxml2
 	PUBLIC /usr/include/lua$ENV{LUA_VERSION}
+	PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
 )
 
-target_link_libraries(trogdor-pp
+target_link_libraries(trogdor
 	PUBLIC xml2
 	PUBLIC pthread
 	PUBLIC lua$ENV{LUA_VERSION}
@@ -93,7 +94,7 @@ add_executable(standalone
 )
 
 target_link_libraries(standalone
-	PUBLIC trogdor-pp
+	PUBLIC trogdor
 )
 
 ###############################################################################

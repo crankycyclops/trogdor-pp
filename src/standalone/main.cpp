@@ -8,8 +8,8 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "../core/include/game.h"
-#include "../core/include/parser/parsers/xmlparser.h"
+#include <trogdor/game.h>
+#include <trogdor/parser/parsers/xmlparser.h>
 
 #include "include/streamout.h"
 #include "include/streamin.h"

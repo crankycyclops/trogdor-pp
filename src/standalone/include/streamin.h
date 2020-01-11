@@ -3,7 +3,7 @@
 
 
 #include <memory>
-#include "../../core/include/iostream/trogin.h"
+#include <trogdor/iostream/trogin.h>
 
 
 

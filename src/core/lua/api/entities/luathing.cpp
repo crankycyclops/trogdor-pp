@@ -1,16 +1,16 @@
 #include <vector>
 
-#include "../../../include/game.h"
+#include <trogdor/game.h>
 
-#include "../../../include/entities/thing.h"
-#include "../../../include/entities/place.h"
-#include "../../../include/entities/object.h"
-#include "../../../include/entities/being.h"
+#include <trogdor/entities/thing.h>
+#include <trogdor/entities/place.h>
+#include <trogdor/entities/object.h>
+#include <trogdor/entities/being.h>
 
-#include "../../../include/lua/api/entities/luathing.h"
-#include "../../../include/lua/api/entities/luaplace.h"
+#include <trogdor/lua/api/entities/luathing.h>
+#include <trogdor/lua/api/entities/luaplace.h>
 
-#include "../../../include/exception/exception.h"
+#include <trogdor/exception/exception.h>
 
 namespace trogdor { namespace entity {
 
@@ -267,4 +267,3 @@ namespace trogdor { namespace entity {
       }
    }
 }}
-

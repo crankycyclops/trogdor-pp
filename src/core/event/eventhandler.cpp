@@ -1,5 +1,5 @@
 #include <cstdarg>
-#include "../include/event/eventhandler.h"
+#include <trogdor/event/eventhandler.h>
 
 namespace trogdor { namespace event {
 
@@ -44,4 +44,3 @@ namespace trogdor { namespace event {
       return EventHandler::event(event, empty);
    }
 }}
-

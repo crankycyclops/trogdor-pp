@@ -1,4 +1,4 @@
-#include "../include/exception/beingexception.h"
+#include <trogdor/exception/beingexception.h>
 
 namespace trogdor { namespace entity {
 

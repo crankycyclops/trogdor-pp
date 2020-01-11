@@ -1,4 +1,4 @@
-#include "include/action.h"
+#include <trogdor/action.h>
 
 namespace trogdor {
 
@@ -7,4 +7,3 @@ namespace trogdor {
    // include/action.h for an explanation of why this is here.
    Action::~Action() {}
 }
-

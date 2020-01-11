@@ -1,6 +1,6 @@
-#include "../include/game.h"
-#include "../include/entities/room.h"
-#include "../include/exception/validationexception.h"
+#include <trogdor/game.h>
+#include <trogdor/entities/room.h>
+#include <trogdor/exception/validationexception.h>
 
 
 namespace trogdor { namespace entity {

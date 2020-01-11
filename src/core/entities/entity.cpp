@@ -1,8 +1,8 @@
-#include "../include/entities/entity.h"
+#include <trogdor/entities/entity.h>
 
-#include "../include/game.h"
-#include "../include/event/eventlistener.h"
-#include "../include/exception/validationexception.h"
+#include <trogdor/game.h>
+#include <trogdor/event/eventlistener.h>
+#include <trogdor/exception/validationexception.h>
 
 
 namespace trogdor { namespace entity {
@@ -184,4 +184,3 @@ namespace trogdor { namespace entity {
       }
    }
 }}
-

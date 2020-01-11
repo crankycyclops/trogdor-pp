@@ -1,4 +1,4 @@
-#include "../include/iostream/trogin.h"
+#include <trogdor/iostream/trogin.h>
 
 
 namespace trogdor {
@@ -8,4 +8,3 @@ namespace trogdor {
    // include/iostream/trogin.h for an explanation of why this is here.
    Trogin::~Trogin() {}
 }
-

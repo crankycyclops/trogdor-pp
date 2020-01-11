@@ -1,4 +1,4 @@
-#include "include/tokenizer.h"
+#include <trogdor/tokenizer.h>
 
 namespace trogdor {
 

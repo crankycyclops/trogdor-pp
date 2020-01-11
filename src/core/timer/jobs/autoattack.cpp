@@ -1,4 +1,4 @@
-#include "../../include/timer/jobs/autoattack.h"
+#include <trogdor/timer/jobs/autoattack.h>
 
 
 namespace trogdor {

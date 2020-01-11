@@ -1,4 +1,4 @@
-#include "../include/event/eventlistener.h"
+#include <trogdor/event/eventlistener.h>
 
 namespace trogdor { namespace event {
 
@@ -48,4 +48,3 @@ namespace trogdor { namespace event {
       }
    }
 }}
-

@@ -1,27 +1,27 @@
-#include "include/game.h"
-#include "include/action.h"
-#include "include/timer/timer.h"
-#include "include/parser/parser.h"
-#include "include/instantiator/instantiators/runtime.h"
+#include <trogdor/game.h>
+#include <trogdor/action.h>
+#include <trogdor/timer/timer.h>
+#include <trogdor/parser/parser.h>
+#include <trogdor/instantiator/instantiators/runtime.h>
 
-#include "include/entities/entity.h"
-#include "include/entities/place.h"
-#include "include/entities/room.h"
-#include "include/entities/thing.h"
-#include "include/entities/being.h"
-#include "include/entities/player.h"
-#include "include/entities/creature.h"
-#include "include/entities/object.h"
+#include <trogdor/entities/entity.h>
+#include <trogdor/entities/place.h>
+#include <trogdor/entities/room.h>
+#include <trogdor/entities/thing.h>
+#include <trogdor/entities/being.h>
+#include <trogdor/entities/player.h>
+#include <trogdor/entities/creature.h>
+#include <trogdor/entities/object.h>
 
-#include "include/event/triggers/autoattack.h"
-#include "include/event/triggers/deathdrop.h"
-#include "include/event/triggers/respawn.h"
+#include <trogdor/event/triggers/autoattack.h>
+#include <trogdor/event/triggers/deathdrop.h>
+#include <trogdor/event/triggers/respawn.h>
 
-#include "include/iostream/nullout.h"
-#include "include/iostream/nullin.h"
-#include "include/iostream/trogout.h"
+#include <trogdor/iostream/nullout.h>
+#include <trogdor/iostream/nullin.h>
+#include <trogdor/iostream/trogout.h>
 
-#include "include/exception/entityexception.h"
+#include <trogdor/exception/entityexception.h>
 
 
 namespace trogdor {
@@ -249,4 +249,3 @@ namespace trogdor {
       vocabulary.insertVerbAction(verb, std::move(action));
    }
 }
-

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <typeinfo>
 
-#include "../include/parser/ast.h"
+#include <trogdor/parser/ast.h>
 
 namespace trogdor {
 

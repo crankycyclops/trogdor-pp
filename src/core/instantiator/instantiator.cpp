@@ -1,12 +1,13 @@
 #include <string>
 #include <fstream>
 
-#include "../include/instantiator/instantiator.h"
-#include "../include/vocabulary.h"
-#include "../include/utility.h"
+#include <trogdor/utility.h>
+#include <trogdor/vocabulary.h>
 
-#include "../include/exception/validationexception.h"
-#include "../include/exception/undefinedexception.h"
+#include <trogdor/exception/validationexception.h>
+#include <trogdor/exception/undefinedexception.h>
+
+#include <trogdor/instantiator/instantiator.h>
 
 
 namespace trogdor {
@@ -931,4 +932,3 @@ namespace trogdor {
    // Does nothing unless implemented in a derived class
    void Instantiator::afterInstantiate() {}
 }
-

@@ -1,5 +1,5 @@
-#include "../../include/dice.h"
-#include "../../include/timer/jobs/wander.h"
+#include <trogdor/dice.h>
+#include <trogdor/timer/jobs/wander.h>
 
 
 using namespace trogdor::entity;

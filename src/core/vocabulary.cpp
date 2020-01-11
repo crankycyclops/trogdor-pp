@@ -4,9 +4,9 @@
 #include <string>
 #include <unordered_set>
 
-#include "include/vocabulary.h"
-#include "include/action.h"
-#include "include/actions.h"
+#include <trogdor/vocabulary.h>
+#include <trogdor/action.h>
+#include <trogdor/actions.h>
 
 namespace trogdor {
 

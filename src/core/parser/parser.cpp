@@ -1,4 +1,4 @@
-#include "../include/parser/parser.h"
+#include <trogdor/parser/parser.h>
 
 namespace trogdor {
 

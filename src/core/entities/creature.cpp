@@ -1,7 +1,7 @@
 #include <algorithm>
 
-#include "../include/game.h"
-#include "../include/entities/creature.h"
+#include <trogdor/game.h>
+#include <trogdor/entities/creature.h>
 
 
 namespace trogdor { namespace entity {
@@ -71,4 +71,3 @@ namespace trogdor { namespace entity {
       return 0;
    }
 }}
-

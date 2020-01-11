@@ -1,4 +1,4 @@
-#include "../include/iostream/nullout.h"
+#include <trogdor/iostream/nullout.h>
 
 
 namespace trogdor {
@@ -14,4 +14,3 @@ namespace trogdor {
       return std::make_unique<NullOut>();
    }
 }
-

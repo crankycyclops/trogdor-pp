@@ -1,4 +1,4 @@
-#include "../../include/timer/jobs/respawn.h"
+#include <trogdor/timer/jobs/respawn.h>
 
 
 namespace trogdor {

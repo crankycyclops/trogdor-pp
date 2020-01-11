@@ -4,10 +4,10 @@
 #include <cstring>
 #include <cstdlib>
 
-#include "include/vocabulary.h"
-#include "include/actions.h"
+#include <trogdor/vocabulary.h>
+#include <trogdor/actions.h>
 
-#include "include/exception/beingexception.h"
+#include <trogdor/exception/beingexception.h>
 
 using namespace trogdor::entity;
 
@@ -504,4 +504,3 @@ namespace trogdor {
       }
    }
 }
-

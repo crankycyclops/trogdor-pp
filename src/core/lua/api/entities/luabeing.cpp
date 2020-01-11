@@ -1,6 +1,6 @@
-#include "../../../include/game.h"
-#include "../../../include/entities/being.h"
-#include "../../../include/lua/api/entities/luabeing.h"
+#include <trogdor/game.h>
+#include <trogdor/entities/being.h>
+#include <trogdor/lua/api/entities/luabeing.h>
 
 namespace trogdor { namespace entity {
 
@@ -92,4 +92,3 @@ namespace trogdor { namespace entity {
       return 1;
    }
 }}
-
