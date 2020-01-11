@@ -1,11 +1,10 @@
-Trogdor++ is the C++ version of the Trogdor Text Adventure Engine, which was written in C.  The original project is no longer maintained.  For historical purposes, it can be found here:
+Trogdor++ is the C++ version of the Trogdor Text Adventure Engine, originally written in C.  That project is no longer maintained, but for historical purposes it can be found here:
 
 https://github.com/crankycyclops/trogdor
 
 For this project, you'll require the following tools:
-	- GNU C++ compiler (if you want to use a different compiler, you're on your own)
-	- GNU Make (if you want to use a different build tool, you're also on your own)
-	- The boost libraries (libboost-dev package on Ubuntu -- only required for server components)
+	- GNU C++ 7 and above or Clang++ 8 and above (if you want to use a different compiler, you're on your own)
+	- CMake 3.10 or above
 	- LibXML2 (libxml2-dev package on Ubuntu)
 	- Lua 5.1+ (lua5.x-dev package on Ubuntu, where 5.x is the version you're compiling against)
 
@@ -14,21 +13,32 @@ By default, trogdor-pp compiles against Lua 5.1, but I've written glue code that
 Build has been tested against Lua 5.1, 5.2, and 5.3.
 
 To install all dependencies in one fell swoop (on Ubuntu 12.04 and up):
-$ apt-get install make g++ libxml2-dev lua5.x-dev libboost-all-dev (where 5.x is your preferred Lua version)
+$ apt-get install cmake g++ libxml2-dev lua5.x-dev (where 5.x is your preferred Lua version)
 
-To build a single player wrapper around the core engine, type:
+Trogdor-pp itself is a library, but in src/standalone, you'll find a simple single player client that demonstrates how it can be used.
 
-make
+To build just the library, issue these commands:
 
-To build a version with GDB debug symbols, type:
+cd /path/to/src
+cmake -DCMAKE_BUILD_TYPE=Release .
+make trogdor-pp
 
-make debug
+To build the single player client demo, use these commands:
 
-By default, g++ is the compiler, but you can change this by setting the CXX environment variable (example, CXX="clang" make would build using clang instead of g++.) Build has been tested with both G++ 7 and Clang 8.
+cd /path/to/src
+cmake -DCMAKE_BUILD_TYPE=Release .
+make standalone
 
-Instead of compiling a standalone single-player game, you can also compile a sample (and very poorly written) server/client that allows multi-player network play by typing the commands below. Please be aware that the server and client both use boost::asio, which requires support for pthreads. I had no idea what I was doing when I wrote these components, so use at your own risk ;)
+You don't have to explicitly build the library first. Building the client will build and link to it automatically as a dependency.
 
-NOTE: the server and client haven't been tested in a VERY LONG TIME and will likely break.
+To build any of the above targets with GDB debug symbols, replace the cmake command with this:
 
-make server (for the backend server that links to the actual trogdor engine)
-make client (for the frontend client that talks to the server)
+cmake -DCMAKE_BUILD_TYPE=Debug .
+
+And if you've already built it using debug symbols and want to switch back to a release build without them, use this cmake command:
+
+cmake -DCMAKE_BUILD_TYPE=Release .
+
+There is code still in the source tree for an old (and now broken) server/client that I wrote as an exercise to teach myself network programming. The code is bad and should not be used. I'm keeping it (for now) only for historical/archival purposes.
+
+Have fun! :)
