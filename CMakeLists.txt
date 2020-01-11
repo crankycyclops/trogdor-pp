@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(Trogdor-pp)
 
-# Build using C++17.
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
 # By default, we compile against Lua 5.1, but 5.2 and 5.3 have also been tested
 # and are known to work.
 if(NOT DEFINED ENV{LUA_VERSION})
@@ -13,6 +9,10 @@ endif()
 
 set(CMAKE_CXX_FLAGS -Wall)
 set(CMAKE_CXX_FLAGS_RELEASE -O2)
+
+# Build using C++17.
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 ###############################################################################
 
@@ -98,7 +98,12 @@ target_link_libraries(standalone
 	PUBLIC trogdor
 )
 
+# Default location where standalone looks for game.xml
+add_definitions(-DGAME_XML_DEFAULT_PATH=\"${CMAKE_INSTALL_PREFIX}/share/trogdor/game.xml\")
+
 install(TARGETS standalone DESTINATION bin)
+install(FILES game.xml DESTINATION share/trogdor)
+install(DIRECTORY script DESTINATION share/trogdor)
 
 ###############################################################################
 
@@ -118,4 +123,3 @@ if(NOT TARGET uninstall)
     add_custom_target(uninstall
         COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 endif()
-
