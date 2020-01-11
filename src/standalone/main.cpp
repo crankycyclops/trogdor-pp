@@ -21,7 +21,11 @@
 int main(int argc, char **argv) {
 
    // default game filename
-   std::string gameXML = "game.xml";
+   #ifdef GAME_XML_DEFAULT_PATH
+      std::string gameXML = GAME_XML_DEFAULT_PATH;
+   #else
+      std::string gameXML = "game.xml";
+   #endif
 
    if (argc > 3) {
 	  std::cerr << "Usage: trogdor [game_file] [xml (default) | inform7]\n" << std::endl;
