@@ -84,6 +84,9 @@ target_link_libraries(trogdor
 	PUBLIC lua$ENV{LUA_VERSION}
 )
 
+install(TARGETS trogdor DESTINATION lib)
+install(DIRECTORY src/core/include/trogdor DESTINATION include)
+
 ###############################################################################
 
 add_executable(standalone
@@ -96,6 +99,8 @@ add_executable(standalone
 target_link_libraries(standalone
 	PUBLIC trogdor
 )
+
+install(TARGETS standalone DESTINATION bin)
 
 ###############################################################################
 
