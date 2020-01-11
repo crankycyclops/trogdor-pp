@@ -11,10 +11,8 @@ if(NOT DEFINED ENV{LUA_VERSION})
 	set(ENV{LUA_VERSION} 5.1)
 endif()
 
-# Build with debug symbols if we pass in the DEBUG environment variable.
-if(DEFINED ENV{DEBUG})
-	set(CMAKE_BUILD_TYPE Debug)
-endif()
+set(CMAKE_CXX_FLAGS -Wall)
+set(CMAKE_CXX_FLAGS_RELEASE -O2)
 
 ###############################################################################
 
