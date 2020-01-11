@@ -2,12 +2,12 @@
 #include <string>
 #include <sstream>
 
-#include "../include/game.h"
-#include "../include/lua/luastate.h"
-#include "../include/entities/entity.h"
+#include <trogdor/game.h>
+#include <trogdor/lua/luastate.h>
+#include <trogdor/entities/entity.h>
 
-#include "../include/exception/luaexception.h"
-#include "../include/exception/undefinedexception.h"
+#include <trogdor/exception/luaexception.h>
+#include <trogdor/exception/undefinedexception.h>
 
 namespace trogdor {
 
@@ -245,4 +245,3 @@ namespace trogdor {
       nReturnValues = nReturnVals;
    }
 }
-

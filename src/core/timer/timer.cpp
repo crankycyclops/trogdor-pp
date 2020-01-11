@@ -1,8 +1,8 @@
 #include <memory>
 #include <algorithm>
 
-#include "../include/timer/timer.h"
-#include "../include/timer/timerjob.h"
+#include <trogdor/timer/timer.h>
+#include <trogdor/timer/timerjob.h>
 
 namespace trogdor {
 

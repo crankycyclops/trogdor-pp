@@ -6,8 +6,8 @@
 #include <fstream>
 #include <sstream>
 
-#include "../../include/exception/parseexception.h"
-#include "../../include/parser/parsers/inform7lexer.h"
+#include <trogdor/exception/parseexception.h>
+#include <trogdor/parser/parsers/inform7lexer.h>
 
 namespace trogdor {
 

@@ -3,7 +3,7 @@
 
 
 #include <memory>
-#include "../../../core/include/action.h"
+#include <trogdor/action.h>
 
 
 /*

@@ -1,4 +1,4 @@
-#include "../include/event/eventtrigger.h"
+#include <trogdor/event/eventtrigger.h>
 
 namespace trogdor { namespace event {
 
@@ -7,4 +7,3 @@ namespace trogdor { namespace event {
    // include/event/eventtrigger.h for an explanation of why this is here.
    EventTrigger::~EventTrigger() {}
 }}
-

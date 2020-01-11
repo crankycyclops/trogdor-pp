@@ -1,8 +1,8 @@
 #include <memory>
 #include <algorithm>
 
-#include "../../include/event/triggers/autoattack.h"
-#include "../../include/timer/jobs/autoattack.h"
+#include <trogdor/event/triggers/autoattack.h>
+#include <trogdor/timer/jobs/autoattack.h>
 
 namespace trogdor { namespace event {
 

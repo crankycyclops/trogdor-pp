@@ -1,7 +1,7 @@
-#include "include/command.h"
-#include "include/game.h"
-#include "include/action.h"
-#include "include/utility.h"
+#include <trogdor/command.h>
+#include <trogdor/game.h>
+#include <trogdor/action.h>
+#include <trogdor/utility.h>
 
 using namespace trogdor::entity;
 
@@ -220,4 +220,3 @@ namespace trogdor {
       return out;
    }
 }
-

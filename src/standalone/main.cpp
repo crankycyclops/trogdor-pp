@@ -9,9 +9,9 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "../core/include/game.h"
-#include "../core/include/parser/parsers/xmlparser.h"
-#include "../core/include/parser/parsers/inform7parser.h"
+#include <trogdor/game.h>
+#include <trogdor/parser/parsers/xmlparser.h>
+#include <trogdor/parser/parsers/inform7parser.h>
 
 #include "include/streamout.h"
 #include "include/streamin.h"

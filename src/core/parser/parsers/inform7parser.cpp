@@ -1,11 +1,11 @@
 #include <memory>
 #include <vector>
 
-#include "../../include/utility.h"
-#include "../../include/vocabulary.h"
-#include "../../include/exception/parseexception.h"
+#include <trogdor/utility.h>
+#include <trogdor/vocabulary.h>
+#include <trogdor/exception/parseexception.h>
 
-#include "../../include/parser/parsers/inform7parser.h"
+#include <trogdor/parser/parsers/inform7parser.h>
 
 namespace trogdor {
 

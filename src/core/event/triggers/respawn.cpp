@@ -1,7 +1,7 @@
 #include <memory>
 
-#include "../../include/event/triggers/respawn.h"
-#include "../../include/timer/jobs/respawn.h"
+#include <trogdor/event/triggers/respawn.h>
+#include <trogdor/timer/jobs/respawn.h>
 
 namespace trogdor { namespace event {
 
@@ -31,4 +31,3 @@ namespace trogdor { namespace event {
       allowActionFlag = true;
    }
 }}
-

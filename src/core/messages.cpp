@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iterator>
 
-#include "include/messages.h"
+#include <trogdor/messages.h>
 
 namespace trogdor {
 

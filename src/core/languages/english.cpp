@@ -1,7 +1,7 @@
 #include <string>
 #include <regex>
 
-#include "../include/languages/english.h"
+#include <trogdor/languages/english.h>
 
 using namespace std;
 
@@ -266,4 +266,3 @@ namespace trogdor {
       return noun + 's';
    }
 }
-

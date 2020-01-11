@@ -1,17 +1,17 @@
 #include <algorithm>
 #include <memory>
 
-#include "../include/entities/place.h"
-#include "../include/entities/thing.h"
-#include "../include/entities/player.h"
-#include "../include/entities/creature.h"
-#include "../include/entities/object.h"
+#include <trogdor/entities/place.h>
+#include <trogdor/entities/thing.h>
+#include <trogdor/entities/player.h>
+#include <trogdor/entities/creature.h>
+#include <trogdor/entities/object.h>
 
-#include "../include/game.h"
-#include "../include/iostream/nullin.h"
-#include "../include/iostream/placeout.h"
+#include <trogdor/game.h>
+#include <trogdor/iostream/nullin.h>
+#include <trogdor/iostream/placeout.h>
 
-#include "../include/exception/undefinedexception.h"
+#include <trogdor/exception/undefinedexception.h>
 
 
 namespace trogdor { namespace entity {

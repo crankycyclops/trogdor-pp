@@ -3,7 +3,7 @@
 
 
 #include <memory>
-#include "../../core/include/iostream/trogout.h"
+#include <trogdor/iostream/trogout.h>
 
 
 

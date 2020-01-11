@@ -1,4 +1,4 @@
-#include "../include/exception/parseexception.h"
+#include <trogdor/exception/parseexception.h>
 
 namespace trogdor {
 

@@ -1,7 +1,7 @@
 #include <algorithm>
 
-#include "../include/iostream/placeout.h"
-#include "../include/entities/thing.h"
+#include <trogdor/iostream/placeout.h>
+#include <trogdor/entities/thing.h>
 
 
 using namespace trogdor::entity;
@@ -26,4 +26,3 @@ namespace trogdor {
       return std::make_unique<PlaceOut>();
    }
 }
-

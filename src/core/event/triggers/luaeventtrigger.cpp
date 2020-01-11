@@ -1,4 +1,4 @@
-#include "../../include/event/triggers/luaeventtrigger.h"
+#include <trogdor/event/triggers/luaeventtrigger.h>
 
 namespace trogdor { namespace event {
 
@@ -53,4 +53,3 @@ namespace trogdor { namespace event {
       allowActionFlag = L->getBoolean(1);
    }
 }}
-

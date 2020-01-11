@@ -1,11 +1,11 @@
 #include <cmath>
 
-#include "../include/entities/being.h"
-#include "../include/entities/creature.h"
-#include "../include/entities/object.h"
+#include <trogdor/entities/being.h>
+#include <trogdor/entities/creature.h>
+#include <trogdor/entities/object.h>
 
-#include "../include/game.h"
-#include "../include/exception/beingexception.h"
+#include <trogdor/game.h>
+#include <trogdor/exception/beingexception.h>
 
 
 namespace trogdor { namespace entity {
@@ -586,4 +586,3 @@ namespace trogdor { namespace entity {
       game->event("afterRespawn", eventArgs);
    }
 }}
-

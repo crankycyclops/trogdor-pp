@@ -1,13 +1,14 @@
 #include <memory>
 
-#include "../../include/iostream/nullout.h"
-#include "../../include/iostream/nullin.h"
-#include "../../include/iostream/placeout.h"
-#include "../../include/utility.h"
+#include <trogdor/utility.h>
 
-#include "../../include/parser/parsers/xmlparser.h"
-#include "../../include/exception/validationexception.h"
-#include "../../include/exception/parseexception.h"
+#include <trogdor/iostream/nullout.h>
+#include <trogdor/iostream/nullin.h>
+#include <trogdor/iostream/placeout.h>
+
+#include <trogdor/parser/parsers/xmlparser.h>
+#include <trogdor/exception/validationexception.h>
+#include <trogdor/exception/parseexception.h>
 
 namespace trogdor {
 

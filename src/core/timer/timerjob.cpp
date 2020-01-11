@@ -1,4 +1,4 @@
-#include "../include/timer/timerjob.h"
+#include <trogdor/timer/timerjob.h>
 
 namespace trogdor {
 

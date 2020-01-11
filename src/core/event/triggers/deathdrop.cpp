@@ -1,5 +1,5 @@
 #include <algorithm>
-#include "../../include/event/triggers/deathdrop.h"
+#include <trogdor/event/triggers/deathdrop.h>
 
 namespace trogdor { namespace event {
 

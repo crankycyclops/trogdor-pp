@@ -1,5 +1,5 @@
-#include "../include/game.h"
-#include "../include/entities/object.h"
+#include <trogdor/game.h>
+#include <trogdor/entities/object.h>
 
 
 namespace trogdor { namespace entity {
@@ -54,4 +54,3 @@ namespace trogdor { namespace entity {
       }
    }
 }}
-

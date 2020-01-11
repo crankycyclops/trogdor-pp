@@ -1,9 +1,9 @@
 #include <cstdio>
 #include <algorithm>
 
-#include "../include/entities/thing.h"
-#include "../include/entities/being.h"
-#include "../include/game.h"
+#include <trogdor/entities/thing.h>
+#include <trogdor/entities/being.h>
+#include <trogdor/game.h>
 
 
 namespace trogdor { namespace entity {
@@ -44,4 +44,3 @@ namespace trogdor { namespace entity {
       }
    }
 }}
-

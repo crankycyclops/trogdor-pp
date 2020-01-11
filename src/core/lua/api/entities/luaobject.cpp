@@ -1,8 +1,8 @@
-#include "../../../include/game.h"
-#include "../../../include/iostream/nullout.h"
+#include <trogdor/game.h>
+#include <trogdor/iostream/nullout.h>
 
-#include "../../../include/entities/object.h"
-#include "../../../include/lua/api/entities/luaobject.h"
+#include <trogdor/entities/object.h>
+#include <trogdor/lua/api/entities/luaobject.h>
 
 namespace trogdor { namespace entity {
 
@@ -122,4 +122,3 @@ namespace trogdor { namespace entity {
       return 1;
    }
 }}
-

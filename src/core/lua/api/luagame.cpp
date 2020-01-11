@@ -1,9 +1,9 @@
 #include <memory>
 
-#include "../../include/game.h"
-#include "../../include/lua/api/luagame.h"
+#include <trogdor/game.h>
+#include <trogdor/lua/api/luagame.h>
 
-#include "../../include/exception/entityexception.h"
+#include <trogdor/exception/entityexception.h>
 
 namespace trogdor {
 
@@ -120,4 +120,3 @@ namespace trogdor {
       return 1;
    }
 }
-

@@ -2,17 +2,20 @@
 #include <memory>
 #include <algorithm>
 
-#include "../../include/game.h"
-#include "../../include/utility.h"
-#include "../../include/iostream/nullout.h"
-#include "../../include/iostream/nullin.h"
-#include "../../include/iostream/placeout.h"
-#include "../../include/timer/jobs/wander.h"
-#include "../../include/instantiator/instantiators/runtime.h"
+#include <trogdor/game.h>
+#include <trogdor/utility.h>
 
-#include "../../include/exception/entityexception.h"
-#include "../../include/exception/undefinedexception.h"
-#include "../../include/exception/validationexception.h"
+#include <trogdor/iostream/nullout.h>
+#include <trogdor/iostream/nullin.h>
+#include <trogdor/iostream/placeout.h>
+
+#include <trogdor/timer/jobs/wander.h>
+
+#include <trogdor/exception/entityexception.h>
+#include <trogdor/exception/undefinedexception.h>
+#include <trogdor/exception/validationexception.h>
+
+#include <trogdor/instantiator/instantiators/runtime.h>
 
 
 namespace trogdor {
@@ -786,4 +789,3 @@ namespace trogdor {
       };
    }
 }
-
