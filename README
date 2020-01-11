@@ -21,23 +21,27 @@ To build just the library, issue these commands:
 
 cd /path/to/src
 cmake -DCMAKE_BUILD_TYPE=Release .
-make trogdor-pp
+make trogdor-pp && make install
 
 To build the single player client demo, use these commands:
 
 cd /path/to/src
 cmake -DCMAKE_BUILD_TYPE=Release .
-make standalone
+make standalone && make install
 
 You don't have to explicitly build the library first. Building the client will build and link to it automatically as a dependency.
 
-To build any of the above targets with GDB debug symbols, replace the cmake command with this:
+To build any of the above targets with GDB debug symbols, add the following option to your cmake command:
 
-cmake -DCMAKE_BUILD_TYPE=Debug .
+-DCMAKE_BUILD_TYPE=Debug
 
-And if you've already built it using debug symbols and want to switch back to a release build without them, use this cmake command:
+And if you've already built it using debug symbols and want to switch back to a release build without them, use this cmake option:
 
-cmake -DCMAKE_BUILD_TYPE=Release .
+-DCMAKE_BUILD_TYPE=Release
+
+If you want to install to somewhere other than the default system path, specify the following option to your cmake command:
+
+-DCMAKE_INSTALL_PREFIX:PATH=/custom/install/path
 
 There is code still in the source tree for an old (and now broken) server/client that I wrote as an exercise to teach myself network programming. The code is bad and should not be used. I'm keeping it (for now) only for historical/archival purposes.
 
