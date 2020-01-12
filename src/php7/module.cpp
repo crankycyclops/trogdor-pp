@@ -27,7 +27,7 @@ zend_module_entry trogdor_module_entry = {
 	STANDARD_MODULE_PROPERTIES
 };
 
-#ifdef COMPILE_DL_QUIDCO
+#ifdef COMPILE_DL_TROGDOR
 extern "C" {
 	ZEND_GET_MODULE(trogdor)
 }
