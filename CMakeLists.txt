@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
+include(FindPkgConfig)
+
 project(Trogdor-pp)
 
 # By default, we compile against Lua 5.1, but 5.2 and 5.3 have also been tested
@@ -70,9 +72,12 @@ add_library(trogdor SHARED
 	src/core/entities/thing.cpp
 )
 
+pkg_search_module(LIBXML libxml-2.0 libxml2 libxml>=2)
+pkg_search_module(LUA lua-$ENV{LUA_VERSION})
+
 target_include_directories(trogdor
-	PUBLIC /usr/include/libxml2
-	PUBLIC /usr/include/lua$ENV{LUA_VERSION}
+	PUBLIC ${LIBXML_INCLUDE_DIRS}
+	PUBLIC ${LUA_INCLUDE_DIRS}
 	PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
 )
 
