@@ -121,7 +121,7 @@ namespace trogdor {
    Player *Game::createPlayer(std::string name, std::unique_ptr<Trogout> outStream,
    std::unique_ptr<Trogin> inStream, std::unique_ptr<Trogout> errStream) {
 
-      if (entities.isset(name)) {
+      if (entities.isEntitySet(name)) {
          throw entity::EntityException(
             std::string("Entity with name '") + name + "' already exists"
          );
