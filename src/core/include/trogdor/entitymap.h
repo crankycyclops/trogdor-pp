@@ -52,7 +52,7 @@ namespace trogdor { namespace entity {
          */
          inline const std::shared_ptr<Entity> &getSharedPtr(std::string name) {
 
-            if (isset(name)) {
+            if (isEntitySet(name)) {
                return entities.find(name)->second;
             } else {
                throw false;
@@ -80,7 +80,7 @@ namespace trogdor { namespace entity {
             Input: Entity name (std::string)
             Output: true if it's set and false if it's not
          */
-         inline bool isset(std::string name) const {
+         inline bool isEntitySet(std::string name) const {
 
             return entities.find(name) == entities.end() ? false : true;
          }
@@ -94,7 +94,7 @@ namespace trogdor { namespace entity {
          */
          inline Entity *get(const std::string name) {
 
-            return isset(name) ? entities.find(name)->second.get() : nullptr;
+            return isEntitySet(name) ? entities.find(name)->second.get() : nullptr;
          }
 
          /*

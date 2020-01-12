@@ -352,7 +352,7 @@ namespace trogdor {
          */
          inline void removePlayer(const std::string name, const std::string message = "") {
 
-            if (players.isset(name)) {
+            if (players.isEntitySet(name)) {
 
                if (message.length()) {
                   players.get(name)->out("notifications") << message << std::endl;
@@ -377,7 +377,7 @@ namespace trogdor {
          */
          inline bool playerIsInGame(const std::string name) const {
 
-            return players.isset(name);
+            return players.isEntitySet(name);
          }
 
         /*
@@ -392,7 +392,7 @@ namespace trogdor {
          */
          inline Entity *getEntity(const std::string name) {
 
-            if (!entities.isset(name)) {
+            if (!entities.isEntitySet(name)) {
                return nullptr;
             }
 
@@ -423,7 +423,7 @@ namespace trogdor {
          */
          inline Place *getPlace(const std::string name) {
 
-            if (!things.isset(name)) {
+            if (!things.isEntitySet(name)) {
                return nullptr;
             }
 
@@ -456,7 +456,7 @@ namespace trogdor {
          */
          inline Thing *getThing(const std::string name) {
 
-            if (!things.isset(name)) {
+            if (!things.isEntitySet(name)) {
                return nullptr;
             }
 
@@ -489,7 +489,7 @@ namespace trogdor {
          */
          inline Being *getBeing(const std::string name) {
 
-            if (!beings.isset(name)) {
+            if (!beings.isEntitySet(name)) {
                return nullptr;
             }
 
@@ -522,7 +522,7 @@ namespace trogdor {
          */
          inline Player *getPlayer(const std::string name) {
 
-            if (!players.isset(name)) {
+            if (!players.isEntitySet(name)) {
                return nullptr;
             }
 
@@ -555,7 +555,7 @@ namespace trogdor {
          */
          inline Creature *getCreature(const std::string name) {
 
-            if (!creatures.isset(name)) {
+            if (!creatures.isEntitySet(name)) {
                return nullptr;
             }
 
@@ -588,7 +588,7 @@ namespace trogdor {
          */
          inline Object *getObject(const std::string name) {
 
-            if (!objects.isset(name)) {
+            if (!objects.isEntitySet(name)) {
                return nullptr;
             }
 
@@ -621,7 +621,7 @@ namespace trogdor {
          */
          inline Room *getRoom(const std::string name) {
 
-            if (!rooms.isset(name)) {
+            if (!rooms.isEntitySet(name)) {
                return nullptr;
             }
 
@@ -690,7 +690,7 @@ namespace trogdor {
          */
          inline void insertEntity(std::string name, std::shared_ptr<entity::Player> player) {
 
-            if (entities.isset(name)) {
+            if (entities.isEntitySet(name)) {
                throw entity::EntityException(std::string("Entity '") + name + "' already exists");
             }
 
@@ -711,7 +711,7 @@ namespace trogdor {
          */
          inline void insertEntity(std::string name, std::shared_ptr<entity::Creature> creature) {
 
-            if (entities.isset(name)) {
+            if (entities.isEntitySet(name)) {
                throw entity::EntityException(std::string("Entity '") + name + "' already exists");
             }
 
@@ -732,7 +732,7 @@ namespace trogdor {
          */
          inline void insertEntity(std::string name, std::shared_ptr<entity::Object> object) {
 
-            if (entities.isset(name)) {
+            if (entities.isEntitySet(name)) {
                throw entity::EntityException(std::string("Entity '") + name + "' already exists");
             }
 
@@ -752,7 +752,7 @@ namespace trogdor {
          */
          inline void insertEntity(std::string name, std::shared_ptr<entity::Room> room) {
 
-            if (entities.isset(name)) {
+            if (entities.isEntitySet(name)) {
                throw entity::EntityException(std::string("Entity '") + name + "' already exists");
             }
 
