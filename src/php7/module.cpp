@@ -12,6 +12,7 @@ PHP_MINFO_FUNCTION(trogdor) {
 PHP_MINIT_FUNCTION(trogdor) {
 
 	defineGameClass();
+	return SUCCESS;
 }
 
 /*****************************************************************************/
@@ -19,6 +20,7 @@ PHP_MINIT_FUNCTION(trogdor) {
 PHP_MSHUTDOWN_FUNCTION(trogdor) {
 
 	// TODO
+	return SUCCESS;
 }
 
 /*****************************************************************************/
