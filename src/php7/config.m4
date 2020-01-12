@@ -7,5 +7,5 @@ if test $PHP_TROGDOR != "no"; then
 	PHP_SUBST(TROGDOR_SHARED_LIBADD)
 	PHP_ADD_LIBRARY(stdc++, 1, TROGDOR_SHARED_LIBADD)
 	PHP_ADD_LIBRARY(trogdor, 1, TROGDOR_SHARED_LIBADD)
-	PHP_NEW_EXTENSION(trogdor, module.cpp, $ext_shared)
+	PHP_NEW_EXTENSION(trogdor, module.cpp game.cpp, $ext_shared)
 fi
