@@ -11,8 +11,9 @@
 #include <trogdor/game.h>
 #include <trogdor/parser/parsers/xmlparser.h>
 
-#include "include/streamout.h"
 #include "include/streamin.h"
+#include "include/streamout.h"
+#include "include/streamerr.h"
 #include "include/actions/timeaction.h"
 
 
@@ -36,7 +37,7 @@ int main(int argc, char **argv) {
    }
 
    std::unique_ptr<trogdor::Game> currentGame = std::make_unique<trogdor::Game>(
-      std::make_unique<StreamOut>(&std::cerr)
+      std::make_unique<StreamErr>(&std::cerr)
    );
 
    // The client can either choose from a parser type that's been implemented in
@@ -53,7 +54,7 @@ int main(int argc, char **argv) {
    // The client can also write and set its own custom game actions
    currentGame->insertVerbAction("time", std::make_unique<TimeAction>());
 
-   if (currentGame->initialize(parser.get(), gameXML)) {
+   if (currentGame->initialize(parser.get(), gameXML, true)) {
 
       // Demonstrates the retrieval of Game metadata
 	  std::string title = currentGame->getMeta("title");
@@ -73,7 +74,7 @@ int main(int argc, char **argv) {
          "player",
          std::make_unique<StreamOut>(&std::cout),
          std::make_unique<StreamIn>(&std::cin),
-         std::make_unique<StreamOut>(&std::cerr)
+         std::make_unique<StreamErr>(&std::cerr)
       );
 
 	  currentGame->start();

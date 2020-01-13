@@ -22,7 +22,7 @@ namespace trogdor { namespace entity {
 
    // The title property will usually be set to something more descriptive later
    Entity::Entity(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e): game(g), name(n),
+   std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e): game(g), name(n),
    title(n), outStream(std::move(o)), errStream(std::move(e)), inStream(std::move(i)) {
 
       if (!isNameValid(n)) {
@@ -61,7 +61,7 @@ namespace trogdor { namespace entity {
       msgs = e.msgs;
       tags = e.tags;
       outStream = e.outStream->clone();
-      errStream = e.errStream->clone();
+      errStream = e.errStream->copy();
       inStream = e.inStream->clone();
 
       L = std::make_shared<LuaState>(*e.L);

@@ -15,7 +15,7 @@
 #include <trogdor/command.h>
 #include <trogdor/event/eventhandler.h>
 #include <trogdor/entitymap.h>
-#include <trogdor/iostream/trogout.h>
+#include <trogdor/iostream/trogerr.h>
 #include <trogdor/instantiator/instantiators/runtime.h>
 
 #include <trogdor/exception/entityexception.h>
@@ -115,7 +115,7 @@ namespace trogdor {
          } introduction;
 
          /* global error stream */
-         std::unique_ptr<Trogout> errStream;
+         std::unique_ptr<Trogerr> errStream;
 
          /*
             Called by initialize().  This initializes event handling in the game.
@@ -132,7 +132,7 @@ namespace trogdor {
             argument.)
          */
          Game() = delete;
-         Game(std::unique_ptr<Trogout> e);
+         Game(std::unique_ptr<Trogerr> e);
 
          /*
             Don't allow copying since I don't currently have a good reason to
@@ -190,18 +190,26 @@ namespace trogdor {
          std::unique_ptr<event::EventListener> &getEventListener() {return eventListener;}
 
          /*
-            Returns a reference to the Game's error stream.  A typical use
+            Returns a reference to the Entity's error stream.  A typical use
             would look something like this:
 
-            gamePtr->err() << "I'm an error message!" << std::endl;
+            game->err() << "I'm an error!" << std::endl;
+
+            Or, with a severity other than ERROR:
+
+            game->err(Trogerr::WARNING) << "I'm a warning!" << std::endl;
 
             Input:
-               (none)
+               Error severity level (default: ERROR)
 
             Output:
-               Trogout &
+               Trogerr &
          */
-         Trogout &err() {return *errStream;}
+         Trogerr &err(Trogerr::ErrorLevel severity = Trogerr::ERROR) {
+
+            errStream->setErrorLevel(severity);
+            return *errStream;
+         }
 
          /*
             Gets a meta data value.  If the value isn't set, an empty string is
@@ -768,11 +776,12 @@ namespace trogdor {
             Input:
                Pointer to an instance of Parser (Parser *)
                Game definition filename (std::string)
+               Whether or not exceptions should be handled by this class (default: false)
 
             Output:
                True if initialization was successful and false if not (bool)
          */
-         bool initialize(Parser *parser, std::string gamefile);
+         bool initialize(Parser *parser, std::string gamefile, bool handleExceptions = false);
 
          /*
             Puts the game into a running state. In a running state, the timer is
@@ -812,12 +821,14 @@ namespace trogdor {
             Input:
                Player name (std::string)
                Pointer to an output stream (Trogout *)
+               Pointer to an input stream (Trogin *)
+               Pointer to an error stream (Trogerr *)
 
             Output:
                Player *
          */
          Player *createPlayer(std::string name, std::unique_ptr<Trogout> outStream,
-         std::unique_ptr<Trogin> inStream, std::unique_ptr<Trogout> errStream);
+         std::unique_ptr<Trogin> inStream, std::unique_ptr<Trogerr> errStream);
 
          /*
             Wraps around Timer API.  See timer.h for documentation.

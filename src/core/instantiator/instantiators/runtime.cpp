@@ -102,7 +102,7 @@ namespace trogdor {
                   0 == className.compare(Entity::typeToStr(entity::ENTITY_ROOM))
                ) {
                   entity = std::make_shared<entity::Room>(
-                     game, entityName, std::make_unique<PlaceOut>(), game->err().clone()
+                     game, entityName, std::make_unique<PlaceOut>(), game->err().copy()
                  );
                }
 
@@ -122,7 +122,7 @@ namespace trogdor {
                   0 == className.compare(Entity::typeToStr(entity::ENTITY_OBJECT))
                ) {
                   entity = std::make_shared<entity::Object>(
-                     game, entityName, std::make_unique<NullOut>(), game->err().clone()
+                     game, entityName, std::make_unique<NullOut>(), game->err().copy()
                   );
                }
 
@@ -142,7 +142,7 @@ namespace trogdor {
                ) {
                   // TODO: should Creatures have some kind of special input stream?
                   entity = std::make_shared<entity::Creature>(
-                     game, entityName, std::make_unique<NullOut>(), game->err().clone()
+                     game, entityName, std::make_unique<NullOut>(), game->err().copy()
                   );
                }
 
@@ -182,20 +182,20 @@ namespace trogdor {
 
             case entity::ENTITY_ROOM:
                entity = std::make_unique<Room>(
-                  game, className, std::make_unique<PlaceOut>(), game->err().clone()
+                  game, className, std::make_unique<PlaceOut>(), game->err().copy()
                );
                break;
 
             case entity::ENTITY_OBJECT:
                entity = std::make_unique<Object>(
-                  game, className, std::make_unique<NullOut>(), game->err().clone()
+                  game, className, std::make_unique<NullOut>(), game->err().copy()
                );
                break;
 
             case entity::ENTITY_CREATURE:
                // TODO: should Creatures have some kind of special input stream?
                entity = std::make_unique<Creature>(
-                  game, className, std::make_unique<NullOut>(), game->err().clone()
+                  game, className, std::make_unique<NullOut>(), game->err().copy()
                );
                break;
 
