@@ -87,6 +87,7 @@ target_include_directories(trogdor
 )
 
 target_link_libraries(trogdor
+	PUBLIC stdc++fs
 	PUBLIC xml2
 	PUBLIC pthread
 	PUBLIC lua$ENV{LUA_VERSION}

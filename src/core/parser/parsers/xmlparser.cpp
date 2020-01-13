@@ -1,5 +1,13 @@
 #include <memory>
 
+#ifdef __cpp_lib_filesystem
+   #include <filesystem>
+   #define STD_FILESYSTEM std::filesystem
+#else
+   #include <experimental/filesystem>
+   #define STD_FILESYSTEM std::experimental::filesystem
+#endif
+
 #include <trogdor/utility.h>
 
 #include <trogdor/iostream/nullout.h>
@@ -24,14 +32,19 @@ namespace trogdor {
 
    void XMLParser::parse(std::string filename) {
 
+      // Keeping track of this will help us later when we need to locate Lua
+      // script files with relative paths
+      gamefilePath = filename;
+      trim(gamefilePath);
+
       if (reader) {
          xmlFreeTextReader(reader);
          reader = nullptr;
       }
 
-      reader = xmlReaderForFile(filename.c_str(), NULL, XML_PARSE_NOBLANKS);
+      reader = xmlReaderForFile(gamefilePath.c_str(), NULL, XML_PARSE_NOBLANKS);
       if (NULL == reader) {
-         throw ParseException("failed to open " + filename + "!\n");
+         throw ParseException("failed to open " + gamefilePath + "!\n");
       }
 
       try {
@@ -41,7 +54,7 @@ namespace trogdor {
          // element), nextTag() will throw an exception that would otherwise
          // go uncaught.
          if (!nextTag()) {
-            throw ParseException(filename + ": empty XML file");
+            throw ParseException(gamefilePath + ": empty XML file");
          }
 
          else if (0 != getTagName().compare("game")) {
@@ -52,7 +65,7 @@ namespace trogdor {
       }
 
       catch (const Exception &e) {
-         throw ParseException(e.what(), filename,
+         throw ParseException(e.what(), gamefilePath,
             xmlTextReaderGetParserLineNumber(reader));
       }
 
@@ -728,8 +741,18 @@ namespace trogdor {
       std::string scriptMode;
 
       try {
+
          script = getAttribute("src");
          scriptMode = "file";
+
+         trim(script);
+
+         // If the gamefile has a parent path and the script path is relative,
+         // we should look for the script relative to the gamefile's location
+         std::string gamefileLocation = STD_FILESYSTEM::path(gamefilePath).parent_path();
+         if (gamefileLocation.length() > 0 && script[0] != STD_FILESYSTEM::path::preferred_separator) {
+            script = gamefileLocation + STD_FILESYSTEM::path::preferred_separator + script;
+         }
       }
 
       // There's no src attribute, so we're either parsing an inline script or
