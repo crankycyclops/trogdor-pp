@@ -75,8 +75,8 @@ add_library(trogdor SHARED
 	src/core/entities/thing.cpp
 )
 
-pkg_search_module(LIBXML libxml-2.0 libxml2 libxml>=2)
-pkg_search_module(LUA lua-$ENV{LUA_VERSION})
+pkg_search_module(LIBXML REQUIRED libxml-2.0 libxml2 libxml>=2)
+pkg_search_module(LUA REQUIRED lua-$ENV{LUA_VERSION})
 
 target_include_directories(trogdor
 	PUBLIC ${LIBXML_INCLUDE_DIRS}
