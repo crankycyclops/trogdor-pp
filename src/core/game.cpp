@@ -17,9 +17,11 @@
 #include <trogdor/event/triggers/deathdrop.h>
 #include <trogdor/event/triggers/respawn.h>
 
-#include <trogdor/iostream/nullout.h>
 #include <trogdor/iostream/nullin.h>
+#include <trogdor/iostream/nullout.h>
+#include <trogdor/iostream/nullerr.h>
 #include <trogdor/iostream/trogout.h>
+#include <trogdor/iostream/trogerr.h>
 
 #include <trogdor/exception/entityexception.h>
 
@@ -27,7 +29,7 @@
 namespace trogdor {
 
 
-   Game::Game(std::unique_ptr<Trogout> e) {
+   Game::Game(std::unique_ptr<Trogerr> e) {
 
       try {
 
@@ -46,7 +48,7 @@ namespace trogdor {
             "default",
             std::make_unique<NullOut>(),
             std::make_unique<NullIn>(),
-            std::make_unique<NullOut>()
+            std::make_unique<NullErr>()
          );
 
          L = std::make_shared<LuaState>(this);
@@ -56,7 +58,7 @@ namespace trogdor {
       }
 
       catch (const Exception &e) {
-         *errStream << e.what() << std::endl;
+         err() << e.what() << std::endl;
       }
    }
 
@@ -80,18 +82,27 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   bool Game::initialize(Parser *parser, std::string gamefile) {
+   bool Game::initialize(Parser *parser, std::string gamefile, bool handleExceptions) {
 
-      try {
+      if (handleExceptions) {
+
+         try {
+            parser->parse(gamefile);
+         }
+
+         catch (const Exception &e) {
+            err() << e.what() << std::endl;
+            return false;
+         }
+
+         initEvents();
+      }
+
+      // In some cases (like the PHP 7 module I'm writing that wraps around
+      // this), it's useful to let the exception fall through.
+      else {
          parser->parse(gamefile);
       }
-
-      catch (const Exception &e) {
-         *errStream << e.what() << std::endl;
-         return false;
-      }
-
-      initEvents();
 
       // Only return true if we've successfully parsed and instantiated one or
       // more entities
@@ -123,7 +134,7 @@ namespace trogdor {
    /***************************************************************************/
 
    Player *Game::createPlayer(std::string name, std::unique_ptr<Trogout> outStream,
-   std::unique_ptr<Trogin> inStream, std::unique_ptr<Trogout> errStream) {
+   std::unique_ptr<Trogin> inStream, std::unique_ptr<Trogerr> errStream) {
 
       if (entities.isEntitySet(name)) {
          throw entity::EntityException(

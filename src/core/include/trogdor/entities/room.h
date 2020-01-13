@@ -30,7 +30,7 @@ namespace trogdor { namespace entity {
             containing Game object and a name.
          */
          inline Room(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogout> e): Place(g, n, std::move(o), std::move(e)) {
+         std::unique_ptr<Trogerr> e): Place(g, n, std::move(o), std::move(e)) {
 
             types.push_back(ENTITY_ROOM);
             setClass("room");

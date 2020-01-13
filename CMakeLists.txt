@@ -50,9 +50,11 @@ add_library(trogdor SHARED
 	src/core/lua/api/entities/luathing.cpp
 	src/core/iostream/nullin.cpp
 	src/core/iostream/nullout.cpp
+	src/core/iostream/nullerr.cpp
 	src/core/iostream/placeout.cpp
 	src/core/iostream/trogin.cpp
 	src/core/iostream/trogout.cpp
+	src/core/iostream/trogerr.cpp
 	src/core/event/eventhandler.cpp
 	src/core/event/eventlistener.cpp
 	src/core/event/eventtrigger.cpp
@@ -99,6 +101,7 @@ add_executable(standalone
 	src/standalone/main.cpp
 	src/standalone/streamin.cpp
 	src/standalone/streamout.cpp
+	src/standalone/streamerr.cpp
 	src/standalone/actions/timeaction.cpp
 )
 

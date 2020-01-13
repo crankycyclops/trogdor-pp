@@ -16,7 +16,7 @@
 
 namespace trogdor { namespace entity {
 
-   Place::Place(Game *g, std::string n, std::unique_ptr<Trogout> o, std::unique_ptr<Trogout> e):
+   Place::Place(Game *g, std::string n, std::unique_ptr<Trogout> o, std::unique_ptr<Trogerr> e):
    Entity(g, n, std::move(o), std::make_unique<NullIn>(), std::move(e)) {
 
       types.push_back(ENTITY_PLACE);

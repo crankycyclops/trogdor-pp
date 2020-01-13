@@ -14,8 +14,9 @@
 #include <trogdor/lua/luatable.h>
 #include <trogdor/lua/luastate.h>
 
-#include <trogdor/iostream/trogout.h>
 #include <trogdor/iostream/trogin.h>
+#include <trogdor/iostream/trogout.h>
+#include <trogdor/iostream/trogerr.h>
 
 
 namespace trogdor {
@@ -103,7 +104,7 @@ namespace trogdor { namespace entity {
 
          // Input and output streams
          std::unique_ptr<Trogout> outStream;
-         std::unique_ptr<Trogout> errStream;
+         std::unique_ptr<Trogerr> errStream;
          std::unique_ptr<Trogin> inStream;
 
          /*
@@ -216,10 +217,10 @@ namespace trogdor { namespace entity {
                Name (std::string)
                Pointer to output stream object (Trogout *)
                Pointer to input stream object (Trogin *)
-               Pointer to error stream object (Trogout *)
+               Pointer to error stream object (Trogerr *)
          */
          Entity(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e);
+         std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e);
 
          /*
             Constructor for cloning an Entity into another (with a unique name.)
@@ -280,12 +281,16 @@ namespace trogdor { namespace entity {
             entityPtr->err() << "I'm a value!" << std::endl;
 
             Input:
-               (none)
+               Error severity level (default: ERROR)
 
             Output:
-               Trogout &
+               Trogerr &
          */
-         Trogout &err() {return *errStream;}
+         Trogerr &err(Trogerr::ErrorLevel severity = Trogerr::ERROR) {
+
+            errStream->setErrorLevel(severity);
+            return *errStream;
+         }
 
          /*
             Returns a pointer to the Game that contains the Entity.

@@ -51,7 +51,7 @@ namespace trogdor { namespace entity {
             containing Game object and a name.
          */
          inline Thing(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e): Entity(g, n,
+         std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e): Entity(g, n,
          std::move(o), std::move(i), std::move(e)), location(nullptr) {
 
             types.push_back(ENTITY_THING);

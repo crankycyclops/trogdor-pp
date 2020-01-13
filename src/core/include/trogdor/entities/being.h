@@ -193,7 +193,7 @@ namespace trogdor { namespace entity {
             containing Game object and a name.
          */
          inline Being(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogin> i, std::unique_ptr<Trogout> e): Thing(g, n,
+         std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e): Thing(g, n,
          std::move(o), std::move(i), std::move(e)),
          maxHealth(DEFAULT_MAX_HEALTH),
          damageBareHands(DEFAULT_DAMAGE_BARE_HANDS) {
