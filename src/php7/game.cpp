@@ -8,6 +8,7 @@ ZEND_DECLARE_MODULE_GLOBALS(game);
 zend_object_handlers gameObjectHandlers;
 
 /*****************************************************************************/
+/*****************************************************************************/
 
 // Custom Object Handlers
 // See: http://blog.jpauli.tech/2016-01-14-php-7-objects-html/
@@ -29,6 +30,8 @@ static zend_object *createGameObject(zend_class_entry *classEntry TSRMLS_DC) {
 	return &gObj->std;
 }
 
+/*****************************************************************************/
+
 static void destroyGameObject(zend_object *object TSRMLS_DC) {
 
 	// If the game is running, be polite and stop it before it's freed
@@ -43,16 +46,26 @@ static void freeGameObject(zend_object *object TSRMLS_DC) {
 }
 
 /*****************************************************************************/
+/*****************************************************************************/
 
 // Game methods
 
+ZEND_BEGIN_ARG_INFO(arginfoGameCtor, 0)
+        ZEND_ARG_INFO(0, XMLPath)
+ZEND_END_ARG_INFO()
+
 PHP_METHOD(Game, __construct) {
 
-	zend_string *XMLPath;
+	zval *XMLPath;
 
-	ZEND_PARSE_PARAMETERS_START(1, 1)
-		Z_PARAM_STR(XMLPath)
-	ZEND_PARSE_PARAMETERS_END();
+	if (zend_parse_parameters_ex(ZEND_PARSE_PARAMS_QUIET, ZEND_NUM_ARGS() TSRMLS_CC, "z", &XMLPath) == FAILURE) {
+		php_error_docref(NULL, E_ERROR, "expected exactly 1 parameter (valid path to a game file)");
+	}
+
+	if (Z_TYPE_P(XMLPath) != IS_STRING) {
+		php_error_docref(NULL, E_WARNING, "expected string");
+		convert_to_string(XMLPath);
+	}
 
 	zval *thisPtr = getThis();
 	trogdor::Game *gameObjPtr = ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject;
@@ -63,7 +76,7 @@ PHP_METHOD(Game, __construct) {
 	);
 
 	try {
-		gameObjPtr->initialize(parser.get(), ZSTR_VAL(XMLPath));
+		gameObjPtr->initialize(parser.get(), Z_STRVAL_P(XMLPath));
 	}
 
 	catch (trogdor::ValidationException &e) {
@@ -95,6 +108,8 @@ PHP_METHOD(Game, __construct) {
 	}
 }
 
+/*****************************************************************************/
+
 PHP_METHOD(Game, start) {
 
 	zval *thisPtr = getThis();
@@ -110,6 +125,8 @@ PHP_METHOD(Game, start) {
 
 	RETURN_NULL()
 }
+
+/*****************************************************************************/
 
 PHP_METHOD(Game, stop) {
 
@@ -127,14 +144,48 @@ PHP_METHOD(Game, stop) {
 	RETURN_NULL()
 }
 
+/*****************************************************************************/
+
+PHP_METHOD(Game, getTime) {
+
+	zval *thisPtr = getThis();
+	trogdor::Game *gameObjPtr = ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject;
+
+	RETURN_LONG(gameObjPtr->getTime());
+}
+
+/*****************************************************************************/
+
+ZEND_BEGIN_ARG_INFO(arginfoGameGetMeta, 0)
+        ZEND_ARG_INFO(0, key)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, getMeta) {
+
+	char *key;
+	size_t keyLength;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &keyLength) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	zval *thisPtr = getThis();
+	trogdor::Game *gameObjPtr = ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject;
+
+	RETURN_STRING(gameObjPtr->getMeta(key).c_str());
+}
+
 // PHP Game class methods
 static const zend_function_entry gameMethods[] =  {
-	PHP_ME(Game, __construct, NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+	PHP_ME(Game, __construct, arginfoGameCtor, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 	PHP_ME(Game,       start, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(Game,        stop, NULL, ZEND_ACC_PUBLIC)
+	PHP_ME(Game,     getTime, NULL, ZEND_ACC_PUBLIC)
+	PHP_ME(Game,     getMeta, arginfoGameGetMeta, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 
+/*****************************************************************************/
 /*****************************************************************************/
 
 void defineGameClass() {
