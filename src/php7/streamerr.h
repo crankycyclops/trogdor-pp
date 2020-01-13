@@ -3,14 +3,15 @@
 
 
 #include <memory>
-#include <trogdor/iostream/trogout.h>
+#include <trogdor/iostream/trogerr.h>
 
+#include "exception.h"
 
 
 /*
    PHP Output stream for error messages.
 */
-class PHPStreamErr: public trogdor::Trogout {
+class PHPStreamErr: public trogdor::Trogerr {
 
    public:
 
@@ -20,9 +21,9 @@ class PHPStreamErr: public trogdor::Trogout {
       virtual void flush();
 
       /*
-         See core/include/iostream/trogout.h for details.
+         See core/include/iostream/trogerr.h for details.
       */
-      virtual std::unique_ptr<trogdor::Trogout> clone();
+      virtual std::unique_ptr<trogdor::Trogerr> copy();
 };
 
 

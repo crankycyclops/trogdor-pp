@@ -1,15 +1,11 @@
 #include "game.h"
+#include "module.h"
+#include "exception.h"
 #include "streamerr.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(game);
 
 zend_object_handlers gameObjectHandlers;
-
-// PHP Game class methods
-static const zend_function_entry gameMethods[] =  {
-	// TODO: define methods
-	PHP_FE_END
-};
 
 /*****************************************************************************/
 
@@ -48,13 +44,108 @@ static void freeGameObject(zend_object *object TSRMLS_DC) {
 
 /*****************************************************************************/
 
+// Game methods
+
+PHP_METHOD(Game, __construct) {
+
+	zend_string *XMLPath;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_STR(XMLPath)
+	ZEND_PARSE_PARAMETERS_END();
+
+	zval *thisPtr = getThis();
+	trogdor::Game *gameObjPtr = ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject;
+
+	// Parse the XML game definition
+	std::unique_ptr<trogdor::XMLParser> parser = std::make_unique<trogdor::XMLParser>(
+		gameObjPtr->makeInstantiator(), gameObjPtr->getVocabulary()
+	);
+
+	try {
+		gameObjPtr->initialize(parser.get(), ZSTR_VAL(XMLPath));
+	}
+
+	catch (trogdor::ValidationException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(validationException), e.what(), 0);
+	}
+
+	catch (trogdor::UndefinedException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(undefinedException), e.what(), 0);
+	}
+
+	catch (trogdor::ParseException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(parseException), e.what(), 0);
+	}
+
+	catch (trogdor::LuaException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(luaException), e.what(), 0);
+	}
+
+	catch (trogdor::entity::EntityException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(entityException), e.what(), 0);
+	}
+
+	catch (trogdor::entity::BeingException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(beingException), e.what(), 0);
+	}
+
+	catch (trogdor::Exception &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(baseException), e.what(), 0);
+	}
+}
+
+PHP_METHOD(Game, start) {
+
+	zval *thisPtr = getThis();
+	trogdor::Game *gameObjPtr = ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject;
+
+	try {
+		gameObjPtr->start();
+	}
+
+	catch (trogdor::Exception &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(baseException), e.what(), 0);
+	}
+
+	RETURN_NULL()
+}
+
+PHP_METHOD(Game, stop) {
+
+	zval *thisPtr = getThis();
+	trogdor::Game *gameObjPtr = ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject;
+
+	try {
+		gameObjPtr->stop();
+	}
+
+	catch (trogdor::Exception &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(baseException), e.what(), 0);
+	}
+
+	RETURN_NULL()
+}
+
+// PHP Game class methods
+static const zend_function_entry gameMethods[] =  {
+	PHP_ME(Game, __construct, NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+	PHP_ME(Game,       start, NULL, ZEND_ACC_PUBLIC)
+	PHP_ME(Game,        stop, NULL, ZEND_ACC_PUBLIC)
+	PHP_FE_END
+};
+
+/*****************************************************************************/
+
 void defineGameClass() {
 
 	zend_class_entry gameClass;
 
 	INIT_CLASS_ENTRY(gameClass, "Trogdor\\Game", gameMethods);
-	// gameClass.create_object = gameObjectNew; (TODO: DO I NEED THIS?)
 	GAME_GLOBALS(gameClassEntry) = zend_register_internal_class(&gameClass);
+
+	// Make sure users can't extend the Game class
+	GAME_GLOBALS(gameClassEntry)->ce_flags |= ZEND_ACC_FINAL;
 
 	// Start out with default object handlers
 	memcpy(&gameObjectHandlers, zend_get_std_object_handlers(), sizeof(gameObjectHandlers));

@@ -1,6 +1,6 @@
-// Look at C++ blog for example of how to allocate/free resources (constructor and destructor using object handlers)
 #include "module.h"
 #include "game.h"
+#include "exception.h"
 
 PHP_MINFO_FUNCTION(trogdor) {
 
@@ -11,7 +11,9 @@ PHP_MINFO_FUNCTION(trogdor) {
 
 PHP_MINIT_FUNCTION(trogdor) {
 
+	defineExceptionClasses();
 	defineGameClass();
+
 	return SUCCESS;
 }
 

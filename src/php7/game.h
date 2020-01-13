@@ -1,4 +1,8 @@
+#ifndef PHP_GAME_H
+#define PHP_GAME_H
+
 #include <trogdor/game.h>
+#include <trogdor/parser/parsers/xmlparser.h>
 
 extern "C" {
 	#include "php.h"
@@ -34,3 +38,5 @@ extern zend_object_handlers gameObjectHandlers;
 
 // Declares the PHP Game class to the Zend engine.
 extern void defineGameClass();
+
+#endif /* PHP_GAME_H */
