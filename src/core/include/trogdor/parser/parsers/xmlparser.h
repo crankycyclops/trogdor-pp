@@ -31,6 +31,10 @@ namespace trogdor {
 
       private:
 
+         // Keeping a copy of the XML file's path will help later when we try to
+         // locate Lua script files using relative paths
+         std::string gamefilePath;
+
          // Record corresponding to an Entity declared in <manifest>
          struct DeclaredEntity {
             std::string name;
