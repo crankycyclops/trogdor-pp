@@ -94,7 +94,7 @@ namespace trogdor { namespace entity {
       Game *g = LuaGame::checkGame(L, -1);
 
       // Creature does not exist in the game unless it's manually inserted
-      Creature *c = new Creature(nullptr, name, std::make_unique<NullOut>(), g->err().clone());
+      Creature *c = new Creature(nullptr, name, std::make_unique<NullOut>(), g->err().copy());
 
       // TODO: replace if necessary with actual class name once I support that
       c->setClass(Entity::typeToStr(entity::ENTITY_CREATURE));
