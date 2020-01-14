@@ -51,7 +51,7 @@ static void freeGameObject(zend_object *object TSRMLS_DC) {
 // Game methods
 
 ZEND_BEGIN_ARG_INFO(arginfoGameCtor, 0)
-        ZEND_ARG_INFO(0, XMLPath)
+	ZEND_ARG_INFO(0, XMLPath)
 ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, __construct) {
@@ -157,7 +157,7 @@ PHP_METHOD(Game, getTime) {
 /*****************************************************************************/
 
 ZEND_BEGIN_ARG_INFO(arginfoGameGetMeta, 0)
-        ZEND_ARG_INFO(0, key)
+	ZEND_ARG_INFO(0, key)
 ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, getMeta) {
@@ -175,6 +175,36 @@ PHP_METHOD(Game, getMeta) {
 	RETURN_STRING(gameObjPtr->getMeta(key).c_str());
 }
 
+/*****************************************************************************/
+
+ZEND_BEGIN_ARG_INFO(arginfoGameSetMeta, 0)
+	ZEND_ARG_INFO(0, key)
+	ZEND_ARG_INFO(0, value)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, setMeta) {
+
+	char *key;
+	size_t keyLength;
+
+	char *value;
+	size_t valueLength;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &key, &keyLength,
+	&value, &valueLength) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	zval *thisPtr = getThis();
+	trogdor::Game *gameObjPtr = ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject;
+
+	gameObjPtr->setMeta(key, value);
+
+	RETURN_NULL();
+}
+
+/*****************************************************************************/
+
 // PHP Game class methods
 static const zend_function_entry gameMethods[] =  {
 	PHP_ME(Game, __construct, arginfoGameCtor, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -182,6 +212,7 @@ static const zend_function_entry gameMethods[] =  {
 	PHP_ME(Game,        stop, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(Game,     getTime, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(Game,     getMeta, arginfoGameGetMeta, ZEND_ACC_PUBLIC)
+	PHP_ME(Game,     setMeta, arginfoGameSetMeta, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 
