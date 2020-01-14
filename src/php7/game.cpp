@@ -3,8 +3,6 @@
 #include "exception.h"
 #include "streamerr.h"
 
-#include <iostream>
-
 ZEND_DECLARE_MODULE_GLOBALS(game);
 
 zend_object_handlers gameObjectHandlers;
@@ -26,11 +24,12 @@ static zend_object *createGameObject(zend_class_entry *classEntry TSRMLS_DC) {
 
 	gameObject *gObj = (gameObject *)ecalloc(1, sizeof(*gObj) + zend_object_properties_size(classEntry));
 
+	// We'll either initialize this with a new instance of trogdor::Game in
+	// Trogdor\Game::__construct() or assign it an existing instance in
+	// Trogdor\Game::get().
 	gObj->realGameObject.persistent = false;
 	gObj->realGameObject.id = 0;
-	gObj->realGameObject.obj = new trogdor::Game(
-		std::make_unique<PHPStreamErr>()
-	);
+	gObj->realGameObject.obj = nullptr;
 
 	zend_object_std_init(&gObj->std, classEntry);
 	object_properties_init(&gObj->std, classEntry);
@@ -53,12 +52,13 @@ static void destroyGameObject(zend_object *object TSRMLS_DC) {
 	zend_objects_destroy_object(object);
 }
 
+/*****************************************************************************/
+
 static void freeGameObject(zend_object *object TSRMLS_DC) {
 
 	// If the game hasn't been persisted, it should be freed immediately
 	if (!ZOBJ_TO_GAMEOBJ(object)->realGameObject.persistent) {
 		delete ZOBJ_TO_GAMEOBJ(object)->realGameObject.obj;
-		std::cout << "Destroyed!" << std::endl;
 	}
 
 	zend_object_std_dtor(object TSRMLS_CC);
@@ -68,6 +68,43 @@ static void freeGameObject(zend_object *object TSRMLS_DC) {
 /*****************************************************************************/
 
 // Game methods
+
+ZEND_BEGIN_ARG_INFO(arginfoGameGet, 0)
+	ZEND_ARG_INFO(0, id)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, get) {
+
+	size_t id;
+
+	if (zend_parse_parameters_ex(ZEND_PARSE_PARAMS_QUIET, ZEND_NUM_ARGS() TSRMLS_CC, "l", &id) == FAILURE) {
+		php_error_docref(NULL, E_ERROR, "expected exactly 1 parameter (Persistent Game object id)");
+	}
+
+	trogdor::Game *gameObj = getGameById(id);
+
+	// Instantiate a new Trogdor\Game object and assign to it the persisted
+	// instange of trogdor::Game.
+	if (nullptr != gameObj) {
+
+		// Note: return_value is a global defined somewhere by PHP. I spent
+		// some time banging my head against the wall until I realized that.
+		if (SUCCESS != object_init_ex(return_value, GAME_GLOBALS(gameClassEntry))) {
+			RETURN_NULL();
+		}
+
+		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.persistent = true;
+		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.id = id;
+		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.obj = gameObj;
+		zend_update_property_long(GAME_GLOBALS(gameClassEntry), return_value, "id", sizeof("id") - 1, id TSRMLS_DC);
+	}
+
+	else {
+		RETURN_NULL();
+	}
+}
+
+/*****************************************************************************/
 
 ZEND_BEGIN_ARG_INFO(arginfoGameCtor, 0)
 	ZEND_ARG_INFO(0, XMLPath)
@@ -87,15 +124,20 @@ PHP_METHOD(Game, __construct) {
 	}
 
 	zval *thisPtr = getThis();
-	trogdor::Game *gameObjPtr = ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.obj;
+	gameObject *gObj = ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr));
+
+	// Create a new instance of trogdor::Game
+	gObj->realGameObject.obj = new trogdor::Game(
+		std::make_unique<PHPStreamErr>()
+	);
 
 	// Parse the XML game definition
 	std::unique_ptr<trogdor::XMLParser> parser = std::make_unique<trogdor::XMLParser>(
-		gameObjPtr->makeInstantiator(), gameObjPtr->getVocabulary()
+		gObj->realGameObject.obj->makeInstantiator(), gObj->realGameObject.obj->getVocabulary()
 	);
 
 	try {
-		gameObjPtr->initialize(parser.get(), Z_STRVAL_P(XMLPath));
+		gObj->realGameObject.obj->initialize(parser.get(), Z_STRVAL_P(XMLPath));
 	}
 
 	catch (trogdor::ValidationException &e) {
@@ -304,6 +346,7 @@ PHP_METHOD(Game, setMeta) {
 
 // PHP Game class methods
 static const zend_function_entry gameMethods[] =  {
+	PHP_ME(Game,             get, arginfoGameGet, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 	PHP_ME(Game,     __construct, arginfoGameCtor, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 	PHP_ME(Game, getPersistentId, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(Game,         persist, NULL, ZEND_ACC_PUBLIC)
