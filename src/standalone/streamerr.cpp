@@ -9,7 +9,6 @@ void StreamErr::flush() {
 
    *stream << Trogerr::errorLevelToStr(getErrorLevel()) << ": " << getBufferStr();
    stream->flush();
-   clear();
 }
 
 std::unique_ptr<trogdor::Trogerr> StreamErr::copy() {
