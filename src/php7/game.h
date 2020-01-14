@@ -1,6 +1,8 @@
 #ifndef PHP_GAME_H
 #define PHP_GAME_H
 
+#include <vector>
+
 #include <trogdor/game.h>
 #include <trogdor/parser/parsers/xmlparser.h>
 
@@ -20,21 +22,43 @@ ZEND_END_MODULE_GLOBALS(game)
 #define GAME_GLOBALS(v) (game_globals.v)
 #endif
 
+struct customData {
+	trogdor::Game *obj;
+	bool persistent;
+	size_t id;
+};
+
 struct gameObject {
-    trogdor::Game *realGameObject;
-    zend_object std;
+	customData realGameObject;
+	zend_object std;
 };
 
 // For an explanation of why this is necessary, see:
 // http://blog.jpauli.tech/2016-01-14-php-7-objects-html/
 inline gameObject *ZOBJ_TO_GAMEOBJ(zend_object *zobj) {
 
-    return (gameObject *)((char *)(zobj) - XtOffsetOf(gameObject, std));
+	return (gameObject *)((char *)(zobj) - XtOffsetOf(gameObject, std));
 }
 
 extern zend_object_handlers gameObjectHandlers;
 
 /*****************************************************************************/
+
+// Retrive a persisted game by index
+extern trogdor::Game *getGameById(size_t id);
+
+// Persist a game and return its id. This function does not check if a Game *
+// has already been persisted. Instead, that check should occur in the PHP
+// "persist" method.
+extern size_t persistGame(trogdor::Game *game);
+
+// Depersist a game referenced by its id. Only call this from the PHP depersist
+// method! If you depersist a Game object after its corresponding PHP class has
+// been destroyed, you'll have a memory leak.
+extern void depersistGame(size_t id);
+
+// Call this during MSHUTDOWN to delete all remaining Game pointers.
+extern void reapPersistedGames();
 
 // Declares the PHP Game class to the Zend engine.
 extern void defineGameClass();

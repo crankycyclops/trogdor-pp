@@ -21,7 +21,7 @@ PHP_MINIT_FUNCTION(trogdor) {
 
 PHP_MSHUTDOWN_FUNCTION(trogdor) {
 
-	// TODO
+	reapPersistedGames();
 	return SUCCESS;
 }
 
