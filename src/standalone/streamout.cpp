@@ -6,7 +6,6 @@ void StreamOut::flush() {
 
    *stream << getBufferStr();
    stream->flush();
-   clear();
 }
 
 std::unique_ptr<trogdor::Trogout> StreamOut::clone() {
