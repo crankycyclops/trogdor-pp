@@ -71,7 +71,6 @@ namespace trogdor { namespace entity {
 
    /***************************************************************************/
 
-   // For some reason that mystifies me, this is required to compile successfully
    Entity::~Entity() {}
 
    /***************************************************************************/
