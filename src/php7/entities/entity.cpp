@@ -49,10 +49,42 @@ static void freeEntityObject(zend_object *object TSRMLS_DC) {
 /*****************************************************************************/
 /*****************************************************************************/
 
+// Magic "__get" allows us to make private and protected data members read-only
+ZEND_BEGIN_ARG_INFO(arginfoEntity__Get, 0)
+	ZEND_ARG_INFO(0, name)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Entity, __get) {
+
+	zval *propVal, rv;
+
+	char *name;
+	int nameLength;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+		RETURN_NULL()
+	}
+
+	// If I return whatever zend_read_property sets rv to, I get an UNKNOWN
+	// zval type when I var_dump the result, but when I return
+	// zend_read_property's return value instead, it works like it's supposed
+	// to. WTF is the rv argument for? Dunno, because PHP's documentation
+	// regarding internals is non-existent. Oh well.
+	propVal = zend_read_property(ENTITY_GLOBALS(classEntry), getThis(), name, nameLength, 1, &rv TSRMLS_CC);
+
+	// There's some insanity in how this works, so for reference, here's what
+	// I read to help me understand what all the arguments mean:
+	// https://medium.com/@davidtstrauss/copy-and-move-semantics-of-zvals-in-php-7-41427223d784
+	RETURN_ZVAL(propVal, 1, 0);
+}
+
+/*****************************************************************************/
+
 // Entity Methods
 
 // PHP Entity class methods
 static const zend_function_entry entityMethods[] =  {
+	PHP_ME(Entity, __get, arginfoEntity__Get, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 
