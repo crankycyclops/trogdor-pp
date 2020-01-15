@@ -56,10 +56,10 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Entity, __get) {
 
-	zval *propVal, rv;
-
 	char *name;
 	int nameLength;
+
+	zval *propVal, rv;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
 		RETURN_NULL()
@@ -101,7 +101,33 @@ void defineEntityClass() {
 	ENTITY_GLOBALS(classEntry)->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 
 	// Declare the Entity class's properties
-	zend_declare_property_null(ENTITY_GLOBALS(classEntry), "name", sizeof("name") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
+	zend_declare_property_null(
+		ENTITY_GLOBALS(classEntry),
+		"name",
+		sizeof("name") - 1,
+		ZEND_ACC_PROTECTED TSRMLS_CC
+	);
+
+	zend_declare_property_null(
+		ENTITY_GLOBALS(classEntry),
+		"title",
+		sizeof("title") - 1,
+		ZEND_ACC_PROTECTED TSRMLS_CC
+	);
+
+	zend_declare_property_null(
+		ENTITY_GLOBALS(classEntry),
+		"longDesc",
+		sizeof("longDesc") - 1,
+		ZEND_ACC_PROTECTED TSRMLS_CC
+	);
+
+	zend_declare_property_null(
+		ENTITY_GLOBALS(classEntry),
+		"shortDesc",
+		sizeof("shortDesc") - 1,
+		ZEND_ACC_PROTECTED TSRMLS_CC
+	);
 
 	// Start out with default object handlers
 	memcpy(&entityObjectHandlers, zend_get_std_object_handlers(), sizeof(entityObjectHandlers));

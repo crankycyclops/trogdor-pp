@@ -3,8 +3,6 @@
 #include "exception.h"
 #include "streamerr.h"
 
-#include "entities/entity.h"
-
 ZEND_DECLARE_MODULE_GLOBALS(game);
 
 zend_object_handlers gameObjectHandlers;
@@ -98,7 +96,7 @@ PHP_METHOD(Game, get) {
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.persistent = true;
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.id = id;
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.obj = gameObj;
-		zend_update_property_long(GAME_GLOBALS(classEntry), return_value, "id", sizeof("id") - 1, id TSRMLS_DC);
+		zend_update_property_long(GAME_GLOBALS(classEntry), return_value, "persistentId", sizeof("persistentId") - 1, id TSRMLS_DC);
 	}
 
 	else {
@@ -204,7 +202,7 @@ PHP_METHOD(Game, persist) {
 
 	ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.id = id;
 	ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.persistent = true;
-	zend_update_property_long(GAME_GLOBALS(classEntry), thisPtr, "id", sizeof("id") - 1, id TSRMLS_DC);
+	zend_update_property_long(GAME_GLOBALS(classEntry), thisPtr, "persistentId", sizeof("persistentId") - 1, id TSRMLS_DC);
 
 	RETURN_LONG(id);
 }
@@ -220,14 +218,14 @@ PHP_METHOD(Game, depersist) {
 		php_error_docref(NULL, E_WARNING, "expects no arguments");
 	}
 
-	zId = zend_read_property(GAME_GLOBALS(classEntry), thisPtr, "id", sizeof("id") - 1, 1, &rv TSRMLS_CC);
+	zId = zend_read_property(GAME_GLOBALS(classEntry), thisPtr, "persistentId", sizeof("persistentId") - 1, 1, &rv TSRMLS_CC);
 
 	if (Z_TYPE_P(zId) == IS_LONG) {
 		size_t id = Z_LVAL_P(zId);
 		depersistGame(Z_LVAL_P(zId));
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.id = 0;
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.persistent = false;
-		zend_update_property_null(GAME_GLOBALS(classEntry), thisPtr, "id", sizeof("id") - 1 TSRMLS_CC);
+		zend_update_property_null(GAME_GLOBALS(classEntry), thisPtr, "persistentId", sizeof("persistentId") - 1 TSRMLS_CC);
 	}
 
 	else {
@@ -318,6 +316,112 @@ PHP_METHOD(Game, getMeta) {
 
 /*****************************************************************************/
 
+ZEND_BEGIN_ARG_INFO(arginfoGameGetEntity, 0)
+	ZEND_ARG_INFO(0, name)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, getEntity) {
+
+	char *name;
+	size_t nameLength;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	zval *thisPtr = getThis();
+	trogdor::Game *gameObjPtr = ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.obj;
+
+	trogdor::entity::Entity *ePtr = gameObjPtr->getEntity(name);
+
+	if (ePtr) {
+
+std::cout << "\n\nType:\n\n" << ePtr->getTypeName() << std::endl;
+
+		switch (ePtr->getType()) {
+
+			case ENTITY_ROOM:
+
+				if (SUCCESS != object_init_ex(return_value, ROOM_GLOBALS(classEntry))) {
+					RETURN_NULL();
+				}
+
+				break;
+
+			case ENTITY_OBJECT:
+
+				if (SUCCESS != object_init_ex(return_value, OBJECT_GLOBALS(classEntry))) {
+					RETURN_NULL();
+				}
+
+				break;
+
+			case ENTITY_CREATURE:
+
+				if (SUCCESS != object_init_ex(return_value, CREATURE_GLOBALS(classEntry))) {
+					RETURN_NULL();
+				}
+
+				break;
+
+			case ENTITY_PLAYER:
+
+				if (SUCCESS != object_init_ex(return_value, PLAYER_GLOBALS(classEntry))) {
+					RETURN_NULL();
+				}
+
+				break;
+
+			default:
+
+				php_error_docref(NULL, E_WARNING, "Found unknown entity type (this is probably a bug.) Returning null instead.");
+				RETURN_NULL();
+		}
+
+		ZOBJ_TO_ENTITYOBJ(Z_OBJ_P(return_value))->realEntityObject.obj = ePtr;
+		ZOBJ_TO_ENTITYOBJ(Z_OBJ_P(return_value))->realEntityObject.managedByGame = true;
+
+		zend_update_property_string(
+			ENTITY_GLOBALS(classEntry),
+			return_value,
+			"name",
+			sizeof("name") - 1,
+			ePtr->getName().c_str() TSRMLS_DC
+		);
+
+		zend_update_property_string(
+			ENTITY_GLOBALS(classEntry),
+			return_value,
+			"title",
+			sizeof("title") - 1,
+			ePtr->getTitle().c_str() TSRMLS_DC
+		);
+
+		zend_update_property_string(
+			ENTITY_GLOBALS(classEntry),
+			return_value,
+			"longDesc",
+			sizeof("longDesc") - 1,
+			ePtr->getLongDescription().c_str() TSRMLS_DC
+		);
+
+		zend_update_property_string(
+			ENTITY_GLOBALS(classEntry),
+			return_value,
+			"shortDesc",
+			sizeof("shortDesc") - 1,
+			ePtr->getShortDescription().c_str() TSRMLS_DC
+		);
+	}
+
+	// Entity by the given name doesn't exist in the game, so just return null
+	else {
+		RETURN_NULL();
+	}
+}
+
+/*****************************************************************************/
+
 ZEND_BEGIN_ARG_INFO(arginfoGameSetMeta, 0)
 	ZEND_ARG_INFO(0, key)
 	ZEND_ARG_INFO(0, value)
@@ -356,6 +460,7 @@ static const zend_function_entry gameMethods[] =  {
 	PHP_ME(Game,           start, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(Game,            stop, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(Game,         getTime, NULL, ZEND_ACC_PUBLIC)
+	PHP_ME(Game,       getEntity, arginfoGameGetEntity, ZEND_ACC_PUBLIC)
 	PHP_ME(Game,         getMeta, arginfoGameGetMeta, ZEND_ACC_PUBLIC)
 	PHP_ME(Game,         setMeta, arginfoGameSetMeta, ZEND_ACC_PUBLIC)
 	PHP_FE_END
@@ -422,7 +527,7 @@ void defineGameClass() {
 	GAME_GLOBALS(classEntry)->ce_flags |= ZEND_ACC_FINAL;
 
 	// Declare the Game class's properties
-	zend_declare_property_null(GAME_GLOBALS(classEntry), "id", sizeof("id") - 1, ZEND_ACC_PRIVATE TSRMLS_CC);
+	zend_declare_property_null(GAME_GLOBALS(classEntry), "persistentId", sizeof("persistentId") - 1, ZEND_ACC_PRIVATE TSRMLS_CC);
 
 	// Start out with default object handlers
 	memcpy(&gameObjectHandlers, zend_get_std_object_handlers(), sizeof(gameObjectHandlers));

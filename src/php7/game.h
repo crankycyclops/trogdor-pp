@@ -10,6 +10,11 @@ extern "C" {
 	#include "php.h"
 }
 
+#include "entities/room.h"
+#include "entities/object.h"
+#include "entities/creature.h"
+#include "entities/player.h"
+
 // For an explanation of what I'm doing here, see:
 // https://www.php.net/manual/en/internals2.structure.globals.php
 ZEND_BEGIN_MODULE_GLOBALS(game)
@@ -44,6 +49,11 @@ inline gameObject *ZOBJ_TO_GAMEOBJ(zend_object *zobj) {
 extern zend_object_handlers gameObjectHandlers;
 
 /*****************************************************************************/
+
+ZEND_EXTERN_MODULE_GLOBALS(room);
+ZEND_EXTERN_MODULE_GLOBALS(object);
+ZEND_EXTERN_MODULE_GLOBALS(creature);
+ZEND_EXTERN_MODULE_GLOBALS(player);
 
 // Retrive a persisted game by index
 extern trogdor::Game *getGameById(size_t id);
