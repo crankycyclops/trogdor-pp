@@ -232,10 +232,7 @@ namespace trogdor { namespace entity {
          Entity(const Entity &e, std::string n);
 
          /*
-            Entity Destructor. For some reason that mystifies me, this is
-            required to compile successfully, even though it's blank (see
-            entities/entity.cpp.) Also, I get compiler warnings unless I make it
-            virtual.
+            Entity Destructor.
 
             Input:
                (none)
