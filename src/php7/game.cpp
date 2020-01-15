@@ -3,6 +3,8 @@
 #include "exception.h"
 #include "streamerr.h"
 
+#include "entities/entity.h"
+
 ZEND_DECLARE_MODULE_GLOBALS(game);
 
 zend_object_handlers gameObjectHandlers;
@@ -89,14 +91,14 @@ PHP_METHOD(Game, get) {
 
 		// Note: return_value is a global defined somewhere by PHP. I spent
 		// some time banging my head against the wall until I realized that.
-		if (SUCCESS != object_init_ex(return_value, GAME_GLOBALS(gameClassEntry))) {
+		if (SUCCESS != object_init_ex(return_value, GAME_GLOBALS(classEntry))) {
 			RETURN_NULL();
 		}
 
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.persistent = true;
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.id = id;
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.obj = gameObj;
-		zend_update_property_long(GAME_GLOBALS(gameClassEntry), return_value, "id", sizeof("id") - 1, id TSRMLS_DC);
+		zend_update_property_long(GAME_GLOBALS(classEntry), return_value, "id", sizeof("id") - 1, id TSRMLS_DC);
 	}
 
 	else {
@@ -202,7 +204,7 @@ PHP_METHOD(Game, persist) {
 
 	ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.id = id;
 	ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.persistent = true;
-	zend_update_property_long(GAME_GLOBALS(gameClassEntry), thisPtr, "id", sizeof("id") - 1, id TSRMLS_DC);
+	zend_update_property_long(GAME_GLOBALS(classEntry), thisPtr, "id", sizeof("id") - 1, id TSRMLS_DC);
 
 	RETURN_LONG(id);
 }
@@ -218,14 +220,14 @@ PHP_METHOD(Game, depersist) {
 		php_error_docref(NULL, E_WARNING, "expects no arguments");
 	}
 
-	zId = zend_read_property(GAME_GLOBALS(gameClassEntry), thisPtr, "id", sizeof("id") - 1, 1, &rv TSRMLS_CC);
+	zId = zend_read_property(GAME_GLOBALS(classEntry), thisPtr, "id", sizeof("id") - 1, 1, &rv TSRMLS_CC);
 
 	if (Z_TYPE_P(zId) == IS_LONG) {
 		size_t id = Z_LVAL_P(zId);
 		depersistGame(Z_LVAL_P(zId));
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.id = 0;
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.persistent = false;
-		zend_update_property_null(GAME_GLOBALS(gameClassEntry), thisPtr, "id", sizeof("id") - 1 TSRMLS_CC);
+		zend_update_property_null(GAME_GLOBALS(classEntry), thisPtr, "id", sizeof("id") - 1 TSRMLS_CC);
 	}
 
 	else {
@@ -414,19 +416,19 @@ void defineGameClass() {
 	zend_class_entry gameClass;
 
 	INIT_CLASS_ENTRY(gameClass, "Trogdor\\Game", gameMethods);
-	GAME_GLOBALS(gameClassEntry) = zend_register_internal_class(&gameClass);
+	GAME_GLOBALS(classEntry) = zend_register_internal_class(&gameClass);
 
 	// Make sure users can't extend the Game class
-	GAME_GLOBALS(gameClassEntry)->ce_flags |= ZEND_ACC_FINAL;
+	GAME_GLOBALS(classEntry)->ce_flags |= ZEND_ACC_FINAL;
 
 	// Declare the Game class's properties
-	zend_declare_property_null(GAME_GLOBALS(gameClassEntry), "id", sizeof("id") - 1, ZEND_ACC_PRIVATE TSRMLS_CC);
+	zend_declare_property_null(GAME_GLOBALS(classEntry), "id", sizeof("id") - 1, ZEND_ACC_PRIVATE TSRMLS_CC);
 
 	// Start out with default object handlers
 	memcpy(&gameObjectHandlers, zend_get_std_object_handlers(), sizeof(gameObjectHandlers));
 
 	// Set the specific custom object handlers we need
-	GAME_GLOBALS(gameClassEntry)->create_object = createGameObject;
+	GAME_GLOBALS(classEntry)->create_object = createGameObject;
 	gameObjectHandlers.free_obj = freeGameObject;
 	gameObjectHandlers.dtor_obj = destroyGameObject;
 

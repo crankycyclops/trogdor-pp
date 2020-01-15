@@ -13,7 +13,7 @@ extern "C" {
 // For an explanation of what I'm doing here, see:
 // https://www.php.net/manual/en/internals2.structure.globals.php
 ZEND_BEGIN_MODULE_GLOBALS(game)
-	zend_class_entry *gameClassEntry;
+	zend_class_entry *classEntry;
 ZEND_END_MODULE_GLOBALS(game)
 
 #ifdef ZTS
@@ -22,6 +22,7 @@ ZEND_END_MODULE_GLOBALS(game)
 #define GAME_GLOBALS(v) (game_globals.v)
 #endif
 
+// Custom data that will be instantiated alongside the zend_object
 struct customData {
 	trogdor::Game *obj;
 	bool persistent;

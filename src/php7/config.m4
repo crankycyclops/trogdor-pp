@@ -13,5 +13,5 @@ if test $PHP_TROGDOR != "no"; then
 	PHP_ADD_LIBRARY(trogdor, 1, TROGDOR_SHARED_LIBADD)
 	PHP_ADD_INCLUDE(`pkg-config --cflags-only-I lua-$php_with_lua_version | sed -r 's/^-I//'`)
 	PHP_ADD_INCLUDE(`pkg-config --cflags-only-I libxml-2.0 | sed -r 's/^-I//'`)
-	PHP_NEW_EXTENSION(trogdor, module.cpp game.cpp exception.cpp streamerr.cpp, $ext_shared, , -std=c++17, cxx)
+	PHP_NEW_EXTENSION(trogdor, *.cpp entities/*.cpp, $ext_shared, , -std=c++17, cxx)
 fi

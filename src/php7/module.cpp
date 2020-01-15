@@ -2,6 +2,8 @@
 #include "game.h"
 #include "exception.h"
 
+#include "entities/entity.h"
+
 PHP_MINFO_FUNCTION(trogdor) {
 
 	// TODO
@@ -12,6 +14,7 @@ PHP_MINFO_FUNCTION(trogdor) {
 PHP_MINIT_FUNCTION(trogdor) {
 
 	defineExceptionClasses();
+	defineEntityClass();
 	defineGameClass();
 
 	return SUCCESS;
