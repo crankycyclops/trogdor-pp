@@ -2,7 +2,10 @@
 #include "game.h"
 #include "exception.h"
 
-#include "entities/entity.h"
+#include "entities/room.h"
+#include "entities/object.h"
+#include "entities/creature.h"
+#include "entities/player.h"
 
 PHP_MINFO_FUNCTION(trogdor) {
 
@@ -13,9 +16,18 @@ PHP_MINFO_FUNCTION(trogdor) {
 
 PHP_MINIT_FUNCTION(trogdor) {
 
-	defineExceptionClasses();
+	// Entity class hierarchy
 	defineEntityClass();
+	definePlaceClass();
+	defineThingClass();
+	defineRoomClass();
+	defineObjectClass();
+	defineBeingClass();
+	defineCreatureClass();
+	definePlayerClass();
+
 	defineGameClass();
+	defineExceptionClasses();
 
 	return SUCCESS;
 }

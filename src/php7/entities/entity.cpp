@@ -29,6 +29,13 @@ static zend_object *createEntityObject(zend_class_entry *classEntry TSRMLS_DC) {
 
 /*****************************************************************************/
 
+static void destroyEntityObject(zend_object *object TSRMLS_DC) {
+
+	zend_objects_destroy_object(object);
+}
+
+/*****************************************************************************/
+
 static void freeEntityObject(zend_object *object TSRMLS_DC) {
 
 	// If the Entity isn't being managed by the game, we need to free it
@@ -44,7 +51,7 @@ static void freeEntityObject(zend_object *object TSRMLS_DC) {
 
 // Entity Methods
 
-// PHP Game class methods
+// PHP Entity class methods
 static const zend_function_entry entityMethods[] =  {
 	PHP_FE_END
 };
@@ -52,15 +59,17 @@ static const zend_function_entry entityMethods[] =  {
 /*****************************************************************************/
 /*****************************************************************************/
 
+// TODO: this should be an abstract class
 void defineEntityClass() {
 
 	zend_class_entry entityClass;
 
 	INIT_CLASS_ENTRY(entityClass, "Trogdor\\Entity\\Entity", entityMethods);
 	ENTITY_GLOBALS(classEntry) = zend_register_internal_class(&entityClass);
+	ENTITY_GLOBALS(classEntry)->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 
 	// Declare the Entity class's properties
-	zend_declare_property_null(ENTITY_GLOBALS(classEntry), "name", sizeof("name") - 1, ZEND_ACC_PRIVATE TSRMLS_CC);
+	zend_declare_property_null(ENTITY_GLOBALS(classEntry), "name", sizeof("name") - 1, ZEND_ACC_PROTECTED TSRMLS_CC);
 
 	// Start out with default object handlers
 	memcpy(&entityObjectHandlers, zend_get_std_object_handlers(), sizeof(entityObjectHandlers));
@@ -68,6 +77,7 @@ void defineEntityClass() {
 	// Set the specific custom object handlers we need
 	ENTITY_GLOBALS(classEntry)->create_object = createEntityObject;
 	entityObjectHandlers.free_obj = freeEntityObject;
+	entityObjectHandlers.dtor_obj = destroyEntityObject;
 
 	// For an explanation of why this is necessary, see:
 	// http://blog.jpauli.tech/2016-01-14-php-7-objects-html/
