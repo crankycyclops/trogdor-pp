@@ -336,8 +336,6 @@ PHP_METHOD(Game, getEntity) {
 
 	if (ePtr) {
 
-std::cout << "\n\nType:\n\n" << ePtr->getTypeName() << std::endl;
-
 		switch (ePtr->getType()) {
 
 			case ENTITY_ROOM:
