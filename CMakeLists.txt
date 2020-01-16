@@ -9,7 +9,7 @@ if(NOT DEFINED ENV{LUA_VERSION})
 	set(ENV{LUA_VERSION} 5.1)
 endif()
 
-set(CMAKE_CXX_FLAGS -Wall)
+set(CMAKE_CXX_FLAGS "-Wall -pthread")
 set(CMAKE_CXX_FLAGS_RELEASE -O2)
 
 # Build using C++17.
@@ -86,7 +86,6 @@ target_include_directories(trogdor
 target_link_libraries(trogdor
 	PUBLIC stdc++fs
 	PUBLIC xml2
-	PUBLIC pthread
 	PUBLIC lua$ENV{LUA_VERSION}
 )
 

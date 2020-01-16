@@ -20,7 +20,7 @@ namespace trogdor {
 
 /******************************************************************************/
 
-   Timer::Timer(Game *gameRef) {
+   Timer::Timer(Game *gameRef): jobThread(nullptr), insertJobThread(nullptr) {
 
       game = gameRef;
       active = false;
@@ -32,8 +32,14 @@ namespace trogdor {
    Timer::~Timer() {
 
       stop();
-      jobThread->join();
-      insertJobThread->join();
+
+      if (jobThread && jobThread->joinable()) {
+         jobThread->join();
+      }
+
+      if (insertJobThread && insertJobThread->joinable()) {
+         insertJobThread->join();
+      }
    }
 
 /******************************************************************************/
