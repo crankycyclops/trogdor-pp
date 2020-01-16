@@ -11,7 +11,7 @@
 #include <trogdor/entities/entity.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    // Forward declarations to prevent circular dependency issues
@@ -270,7 +270,7 @@ namespace trogdor { namespace entity {
             return iterators;
          }
    };
-}}
+}
 
 
 #endif

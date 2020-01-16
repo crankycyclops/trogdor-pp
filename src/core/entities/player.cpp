@@ -2,7 +2,7 @@
 #include <trogdor/entities/player.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
    // TODO: keeping this around just in case I ever need it again...
-}}
+}

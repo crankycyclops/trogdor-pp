@@ -4,7 +4,7 @@
 #include <trogdor/event/triggers/autoattack.h>
 #include <trogdor/timer/jobs/autoattack.h>
 
-namespace trogdor { namespace event {
+namespace trogdor::event {
 
 
    void AutoAttackEventTrigger::execute(EventArgumentList args) {
@@ -32,4 +32,4 @@ namespace trogdor { namespace event {
       continueExecutionFlag = true;
       allowActionFlag = true;
    }
-}}
+}

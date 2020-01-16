@@ -6,7 +6,7 @@
 #include <trogdor/lua/luastate.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    class Entity;
@@ -314,7 +314,7 @@ namespace trogdor { namespace entity {
          */
          static int observedBy(lua_State *L);
    };
-}}
+}
 
 
 #endif

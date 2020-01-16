@@ -8,7 +8,7 @@
 #include <trogdor/lua/api/entities/luaplace.h>
 #include <trogdor/lua/api/entities/luathing.h>
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    // The name of the metatable that represents the Place metatable
@@ -162,4 +162,4 @@ namespace trogdor { namespace entity {
       p->removeThing(t);
       return 0;
    }
-}}
+}

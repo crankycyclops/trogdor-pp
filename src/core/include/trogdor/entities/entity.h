@@ -32,7 +32,7 @@ namespace trogdor {
 
 using namespace trogdor::event;
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    class Place;
@@ -873,7 +873,7 @@ namespace trogdor { namespace entity {
          throw answer;
       }
    }
-}}
+}
 
 
 #endif

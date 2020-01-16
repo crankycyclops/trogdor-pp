@@ -1,7 +1,7 @@
 #include <cstdarg>
 #include <trogdor/event/eventhandler.h>
 
-namespace trogdor { namespace event {
+namespace trogdor::event {
 
 
    bool EventHandler::event(const char *event, EventArgumentList &args) {
@@ -43,4 +43,4 @@ namespace trogdor { namespace event {
       EventArgumentList empty;
       return EventHandler::event(event, empty);
    }
-}}
+}

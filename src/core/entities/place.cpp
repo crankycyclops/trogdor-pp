@@ -14,7 +14,7 @@
 #include <trogdor/exception/undefinedexception.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
    Place::Place(Game *g, std::string n, std::unique_ptr<Trogout> o, std::unique_ptr<Trogerr> e):
    Entity(g, n, std::move(o), std::make_unique<NullIn>(), std::move(e)) {
@@ -242,4 +242,4 @@ namespace trogdor { namespace entity {
          }
       });
    }
-}}
+}
