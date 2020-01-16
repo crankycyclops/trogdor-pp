@@ -4,7 +4,7 @@
 #include <trogdor/entities/creature.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    // TODO: I can reimplement this as a BST so I don't have to rebuilt the
@@ -70,4 +70,4 @@ namespace trogdor { namespace entity {
       // creature either didn't have a weapon or couldn't use one
       return 0;
    }
-}}
+}

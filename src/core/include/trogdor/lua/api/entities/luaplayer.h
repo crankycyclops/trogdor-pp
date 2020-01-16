@@ -8,7 +8,7 @@
 #include <trogdor/lua/api/entities/luabeing.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    class Player;
@@ -82,7 +82,7 @@ namespace trogdor { namespace entity {
          */
          static int getPlayer(lua_State *L);
    };
-}}
+}
 
 
 #endif

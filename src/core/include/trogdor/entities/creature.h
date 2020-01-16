@@ -11,7 +11,7 @@
 #include <trogdor/exception/validationexception.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    class Creature: public Being {
@@ -325,7 +325,7 @@ namespace trogdor { namespace entity {
          */
          Object *selectWeapon();
    };
-}}
+}
 
 
 #endif

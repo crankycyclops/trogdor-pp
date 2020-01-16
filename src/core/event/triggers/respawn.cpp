@@ -3,7 +3,7 @@
 #include <trogdor/event/triggers/respawn.h>
 #include <trogdor/timer/jobs/respawn.h>
 
-namespace trogdor { namespace event {
+namespace trogdor::event {
 
 
    void RespawnEventTrigger::execute(EventArgumentList args) {
@@ -30,4 +30,4 @@ namespace trogdor { namespace event {
       continueExecutionFlag = true;
       allowActionFlag = true;
    }
-}}
+}

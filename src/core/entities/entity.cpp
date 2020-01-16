@@ -5,7 +5,7 @@
 #include <trogdor/exception/validationexception.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    // Special empty lists used for returning .end() iterator pairs in the case
@@ -182,4 +182,4 @@ namespace trogdor { namespace entity {
          game->event("afterGlance", eventArgs);
       }
    }
-}}
+}

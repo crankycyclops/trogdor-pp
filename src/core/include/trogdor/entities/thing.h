@@ -9,7 +9,7 @@
 #include <trogdor/entities/place.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    class Thing: public Entity {
@@ -123,7 +123,7 @@ namespace trogdor { namespace entity {
 
          // TODO: virtual void removeAlias(string alias);
    };
-}}
+}
 
 
 #endif

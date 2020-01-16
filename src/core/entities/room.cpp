@@ -3,7 +3,7 @@
 #include <trogdor/exception/validationexception.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    void Room::setConnection(std::string direction, Room *connectTo) {
@@ -19,4 +19,4 @@ namespace trogdor { namespace entity {
          );
       }
    }
-}}
+}

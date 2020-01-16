@@ -2,7 +2,7 @@
 #include <trogdor/entities/object.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    // Tag is set if the Object is a weapon
@@ -53,4 +53,4 @@ namespace trogdor { namespace entity {
          updateOwnerWeaponCache();
       }
    }
-}}
+}

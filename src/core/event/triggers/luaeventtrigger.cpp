@@ -1,6 +1,6 @@
 #include <trogdor/event/triggers/luaeventtrigger.h>
 
-namespace trogdor { namespace event {
+namespace trogdor::event {
 
 
    void LuaEventTrigger::execute(EventArgumentList args) {
@@ -52,4 +52,4 @@ namespace trogdor { namespace event {
       continueExecutionFlag = L->getBoolean(0);
       allowActionFlag = L->getBoolean(1);
    }
-}}
+}

@@ -1,6 +1,6 @@
 #include <trogdor/event/eventlistener.h>
 
-namespace trogdor { namespace event {
+namespace trogdor::event {
 
 
    void EventListener::add(std::string event, EventTrigger *trigger) {
@@ -47,4 +47,4 @@ namespace trogdor { namespace event {
          }
       }
    }
-}}
+}

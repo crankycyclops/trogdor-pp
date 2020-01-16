@@ -1,6 +1,6 @@
 #include <trogdor/exception/beingexception.h>
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    BeingException::BeingException(const std::string &what_arg): EntityException(what_arg) {
@@ -30,4 +30,4 @@ namespace trogdor { namespace entity {
 
       errorCode = code;
    }
-}}
+}

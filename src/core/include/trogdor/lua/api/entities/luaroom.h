@@ -8,7 +8,7 @@
 #include <trogdor/lua/api/entities/luaplace.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    class Room;
@@ -95,7 +95,7 @@ namespace trogdor { namespace entity {
          */
          static int getRoom(lua_State *L);
    };
-}}
+}
 
 
 #endif

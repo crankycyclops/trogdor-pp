@@ -2,7 +2,7 @@
 #include <trogdor/entities/player.h>
 #include <trogdor/lua/api/entities/luaplayer.h>
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    // The name of the metatable that represents the Player metatable
@@ -90,4 +90,4 @@ namespace trogdor { namespace entity {
 
       return 1;
    }
-}}
+}

@@ -8,7 +8,7 @@
 #include <trogdor/lua/api/entities/luaentity.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    class Place;
@@ -104,7 +104,7 @@ namespace trogdor { namespace entity {
          */
          static int removeThing(lua_State *L);
    };
-}}
+}
 
 
 #endif

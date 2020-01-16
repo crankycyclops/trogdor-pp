@@ -9,7 +9,7 @@
 #include <trogdor/event/triggers/luaeventtrigger.h>
 
 
-namespace trogdor { namespace event {
+namespace trogdor::event {
 
 
    class EventListener {
@@ -97,7 +97,7 @@ namespace trogdor { namespace event {
          */
          void execute(std::string event, EventArgumentList args);
    };
-}}
+}
 
 
 #endif

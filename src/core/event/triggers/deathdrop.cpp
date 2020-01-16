@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <trogdor/event/triggers/deathdrop.h>
 
-namespace trogdor { namespace event {
+namespace trogdor::event {
 
 
    void DeathDropEventTrigger::execute(EventArgumentList args) {
@@ -23,4 +23,4 @@ namespace trogdor { namespace event {
       continueExecutionFlag = true;
       allowActionFlag = true;
    }
-}}
+}

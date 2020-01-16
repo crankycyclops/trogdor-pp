@@ -12,7 +12,7 @@
 #include <trogdor/entities/place.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    class Room: public Place {
@@ -129,7 +129,7 @@ namespace trogdor { namespace entity {
          */
          void setConnection(std::string direction, Room *connectTo);
    };
-}}
+}
 
 
 #endif

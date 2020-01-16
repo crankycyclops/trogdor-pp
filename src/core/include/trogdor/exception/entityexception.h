@@ -5,7 +5,7 @@
 #include <trogdor/exception/exception.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    /*
@@ -17,7 +17,7 @@ namespace trogdor { namespace entity {
 
          using Exception::Exception;
    };
-}}
+}
 
 
 #endif

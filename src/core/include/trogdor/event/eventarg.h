@@ -15,7 +15,7 @@
 #include <trogdor/entities/object.h>
 #include <trogdor/entities/creature.h>
 
-namespace trogdor { namespace event {
+namespace trogdor::event {
 
 
    // Allows us to pass a variable number of unknown type arguments to an
@@ -23,7 +23,7 @@ namespace trogdor { namespace event {
    typedef std::variant<int, double, bool, std::string, Game *, entity::Entity *> EventArgument;
    typedef std::vector<EventArgument> EventArgumentList;
 
-}}
+}
 
 
 #endif

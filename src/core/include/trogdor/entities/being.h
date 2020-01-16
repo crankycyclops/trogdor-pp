@@ -17,7 +17,7 @@
 #include <trogdor/exception/undefinedexception.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    class Being: public Thing {
@@ -719,7 +719,7 @@ namespace trogdor { namespace entity {
          */
          void respawn();
    };
-}}
+}
 
 
 #endif
