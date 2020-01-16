@@ -91,7 +91,6 @@ static const zend_function_entry entityMethods[] =  {
 /*****************************************************************************/
 /*****************************************************************************/
 
-// TODO: this should be an abstract class
 void defineEntityClass() {
 
 	zend_class_entry entityClass;

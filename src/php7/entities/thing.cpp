@@ -15,7 +15,6 @@ static const zend_function_entry thingMethods[] =  {
 /*****************************************************************************/
 /*****************************************************************************/
 
-// TODO: this should be an abstract class
 void defineThingClass() {
 
 	zend_class_entry thingClass;

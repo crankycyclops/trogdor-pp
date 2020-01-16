@@ -15,7 +15,6 @@ static const zend_function_entry placeMethods[] =  {
 /*****************************************************************************/
 /*****************************************************************************/
 
-// TODO: this should be an abstract class
 void definePlaceClass() {
 
 	zend_class_entry placeClass;
