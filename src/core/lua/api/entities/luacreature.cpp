@@ -4,7 +4,7 @@
 #include <trogdor/entities/creature.h>
 #include <trogdor/lua/api/entities/luacreature.h>
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    // The name of the metatable that represents the Creature metatable
@@ -122,4 +122,4 @@ namespace trogdor { namespace entity {
 
       return 1;
    }
-}}
+}

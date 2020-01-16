@@ -5,7 +5,7 @@
 #include <trogdor/exception/entityexception.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    /*
@@ -48,7 +48,7 @@ namespace trogdor { namespace entity {
          */
          inline const enum ErrorCodeType getErrorCode() const noexcept {return errorCode;}
    };
-}}
+}
 
 
 #endif

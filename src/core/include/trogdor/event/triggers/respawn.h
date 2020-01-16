@@ -5,7 +5,7 @@
 #include <trogdor/event/eventtrigger.h>
 
 
-namespace trogdor { namespace event {
+namespace trogdor::event {
 
 
    class RespawnEventTrigger: public EventTrigger {
@@ -23,7 +23,7 @@ namespace trogdor { namespace event {
          */
          virtual void execute(EventArgumentList args);
    };
-}}
+}
 
 
 #endif

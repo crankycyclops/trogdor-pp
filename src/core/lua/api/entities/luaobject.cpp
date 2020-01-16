@@ -4,7 +4,7 @@
 #include <trogdor/entities/object.h>
 #include <trogdor/lua/api/entities/luaobject.h>
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    // The name of the metatable that represents the Object metatable
@@ -121,4 +121,4 @@ namespace trogdor { namespace entity {
 
       return 1;
    }
-}}
+}

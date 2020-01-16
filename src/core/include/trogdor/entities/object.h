@@ -8,7 +8,7 @@
 #include <trogdor/iostream/nullin.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    class Being;
@@ -188,7 +188,7 @@ namespace trogdor { namespace entity {
          */
          virtual void addAlias(std::string alias);
    };
-}}
+}
 
 
 #endif

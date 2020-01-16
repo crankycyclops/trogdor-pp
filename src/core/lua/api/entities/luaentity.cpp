@@ -6,7 +6,7 @@
 #include <trogdor/lua/api/entities/luaentity.h>
 #include <trogdor/lua/api/entities/luabeing.h>
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    // The name of the metatable that represents the Entity metatable
@@ -590,4 +590,4 @@ namespace trogdor { namespace entity {
       lua_pushboolean(L, glanced->glancedBy(glancer));
       return 1;
    }
-}}
+}

@@ -9,7 +9,7 @@
 #include <trogdor/event/eventlistener.h>
 
 
-namespace trogdor { namespace event {
+namespace trogdor::event {
 
 
    class EventHandler {
@@ -80,7 +80,7 @@ namespace trogdor { namespace event {
          */
          bool event(const char *event);
    };
-}}
+}
 
 
 #endif

@@ -2,7 +2,7 @@
 #include <trogdor/entities/being.h>
 #include <trogdor/lua/api/entities/luabeing.h>
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    // The name of the metatable that represents the Being metatable
@@ -91,4 +91,4 @@ namespace trogdor { namespace entity {
 
       return 1;
    }
-}}
+}

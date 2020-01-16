@@ -6,7 +6,7 @@
 #include <trogdor/game.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    void Thing::display(Being *observer, bool displayFull) {
@@ -43,4 +43,4 @@ namespace trogdor { namespace entity {
          }
       }
    }
-}}
+}

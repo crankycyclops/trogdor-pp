@@ -12,7 +12,7 @@
 
 #include <trogdor/exception/exception.h>
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    // The name of the metatable that represents the Thing metatable
@@ -266,4 +266,4 @@ namespace trogdor { namespace entity {
          return luaL_error(L, e.what());
       }
    }
-}}
+}
