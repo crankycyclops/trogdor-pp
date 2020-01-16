@@ -39,6 +39,11 @@ namespace trogdor {
          // queue of jobs to execute every n ticks
          std::list<std::shared_ptr<TimerJob>> queue;
 
+         // jobThread executes tick() and insertJobThread allows jobs to be
+         // inserted asynchronously
+         std::unique_ptr<std::thread> jobThread;
+         std::unique_ptr<std::thread> insertJobThread;
+
          /*
             Executes all jobs in the queue and increments the time.  This is
             called by the thread created in Timer::start() and shouldn't be
@@ -64,6 +69,11 @@ namespace trogdor {
             Constructor for the Timer class.
          */
          Timer(Game *game);
+
+         /*
+            Destructor
+         */
+         ~Timer();
 
          /*
             Returns the current time.

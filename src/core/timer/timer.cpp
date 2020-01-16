@@ -29,6 +29,14 @@ namespace trogdor {
 
 /******************************************************************************/
 
+   Timer::~Timer() {
+
+      jobThread->join();
+      insertJobThread->join();
+   }
+
+/******************************************************************************/
+
    void Timer::tick() {
 
       // look into std::chrono::high_resolution_clock for more accurate timekeeping
@@ -82,14 +90,13 @@ namespace trogdor {
          game->timerMutex.lock();
          active = true;
 
-         std::thread jobThread([](Timer *timerObj) {
+         jobThread = std::make_unique<std::thread>([](Timer *timerObj) {
 
             while ((timerObj)->active) {
                timerObj->tick();
             }
          }, this);
 
-         jobThread.detach();
          game->timerMutex.unlock();
       }
    }
@@ -121,14 +128,12 @@ namespace trogdor {
 
       // insert job asynchronously to avoid deadlock when a function called by
       // one job inserts another job
-      std::thread insertJobThread([](Game *g, Timer *t, std::shared_ptr<TimerJob> j) {
+      insertJobThread = std::make_unique<std::thread>([](Game *g, Timer *t, std::shared_ptr<TimerJob> j) {
 
          g->timerMutex.lock();
          j->initTime = t->time;
          t->queue.insert(t->queue.end(), j);
          g->timerMutex.unlock();
       }, game, this, job);
-
-      insertJobThread.detach();
    }
 }
