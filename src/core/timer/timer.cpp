@@ -31,6 +31,7 @@ namespace trogdor {
 
    Timer::~Timer() {
 
+      stop();
       jobThread->join();
       insertJobThread->join();
    }
