@@ -96,6 +96,7 @@ PHP_METHOD(Game, get) {
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.persistent = true;
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.id = id;
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.obj = gameObj;
+
 		zend_update_property_long(GAME_GLOBALS(classEntry), return_value, "persistentId", sizeof("persistentId") - 1, id TSRMLS_DC);
 	}
 
@@ -202,6 +203,7 @@ PHP_METHOD(Game, persist) {
 
 	ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.id = id;
 	ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.persistent = true;
+
 	zend_update_property_long(GAME_GLOBALS(classEntry), thisPtr, "persistentId", sizeof("persistentId") - 1, id TSRMLS_DC);
 
 	RETURN_LONG(id);

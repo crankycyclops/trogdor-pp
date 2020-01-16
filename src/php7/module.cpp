@@ -29,6 +29,59 @@ PHP_MINIT_FUNCTION(trogdor) {
 	defineGameClass();
 	defineExceptionClasses();
 
+	// Global namespaced constants that identify entity types and their string
+	// representations. Note: I have to define these string constants here
+	// instead of in a more appropriate location because the
+	// REGISTER_STRING_CONSTANT macro relies on a variable, module_number,
+	// which PHP_MINIT_FUNCTION provides.
+	REGISTER_STRING_CONSTANT(
+		"Trogdor\\Entity\\TYPE_ENTITY",
+		(char *)"entity",
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
+		"Trogdor\\Entity\\TYPE_THING",
+		(char *)"thing",
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
+		"Trogdor\\Entity\\TYPE_BEING",
+		(char *)"being",
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
+		"Trogdor\\Entity\\TYPE_CREATURE",
+		(char *)"creature",
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
+		"Trogdor\\Entity\\TYPE_PLAYER",
+		(char *)"player",
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
+		"Trogdor\\Entity\\TYPE_OBJECT",
+		(char *)"object",
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
+		"Trogdor\\Entity\\TYPE_PLACE",
+		(char *)"place",
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
+		"Trogdor\\Entity\\TYPE_ROOM",
+		(char *)"room",
+		CONST_CS | CONST_PERSISTENT
+	);
+
 	return SUCCESS;
 }
 
