@@ -9,7 +9,7 @@ zend_object_handlers gameObjectHandlers;
 
 // Indices in persistedGames that have been reclaimed (had their Game pointers
 // set to nullptr)
-static std::vector<size_t> recycledGameIds;
+static std::queue<size_t> recycledGameIds;
 
 // Persisted games that can later be retrived by index
 static std::vector<trogdor::Game *> persistedGames;
@@ -480,8 +480,17 @@ extern trogdor::Game *getGameById(size_t id) {
 // "persist" method.
 size_t persistGame(trogdor::Game *game) {
 
-	persistedGames.push_back(game);
-	return persistedGames.size() - 1;
+	if (recycledGameIds.size()) {
+		size_t i = recycledGameIds.front();
+		recycledGameIds.pop();
+		persistedGames[i] = game;
+		return i;
+	}
+
+	else {
+		persistedGames.push_back(game);
+		return persistedGames.size() - 1;
+	}
 }
 
 /*****************************************************************************/
@@ -493,7 +502,7 @@ void depersistGame(size_t id) {
 
 	if (persistedGames.size() > id && nullptr != persistedGames[id]) {
 		persistedGames[id] = nullptr;
-		recycledGameIds.push_back(id);
+		recycledGameIds.push(id);
 	}
 }
 

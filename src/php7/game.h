@@ -2,6 +2,7 @@
 #define PHP_GAME_H
 
 #include <vector>
+#include <queue>
 
 #include <trogdor/game.h>
 #include <trogdor/parser/parsers/xmlparser.h>
