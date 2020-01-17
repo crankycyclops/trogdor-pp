@@ -20,7 +20,7 @@ namespace trogdor {
 
 /******************************************************************************/
 
-   Timer::Timer(Game *gameRef): jobThread(nullptr), insertJobThread(nullptr) {
+   Timer::Timer(Game *gameRef): jobThread(nullptr) {
 
       game = gameRef;
       active = false;
@@ -33,12 +33,13 @@ namespace trogdor {
 
       stop();
 
-      if (jobThread && jobThread->joinable()) {
-         jobThread->join();
-      }
-
-      if (insertJobThread && insertJobThread->joinable()) {
-         insertJobThread->join();
+      // Join any remaining job insert threads to avoid any joinable threads
+      // falling out of scope without being joined and causing whatever
+      // application is linked against this library to prematurely abort.
+      if (insertJobThreads.size()) {
+         for (auto &insertJobThread: insertJobThreads) {
+            insertJobThread->join();
+         }
       }
    }
 
@@ -113,9 +114,15 @@ namespace trogdor {
    void Timer::stop() {
 
       if (active) {
+
          game->timerMutex.lock();
          active = false;
          game->timerMutex.unlock();
+
+         if (jobThread && jobThread->joinable()) {
+            jobThread->join();
+            jobThread = nullptr;
+         }
       }
    }
 
@@ -135,12 +142,12 @@ namespace trogdor {
 
       // insert job asynchronously to avoid deadlock when a function called by
       // one job inserts another job
-      insertJobThread = std::make_unique<std::thread>([](Game *g, Timer *t, std::shared_ptr<TimerJob> j) {
+      insertJobThreads.push_back(std::make_unique<std::thread>([](Game *g, Timer *t, std::shared_ptr<TimerJob> j) {
 
          g->timerMutex.lock();
          j->initTime = t->time;
          t->queue.insert(t->queue.end(), j);
          g->timerMutex.unlock();
-      }, game, this, job);
+      }, game, this, job));
    }
 }
