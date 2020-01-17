@@ -9,22 +9,27 @@ void PHPStreamOut::flush() {
 	}
 
 	const std::string &entityName = entity->getName();
-
-	if (gameData->outBuffer.end() == gameData->outBuffer.find(entityName)) {
-		gameData->outBuffer[entityName] = {};
-	}
-
-	if (gameData->outBuffer[entityName].end() == gameData->outBuffer[entityName].find(getChannel())) {
-		gameData->outBuffer[entityName][getChannel()] = {};
-	}
+	std::unique_ptr<customConstructedData> &cd = customConstructedDataMap[gameData->obj];
 
 	time_t curTime;
 	time(&curTime);
 
-	gameData->outBuffer[entityName][getChannel()].push({
+	cd->outBufferMutex.lock();
+
+	if (cd->outBuffer.end() == cd->outBuffer.find(entityName)) {
+		cd->outBuffer[entityName] = {};
+	}
+
+	if (cd->outBuffer[entityName].end() == cd->outBuffer[entityName].find(getChannel())) {
+		cd->outBuffer[entityName][getChannel()] = {};
+	}
+
+	cd->outBuffer[entityName][getChannel()].push({
 		curTime,
 		getBufferStr()
 	});
+
+	cd->outBufferMutex.unlock();
 }
 
 std::unique_ptr<trogdor::Trogout> PHPStreamOut::clone() {

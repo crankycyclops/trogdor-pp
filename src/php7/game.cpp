@@ -13,6 +13,14 @@ static std::queue<size_t> recycledGameIds;
 // Persisted games that can later be retrived by index
 static std::vector<trogdor::Game *> persistedGames;
 
+// Maps trogdor::Game * to a struct containing data that can't be stored in
+// customData.
+std::unordered_map<
+	trogdor::Game *,
+	std::unique_ptr<customConstructedData>,
+	std::hash<trogdor::Game *>
+> customConstructedDataMap;
+
 /*****************************************************************************/
 /*****************************************************************************/
 
@@ -57,6 +65,7 @@ static void freeGameObject(zend_object *object TSRMLS_DC) {
 
 	// If the game hasn't been persisted, it should be freed immediately
 	if (!ZOBJ_TO_GAMEOBJ(object)->realGameObject.persistent) {
+		customConstructedDataMap.erase(ZOBJ_TO_GAMEOBJ(object)->realGameObject.obj);
 		delete ZOBJ_TO_GAMEOBJ(object)->realGameObject.obj;
 	}
 
@@ -96,6 +105,12 @@ PHP_METHOD(Game, get) {
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.id = id;
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.obj = gameObj;
 
+		// Create a new instance of customConstructedData that will contain data
+		// that can't be stored in gameObject.customData.
+		if (customConstructedDataMap.end() == customConstructedDataMap.find(gameObj)) {
+			customConstructedDataMap[gameObj] = std::make_unique<customConstructedData>();
+		}
+
 		zend_update_property_long(GAME_GLOBALS(classEntry), return_value, "persistentId", sizeof("persistentId") - 1, id TSRMLS_DC);
 	}
 
@@ -130,6 +145,10 @@ PHP_METHOD(Game, __construct) {
 	gObj->realGameObject.obj = new trogdor::Game(
 		std::make_unique<PHPStreamErr>()
 	);
+
+	// Create a new instance of customConstructedData that will contain data
+	// that can't be stored in gameObject.customData.
+	customConstructedDataMap[gObj->realGameObject.obj] = std::make_unique<customConstructedData>();
 
 	// Parse the XML game definition
 	std::unique_ptr<trogdor::XMLParser> parser = std::make_unique<trogdor::XMLParser>(
