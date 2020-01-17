@@ -1,8 +1,3 @@
-extern "C" {
-	#include "php.h"
-}
-
-#include <memory>
 #include "streamerr.h"
 
 
@@ -19,8 +14,6 @@ void PHPStreamErr::flush() {
 	else if (trogdor::Trogerr::INFO == getErrorLevel()) {
 		php_error_docref(NULL, E_NOTICE, getBufferStr().c_str());
 	}
-
-	clear();
 }
 
 std::unique_ptr<trogdor::Trogerr> PHPStreamErr::copy() {

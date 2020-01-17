@@ -2,7 +2,6 @@
 #define PHP_GAME_H
 
 #include <vector>
-#include <queue>
 
 #include <trogdor/game.h>
 #include <trogdor/parser/parsers/xmlparser.h>
@@ -10,6 +9,9 @@
 extern "C" {
 	#include "php.h"
 }
+
+#include "gamedata.h"
+#include "streamout.h"
 
 #include "entities/room.h"
 #include "entities/object.h"
@@ -27,13 +29,6 @@ ZEND_END_MODULE_GLOBALS(game)
 #else
 #define GAME_GLOBALS(v) (game_globals.v)
 #endif
-
-// Custom data that will be instantiated alongside the zend_object
-struct customData {
-	trogdor::Game *obj;
-	bool persistent;
-	size_t id;
-};
 
 struct gameObject {
 	customData realGameObject;
