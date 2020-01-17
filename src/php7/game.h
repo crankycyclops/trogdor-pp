@@ -11,12 +11,14 @@ extern "C" {
 }
 
 #include "gamedata.h"
-#include "streamout.h"
 
 #include "entities/room.h"
 #include "entities/object.h"
 #include "entities/creature.h"
 #include "entities/player.h"
+
+#include "iostream/streamout.h"
+#include "iostream/streamerr.h"
 
 // For an explanation of what I'm doing here, see:
 // https://www.php.net/manual/en/internals2.structure.globals.php

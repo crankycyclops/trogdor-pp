@@ -14,8 +14,8 @@ extern "C" {
 #include <trogdor/entities/entity.h>
 #include <trogdor/iostream/trogout.h>
 
-#include "gamedata.h"
-#include "exception.h"
+#include "../gamedata.h"
+#include "../exception.h"
 
 
 /*

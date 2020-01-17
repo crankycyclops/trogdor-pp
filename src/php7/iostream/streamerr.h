@@ -9,7 +9,7 @@ extern "C" {
 #include <memory>
 #include <trogdor/iostream/trogerr.h>
 
-#include "exception.h"
+#include "../exception.h"
 
 
 // PHP output stream for error messages.

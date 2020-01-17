@@ -1,7 +1,6 @@
 #include "game.h"
 #include "module.h"
 #include "exception.h"
-#include "streamerr.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(game);
 
