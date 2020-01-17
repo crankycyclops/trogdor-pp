@@ -39,10 +39,10 @@ namespace trogdor {
          // queue of jobs to execute every n ticks
          std::list<std::shared_ptr<TimerJob>> queue;
 
-         // jobThread executes tick() and insertJobThread allows jobs to be
-         // inserted asynchronously
+         // jobThread executes tick() and threads inside insertJobThreads allow
+         // jobs to be inserted asynchronously
          std::unique_ptr<std::thread> jobThread;
-         std::unique_ptr<std::thread> insertJobThread;
+         std::vector<std::unique_ptr<std::thread>> insertJobThreads;
 
          /*
             Executes all jobs in the queue and increments the time.  This is
