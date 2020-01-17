@@ -21,4 +21,7 @@ void defineCreatureClass() {
 
 	INIT_CLASS_ENTRY(creatureClass, "Trogdor\\Entity\\Creature", creatureMethods);
 	CREATURE_GLOBALS(classEntry) = zend_register_internal_class_ex(&creatureClass, BEING_GLOBALS(classEntry));
+
+	// Creature is a concrete entity type and can't be extended further
+	CREATURE_GLOBALS(classEntry)->ce_flags |= ZEND_ACC_FINAL;
 }

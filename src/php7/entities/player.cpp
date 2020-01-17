@@ -21,4 +21,7 @@ void definePlayerClass() {
 
 	INIT_CLASS_ENTRY(playerClass, "Trogdor\\Entity\\Player", playerMethods);
 	PLAYER_GLOBALS(classEntry) = zend_register_internal_class_ex(&playerClass, BEING_GLOBALS(classEntry));
+
+	// Player is a concrete entity type and can't be extended further
+	PLAYER_GLOBALS(classEntry)->ce_flags |= ZEND_ACC_FINAL;
 }

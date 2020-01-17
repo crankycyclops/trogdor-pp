@@ -21,4 +21,7 @@ void defineRoomClass() {
 
 	INIT_CLASS_ENTRY(roomClass, "Trogdor\\Entity\\Room", roomMethods);
 	ROOM_GLOBALS(classEntry) = zend_register_internal_class_ex(&roomClass, PLACE_GLOBALS(classEntry));
+
+	// Room is a concrete entity type and can't be extended further
+	ROOM_GLOBALS(classEntry)->ce_flags |= ZEND_ACC_FINAL;
 }
