@@ -8,7 +8,7 @@
 #include <trogdor/exception/beingexception.h>
 
 
-namespace trogdor { namespace entity {
+namespace trogdor::entity {
 
 
    // Tag is set if the Being is attackable
@@ -585,4 +585,4 @@ namespace trogdor { namespace entity {
       game->addEventListener(triggers.get());
       game->event("afterRespawn", eventArgs);
    }
-}}
+}
