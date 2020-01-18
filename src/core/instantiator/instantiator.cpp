@@ -878,10 +878,6 @@ namespace trogdor {
       // If a game introduction is enabled, all players will see this text once
       // before beginning the game
       gamePropValidators["introduction.text"] = assertString;
-
-      // Whether or not the game should pause after the introduction before
-      // continuing (if the introduction is enabled)
-      gamePropValidators["introduction.pause"] = assertBool;
    }
 
    /***************************************************************************/

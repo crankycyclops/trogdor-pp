@@ -110,7 +110,6 @@ namespace trogdor {
          // they're first added to the game
          struct {
             bool enabled;            // whether to show new players an intro
-            bool pauseWhileReading;  // whether to pause the game during the intro
             std::string text;             // introduction's content
          } introduction;
 
@@ -317,18 +316,6 @@ namespace trogdor {
                (none)
          */
          inline void setIntroductionEnabled(bool e) {introduction.enabled = e;}
-
-         /*
-            Sets whether or not to pause the game while a new player reads the
-            introduction. This is primarily for single player games.
-
-            Input:
-               Whether or not to pause while reading (bool)
-
-            Output:
-               (none)
-         */
-         inline void setIntroductionPause(bool p) {introduction.pauseWhileReading = p;}
 
          /*
             Sets the content for the new player introduction. Won't be displayed
@@ -847,6 +834,12 @@ namespace trogdor {
             Inserts a player into the game. Throws an exception if an entity
             with the given name already exists in the game.
 
+            If a callback is provided and new player introductions are enabled
+            via game.xml, it will be called after the introduction is displayed
+            and before the player is actually inserted into the game. Its
+            primary purpose is to give the client the option of confirming that
+            the user has read the introduction before they can start playing.
+
             Input:
                Player name (std::string)
                Pointer to an output stream (Trogout *)
@@ -856,7 +849,8 @@ namespace trogdor {
             Output:
                Player *
          */
-         void insertPlayer(std::shared_ptr<Player> player);
+         void insertPlayer(std::shared_ptr<Player> player,
+         std::function<void()> confirmationCallback = nullptr);
 
          /*
             Wraps around Timer API.  See timer.h for documentation.

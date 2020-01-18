@@ -300,8 +300,7 @@ namespace trogdor {
    void XMLParser::parseIntroduction() {
 
       static std::unordered_map<std::string, std::string> tagToProperty({
-         {"enabled", "introduction.enabled"}, {"pause", "introduction.pause"},
-         {"text", "introduction.text"}
+         {"enabled", "introduction.enabled"}, {"text", "introduction.text"}
       });
 
       while (nextTag() && 2 == getDepth()) {
