@@ -399,66 +399,13 @@ PHP_METHOD(Game, getEntity) {
 		ZOBJ_TO_ENTITYOBJ(Z_OBJ_P(return_value))->realEntityObject.obj = ePtr;
 		ZOBJ_TO_ENTITYOBJ(Z_OBJ_P(return_value))->realEntityObject.managedByGame = true;
 
-		zval outputObj;
+		// Attaches a PHP instance of Trogdor\Entity\IO\Output which can be
+		// used to consume messages from the output buffer
+		attachOutputToEntity(ePtr, return_value);
 
-		if (SUCCESS != object_init_ex(&outputObj, ENTITYOUT_GLOBALS(classEntry))) {
-			php_error_docref(NULL, E_ERROR, "Could not instantiate Trogdor\\Entity\\IO\\Output. This is a bug.");
-		}
-
-		// The output buffer needs a pointer to the Entity it's assigned to so
-		// it can key into the output buffer.
-		ZOBJ_TO_OUTPUTOBJ(Z_OBJ(outputObj))->data.ePtr = ePtr;
-
-		// Temporarily make output writeable.
-		entityObjectHandlers.write_property = zend_std_write_property;
-
-		// This read-only property is the object we use to consume messages
-		// from the output buffer.
-		zend_update_property(
-			ENTITY_GLOBALS(classEntry),
-			return_value,
-			"output",
-			sizeof("output") - 1,
-			&outputObj TSRMLS_DC
-		);
-
-		// Once we've updated the output property, make it read-only again so
-		// it can't be modified from PHP userland.
-		entityObjectHandlers.write_property = writeProperty;
-
-		zval_ptr_dtor(&outputObj);
-
-		zend_update_property_string(
-			ENTITY_GLOBALS(classEntry),
-			return_value,
-			"name",
-			sizeof("name") - 1,
-			ePtr->getName().c_str() TSRMLS_DC
-		);
-
-		zend_update_property_string(
-			ENTITY_GLOBALS(classEntry),
-			return_value,
-			"title",
-			sizeof("title") - 1,
-			ePtr->getTitle().c_str() TSRMLS_DC
-		);
-
-		zend_update_property_string(
-			ENTITY_GLOBALS(classEntry),
-			return_value,
-			"longDesc",
-			sizeof("longDesc") - 1,
-			ePtr->getLongDescription().c_str() TSRMLS_DC
-		);
-
-		zend_update_property_string(
-			ENTITY_GLOBALS(classEntry),
-			return_value,
-			"shortDesc",
-			sizeof("shortDesc") - 1,
-			ePtr->getShortDescription().c_str() TSRMLS_DC
-		);
+		// Update the PHP instance's properties to match what's in the
+		// underlying data structure
+		refreshEntityObjProperties(ePtr, return_value);
 	}
 
 	// Entity by the given name doesn't exist in the game, so just return null
@@ -497,6 +444,81 @@ PHP_METHOD(Game, setMeta) {
 
 /*****************************************************************************/
 
+ZEND_BEGIN_ARG_INFO(arginfoGameCreatePlayer, 0)
+	ZEND_ARG_INFO(0, name)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, createPlayer) {
+
+	char *name;
+	size_t nameLength;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	zval *thisPtr = getThis();
+	trogdor::Game *gameObjPtr = ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.obj;
+
+	try {
+
+		std::shared_ptr<trogdor::entity::Player> player = gameObjPtr->createPlayer(
+			name,
+			std::make_unique<PHPStreamOut>(&(ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject)),
+			std::make_unique<trogdor::NullIn>(), // TODO: replace this with PHPStreamIn once implemented
+			std::make_unique<PHPStreamErr>()
+		);
+
+		dynamic_cast<PHPStreamOut *>(&(player->out()))->setEntity(player.get());
+
+		// Originally, I wanted to separate this into another insertPlayer
+		// method, but I can't, because the shared_ptr falls out of scope,
+		// and I can't even do a hack where I temporarily release it, because
+		// shared_ptr doesn't support that (only unique_ptr does.) I could
+		// create some kind of hacky global mechanism that keeps shared_ptr
+		// references around until I don't need them anymore, but I don't
+		// want to do that. Instead, I'm going to combine these two methods
+		// into one, and if I ever need to separate them in the future I'll
+		// revisit this.
+		gameObjPtr->insertPlayer(player);
+
+		// Per usual, wrap the actual Player object inside its PHP counterpart
+		if (SUCCESS != object_init_ex(return_value, PLAYER_GLOBALS(classEntry))) {
+			RETURN_NULL();
+		}
+
+		ZOBJ_TO_ENTITYOBJ(Z_OBJ_P(return_value))->realEntityObject.obj = player.get();
+		ZOBJ_TO_ENTITYOBJ(Z_OBJ_P(return_value))->realEntityObject.managedByGame = true;
+
+		// Attaches a PHP instance of Trogdor\Entity\IO\Output which can be
+		// used to consume messages from the output buffer
+		attachOutputToEntity(player.get(), return_value);
+
+		// Update the PHP instance's properties to match what's in the
+		// underlying data structure
+		refreshEntityObjProperties(player.get(), return_value);
+	}
+
+	catch (trogdor::entity::EntityException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(entityException), e.what(), 0);
+		RETURN_NULL();
+	}
+}
+
+/*****************************************************************************/
+
+ZEND_BEGIN_ARG_INFO(arginfoGameInsertPlayer, 0)
+	ZEND_ARG_INFO(0, player)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, insertPlayer) {
+
+	// TODO
+	RETURN_NULL();
+}
+
+/*****************************************************************************/
+
 // PHP Game class methods
 static const zend_function_entry gameMethods[] =  {
 	PHP_ME(Game,             get, arginfoGameGet, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
@@ -510,6 +532,8 @@ static const zend_function_entry gameMethods[] =  {
 	PHP_ME(Game,       getEntity, arginfoGameGetEntity, ZEND_ACC_PUBLIC)
 	PHP_ME(Game,         getMeta, arginfoGameGetMeta, ZEND_ACC_PUBLIC)
 	PHP_ME(Game,         setMeta, arginfoGameSetMeta, ZEND_ACC_PUBLIC)
+	PHP_ME(Game,    createPlayer, arginfoGameCreatePlayer, ZEND_ACC_PUBLIC)
+	PHP_ME(Game,    insertPlayer, arginfoGameInsertPlayer, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 

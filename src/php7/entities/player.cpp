@@ -7,8 +7,21 @@ ZEND_DECLARE_MODULE_GLOBALS(player);
 
 // Player Methods
 
+ZEND_BEGIN_ARG_INFO(arginfoPlayerCtor, 0)
+	ZEND_ARG_INFO(0, XMLPath)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Player, __construct) {
+
+	php_error_docref(NULL, E_ERROR, "Don't instantiate Trogdor\\Entity\\Player directly! Instead, use Trogdor\\Game::createPlayer.");
+	RETURN_NULL();
+}
+
+/*****************************************************************************/
+
 // PHP Player class methods
 static const zend_function_entry playerMethods[] =  {
+	PHP_ME(Player, __construct, arginfoPlayerCtor, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 	PHP_FE_END
 };
 

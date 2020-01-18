@@ -112,6 +112,79 @@ static const zend_function_entry entityMethods[] =  {
 /*****************************************************************************/
 /*****************************************************************************/
 
+// Utility functions
+
+void attachOutputToEntity(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
+
+	zval outputObj;
+
+	if (SUCCESS != object_init_ex(&outputObj, ENTITYOUT_GLOBALS(classEntry))) {
+		php_error_docref(NULL, E_ERROR, "Could not instantiate Trogdor\\Entity\\IO\\Output. This is a bug.");
+	}
+
+	// The output buffer needs a pointer to the Entity it's assigned to so
+	// it can key into the output buffer.
+	ZOBJ_TO_OUTPUTOBJ(Z_OBJ(outputObj))->data.ePtr = ePtr;
+
+	// Temporarily make output writeable.
+	entityObjectHandlers.write_property = zend_std_write_property;
+
+	// This read-only property is the object we use to consume messages
+	// from the output buffer.
+	zend_update_property(
+		ENTITY_GLOBALS(classEntry),
+		phpEntityObj,
+		"output",
+		sizeof("output") - 1,
+		&outputObj TSRMLS_DC
+	);
+
+	// Once we've updated the output property, make it read-only again so
+	// it can't be modified from PHP userland.
+	entityObjectHandlers.write_property = writeProperty;
+
+	zval_ptr_dtor(&outputObj);
+}
+
+/*****************************************************************************/
+
+void refreshEntityObjProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
+
+	zend_update_property_string(
+		ENTITY_GLOBALS(classEntry),
+		phpEntityObj,
+		"name",
+		sizeof("name") - 1,
+		ePtr->getName().c_str() TSRMLS_DC
+	);
+
+	zend_update_property_string(
+		ENTITY_GLOBALS(classEntry),
+		phpEntityObj,
+		"title",
+		sizeof("title") - 1,
+		ePtr->getTitle().c_str() TSRMLS_DC
+	);
+
+	zend_update_property_string(
+		ENTITY_GLOBALS(classEntry),
+		phpEntityObj,
+		"longDesc",
+		sizeof("longDesc") - 1,
+		ePtr->getLongDescription().c_str() TSRMLS_DC
+	);
+
+	zend_update_property_string(
+		ENTITY_GLOBALS(classEntry),
+		phpEntityObj,
+		"shortDesc",
+		sizeof("shortDesc") - 1,
+		ePtr->getShortDescription().c_str() TSRMLS_DC
+	);
+}
+
+/*****************************************************************************/
+
 void defineEntityClass() {
 
 	zval *ioout;

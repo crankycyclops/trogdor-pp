@@ -7,6 +7,8 @@ extern "C" {
 	#include "php.h"
 }
 
+#include "entities/io/output.h"
+
 // For an explanation of what I'm doing here, see:
 // https://www.php.net/manual/en/internals2.structure.globals.php
 ZEND_BEGIN_MODULE_GLOBALS(entity)
@@ -40,6 +42,16 @@ inline entityObject *ZOBJ_TO_ENTITYOBJ(zend_object *zobj) {
 extern zend_object_handlers entityObjectHandlers;
 
 /*****************************************************************************/
+
+ZEND_EXTERN_MODULE_GLOBALS(entityout);
+
+// Utility function that attaches an instance of Trogdor\Entity\IO\Output to a
+// PHP Entity class.
+extern void attachOutputToEntity(trogdor::entity::Entity *ePtr, zval *phpEntityObj);
+
+// Utility function that refreshes the properties of an instance of
+// Trogdor\Entity\Entity based on their current underlying values.
+extern void refreshEntityObjProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj);
 
 // Overrides zend_std_write_property and makes certain properties read-only
 extern void writeProperty(zval *object, zval *member, zval *value, void **cache_slot);
