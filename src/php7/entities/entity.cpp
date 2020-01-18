@@ -15,7 +15,9 @@ zend_object_handlers entityObjectHandlers;
 
 static zend_object *createEntityObject(zend_class_entry *classEntry TSRMLS_DC) {
 
-	entityObject *gObj = (entityObject *)ecalloc(1, sizeof(*gObj) + zend_object_properties_size(classEntry));
+	entityObject *gObj = (entityObject *)ecalloc(
+		1, sizeof(*gObj) + zend_object_properties_size(classEntry)
+	);
 
 	// If managedByGame is true, it means the object belongs to the game and
 	// should not be freed at any time by PHP

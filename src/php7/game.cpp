@@ -405,6 +405,10 @@ PHP_METHOD(Game, getEntity) {
 			php_error_docref(NULL, E_ERROR, "Could not instantiate Trogdor\\Entity\\IO\\Output. This is a bug.");
 		}
 
+		// The output buffer needs a pointer to the Entity it's assigned to so
+		// it can key into the output buffer.
+		ZOBJ_TO_OUTPUTOBJ(Z_OBJ(outputObj))->data.ePtr = ePtr;
+
 		// Temporarily make output writeable.
 		entityObjectHandlers.write_property = zend_std_write_property;
 
