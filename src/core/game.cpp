@@ -40,7 +40,6 @@ namespace trogdor {
          events = std::make_unique<event::EventHandler>();
 
          introduction.enabled           = DEFAULT_INTRODUCTION_ENABLED;
-         introduction.pauseWhileReading = DEFAULT_INTRODUCTION_PAUSE;
          introduction.text              = "";
 
          defaultPlayer = std::make_unique<entity::Player>(
@@ -160,14 +159,7 @@ namespace trogdor {
 
       // if new player introduction is enabled, show it before inserting
       // the new player into the game
-      // TODO: this works fine for a single player game, but in a
-      // multi-player environment, the game can't stop every time a player
-      // has to read the introduction...
       if (introduction.enabled && introduction.text.length() > 0) {
-
-         if (introduction.pauseWhileReading) {
-            stop();
-         }
 
          // we really only need this to give player->in() something to do
          std::string blah;
@@ -176,10 +168,6 @@ namespace trogdor {
          player->out() << "Press enter to start." << std::endl;
          player->in() >> blah;
          player->out() << std::endl;
-
-         if (introduction.pauseWhileReading) {
-            start();
-         }
       }
 
       entities.set(player->getName(), player);

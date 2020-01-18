@@ -532,14 +532,6 @@ namespace trogdor {
       gameSetters["introduction.enabled"] = [](Game *game, std::string value) {
          game->setIntroductionEnabled(stoi(value));
       };
-
-      /**********/
-
-      // Whether or not the game should pause after the introduction before
-      // continuing (if the introduction is enabled)
-      gameSetters["introduction.pause"] = [](Game *game, std::string value) {
-         game->setIntroductionPause(stoi(value));
-      };
    }
 
    /***************************************************************************/

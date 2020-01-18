@@ -110,7 +110,6 @@ namespace trogdor {
          // they're first added to the game
          struct {
             bool enabled;            // whether to show new players an intro
-            bool pauseWhileReading;  // whether to pause the game during the intro
             std::string text;             // introduction's content
          } introduction;
 
@@ -317,18 +316,6 @@ namespace trogdor {
                (none)
          */
          inline void setIntroductionEnabled(bool e) {introduction.enabled = e;}
-
-         /*
-            Sets whether or not to pause the game while a new player reads the
-            introduction. This is primarily for single player games.
-
-            Input:
-               Whether or not to pause while reading (bool)
-
-            Output:
-               (none)
-         */
-         inline void setIntroductionPause(bool p) {introduction.pauseWhileReading = p;}
 
          /*
             Sets the content for the new player introduction. Won't be displayed
