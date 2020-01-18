@@ -70,17 +70,18 @@ int main(int argc, char **argv) {
 	     std::cout << "Author: " << author << std::endl << std::endl;
 	  }
 
-	  Player *player = currentGame->createPlayer(
+	  std::shared_ptr<trogdor::entity::Player> player = currentGame->createPlayer(
          "player",
          std::make_unique<StreamOut>(&std::cout),
          std::make_unique<StreamIn>(&std::cin),
          std::make_unique<StreamErr>(&std::cerr)
-      );
+	  );
 
+	  currentGame->insertPlayer(player);
 	  currentGame->start();
 
 	  while (currentGame->inProgress() && currentGame->playerIsInGame("player")) {
-	     currentGame->processCommand(player);
+	     currentGame->processCommand(player.get());
 	  }
 
 	  currentGame->stop();

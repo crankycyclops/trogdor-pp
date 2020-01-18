@@ -297,6 +297,17 @@ namespace trogdor {
          }
 
          /*
+            Returns whether or not new player introductions are enabled.
+
+            Input:
+               (none)
+
+            Output:
+               Whether or not new player introductions are enabled (bool)
+         */
+         inline bool getIntroductionEnabled() {return introduction.enabled;}
+
+         /*
             Sets whether or not new player introductions are enabled.
 
             Input:
@@ -815,8 +826,9 @@ namespace trogdor {
          inline bool inProgress() const {return inGame;}
 
          /*
-            Creates a new player and inserts it into the game.  Throws an
-            exception if an entity with the given name already exists.
+            Creates a new player (but does not insert it into the game.) Throws
+            an exception if an entity with the given name already exists in the
+            game.
 
             Input:
                Player name (std::string)
@@ -827,8 +839,24 @@ namespace trogdor {
             Output:
                Player *
          */
-         Player *createPlayer(std::string name, std::unique_ptr<Trogout> outStream,
-         std::unique_ptr<Trogin> inStream, std::unique_ptr<Trogerr> errStream);
+         std::shared_ptr<Player> createPlayer(std::string name,
+         std::unique_ptr<Trogout> outStream, std::unique_ptr<Trogin> inStream,
+         std::unique_ptr<Trogerr> errStream);
+
+         /*
+            Inserts a player into the game. Throws an exception if an entity
+            with the given name already exists in the game.
+
+            Input:
+               Player name (std::string)
+               Pointer to an output stream (Trogout *)
+               Pointer to an input stream (Trogin *)
+               Pointer to an error stream (Trogerr *)
+
+            Output:
+               Player *
+         */
+         void insertPlayer(std::shared_ptr<Player> player);
 
          /*
             Wraps around Timer API.  See timer.h for documentation.
