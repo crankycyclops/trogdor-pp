@@ -148,7 +148,8 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Game::insertPlayer(std::shared_ptr<Player> player) {
+   void Game::insertPlayer(std::shared_ptr<Player> player,
+   std::function<void()> confirmationCallback) {
 
       // Make sure there are no name conflicts before inserting the new player
       if (entities.isEntitySet(player->getName())) {
@@ -161,13 +162,11 @@ namespace trogdor {
       // the new player into the game
       if (introduction.enabled && introduction.text.length() > 0) {
 
-         // we really only need this to give player->in() something to do
-         std::string blah;
+         player->out() << introduction.text << std::endl;
 
-         player->out() << introduction.text << std::endl << std::endl;
-         player->out() << "Press enter to start." << std::endl;
-         player->in() >> blah;
-         player->out() << std::endl;
+         if (confirmationCallback) {
+            confirmationCallback();
+         }
       }
 
       entities.set(player->getName(), player);

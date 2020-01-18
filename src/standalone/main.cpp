@@ -77,7 +77,21 @@ int main(int argc, char **argv) {
          std::make_unique<StreamErr>(&std::cerr)
 	  );
 
-	  currentGame->insertPlayer(player);
+	  // The optional callback forces the user to acknowledge they've read the
+     // introduction before they can start playing. Since we call Game::start()
+     // after this, and since std::cin will block until it gets a result, it
+     // also results in the game remaining in a paused state until the user
+     // enters. Be aware that this would be catastrophic in a multi-player
+     // environment.
+	  currentGame->insertPlayer(player, [&player]() {
+
+         std::string blah;
+
+         player->out() << "\nPress enter to start." << std::endl;
+         player->in() >> blah;
+         player->out() << std::endl;
+     });
+
 	  currentGame->start();
 
 	  while (currentGame->inProgress() && currentGame->playerIsInGame("player")) {
