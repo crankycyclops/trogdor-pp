@@ -20,6 +20,8 @@ extern "C" {
 #include "iostream/streamout.h"
 #include "iostream/streamerr.h"
 
+#include "entities/io/output.h"
+
 // For an explanation of what I'm doing here, see:
 // https://www.php.net/manual/en/internals2.structure.globals.php
 ZEND_BEGIN_MODULE_GLOBALS(game)
@@ -52,6 +54,7 @@ ZEND_EXTERN_MODULE_GLOBALS(room);
 ZEND_EXTERN_MODULE_GLOBALS(object);
 ZEND_EXTERN_MODULE_GLOBALS(creature);
 ZEND_EXTERN_MODULE_GLOBALS(player);
+ZEND_EXTERN_MODULE_GLOBALS(entityout);
 
 // Retrive a persisted game by index
 extern trogdor::Game *getGameById(size_t id);

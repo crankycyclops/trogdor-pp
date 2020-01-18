@@ -4,7 +4,11 @@
 void PHPStreamOut::flush() {
 
 	if (!entity) {
-		zend_throw_exception(EXCEPTION_GLOBALS(validationException), "Entity pointer must be set before the PHPStreamOut instance can be used.", 0);
+		zend_throw_exception(
+			EXCEPTION_GLOBALS(validationException),
+			"Entity pointer must be set before the PHPStreamOut instance can be used.",
+			0
+		);
 		return;
 	}
 

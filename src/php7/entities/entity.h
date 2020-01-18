@@ -41,6 +41,9 @@ extern zend_object_handlers entityObjectHandlers;
 
 /*****************************************************************************/
 
+// Overrides zend_std_write_property and makes certain properties read-only
+extern void writeProperty(zval *object, zval *member, zval *value, void **cache_slot);
+
 // Declares the PHP Entity class to the Zend engine.
 extern void defineEntityClass();
 

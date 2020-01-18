@@ -1,4 +1,7 @@
+#include <cstring>
+
 #include "entity.h"
+#include "io/output.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(entity);
 
@@ -44,6 +47,22 @@ static void freeEntityObject(zend_object *object TSRMLS_DC) {
 	}
 
 	zend_object_std_dtor(object TSRMLS_CC);
+}
+
+/*****************************************************************************/
+
+void writeProperty(zval *object, zval *member, zval *value, void **cache_slot) {
+
+	if (IS_STRING == Z_TYPE_P(member) && (
+		0 == strcmp("input", (Z_STRVAL_P(member))) ||
+		0 == strcmp("output", Z_STRVAL_P(member)))
+	) {
+		std::string warning = std::string("Cannot write to read-only property '")
+			+ Z_STRVAL_P(member) + "'";
+		php_error_docref(NULL, E_WARNING, warning.c_str());
+	} else {
+		zend_std_write_property(object, member, value, cache_slot);
+	}
 }
 
 /*****************************************************************************/
@@ -93,6 +112,10 @@ static const zend_function_entry entityMethods[] =  {
 
 void defineEntityClass() {
 
+	zval *ioout;
+
+	defineIOOutputClass();
+
 	zend_class_entry entityClass;
 
 	INIT_CLASS_ENTRY(entityClass, "Trogdor\\Entity\\Entity", entityMethods);
@@ -100,6 +123,13 @@ void defineEntityClass() {
 	ENTITY_GLOBALS(classEntry)->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 
 	// Declare the Entity class's properties
+	zend_declare_property_null(
+		ENTITY_GLOBALS(classEntry),
+		"output",
+		sizeof("output") - 1,
+		ZEND_ACC_PUBLIC TSRMLS_CC
+	);
+
 	zend_declare_property_null(
 		ENTITY_GLOBALS(classEntry),
 		"name",
@@ -135,6 +165,7 @@ void defineEntityClass() {
 	ENTITY_GLOBALS(classEntry)->create_object = createEntityObject;
 	entityObjectHandlers.free_obj = freeEntityObject;
 	entityObjectHandlers.dtor_obj = destroyEntityObject;
+	entityObjectHandlers.write_property = writeProperty;
 
 	// For an explanation of why this is necessary, see:
 	// http://blog.jpauli.tech/2016-01-14-php-7-objects-html/

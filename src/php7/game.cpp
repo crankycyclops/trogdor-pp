@@ -399,6 +399,31 @@ PHP_METHOD(Game, getEntity) {
 		ZOBJ_TO_ENTITYOBJ(Z_OBJ_P(return_value))->realEntityObject.obj = ePtr;
 		ZOBJ_TO_ENTITYOBJ(Z_OBJ_P(return_value))->realEntityObject.managedByGame = true;
 
+		zval outputObj;
+
+		if (SUCCESS != object_init_ex(&outputObj, ENTITYOUT_GLOBALS(classEntry))) {
+			php_error_docref(NULL, E_ERROR, "Could not instantiate Trogdor\\Entity\\IO\\Output. This is a bug.");
+		}
+
+		// Temporarily make output writeable.
+		entityObjectHandlers.write_property = zend_std_write_property;
+
+		// This read-only property is the object we use to consume messages
+		// from the output buffer.
+		zend_update_property(
+			ENTITY_GLOBALS(classEntry),
+			return_value,
+			"output",
+			sizeof("output") - 1,
+			&outputObj TSRMLS_DC
+		);
+
+		// Once we've updated the output property, make it read-only again so
+		// it can't be modified from PHP userland.
+		entityObjectHandlers.write_property = writeProperty;
+
+		zval_ptr_dtor(&outputObj);
+
 		zend_update_property_string(
 			ENTITY_GLOBALS(classEntry),
 			return_value,
