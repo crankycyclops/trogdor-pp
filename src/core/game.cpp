@@ -129,9 +129,10 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   Player *Game::createPlayer(std::string name, std::unique_ptr<Trogout> outStream,
+   std::shared_ptr<Player> Game::createPlayer(std::string name, std::unique_ptr<Trogout> outStream,
    std::unique_ptr<Trogin> inStream, std::unique_ptr<Trogerr> errStream) {
 
+      // Make sure there are no name conflicts before creating the new player
       if (entities.isEntitySet(name)) {
          throw entity::EntityException(
             std::string("Entity with name '") + name + "' already exists"
@@ -142,6 +143,20 @@ namespace trogdor {
       std::shared_ptr<Player> player = std::make_shared<Player>(
          *defaultPlayer, name, std::move(outStream), std::move(inStream), std::move(errStream)
       );
+
+      return player;
+   }
+
+   /***************************************************************************/
+
+   void Game::insertPlayer(std::shared_ptr<Player> player) {
+
+      // Make sure there are no name conflicts before inserting the new player
+      if (entities.isEntitySet(player->getName())) {
+         throw entity::EntityException(
+            std::string("Entity with name '") + player->getName() + "' already exists"
+         );
+      }
 
       // if new player introduction is enabled, show it before inserting
       // the new player into the game
@@ -167,10 +182,10 @@ namespace trogdor {
          }
       }
 
-      entities.set(name, player);
-      things.set(name, player);
-      beings.set(name, player);
-      players.set(name, player);
+      entities.set(player->getName(), player);
+      things.set(player->getName(), player);
+      beings.set(player->getName(), player);
+      players.set(player->getName(), player);
 
       // set Player's initial location
       player->setLocation(places.get("start"));
@@ -178,8 +193,6 @@ namespace trogdor {
 
       // Player must see an initial description of where they are
       player->getLocation()->observe(player, false);
-
-      return player.get();
    }
 
    /***************************************************************************/
