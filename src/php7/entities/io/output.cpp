@@ -85,15 +85,18 @@ PHP_METHOD(Output, consume) {
 
 	if (customConstructedDataMap[ePtr->getGame()]->outBuffer.end() ==
 	customConstructedDataMap[ePtr->getGame()]->outBuffer.find(ePtr->getName())) {
+		customConstructedDataMap[ePtr->getGame()]->outBufferMutex.unlock();
 		RETURN_NULL();
 	}
 
 	else if (customConstructedDataMap[ePtr->getGame()]->outBuffer[ePtr->getName()].end() ==
 	customConstructedDataMap[ePtr->getGame()]->outBuffer[ePtr->getName()].find(channel)) {
+		customConstructedDataMap[ePtr->getGame()]->outBufferMutex.unlock();
 		RETURN_NULL();
 	}
 
 	else if (customConstructedDataMap[ePtr->getGame()]->outBuffer[ePtr->getName()][channel].empty()) {
+		customConstructedDataMap[ePtr->getGame()]->outBufferMutex.unlock();
 		RETURN_NULL();
 	}
 
@@ -106,6 +109,7 @@ PHP_METHOD(Output, consume) {
 		add_assoc_string(return_value, "message", m.content.c_str());
 
 		customConstructedDataMap[ePtr->getGame()]->outBuffer[ePtr->getName()][channel].pop();
+		customConstructedDataMap[ePtr->getGame()]->outBufferMutex.unlock();
 	}
 }
 
