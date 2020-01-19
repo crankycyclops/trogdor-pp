@@ -405,7 +405,7 @@ PHP_METHOD(Game, getEntity) {
 
 		// Update the PHP instance's properties to match what's in the
 		// underlying data structure
-		refreshEntityObjProperties(ePtr, return_value);
+		refreshEntityProperties(ePtr, return_value);
 	}
 
 	// Entity by the given name doesn't exist in the game, so just return null
@@ -496,7 +496,7 @@ PHP_METHOD(Game, createPlayer) {
 
 		// Update the PHP instance's properties to match what's in the
 		// underlying data structure
-		refreshEntityObjProperties(player.get(), return_value);
+		refreshEntityProperties(player.get(), return_value);
 	}
 
 	catch (trogdor::entity::EntityException &e) {

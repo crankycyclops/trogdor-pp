@@ -148,7 +148,7 @@ void attachOutputToEntity(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
 
 /*****************************************************************************/
 
-void refreshEntityObjProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
+void refreshEntityProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
 
 	zend_update_property_string(
 		ENTITY_GLOBALS(classEntry),

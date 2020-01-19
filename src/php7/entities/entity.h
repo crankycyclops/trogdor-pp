@@ -51,7 +51,7 @@ extern void attachOutputToEntity(trogdor::entity::Entity *ePtr, zval *phpEntityO
 
 // Utility function that refreshes the properties of an instance of
 // Trogdor\Entity\Entity based on their current underlying values.
-extern void refreshEntityObjProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj);
+extern void refreshEntityProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj);
 
 // Overrides zend_std_write_property and makes certain properties read-only
 extern void writeProperty(zval *object, zval *member, zval *value, void **cache_slot);

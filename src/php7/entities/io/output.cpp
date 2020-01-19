@@ -100,11 +100,12 @@ PHP_METHOD(Output, consume) {
 	else {
 
 		OutputMessage &m = customConstructedDataMap[ePtr->getGame()]->outBuffer[ePtr->getName()][channel].front();
-		customConstructedDataMap[ePtr->getGame()]->outBuffer[ePtr->getName()][channel].pop();
 
 		array_init(return_value);
 		add_assoc_long(return_value, "timestamp", m.timestamp);
 		add_assoc_string(return_value, "message", m.content.c_str());
+
+		customConstructedDataMap[ePtr->getGame()]->outBuffer[ePtr->getName()][channel].pop();
 	}
 }
 
