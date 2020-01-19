@@ -32,12 +32,12 @@ extern "C" {
 	// (creating an instance of Player for this example):
 
 	// gamePtr here is a pointer to an instance of trogdor::Game
-	gamePtr->createPlayer(playerName, outStream, inStream, errStream);
+	player = gamePtr->createPlayer(playerName, outStream, inStream, errStream);
 
 	// Finally, a pointer to the Player object must be passed back to the
 	// output stream:
 
-	outStream->setEntity(gamePtr->getEntity(playerName));
+	outStream->setEntity(player);
 
 	If the entity pointer isn't set, a PHP exception will be thrown to warn the
 	developer (me) of their nefarious and dastardly ways.

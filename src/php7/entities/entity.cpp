@@ -1,6 +1,7 @@
 #include <cstring>
 
 #include "entity.h"
+#include "io/input.h"
 #include "io/output.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(entity);
@@ -114,6 +115,40 @@ static const zend_function_entry entityMethods[] =  {
 
 // Utility functions
 
+void attachInputToEntity(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
+
+	zval inputObj;
+
+	if (SUCCESS != object_init_ex(&inputObj, ENTITYIN_GLOBALS(classEntry))) {
+		php_error_docref(NULL, E_ERROR, "Could not instantiate Trogdor\\Entity\\IO\\Input. This is a bug.");
+	}
+
+	// The input buffer needs a pointer to the Entity it's assigned to so
+	// it can key into the output buffer.
+	ZOBJ_TO_OUTPUTOBJ(Z_OBJ(inputObj))->data.ePtr = ePtr;
+
+	// Temporarily make input writeable.
+	entityObjectHandlers.write_property = zend_std_write_property;
+
+	// This read-only property is the object we use to consume messages
+	// from the output buffer.
+	zend_update_property(
+		ENTITY_GLOBALS(classEntry),
+		phpEntityObj,
+		"input",
+		sizeof("input") - 1,
+		&inputObj TSRMLS_DC
+	);
+
+	// Once we've updated the output property, make it read-only again so
+	// it can't be modified from PHP userland.
+	entityObjectHandlers.write_property = writeProperty;
+
+	zval_ptr_dtor(&inputObj);
+}
+
+/*****************************************************************************/
+
 void attachOutputToEntity(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
 
 	zval outputObj;
@@ -189,6 +224,7 @@ void defineEntityClass() {
 
 	zval *ioout;
 
+	defineIOInputClass();
 	defineIOOutputClass();
 
 	zend_class_entry entityClass;
@@ -198,6 +234,13 @@ void defineEntityClass() {
 	ENTITY_GLOBALS(classEntry)->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 
 	// Declare the Entity class's properties
+	zend_declare_property_null(
+		ENTITY_GLOBALS(classEntry),
+		"input",
+		sizeof("input") - 1,
+		ZEND_ACC_PUBLIC TSRMLS_CC
+	);
+
 	zend_declare_property_null(
 		ENTITY_GLOBALS(classEntry),
 		"output",

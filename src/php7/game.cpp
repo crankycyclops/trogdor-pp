@@ -399,8 +399,10 @@ PHP_METHOD(Game, getEntity) {
 		ZOBJ_TO_ENTITYOBJ(Z_OBJ_P(return_value))->realEntityObject.obj = ePtr;
 		ZOBJ_TO_ENTITYOBJ(Z_OBJ_P(return_value))->realEntityObject.managedByGame = true;
 
-		// Attaches a PHP instance of Trogdor\Entity\IO\Output which can be
-		// used to consume messages from the output buffer
+		// Attaches instances of the PHP classes Trogdor\Entity\IO\Output and
+		// Trogdor\Entity\IO\Input, which can be used to consume messages from
+		// the output buffer and send messages to the input buffer.
+		attachInputToEntity(ePtr, return_value);
 		attachOutputToEntity(ePtr, return_value);
 
 		// Update the PHP instance's properties to match what's in the
@@ -490,8 +492,10 @@ PHP_METHOD(Game, createPlayer) {
 		ZOBJ_TO_ENTITYOBJ(Z_OBJ_P(return_value))->realEntityObject.obj = player.get();
 		ZOBJ_TO_ENTITYOBJ(Z_OBJ_P(return_value))->realEntityObject.managedByGame = true;
 
-		// Attaches a PHP instance of Trogdor\Entity\IO\Output which can be
-		// used to consume messages from the output buffer
+		// Attaches instances of the PHP classes Trogdor\Entity\IO\Output and
+		// Trogdor\Entity\IO\Input, which can be used to consume messages from
+		// the output buffer and send messages to the input buffer.
+		attachInputToEntity(player.get(), return_value);
 		attachOutputToEntity(player.get(), return_value);
 
 		// Update the PHP instance's properties to match what's in the

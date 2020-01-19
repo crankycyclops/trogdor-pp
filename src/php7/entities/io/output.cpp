@@ -17,8 +17,6 @@ static zend_object *createOutputObject(zend_class_entry *classEntry TSRMLS_DC) {
 		1, sizeof(*wrapper) + zend_object_properties_size(classEntry)
 	);
 
-	// If managedByGame is true, it means the object belongs to the game and
-	// should not be freed at any time by PHP
 	wrapper->data.ePtr = nullptr;
 
 	zend_object_std_init(&wrapper->std, classEntry);
@@ -48,7 +46,7 @@ static void freeOutputObject(zend_object *object TSRMLS_DC) {
 
 // Output Methods
 
-ZEND_BEGIN_ARG_INFO(arginfoObjectCtor, 0)
+ZEND_BEGIN_ARG_INFO(arginfoOutputCtor, 0)
 	ZEND_ARG_INFO(0, XMLPath)
 ZEND_END_ARG_INFO()
 
@@ -60,7 +58,6 @@ PHP_METHOD(Output, __construct) {
 
 /*****************************************************************************/
 
-// Magic "__get" allows us to make private and protected data members read-only
 ZEND_BEGIN_ARG_INFO(arginfoOutputConsume, 0)
 	ZEND_ARG_INFO(0, channel)
 ZEND_END_ARG_INFO()
@@ -113,9 +110,11 @@ PHP_METHOD(Output, consume) {
 	}
 }
 
+/*****************************************************************************/
+
 // Trogdor\Entity\IO\Output methods
 static const zend_function_entry outputMethods[] =  {
-	PHP_ME(Output, __construct, arginfoObjectCtor, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+	PHP_ME(Output, __construct, arginfoOutputCtor, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 	PHP_ME(Output,     consume, arginfoOutputConsume, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };

@@ -7,6 +7,7 @@ extern "C" {
 	#include "php.h"
 }
 
+#include "entities/io/input.h"
 #include "entities/io/output.h"
 
 // For an explanation of what I'm doing here, see:
@@ -43,7 +44,12 @@ extern zend_object_handlers entityObjectHandlers;
 
 /*****************************************************************************/
 
+ZEND_EXTERN_MODULE_GLOBALS(entityin);
 ZEND_EXTERN_MODULE_GLOBALS(entityout);
+
+// Utility function that attaches an instance of Trogdor\Entity\IO\Input to a
+// PHP Entity class.
+void attachInputToEntity(trogdor::entity::Entity *ePtr, zval *phpEntityObj);
 
 // Utility function that attaches an instance of Trogdor\Entity\IO\Output to a
 // PHP Entity class.

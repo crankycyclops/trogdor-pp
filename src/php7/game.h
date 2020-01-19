@@ -20,6 +20,7 @@ extern "C" {
 #include "iostream/streamout.h"
 #include "iostream/streamerr.h"
 
+#include "entities/io/input.h"
 #include "entities/io/output.h"
 
 // For an explanation of what I'm doing here, see:
@@ -54,6 +55,8 @@ ZEND_EXTERN_MODULE_GLOBALS(room);
 ZEND_EXTERN_MODULE_GLOBALS(object);
 ZEND_EXTERN_MODULE_GLOBALS(creature);
 ZEND_EXTERN_MODULE_GLOBALS(player);
+
+ZEND_EXTERN_MODULE_GLOBALS(entityin);
 ZEND_EXTERN_MODULE_GLOBALS(entityout);
 
 // Retrive a persisted game by index
