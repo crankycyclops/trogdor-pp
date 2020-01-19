@@ -4,6 +4,7 @@
 #include <queue>
 #include <thread>
 #include <unordered_map>
+#include <condition_variable>
 #include <trogdor/game.h>
 
 #include "message.h"
@@ -13,6 +14,11 @@
 // constructors called. Instead, we'll insert this into an unordered_map whose
 // keys will be of type trogdor::Game *.
 struct customConstructedData {
+
+	// PHPStreamIn will use these two variables to make the thread that calls
+	// it wait until there's a value in the input buffer.
+	std::mutex inputConditionMutex;
+	std::condition_variable inputCondition;
 
 	// We need to lock on these mutexes whenever we access or change inBuffer
 	// and outBuffer.
