@@ -467,7 +467,7 @@ PHP_METHOD(Game, createPlayer) {
 		std::shared_ptr<trogdor::entity::Player> player = gameObjPtr->createPlayer(
 			name,
 			std::make_unique<PHPStreamOut>(&(ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject)),
-			std::make_unique<trogdor::NullIn>(), // TODO: replace this with PHPStreamIn once implemented
+			std::make_unique<PHPStreamIn>(&(ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject)),
 			std::make_unique<PHPStreamErr>()
 		);
 

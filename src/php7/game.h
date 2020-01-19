@@ -17,6 +17,7 @@ extern "C" {
 #include "entities/creature.h"
 #include "entities/player.h"
 
+#include "iostream/streamin.h"
 #include "iostream/streamout.h"
 #include "iostream/streamerr.h"
 
