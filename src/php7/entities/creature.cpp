@@ -15,6 +15,15 @@ static const zend_function_entry creatureMethods[] =  {
 /*****************************************************************************/
 /*****************************************************************************/
 
+// Utility functions
+
+void refreshCreatureProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
+
+	// TODO
+}
+
+/*****************************************************************************/
+
 void defineCreatureClass() {
 
 	zend_class_entry creatureClass;

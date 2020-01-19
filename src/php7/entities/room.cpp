@@ -15,6 +15,15 @@ static const zend_function_entry roomMethods[] =  {
 /*****************************************************************************/
 /*****************************************************************************/
 
+// Utility functions
+
+void refreshRoomProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
+
+	// TODO
+}
+
+/*****************************************************************************/
+
 void defineRoomClass() {
 
 	zend_class_entry roomClass;

@@ -20,6 +20,10 @@ ZEND_EXTERN_MODULE_GLOBALS(place);
 
 /*****************************************************************************/
 
+// Utility function that refreshes the properties of an instance of
+// Trogdor\Entity\Room based on their current underlying values.
+extern void refreshRoomProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj);
+
 // Declares the PHP Room class to the Zend engine.
 extern void defineRoomClass();
 

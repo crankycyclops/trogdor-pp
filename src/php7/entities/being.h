@@ -20,6 +20,10 @@ ZEND_EXTERN_MODULE_GLOBALS(thing);
 
 /*****************************************************************************/
 
+// Utility function that refreshes the properties of an instance of
+// Trogdor\Entity\Being based on their current underlying values.
+extern void refreshBeingProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj);
+
 // Declares the PHP Being class to the Zend engine.
 extern void defineBeingClass();
 

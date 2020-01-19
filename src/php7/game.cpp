@@ -364,6 +364,10 @@ PHP_METHOD(Game, getEntity) {
 					RETURN_NULL();
 				}
 
+				refreshEntityProperties(ePtr, return_value);
+				refreshPlaceProperties(ePtr, return_value);
+				refreshRoomProperties(ePtr, return_value);
+
 				break;
 
 			case ENTITY_OBJECT:
@@ -371,6 +375,10 @@ PHP_METHOD(Game, getEntity) {
 				if (SUCCESS != object_init_ex(return_value, OBJECT_GLOBALS(classEntry))) {
 					RETURN_NULL();
 				}
+
+				refreshEntityProperties(ePtr, return_value);
+				refreshThingProperties(ePtr, return_value);
+				refreshObjectProperties(ePtr, return_value);
 
 				break;
 
@@ -380,6 +388,11 @@ PHP_METHOD(Game, getEntity) {
 					RETURN_NULL();
 				}
 
+				refreshEntityProperties(ePtr, return_value);
+				refreshThingProperties(ePtr, return_value);
+				refreshBeingProperties(ePtr, return_value);
+				refreshCreatureProperties(ePtr, return_value);
+
 				break;
 
 			case ENTITY_PLAYER:
@@ -387,6 +400,11 @@ PHP_METHOD(Game, getEntity) {
 				if (SUCCESS != object_init_ex(return_value, PLAYER_GLOBALS(classEntry))) {
 					RETURN_NULL();
 				}
+
+				refreshEntityProperties(ePtr, return_value);
+				refreshThingProperties(ePtr, return_value);
+				refreshBeingProperties(ePtr, return_value);
+				refreshPlayerProperties(ePtr, return_value);
 
 				break;
 
@@ -404,10 +422,6 @@ PHP_METHOD(Game, getEntity) {
 		// the output buffer and send messages to the input buffer.
 		attachInputToEntity(ePtr, return_value);
 		attachOutputToEntity(ePtr, return_value);
-
-		// Update the PHP instance's properties to match what's in the
-		// underlying data structure
-		refreshEntityProperties(ePtr, return_value);
 	}
 
 	// Entity by the given name doesn't exist in the game, so just return null
@@ -501,6 +515,9 @@ PHP_METHOD(Game, createPlayer) {
 		// Update the PHP instance's properties to match what's in the
 		// underlying data structure
 		refreshEntityProperties(player.get(), return_value);
+		refreshThingProperties(player.get(), return_value);
+		refreshBeingProperties(player.get(), return_value);
+		refreshPlayerProperties(player.get(), return_value);
 	}
 
 	catch (trogdor::entity::EntityException &e) {

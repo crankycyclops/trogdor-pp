@@ -20,6 +20,10 @@ ZEND_EXTERN_MODULE_GLOBALS(being);
 
 /*****************************************************************************/
 
+// Utility function that refreshes the properties of an instance of
+// Trogdor\Entity\Player based on their current underlying values.
+extern void refreshPlayerProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj);
+
 // Declares the PHP Player class to the Zend engine.
 extern void definePlayerClass();
 

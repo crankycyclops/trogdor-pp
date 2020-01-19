@@ -15,6 +15,15 @@ static const zend_function_entry thingMethods[] =  {
 /*****************************************************************************/
 /*****************************************************************************/
 
+// Utility functions
+
+void refreshThingProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
+
+	// TODO
+}
+
+/*****************************************************************************/
+
 void defineThingClass() {
 
 	zend_class_entry thingClass;

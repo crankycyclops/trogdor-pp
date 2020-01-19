@@ -15,6 +15,15 @@ static const zend_function_entry placeMethods[] =  {
 /*****************************************************************************/
 /*****************************************************************************/
 
+// Utility functions
+
+void refreshPlaceProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
+
+	// TODO
+}
+
+/*****************************************************************************/
+
 void definePlaceClass() {
 
 	zend_class_entry placeClass;

@@ -20,6 +20,10 @@ ZEND_EXTERN_MODULE_GLOBALS(entity);
 
 /*****************************************************************************/
 
+// Utility function that refreshes the properties of an instance of
+// Trogdor\Entity\Place based on their current underlying values.
+extern void refreshPlaceProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj);
+
 // Declares the PHP Place class to the Zend engine.
 extern void definePlaceClass();
 

@@ -15,6 +15,15 @@ static const zend_function_entry beingMethods[] =  {
 /*****************************************************************************/
 /*****************************************************************************/
 
+// Utility functions
+
+void refreshBeingProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
+
+	// TODO
+}
+
+/*****************************************************************************/
+
 void defineBeingClass() {
 
 	zend_class_entry beingClass;
