@@ -29,6 +29,7 @@ void PHPStreamOut::flush() {
 	});
 
 	cd->outBufferMutex.unlock();
+	clear();
 }
 
 std::unique_ptr<trogdor::Trogout> PHPStreamOut::clone() {

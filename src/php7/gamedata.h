@@ -15,6 +15,14 @@
 // keys will be of type trogdor::Game *.
 struct customConstructedData {
 
+	// Each time a player is inserted into the game, a thread is created to
+	// execute that player's commands.
+	std::unordered_map<
+		trogdor::entity::Player *,
+		std::thread,
+		std::hash<trogdor::entity::Player *>
+	> playerThreads;
+
 	// PHPStreamIn will use these two variables to make the thread that calls
 	// it wait until there's a value in the input buffer.
 	std::mutex inputConditionMutex;

@@ -24,6 +24,60 @@ std::unordered_map<
 /*****************************************************************************/
 /*****************************************************************************/
 
+// Private utility functions
+
+// Run this inside a thread to listen for a player's commands.
+static void playerListen(trogdor::Game *game, trogdor::entity::Player *player) {
+
+	while (game->inProgress() && game->playerIsInGame(player->getName())) {
+		game->processCommand(player);
+	}
+}
+
+/*****************************************************************************/
+
+// Sends an empty command to the specified player. Primarily useful for
+// terminating a thread listening for player commands after the game has been
+// stopped.
+static void playerSendNullCommand(trogdor::Game *gameObjPtr, trogdor::entity::Player *player) {
+
+	std::string playerName = player->getName();
+
+	// Simulate an empty command so the thread will exit
+	customConstructedDataMap[gameObjPtr]->inBufferMutex.lock();
+	customConstructedDataMap[gameObjPtr]->inBuffer[playerName].push("");
+	customConstructedDataMap[gameObjPtr]->inBufferMutex.unlock();
+	customConstructedDataMap[gameObjPtr]->inputCondition.notify_all();
+}
+
+/*****************************************************************************/
+
+// Stops the game and joins all the player command threads.
+static void stopAndJoinPlayerThreads(trogdor::Game *gameObjPtr) {
+
+	try {
+
+		gameObjPtr->stop();
+
+		// Threads that are started by Trogdor\Game\createPlayer to listen to
+		// the player's commands will end when the game stops and need to be
+		// joined.
+		for (auto &playerThreadEntry: customConstructedDataMap[gameObjPtr]->playerThreads) {
+			playerSendNullCommand(gameObjPtr, playerThreadEntry.first);
+			playerThreadEntry.second.join();
+		}
+
+		customConstructedDataMap[gameObjPtr]->playerThreads.clear();
+	}
+
+	catch (trogdor::Exception &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(baseException), e.what(), 0);
+	}
+}
+
+/*****************************************************************************/
+/*****************************************************************************/
+
 // Custom Object Handlers
 // See: http://blog.jpauli.tech/2016-01-14-php-7-objects-html/
 
@@ -53,7 +107,7 @@ static void destroyGameObject(zend_object *object TSRMLS_DC) {
 	// If the game is running and hasn't been persisted, be polite and stop it
 	// before it's freed
 	if (!ZOBJ_TO_GAMEOBJ(object)->realGameObject.persistent) {
-		ZOBJ_TO_GAMEOBJ(object)->realGameObject.obj->stop();
+		stopAndJoinPlayerThreads(ZOBJ_TO_GAMEOBJ(object)->realGameObject.obj);
 	}
 
 	zend_objects_destroy_object(object);
@@ -267,7 +321,20 @@ PHP_METHOD(Game, start) {
 	}
 
 	try {
+
 		gameObjPtr->start();
+
+		// If there are any players already in the game, that means we're
+		// resuming a paused game and need to spin up new threads to listen
+		// for each player's commands.
+		for (auto player = gameObjPtr->playersBegin();
+		player != gameObjPtr->playersEnd(); player++) {
+
+			trogdor::entity::Player *pPtr = dynamic_cast<trogdor::entity::Player *>(player->second.get());
+			std::thread playerThread(playerListen, gameObjPtr, pPtr);
+
+			customConstructedDataMap[gameObjPtr]->playerThreads[pPtr] = std::move(playerThread);
+		}
 	}
 
 	catch (trogdor::Exception &e) {
@@ -288,15 +355,8 @@ PHP_METHOD(Game, stop) {
 		php_error_docref(NULL, E_WARNING, "expects no arguments");
 	}
 
-	try {
-		gameObjPtr->stop();
-	}
-
-	catch (trogdor::Exception &e) {
-		zend_throw_exception(EXCEPTION_GLOBALS(baseException), e.what(), 0);
-	}
-
-	RETURN_NULL()
+	stopAndJoinPlayerThreads(gameObjPtr);
+	RETURN_NULL();
 }
 
 /*****************************************************************************/
@@ -483,6 +543,16 @@ PHP_METHOD(Game, createPlayer) {
 		// into one, and if I ever need to separate them in the future I'll
 		// revisit this.
 		gameObjPtr->insertPlayer(player);
+
+		// If the game has already started, spin off a thread to listen for
+		// the new player's commands
+		if (gameObjPtr->inProgress()) {
+
+			trogdor::entity::Player *pPtr = dynamic_cast<trogdor::entity::Player *>(player.get());
+			std::thread playerThread(playerListen, gameObjPtr, pPtr);
+
+			customConstructedDataMap[gameObjPtr]->playerThreads[pPtr] = std::move(playerThread);
+		}
 
 		// Per usual, wrap the actual Player object inside its PHP counterpart
 		if (SUCCESS != object_init_ex(return_value, PLAYER_GLOBALS(classEntry))) {

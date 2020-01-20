@@ -14,6 +14,8 @@ trogdor::Trogin &PHPStreamIn::operator>> (std::string &val) {
 	std::unique_lock<std::mutex> lock(cd->inputConditionMutex);
 	cd->inputCondition.wait(lock, [&]() {
 
+std::cout << "input condition met!" << std::endl;
+
 		if (cd->inBuffer.end() == cd->inBuffer.find(entity->getName())) {
 			return false;
 		} else {

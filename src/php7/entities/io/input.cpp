@@ -87,6 +87,9 @@ PHP_METHOD(Input, send) {
 
 	customConstructedDataMap[ePtr->getGame()]->inBuffer[ePtr->getName()].push(inputStr);
 	customConstructedDataMap[ePtr->getGame()]->inBufferMutex.unlock();
+
+	// Wake up PHPStreamIn(), which will then consume this value from the buffer
+	customConstructedDataMap[ePtr->getGame()]->inputCondition.notify_all();
 }
 
 /*****************************************************************************/
