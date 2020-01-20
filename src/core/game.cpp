@@ -210,8 +210,13 @@ namespace trogdor {
       std::shared_ptr<Command> command = std::make_shared<Command>(vocabulary);
       command->read(player);
 
+      // don't do anything if the user didn't actually enter a command
+      if (command->isNull()) {
+         return;
+      }
+
       // do nothing if we're not in a running state
-      if (!inGame) {
+      else if (!inGame) {
          player->out() << "Game is stopped and not accepting commands." << std::endl;
          return;
       }
