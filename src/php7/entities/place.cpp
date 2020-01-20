@@ -19,7 +19,7 @@ static const zend_function_entry placeMethods[] =  {
 
 void refreshPlaceProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
 
-	// TODO
+	refreshEntityProperties(ePtr, phpEntityObj);
 }
 
 /*****************************************************************************/

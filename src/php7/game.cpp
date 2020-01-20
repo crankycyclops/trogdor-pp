@@ -364,10 +364,7 @@ PHP_METHOD(Game, getEntity) {
 					RETURN_NULL();
 				}
 
-				refreshEntityProperties(ePtr, return_value);
-				refreshPlaceProperties(ePtr, return_value);
 				refreshRoomProperties(ePtr, return_value);
-
 				break;
 
 			case ENTITY_OBJECT:
@@ -376,10 +373,7 @@ PHP_METHOD(Game, getEntity) {
 					RETURN_NULL();
 				}
 
-				refreshEntityProperties(ePtr, return_value);
-				refreshThingProperties(ePtr, return_value);
 				refreshObjectProperties(ePtr, return_value);
-
 				break;
 
 			case ENTITY_CREATURE:
@@ -388,11 +382,7 @@ PHP_METHOD(Game, getEntity) {
 					RETURN_NULL();
 				}
 
-				refreshEntityProperties(ePtr, return_value);
-				refreshThingProperties(ePtr, return_value);
-				refreshBeingProperties(ePtr, return_value);
 				refreshCreatureProperties(ePtr, return_value);
-
 				break;
 
 			case ENTITY_PLAYER:
@@ -401,11 +391,7 @@ PHP_METHOD(Game, getEntity) {
 					RETURN_NULL();
 				}
 
-				refreshEntityProperties(ePtr, return_value);
-				refreshThingProperties(ePtr, return_value);
-				refreshBeingProperties(ePtr, return_value);
 				refreshPlayerProperties(ePtr, return_value);
-
 				break;
 
 			default:

@@ -19,7 +19,7 @@ static const zend_function_entry roomMethods[] =  {
 
 void refreshRoomProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
 
-	// TODO
+	refreshPlaceProperties(ePtr, phpEntityObj);
 }
 
 /*****************************************************************************/

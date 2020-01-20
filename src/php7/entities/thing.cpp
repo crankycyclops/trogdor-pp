@@ -19,7 +19,7 @@ static const zend_function_entry thingMethods[] =  {
 
 void refreshThingProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
 
-	// TODO
+	refreshEntityProperties(ePtr, phpEntityObj);
 }
 
 /*****************************************************************************/

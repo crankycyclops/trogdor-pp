@@ -32,8 +32,7 @@ static const zend_function_entry playerMethods[] =  {
 
 void refreshPlayerProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
 
-	// Placeholder in case I ever have player-specific properties to set in the
-	// future
+	refreshBeingProperties(ePtr, phpEntityObj);
 }
 
 /*****************************************************************************/

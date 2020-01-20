@@ -19,7 +19,7 @@ static const zend_function_entry creatureMethods[] =  {
 
 void refreshCreatureProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj) {
 
-	// TODO
+	refreshBeingProperties(ePtr, phpEntityObj);
 }
 
 /*****************************************************************************/
