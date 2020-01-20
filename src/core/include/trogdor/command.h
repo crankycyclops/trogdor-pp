@@ -25,6 +25,9 @@ namespace trogdor {
          // Reference to the game's vocabulary (used for lookups)
          const Vocabulary &vocabulary;
 
+         // True if the user entered an empty command
+         bool nullCommand;
+
          // Note that a command is presumed invalid until successfully parsed
          bool invalid;
 
@@ -53,6 +56,14 @@ namespace trogdor {
             Output: (none)
          */
          inline bool isInvalid() const {return invalid;}
+
+         /*
+            Returns true if the user entered an empty command.
+
+            Input: (none)
+            Output: (none)
+         */
+         inline bool isNull() const {return nullCommand;}
 
          /*
             Returns const reference to the vocabulary.

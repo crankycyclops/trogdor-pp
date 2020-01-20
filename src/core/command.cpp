@@ -16,6 +16,9 @@ namespace trogdor {
       indirectObject = "";
       preposition = "";
 
+      // true if the user entered an empty command
+      nullCommand = false;
+
       // command is invalid until we successfully parse a command
       invalid = true;
    }
@@ -25,12 +28,16 @@ namespace trogdor {
 
       std::string commandStr;
 
-      // prompt the user until we get a response
-      do {
-         user->out() << "\n> ";
-         user->out().flush();
-         user->in() >> commandStr;
-      } while (0 == commandStr.length());
+      // Prompt the user for a response
+      user->out() << "\n> ";
+      user->out().flush();
+      user->in() >> commandStr;
+
+      trim(commandStr);
+
+      if (!commandStr.length()) {
+         nullCommand = true;
+      }
 
       parse(commandStr);
    }
