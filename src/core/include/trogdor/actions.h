@@ -9,7 +9,7 @@ namespace trogdor {
 
 
    /*
-      The Quit action stops the game, ordinarily returning control to the client.
+      The Quit action removes the player who issued the command from the game.
    */
    class QuitAction: public Action {
 
