@@ -531,6 +531,7 @@ PHP_METHOD(Game, createPlayer) {
 			std::make_unique<PHPStreamErr>()
 		);
 
+		dynamic_cast<PHPStreamIn *>(&(player->in()))->setEntity(player.get());
 		dynamic_cast<PHPStreamOut *>(&(player->out()))->setEntity(player.get());
 
 		// Originally, I wanted to separate this into another insertPlayer
