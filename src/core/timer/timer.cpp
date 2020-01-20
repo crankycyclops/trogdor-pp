@@ -47,10 +47,6 @@ namespace trogdor {
 
    void Timer::tick() {
 
-      // look into std::chrono::high_resolution_clock for more accurate timekeeping
-      static std::chrono::milliseconds tickInterval(TICK_MILLISECONDS);
-      std::this_thread::sleep_for(tickInterval);
-
       // increment the current game time
       game->timerMutex.lock();
       time++;
@@ -100,8 +96,30 @@ namespace trogdor {
 
          jobThread = std::make_unique<std::thread>([](Timer *timerObj) {
 
+            // How long the thread should sleep before checking if it should
+            // advance the clock
+            static std::chrono::milliseconds threadSleepTime(THREAD_SLEEP_MILLISECONDS);
+
+            // The interval of time between clock ticks
+            static std::chrono::milliseconds tickInterval(TICK_MILLISECONDS);
+
+            // The last time the clock ticked
+            static std::chrono::milliseconds lastTime = std::chrono::duration_cast<std::chrono::milliseconds>(
+               std::chrono::system_clock::now().time_since_epoch()
+            );
+
             while ((timerObj)->active) {
-               timerObj->tick();
+
+               std::chrono::milliseconds curTime = std::chrono::duration_cast<std::chrono::milliseconds>(
+                  std::chrono::system_clock::now().time_since_epoch()
+               );
+
+               if (curTime - lastTime >= tickInterval) {
+                  timerObj->tick();
+                  lastTime = curTime;
+               }
+
+               std::this_thread::sleep_for(threadSleepTime);
             }
          }, this);
 
