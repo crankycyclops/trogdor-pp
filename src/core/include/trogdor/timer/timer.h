@@ -13,8 +13,12 @@
 
 #include <trogdor/game.h>
 
-// number of milliseconds in each clock tick
+// Number of milliseconds in each clock tick
 constexpr int TICK_MILLISECONDS = 1000;
+
+// How long the timer thread should sleep before checking to see if it needs to
+// advance the clock
+constexpr int THREAD_SLEEP_MILLISECONDS = 100;
 
 
 namespace trogdor {
