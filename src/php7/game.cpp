@@ -341,7 +341,7 @@ PHP_METHOD(Game, start) {
 		zend_throw_exception(EXCEPTION_GLOBALS(baseException), e.what(), 0);
 	}
 
-	RETURN_NULL()
+	RETURN_NULL();
 }
 
 /*****************************************************************************/
