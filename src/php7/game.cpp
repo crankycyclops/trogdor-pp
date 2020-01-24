@@ -669,6 +669,18 @@ void depersistGame(size_t id) {
 // Call this during MSHUTDOWN to delete all remaining Game pointers.
 void reapPersistedGames() {
 
+	// Optimization: if I stop all the games first, then the timer threads for
+	// each game will already have exited and will join right away. If I don't
+	// do this, then the effect will be that I stop one game, wait for the
+	// thread to stop executing, then stop the next game, rinse and repeat.
+	// After some rough measuring, I've observed that this cuts the amount of
+	// time it takes for MSHUTDOWN to complete by about half.
+	for (auto &persistedGameEntry: persistedGames) {
+		if (nullptr != persistedGameEntry) {
+			persistedGameEntry->stop();
+		}
+	}
+
 	while (!persistedGames.empty()) {
 
 		if (nullptr != persistedGames.back()) {
