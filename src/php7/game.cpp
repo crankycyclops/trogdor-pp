@@ -669,8 +669,10 @@ void depersistGame(size_t id) {
 // Call this during MSHUTDOWN to delete all remaining Game pointers.
 void reapPersistedGames() {
 
-	// Optimization: this pre-step cuts the amount of time it takes for
-	// MSHUTDOWN to finish by about half.
+	// Optimization: this pre-step along with its corresponding call to
+	// game->shutdown() in the next loop reduces MSHUTDOWN time from many
+	// seconds (in the case where there are a large number of persisted games)
+	// to almost nothing.
 	for (auto &persistedGameEntry: persistedGames) {
 		if (nullptr != persistedGameEntry) {
 			persistedGameEntry->deactivate();
