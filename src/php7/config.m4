@@ -1,6 +1,6 @@
 PHP_ARG_ENABLE(trogdor,
-	[Whether to enable libtrogdor (Trogdor-pp) support],
-	[  --enable-trogdor         Enable libtrogdor (Trogdor-pp) support], yes)
+	[Whether to enable Trogdor++ support],
+	[  --enable-trogdor         Enable Trogdor++ support], yes)
 
 PHP_ARG_WITH(lua_version,
 	[Specifies the version of Lua libtrogdor was compiled against],

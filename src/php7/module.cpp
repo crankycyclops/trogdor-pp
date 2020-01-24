@@ -10,7 +10,7 @@
 PHP_MINFO_FUNCTION(trogdor) {
 
 	php_info_print_table_start();
-	php_info_print_table_row(2, "Trogdor-pp Support", "enabled");
+	php_info_print_table_row(2, "Trogdor++ Support", "enabled");
 	php_info_print_table_row(2, "Persistent Games", std::to_string(getNumPersistedGames()).c_str());
 	php_info_print_table_end();
 }

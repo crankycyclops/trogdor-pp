@@ -1,4 +1,4 @@
-A PHP 7 module that allows one or more Trogdor-pp games to run in PHP, and in conjunction with php-fpm can be used to create a game server.
+A PHP 7 module that allows one or more Trogdor++ games to run in PHP, and in conjunction with php-fpm can be used to create a game server.
 
 To build, issue the following commands:
 
