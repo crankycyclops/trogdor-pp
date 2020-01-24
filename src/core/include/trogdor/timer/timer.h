@@ -112,6 +112,46 @@ namespace trogdor {
          void stop();
 
          /*
+            Deactivates the timer, but does not join the timer thread. Should be
+            followed by a call to Timer::shutdown(). The only reason I provide
+            this as a separate method and make it public is because it makes an
+            optimization possible in the case where a lot of games need to be
+            stopped at once. Under ordinary circumstances, you should only call
+            start() and stop() directly.
+
+            If you have to use this, it should always be followed by a call to
+            shutdown, like so:
+
+            timer->deactivate();
+            ... any necessary cleanup code ...
+            timer->shutdown();
+
+            Input: (none)
+            Output: (none)
+         */
+         void deactivate();
+         /*
+
+            Shuts down the timer thread after the timer has been deactivated.
+            Should only be called after a call to deactivate(). The only reason
+            I provide this as a separate method and make it public is because it
+            makes an optimization possible in the case where a lot of games need
+            to be stopped at once. Under ordinary circumstances, you should only
+            call start() and stop() directly.
+
+            If you have to use this, it should always be preceded by a call to
+            deactivate, like so:
+
+            timer->deactivate();
+            ... any necessary cleanup code ...
+            timer->shutdown();
+
+            Input: (none)
+            Output: (none)
+         */
+         void shutdown();
+
+         /*
             Clears the job queue and resets the current time to 0.  If the timer
             is still running when reset is called, the timer will continue to
             run, starting at 0.
