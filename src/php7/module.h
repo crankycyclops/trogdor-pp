@@ -10,6 +10,7 @@
 
 extern "C" {
 	#include "php.h"
+	#include "ext/standard/info.h"
 }
 
 // This needs to be a true global

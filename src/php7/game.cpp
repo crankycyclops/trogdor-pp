@@ -618,8 +618,15 @@ static const zend_function_entry gameMethods[] =  {
 /*****************************************************************************/
 /*****************************************************************************/
 
+size_t getNumPersistedGames() {
+
+	return persistedGames.size();
+}
+
+/*****************************************************************************/
+
 // Retrive a persisted game by index
-extern trogdor::Game *getGameById(size_t id) {
+trogdor::Game *getGameById(size_t id) {
 
 	return persistedGames.size() > id ? persistedGames[id] : nullptr;
 }

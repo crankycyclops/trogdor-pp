@@ -60,6 +60,9 @@ ZEND_EXTERN_MODULE_GLOBALS(player);
 ZEND_EXTERN_MODULE_GLOBALS(entityin);
 ZEND_EXTERN_MODULE_GLOBALS(entityout);
 
+// Returns the current number of persisted games
+extern size_t getNumPersistedGames();
+
 // Retrive a persisted game by index
 extern trogdor::Game *getGameById(size_t id);
 
