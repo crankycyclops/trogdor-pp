@@ -132,6 +132,23 @@ namespace trogdor {
 
    /***************************************************************************/
 
+   void Game::deactivate() {
+
+      resourceMutex.lock();
+      inGame = false;
+      timer->deactivate();
+      resourceMutex.unlock();
+   }
+
+   /***************************************************************************/
+
+   void Game::shutdown() {
+
+      timer->shutdown();
+   }
+
+   /***************************************************************************/
+
    std::shared_ptr<Player> Game::createPlayer(std::string name, std::unique_ptr<Trogout> outStream,
    std::unique_ptr<Trogin> inStream, std::unique_ptr<Trogerr> errStream) {
 

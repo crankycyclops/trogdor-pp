@@ -129,18 +129,30 @@ namespace trogdor {
 
 /******************************************************************************/
 
+void Timer::deactivate() {
+
+   game->timerMutex.lock();
+   active = false;
+   game->timerMutex.unlock();
+}
+
+/******************************************************************************/
+
+void Timer::shutdown() {
+
+   if (jobThread && jobThread->joinable()) {
+      jobThread->join();
+      jobThread = nullptr;
+   }
+}
+
+/******************************************************************************/
+
    void Timer::stop() {
 
       if (active) {
-
-         game->timerMutex.lock();
-         active = false;
-         game->timerMutex.unlock();
-
-         if (jobThread && jobThread->joinable()) {
-            jobThread->join();
-            jobThread = nullptr;
-         }
+         deactivate();
+         shutdown();
       }
    }
 

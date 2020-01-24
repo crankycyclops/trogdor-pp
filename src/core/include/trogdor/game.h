@@ -805,6 +805,46 @@ namespace trogdor {
          void stop();
 
          /*
+            Deactivates the game and timer without calling Timer::stop(), which
+            waits to join on the timer thread. The only reason I added this
+            method and made it public was to enable an optimization where you
+            need to stop a large number of games at once and it would take too
+            long to stop each timer serially. You should NOT call this method
+            unless you have a good reason to.
+
+            If you have to use this, it should always be followed by a call to
+            shutdown, like so:
+
+            game->deactivate();
+            ... any necessary cleanup code ...
+            game->shutdown();
+
+            Input: (none)
+            Output: (none)
+         */
+         void deactivate();
+
+         /*
+            Stops the game and timer after a call to deactivate(). Should never
+            be called until after a previous call to deactivate(). The only
+            reason I added this method and made it public was to enable an
+            optimization where you need to stop a large number of games at once
+            and it would take too long to stop each timer serially. You should
+            NOT call this method unless you have a good reason to.
+
+            If you have to use this, it should be done in the following
+            order:
+
+            game->deactivate();
+            ... any necessary cleanup code ...
+            game->shutdown();
+
+            Input: (none)
+            Output: (none)
+         */
+         void shutdown();
+
+         /*
             Returns the status of the game.
 
             Input: (none)
