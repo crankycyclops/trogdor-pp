@@ -656,10 +656,10 @@ void depersistGame(size_t id) {
 // Call this during MSHUTDOWN to delete all remaining Game pointers.
 void reapPersistedGames() {
 
-	// Optimization: this pre-step along with its corresponding call to
-	// game->shutdown() in the next loop reduces MSHUTDOWN time from many
-	// seconds (in the case where there are a large number of persisted games)
-	// to almost nothing.
+	// Optimization: this pre-step, along with its corresponding call to
+	// game->shutdown() in the next loop instead of game->stop(), reduces
+	// MSHUTDOWN time from many seconds (in the case where there are hundreds
+	// or thousands of persisted games) to almost nothing.
 	for (auto &persistedGameEntry: persistedGames) {
 		if (nullptr != persistedGameEntry) {
 			persistedGameEntry->deactivate();
@@ -690,10 +690,20 @@ void defineGameClass() {
 	GAME_GLOBALS(classEntry)->ce_flags |= ZEND_ACC_FINAL;
 
 	// Declare the Game class's properties
-	zend_declare_property_null(GAME_GLOBALS(classEntry), "persistentId", sizeof("persistentId") - 1, ZEND_ACC_PRIVATE TSRMLS_CC);
+	zend_declare_property_null(
+		GAME_GLOBALS(classEntry),
+		"persistentId",
+		sizeof("persistentId") - 1,
+		ZEND_ACC_PRIVATE
+		TSRMLS_CC
+	);
 
 	// Start out with default object handlers
-	memcpy(&gameObjectHandlers, zend_get_std_object_handlers(), sizeof(gameObjectHandlers));
+	memcpy(
+		&gameObjectHandlers,
+		zend_get_std_object_handlers(),
+		sizeof(gameObjectHandlers)
+	);
 
 	// Set the specific custom object handlers we need
 	GAME_GLOBALS(classEntry)->create_object = createGameObject;
