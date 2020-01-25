@@ -585,18 +585,6 @@ PHP_METHOD(Game, createPlayer) {
 
 /*****************************************************************************/
 
-ZEND_BEGIN_ARG_INFO(arginfoGameInsertPlayer, 0)
-	ZEND_ARG_INFO(0, player)
-ZEND_END_ARG_INFO()
-
-PHP_METHOD(Game, insertPlayer) {
-
-	// TODO
-	RETURN_NULL();
-}
-
-/*****************************************************************************/
-
 // PHP Game class methods
 static const zend_function_entry gameMethods[] =  {
 	PHP_ME(Game,             get, arginfoGameGet, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
@@ -611,7 +599,6 @@ static const zend_function_entry gameMethods[] =  {
 	PHP_ME(Game,         getMeta, arginfoGameGetMeta, ZEND_ACC_PUBLIC)
 	PHP_ME(Game,         setMeta, arginfoGameSetMeta, ZEND_ACC_PUBLIC)
 	PHP_ME(Game,    createPlayer, arginfoGameCreatePlayer, ZEND_ACC_PUBLIC)
-	PHP_ME(Game,    insertPlayer, arginfoGameInsertPlayer, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 
