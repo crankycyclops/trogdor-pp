@@ -7,6 +7,7 @@ extern "C" {
 	#include "php.h"
 }
 
+#include "compatibility.h"
 #include "entities/io/input.h"
 #include "entities/io/output.h"
 
@@ -60,7 +61,7 @@ extern void attachOutputToEntity(trogdor::entity::Entity *ePtr, zval *phpEntityO
 extern void refreshEntityProperties(trogdor::entity::Entity *ePtr, zval *phpEntityObj);
 
 // Overrides zend_std_write_property and makes certain properties read-only
-extern void writeProperty(zval *object, zval *member, zval *value, void **cache_slot);
+extern WRITE_PROP_RETURN_TYPE writeProperty(zval *object, zval *member, zval *value, void **cache_slot);
 
 // Declares the PHP Entity class to the Zend engine.
 extern void defineEntityClass();

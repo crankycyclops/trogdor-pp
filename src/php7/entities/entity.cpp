@@ -54,7 +54,7 @@ static void freeEntityObject(zend_object *object TSRMLS_DC) {
 
 /*****************************************************************************/
 
-void writeProperty(zval *object, zval *member, zval *value, void **cache_slot) {
+WRITE_PROP_RETURN_TYPE writeProperty(zval *object, zval *member, zval *value, void **cache_slot) {
 
 	if (IS_STRING == Z_TYPE_P(member) && (
 		0 == strcmp("input", (Z_STRVAL_P(member))) ||
@@ -64,8 +64,16 @@ void writeProperty(zval *object, zval *member, zval *value, void **cache_slot) {
 			+ Z_STRVAL_P(member) + "'";
 		php_error_docref(NULL, E_WARNING, warning.c_str());
 	} else {
-		zend_std_write_property(object, member, value, cache_slot);
+		#if ZEND_MODULE_API_NO >= 20190902
+			return zend_std_write_property(object, member, value, cache_slot);
+		#else
+			zend_std_write_property(object, member, value, cache_slot);
+		#endif
 	}
+
+	#if ZEND_MODULE_API_NO >= 20190902
+		return object;
+	#endif
 }
 
 /*****************************************************************************/
