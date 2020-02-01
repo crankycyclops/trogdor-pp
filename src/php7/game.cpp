@@ -131,6 +131,24 @@ static void freeGameObject(zend_object *object TSRMLS_DC) {
 
 // Game methods
 
+PHP_METHOD(Game, info) {
+
+	zval version;
+
+	array_init(return_value);
+	array_init(&version);
+
+	add_assoc_long(&version, "major", PHP_TROGDOR_VERSION_MAJOR);
+	add_assoc_long(&version, "minor", PHP_TROGDOR_VERSION_MINOR);
+	add_assoc_long(&version, "patch", PHP_TROGDOR_VERSION_PATCH);
+
+	add_assoc_zval(return_value, "version", &version);
+	add_assoc_string(return_value, "built", __DATE__ ", " __TIME__);
+	add_assoc_long(return_value, "numPersistentGames", getNumPersistedGames());
+}
+
+/*****************************************************************************/
+
 ZEND_BEGIN_ARG_INFO(arginfoGameGet, 0)
 	ZEND_ARG_INFO(0, id)
 ZEND_END_ARG_INFO()
@@ -587,6 +605,7 @@ PHP_METHOD(Game, createPlayer) {
 
 // PHP Game class methods
 static const zend_function_entry gameMethods[] =  {
+	PHP_ME(Game,            info, NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 	PHP_ME(Game,             get, arginfoGameGet, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 	PHP_ME(Game,     __construct, arginfoGameCtor, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 	PHP_ME(Game, getPersistentId, NULL, ZEND_ACC_PUBLIC)

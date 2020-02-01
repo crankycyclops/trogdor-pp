@@ -113,7 +113,7 @@ zend_module_entry trogdor_module_entry = {
 	PHP_MINFO(trogdor),
 
 	#if ZEND_MODULE_API_NO >= 20010901
-	MODULE_VERSION,
+	PHP_TROGOR_VERSION,
 	#endif
 
 	STANDARD_MODULE_PROPERTIES
