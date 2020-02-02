@@ -76,6 +76,43 @@ static void stopAndJoinPlayerThreads(trogdor::Game *gameObjPtr) {
 }
 
 /*****************************************************************************/
+
+// Gets the game referenced by id and instantiates a \Trogdor\Game object for it
+// in game.
+static bool getGame(zval *game, size_t id) {
+
+	trogdor::Game *gameObj = getGameById(id);
+
+	// Instantiate a new Trogdor\Game object and assign to it the persisted
+	// instange of trogdor::Game.
+	if (nullptr != gameObj) {
+
+		// Note: return_value is a global defined somewhere by PHP. I spent
+		// some time banging my head against the wall until I realized that.
+		if (SUCCESS != object_init_ex(game, GAME_GLOBALS(classEntry))) {
+			return false;
+		}
+
+		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(game))->realGameObject.persistent = true;
+		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(game))->realGameObject.id = id;
+		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(game))->realGameObject.obj = gameObj;
+
+		// Create a new instance of customConstructedData that will contain data
+		// that can't be stored in gameObject.customData.
+		if (customConstructedDataMap.end() == customConstructedDataMap.find(gameObj)) {
+			customConstructedDataMap[gameObj] = std::make_unique<customConstructedData>();
+		}
+
+		zend_update_property_long(GAME_GLOBALS(classEntry), game, "persistentId", sizeof("persistentId") - 1, id TSRMLS_DC);
+		return true;
+	}
+
+	else {
+		return false;
+	}
+}
+
+/*****************************************************************************/
 /*****************************************************************************/
 
 // Custom Object Handlers
@@ -175,33 +212,34 @@ PHP_METHOD(Game, get) {
 		php_error_docref(NULL, E_ERROR, "expected exactly 1 parameter (Persistent Game object id)");
 	}
 
-	trogdor::Game *gameObj = getGameById(id);
-
-	// Instantiate a new Trogdor\Game object and assign to it the persisted
-	// instange of trogdor::Game.
-	if (nullptr != gameObj) {
-
-		// Note: return_value is a global defined somewhere by PHP. I spent
-		// some time banging my head against the wall until I realized that.
-		if (SUCCESS != object_init_ex(return_value, GAME_GLOBALS(classEntry))) {
-			RETURN_NULL();
-		}
-
-		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.persistent = true;
-		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.id = id;
-		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(return_value))->realGameObject.obj = gameObj;
-
-		// Create a new instance of customConstructedData that will contain data
-		// that can't be stored in gameObject.customData.
-		if (customConstructedDataMap.end() == customConstructedDataMap.find(gameObj)) {
-			customConstructedDataMap[gameObj] = std::make_unique<customConstructedData>();
-		}
-
-		zend_update_property_long(GAME_GLOBALS(classEntry), return_value, "persistentId", sizeof("persistentId") - 1, id TSRMLS_DC);
-	}
-
-	else {
+	// If getGame is successful, it will have already set the return value by
+	// the time this function falls out of scope.
+	else if (!getGame(return_value, id)) {
 		RETURN_NULL();
+	}
+}
+
+/*****************************************************************************/
+
+// Returns an array of \Trogdor\Game instances corresponding to every persistent
+// game.
+PHP_METHOD(Game, getAll) {
+
+	size_t rvIndex = 0;
+
+	array_init(return_value);
+
+	for (size_t id = 0; id < persistedGames.size(); id++) {
+
+		if (persistedGames[id]) {
+
+			zval game;
+
+			if (getGame(&game, id)) {
+				add_index_zval(return_value, rvIndex, &game);
+				rvIndex++;
+			}
+		}
 	}
 }
 
@@ -621,6 +659,7 @@ PHP_METHOD(Game, createPlayer) {
 static const zend_function_entry gameMethods[] =  {
 	PHP_ME(Game,            info, NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 	PHP_ME(Game,             get, arginfoGameGet, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+	PHP_ME(Game,          getAll, NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 	PHP_ME(Game,     __construct, arginfoGameCtor, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 	PHP_ME(Game, getPersistentId, NULL, ZEND_ACC_PUBLIC)
 	PHP_ME(Game,         persist, NULL, ZEND_ACC_PUBLIC)
