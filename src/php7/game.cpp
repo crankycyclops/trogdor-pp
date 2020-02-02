@@ -133,18 +133,30 @@ static void freeGameObject(zend_object *object TSRMLS_DC) {
 
 PHP_METHOD(Game, info) {
 
-	zval version;
+	zval libVersion;
+	zval extVersion;
+	zval buildTime;
 
 	array_init(return_value);
-	array_init(&version);
+	array_init(&libVersion);
+	array_init(&extVersion);
+	array_init(&buildTime);
 
-	add_assoc_long(&version, "major", PHP_TROGDOR_VERSION_MAJOR);
-	add_assoc_long(&version, "minor", PHP_TROGDOR_VERSION_MINOR);
-	add_assoc_long(&version, "patch", PHP_TROGDOR_VERSION_PATCH);
+	add_assoc_long(&libVersion, "major", TROGDOR_VERSION_MAJOR);
+	add_assoc_long(&libVersion, "minor", TROGDOR_VERSION_MINOR);
+	add_assoc_long(&libVersion, "patch", TROGDOR_VERSION_PATCH);
 
-	add_assoc_zval(return_value, "version", &version);
-	add_assoc_string(return_value, "built", __DATE__ " at " __TIME__);
-	add_assoc_long(return_value, "numPersistentGames", getNumPersistedGames());
+	add_assoc_long(&extVersion, "major", PHP_TROGDOR_VERSION_MAJOR);
+	add_assoc_long(&extVersion, "minor", PHP_TROGDOR_VERSION_MINOR);
+	add_assoc_long(&extVersion, "patch", PHP_TROGDOR_VERSION_PATCH);
+
+	add_assoc_string(&buildTime, "date", __DATE__);
+	add_assoc_string(&buildTime, "time", __TIME__);
+
+	add_assoc_zval(return_value, "versionLib", &libVersion);
+	add_assoc_zval(return_value, "versionExt", &extVersion);
+	add_assoc_zval(return_value, "builtOn", &buildTime);
+	add_assoc_long(return_value, "numPersistent", getNumPersistedGames());
 
 	// Allows a PHP script to determine at runtime whether or not it can
 	// utilize ZTS-dependent features of the extension

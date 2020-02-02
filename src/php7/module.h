@@ -1,6 +1,8 @@
 #ifndef PHP_TROGDOR_H
 #define PHP_TROGDOR_H
 
+#include <trogdor/version.h>
+
 #define MODULE_NAME     "trogdor"
 
 // A bit of mystical preprocessor wizardry
@@ -9,10 +11,13 @@
 
 // PHP Module version
 #define PHP_TROGDOR_VERSION_MAJOR 0
-#define PHP_TROGDOR_VERSION_MINOR 1
+#define PHP_TROGDOR_VERSION_MINOR 2
 #define PHP_TROGDOR_VERSION_PATCH 0
 
 #define PHP_TROGDOR_VERSION STR(PHP_TROGDOR_VERSION_MAJOR) "." STR(PHP_TROGDOR_VERSION_MINOR) "." STR(PHP_TROGDOR_VERSION_PATCH)
+
+// Core library version string
+#define TROGDOR_VERSION STR(TROGDOR_VERSION_MAJOR) "." STR(TROGDOR_VERSION_MINOR) "." STR(TROGDOR_VERSION_PATCH)
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

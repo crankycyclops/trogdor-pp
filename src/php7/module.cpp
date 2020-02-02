@@ -11,8 +11,9 @@ PHP_MINFO_FUNCTION(trogdor) {
 
 	php_info_print_table_start();
 	php_info_print_table_row(2, "Trogdor++ Support", "enabled");
+	php_info_print_table_row(2, "Trogdor++ Version", TROGDOR_VERSION);
 	php_info_print_table_row(2, "Extension Version", PHP_TROGDOR_VERSION);
-	php_info_print_table_row(2, "Built on", __DATE__ " at " __TIME__);
+	php_info_print_table_row(2, "Built", __DATE__ " at " __TIME__);
 
 	#ifdef ZTS
 		php_info_print_table_row(2, "ZTS", "yes");
