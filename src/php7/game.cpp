@@ -143,8 +143,16 @@ PHP_METHOD(Game, info) {
 	add_assoc_long(&version, "patch", PHP_TROGDOR_VERSION_PATCH);
 
 	add_assoc_zval(return_value, "version", &version);
-	add_assoc_string(return_value, "built", __DATE__ ", " __TIME__);
+	add_assoc_string(return_value, "built", __DATE__ " at " __TIME__);
 	add_assoc_long(return_value, "numPersistentGames", getNumPersistedGames());
+
+	// Allows a PHP script to determine at runtime whether or not it can
+	// utilize ZTS-dependent features of the extension
+	#ifdef ZTS
+		add_assoc_bool(return_value, "zts", 1);
+	#else
+		add_assoc_bool(return_value, "zts", 0);
+	#endif
 }
 
 /*****************************************************************************/

@@ -11,6 +11,15 @@ PHP_MINFO_FUNCTION(trogdor) {
 
 	php_info_print_table_start();
 	php_info_print_table_row(2, "Trogdor++ Support", "enabled");
+	php_info_print_table_row(2, "Extension Version", PHP_TROGDOR_VERSION);
+	php_info_print_table_row(2, "Built on", __DATE__ " at " __TIME__);
+
+	#ifdef ZTS
+		php_info_print_table_row(2, "ZTS", "yes");
+	#else
+		php_info_print_table_row(2, "ZTS", "no");
+	#endif
+
 	php_info_print_table_row(2, "Persistent Games", std::to_string(getNumPersistedGames()).c_str());
 	php_info_print_table_end();
 }
@@ -113,7 +122,7 @@ zend_module_entry trogdor_module_entry = {
 	PHP_MINFO(trogdor),
 
 	#if ZEND_MODULE_API_NO >= 20010901
-	PHP_TROGOR_VERSION,
+	PHP_TROGDOR_VERSION,
 	#endif
 
 	STANDARD_MODULE_PROPERTIES
