@@ -454,6 +454,12 @@ PHP_METHOD(Game, getMeta) {
 	char *key;
 	size_t keyLength;
 
+	// If I don't set the return value to a static variable, I get a corrupt
+	// value, probably because when the zval finally gets set based on the
+	// string, the function has already returned and the automatic variable
+	// along with it.
+	static std::string retVal;
+
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &keyLength) == FAILURE) {
 		RETURN_NULL();
 	}
@@ -461,7 +467,8 @@ PHP_METHOD(Game, getMeta) {
 	zval *thisPtr = getThis();
 	trogdor::Game *gameObjPtr = ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.obj;
 
-	RETURN_STRING(gameObjPtr->getMeta(key).c_str());
+	retVal = gameObjPtr->getMeta(key);
+	RETURN_STRING(retVal.c_str());
 }
 
 /*****************************************************************************/
