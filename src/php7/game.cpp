@@ -135,12 +135,10 @@ PHP_METHOD(Game, info) {
 
 	zval libVersion;
 	zval extVersion;
-	zval buildTime;
 
 	array_init(return_value);
 	array_init(&libVersion);
 	array_init(&extVersion);
-	array_init(&buildTime);
 
 	add_assoc_long(&libVersion, "major", TROGDOR_VERSION_MAJOR);
 	add_assoc_long(&libVersion, "minor", TROGDOR_VERSION_MINOR);
@@ -150,12 +148,8 @@ PHP_METHOD(Game, info) {
 	add_assoc_long(&extVersion, "minor", PHP_TROGDOR_VERSION_MINOR);
 	add_assoc_long(&extVersion, "patch", PHP_TROGDOR_VERSION_PATCH);
 
-	add_assoc_string(&buildTime, "date", __DATE__);
-	add_assoc_string(&buildTime, "time", __TIME__);
-
 	add_assoc_zval(return_value, "versionLib", &libVersion);
 	add_assoc_zval(return_value, "versionExt", &extVersion);
-	add_assoc_zval(return_value, "builtOn", &buildTime);
 	add_assoc_long(return_value, "numPersistent", getNumPersistedGames());
 
 	// Allows a PHP script to determine at runtime whether or not it can

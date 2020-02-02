@@ -10,10 +10,7 @@
 PHP_MINFO_FUNCTION(trogdor) {
 
 	php_info_print_table_start();
-	php_info_print_table_row(2, "Trogdor++ Support", "enabled");
-	php_info_print_table_row(2, "Trogdor++ Version", TROGDOR_VERSION);
-	php_info_print_table_row(2, "Extension Version", PHP_TROGDOR_VERSION);
-	php_info_print_table_row(2, "Built", __DATE__ " at " __TIME__);
+	php_info_print_table_row(2, "trogdor", "enabled");
 
 	#ifdef ZTS
 		php_info_print_table_row(2, "ZTS", "yes");
@@ -21,6 +18,8 @@ PHP_MINFO_FUNCTION(trogdor) {
 		php_info_print_table_row(2, "ZTS", "no");
 	#endif
 
+	php_info_print_table_row(2, "Trogdor++ Version", TROGDOR_VERSION);
+	php_info_print_table_row(2, "Extension Version", PHP_TROGDOR_VERSION);
 	php_info_print_table_row(2, "Persistent Games", std::to_string(getNumPersistedGames()).c_str());
 	php_info_print_table_end();
 }
