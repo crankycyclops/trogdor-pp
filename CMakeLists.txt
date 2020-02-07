@@ -160,7 +160,7 @@ if (Boost_FOUND)
 
 else(Boost_FOUND)
 
-	add_custom_target(trogdord echo "The Boost libraries and their headers must be installed in a place where CMake can find them to build trogdord. Exiting.")
+	add_custom_target(trogdord echo "The Boost libraries and their headers must be installed in a place where CMake can find them to build trogdord. If trogdord target was part of a 'make all', it's safe to install the other targets using 'make install'.")
 
 endif(Boost_FOUND)
 
