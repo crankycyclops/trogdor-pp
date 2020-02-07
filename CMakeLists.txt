@@ -16,6 +16,24 @@ set(CMAKE_CXX_FLAGS_RELEASE -O2)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# Don't force every optional component to build as a prerequisite to "make install"
+SET(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY True)
+
+###############################################################################
+
+# C++ Include files necessary to develop for the library
+add_custom_target(dev)
+
+install(DIRECTORY src/core/include/trogdor DESTINATION include COMPONENT dev)
+
+###############################################################################
+
+# Sample game data
+add_custom_target(data)
+
+install(FILES game.xml DESTINATION share/trogdor COMPONENT data)
+install(DIRECTORY script DESTINATION share/trogdor COMPONENT data)
+
 ###############################################################################
 
 add_library(trogdor SHARED
@@ -74,6 +92,9 @@ add_library(trogdor SHARED
 	src/core/entities/thing.cpp
 )
 
+# Installing the library should also install the headers and sample data
+add_dependencies(trogdor dev data)
+
 pkg_search_module(LIBXML REQUIRED libxml-2.0 libxml2 libxml>=2)
 pkg_search_module(LUA REQUIRED lua-$ENV{LUA_VERSION})
 
@@ -89,11 +110,12 @@ target_link_libraries(trogdor
 	PUBLIC lua$ENV{LUA_VERSION}
 )
 
-install(TARGETS trogdor DESTINATION lib)
-install(DIRECTORY src/core/include/trogdor DESTINATION include)
+install(TARGETS trogdor DESTINATION lib COMPONENT trogdor OPTIONAL)
 
 ###############################################################################
 
+# Build the example standalone game, which illustrates what a single player
+# client might look like
 add_executable(standalone
 	src/standalone/main.cpp
 	src/standalone/streamin.cpp
@@ -102,6 +124,8 @@ add_executable(standalone
 	src/standalone/actions/timeaction.cpp
 )
 
+add_dependencies(standalone trogdor)
+
 target_link_libraries(standalone
 	PUBLIC trogdor
 )
@@ -109,9 +133,7 @@ target_link_libraries(standalone
 # Default location where standalone looks for game.xml
 add_definitions(-DGAME_XML_DEFAULT_PATH=\"${CMAKE_INSTALL_PREFIX}/share/trogdor/game.xml\")
 
-install(TARGETS standalone DESTINATION bin)
-install(FILES game.xml DESTINATION share/trogdor)
-install(DIRECTORY script DESTINATION share/trogdor)
+install(TARGETS standalone DESTINATION bin COMPONENT standalone OPTIONAL)
 
 ###############################################################################
 
