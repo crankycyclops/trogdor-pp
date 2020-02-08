@@ -10,8 +10,7 @@
 using namespace boost::system;
 using boost::asio::ip::tcp;
 
-// TODO: move this to an appropriate place. I stole it from the old Dispatcher!
-static void establishConnection(std::shared_ptr<TCPConnection> connection, void *) {
+void TCPServer::establishConnection(std::shared_ptr<TCPConnection> connection, void *) {
 
 	// add connection to list of active connections
 	connection->getServer()->addActiveConnection(connection);
@@ -26,8 +25,7 @@ static void establishConnection(std::shared_ptr<TCPConnection> connection, void 
 
 /******************************************************************************/
 
-// TODO: stub for now, stolen from Dispatcher
-static void serveRequest(std::shared_ptr<TCPConnection> connection, void *) {
+void TCPServer::serveRequest(std::shared_ptr<TCPConnection> connection, void *) {
 
 	std::string request = connection->getBufferStr();
 	std::cout << "Request said: " << request << std::endl;

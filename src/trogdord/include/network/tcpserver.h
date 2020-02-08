@@ -26,14 +26,22 @@ class TCPServer {
 
 	private:
 
-		// active connections that need to be maintained
+		// active connections that need to be maintained.
 		std::list<std::shared_ptr<TCPConnection>> activeConnections;
 
 		// Accepts new socket connections
 		tcp::acceptor acceptor;
 
-		// Used to make sure serveConnections() only fires at a given interval
+		// Used to make sure serveConnections() only fires at a given interval.
 		boost::asio::deadline_timer timer;
+
+		// Creates a new instance of TCPConnection and sends it an
+		// acknowledgement to let it know it's ready to start accepting
+		// requests.
+		static void establishConnection(std::shared_ptr<TCPConnection> connection, void *);
+
+		// Processes a request that came in through the socket.
+		static void serveRequest(std::shared_ptr<TCPConnection> connection, void *);
 
 		// Handles an asynchronous accept. If there are no errors, the
 		// specified callback is called along with the specified argument.
