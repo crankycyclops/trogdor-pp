@@ -50,7 +50,7 @@ acceptor(io_service), timer(io_service, boost::posix_time::milliseconds(SERVE_SL
 	acceptor.open(endpoint.protocol());
 
 	// TODO: make these options configurable via a file in /etc
-	acceptor.set_option(tcp::acceptor::reuse_address(false));
+	acceptor.set_option(tcp::acceptor::reuse_address(true));
 	acceptor.set_option(tcp::acceptor::keep_alive(true));
 
 	acceptor.bind(endpoint);
