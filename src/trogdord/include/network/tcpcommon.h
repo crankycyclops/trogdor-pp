@@ -4,7 +4,7 @@
 
 // Response sent to incoming connections to let them know trogdord is ready to
 // send and receive commands
-#define READY ("READY")
+#define READY ("{\"status\":\"ready\"}")
 
 // Signals the end of a transmission
 #define EOT ('\0')

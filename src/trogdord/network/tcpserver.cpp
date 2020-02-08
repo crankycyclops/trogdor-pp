@@ -107,8 +107,6 @@ void TCPServer::startAccept(TCPConnection::callback_t callback, void *callbackAr
 
 void TCPServer::serveConnections() {
 
-	size_t nConnections = activeConnections.size();
-
 	// listen for new requests on already accepted connections
 	for (std::list<std::shared_ptr<TCPConnection>>::iterator i = activeConnections.begin();
 	i != activeConnections.end(); i++) {

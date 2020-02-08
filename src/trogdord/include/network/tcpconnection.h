@@ -47,7 +47,7 @@ class TCPConnection: public std::enable_shared_from_this<TCPConnection> {
 
 		// Constructor should only be called internally by create().
 		TCPConnection(boost::asio::io_service &io_service, TCPServer *s):
-			socket(io_service), server(s), inUse(false) {}
+			server(s), socket(io_service), inUse(false) {}
 
 		// Called after async_read_until() completes. Takes as input a callback
 		// function and a void pointer with an argument. Callback is only
