@@ -29,8 +29,10 @@ void TCPServer::establishConnection(std::shared_ptr<TCPConnection> connection, v
 
 void TCPServer::serveRequest(std::shared_ptr<TCPConnection> connection, void *) {
 
-	Dispatcher::get()->dispatch(connection->getBufferStr());
-	connection->setInUse(false);
+	connection->write(Dispatcher::get()->dispatch(connection->getBufferStr()) + EOT,
+	[] (std::shared_ptr<TCPConnection> connection, void *) {
+		connection->setInUse(false);
+	}, 0);
 }
 
 /******************************************************************************/

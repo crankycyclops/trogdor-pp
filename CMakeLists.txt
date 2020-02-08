@@ -144,10 +144,13 @@ if (Boost_FOUND)
 
 	add_executable(trogdord
 		src/trogdord/main.cpp
+		src/trogdord/json.cpp
 		src/trogdord/dispatcher.cpp
+		src/trogdord/exception/requestexception.cpp
 		src/trogdord/iostream/streamerr.cpp
 		src/trogdord/network/tcpconnection.cpp
-		src/trogdord/network/tcpserver.cpp	
+		src/trogdord/network/tcpserver.cpp
+		src/trogdord/scopes/controller.cpp
 	)
 
 	target_include_directories(trogdord
