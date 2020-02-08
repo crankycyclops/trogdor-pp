@@ -20,7 +20,10 @@ static std::unique_ptr<TCPServer> server;
 // Called whenever we receive SIGINT (CTRL-C) or SIGTERM.
 static void shutdownHandler(const boost::system::error_code& error, int signal_number) {
 
-	// TODO: destroy games here.
+	// Forces the server's destructor to be called, ensuring that any remaining
+	// connections are closed and that any other cleanup is performed before we
+	// exit.
+	server = nullptr;
 
 	std::cout << "\n" << "Shutting down Trogdord.\n" << std::endl;
 	exit(error ? EXIT_FAILURE : EXIT_SUCCESS);

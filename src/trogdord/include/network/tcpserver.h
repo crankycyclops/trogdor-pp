@@ -29,7 +29,10 @@ class TCPServer {
 		// active connections that need to be maintained
 		std::list<std::shared_ptr<TCPConnection>> activeConnections;
 
+		// Accepts new socket connections
 		tcp::acceptor acceptor;
+
+		// Used to make sure serveConnections() only fires at a given interval
 		boost::asio::deadline_timer timer;
 
 		// Handles an asynchronous accept. If there are no errors, the
@@ -59,6 +62,9 @@ class TCPServer {
 		// Contructor establishes that we're using IPv4 and that we're
 		// listening on port SERVER_PORT.
 		TCPServer(boost::asio::io_service &io_service, unsigned short port);
+
+		// Makes sure the server is cleanly shutdown
+		~TCPServer();
 
 		// Calls async_accept(), which waits for a connection in a separate
 		// thread. The provided callback should assume that a connection was

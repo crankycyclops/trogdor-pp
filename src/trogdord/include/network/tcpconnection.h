@@ -32,19 +32,22 @@ class TCPConnection: public std::enable_shared_from_this<TCPConnection> {
 		// arg to signal the end.
 		typedef void (*callback_t)(std::shared_ptr<TCPConnection> connection, void *arg);
 
+		// Ensures the actual connection is cleanly shutdown when the
+		// TCPConnection object is destroyed
+		~TCPConnection();
+
 	private:
 
 		TCPServer *server; // server class that spawned this connection
 		tcp::socket socket;
 		bool inUse;
-		bool opened; // whether or not the connection is open
 
 		boost::asio::streambuf inBuffer;
 		std::string bufferStr;
 
 		// Constructor should only be called internally by create().
 		TCPConnection(boost::asio::io_service &io_service, TCPServer *s):
-			socket(io_service), server(s), inUse(false), opened(true) {}
+			socket(io_service), server(s), inUse(false) {}
 
 		// Called after async_read_until() completes. Takes as input a callback
 		// function and a void pointer with an argument. Callback is only
@@ -74,7 +77,7 @@ class TCPConnection: public std::enable_shared_from_this<TCPConnection> {
 		}
 
 		// Whether or not the connection is open.
-		inline bool isOpen() {return opened;}
+		inline bool isOpen() {return socket.is_open();}
 
 		// Returns whether or not the connection is in use (AKA waiting on the
 		// completion of an asynchronous call.)
@@ -104,10 +107,11 @@ class TCPConnection: public std::enable_shared_from_this<TCPConnection> {
 		// object beyond calling isOpen() will result in undefined behavior.
 		inline void close() {
 
-			boost::system::error_code ignore;
-			socket.shutdown(tcp::socket::shutdown_both, ignore);
-			socket.close();
-			opened = false;
+			if (socket.is_open()) {
+				boost::system::error_code ignore;
+				socket.shutdown(tcp::socket::shutdown_both, ignore);
+				socket.close();
+			}
 		}
 };
 

@@ -12,6 +12,15 @@ using namespace boost::system;
 using boost::asio::ip::tcp;
 
 
+TCPConnection::~TCPConnection() {
+
+	// Make sure the actual connection is closed cleanly before destroying the
+	// object that wraps around it.
+	close();
+}
+
+/******************************************************************************/
+
 void TCPConnection::handleRead(
 	const boost::system::error_code &e,
 	callback_t callback,

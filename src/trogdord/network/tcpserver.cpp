@@ -42,11 +42,20 @@ acceptor(io_service), timer(io_service, boost::posix_time::milliseconds(SERVE_SL
 	tcp::endpoint endpoint(tcp::v4(), port);
 
 	acceptor.open(endpoint.protocol());
-	acceptor.set_option(tcp::acceptor::reuse_address(true));
+	//acceptor.set_option(tcp::acceptor::reuse_address(true));
+	acceptor.set_option(tcp::acceptor::keep_alive(true));
 	acceptor.bind(endpoint);
 	acceptor.listen();
 
 	timer.async_wait(std::bind(&TCPServer::serveConnections, this));
+}
+
+/******************************************************************************/
+
+TCPServer::~TCPServer() {
+
+	// Makes sure the destructor is called on all remaining connections
+	activeConnections.clear();
 }
 
 /******************************************************************************/
