@@ -47,6 +47,4 @@ If you want to install to somewhere other than the default system path, specify 
 
 -DCMAKE_INSTALL_PREFIX:PATH=/custom/install/path
 
-There is code still in the source tree for an old (and now broken) server/client that I wrote as an exercise to teach myself network programming. The code is bad and should not be used. I'm keeping it (for now) only for historical/archival purposes.
-
 Have fun! :)
