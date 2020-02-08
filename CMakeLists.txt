@@ -144,6 +144,7 @@ if (Boost_FOUND)
 
 	add_executable(trogdord
 		src/trogdord/main.cpp
+		src/trogdord/dispatcher.cpp
 		src/trogdord/iostream/streamerr.cpp
 		src/trogdord/network/tcpconnection.cpp
 		src/trogdord/network/tcpserver.cpp	

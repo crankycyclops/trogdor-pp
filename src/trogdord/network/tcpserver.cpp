@@ -6,9 +6,11 @@
 
 #include "../include/network/tcpconnection.h"
 #include "../include/network/tcpserver.h"
+#include "../include/dispatcher.h"
 
 using namespace boost::system;
 using boost::asio::ip::tcp;
+
 
 void TCPServer::establishConnection(std::shared_ptr<TCPConnection> connection, void *) {
 
@@ -27,8 +29,7 @@ void TCPServer::establishConnection(std::shared_ptr<TCPConnection> connection, v
 
 void TCPServer::serveRequest(std::shared_ptr<TCPConnection> connection, void *) {
 
-	std::string request = connection->getBufferStr();
-	std::cout << "Request said: " << request << std::endl;
+	Dispatcher::get()->dispatch(connection->getBufferStr());
 	connection->setInUse(false);
 }
 
