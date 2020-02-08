@@ -30,6 +30,8 @@ static void establishConnection(std::shared_ptr<TCPConnection> connection, void 
 static void serveRequest(std::shared_ptr<TCPConnection> connection, void *) {
 
 	std::string request = connection->getBufferStr();
+	std::cout << "Request said: " << request << std::endl;
+	connection->setInUse(false);
 }
 
 /******************************************************************************/
