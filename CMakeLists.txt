@@ -138,7 +138,7 @@ install(TARGETS standalone DESTINATION bin COMPONENT standalone OPTIONAL)
 ###############################################################################
 
 # Build the game server trogdord
-find_package(Boost)
+find_package(Boost COMPONENTS system)
 
 if (Boost_FOUND)
 
@@ -149,9 +149,13 @@ if (Boost_FOUND)
 		src/trogdord/network/tcpserver.cpp	
 	)
 
+	target_include_directories(trogdord
+		PUBLIC ${Boost_INCLUDE_DIRS}
+	)
+
 	target_link_libraries(trogdord
 		PUBLIC trogdor
-		PUBLIC boost_system
+		PUBLIC ${Boost_LIBRARIES}
 	)
 
 	add_dependencies(trogdord trogdor)
@@ -160,7 +164,7 @@ if (Boost_FOUND)
 
 else(Boost_FOUND)
 
-	add_custom_target(trogdord echo "The Boost libraries and their headers must be installed in a place where CMake can find them to build trogdord. If trogdord target was part of a 'make all', it's safe to install the other targets using 'make install'.")
+	add_custom_target(trogdord echo "Skipping trogdord because the Boost C++ libraries are not installed in a place where CMake can find them.")
 
 endif(Boost_FOUND)
 
