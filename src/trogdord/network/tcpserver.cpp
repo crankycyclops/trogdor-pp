@@ -2,8 +2,6 @@
 #include <functional>
 
 #include <boost/asio.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "../include/network/tcpconnection.h"
@@ -13,15 +11,15 @@ using namespace boost::system;
 using boost::asio::ip::tcp;
 
 // TODO: move this to an appropriate place. I stole it from the old Dispatcher!
-static void establishConnection(TCPConnection::ptr connection, void *) {
+static void establishConnection(std::shared_ptr<TCPConnection> connection, void *) {
 
 	// add connection to list of active connections
 	connection->getServer()->addActiveConnection(connection);
 
 	// confirm successful connection to the client
 	connection->setInUse(true);
-	connection->write(std::string(READY),
-	[] (TCPConnection::ptr connection, void *) {
+	connection->write(std::string(READY) + EOT,
+	[] (std::shared_ptr<TCPConnection> connection, void *) {
 		connection->setInUse(false);
 	}, 0);
 }
@@ -29,7 +27,7 @@ static void establishConnection(TCPConnection::ptr connection, void *) {
 /******************************************************************************/
 
 // TODO: stub for now, stolen from Dispatcher
-static void serveRequest(TCPConnection::ptr connection, void *) {
+static void serveRequest(std::shared_ptr<TCPConnection> connection, void *) {
 
 	std::string request = connection->getBufferStr();
 }
@@ -52,7 +50,7 @@ acceptor(io_service), timer(io_service, boost::posix_time::milliseconds(SERVE_SL
 /******************************************************************************/
 
 void TCPServer::handleAccept(
-	TCPConnection::ptr connection,
+	std::shared_ptr<TCPConnection> connection,
 	const boost::system::error_code &e,
 	TCPConnection::callback_t callback,
 	void *callbackArg
@@ -68,7 +66,10 @@ void TCPServer::handleAccept(
 
 void TCPServer::startAccept(TCPConnection::callback_t callback, void *callbackArg) {
 
-	TCPConnection::ptr connection = TCPConnection::create(acceptor.get_io_service(), this);
+	std::shared_ptr<TCPConnection> connection = TCPConnection::create(
+		acceptor.get_io_service(),
+		this
+	);
 
 	acceptor.async_accept(
 		connection->getSocket(),
@@ -90,10 +91,10 @@ void TCPServer::serveConnections() {
 	size_t nConnections = activeConnections.size();
 
 	// listen for new requests on already accepted connections
-	for (std::list<TCPConnection::ptr>::iterator i = activeConnections.begin();
+	for (std::list<std::shared_ptr<TCPConnection>>::iterator i = activeConnections.begin();
 	i != activeConnections.end(); i++) {
 
-		TCPConnection::ptr connection = *i;
+		std::shared_ptr<TCPConnection> connection = *i;
 
 		// If the connection was closed, remove it and skip ahead to the next.
 		if (!connection->isOpen()) {

@@ -4,10 +4,9 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include <boost/asio.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include "tcpcommon.h"
@@ -22,18 +21,16 @@ class TCPServer;
 // http://www.boost.org/doc/libs/1_54_0/doc/html/boost_asio/tutorial/tutdaytime3/src.html
 // I also used the following to implement some missing pieces:
 // http://www.boost.org/doc/libs/1_45_0/doc/html/boost_asio/example/timeouts/async_tcp_client.cpp
-class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
+class TCPConnection: public std::enable_shared_from_this<TCPConnection> {
 
 	public:
-
-		typedef boost::shared_ptr<TCPConnection> ptr;
 
 		// Callback that takes a single argument and is called at the
 		// conclusion of an asynchronous event. You can daisychain multiple
 		// callbacks by passing additional callbacks to TCPConnection::read()
 		// or TCPConnection::write(). Pass in NULL pointers to callback and 
 		// arg to signal the end.
-		typedef void (*callback_t)(ptr connection, void *arg);
+		typedef void (*callback_t)(std::shared_ptr<TCPConnection> connection, void *arg);
 
 	private:
 
@@ -67,9 +64,13 @@ class TCPConnection: public boost::enable_shared_from_this<TCPConnection> {
 		// Call this instead of using new directly. Returns a smart pointer
 		// to an instance of TCPConnection that will automatically destruct
 		// when we're done with it.
-		static inline ptr create(boost::asio::io_service &io_service, TCPServer *s) {
+		static inline std::shared_ptr<TCPConnection> create(
+			boost::asio::io_service &io_service, TCPServer *s
+		) {
 
-			return ptr(new TCPConnection(io_service, s));
+			// Calling new instead of using std::make_shared because the
+			// constructor is private and can't be called outside our class.
+			return std::shared_ptr<TCPConnection>(new TCPConnection(io_service, s));
 		}
 
 		// Whether or not the connection is open.

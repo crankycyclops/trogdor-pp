@@ -27,27 +27,31 @@ class TCPServer {
 	private:
 
 		// active connections that need to be maintained
-		std::list<TCPConnection::ptr> activeConnections;
+		std::list<std::shared_ptr<TCPConnection>> activeConnections;
 
 		tcp::acceptor acceptor;
 		boost::asio::deadline_timer timer;
 
 		// Handles an asynchronous accept. If there are no errors, the
 		// specified callback is called along with the specified argument.
-		void handleAccept(TCPConnection::ptr connection, const boost::system::error_code &e,
-			TCPConnection::callback_t callback, void *arg);
+		void handleAccept(
+			std::shared_ptr<TCPConnection> connection,
+			const boost::system::error_code &e,
+			TCPConnection::callback_t callback,
+			void *arg
+		);
 
 	public:
 
 		// Adds a connection to the list of active connections
-		inline void addActiveConnection(TCPConnection::ptr connection) {
+		inline void addActiveConnection(std::shared_ptr<TCPConnection> connection) {
 
 			activeConnections.insert(activeConnections.begin(), connection);
 		}
 
 		// Removes a connection from the list of active connections, thereby
 		// effectively closing it.
-		inline void removeActiveConnection(TCPConnection::ptr connection) {
+		inline void removeActiveConnection(std::shared_ptr<TCPConnection> connection) {
 
 			activeConnections.remove(connection);
 		}
