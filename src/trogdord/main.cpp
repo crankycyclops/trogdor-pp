@@ -33,17 +33,23 @@ static void shutdownHandler(const boost::system::error_code& error, int signal_n
 
 int main(int argc, char **argv) {
 
-	boost::asio::io_service io;
+	try {
 
-	// Shutdown the server if we receive CTRL-C or a kill signal.
-	boost::asio::signal_set signals(io, SIGINT, SIGTERM);
-	signals.async_wait(shutdownHandler);
+		boost::asio::io_service io;
 
-	// Constructor starts up a deadline_timer that checks at regular intervals
-	// on the needs of existing connections as well as accepting new ones.
-	server = std::make_unique<TCPServer>(io, SERVER_PORT);
-	io.run();
+		// Shutdown the server if we receive CTRL-C or a kill signal.
+		boost::asio::signal_set signals(io, SIGINT, SIGTERM);
+		signals.async_wait(shutdownHandler);
 
-	// We don't actually ever get here...
+		// Constructor starts up a deadline_timer that checks at regular intervals
+		// on the needs of existing connections as well as accepting new ones.
+		server = std::make_unique<TCPServer>(io, SERVER_PORT);
+		io.run();
+	}
+
+	catch (std::exception &e) {
+		std::cout << "Error: " << e.what() << std::endl;
+	}
+
 	return EXIT_SUCCESS;
 }

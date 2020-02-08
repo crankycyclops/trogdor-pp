@@ -39,11 +39,20 @@ static void serveRequest(std::shared_ptr<TCPConnection> connection, void *) {
 TCPServer::TCPServer(boost::asio::io_service &io_service, unsigned short port):
 acceptor(io_service), timer(io_service, boost::posix_time::milliseconds(SERVE_SLEEP_TIME)) {
 
+	// TODO: enable ipv6 via a second socket. Don't use an ipv6 socket for
+	// both protocols (See: https://stackoverflow.com/a/31126262/4683164)
+	// I'll need an acceptor for each endpoint, which means I'll have to be
+	// able to manage two acceptors instead of one (but I can share the same
+	// io_service.)
+	// Whether or not to enable ipv6 should be configurable. Also, the port
+	// for ipv4 and ipv6 should be configured independently.
 	tcp::endpoint endpoint(tcp::v4(), port);
-
 	acceptor.open(endpoint.protocol());
-	//acceptor.set_option(tcp::acceptor::reuse_address(true));
+
+	// TODO: make these options configurable via a file in /etc
+	acceptor.set_option(tcp::acceptor::reuse_address(false));
 	acceptor.set_option(tcp::acceptor::keep_alive(true));
+
 	acceptor.bind(endpoint);
 	acceptor.listen();
 
