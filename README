@@ -29,6 +29,10 @@ cd /path/to/src
 cmake -DCMAKE_BUILD_TYPE=Release .
 make standalone && make install
 
+To build the game server trogdord:
+cmake -DCMAKE_BUILD_TYPE=Release .
+make trogdord && make install
+
 You don't have to explicitly build the library first. Building the client will build and link to it automatically as a dependency.
 
 To build any of the above targets with GDB debug symbols, add the following option to your cmake command:
