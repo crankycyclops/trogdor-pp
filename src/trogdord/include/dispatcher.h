@@ -67,33 +67,15 @@ class Dispatcher {
 
 	private:
 
-		// Message to send back to the user if their request wasn't a valid
-		// JSON string
-		const char *INVALID_JSON_MSG = "request must be valid JSON";
-
-		// Message to send back to the user if they didn't include a
-		// method with their request
-		const char *MISSING_METHOD_MSG = "missing required method";
-
-		// Message to send back to the user if we couldn't resolve the method
-		// specified in the request
-		const char *INVALID_METHOD_MSG = "invalid method";
-
-		// Message to send back to the user if they didn't include a
-		// scope with their request
-		const char *MISSING_SCOPE_MSG = "missing required scope";
-
-		// Message to send back to the user if we couldn't resolve the scope
-		// specified in the request
-		const char *INVALID_SCOPE_MSG = "invalid scope";
-
-		// Message to send back to the user if they didn't include an
-		// action with their request
-		const char *MISSING_ACTION_MSG = "missing required action";
-
-		// Message to send back to the user if we couldn't resolve the action
-		// specified in the request
-		const char *INVALID_ACTION_MSG = "invalid action";
+		// Error messages for malformatted requests
+		static const char *INVALID_JSON;
+		static const char *MISSING_METHOD;
+		static const char *INVALID_METHOD;
+		static const char *MISSING_SCOPE;
+		static const char *INVALID_SCOPE;
+		static const char *SCOPE_NOT_FOUND;
+		static const char *MISSING_ACTION;
+		static const char *INVALID_ACTION;
 
 		// Singleton instance of Dispatcher
 		static std::unique_ptr<Dispatcher> instance;
@@ -105,6 +87,8 @@ class Dispatcher {
 		// ensure we only ever have a single instance of the class.
 		Dispatcher();
 		Dispatcher(const Dispatcher &) = delete;
+
+		std::string parseRequestComponent(JSONObject requestObj, std::string component);
 
 		// Parses a JSON request and returns a JSONObject representation of
 		// it. If there are any errors during parsing, this will throw an
@@ -119,6 +103,12 @@ class Dispatcher {
 		);
 
 	public:
+
+		// The four possible components of a request
+		static const char *METHOD;
+		static const char *SCOPE;
+		static const char *ACTION;
+		static const char *ARGS;
 
 		// Returns singleton instance of Dispatcher.
 		static std::unique_ptr<Dispatcher> &get();

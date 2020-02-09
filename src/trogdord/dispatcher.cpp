@@ -4,6 +4,23 @@
 #include "include/exception/requestexception.h"
 
 
+// String representations of each request component
+const char *Dispatcher::METHOD = "method";
+const char *Dispatcher::SCOPE = "scope";
+const char *Dispatcher::ACTION = "action";
+const char *Dispatcher::ARGS = "args";
+
+// Error messages for malformatted requests
+const char *Dispatcher::INVALID_JSON = "request must be valid JSON";
+const char *Dispatcher::MISSING_METHOD = "missing required method";
+const char *Dispatcher::INVALID_METHOD = "invalid method";
+const char *Dispatcher::MISSING_SCOPE = "missing required scope";
+const char *Dispatcher::INVALID_SCOPE = "invalid scope";
+const char *Dispatcher::SCOPE_NOT_FOUND = "scope not found";
+const char *Dispatcher::MISSING_ACTION = "missing required action";
+const char *Dispatcher::INVALID_ACTION = "invalid action";
+
+// Singleton instance of Dispatcher
 std::unique_ptr<Dispatcher> Dispatcher::instance = nullptr;
 
 /*****************************************************************************/
@@ -26,11 +43,35 @@ std::unique_ptr<Dispatcher> &Dispatcher::get() {
 
 /*****************************************************************************/
 
-// I'm not happy about catching and then throwing more exceptions, but for now,
-// I'm going to keep this the way it is because it allows me to have cleaner
-// code. Once I get this working an it's well tested, I'll revisit my use of
-// boost::property_tree::iptree to see if there's a way I can do the same sort
-// of error checking without having to catch exceptions.
+std::string Dispatcher::parseRequestComponent(JSONObject requestObj, std::string component) {
+
+	static std::unordered_map<std::string, std::string> missingMsgMap = {
+		{METHOD, MISSING_METHOD},
+		{SCOPE, MISSING_SCOPE},
+		{ACTION, MISSING_ACTION}
+	};
+
+	static std::unordered_map<std::string, std::string> invalidMsgMap = {
+		{METHOD, INVALID_METHOD},
+		{SCOPE, INVALID_SCOPE},
+		{ACTION, INVALID_ACTION}
+	};
+
+	if (requestObj.not_found() == requestObj.find(METHOD)) {
+		throw RequestException(missingMsgMap[component], 400);
+	}
+
+	try {
+		return strToLower(requestObj.get<std::string>(METHOD));
+	}
+
+	catch (boost::property_tree::ptree_bad_path &e) {
+		throw RequestException(invalidMsgMap[component], 400);
+	}
+}
+
+/*****************************************************************************/
+
 JSONObject Dispatcher::parseRequest(
 	std::string request,
 	std::string &method,
@@ -45,51 +86,16 @@ JSONObject Dispatcher::parseRequest(
 	}
 
 	catch (std::exception &e) {
-		throw RequestException(INVALID_JSON_MSG, 400);
+		throw RequestException(INVALID_JSON, 400);
 	}
 
-	// Parse the method
-	try {
-		method = strToLower(requestObj.get<std::string>("method"));
-	}
-
-	catch (boost::property_tree::ptree_bad_path &e) {
-		throw RequestException(MISSING_METHOD_MSG, 400);
-	}
-
-	catch (boost::property_tree::ptree_bad_data &e) {
-		throw RequestException(INVALID_METHOD_MSG, 400);
-	}
-
-	// Parse the scope
-	try {
-		scope = strToLower(requestObj.get<std::string>("scope"));
-	}
-
-	catch (boost::property_tree::ptree_bad_path &e) {
-		throw RequestException(MISSING_SCOPE_MSG, 400);
-	}
-
-	catch (boost::property_tree::ptree_bad_data &e) {
-		throw RequestException(INVALID_SCOPE_MSG, 400);
-	}
-
-	// Parse the action
-	try {
-		action = strToLower(requestObj.get<std::string>("action"));
-	}
-
-	catch (boost::property_tree::ptree_bad_path &e) {
-		throw RequestException(MISSING_ACTION_MSG, 400);
-	}
-
-	catch (boost::property_tree::ptree_bad_data &e) {
-		throw RequestException(INVALID_ACTION_MSG, 400);
-	}
+	method = parseRequestComponent(requestObj, METHOD);
+	scope = parseRequestComponent(requestObj, SCOPE);
+	action = parseRequestComponent(requestObj, ACTION);
 
 	// Make sure the specified scope can be resolved
 	if (scopes.end() == scopes.find(scope)) {
-		throw RequestException(INVALID_SCOPE_MSG, 400);
+		throw RequestException(SCOPE_NOT_FOUND, 404);
 	}
 
 	return requestObj;
