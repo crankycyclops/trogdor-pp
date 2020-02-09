@@ -93,11 +93,6 @@ JSONObject Dispatcher::parseRequest(
 	scope = parseRequestComponent(requestObj, SCOPE);
 	action = parseRequestComponent(requestObj, ACTION);
 
-	// Make sure the specified scope can be resolved
-	if (scopes.end() == scopes.find(scope)) {
-		throw RequestException(SCOPE_NOT_FOUND, 404);
-	}
-
 	return requestObj;
 }
 
@@ -110,7 +105,14 @@ std::string Dispatcher::dispatch(std::string request) {
 	std::string action;
 
 	try {
+
 		JSONObject requestObj = parseRequest(request, method, scope, action);
+
+		// Make sure the specified scope can be resolved
+		if (scopes.end() == scopes.find(scope)) {
+			return makeErrorJson(SCOPE_NOT_FOUND, 404);
+		}
+
 		// TODO: call execute method on scopes[scope], passing it requestObj
 		return makeErrorJson("TODO", 200);
 	}
