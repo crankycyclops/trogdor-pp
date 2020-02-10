@@ -2,6 +2,7 @@
 #define SCOPE_GAME_H
 
 
+#include <variant>
 #include "controller.h"
 
 
@@ -12,6 +13,9 @@ class Game: public ScopeController {
 		// Singleton instance of Game
 		static std::unique_ptr<Game> instance;
 
+		// Actions served by the "game" scope
+		static const char *LIST_ACTION;
+
 		// Error messages
 		static const char *MISSING_GAME_ID;
 		static const char *INVALID_GAME_ID;
@@ -20,6 +24,9 @@ class Game: public ScopeController {
 		// ensure we only ever have a single instance of the class.
 		Game();
 		Game(const Game &) = delete;
+
+		// Parses a game id from a request's arguments
+		int parseGameId(JSONObject request);
 
 	public:
 
@@ -32,8 +39,14 @@ class Game: public ScopeController {
 		// Returns details about a running game
 		JSONObject getGame(JSONObject request);
 
+		// Returns a list of all currently existing games
+		JSONObject getGameList(JSONObject request);
+
 		// Instantiates a new game and returns its id
 		JSONObject createGame(JSONObject request);
+
+		// Destroy's a game
+		JSONObject destroyGame(JSONObject request);
 };
 
 

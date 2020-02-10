@@ -1,8 +1,13 @@
+#include <utility>
+
 #include "../include/request.h"
 #include "../include/scopes/game.h"
 
 // Scope name that should be used in requests
 const char *Game::SCOPE = "game";
+
+// Actions served by the "game" scope
+const char *Game::LIST_ACTION = "list";
 
 // Error messages
 const char *Game::MISSING_GAME_ID = "missing required game id";
@@ -19,9 +24,62 @@ Game::Game() {
 		return this->getGame(request);
 	});
 
+	registerAction(Request::GET, LIST_ACTION, [&] (JSONObject request) -> JSONObject {
+		return this->getGameList(request);
+	});
+
 	registerAction(Request::POST, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
 		return this->createGame(request);
 	});
+
+	registerAction(Request::DELETE, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
+		return this->destroyGame(request);
+	});
+}
+
+/*****************************************************************************/
+
+int Game::parseGameId(JSONObject request) {
+
+	try {
+
+		int gameId = request.get<int>("args.id");
+
+		if (gameId < 0) {
+
+			JSONObject response;
+
+			response.put("status", 400);
+			response.put("message", INVALID_GAME_ID);
+
+			throw response;
+		}
+
+		return gameId;
+	}
+
+	// It's kind of yucky catching an exception here just to throw another
+	// one. Perhaps I can return a std::variant instead? I'll think about this
+	// some more and revisit it.
+	catch (boost::property_tree::ptree_bad_path &e) {
+
+		JSONObject response;
+
+		response.put("status", 400);
+		response.put("message", MISSING_GAME_ID);
+
+		throw response;
+	}
+
+	catch (boost::property_tree::ptree_bad_data &e) {
+
+		JSONObject response;
+
+		response.put("status", 400);
+		response.put("message", INVALID_GAME_ID);
+
+		throw response;
+	}
 }
 
 /*****************************************************************************/
@@ -43,36 +101,38 @@ JSONObject Game::getGame(JSONObject request) {
 	JSONObject response;
 
 	try {
-		gameId = request.get<int>("args.id");
+		gameId = parseGameId(request);
 	}
 
-	catch (boost::property_tree::ptree_bad_path &e) {
-
-		response.put("status", 400);
-		response.put("message", MISSING_GAME_ID);
-
-		return response;
-	}
-
-	catch (boost::property_tree::ptree_bad_data &e) {
-
-		response.put("status", 400);
-		response.put("message", INVALID_GAME_ID);
-
-		return response;
-	}
-
-	if (gameId < 0) {
-
-		response.put("status", 400);
-		response.put("message", INVALID_GAME_ID);
-
-		return response;
+	catch (JSONObject error) {
+		return error;
 	}
 
 	// TODO: Retrieve game and throw 404 if not found
+	// TODO: remove message from this query on success (but have one for 404)
 	response.put("status", 200);
 	response.put("message", "TODO: get game stub");
+
+	return response;
+}
+
+/*****************************************************************************/
+
+JSONObject Game::getGameList(JSONObject request) {
+
+	JSONObject response;
+
+	// TODO: stub with sample data for now
+	JSONObject gameList;
+	JSONObject testGame;
+
+	testGame.put("id", 0);
+	gameList.push_back(std::make_pair("", testGame));
+
+	// TODO: remove message from this query on success
+	response.put("status", 200);
+	response.put("message", "TODO: get game list stub");
+	response.add_child("games", gameList);
 
 	return response;
 }
@@ -84,9 +144,32 @@ JSONObject Game::createGame(JSONObject request) {
 	JSONObject response;
 
 	// "id" should be the game's id
+	// TODO: remove message from this query on success
 	response.put("status", 200);
 	response.put("id", 0);
 	response.put("message", "TODO: create game stub");
+
+	return response;
+}
+
+/*****************************************************************************/
+
+JSONObject Game::destroyGame(JSONObject request) {
+
+	int gameId;
+	JSONObject response;
+
+	try {
+		gameId = parseGameId(request);
+	}
+
+	catch (JSONObject error) {
+		return error;
+	}
+
+	// TODO: remove message from this query on success
+	response.put("status", 200);
+	response.put("message", "TODO: destroy game stub");
 
 	return response;
 }
