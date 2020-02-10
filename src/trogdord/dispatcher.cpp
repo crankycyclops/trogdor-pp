@@ -2,8 +2,10 @@
 
 #include "include/dispatcher.h"
 #include "include/response.h"
-#include "include/scopes/global.h"
 #include "include/exception/requestexception.h"
+
+#include "include/scopes/global.h"
+#include "include/scopes/game.h"
 
 
 // String representations of each request component
@@ -31,6 +33,7 @@ Dispatcher::Dispatcher() {
 
 	// Register available scopes
 	scopes[Global::SCOPE] = Global::get().get();
+	scopes[Game::SCOPE] = Game::get().get();
 }
 
 /*****************************************************************************/
@@ -78,7 +81,7 @@ std::string Dispatcher::parseRequestComponent(JSONObject requestObj, std::string
 		return strToLower(requestObj.get<std::string>(component));
 	}
 
-	catch (boost::property_tree::ptree_bad_path &e) {
+	catch (boost::property_tree::ptree_bad_data &e) {
 		throw RequestException(invalidMsgs[component], 400);
 	}
 }

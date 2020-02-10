@@ -153,6 +153,7 @@ if (Boost_FOUND)
 		src/trogdord/network/tcpserver.cpp
 		src/trogdord/scopes/controller.cpp
 		src/trogdord/scopes/global.cpp
+		src/trogdord/scopes/game.cpp
 	)
 
 	target_include_directories(trogdord

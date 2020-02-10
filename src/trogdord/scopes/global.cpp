@@ -38,7 +38,7 @@ JSONObject Global::statistics(JSONObject request) {
 	JSONObject response;
 
 	response.put("status", 200);
-	response.put("message", "TODO");
+	response.put("message", "TODO: statistics stub");
 
 	return response;
 }

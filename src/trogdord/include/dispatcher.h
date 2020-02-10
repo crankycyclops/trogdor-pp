@@ -49,9 +49,9 @@
 		"args": {...}
 	}
 
-	Some scopes define a default action, allowing you to leave the "action"
-	parameter out. For example, to get the details of a running game with id 1,
-	you would send the following request:
+	Some method/scope pairs define a default action, allowing you to leave the
+	"action" parameter out of the request. For example, to get the details of a
+	running game with id 1, you would send the following request:
 	{"method":"get","scope":"game","args":{"id":1}}
 
 	If for some reason you want to call the default action explicitly, the
