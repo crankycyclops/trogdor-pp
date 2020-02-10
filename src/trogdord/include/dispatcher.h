@@ -49,6 +49,15 @@
 		"args": {...}
 	}
 
+	Some scopes define a default action, allowing you to leave the "action"
+	parameter out. For example, to get the details of a running game with id 1,
+	you would send the following request:
+	{"method":"get","scope":"game","args":{"id":1}}
+
+	If for some reason you want to call the default action explicitly, the
+	following request would also work:
+	{"method":"get","scope":"game","action":"default","args":{"id":1}}
+
 	The following rules govern case sensitivity of request keys and values:
 
 	1) All keys are case INSENSITIVE. This means that {"scope": ...} is

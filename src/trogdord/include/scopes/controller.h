@@ -14,6 +14,10 @@ class ScopeController {
 
 	protected:
 
+		// If an action isn't specified in the request, we try to resolve this
+		// one instead.
+		static const char *DEFAULT_ACTION;
+
 		// Error messages for malformatted requests
 		static const char *METHOD_NOT_FOUND;
 		static const char *ACTION_NOT_FOUND;

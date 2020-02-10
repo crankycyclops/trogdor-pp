@@ -48,20 +48,30 @@ std::unique_ptr<Dispatcher> &Dispatcher::get() {
 
 std::string Dispatcher::parseRequestComponent(JSONObject requestObj, std::string component) {
 
-	static std::unordered_map<std::string, std::string> missingMsgMap = {
+	static std::unordered_map<std::string, bool> required = {
+		{METHOD, true},
+		{SCOPE, true},
+		{ACTION, false}
+	};
+
+	static std::unordered_map<std::string, std::string> missingMsgs = {
 		{METHOD, MISSING_METHOD},
 		{SCOPE, MISSING_SCOPE},
 		{ACTION, MISSING_ACTION}
 	};
 
-	static std::unordered_map<std::string, std::string> invalidMsgMap = {
+	static std::unordered_map<std::string, std::string> invalidMsgs = {
 		{METHOD, INVALID_METHOD},
 		{SCOPE, INVALID_SCOPE},
 		{ACTION, INVALID_ACTION}
 	};
 
 	if (requestObj.not_found() == requestObj.find(component)) {
-		throw RequestException(missingMsgMap[component], 400);
+		if (required[component]) {
+			throw RequestException(missingMsgs[component], 400);
+		} else {
+			return "";
+		}
 	}
 
 	try {
@@ -69,7 +79,7 @@ std::string Dispatcher::parseRequestComponent(JSONObject requestObj, std::string
 	}
 
 	catch (boost::property_tree::ptree_bad_path &e) {
-		throw RequestException(invalidMsgMap[component], 400);
+		throw RequestException(invalidMsgs[component], 400);
 	}
 }
 
