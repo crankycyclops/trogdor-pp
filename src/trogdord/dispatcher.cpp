@@ -1,6 +1,9 @@
 #include <trogdor/utility.h>
+#include <iostream>
 
 #include "include/dispatcher.h"
+#include "include/response.h"
+#include "include/scopes/global.h"
 #include "include/exception/requestexception.h"
 
 
@@ -27,7 +30,7 @@ std::unique_ptr<Dispatcher> Dispatcher::instance = nullptr;
 
 Dispatcher::Dispatcher() {
 
-	// TODO
+	scopes[Global::SCOPE] = Global::get().get();
 }
 
 /*****************************************************************************/
@@ -57,12 +60,12 @@ std::string Dispatcher::parseRequestComponent(JSONObject requestObj, std::string
 		{ACTION, INVALID_ACTION}
 	};
 
-	if (requestObj.not_found() == requestObj.find(METHOD)) {
+	if (requestObj.not_found() == requestObj.find(component)) {
 		throw RequestException(missingMsgMap[component], 400);
 	}
 
 	try {
-		return strToLower(requestObj.get<std::string>(METHOD));
+		return strToLower(requestObj.get<std::string>(component));
 	}
 
 	catch (boost::property_tree::ptree_bad_path &e) {
@@ -110,14 +113,16 @@ std::string Dispatcher::dispatch(std::string request) {
 
 		// Make sure the specified scope can be resolved
 		if (scopes.end() == scopes.find(scope)) {
-			return makeErrorJson(SCOPE_NOT_FOUND, 404);
+			std::cout << "Scope: " << scope << std::endl;
+			std::cout << "Class scope: " << Global::SCOPE << std::endl;
+			std::cout << std::to_string(scopes.size()) << std::endl;
+			return Response::makeErrorJson(SCOPE_NOT_FOUND, 404);
 		}
 
-		// TODO: call execute method on scopes[scope], passing it requestObj
-		return makeErrorJson("TODO", 200);
+		return JSON::serialize(scopes[scope]->resolve(method, action, requestObj));
 	}
 
 	catch (RequestException &e) {
-		return makeErrorJson(e.what(), e.getStatus());
+		return Response::makeErrorJson(e.what(), e.getStatus());
 	}
 }

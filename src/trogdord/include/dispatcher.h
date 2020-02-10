@@ -81,7 +81,7 @@ class Dispatcher {
 		static std::unique_ptr<Dispatcher> instance;
 
 		// Maps scope name -> scope controller
-		std::unordered_map<std::string, std::unique_ptr<ScopeController> &> scopes;
+		std::unordered_map<std::string, ScopeController*> scopes;
 
 		// Constructor should only be called internally by get(), which will
 		// ensure we only ever have a single instance of the class.
@@ -104,7 +104,7 @@ class Dispatcher {
 
 	public:
 
-		// The four possible components of a request
+		// The four possible components of a request.
 		static const char *METHOD;
 		static const char *SCOPE;
 		static const char *ACTION;
@@ -115,14 +115,6 @@ class Dispatcher {
 
 		// Dispatches a request and returns the server's response in JSON.
 		std::string dispatch(std::string request);
-
-		// Crafts a simple JSON response that looks like this:
-		// {"status":<statusCode>,"message":<message>}
-		inline std::string makeErrorJson(std::string message, int statusCode) {
-
-			return std::string("{\"status\":") + std::to_string(statusCode) +
-				",\"message\":\"" + message + "\"}";
-		}
 };
 
 
