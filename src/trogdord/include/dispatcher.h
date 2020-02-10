@@ -81,7 +81,7 @@ class Dispatcher {
 		static std::unique_ptr<Dispatcher> instance;
 
 		// Maps scope name -> scope controller
-		std::unordered_map<std::string, ScopeController*> scopes;
+		std::unordered_map<std::string, ScopeController *> scopes;
 
 		// Constructor should only be called internally by get(), which will
 		// ensure we only ever have a single instance of the class.

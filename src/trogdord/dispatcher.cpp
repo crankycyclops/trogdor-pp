@@ -1,5 +1,4 @@
 #include <trogdor/utility.h>
-#include <iostream>
 
 #include "include/dispatcher.h"
 #include "include/response.h"
@@ -30,6 +29,7 @@ std::unique_ptr<Dispatcher> Dispatcher::instance = nullptr;
 
 Dispatcher::Dispatcher() {
 
+	// Register available scopes
 	scopes[Global::SCOPE] = Global::get().get();
 }
 
@@ -113,9 +113,6 @@ std::string Dispatcher::dispatch(std::string request) {
 
 		// Make sure the specified scope can be resolved
 		if (scopes.end() == scopes.find(scope)) {
-			std::cout << "Scope: " << scope << std::endl;
-			std::cout << "Class scope: " << Global::SCOPE << std::endl;
-			std::cout << std::to_string(scopes.size()) << std::endl;
 			return Response::makeErrorJson(SCOPE_NOT_FOUND, 404);
 		}
 
