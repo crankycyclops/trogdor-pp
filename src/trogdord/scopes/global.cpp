@@ -1,3 +1,4 @@
+#include "../include/version.h"
 #include "../include/request.h"
 #include "../include/scopes/global.h"
 
@@ -36,9 +37,15 @@ std::unique_ptr<Global> &Global::get() {
 JSONObject Global::statistics(JSONObject request) {
 
 	JSONObject response;
+	JSONObject version;
 
+	version.put("major", TROGDORD_VERSION_MAJOR);
+	version.put("minor", TROGDORD_VERSION_MINOR);
+	version.put("patch", TROGDORD_VERSION_PATCH);
+
+	// TODO: add number of existing games and other stats
 	response.put("status", 200);
-	response.put("message", "TODO: statistics stub");
+	response.add_child("version", version);
 
 	return response;
 }

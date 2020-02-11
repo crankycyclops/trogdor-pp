@@ -177,7 +177,10 @@ if (Boost_FOUND)
 
 	add_dependencies(trogdord trogdor trogdord_data)
 
-	# Default location where standalone looks for game.xml
+	# Explose the installation prefix to trogdord
+	add_definitions(-DTROGDORD_INSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
+
+	# Default location where trogdord looks for trogdord.ini
 	add_definitions(-DTROGDORD_INI_PATH=\"${CMAKE_INSTALL_PREFIX}/etc/trogdord/trogdord.ini\")
 
 	install(TARGETS trogdord DESTINATION bin COMPONENT trogdord OPTIONAL)

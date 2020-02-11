@@ -53,8 +53,8 @@ Config::Config(std::string iniPath) {
 		}
 	}
 
-	// Populate the ini object with defaults for any values not set in the
-	// ini file.
+	// Populate the ini object with defaults for any values not set in the ini
+	// file.
 	for (auto &defaultVal: DEFAULTS) {
 		if (ini.not_found() == ini.find(defaultVal.first)) {
 			ini.put(defaultVal.first, defaultVal.second);

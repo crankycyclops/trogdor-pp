@@ -15,6 +15,11 @@
 #include "exception/configinvalidvalue.h"
 #include "exception/configundefinedvalue.h"
 
+// All relative paths in trogdord.ini are computed based on this root directory.
+// This should be provided by the build system, but if it's not, we'll assume /.
+#ifndef TROGDORD_INSTALL_PREFIX
+	#define TROGDORD_INSTALL_PREFIX "/"
+#endif
 
 class Config {
 
