@@ -6,6 +6,13 @@ std::unique_ptr<GameContainer> GameContainer::instance = nullptr;
 
 /*****************************************************************************/
 
+GameContainer::GameContainer() {
+
+	// TODO
+}
+
+/*****************************************************************************/
+
 GameContainer::~GameContainer() {
 
 	// Optimization: this pre-step, along with its corresponding call to
@@ -23,13 +30,6 @@ GameContainer::~GameContainer() {
 	while (!games.empty()) {
 		games.pop_back();
 	}
-}
-
-/*****************************************************************************/
-
-GameContainer::GameContainer() {
-
-	// TODO
 }
 
 /*****************************************************************************/

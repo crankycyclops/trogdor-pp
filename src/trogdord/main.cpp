@@ -4,12 +4,11 @@
 
 #include <boost/asio.hpp>
 
+#include "include/config.h"
 #include "include/network/tcpcommon.h"
 #include "include/network/tcpconnection.h"
 #include "include/network/tcpserver.h"
 #include "include/iostream/streamerr.h"
-
-#define SERVER_PORT 1040 // TODO: config that should be moved outside
 
 
 // serves TCP connections
@@ -33,6 +32,8 @@ static void shutdownHandler(const boost::system::error_code& error, int signal_n
 
 int main(int argc, char **argv) {
 
+	std::unique_ptr<Config> &config = Config::get();
+
 	try {
 
 		boost::asio::io_service io;
@@ -43,14 +44,14 @@ int main(int argc, char **argv) {
 
 		// Constructor starts up a deadline_timer that checks at regular intervals
 		// on the needs of existing connections as well as accepting new ones.
-		server = std::make_unique<TCPServer>(io, SERVER_PORT);
+		server = std::make_unique<TCPServer>(io, config->value<int>(Config::CONFIG_KEY_PORT));
 		io.run();
 	}
 
 	// TODO: send error to StreamErr instance (once I figure out how I'm going
 	// to organize that in code.)
 	catch (std::exception &e) {
-		std::cout << "Error: " << e.what() << std::endl;
+		std::cerr << "Error: " << e.what() << std::endl;
 	}
 
 	return EXIT_SUCCESS;

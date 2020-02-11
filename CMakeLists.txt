@@ -36,6 +36,13 @@ install(DIRECTORY script DESTINATION share/trogdor COMPONENT data)
 
 ###############################################################################
 
+# Trogdord ini starting point
+
+add_custom_target(trogdord_data)
+install(FILES src/trogdord/etc/trogdord.ini DESTINATION etc/trogdor COMPONENT trogdord_data)
+
+###############################################################################
+
 add_library(trogdor SHARED
 	src/core/action.cpp
 	src/core/actions.cpp
@@ -144,6 +151,7 @@ if (Boost_FOUND)
 
 	add_executable(trogdord
 		src/trogdord/main.cpp
+		src/trogdord/config.cpp
 		src/trogdord/json.cpp
 		src/trogdord/request.cpp
 		src/trogdord/dispatcher.cpp
@@ -163,10 +171,14 @@ if (Boost_FOUND)
 
 	target_link_libraries(trogdord
 		PUBLIC trogdor
+		PUBLIC stdc++fs
 		PUBLIC ${Boost_LIBRARIES}
 	)
 
-	add_dependencies(trogdord trogdor)
+	add_dependencies(trogdord trogdor trogdord_data)
+
+	# Default location where standalone looks for game.xml
+	add_definitions(-DTROGDORD_INI_PATH=\"${CMAKE_INSTALL_PREFIX}/etc/trogdord/trogdord.ini\")
 
 	install(TARGETS trogdord DESTINATION bin COMPONENT trogdord OPTIONAL)
 
