@@ -147,6 +147,7 @@ if (Boost_FOUND)
 		src/trogdord/json.cpp
 		src/trogdord/request.cpp
 		src/trogdord/dispatcher.cpp
+		src/trogdord/gamecontainer.cpp
 		src/trogdord/exception/requestexception.cpp
 		src/trogdord/iostream/streamerr.cpp
 		src/trogdord/network/tcpconnection.cpp

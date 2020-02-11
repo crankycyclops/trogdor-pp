@@ -9,7 +9,7 @@
 #include "include/network/tcpserver.h"
 #include "include/iostream/streamerr.h"
 
-#define SERVER_PORT 1040 // config that should be moved outside
+#define SERVER_PORT 1040 // TODO: config that should be moved outside
 
 
 // serves TCP connections
@@ -47,6 +47,8 @@ int main(int argc, char **argv) {
 		io.run();
 	}
 
+	// TODO: send error to StreamErr instance (once I figure out how I'm going
+	// to organize that in code.)
 	catch (std::exception &e) {
 		std::cout << "Error: " << e.what() << std::endl;
 	}

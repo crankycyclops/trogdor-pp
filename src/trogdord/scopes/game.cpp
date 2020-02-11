@@ -1,6 +1,8 @@
 #include <utility>
 
 #include "../include/request.h"
+#include "../include/gamecontainer.h"
+
 #include "../include/scopes/game.h"
 
 // Scope name that should be used in requests
@@ -12,6 +14,7 @@ const char *Game::LIST_ACTION = "list";
 // Error messages
 const char *Game::MISSING_GAME_ID = "missing required game id";
 const char *Game::INVALID_GAME_ID = "invalid game id";
+const char *Game::GAME_NOT_FOUND = "game not found";
 
 // Singleton instance of Game
 std::unique_ptr<Game> Game::instance = nullptr;
@@ -59,8 +62,9 @@ int Game::parseGameId(JSONObject request) {
 	}
 
 	// It's kind of yucky catching an exception here just to throw another
-	// one. Perhaps I can return a std::variant instead? I'll think about this
-	// some more and revisit it.
+	// one, but as you can see, in methods like getGame, it cleans up my code
+	// a lot. Perhaps I can return a std::variant instead? I'll think about
+	// this some more and revisit it.
 	catch (boost::property_tree::ptree_bad_path &e) {
 
 		JSONObject response;
@@ -108,10 +112,19 @@ JSONObject Game::getGame(JSONObject request) {
 		return error;
 	}
 
-	// TODO: Retrieve game and throw 404 if not found
-	// TODO: remove message from this query on success (but have one for 404)
-	response.put("status", 200);
-	response.put("message", "TODO: get game stub");
+	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+
+	if (game) {
+		// TODO: remove message from this query on success and put appropriate
+		// fields (like name, author, etc.)
+		response.put("status", 200);
+		response.put("message", "TODO: get game stub");
+	}
+
+	else {
+		response.put("status", 404);
+		response.put("message", GAME_NOT_FOUND);
+	}
 
 	return response;
 }

@@ -19,6 +19,7 @@ class Game: public ScopeController {
 		// Error messages
 		static const char *MISSING_GAME_ID;
 		static const char *INVALID_GAME_ID;
+		static const char *GAME_NOT_FOUND;
 
 		// Constructor should only be called internally by get(), which will
 		// ensure we only ever have a single instance of the class.
