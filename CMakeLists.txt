@@ -39,7 +39,9 @@ install(DIRECTORY script DESTINATION share/trogdor COMPONENT data)
 # Trogdord ini starting point
 
 add_custom_target(trogdord_data)
-install(FILES src/trogdord/etc/trogdord.ini DESTINATION etc/trogdor COMPONENT trogdord_data)
+
+install(FILES src/trogdord/etc/trogdord.ini DESTINATION etc/trogdord COMPONENT trogdord_data)
+install(DIRECTORY DESTINATION var/log COMPONENT trogdord_data)
 
 ###############################################################################
 

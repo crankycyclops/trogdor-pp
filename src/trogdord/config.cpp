@@ -1,6 +1,9 @@
 #include <cstdlib>
 #include <iostream>
 
+#include <boost/optional.hpp>
+#include <trogdor/utility.h>
+
 #include "include/config.h"
 
 #ifdef __cpp_lib_filesystem
@@ -21,12 +24,14 @@ const char *Config::CONFIG_KEY_PORT = "network.port";
 const char *Config::CONFIG_KEY_DEFINITIONS_PATH = "resources.definitions_path";
 const char *Config::CONFIG_KEY_REUSE_ADDRESS = "network.reuse_address";
 const char *Config::CONFIG_KEY_SEND_TCP_KEEPALIVE = "network.send_keepalive";
+const char *Config::CONFIG_KEY_LOGTO = "logging.logto";
 
 // Default ini values
 const std::unordered_map<std::string, std::string> Config::DEFAULTS = {
 	{CONFIG_KEY_PORT,               "1040"},
 	{CONFIG_KEY_REUSE_ADDRESS,      "true"},
 	{CONFIG_KEY_SEND_TCP_KEEPALIVE, "true"},
+	{CONFIG_KEY_LOGTO,              "stderr"},
 	{CONFIG_KEY_DEFINITIONS_PATH,   "share/trogdor"}
 };
 
@@ -37,6 +42,12 @@ std::unique_ptr<Config> Config::instance = nullptr;
 
 Config::Config(std::string iniPath) {
 
+	// This will only be set if we're logging errors to a file instead of
+	// stdout or stderr. Don't put this in initErrorLogger()! It needs to be
+	// called up here before any other code executes that might throw an
+	// exception.
+	logFileStream = nullptr;
+
 	if (
 		0 != iniPath.compare("") &&
 		STD_FILESYSTEM::exists(iniPath) &&
@@ -46,7 +57,7 @@ Config::Config(std::string iniPath) {
 			boost::property_tree::ini_parser::read_ini(iniPath, ini);
 		}
 
-		// TODO: log to error stream instead and remove include of iostream
+		// Error logging hasn't been setup yet, so I have to write to stderr.
 		catch (boost::property_tree::ini_parser::ini_parser_error &e) {
 			std::cerr << "Error: " << e.what() << std::endl;
 			exit(EXIT_INI_ERROR);
@@ -56,8 +67,61 @@ Config::Config(std::string iniPath) {
 	// Populate the ini object with defaults for any values not set in the ini
 	// file.
 	for (auto &defaultVal: DEFAULTS) {
-		if (ini.not_found() == ini.find(defaultVal.first)) {
+
+		boost::optional iniValue = ini.get_optional<std::string>(defaultVal.first);
+
+		if (!iniValue) {
 			ini.put(defaultVal.first, defaultVal.second);
+		}
+	}
+
+	// Setup the global error logger
+	initErrorLogger();
+}
+
+/*****************************************************************************/
+
+void Config::initErrorLogger() {
+
+	std::string logto = strToLower(ini.get<std::string>(CONFIG_KEY_LOGTO));
+
+	if (0 == logto.compare("stderr")) {
+		errStream = std::make_unique<StreamErr>(&std::cerr);
+	}
+
+	else if (0 == logto.compare("stdout")) {
+		errStream = std::make_unique<StreamErr>(&std::cout);
+	}
+
+	else {
+
+		// If the configured path is relative, compute an absolute path based
+		// on the installation prefix.
+		if (STD_FILESYSTEM::path(logto).is_relative()) {
+
+			std::string prefix = TROGDORD_INSTALL_PREFIX;
+
+			if (prefix[prefix.length() - 1] != STD_FILESYSTEM::path::preferred_separator) {
+				prefix += STD_FILESYSTEM::path::preferred_separator;
+			}
+
+			logto = prefix + logto;
+		}
+
+		try {
+			logFileStream = std::make_unique<std::ofstream>(logto, std::ofstream::app);
+			errStream = std::make_unique<StreamErr>(logFileStream.get());
+		}
+
+		// If for whatever reason we failed to open the file for writing
+		// (maybe the process doesn't have the necessary permissions?), fall
+		// back to std::cerr.
+		catch (std::exception &e) {
+
+			std::cerr << "WARNING: failed to open " << logto << " for writing. Falling back to stderr." << std::endl;
+
+			logFileStream = nullptr;
+			errStream = std::make_unique<StreamErr>(&std::cerr);
 		}
 	}
 }

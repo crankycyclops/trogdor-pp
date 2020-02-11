@@ -19,12 +19,19 @@ static std::unique_ptr<TCPServer> server;
 // Called whenever we receive SIGINT (CTRL-C) or SIGTERM.
 static void shutdownHandler(const boost::system::error_code& error, int signal_number) {
 
+	std::string shutdownMsg = "Shutting down Trogdord.";
+
 	// Forces the server's destructor to be called, ensuring that any remaining
 	// connections are closed and that any other cleanup is performed before we
 	// exit.
 	server = nullptr;
 
-	std::cout << "\n" << "Shutting down Trogdord.\n" << std::endl;
+	Config::get()->err(trogdor::Trogerr::INFO) << shutdownMsg << std::endl;
+
+	if (Config::get()->isErrorLogFile()) {
+		std::cout << "\n" << shutdownMsg << "\n" << std::endl;
+	}
+
 	exit(error ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
@@ -48,10 +55,17 @@ int main(int argc, char **argv) {
 		io.run();
 	}
 
-	// TODO: send error to StreamErr instance (once I figure out how I'm going
-	// to organize that in code.)
 	catch (std::exception &e) {
-		std::cerr << "Error: " << e.what() << std::endl;
+
+		config->err() << e.what() << std::endl;
+
+		// If we're logging errors to a file, also log this one to stderr
+		// (since any error this catches will result in trogdord terminating,
+		// and the user will probably want to know why without having to tail
+		// the log.)
+		if (config->isErrorLogFile()) {
+			std::cerr << "ERROR: " << e.what() << std::endl;
+		}
 	}
 
 	return EXIT_SUCCESS;

@@ -12,6 +12,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 
+#include "iostream/streamerr.h"
 #include "exception/configinvalidvalue.h"
 #include "exception/configundefinedvalue.h"
 
@@ -34,11 +35,21 @@ class Config {
 		// Parsed ini file
 		boost::property_tree::iptree ini;
 
+		// Our global error logger
+		std::unique_ptr<StreamErr> errStream;
+
+		// If not nullptr, this is the file we log errors to (otherwise, we're
+		// logging to stdout or stderr.)
+		std::unique_ptr<std::ofstream> logFileStream;
+
 		// Protected constructor, making get() the only way to return an
 		// instance.
 		Config(std::string iniPath);
 		Config() = delete;
 		Config(const Config &) = delete;
+
+		// Initialize the global error logger.
+		void initErrorLogger();
 
 	public:
 
@@ -46,6 +57,7 @@ class Config {
 		static const char *CONFIG_KEY_PORT;
 		static const char *CONFIG_KEY_REUSE_ADDRESS;
 		static const char *CONFIG_KEY_SEND_TCP_KEEPALIVE;
+		static const char *CONFIG_KEY_LOGTO;
 		static const char *CONFIG_KEY_DEFINITIONS_PATH;
 
 		// Returns singleton instance of Config.
@@ -68,6 +80,27 @@ class Config {
 				throw ConfigInvalidValue("Config value '" + key + "' is invalid.");
 			}
 		}
+
+		// Used to log errors to the global error handler. Optional argument
+		// sets the severity level (see include/trogdor/iostream/trogerr.h for
+		// details.)
+		//
+		// This example logs at severity level ERROR:
+		//
+		// Config::get()->err() << "This is an error!" << std::endl;
+		//
+		// And this example logs to severity level INFO:
+		//
+		// Config::Get()->err(trogdor::Trogerr::INFO) << "This is an info message!" << std::endl;
+		inline StreamErr &err(trogdor::Trogerr::ErrorLevel severity = trogdor::Trogerr::ERROR) {
+
+			errStream->setErrorLevel(severity);
+			return *errStream;
+		}
+
+		// Returns true if the error log is writing to a file and false if
+		// it's writing to stderr or stdout.
+		inline bool isErrorLogFile() {return logFileStream ? true : false;}
 };
 
 
