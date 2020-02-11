@@ -58,8 +58,7 @@ class Config {
 			}
 
 			catch (boost::property_tree::ptree_bad_data &e) {
-				throw ConfigInvalidValue("Cannot cast config value '" + key +
-					"' to the requested type.");
+				throw ConfigInvalidValue("Config value '" + key + "' is invalid.");
 			}
 		}
 };
