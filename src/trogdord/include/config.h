@@ -39,6 +39,8 @@ class Config {
 
 		// Setting keys
 		static const char *CONFIG_KEY_PORT;
+		static const char *CONFIG_KEY_REUSE_ADDRESS;
+		static const char *CONFIG_KEY_SEND_TCP_KEEPALIVE;
 		static const char *CONFIG_KEY_DEFINITIONS_PATH;
 
 		// Returns singleton instance of Config.

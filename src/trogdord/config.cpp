@@ -19,16 +19,16 @@
 // Ini file keys
 const char *Config::CONFIG_KEY_PORT = "network.port";
 const char *Config::CONFIG_KEY_DEFINITIONS_PATH = "resources.definitions_path";
+const char *Config::CONFIG_KEY_REUSE_ADDRESS = "network.reuse_address";
+const char *Config::CONFIG_KEY_SEND_TCP_KEEPALIVE = "network.send_keepalive";
 
 // Default ini values
 const std::unordered_map<std::string, std::string> Config::DEFAULTS = {
-	{CONFIG_KEY_PORT,             "1040"},
-	{CONFIG_KEY_DEFINITIONS_PATH, "share/trogdor"}
+	{CONFIG_KEY_PORT,               "1040"},
+	{CONFIG_KEY_REUSE_ADDRESS,      "true"},
+	{CONFIG_KEY_SEND_TCP_KEEPALIVE, "true"},
+	{CONFIG_KEY_DEFINITIONS_PATH,   "share/trogdor"}
 };
-
-// Default values
-const char *DEFAULT_VALUE_PORT;
-const char *DEFAULT_VALUE_DEFINITIONS_PATH;
 
 // Singleton instance of Config
 std::unique_ptr<Config> Config::instance = nullptr;

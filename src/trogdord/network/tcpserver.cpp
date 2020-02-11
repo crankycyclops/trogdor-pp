@@ -7,6 +7,7 @@
 #include "../include/network/tcpconnection.h"
 #include "../include/network/tcpserver.h"
 #include "../include/dispatcher.h"
+#include "../include/config.h"
 
 using namespace boost::system;
 using boost::asio::ip::tcp;
@@ -40,6 +41,8 @@ void TCPServer::serveRequest(std::shared_ptr<TCPConnection> connection, void *) 
 TCPServer::TCPServer(boost::asio::io_service &io_service, unsigned short port):
 acceptor(io_service), timer(io_service, boost::posix_time::milliseconds(SERVE_SLEEP_TIME)) {
 
+	std::unique_ptr<Config> &config = Config::get();
+
 	// TODO: enable ipv6 via a second socket. Don't use an ipv6 socket for
 	// both protocols (See: https://stackoverflow.com/a/31126262/4683164)
 	// I'll need an acceptor for each endpoint, which means I'll have to be
@@ -50,9 +53,12 @@ acceptor(io_service), timer(io_service, boost::posix_time::milliseconds(SERVE_SL
 	tcp::endpoint endpoint(tcp::v4(), port);
 	acceptor.open(endpoint.protocol());
 
-	// TODO: make these options configurable via a file in /etc
-	acceptor.set_option(tcp::acceptor::reuse_address(true));
-	acceptor.set_option(tcp::acceptor::keep_alive(true));
+	acceptor.set_option(tcp::acceptor::reuse_address(
+		config->value<bool>(Config::CONFIG_KEY_REUSE_ADDRESS)
+	));
+	acceptor.set_option(tcp::acceptor::keep_alive(
+		config->value<bool>(Config::CONFIG_KEY_SEND_TCP_KEEPALIVE)
+	));
 
 	acceptor.bind(endpoint);
 	acceptor.listen();
