@@ -83,6 +83,11 @@ void TCPServer::handleAccept(
 	void *callbackArg
 ) {
 	if (!e) {
+
+		Config::get()->err(trogdor::Trogerr::INFO) <<
+			connection->getSocket().remote_endpoint().address().to_string() <<
+			" connected." << std::endl;
+
 		if (callback) {
 			callback(connection, callbackArg);
 		}

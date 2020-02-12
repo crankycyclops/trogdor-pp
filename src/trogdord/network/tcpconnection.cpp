@@ -8,9 +8,16 @@
 #include "../include/network/tcpconnection.h"
 #include "../include/network/tcpserver.h"
 
+#include "../include/config.h"
+
 using namespace boost::system;
 using boost::asio::ip::tcp;
 
+
+TCPConnection::TCPConnection(boost::asio::io_service &io_service, TCPServer *s):
+server(s), socket(io_service), inUse(false) {}
+
+/******************************************************************************/
 
 TCPConnection::~TCPConnection() {
 
@@ -26,7 +33,13 @@ void TCPConnection::handleRead(
 	callback_t callback,
 	void *callbackArg
 ) {
-	if (!e) {
+	if (boost::asio::error::eof == e || boost::asio::error::connection_reset == e) {
+		Config::get()->err(trogdor::Trogerr::INFO) <<
+			socket.remote_endpoint().address().to_string() <<
+			" disconnected." << std::endl;
+	}
+
+	else if (!e) {
 
 		// const char *bufferData = boost::asio::buffer_cast<const char *>(inBuffer.data());
 		bufferStr = boost::asio::buffer_cast<const char *>(inBuffer.data());
