@@ -14,7 +14,7 @@ void StreamErr::flush() {
    auto t = std::time(nullptr);
    auto tm = *std::localtime(&t);
 
-   *stream << std::put_time(&tm, "%Y-%m-%d %H:%M:%S") << " " <<
+   *stream << '[' << std::put_time(&tm, "%Y-%m-%d %H:%M:%S") << "] " <<
       Trogerr::errorLevelToStr(getErrorLevel()) << ": " << getBufferStr();
    stream->flush();
 }

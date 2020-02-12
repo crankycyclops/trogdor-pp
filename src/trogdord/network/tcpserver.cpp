@@ -30,7 +30,7 @@ void TCPServer::establishConnection(std::shared_ptr<TCPConnection> connection, v
 
 void TCPServer::serveRequest(std::shared_ptr<TCPConnection> connection, void *) {
 
-	connection->write(Dispatcher::get()->dispatch(connection->getBufferStr()) + EOT,
+	connection->write(Dispatcher::get()->dispatch(connection, connection->getBufferStr()) + EOT,
 	[] (std::shared_ptr<TCPConnection> connection, void *) {
 		connection->setInUse(false);
 	}, 0);
@@ -84,9 +84,7 @@ void TCPServer::handleAccept(
 ) {
 	if (!e) {
 
-		Config::get()->err(trogdor::Trogerr::INFO) <<
-			connection->getSocket().remote_endpoint().address().to_string() <<
-			" connected." << std::endl;
+		connection->log(trogdor::Trogerr::INFO, "connected.");
 
 		if (callback) {
 			callback(connection, callbackArg);

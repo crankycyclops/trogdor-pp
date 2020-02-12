@@ -24,6 +24,7 @@ void ScopeController::registerAction(
 /*****************************************************************************/
 
 JSONObject ScopeController::resolve(
+	std::shared_ptr<TCPConnection> &connection,
 	std::string method,
 	std::string action,
 	JSONObject requestObj
@@ -39,19 +40,24 @@ JSONObject ScopeController::resolve(
 		response.put("status", 404);
 		response.put("message", METHOD_NOT_FOUND);
 
+		connection->log(trogdor::Trogerr::INFO, std::string("404: ") + METHOD_NOT_FOUND);
+
 		return response;
 	}
 
 	else if (actionMap[method].end() == actionMap[method].find(action)) {
 
+		std::string message;
 		response.put("status", 404);
 
 		if (0 == action.compare(DEFAULT_ACTION)) {
-			response.put("message", std::string("no default action for method ") +
-				method);
+			message = std::string("no default action for method ") + method;
 		} else {
-			response.put("message", ACTION_NOT_FOUND);
+			message = ACTION_NOT_FOUND;
 		}
+
+		connection->log(trogdor::Trogerr::INFO, std::string("404: ") + message);
+		response.put("message", message);
 
 		return response;
 	}

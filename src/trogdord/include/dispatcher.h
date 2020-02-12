@@ -7,6 +7,7 @@
 
 #include "json.h"
 #include "scopes/controller.h"
+#include "network/tcpconnection.h"
 
 
 /*
@@ -123,7 +124,7 @@ class Dispatcher {
 		static std::unique_ptr<Dispatcher> &get();
 
 		// Dispatches a request and returns the server's response in JSON.
-		std::string dispatch(std::string request);
+		std::string dispatch(std::shared_ptr<TCPConnection> &connection, std::string request);
 };
 
 

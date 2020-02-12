@@ -8,8 +8,6 @@
 #include "../include/network/tcpconnection.h"
 #include "../include/network/tcpserver.h"
 
-#include "../include/config.h"
-
 using namespace boost::system;
 using boost::asio::ip::tcp;
 
@@ -34,9 +32,7 @@ void TCPConnection::handleRead(
 	void *callbackArg
 ) {
 	if (boost::asio::error::eof == e || boost::asio::error::connection_reset == e) {
-		Config::get()->err(trogdor::Trogerr::INFO) <<
-			socket.remote_endpoint().address().to_string() <<
-			" disconnected." << std::endl;
+		log(trogdor::Trogerr::INFO, "disconnected.");
 	}
 
 	else if (!e) {

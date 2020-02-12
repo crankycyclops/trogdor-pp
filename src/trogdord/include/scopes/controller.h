@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "../json.h"
+#include "../network/tcpconnection.h"
 
 
 class ScopeController {
@@ -45,6 +46,7 @@ class ScopeController {
 
 		// Resolves a request and returns a JSON response.
 		JSONObject resolve(
+			std::shared_ptr<TCPConnection> &connection,
 			std::string method,
 			std::string action,
 			JSONObject requestObj

@@ -9,6 +9,7 @@
 #include <boost/asio.hpp>
 #include <boost/algorithm/string.hpp>
 
+#include "../config.h"
 #include "tcpcommon.h"
 
 using namespace boost::system;
@@ -100,6 +101,16 @@ class TCPConnection: public std::enable_shared_from_this<TCPConnection> {
 		// Send a string through a connection that was established during
 		// instantiation.
 		void write(std::string message, TCPConnection::callback_t callback, void *callbackArg);
+
+		// Logs a message associated with the connection.
+		inline void log(trogdor::Trogerr::ErrorLevel severity, std::string message) {
+
+			Config::get()->err(severity) <<
+				socket.remote_endpoint().address().to_string() << ": " <<
+				message << std::endl;
+
+			return;
+		}
 
 		// Closes the connection. Once this is done, the connection cannot be
 		// reopened again, and any further operations on this connection

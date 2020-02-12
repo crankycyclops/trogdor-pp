@@ -1,5 +1,7 @@
 #include <trogdor/utility.h>
 
+#include "include/config.h"
+
 #include "include/dispatcher.h"
 #include "include/response.h"
 #include "include/exception/requestexception.h"
@@ -114,11 +116,14 @@ JSONObject Dispatcher::parseRequest(
 
 /*****************************************************************************/
 
-std::string Dispatcher::dispatch(std::string request) {
+std::string Dispatcher::dispatch(std::shared_ptr<TCPConnection> &connection, std::string request) {
 
 	std::string method;
 	std::string scope;
 	std::string action;
+
+	// Log all incoming requests
+	connection->log(trogdor::Trogerr::INFO, trim(request));
 
 	try {
 
@@ -126,13 +131,15 @@ std::string Dispatcher::dispatch(std::string request) {
 
 		// Make sure the specified scope can be resolved
 		if (scopes.end() == scopes.find(scope)) {
+			connection->log(trogdor::Trogerr::INFO, std::string("404: ") + SCOPE_NOT_FOUND);
 			return Response::makeErrorJson(SCOPE_NOT_FOUND, 404);
 		}
 
-		return JSON::serialize(scopes[scope]->resolve(method, action, requestObj));
+		return JSON::serialize(scopes[scope]->resolve(connection, method, action, requestObj));
 	}
 
 	catch (RequestException &e) {
+		connection->log(trogdor::Trogerr::INFO, std::to_string(e.getStatus()) + ": " + e.what());
 		return Response::makeErrorJson(e.what(), e.getStatus());
 	}
 }
