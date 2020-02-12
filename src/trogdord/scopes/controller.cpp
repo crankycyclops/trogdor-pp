@@ -1,3 +1,6 @@
+#include <optional>
+#include <boost/optional.hpp>
+
 #include "../include/scopes/controller.h"
 
 
@@ -62,5 +65,15 @@ JSONObject ScopeController::resolve(
 		return response;
 	}
 
-	return actionMap[method][action](requestObj);
+	response = actionMap[method][action](requestObj);
+
+	std::string logMessage = response.get<std::string>("status");
+	boost::optional responseMessage = response.get_optional<std::string>("message");
+
+	if (responseMessage) {
+		logMessage += std::string(" ") + *responseMessage;
+	}
+
+	connection->log(trogdor::Trogerr::INFO, logMessage);
+	return response;
 }
