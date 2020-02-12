@@ -40,13 +40,7 @@ std::unique_ptr<Config> Config::instance = nullptr;
 
 /*****************************************************************************/
 
-Config::Config(std::string iniPath) {
-
-	// This will only be set if we're logging errors to a file instead of
-	// stdout or stderr. Don't put this in initErrorLogger()! It needs to be
-	// called up here before any other code executes that might throw an
-	// exception.
-	logFileStream = nullptr;
+Config::Config(std::string iniPath) noexcept {
 
 	if (
 		0 != iniPath.compare("") &&
@@ -81,7 +75,9 @@ Config::Config(std::string iniPath) {
 
 /*****************************************************************************/
 
-void Config::initErrorLogger() {
+void Config::initErrorLogger() noexcept {
+
+	logFileStream = nullptr;
 
 	std::string logto = strToLower(ini.get<std::string>(CONFIG_KEY_LOGTO));
 
@@ -118,6 +114,7 @@ void Config::initErrorLogger() {
 		// back to std::cerr.
 		catch (std::exception &e) {
 
+			std::cerr << e.what() << std::endl;
 			std::cerr << "WARNING: failed to open " << logto << " for writing. Falling back to stderr." << std::endl;
 
 			logFileStream = nullptr;
@@ -128,7 +125,7 @@ void Config::initErrorLogger() {
 
 /*****************************************************************************/
 
-std::unique_ptr<Config> &Config::get() {
+std::unique_ptr<Config> &Config::get() noexcept {
 
 	if (!instance) {
 		instance = std::unique_ptr<Config>(new Config(TROGDORD_INI_PATH));

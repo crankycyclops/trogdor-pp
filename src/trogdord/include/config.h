@@ -44,12 +44,12 @@ class Config {
 
 		// Protected constructor, making get() the only way to return an
 		// instance.
-		Config(std::string iniPath);
+		Config(std::string iniPath) noexcept;
 		Config() = delete;
 		Config(const Config &) = delete;
 
 		// Initialize the global error logger.
-		void initErrorLogger();
+		void initErrorLogger() noexcept;
 
 	public:
 
@@ -61,7 +61,7 @@ class Config {
 		static const char *CONFIG_KEY_DEFINITIONS_PATH;
 
 		// Returns singleton instance of Config.
-		static std::unique_ptr<Config> &get();
+		static std::unique_ptr<Config> &get() noexcept;
 
 		// Returns the specified config value. Throws ConfigUndefinedValue
 		// if the config value isn't set and ConfigInvalidValue if it
