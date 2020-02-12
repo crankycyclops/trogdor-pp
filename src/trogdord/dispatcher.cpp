@@ -123,7 +123,7 @@ std::string Dispatcher::dispatch(std::shared_ptr<TCPConnection> &connection, std
 	std::string action;
 
 	// Log all incoming requests
-	connection->log(trogdor::Trogerr::INFO, trim(request));
+	connection->log(trogdor::Trogerr::INFO, std::string("request: ") + trim(request));
 
 	try {
 
