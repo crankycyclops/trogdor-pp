@@ -1,7 +1,6 @@
 #include <cstdlib>
 #include <iostream>
 
-#include <boost/optional.hpp>
 #include <trogdor/utility.h>
 
 #include "include/config.h"

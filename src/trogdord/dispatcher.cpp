@@ -79,11 +79,11 @@ std::string Dispatcher::parseRequestComponent(JSONObject requestObj, std::string
 		}
 	}
 
-	try {
-		return strToLower(requestObj.get<std::string>(component));
-	}
+	boost::optional value = requestObj.get_optional<std::string>(component);
 
-	catch (boost::property_tree::ptree_bad_data &e) {
+	if (value) {
+		return strToLower(*value);
+	} else {
 		throw RequestException(invalidMsgs[component], 400);
 	}
 }
@@ -103,7 +103,7 @@ JSONObject Dispatcher::parseRequest(
 		requestObj = JSON::deserialize(request);
 	}
 
-	catch (std::exception &e) {
+	catch (boost::property_tree::json_parser::json_parser_error &e) {
 		throw RequestException(INVALID_JSON, 400);
 	}
 

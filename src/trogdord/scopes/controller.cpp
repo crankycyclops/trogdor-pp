@@ -1,6 +1,4 @@
 #include <optional>
-#include <boost/optional.hpp>
-
 #include "../include/scopes/controller.h"
 
 
