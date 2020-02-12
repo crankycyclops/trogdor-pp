@@ -4,14 +4,7 @@
 #include <trogdor/utility.h>
 
 #include "include/config.h"
-
-#ifdef __cpp_lib_filesystem
-	#include <filesystem>
-	#define STD_FILESYSTEM std::filesystem
-#else
-	#include <experimental/filesystem>
-	#define STD_FILESYSTEM std::experimental::filesystem
-#endif
+#include "include/filesystem.h"
 
 #ifndef TROGDORD_INI_PATH
 	#define TROGDORD_INI_PATH ""

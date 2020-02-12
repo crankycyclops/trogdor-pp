@@ -1,5 +1,7 @@
 #include <utility>
+#include <trogdor/utility.h>
 
+#include "../include/filesystem.h"
 #include "../include/request.h"
 #include "../include/gamecontainer.h"
 
@@ -15,6 +17,9 @@ const char *Game::LIST_ACTION = "list";
 const char *Game::MISSING_GAME_ID = "missing required game id";
 const char *Game::INVALID_GAME_ID = "invalid game id";
 const char *Game::GAME_NOT_FOUND = "game not found";
+const char *Game::MISSING_REQUIRED_NAME = "missing required name";
+const char *Game::MISSING_REQUIRED_DEFINITION = "missing required definition path";
+const char *Game::DEFINITION_NOT_RELATIVE = "definition path must be relative";
 
 // Singleton instance of Game
 std::unique_ptr<Game> Game::instance = nullptr;
@@ -115,10 +120,11 @@ JSONObject Game::getGame(JSONObject request) {
 	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
 
 	if (game) {
-		// TODO: remove message from this query on success and put appropriate
-		// fields (like name, author, etc.)
 		response.put("status", 200);
-		response.put("message", "TODO: get game stub");
+		response.put("id", gameId);
+		response.put("name", game->getMeta("name"));
+		response.put("current_time", game->getTime());
+		response.put("running", game->inProgress());
 	}
 
 	else {
@@ -156,11 +162,44 @@ JSONObject Game::createGame(JSONObject request) {
 
 	JSONObject response;
 
-	// "id" should be the game's id
-	// TODO: remove message from this query on success
-	response.put("status", 200);
-	response.put("id", 0);
-	response.put("message", "TODO: create game stub");
+	boost::optional name = request.get_optional<std::string>("args.name");
+	boost::optional definition = request.get_optional<std::string>("args.definition");
+
+	if (!name) {
+		response.put("status", 400);
+		response.put("message", MISSING_REQUIRED_NAME);
+	}
+
+	else if (!definition) {
+		response.put("status", 400);
+		response.put("message", MISSING_REQUIRED_DEFINITION);
+	}
+
+	else if (STD_FILESYSTEM::path(*definition).is_absolute()) {
+		response.put("status", 400);
+		response.put("message", DEFINITION_NOT_RELATIVE);
+	}
+
+	else {
+
+		*name = trim(*name);
+		*definition = trim(*definition);
+
+		try {
+			response.put("status", 200);
+			response.put("id", GameContainer::get()->createGame(*name, *definition));
+		}
+
+		catch (trogdor::Exception &e) {
+			response.put("status", 500);
+			response.put("message", e.what());
+		}
+
+		catch (ServerException &e) {
+			response.put("status", 500);
+			response.put("message", e.what());
+		}
+	}
 
 	return response;
 }

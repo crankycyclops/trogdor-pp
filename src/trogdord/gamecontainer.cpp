@@ -1,3 +1,5 @@
+#include "include/filesystem.h"
+#include "include/config.h"
 #include "include/gamecontainer.h"
 
 
@@ -56,10 +58,38 @@ std::unique_ptr<trogdor::Game> &GameContainer::getGame(size_t id) {
 
 /*****************************************************************************/
 
-size_t GameContainer::createGame() {
+size_t GameContainer::createGame(std::string name, std::string definitionPath) {
 
-	// TODO
-	return 0;
+	std::string pathPrefix = TROGDORD_INSTALL_PREFIX;
+
+	if (pathPrefix[pathPrefix.length() - 1] != STD_FILESYSTEM::path::preferred_separator) {
+		pathPrefix += STD_FILESYSTEM::path::preferred_separator;
+	}
+
+	pathPrefix = pathPrefix + Config::get()->value<std::string>(Config::CONFIG_KEY_DEFINITIONS_PATH);
+
+	if (pathPrefix[pathPrefix.length() - 1] != STD_FILESYSTEM::path::preferred_separator) {
+		pathPrefix += STD_FILESYSTEM::path::preferred_separator;
+	}
+
+	definitionPath = pathPrefix + definitionPath;
+
+	// TODO: will need better and more specific error logging
+	std::unique_ptr<trogdor::Game> game = std::make_unique<trogdor::Game>(
+		Config::get()->err().copy()
+	);
+
+	std::unique_ptr<trogdor::XMLParser> parser = std::make_unique<trogdor::XMLParser>(
+		game->makeInstantiator(), game->getVocabulary()
+	);
+
+	if (!game->initialize(parser.get(), definitionPath)) {
+		throw ServerException("failed to initialize game");
+	}
+
+	game->setMeta("name", name);
+	games.push_back(std::move(game));
+	return games.size() - 1;
 }
 
 /*****************************************************************************/

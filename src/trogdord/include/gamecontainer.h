@@ -6,6 +6,7 @@
 #include <memory>
 
 #include <trogdor/game.h>
+#include <trogdor/parser/parsers/xmlparser.h>
 
 
 class GameContainer {
@@ -38,8 +39,11 @@ class GameContainer {
 		// it doesn't exist.)
 		std::unique_ptr<trogdor::Game> &getGame(size_t id);
 
-		// Creates a new game and returns its id.
-		size_t createGame();
+		// Creates a new game and returns its id. Takes as input a name that
+		// the game should be identified by and a relative path to the
+		// definition that should be used to create it. Throws an instance of
+		// ServerException or trogdor::Exception if the game cannot be created.
+		size_t createGame(std::string name, std::string definitionPath);
 
 		// Destroys the game referenced by the given id (does nothing if the
 		// game doesn't exist.)
