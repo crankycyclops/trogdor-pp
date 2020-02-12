@@ -33,6 +33,7 @@ static void shutdownHandler(const boost::system::error_code& error, int signal_n
 int main(int argc, char **argv) {
 
 	std::unique_ptr<Config> &config = Config::get();
+	config->err(trogdor::Trogerr::INFO) << "Starting Trogdord." << std::endl;
 
 	try {
 
