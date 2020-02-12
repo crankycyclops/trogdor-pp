@@ -15,10 +15,6 @@ class GameContainer {
 		// Singleton instance of GameContainer.
 		static std::unique_ptr<GameContainer> instance;
 
-		// Indices in games that have been reclaimed (had their Game pointers
-		// set to nullptr.)
-		std::queue<size_t> recycledIds;
-
 		// All currently existing games reside here.
 		std::vector<std::unique_ptr<trogdor::Game>> games;
 

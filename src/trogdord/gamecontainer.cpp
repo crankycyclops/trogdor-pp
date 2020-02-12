@@ -68,6 +68,5 @@ void GameContainer::destroyGame(size_t id) {
 
 	if (games.size() > id && nullptr != games[id]) {
 		games[id] = nullptr;
-		recycledIds.push(id);
 	}
 }
