@@ -35,6 +35,10 @@ class GameContainer {
 		// Returns the current number of existing games.
 		inline size_t size() {return games.size();}
 
+		// Returns a read-only reference to games so that we can iterate over
+		// it from the outside.
+		inline const std::vector<std::unique_ptr<trogdor::Game>> &getGames() {return games;}
+
 		// Returns the game referenced by the given id (returns nullptr if
 		// it doesn't exist.)
 		std::unique_ptr<trogdor::Game> &getGame(size_t id);

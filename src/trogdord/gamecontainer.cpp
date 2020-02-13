@@ -74,7 +74,8 @@ size_t GameContainer::createGame(std::string name, std::string definitionPath) {
 
 	definitionPath = pathPrefix + definitionPath;
 
-	// TODO: will need better and more specific error logging
+	// TODO: will need better and more specific error logging than just a
+	// simple copy of the global server error logger
 	std::unique_ptr<trogdor::Game> game = std::make_unique<trogdor::Game>(
 		Config::get()->err().copy()
 	);

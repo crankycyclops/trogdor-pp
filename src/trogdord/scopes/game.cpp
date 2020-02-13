@@ -140,17 +140,33 @@ JSONObject Game::getGame(JSONObject request) {
 JSONObject Game::getGameList(JSONObject request) {
 
 	JSONObject response;
-
-	// TODO: stub with sample data for now
 	JSONObject gameList;
-	JSONObject testGame;
 
-	testGame.put("id", 0);
-	gameList.push_back(std::make_pair("", testGame));
+	bool addedGames = false;
+	auto &gamePtrs = GameContainer::get()->getGames();
 
-	// TODO: remove message from this query on success
+	for (size_t i = 0; i < gamePtrs.size(); i++) {
+
+		if (gamePtrs[i]) {
+
+			JSONObject game;
+
+			game.put("id", i);
+			game.put("name", gamePtrs[i]->getMeta("name"));
+			gameList.push_back(std::make_pair("", game));
+
+			addedGames = true;
+		}
+	}
+
+	// This kludge, if there are no games in GameContainer to list, results in
+	// write_json() outputting [""], which the serialize() function in json.cpp
+	// will later convert to [].
+	if (!addedGames) {
+		gameList.push_back(std::make_pair("", JSONObject()));
+	}
+
 	response.put("status", 200);
-	response.put("message", "TODO: get game list stub");
 	response.add_child("games", gameList);
 
 	return response;
