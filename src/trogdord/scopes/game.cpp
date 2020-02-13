@@ -219,9 +219,15 @@ JSONObject Game::destroyGame(JSONObject request) {
 		return error;
 	}
 
-	// TODO: remove message from this query on success
-	response.put("status", 200);
-	response.put("message", "TODO: destroy game stub");
+	if (GameContainer::get()->getGame(gameId)) {
+		GameContainer::get()->destroyGame(gameId);
+		response.put("status", 200);
+	}
+
+	else {
+		response.put("status", 404);
+		response.put("message", GAME_NOT_FOUND);
+	}
 
 	return response;
 }
