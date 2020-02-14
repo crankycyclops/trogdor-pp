@@ -406,16 +406,15 @@ namespace trogdor {
          }
 
          /*
-            Returns a pair of iterators covering all Entities in the game.
+            Returns a read-only reference to entities that can be iterated over.
 
             Input:
                (none)
 
             Output:
-               Entity iterator
+               const entity::EntityMap &
          */
-         inline auto const entitiesBegin() {return entities.begin();}
-         inline auto const entitiesEnd() {return entities.end();}
+         inline const entity::EntityMap &getEntities() const {return entities;}
 
         /*
             Returns the Place object associated with the specified name. Throws
@@ -437,18 +436,18 @@ namespace trogdor {
          }
 
          /*
-            Returns a pair of iterators covering all Places in the game. The
-            underline pointers are of type shared_ptr<Entity> and must be cast
-            to shared_ptr<Place> when accessing Place-specific methods.
+            Returns a read-only reference to all places in the game that can be
+            iterated over. The underline pointers are of type shared_ptr<Entity>
+            and must be cast to shared_ptr<Place> when accessing Place-specific
+            methods.
 
             Input:
                (none)
 
             Output:
-               Places iterator
+               const entity::PlaceMap &
          */
-         inline auto const placesBegin() {return places.begin();}
-         inline auto const placesEnd() {return places.end();}
+         inline const entity::PlaceMap &getPlaces() const {return places;}
 
         /*
             Returns the Thing object associated with the specified name. Throws
@@ -470,18 +469,18 @@ namespace trogdor {
          }
 
          /*
-            Returns a pair of iterators covering all Things in the game. The
-            underline pointers are of type shared_ptr<Entity> and must be cast
-            to shared_ptr<Thing> when accessing Thing-specific methods.
+            Returns a read-only reference to all things in the game that can be
+            iterated over. The underline pointers are of type shared_ptr<Entity>
+            and must be cast to shared_ptr<Thing> when accessing Thing-specific
+            methods.
 
             Input:
                (none)
 
             Output:
-               Things iterator
+               const entity::ThingMap &
          */
-         inline auto const thingsBegin() {return things.begin();}
-         inline auto const thingsEnd() {return things.end();}
+         inline const entity::ThingMap &getThings() const {return things;}
 
          /*
             Returns the Being object associated with the specified being name.
@@ -503,18 +502,18 @@ namespace trogdor {
          }
 
          /*
-            Returns a pair of iterators covering all Beings in the game. The
-            underline pointers are of type shared_ptr<Entity> and must be cast
-            to shared_ptr<Being> when accessing Being-specific methods.
+            Returns a read-only reference to all beings in the game that can be
+            iterated over. The underline pointers are of type shared_ptr<Entity>
+            and must be cast to shared_ptr<Being> when accessing Being-specific
+            methods.
 
             Input:
                (none)
 
             Output:
-               Beings iterator
+               const entity::BeingMap &
          */
-         inline auto const beingsBegin() {return beings.begin();}
-         inline auto const beingsEnd() {return beings.end();}
+         inline const entity::BeingMap &getBeings() const {return beings;}
 
          /*
             Returns the Player object associated with the specified player name.
@@ -536,18 +535,18 @@ namespace trogdor {
          }
 
          /*
-            Returns a pair of iterators covering all Players in the game. The
-            underline pointers are of type shared_ptr<Entity> and must be cast
-            to shared_ptr<Player> when accessing Player-specific methods.
+            Returns a read-only reference to all players in the game that can be
+            iterated over. The underline pointers are of type shared_ptr<Entity>
+            and must be cast to shared_ptr<Player> when accessing Player-specific
+            methods.
 
             Input:
                (none)
 
             Output:
-               Players iterator
+               const entity::PlayerMap &
          */
-         inline auto const playersBegin() {return players.begin();}
-         inline auto const playersEnd() {return players.end();}
+         inline const entity::PlayerMap &getPlayers() const {return players;}
 
          /*
             Returns the Creature object associated with the specified name.
@@ -569,18 +568,18 @@ namespace trogdor {
          }
 
          /*
-            Returns a pair of iterators covering all Creatures in the game. The
-            underline pointers are of type shared_ptr<Entity> and must be cast
-            to shared_ptr<Creature> when accessing Creature-specific methods.
+            Returns a read-only reference to all creatures in the game that can
+            be iterated over. The underline pointers are of type shared_ptr<Entity>
+            and must be cast to shared_ptr<Creature> when accessing
+            Creature-specific methods.
 
             Input:
                (none)
 
             Output:
-               Creatures iterator
+               const entity::CreatureMap &
          */
-         inline auto const creaturesBegin() {return creatures.begin();}
-         inline auto const creaturesEnd() {return creatures.end();}
+         inline const entity::CreatureMap &getCreatures() const {return creatures;}
 
          /*
             Returns the Object associated with the specified name. Throws an
@@ -602,18 +601,18 @@ namespace trogdor {
          }
 
          /*
-            Returns a pair of iterators covering all Objects in the game. The
-            underline pointers are of type shared_ptr<Entity> and must be cast
-            to shared_ptr<Object> when accessing Object-specific methods.
+            Returns a read-only reference to all objects in the game that can be
+            iterated over. The underline pointers are of type shared_ptr<Entity>
+            and must be cast to shared_ptr<Object> when accessing Object-specific
+            methods.
 
             Input:
                (none)
 
             Output:
-               Objects iterator
+               const entity::ObjectMap &
          */
-         inline auto const objectsBegin() {return objects.begin();}
-         inline auto const objectsEnd() {return objects.end();}
+         inline const entity::ObjectMap &getObjects() const {return objects;}
 
          /*
             Returns the Room associated with the specified name. Throws an
@@ -635,18 +634,18 @@ namespace trogdor {
          }
 
          /*
-            Returns a pair of iterators covering all Rooms in the game. The
-            underline pointers are of type shared_ptr<Entity> and must be cast
-            to shared_ptr<Room> when accessing Room-specific methods.
+            Returns a read-only reference to all rooms in the game that can be
+            iterated over. The underline pointers are of type shared_ptr<Entity>
+            and must be cast to shared_ptr<Room> when accessing Room-specific
+            methods.
 
             Input:
                (none)
 
             Output:
-               Rooms iterator
+               const entity::RoomMap &
          */
-         inline auto const roomsBegin() {return rooms.begin();}
-         inline auto const roomsEnd() {return rooms.end();}
+         inline const entity::RoomMap &getRooms() const {return rooms;}
 
          /*
             Wraps around the other insertEntity methods in cases where I have a
