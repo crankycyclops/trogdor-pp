@@ -21,7 +21,7 @@ To build just the library, issue these commands:
 
 cd /path/to/src
 cmake -DCMAKE_BUILD_TYPE=Release .
-make trogdor-pp && make install
+make trogdor && make install
 
 To build the single player client demo, use these commands:
 
