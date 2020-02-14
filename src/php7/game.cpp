@@ -397,10 +397,9 @@ PHP_METHOD(Game, start) {
 		// If there are any players already in the game, that means we're
 		// resuming a paused game and need to spin up new threads to listen
 		// for each player's commands.
-		for (auto player = gameObjPtr->playersBegin();
-		player != gameObjPtr->playersEnd(); player++) {
+		for (auto &player: gameObjPtr->getPlayers()) {
 
-			trogdor::entity::Player *pPtr = dynamic_cast<trogdor::entity::Player *>(player->second.get());
+			trogdor::entity::Player *pPtr = dynamic_cast<trogdor::entity::Player *>(player.second.get());
 			std::thread playerThread(playerListen, gameObjPtr, pPtr);
 
 			customConstructedDataMap[gameObjPtr]->playerThreads[pPtr] = std::move(playerThread);
