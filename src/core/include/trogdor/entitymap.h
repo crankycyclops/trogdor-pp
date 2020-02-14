@@ -122,7 +122,7 @@ namespace trogdor { namespace entity {
             Input: (none)
             Output: entityUnorderedMap::const_iterator const
          */
-         inline entityUnorderedMap::const_iterator const begin() {return entities.begin();}
+         inline entityUnorderedMap::const_iterator const begin() const {return entities.cbegin();}
 
          /*
             Returns a const iterator pointing to the end of the map. Used to
@@ -131,7 +131,7 @@ namespace trogdor { namespace entity {
             Input: (none)
             Output: entityUnorderedMap::const_iterator const
          */
-         inline entityUnorderedMap::const_iterator const end() {return entities.end();}
+         inline entityUnorderedMap::const_iterator const end() const {return entities.cend();}
    };
 
    /***************************************************************************/
