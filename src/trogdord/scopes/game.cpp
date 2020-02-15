@@ -1,7 +1,8 @@
 #include <utility>
-#include <trogdor/utility.h>
 
-#include "../include/filesystem.h"
+#include <trogdor/utility.h>
+#include <trogdor/filesystem.h>
+
 #include "../include/request.h"
 #include "../include/gamecontainer.h"
 

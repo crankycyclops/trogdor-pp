@@ -1,4 +1,5 @@
-#include "include/filesystem.h"
+#include <trogdor/filesystem.h>
+
 #include "include/config.h"
 #include "include/gamecontainer.h"
 

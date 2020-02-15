@@ -2,9 +2,9 @@
 #include <iostream>
 
 #include <trogdor/utility.h>
+#include <trogdor/filesystem.h>
 
 #include "include/config.h"
-#include "include/filesystem.h"
 
 #ifndef TROGDORD_INI_PATH
 	#define TROGDORD_INI_PATH ""
