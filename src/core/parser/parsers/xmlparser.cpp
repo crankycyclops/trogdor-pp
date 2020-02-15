@@ -1,14 +1,7 @@
 #include <memory>
 
-#ifdef __cpp_lib_filesystem
-   #include <filesystem>
-   #define STD_FILESYSTEM std::filesystem
-#else
-   #include <experimental/filesystem>
-   #define STD_FILESYSTEM std::experimental::filesystem
-#endif
-
 #include <trogdor/utility.h>
+#include <trogdor/filesystem.h>
 
 #include <trogdor/iostream/nullout.h>
 #include <trogdor/iostream/nullin.h>
@@ -44,7 +37,11 @@ namespace trogdor {
 
       reader = xmlReaderForFile(gamefilePath.c_str(), NULL, XML_PARSE_NOBLANKS);
       if (NULL == reader) {
-         throw ParseException("failed to open " + gamefilePath + "!\n");
+         throw ParseException(
+            std::string("failed to open ") +
+            STD_FILESYSTEM::path(gamefilePath).filename().string() +
+            "!\n"
+         );
       }
 
       try {
