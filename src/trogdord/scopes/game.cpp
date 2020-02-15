@@ -5,6 +5,7 @@
 
 #include "../include/request.h"
 #include "../include/gamecontainer.h"
+#include "../include/filesystem.h"
 
 #include "../include/scopes/game.h"
 
@@ -13,6 +14,7 @@ const char *Game::SCOPE = "game";
 
 // Actions served by the "game" scope
 const char *Game::LIST_ACTION = "list";
+const char *Game::DEFINITIONS_ACTION = "definitions";
 
 // Error messages
 const char *Game::MISSING_GAME_ID = "missing required game id";
@@ -35,6 +37,10 @@ Game::Game() {
 
 	registerAction(Request::GET, LIST_ACTION, [&] (JSONObject request) -> JSONObject {
 		return this->getGameList(request);
+	});
+
+	registerAction(Request::GET, DEFINITIONS_ACTION, [&] (JSONObject request) -> JSONObject {
+		return this->getDefinitionList(request);
 	});
 
 	registerAction(Request::POST, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
@@ -169,6 +175,50 @@ JSONObject Game::getGameList(JSONObject request) {
 
 	response.put("status", 200);
 	response.add_child("games", gameList);
+
+	return response;
+}
+
+/*****************************************************************************/
+
+JSONObject Game::getDefinitionList(JSONObject request) {
+
+	JSONObject response;
+	JSONObject definitions;
+
+	bool addedDefinitions = false;
+	std::string definitionsPath = Filesystem::getFullDefinitionsPath();
+
+	try {
+
+		for (auto &dirEntry: STD_FILESYSTEM::recursive_directory_iterator(definitionsPath)) {
+
+			std::string filename = dirEntry.path().string();
+
+			if (0 == filename.compare(filename.length() - 4, filename.length(), ".xml")) {
+
+				JSONObject definition;
+
+				definition.put_value(filename.replace(0, definitionsPath.length(), ""));
+				definitions.push_back(std::make_pair("", definition));
+				addedDefinitions = true;
+			}
+		}
+
+		// See comment in Game::getGameList describing use of addedGames for an
+		// explanation of what I'm doing here.
+		if (!addedDefinitions) {
+			definitions.push_back(std::make_pair("", JSONObject()));
+		}
+
+		response.put("status", 200);
+		response.add_child("definitions", definitions);
+	}
+
+	catch (STD_FILESYSTEM::filesystem_error &e) {
+		response.put("status", 500);
+		response.put("message", e.what());
+	}
 
 	return response;
 }

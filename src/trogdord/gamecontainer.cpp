@@ -1,6 +1,4 @@
-#include <trogdor/filesystem.h>
-
-#include "include/config.h"
+#include "include/filesystem.h"
 #include "include/gamecontainer.h"
 
 
@@ -61,19 +59,7 @@ std::unique_ptr<trogdor::Game> &GameContainer::getGame(size_t id) {
 
 size_t GameContainer::createGame(std::string name, std::string definitionPath) {
 
-	std::string pathPrefix = TROGDORD_INSTALL_PREFIX;
-
-	if (pathPrefix[pathPrefix.length() - 1] != STD_FILESYSTEM::path::preferred_separator) {
-		pathPrefix += STD_FILESYSTEM::path::preferred_separator;
-	}
-
-	pathPrefix = pathPrefix + Config::get()->value<std::string>(Config::CONFIG_KEY_DEFINITIONS_PATH);
-
-	if (pathPrefix[pathPrefix.length() - 1] != STD_FILESYSTEM::path::preferred_separator) {
-		pathPrefix += STD_FILESYSTEM::path::preferred_separator;
-	}
-
-	definitionPath = pathPrefix + definitionPath;
+	definitionPath = Filesystem::getFullDefinitionsPath(definitionPath);
 
 	// TODO: will need better and more specific error logging than just a
 	// simple copy of the global server error logger

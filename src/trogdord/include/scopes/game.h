@@ -15,6 +15,7 @@ class Game: public ScopeController {
 
 		// Actions served by the "game" scope
 		static const char *LIST_ACTION;
+		static const char *DEFINITIONS_ACTION;
 
 		// Error messages
 		static const char *MISSING_GAME_ID;
@@ -45,6 +46,9 @@ class Game: public ScopeController {
 
 		// Returns a list of all currently existing games
 		JSONObject getGameList(JSONObject request);
+
+		// Returns a list of all available game definitions
+		JSONObject getDefinitionList(JSONObject request);
 
 		// Instantiates a new game and returns its id
 		JSONObject createGame(JSONObject request);
