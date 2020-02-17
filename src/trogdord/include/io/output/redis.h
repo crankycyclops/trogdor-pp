@@ -28,12 +28,12 @@ namespace output {
 				size_t gameId,
 				std::string entityName,
 				std::string channel,
-				OutputMessage message
+				Message message
 			);
 
 			// Pops the oldest message from an entity's channel's output
 			// buffer. If the buffer is empty, std::nullopt is returned.
-			virtual std::optional<OutputMessage> pop(
+			virtual std::optional<Message> pop(
 				size_t gameId,
 				std::string entityName,
 				std::string channel

@@ -4,12 +4,15 @@
 #include <string>
 #include <ctime>
 
+namespace output {
 
-// Represents a single message to be inserted into the output buffer.
-struct OutputMessage {
-	time_t timestamp;
-	std::string content;
-};
+
+	// Represents a single message to be inserted into the output buffer.
+	struct Message {
+		time_t timestamp;
+		std::string content;
+	};
+}
 
 
 #endif

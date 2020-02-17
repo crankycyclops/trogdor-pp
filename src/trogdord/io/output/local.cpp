@@ -23,7 +23,7 @@ namespace output {
 		size_t gameId,
 		std::string entityName,
 		std::string channel,
-		OutputMessage message
+		Message message
 	) {
 
 		if (buffer.end() == buffer.find(gameId)) {
@@ -45,7 +45,7 @@ namespace output {
 
 	// Pops the oldest message from an entity's channel's output
 	// buffer
-	std::optional<OutputMessage> Local::pop(
+	std::optional<Message> Local::pop(
 		size_t gameId,
 		std::string entityName,
 		std::string channel
@@ -55,7 +55,7 @@ namespace output {
 			return std::nullopt;
 		}
 
-		OutputMessage m = buffer[gameId][entityName][channel].front();
+		Message m = buffer[gameId][entityName][channel].front();
 
 		buffer[gameId][entityName][channel].pop();
 		return m;

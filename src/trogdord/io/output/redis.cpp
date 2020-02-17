@@ -23,7 +23,7 @@ namespace output {
 		size_t gameId,
 		std::string entityName,
 		std::string channel,
-		OutputMessage message
+		Message message
 	) {
 		// TODO
 		return;
@@ -33,7 +33,7 @@ namespace output {
 
 	// Pops the oldest message from an entity's channel's output
 	// buffer
-	std::optional<OutputMessage> Redis::pop(
+	std::optional<Message> Redis::pop(
 		size_t gameId,
 		std::string entityName,
 		std::string channel

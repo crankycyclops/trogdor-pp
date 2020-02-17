@@ -15,7 +15,8 @@ namespace output {
 
 		private:
 
-			// Indicates that the singleton drivers have been instantiated.
+			// Gets set to true once the singleton drivers have been
+			// instantiated.
 			static bool driversInstantiated;
 
 			// Maps driver names to a singleton instance of that driver
@@ -45,12 +46,12 @@ namespace output {
 				size_t gameId,
 				std::string entityName,
 				std::string channel,
-				OutputMessage message
+				Message message
 			) = 0;
 
 			// Pops the oldest message from an entity's channel's output
 			// buffer. If the buffer is empty, std::nullopt is returned.
-			virtual std::optional<OutputMessage> pop(
+			virtual std::optional<Message> pop(
 				size_t gameId,
 				std::string entityName,
 				std::string channel
