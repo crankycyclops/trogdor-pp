@@ -12,7 +12,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 
-#include "iostream/streamerr.h"
+#include "io/iostream/streamerr.h"
 #include "exception/configinvalidvalue.h"
 #include "exception/configundefinedvalue.h"
 
@@ -59,6 +59,7 @@ class Config {
 		static const char *CONFIG_KEY_SEND_TCP_KEEPALIVE;
 		static const char *CONFIG_KEY_LOGTO;
 		static const char *CONFIG_KEY_DEFINITIONS_PATH;
+		static const char *CONFIG_KEY_OUTPUT_DRIVER;
 
 		// Returns singleton instance of Config.
 		static std::unique_ptr<Config> &get() noexcept;

@@ -8,7 +8,7 @@
 #include "include/network/tcpcommon.h"
 #include "include/network/tcpconnection.h"
 #include "include/network/tcpserver.h"
-#include "include/iostream/streamerr.h"
+#include "include/io/iostream/streamerr.h"
 
 
 // serves TCP connections

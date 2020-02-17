@@ -160,12 +160,15 @@ if (Boost_FOUND)
 		src/trogdord/dispatcher.cpp
 		src/trogdord/gamecontainer.cpp
 		src/trogdord/exception/requestexception.cpp
-		src/trogdord/iostream/streamerr.cpp
 		src/trogdord/network/tcpconnection.cpp
 		src/trogdord/network/tcpserver.cpp
 		src/trogdord/scopes/controller.cpp
 		src/trogdord/scopes/global.cpp
 		src/trogdord/scopes/game.cpp
+		src/trogdord/io/iostream/streamerr.cpp
+		src/trogdord/io/output/driver.cpp
+		src/trogdord/io/output/local.cpp
+		src/trogdord/io/output/redis.cpp
 	)
 
 	target_include_directories(trogdord
