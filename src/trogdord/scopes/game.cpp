@@ -10,24 +10,23 @@
 #include "../include/scopes/game.h"
 
 // Scope name that should be used in requests
-const char *Game::SCOPE = "game";
+const char *GameController::SCOPE = "game";
 
 // Actions served by the "game" scope
-const char *Game::LIST_ACTION = "list";
-const char *Game::DEFINITIONS_ACTION = "definitions";
+const char *GameController::LIST_ACTION = "list";
+const char *GameController::DEFINITIONS_ACTION = "definitions";
 
 // Error messages
-const char *Game::GAME_NOT_FOUND = "game not found";
-const char *Game::MISSING_REQUIRED_NAME = "missing required name";
-const char *Game::MISSING_REQUIRED_DEFINITION = "missing required definition path";
-const char *Game::DEFINITION_NOT_RELATIVE = "definition path must be relative";
+const char *GameController::MISSING_REQUIRED_NAME = "missing required name";
+const char *GameController::MISSING_REQUIRED_DEFINITION = "missing required definition path";
+const char *GameController::DEFINITION_NOT_RELATIVE = "definition path must be relative";
 
-// Singleton instance of Game
-std::unique_ptr<Game> Game::instance = nullptr;
+// Singleton instance of GameController
+std::unique_ptr<GameController> GameController::instance = nullptr;
 
 /*****************************************************************************/
 
-Game::Game() {
+GameController::GameController() {
 
 	registerAction(Request::GET, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
 		return this->getGame(request);
@@ -52,10 +51,10 @@ Game::Game() {
 
 /*****************************************************************************/
 
-std::unique_ptr<Game> &Game::get() {
+std::unique_ptr<GameController> &GameController::get() {
 
 	if (!instance) {
-		instance = std::unique_ptr<Game>(new Game());
+		instance = std::unique_ptr<GameController>(new GameController());
 	}
 
 	return instance;
@@ -63,7 +62,7 @@ std::unique_ptr<Game> &Game::get() {
 
 /*****************************************************************************/
 
-JSONObject Game::getGame(JSONObject request) {
+JSONObject GameController::getGame(JSONObject request) {
 
 	int gameId;
 	JSONObject response;
@@ -96,12 +95,11 @@ JSONObject Game::getGame(JSONObject request) {
 
 /*****************************************************************************/
 
-JSONObject Game::getGameList(JSONObject request) {
+JSONObject GameController::getGameList(JSONObject request) {
 
 	JSONObject response;
 	JSONObject gameList;
 
-	bool addedGames = false;
 	auto &gamePtrs = GameContainer::get()->getGames();
 
 	for (size_t i = 0; i < gamePtrs.size(); i++) {
@@ -113,15 +111,13 @@ JSONObject Game::getGameList(JSONObject request) {
 			game.put("id", i);
 			game.put("name", gamePtrs[i]->getMeta("name"));
 			gameList.push_back(std::make_pair("", game));
-
-			addedGames = true;
 		}
 	}
 
 	// This kludge, if there are no games in GameContainer to list, results in
 	// write_json() outputting [""], which the serialize() function in json.cpp
 	// will later convert to [].
-	if (!addedGames) {
+	if (!gameList.size()) {
 		gameList.push_back(std::make_pair("", JSONObject()));
 	}
 
@@ -133,12 +129,11 @@ JSONObject Game::getGameList(JSONObject request) {
 
 /*****************************************************************************/
 
-JSONObject Game::getDefinitionList(JSONObject request) {
+JSONObject GameController::getDefinitionList(JSONObject request) {
 
 	JSONObject response;
 	JSONObject definitions;
 
-	bool addedDefinitions = false;
 	std::string definitionsPath = Filesystem::getFullDefinitionsPath();
 
 	try {
@@ -153,13 +148,12 @@ JSONObject Game::getDefinitionList(JSONObject request) {
 
 				definition.put_value(filename.replace(0, definitionsPath.length(), ""));
 				definitions.push_back(std::make_pair("", definition));
-				addedDefinitions = true;
 			}
 		}
 
-		// See comment in Game::getGameList describing use of addedGames for an
-		// explanation of what I'm doing here.
-		if (!addedDefinitions) {
+		// See comment in GameController::getGameList describing use of
+		// addedGames for an explanation of what I'm doing here.
+		if (!definitions.size()) {
 			definitions.push_back(std::make_pair("", JSONObject()));
 		}
 
@@ -177,7 +171,7 @@ JSONObject Game::getDefinitionList(JSONObject request) {
 
 /*****************************************************************************/
 
-JSONObject Game::createGame(JSONObject request) {
+JSONObject GameController::createGame(JSONObject request) {
 
 	JSONObject response;
 
@@ -225,7 +219,7 @@ JSONObject Game::createGame(JSONObject request) {
 
 /*****************************************************************************/
 
-JSONObject Game::destroyGame(JSONObject request) {
+JSONObject GameController::destroyGame(JSONObject request) {
 
 	int gameId;
 	JSONObject response;

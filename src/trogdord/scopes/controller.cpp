@@ -9,6 +9,7 @@ const char *ScopeController::ACTION_NOT_FOUND = "action not found";
 
 const char *ScopeController::MISSING_GAME_ID = "missing required game id";
 const char *ScopeController::INVALID_GAME_ID = "invalid game id";
+const char *ScopeController::GAME_NOT_FOUND = "game not found";
 
 /*****************************************************************************/
 

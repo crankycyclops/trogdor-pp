@@ -27,6 +27,7 @@ class ScopeController {
 		// more than one scope controller.
 		static const char *MISSING_GAME_ID;
 		static const char *INVALID_GAME_ID;
+		static const char *GAME_NOT_FOUND;
 
 		// Maps method, action pairs to methods in classes that inherit from
 		// ScopeCotroller.

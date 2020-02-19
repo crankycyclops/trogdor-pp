@@ -8,6 +8,7 @@
 
 #include "include/scopes/global.h"
 #include "include/scopes/game.h"
+#include "include/scopes/player.h"
 
 
 // String representations of each request component
@@ -34,8 +35,9 @@ std::unique_ptr<Dispatcher> Dispatcher::instance = nullptr;
 Dispatcher::Dispatcher() {
 
 	// Register available scopes
-	scopes[Global::SCOPE] = Global::get().get();
-	scopes[Game::SCOPE] = Game::get().get();
+	scopes[GlobalController::SCOPE] = GlobalController::get().get();
+	scopes[GameController::SCOPE] = GameController::get().get();
+	scopes[PlayerController::SCOPE] = PlayerController::get().get();
 }
 
 /*****************************************************************************/

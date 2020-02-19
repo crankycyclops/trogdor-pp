@@ -1,20 +1,22 @@
+#include <trogdor/version.h>
+
 #include "../include/version.h"
 #include "../include/request.h"
 #include "../include/scopes/global.h"
 
 
 // Scope name that should be used in requests
-const char *Global::SCOPE = "global";
+const char *GlobalController::SCOPE = "global";
 
-// Action names that get mapped to methods in Global
-const char *Global::STATISTICS_ACTION = "statistics";
+// Action names that get mapped to methods in GlobalController
+const char *GlobalController::STATISTICS_ACTION = "statistics";
 
-// Singleton instance of Global
-std::unique_ptr<Global> Global::instance = nullptr;
+// Singleton instance of GlobalController
+std::unique_ptr<GlobalController> GlobalController::instance = nullptr;
 
 /*****************************************************************************/
 
-Global::Global() {
+GlobalController::GlobalController() {
 
 	registerAction(Request::GET, STATISTICS_ACTION, [&] (JSONObject request) -> JSONObject {
 		return this->statistics(request);
@@ -23,10 +25,10 @@ Global::Global() {
 
 /*****************************************************************************/
 
-std::unique_ptr<Global> &Global::get() {
+std::unique_ptr<GlobalController> &GlobalController::get() {
 
 	if (!instance) {
-		instance = std::unique_ptr<Global>(new Global());
+		instance = std::unique_ptr<GlobalController>(new GlobalController());
 	}
 
 	return instance;
@@ -34,18 +36,24 @@ std::unique_ptr<Global> &Global::get() {
 
 /*****************************************************************************/
 
-JSONObject Global::statistics(JSONObject request) {
+JSONObject GlobalController::statistics(JSONObject request) {
 
 	JSONObject response;
 	JSONObject version;
+	JSONObject libVersion;
 
 	version.put("major", TROGDORD_VERSION_MAJOR);
 	version.put("minor", TROGDORD_VERSION_MINOR);
 	version.put("patch", TROGDORD_VERSION_PATCH);
 
+	libVersion.put("major", TROGDOR_VERSION_MAJOR);
+	libVersion.put("minor", TROGDOR_VERSION_MINOR);
+	libVersion.put("patch", TROGDOR_VERSION_PATCH);
+
 	// TODO: add number of existing games and other stats
 	response.put("status", 200);
 	response.add_child("version", version);
+	response.add_child("lib_version", libVersion);
 
 	return response;
 }
