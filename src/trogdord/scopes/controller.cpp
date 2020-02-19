@@ -7,6 +7,55 @@ const char *ScopeController::DEFAULT_ACTION = "default";
 const char *ScopeController::METHOD_NOT_FOUND = "method not found";
 const char *ScopeController::ACTION_NOT_FOUND = "action not found";
 
+const char *ScopeController::MISSING_GAME_ID = "missing required game id";
+const char *ScopeController::INVALID_GAME_ID = "invalid game id";
+
+/*****************************************************************************/
+
+int ScopeController::parseGameId(JSONObject request, std::string idField) {
+
+	try {
+
+		int gameId = request.get<int>(idField);
+
+		if (gameId < 0) {
+
+			JSONObject response;
+
+			response.put("status", 400);
+			response.put("message", INVALID_GAME_ID);
+
+			throw response;
+		}
+
+		return gameId;
+	}
+
+	// It's kind of yucky catching an exception here just to throw another
+	// one, but as you can see, in methods like getGame, it cleans up my code
+	// a lot. Perhaps I can return a std::variant instead? I'll think about
+	// this some more and revisit it.
+	catch (boost::property_tree::ptree_bad_path &e) {
+
+		JSONObject response;
+
+		response.put("status", 400);
+		response.put("message", MISSING_GAME_ID);
+
+		throw response;
+	}
+
+	catch (boost::property_tree::ptree_bad_data &e) {
+
+		JSONObject response;
+
+		response.put("status", 400);
+		response.put("message", INVALID_GAME_ID);
+
+		throw response;
+	}
+}
+
 /*****************************************************************************/
 
 void ScopeController::registerAction(

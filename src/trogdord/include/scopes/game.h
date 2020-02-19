@@ -18,8 +18,6 @@ class Game: public ScopeController {
 		static const char *DEFINITIONS_ACTION;
 
 		// Error messages
-		static const char *MISSING_GAME_ID;
-		static const char *INVALID_GAME_ID;
 		static const char *GAME_NOT_FOUND;
 		static const char *MISSING_REQUIRED_NAME;
 		static const char *MISSING_REQUIRED_DEFINITION;
@@ -29,9 +27,6 @@ class Game: public ScopeController {
 		// ensure we only ever have a single instance of the class.
 		Game();
 		Game(const Game &) = delete;
-
-		// Parses a game id from a request's arguments
-		int parseGameId(JSONObject request);
 
 	public:
 
