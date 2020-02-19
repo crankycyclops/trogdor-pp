@@ -13,8 +13,14 @@ namespace output {
 		std::string entityName,
 		std::string channel
 	) {
-		return isBufferInitialized(gameId, entityName, channel) ?
+
+		bufferMutex.lock();
+
+		size_t bufferSize = isBufferInitialized(gameId, entityName, channel) ?
 			buffer[gameId][entityName][channel].size() : 0;
+
+		bufferMutex.unlock();
+		return bufferSize;
 	}
 
 	/************************************************************************/
@@ -25,6 +31,8 @@ namespace output {
 		std::string channel,
 		Message message
 	) {
+
+		bufferMutex.lock();
 
 		if (buffer.end() == buffer.find(gameId)) {
 			buffer[gameId] = {};
@@ -39,6 +47,8 @@ namespace output {
 		}
 
 		buffer[gameId][entityName][channel].push(message);
+
+		bufferMutex.unlock();
 	}
 
 	/************************************************************************/
@@ -51,13 +61,18 @@ namespace output {
 		std::string channel
 	) {
 
+		bufferMutex.lock();
+
 		if (!isBufferInitialized(gameId, entityName, channel)) {
+			bufferMutex.unlock();
 			return std::nullopt;
 		}
 
 		Message m = buffer[gameId][entityName][channel].front();
 
 		buffer[gameId][entityName][channel].pop();
+
+		bufferMutex.unlock();
 		return m;
 	}
 }

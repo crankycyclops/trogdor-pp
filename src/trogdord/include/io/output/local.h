@@ -3,6 +3,7 @@
 
 #include <queue>
 #include <string>
+#include <mutex>
 #include <unordered_map>
 
 #include "driver.h"
@@ -15,6 +16,9 @@ namespace output {
 	class Local: public Driver {
 
 		private:
+
+			// Make sure all operations on the local output buffer are thread-safe
+			std::mutex bufferMutex;
 
 			// Maps gameId -> entity name -> channel -> queue of messages.
 			std::unordered_map<
