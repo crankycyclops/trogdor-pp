@@ -28,8 +28,17 @@ class PlayerController: public ScopeController {
 		// Returns singleton instance of PlayerController.
 		static std::unique_ptr<PlayerController> &get();
 
+		// Returns details about the player in the specified game
+		JSONObject getPlayer(JSONObject request);
+
 		// Returns a list of all players in the specified game
 		JSONObject getPlayerList(JSONObject request);
+
+		// Creates a player in the specified game
+		JSONObject createPlayer(JSONObject request);
+
+		// Removes a player in the specified game
+		JSONObject destroyPlayer(JSONObject request);
 };
 
 

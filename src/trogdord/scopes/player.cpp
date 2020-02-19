@@ -17,8 +17,20 @@ std::unique_ptr<PlayerController> PlayerController::instance = nullptr;
 
 PlayerController::PlayerController() {
 
+	registerAction(Request::GET, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
+		return this->getPlayer(request);
+	});
+
 	registerAction(Request::GET, LIST_ACTION, [&] (JSONObject request) -> JSONObject {
 		return this->getPlayerList(request);
+	});
+
+	registerAction(Request::POST, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
+		return this->createPlayer(request);
+	});
+
+	registerAction(Request::DELETE, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
+		return this->destroyPlayer(request);
 	});
 }
 
@@ -31,6 +43,36 @@ std::unique_ptr<PlayerController> &PlayerController::get() {
 	}
 
 	return instance;
+}
+
+/*****************************************************************************/
+
+JSONObject PlayerController::getPlayer(JSONObject request) {
+
+	int gameId;
+	JSONObject response;
+
+	try {
+		gameId = parseGameId(request, "args.game_id");
+	}
+
+	catch (JSONObject error) {
+		return error;
+	}
+
+	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+
+	if (game) {
+		response.put("status", 200);
+		response.put("message", "TODO");
+	}
+
+	else {
+		response.put("status", 404);
+		response.put("message", GAME_NOT_FOUND);
+	}
+
+	return response;
 }
 
 /*****************************************************************************/
@@ -70,6 +112,66 @@ JSONObject PlayerController::getPlayerList(JSONObject request) {
 
 		response.put("status", 200);
 		response.add_child("players", players);
+	}
+
+	else {
+		response.put("status", 404);
+		response.put("message", GAME_NOT_FOUND);
+	}
+
+	return response;
+}
+
+/*****************************************************************************/
+
+JSONObject PlayerController::createPlayer(JSONObject request) {
+
+	int gameId;
+	JSONObject response;
+
+	try {
+		gameId = parseGameId(request, "args.game_id");
+	}
+
+	catch (JSONObject error) {
+		return error;
+	}
+
+	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+
+	if (game) {
+		response.put("status", 200);
+		response.put("message", "TODO");
+	}
+
+	else {
+		response.put("status", 404);
+		response.put("message", GAME_NOT_FOUND);
+	}
+
+	return response;
+}
+
+/*****************************************************************************/
+
+JSONObject PlayerController::destroyPlayer(JSONObject request) {
+
+	int gameId;
+	JSONObject response;
+
+	try {
+		gameId = parseGameId(request, "args.game_id");
+	}
+
+	catch (JSONObject error) {
+		return error;
+	}
+
+	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+
+	if (game) {
+		response.put("status", 200);
+		response.put("message", "TODO");
 	}
 
 	else {
