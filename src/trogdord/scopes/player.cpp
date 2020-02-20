@@ -50,6 +50,7 @@ std::unique_ptr<PlayerController> &PlayerController::get() {
 JSONObject PlayerController::getPlayer(JSONObject request) {
 
 	int gameId;
+
 	JSONObject response;
 
 	try {

@@ -15,6 +15,8 @@ const char *GameController::SCOPE = "game";
 // Actions served by the "game" scope
 const char *GameController::LIST_ACTION = "list";
 const char *GameController::DEFINITIONS_ACTION = "definitions";
+const char *GameController::START_ACTION = "start";
+const char *GameController::STOP_ACTION = "stop";
 
 // Error messages
 const char *GameController::MISSING_REQUIRED_NAME = "missing required name";
@@ -42,6 +44,14 @@ GameController::GameController() {
 
 	registerAction(Request::POST, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
 		return this->createGame(request);
+	});
+
+	registerAction(Request::SET, START_ACTION, [&] (JSONObject request) -> JSONObject {
+		return this->startGame(request);
+	});
+
+	registerAction(Request::SET, STOP_ACTION, [&] (JSONObject request) -> JSONObject {
+		return this->stopGame(request);
 	});
 
 	registerAction(Request::DELETE, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
@@ -234,6 +244,62 @@ JSONObject GameController::destroyGame(JSONObject request) {
 
 	if (GameContainer::get()->getGame(gameId)) {
 		GameContainer::get()->destroyGame(gameId);
+		response.put("status", 200);
+	}
+
+	else {
+		response.put("status", 404);
+		response.put("message", GAME_NOT_FOUND);
+	}
+
+	return response;
+}
+
+/*****************************************************************************/
+
+JSONObject GameController::startGame(JSONObject request) {
+
+	int gameId;
+	JSONObject response;
+
+	try {
+		gameId = parseGameId(request);
+	}
+
+	catch (JSONObject error) {
+		return error;
+	}
+
+	if (GameContainer::get()->getGame(gameId)) {
+		GameContainer::get()->startGame(gameId);
+		response.put("status", 200);
+	}
+
+	else {
+		response.put("status", 404);
+		response.put("message", GAME_NOT_FOUND);
+	}
+
+	return response;
+}
+
+/*****************************************************************************/
+
+JSONObject GameController::stopGame(JSONObject request) {
+
+	int gameId;
+	JSONObject response;
+
+	try {
+		gameId = parseGameId(request);
+	}
+
+	catch (JSONObject error) {
+		return error;
+	}
+
+	if (GameContainer::get()->getGame(gameId)) {
+		GameContainer::get()->stopGame(gameId);
 		response.put("status", 200);
 	}
 

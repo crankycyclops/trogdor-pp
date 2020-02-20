@@ -88,3 +88,25 @@ void GameContainer::destroyGame(size_t id) {
 		games[id] = nullptr;
 	}
 }
+
+/*****************************************************************************/
+
+void GameContainer::startGame(size_t id) {
+
+	// TODO: start player listener thread
+
+	if (games.size() > id && nullptr != games[id]) {
+		games[id]->start();
+	}
+}
+
+/*****************************************************************************/
+
+void GameContainer::stopGame(size_t id) {
+
+	// TODO: stop player listener thread
+
+	if (games.size() > id && nullptr != games[id]) {
+		games[id]->stop();
+	}
+}

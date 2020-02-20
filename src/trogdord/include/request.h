@@ -13,7 +13,7 @@ class Request {
 		static const char *GET;
 		static const char *POST;
 		static const char *PUT;
-		static const char *PATCH;
+		static const char *SET;
 		static const char *DELETE;
 };
 

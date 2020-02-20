@@ -16,6 +16,8 @@ class GameController: public ScopeController {
 		// Actions served by the "game" scope
 		static const char *LIST_ACTION;
 		static const char *DEFINITIONS_ACTION;
+		static const char *START_ACTION;
+		static const char *STOP_ACTION;
 
 		// Error messages
 		static const char *MISSING_REQUIRED_NAME;
@@ -47,8 +49,14 @@ class GameController: public ScopeController {
 		// Instantiates a new game and returns its id
 		JSONObject createGame(JSONObject request);
 
-		// Destroy's a game
+		// Destroys a game
 		JSONObject destroyGame(JSONObject request);
+
+		// Starts a game
+		JSONObject startGame(JSONObject request);
+
+		// Stops a game
+		JSONObject stopGame(JSONObject request);
 };
 
 

@@ -52,6 +52,12 @@ class GameContainer {
 		// Destroys the game referenced by the given id (does nothing if the
 		// game doesn't exist.)
 		void destroyGame(size_t id);
+
+		// Starts the game referenced by the given id.
+		void startGame(size_t id);
+
+		// Stops the game referenced by the given id.
+		void stopGame(size_t id);
 };
 
 

@@ -18,9 +18,9 @@
 		// This is analagous to the HTTP methods GET, PUT, POST, etc, and they
 		// basically mean the same thing. "get" requests retrieve data, "post"
 		// requests create data, "put" requests replacing existing data,
-		// "patch" requests modify existing data, and "delete" requests, of
-		// course, delete existing data.
-		"method": "get" | "post" | "put" | "patch" | delete",
+		// "set" requests are like PATCH and modify existing data, and "delete"
+		// requests, of course, delete existing data.
+		"method": "get" | "post" | "put" | "set" | delete",
 
 		// If this were an MVC web application, then the scope would be your
 		// controller. Requests that have an effect on the server environment
