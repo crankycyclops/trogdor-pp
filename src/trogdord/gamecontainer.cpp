@@ -7,6 +7,39 @@ std::unique_ptr<GameContainer> GameContainer::instance = nullptr;
 
 /*****************************************************************************/
 
+void PlayerInputListener::start() {
+
+	if (!on) {
+
+		on = true;
+
+		worker = std::thread([&]() {
+
+			// How long to sleep the thread before polling again
+			static std::chrono::milliseconds sleepTime(
+				PlayerInputListener::THREAD_SLEEP_MS
+			);
+
+			while (on) {
+				// TODO: thread body
+				std::this_thread::sleep_for(sleepTime);
+			}
+		});
+	}
+}
+
+/*****************************************************************************/
+
+void PlayerInputListener::stop() {
+
+	if (on) {
+		on = false;
+		worker.join();
+	}
+}
+
+/*****************************************************************************/
+
 GameContainer::GameContainer() {
 
 	// TODO
@@ -15,6 +48,11 @@ GameContainer::GameContainer() {
 /*****************************************************************************/
 
 GameContainer::~GameContainer() {
+
+	// Stop listening for player input on all currently running games
+	for (auto &listener: playerListeners) {
+		listener.second->stop();
+	}
 
 	// Optimization: this pre-step, along with its corresponding call to
 	// game->shutdown() in the next loop instead of game->stop(), reduces
@@ -77,7 +115,17 @@ size_t GameContainer::createGame(std::string name, std::string definitionPath) {
 
 	game->setMeta("name", name);
 	games.push_back(std::move(game));
-	return games.size() - 1;
+
+	size_t gameId = games.size() - 1;
+
+	playerListeners.insert(
+		std::make_pair(
+			gameId,
+			std::make_unique<PlayerInputListener>(games[gameId].get())
+		)
+	);
+
+	return gameId;
 }
 
 /*****************************************************************************/
@@ -93,10 +141,9 @@ void GameContainer::destroyGame(size_t id) {
 
 void GameContainer::startGame(size_t id) {
 
-	// TODO: start player listener thread
-
 	if (games.size() > id && nullptr != games[id]) {
 		games[id]->start();
+		playerListeners[id]->start();
 	}
 }
 
@@ -104,9 +151,8 @@ void GameContainer::startGame(size_t id) {
 
 void GameContainer::stopGame(size_t id) {
 
-	// TODO: stop player listener thread
-
 	if (games.size() > id && nullptr != games[id]) {
 		games[id]->stop();
+		playerListeners[id]->stop();
 	}
 }
