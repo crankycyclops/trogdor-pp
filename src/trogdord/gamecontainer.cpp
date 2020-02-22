@@ -13,6 +13,16 @@ void PlayerInputListener::start() {
 
 		on = true;
 
+		// Initialize the worker thread with a list of players whose commands
+		// need to be listened for and processed.
+		for (const auto &playerPtr: gamePtr->getPlayers()) {
+
+			PlayerFuture pf;
+
+			pf.playerPtr = static_cast<trogdor::entity::Player *>(playerPtr.second.get());
+			processed.push_back(std::move(pf));
+		}
+
 		worker = std::thread([&]() {
 
 			// How long to sleep the thread before polling again
@@ -21,7 +31,39 @@ void PlayerInputListener::start() {
 			);
 
 			while (on) {
-				// TODO: thread body
+
+				for (auto &nextProcessed: processed) {
+
+					// If a command for this player has already been
+					// processed, or if this is the first time the thread
+					// is executed, process the next command.
+					if (nextProcessed.futureIsReady() || !nextProcessed.initialized) {
+
+						if (nextProcessed.playerPtr) {
+
+							nextProcessed.future = std::async(
+								std::launch::async,
+								[&](trogdor::entity::Player *pPtr) -> bool {
+									gamePtr->processCommand(pPtr);
+									return true;
+								},
+								nextProcessed.playerPtr
+							);
+
+							nextProcessed.initialized = true;
+						}
+
+						// The player was removed from the game, so stop
+						// listening for their commands.
+						else {
+							processed.erase(
+								std::remove(processed.begin(), processed.end(), nextProcessed),
+								processed.end()
+							);
+						}
+					}
+				}
+
 				std::this_thread::sleep_for(sleepTime);
 			}
 		});

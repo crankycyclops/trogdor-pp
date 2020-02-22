@@ -11,9 +11,43 @@
 #include <trogdor/parser/parsers/xmlparser.h>
 
 
+struct PlayerFuture {
+
+	// True once the future has been used to process a player command for the
+	// first time.
+	bool initialized = false;
+
+	// Pointer back to the player who issued the command. Setting this to
+	// nullptr indicates that the player has been removed from the game and
+	// that we should stop listening for their commands.
+	trogdor::entity::Player *playerPtr;
+
+	// This will contain a value after trogdor::Game::processCommand() returns.
+	std::future<bool> future;
+
+	// Returns true if the future is ready and false if not.
+	inline bool futureIsReady() {
+
+		return future.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+	}
+
+	// Comparison operator (required for use of std::remove in case where we
+	// need to stop listening for the player's input.)
+	inline bool operator==(const PlayerFuture &other) {
+
+		return playerPtr == other.playerPtr;
+	}
+};
+
+/*****************************************************************************/
+
 class PlayerInputListener {
 
 	private:
+
+		// Number of milliseconds to sleep player input threads after one
+		// round of checking for player input.
+		static const unsigned int THREAD_SLEEP_MS = 10;
 
 		// Setting this to false after the input listener has been started
 		// will stop the worker thread.
@@ -27,15 +61,11 @@ class PlayerInputListener {
 
 		// A future for each player in the game that will contain a value once
 		// trogdor::Game::processCommand() returns, indicating that a command
-		// has been executed and that we should listen for another from the same
-		// player.
-		std::vector<std::future<bool>> processed;
+		// has been executed and that we should listen for another command
+		// from the same player.
+		std::vector<PlayerFuture> processed;
 
 	public:
-
-		// Number of milliseconds to sleep player input threads after one
-		// round of checking for player input.
-		static const unsigned int THREAD_SLEEP_MS = 10;
 
 		// Constructor
 		inline PlayerInputListener(trogdor::Game *gPtr): gamePtr(gPtr) {}
