@@ -26,7 +26,7 @@ struct PlayerFuture {
 	std::future<bool> future;
 
 	// Returns true if the future is ready and false if not.
-	inline bool futureIsReady() {
+	inline bool isReady() {
 
 		return future.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
 	}

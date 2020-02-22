@@ -15,14 +15,15 @@ void PlayerInputListener::start() {
 
 		// Initialize the worker thread with a list of players whose commands
 		// need to be listened for and processed.
-		for (const auto &playerPtr: gamePtr->getPlayers()) {
+		for (const auto &player: gamePtr->getPlayers()) {
 
 			PlayerFuture pf;
 
-			pf.playerPtr = static_cast<trogdor::entity::Player *>(playerPtr.second.get());
+			pf.playerPtr = static_cast<trogdor::entity::Player *>(player.second.get());
 			processed.push_back(std::move(pf));
 		}
 
+		// Worker thread that will listen for and process player commands.
 		worker = std::thread([&]() {
 
 			// How long to sleep the thread before polling again
@@ -32,32 +33,33 @@ void PlayerInputListener::start() {
 
 			while (on) {
 
-				for (auto &nextProcessed: processed) {
+				for (auto &next: processed) {
 
 					// If a command for this player has already been
 					// processed, or if this is the first time the thread
 					// is executed, process the next command.
-					if (nextProcessed.futureIsReady() || !nextProcessed.initialized) {
+					if (next.isReady() || !next.initialized) {
 
-						if (nextProcessed.playerPtr) {
+						if (next.playerPtr) {
 
-							nextProcessed.future = std::async(
+							next.future = std::async(
 								std::launch::async,
 								[&](trogdor::entity::Player *pPtr) -> bool {
 									gamePtr->processCommand(pPtr);
+std::cout << "processed command!" << std::endl;
 									return true;
 								},
-								nextProcessed.playerPtr
+								next.playerPtr
 							);
 
-							nextProcessed.initialized = true;
+							next.initialized = true;
 						}
 
 						// The player was removed from the game, so stop
 						// listening for their commands.
 						else {
 							processed.erase(
-								std::remove(processed.begin(), processed.end(), nextProcessed),
+								std::remove(processed.begin(), processed.end(), next),
 								processed.end()
 							);
 						}
@@ -91,9 +93,11 @@ GameContainer::GameContainer() {
 
 GameContainer::~GameContainer() {
 
-	// Stop listening for player input on all currently running games
+	// Stop listening for player input on all currently running games and free
+	// the listener's memory.
 	for (auto &listener: playerListeners) {
 		listener.second->stop();
+		listener.second = nullptr;
 	}
 
 	// Optimization: this pre-step, along with its corresponding call to
@@ -175,6 +179,8 @@ size_t GameContainer::createGame(std::string name, std::string definitionPath) {
 void GameContainer::destroyGame(size_t id) {
 
 	if (games.size() > id && nullptr != games[id]) {
+		playerListeners[id]->stop();
+		playerListeners[id] = nullptr;
 		games[id] = nullptr;
 	}
 }

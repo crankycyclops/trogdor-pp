@@ -23,10 +23,7 @@ class ScopeController {
 		static const char *METHOD_NOT_FOUND;
 		static const char *ACTION_NOT_FOUND;
 
-		// Error messages for missing or invalid arguments that are common to
-		// more than one scope controller.
-		static const char *MISSING_GAME_ID;
-		static const char *INVALID_GAME_ID;
+		// Error messages that are common to more than one scope controller.
 		static const char *GAME_NOT_FOUND;
 
 		// Maps method, action pairs to methods in classes that inherit from
@@ -47,10 +44,6 @@ class ScopeController {
 			std::string action,
 			std::function<JSONObject(JSONObject)> callback
 		);
-
-		// Parses a game id from a request's arguments. This is common to more
-		// than one scope controller, which is why it's defined here.
-		int parseGameId(JSONObject request, std::string idField = "args.id");
 
 	public:
 

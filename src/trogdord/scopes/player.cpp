@@ -50,11 +50,13 @@ std::unique_ptr<PlayerController> &PlayerController::get() {
 JSONObject PlayerController::getPlayer(JSONObject request) {
 
 	int gameId;
+	int playerId;
 
 	JSONObject response;
 
 	try {
-		gameId = parseGameId(request, "args.game_id");
+		gameId = Request::parseGameId(request, "args.game_id");
+		playerId = Request::parsePlayerId(request, "args.player_id");
 	}
 
 	catch (JSONObject error) {
@@ -81,10 +83,13 @@ JSONObject PlayerController::getPlayer(JSONObject request) {
 JSONObject PlayerController::getPlayerList(JSONObject request) {
 
 	int gameId;
+	int playerId;
+
 	JSONObject response;
 
 	try {
-		gameId = parseGameId(request, "args.game_id");
+		gameId = Request::parseGameId(request, "args.game_id");
+		playerId = Request::parsePlayerId(request, "args.player_id");
 	}
 
 	catch (JSONObject error) {
@@ -128,10 +133,13 @@ JSONObject PlayerController::getPlayerList(JSONObject request) {
 JSONObject PlayerController::createPlayer(JSONObject request) {
 
 	int gameId;
+	int playerId;
+
 	JSONObject response;
 
 	try {
-		gameId = parseGameId(request, "args.game_id");
+		gameId = Request::parseGameId(request, "args.game_id");
+		playerId = Request::parsePlayerId(request, "args.player_id");
 	}
 
 	catch (JSONObject error) {
@@ -158,10 +166,13 @@ JSONObject PlayerController::createPlayer(JSONObject request) {
 JSONObject PlayerController::destroyPlayer(JSONObject request) {
 
 	int gameId;
+	int playerId;
+
 	JSONObject response;
 
 	try {
-		gameId = parseGameId(request, "args.game_id");
+		gameId = Request::parseGameId(request, "args.game_id");
+		playerId = Request::parsePlayerId(request, "args.player_id");
 	}
 
 	catch (JSONObject error) {

@@ -78,7 +78,7 @@ JSONObject GameController::getGame(JSONObject request) {
 	JSONObject response;
 
 	try {
-		gameId = parseGameId(request);
+		gameId = Request::parseGameId(request);
 	}
 
 	catch (JSONObject error) {
@@ -235,7 +235,7 @@ JSONObject GameController::destroyGame(JSONObject request) {
 	JSONObject response;
 
 	try {
-		gameId = parseGameId(request);
+		gameId = Request::parseGameId(request);
 	}
 
 	catch (JSONObject error) {
@@ -263,7 +263,7 @@ JSONObject GameController::startGame(JSONObject request) {
 	JSONObject response;
 
 	try {
-		gameId = parseGameId(request);
+		gameId = Request::parseGameId(request);
 	}
 
 	catch (JSONObject error) {
@@ -291,7 +291,7 @@ JSONObject GameController::stopGame(JSONObject request) {
 	JSONObject response;
 
 	try {
-		gameId = parseGameId(request);
+		gameId = Request::parseGameId(request);
 	}
 
 	catch (JSONObject error) {
