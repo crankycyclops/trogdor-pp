@@ -170,6 +170,7 @@ if (Boost_FOUND)
 		src/trogdord/io/output/driver.cpp
 		src/trogdord/io/output/local.cpp
 		src/trogdord/io/output/redis.cpp
+		src/trogdord/io/iostream/serverin.cpp
 		src/trogdord/io/iostream/serverout.cpp
 		src/trogdord/io/iostream/servererr.cpp
 	)

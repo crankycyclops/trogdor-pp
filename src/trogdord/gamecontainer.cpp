@@ -1,8 +1,8 @@
 #include "include/filesystem.h"
 #include "include/gamecontainer.h"
 
+#include "include/io/iostream/serverin.h"
 #include "include/io/iostream/serverout.h"
-#include <trogdor/iostream/nullin.h>
 
 
 // Singleton instance of GameContainer
@@ -142,14 +142,14 @@ trogdor::entity::Player *GameContainer::createPlayer(size_t gameId, std::string 
 		throw GameNotFound();
 	}
 
-	// TODO: use StreamIn instead of NullIn
 	std::shared_ptr<trogdor::entity::Player> player = game->createPlayer(
 		playerName,
 		std::make_unique<ServerOut>(gameId),
-		std::make_unique<trogdor::NullIn>(),
+		std::make_unique<ServerIn>(gameId),
 		Config::get()->err().copy()
 	);
 
+	static_cast<ServerIn *>(&(player->in()))->setEntity(player.get());
 	static_cast<ServerOut *>(&(player->out()))->setEntity(player.get());
 
 	game->insertPlayer(player);

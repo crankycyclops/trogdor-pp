@@ -1,5 +1,5 @@
-#ifndef TROGDORD_SERVEROUT_H
-#define TROGDORD_SERVEROUT_H
+#ifndef TROGDORD_SERVERIN_H
+#define TROGDORD_SERVERIN_H
 
 
 #include <trogdor/game.h>
@@ -8,12 +8,12 @@
 
 
 /*
-	Trogdord output stream.
+	Trogdord input stream.
 
 	From C++, an instance of this class must be initialized in 3 steps before
 	it can be used. First, it must be instantiated like so:
 
-	std::unique_ptr<ServerOut> outStream = std::make_unique<ServerOut>(gameId);
+	std::unique_ptr<ServerIn> inStream = std::make_unique<ServerIn>(gameId);
 
 	// Next, the Entity that uses the output stream must be instantiated
 	// (creating an instance of Player for this example):
@@ -23,36 +23,36 @@
 	// Finally, a pointer to the Player object must be passed back to the
 	// output stream:
 
-	outStream->setEntity(player);
+	inStream->setEntity(player);
 
 	If the entity pointer isn't set, an exception will be thrown to warn the
 	developer (me) of their nefarious and dastardly ways.
 */
-class ServerOut: public trogdor::Trogout {
+class ServerIn: public trogdor::Trogin {
 
 	private:
 
-		// ID of the game the output stream belongs to
+		// ID of the game the input stream belongs to
 		size_t gameId;
 
-		// The Entity whose output we're processing
+		// The Entity who's input we're reading
 		trogdor::entity::Entity *entityPtr;
 
 	public:
 
 		// Constructor
-		ServerOut() = delete;
-		inline ServerOut(size_t gId): gameId(gId) {}
+		ServerIn() = delete;
+		inline ServerIn(size_t gId): gameId(gId) {}
 
-		// Sets the entity the output stream belongs to. This must be
+		// Sets the entity the input stream belongs to. This must be
 		// called BEFORE the stream can be used.
 		inline void setEntity(trogdor::entity::Entity *e) {entityPtr = e;}
 
-		// See core/include/iostream/trogout.h for details.
-		virtual void flush();
+		// See include/iostream/trogin.h for details.
+		virtual std::unique_ptr<Trogin> clone();
 
-		// See core/include/iostream/trogout.h for details.
-		virtual std::unique_ptr<trogdor::Trogout> clone();
+		// For now, I only need to define input for strings
+		virtual Trogin &operator>> (std::string &val);
 };
 
 
