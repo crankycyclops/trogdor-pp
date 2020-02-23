@@ -2,10 +2,10 @@
 #include "../../include/io/message.h"
 #include "../../include/exception/serverexception.h"
 #include "../../include/io/output/driver.h"
-#include "../../include/io/iostream/streamout.h"
+#include "../../include/io/iostream/serverout.h"
 
 
-void StreamOut::flush() {
+void ServerOut::flush() {
 
 	if (!entityPtr) {
 		throw ServerException("Entity pointer not set on output stream before use. This is a bug.");
@@ -26,9 +26,9 @@ void StreamOut::flush() {
 
 /*****************************************************************************/
 
-std::unique_ptr<trogdor::Trogout> StreamOut::clone() {
+std::unique_ptr<trogdor::Trogout> ServerOut::clone() {
 
-	std::unique_ptr<StreamOut> stream = std::make_unique<StreamOut>(gameId);
+	std::unique_ptr<ServerOut> stream = std::make_unique<ServerOut>(gameId);
 
 	stream->setEntity(entityPtr);
 	return stream;

@@ -76,11 +76,11 @@ void Config::initErrorLogger() noexcept {
 	std::string logto = strToLower(ini.get<std::string>(CONFIG_KEY_LOGTO));
 
 	if (0 == logto.compare("stderr")) {
-		errStream = std::make_unique<StreamErr>(&std::cerr);
+		errStream = std::make_unique<ServerErr>(&std::cerr);
 	}
 
 	else if (0 == logto.compare("stdout")) {
-		errStream = std::make_unique<StreamErr>(&std::cout);
+		errStream = std::make_unique<ServerErr>(&std::cout);
 	}
 
 	else {
@@ -100,7 +100,7 @@ void Config::initErrorLogger() noexcept {
 
 		try {
 			logFileStream = std::make_unique<std::ofstream>(logto, std::ofstream::app);
-			errStream = std::make_unique<StreamErr>(logFileStream.get());
+			errStream = std::make_unique<ServerErr>(logFileStream.get());
 		}
 
 		// If for whatever reason we failed to open the file for writing
@@ -112,7 +112,7 @@ void Config::initErrorLogger() noexcept {
 			std::cerr << "WARNING: failed to open " << logto << " for writing. Falling back to stderr." << std::endl;
 
 			logFileStream = nullptr;
-			errStream = std::make_unique<StreamErr>(&std::cerr);
+			errStream = std::make_unique<ServerErr>(&std::cerr);
 		}
 	}
 }

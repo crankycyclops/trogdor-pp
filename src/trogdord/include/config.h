@@ -12,7 +12,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 
-#include "io/iostream/streamerr.h"
+#include "io/iostream/servererr.h"
 #include "exception/configinvalidvalue.h"
 #include "exception/configundefinedvalue.h"
 
@@ -36,7 +36,7 @@ class Config {
 		boost::property_tree::iptree ini;
 
 		// Our global error logger
-		std::unique_ptr<StreamErr> errStream;
+		std::unique_ptr<ServerErr> errStream;
 
 		// If not nullptr, this is the file we log errors to (otherwise, we're
 		// logging to stdout or stderr.)
@@ -93,7 +93,7 @@ class Config {
 		// And this example logs to severity level INFO:
 		//
 		// Config::Get()->err(trogdor::Trogerr::INFO) << "This is an info message!" << std::endl;
-		inline StreamErr &err(trogdor::Trogerr::ErrorLevel severity = trogdor::Trogerr::ERROR) {
+		inline ServerErr &err(trogdor::Trogerr::ErrorLevel severity = trogdor::Trogerr::ERROR) {
 
 			errStream->setErrorLevel(severity);
 			return *errStream;

@@ -5,10 +5,10 @@
 #include <boost/asio.hpp>
 
 #include "include/config.h"
+
 #include "include/network/tcpcommon.h"
 #include "include/network/tcpconnection.h"
 #include "include/network/tcpserver.h"
-#include "include/io/iostream/streamerr.h"
 
 
 // serves TCP connections

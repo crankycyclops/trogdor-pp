@@ -1,5 +1,5 @@
-#ifndef STREAMERR_H
-#define STREAMERR_H
+#ifndef SERVERERR_H
+#define SERVERERR_H
 
 
 #include <memory>
@@ -10,7 +10,7 @@
 /*
    Error output "stream" that wraps around the specified ostream object.
 */
-class StreamErr: public trogdor::Trogerr {
+class ServerErr: public trogdor::Trogerr {
 
    private:
 
@@ -18,13 +18,13 @@ class StreamErr: public trogdor::Trogerr {
 
    public:
 
-      inline StreamErr(std::ostream *s) {stream = s;}
+      inline ServerErr(std::ostream *s) {stream = s;}
 
       /*
          If I don't have this, I get undefined vtable errors when linking to
          libtrogdor.
       */
-      virtual ~StreamErr();
+      virtual ~ServerErr();
 
       /*
          See include/iostream/trogout.h for details.

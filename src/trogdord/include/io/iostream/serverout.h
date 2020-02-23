@@ -1,5 +1,5 @@
-#ifndef TROGDORD_STREAMOUT_H
-#define TROGDORD_STREAMOUT_H
+#ifndef TROGDORD_SERVEROUT_H
+#define TROGDORD_SERVEROUT_H
 
 
 #include <trogdor/game.h>
@@ -13,7 +13,7 @@
 	From C++, an instance of this class must be initialized in 3 steps before
 	it can be used. First, it must be instantiated like so:
 
-	std::unique_ptr<StreamOut> outStream = std::make_unique<StreamOut>(gameId);
+	std::unique_ptr<ServerOut> outStream = std::make_unique<ServerOut>(gameId);
 
 	// Next, the Entity that uses the output stream must be instantiated
 	// (creating an instance of Player for this example):
@@ -28,7 +28,7 @@
 	If the entity pointer isn't set, an exception will be thrown to warn the
 	developer (me) of their nefarious and dastardly ways.
 */
-class StreamOut: public trogdor::Trogout {
+class ServerOut: public trogdor::Trogout {
 
 	private:
 
@@ -41,8 +41,8 @@ class StreamOut: public trogdor::Trogout {
 	public:
 
 		// Constructor
-		StreamOut() = delete;
-		inline StreamOut(size_t gId): gameId(gId) {}
+		ServerOut() = delete;
+		inline ServerOut(size_t gId): gameId(gId) {}
 
 		// Sets the entity the output stream belongs to. This must be
 		// called BEFORE the output stream can be used.

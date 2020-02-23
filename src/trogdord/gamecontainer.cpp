@@ -1,7 +1,7 @@
 #include "include/filesystem.h"
 #include "include/gamecontainer.h"
 
-#include "include/io/iostream/streamout.h"
+#include "include/io/iostream/serverout.h"
 #include <trogdor/iostream/nullin.h>
 
 
@@ -240,12 +240,12 @@ trogdor::entity::Player *GameContainer::createPlayer(size_t gameId, std::string 
 	// TODO: use StreamIn instead of NullIn
 	std::shared_ptr<trogdor::entity::Player> player = game->createPlayer(
 		playerName,
-		std::make_unique<StreamOut>(gameId),
+		std::make_unique<ServerOut>(gameId),
 		std::make_unique<trogdor::NullIn>(),
 		Config::get()->err().copy()
 	);
 
-	static_cast<StreamOut *>(&(player->out()))->setEntity(player.get());
+	static_cast<ServerOut *>(&(player->out()))->setEntity(player.get());
 
 	game->insertPlayer(player);
 	playerListeners[gameId]->subscribe(player.get());

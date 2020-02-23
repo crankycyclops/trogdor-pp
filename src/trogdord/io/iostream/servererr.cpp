@@ -2,14 +2,14 @@
 #include <iomanip>
 #include <memory>
 
-#include "../../include/io/iostream/streamerr.h"
+#include "../../include/io/iostream/servererr.h"
 
 
-StreamErr::~StreamErr() {}
+ServerErr::~ServerErr() {}
 
 /*****************************************************************************/
 
-void StreamErr::flush() {
+void ServerErr::flush() {
 
    auto t = std::time(nullptr);
    auto tm = *std::localtime(&t);
@@ -21,7 +21,7 @@ void StreamErr::flush() {
 
 /*****************************************************************************/
 
-std::unique_ptr<trogdor::Trogerr> StreamErr::copy() {
+std::unique_ptr<trogdor::Trogerr> ServerErr::copy() {
 
-   return std::make_unique<StreamErr>(stream);
+   return std::make_unique<ServerErr>(stream);
 }
