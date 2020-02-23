@@ -12,7 +12,9 @@
 #include <trogdor/parser/parsers/xmlparser.h>
 
 #include "inputlistener.h"
+
 #include "exception/gamenotfound.h"
+#include "exception/playernotfound.h"
 
 
 class GameContainer {
@@ -73,6 +75,13 @@ class GameContainer {
 		// or GameNotFound if the specified game ID doesn't correspond to an
 		// existing game.
 		trogdor::entity::Player *createPlayer(size_t gameId, std::string playerName);
+
+		// Removes a player from the game. Throws GameNotFound if the specified
+		// game ID doesn't correspond to an existing game or PlayerNotFound if
+		// the specified player doesn't exist in the given game. If message is
+		// set to a non-empty string, that message will be sent to the player's
+		// notifications channel before they're removed.
+		void removePlayer(size_t gameId, std::string playerName, std::string message = "");
 };
 
 

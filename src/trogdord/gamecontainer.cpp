@@ -157,3 +157,24 @@ trogdor::entity::Player *GameContainer::createPlayer(size_t gameId, std::string 
 
 	return player.get();
 }
+
+/*****************************************************************************/
+
+void GameContainer::removePlayer(size_t gameId, std::string playerName, std::string message) {
+
+	std::unique_ptr<trogdor::Game> &game = getGame(gameId);
+
+	if (!game) {
+		throw GameNotFound();
+	}
+
+	trogdor::entity::Player *pPtr = game->getPlayer(playerName);
+
+	if (!pPtr) {
+		throw PlayerNotFound();
+	}
+
+	game->removePlayer(playerName, message);
+	playerListeners[gameId]->unsubscribe(pPtr);
+
+}

@@ -218,6 +218,16 @@ JSONObject PlayerController::destroyPlayer(JSONObject request) {
 	int gameId;
 	std::string playerName;
 
+	// If a removal message is sent as part of the request, it will be sent to
+	// the player's notifications channel before they're removed from the game.
+	std::string removalMessage = "";
+
+	boost::optional messageArg = request.get_optional<std::string>("args.message");
+
+	if (messageArg) {
+		removalMessage = *messageArg;
+	}
+
 	try {
 		gameId = Request::parseGameId(request, "args.game_id");
 		playerName = Request::parseArgument<std::string>(
@@ -232,9 +242,15 @@ JSONObject PlayerController::destroyPlayer(JSONObject request) {
 		return error;
 	}
 
-	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+	try {
 
-	if (!game) {
+		GameContainer::get()->removePlayer(gameId, playerName, removalMessage);
+		response.put("status", 200);
+
+		return response;
+	}
+
+	catch (GameNotFound &e) {
 
 		response.put("status", 404);
 		response.put("message", GAME_NOT_FOUND);
@@ -242,8 +258,19 @@ JSONObject PlayerController::destroyPlayer(JSONObject request) {
 		return response;
 	}
 
-	response.put("status", 200);
-	response.put("message", "TODO");
+	catch (PlayerNotFound &e) {
 
-	return response;
+		response.put("status", 404);
+		response.put("message", PLAYER_NOT_FOUND);
+
+		return response;
+	}
+
+	catch (trogdor::Exception &e) {
+
+		response.put("status", 500);
+		response.put("message", e.what());
+
+		return response;
+	}
 }

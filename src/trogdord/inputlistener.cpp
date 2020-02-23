@@ -73,33 +73,37 @@ void InputListener::start() {
 
 				processedMutex.lock();
 
-				for (auto &next: processed) {
+				// Can't use a range-based for here because I need to be able
+				// to alter the unordered map in the case where an
+				// unsubscribed player needs to be removed.
+				for (auto it = processed.begin(); it != processed.end(); ) {
 
 					// If a command for this player has already been
 					// processed, or if this is the first time the thread
 					// is executed, process the next command.
-					if (!next.second.initialized || next.second.isReady()) {
+					if (!it->second.initialized || it->second.isReady()) {
 
-						if (next.second.playerPtr) {
+						if (it->second.playerPtr) {
 
-							next.second.future = std::async(
+							it->second.future = std::async(
 								std::launch::async,
 								[&](trogdor::entity::Player *pPtr) -> bool {
 									gamePtr->processCommand(pPtr);
 									return true;
 								},
-								next.second.playerPtr
+								it->second.playerPtr
 							);
 
-							next.second.initialized = true;
+							it->second.initialized = true;
+							it++;
 						}
 
 						// The player was removed from the game, so stop
 						// listening for their commands.
 						else {
 							// TODO: send null command
-							next.second.future.wait();
-							processed.erase(next.first);
+							it->second.future.wait();
+							it = processed.erase(it);
 						}
 					}
 				}
