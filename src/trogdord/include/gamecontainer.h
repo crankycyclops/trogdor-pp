@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <thread>
+#include <mutex>
 #include <future>
 #include <vector>
 #include <queue>
@@ -68,26 +69,45 @@ class PlayerInputListener {
 		// from the same player.
 		std::unordered_map<std::string, PlayerFuture> processed;
 
+		// Synchronizes access to processed (defined above)
+		std::mutex processedMutex;
+
+		// Start listening for input from the given player. Allows mutex
+		// locking to be turned on and off.
+		void _subscribe(trogdor::entity::Player *pPtr, bool lock = true);
+
+		// Stop listening for input from the given player. Allows mutex
+		// locking to be turned on and off.
+		void _unsubscribe(std::string playerName, bool lock = true);
+
 	public:
 
 		// Constructor
 		inline PlayerInputListener(trogdor::Game *gPtr): gamePtr(gPtr) {}
-		//PlayerInputListener() = delete;
-		//PlayerInputListener(const PlayerInputListener &) = delete;
+		PlayerInputListener() = delete;
+		PlayerInputListener(const PlayerInputListener &) = delete;
 
 		// Destructor
 		~PlayerInputListener();
 
-		// Start listening for input from the given player.
-		void subscribe(trogdor::entity::Player *pPtr);
+		// Start listening for input from the given player. This public access
+		// to _subscribe forces mutex locking.
+		inline void subscribe(trogdor::entity::Player *pPtr) {
 
-		// Stop listening for input from the given player.
-		void unsubscribe(std::string playerName);
+			_subscribe(pPtr);
+		}
+
+		// Stop listening for input from the given player. This public access
+		// to _unsubscribe forces mutex locking.
+		inline void unsubscribe(std::string playerName) {
+
+			_unsubscribe(playerName);
+		}
 
 		// Stop listening for input from the given player.
 		inline void unsubscribe(trogdor::entity::Player *pPtr) {
 
-			unsubscribe(pPtr->getName());
+			_unsubscribe(pPtr->getName());
 		}
 
 		// Start the player input listener thread

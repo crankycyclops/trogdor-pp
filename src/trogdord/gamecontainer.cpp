@@ -17,22 +17,38 @@ PlayerInputListener::~PlayerInputListener() {
 
 /*****************************************************************************/
 
-void PlayerInputListener::subscribe(trogdor::entity::Player *pPtr) {
+void PlayerInputListener::_subscribe(trogdor::entity::Player *pPtr, bool lock) {
 
 	PlayerFuture pf;
 
+	if (lock) {
+		processedMutex.lock();
+	}
+
 	pf.playerPtr = pPtr;
 	processed[pPtr->getName()] = std::move(pf);
+
+	if (lock) {
+		processedMutex.unlock();
+	}
 }
 
 /*****************************************************************************/
 
-void PlayerInputListener::unsubscribe(std::string playerName) {
+void PlayerInputListener::_unsubscribe(std::string playerName, bool lock) {
+
+	if (lock) {
+		processedMutex.lock();
+	}
 
 	// Do the actual removal in the worker thread after we're sure we're not
 	// waiting on anymore commands.
 	if (processed.end() != processed.find(playerName)) {
 		processed[playerName].playerPtr = nullptr;
+	}
+
+	if (lock) {
+		processedMutex.unlock();
 	}
 }
 
@@ -46,9 +62,13 @@ void PlayerInputListener::start() {
 
 		// Initialize the worker thread with a list of players whose commands
 		// need to be listened for and processed.
+		processedMutex.lock();
+
 		for (const auto &player: gamePtr->getPlayers()) {
-			subscribe(static_cast<trogdor::entity::Player *>(player.second.get()));
+			_subscribe(static_cast<trogdor::entity::Player *>(player.second.get()), false);
 		}
+
+		processedMutex.unlock();
 
 		// Worker thread that will listen for and process player commands.
 		worker = std::thread([&]() {
@@ -59,6 +79,8 @@ void PlayerInputListener::start() {
 			);
 
 			while (on) {
+
+				processedMutex.lock();
 
 				for (auto &next: processed) {
 
@@ -91,6 +113,7 @@ void PlayerInputListener::start() {
 					}
 				}
 
+				processedMutex.unlock();
 				std::this_thread::sleep_for(sleepTime);
 			}
 		});
@@ -135,7 +158,11 @@ GameContainer::~GameContainer() {
 	// Destructor for trogdor::Game will be called once the unique_ptr falls
 	// out of scope.
 	while (!games.empty()) {
-		games.back()->shutdown();
+
+		if (nullptr != games.back()) {
+			games.back()->shutdown();
+		}
+
 		games.pop_back();
 	}
 }
