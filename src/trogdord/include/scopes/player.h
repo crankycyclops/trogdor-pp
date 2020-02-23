@@ -2,6 +2,7 @@
 #define SCOPE_PLAYER_H
 
 
+#include <trogdor/entities/player.h>
 #include "controller.h"
 
 
@@ -15,10 +16,18 @@ class PlayerController: public ScopeController {
 		// Actions served by the "player" scope
 		static const char *LIST_ACTION;
 
+		// Error messages
+		static const char *MISSING_PLAYER_NAME;
+		static const char *INVALID_PLAYER_NAME;
+		static const char *PLAYER_NOT_FOUND;
+
 		// Constructor should only be called internally by get(), which will
 		// ensure we only ever have a single instance of the class.
 		PlayerController();
 		PlayerController(const PlayerController &) = delete;
+
+		// Converts a player to a JSON object
+		JSONObject playerToJSONObject(trogdor::entity::Player *pPtr);
 
 	public:
 

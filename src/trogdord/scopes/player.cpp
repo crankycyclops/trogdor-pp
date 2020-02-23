@@ -10,8 +10,25 @@ const char *PlayerController::SCOPE = "player";
 // Actions served by the "player" scope
 const char *PlayerController::LIST_ACTION = "list";
 
+// Error messages
+const char *PlayerController::MISSING_PLAYER_NAME = "missing required player name";
+const char *PlayerController::INVALID_PLAYER_NAME = "invalid player name";
+const char *PlayerController::PLAYER_NOT_FOUND = "player not found";
+
 // Singleton instance of PlayerController
 std::unique_ptr<PlayerController> PlayerController::instance = nullptr;
+
+/*****************************************************************************/
+
+JSONObject PlayerController::playerToJSONObject(trogdor::entity::Player *pPtr) {
+
+	JSONObject player;
+
+	// TODO: what other values should I include here?
+	player.put("name", pPtr->getName());
+
+	return player;
+}
 
 /*****************************************************************************/
 
@@ -49,14 +66,19 @@ std::unique_ptr<PlayerController> &PlayerController::get() {
 
 JSONObject PlayerController::getPlayer(JSONObject request) {
 
-	int gameId;
-	int playerId;
-
 	JSONObject response;
+
+	int gameId;
+	std::string playerName;
 
 	try {
 		gameId = Request::parseGameId(request, "args.game_id");
-		playerId = Request::parsePlayerId(request, "args.player_id");
+		playerName = Request::parseArgument<std::string>(
+			request,
+			"args.name",
+			MISSING_PLAYER_NAME,
+			INVALID_PLAYER_NAME
+		);
 	}
 
 	catch (JSONObject error) {
@@ -65,15 +87,26 @@ JSONObject PlayerController::getPlayer(JSONObject request) {
 
 	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
 
-	if (game) {
-		response.put("status", 200);
-		response.put("message", "TODO");
-	}
+	if (!game) {
 
-	else {
 		response.put("status", 404);
 		response.put("message", GAME_NOT_FOUND);
+
+		return response;
 	}
+
+	trogdor::entity::Player *pPtr = game->getPlayer(playerName);
+
+	if (!pPtr) {
+
+		response.put("status", 404);
+		response.put("message", PLAYER_NOT_FOUND);
+
+		return response;
+	};
+
+	response.put("status", 200);
+	response.add_child("player", playerToJSONObject(pPtr));
 
 	return response;
 }
@@ -83,13 +116,11 @@ JSONObject PlayerController::getPlayer(JSONObject request) {
 JSONObject PlayerController::getPlayerList(JSONObject request) {
 
 	int gameId;
-	int playerId;
 
 	JSONObject response;
 
 	try {
 		gameId = Request::parseGameId(request, "args.game_id");
-		playerId = Request::parsePlayerId(request, "args.player_id");
 	}
 
 	catch (JSONObject error) {
@@ -132,47 +163,69 @@ JSONObject PlayerController::getPlayerList(JSONObject request) {
 
 JSONObject PlayerController::createPlayer(JSONObject request) {
 
-	int gameId;
-	int playerId;
-
 	JSONObject response;
+
+	int gameId;
+	std::string playerName;
 
 	try {
 		gameId = Request::parseGameId(request, "args.game_id");
-		playerId = Request::parsePlayerId(request, "args.player_id");
+		playerName = Request::parseArgument<std::string>(
+			request,
+			"args.name",
+			MISSING_PLAYER_NAME,
+			INVALID_PLAYER_NAME
+		);
 	}
 
 	catch (JSONObject error) {
 		return error;
 	}
 
-	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+	try {
 
-	if (game) {
 		response.put("status", 200);
-		response.put("message", "TODO");
+		response.add_child("player", playerToJSONObject(
+			GameContainer::get()->createPlayer(gameId, playerName))
+		);
+
+		return response;
 	}
 
-	else {
+	catch (GameNotFound &e) {
+
 		response.put("status", 404);
 		response.put("message", GAME_NOT_FOUND);
+
+		return response;
 	}
 
-	return response;
+	catch (trogdor::Exception &e) {
+
+		response.put("status", 500);
+		response.put("message", e.what());
+
+		return response;
+	}
 }
 
 /*****************************************************************************/
 
 JSONObject PlayerController::destroyPlayer(JSONObject request) {
 
-	int gameId;
-	int playerId;
-
 	JSONObject response;
+
+	int gameId;
+	std::string playerName;
 
 	try {
 		gameId = Request::parseGameId(request, "args.game_id");
-		playerId = Request::parsePlayerId(request, "args.player_id");
+		playerName = Request::parseArgument<std::string>(
+			request,
+			"args.name",
+			MISSING_PLAYER_NAME,
+			INVALID_PLAYER_NAME
+		);
 	}
 
 	catch (JSONObject error) {
@@ -181,15 +234,16 @@ JSONObject PlayerController::destroyPlayer(JSONObject request) {
 
 	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
 
-	if (game) {
-		response.put("status", 200);
-		response.put("message", "TODO");
-	}
+	if (!game) {
 
-	else {
 		response.put("status", 404);
 		response.put("message", GAME_NOT_FOUND);
+
+		return response;
 	}
+
+	response.put("status", 200);
+	response.put("message", "TODO");
 
 	return response;
 }

@@ -1,14 +1,17 @@
 #ifndef GAME_CONTAINER_H
 #define GAME_CONTAINER_H
 
-#include <vector>
-#include <queue>
 #include <memory>
 #include <thread>
 #include <future>
+#include <vector>
+#include <queue>
+#include <unordered_map>
 
 #include <trogdor/game.h>
 #include <trogdor/parser/parsers/xmlparser.h>
+
+#include "exception/gamenotfound.h"
 
 
 struct PlayerFuture {
@@ -63,7 +66,7 @@ class PlayerInputListener {
 		// trogdor::Game::processCommand() returns, indicating that a command
 		// has been executed and that we should listen for another command
 		// from the same player.
-		std::vector<PlayerFuture> processed;
+		std::unordered_map<std::string, PlayerFuture> processed;
 
 	public:
 
@@ -71,6 +74,21 @@ class PlayerInputListener {
 		inline PlayerInputListener(trogdor::Game *gPtr): gamePtr(gPtr) {}
 		//PlayerInputListener() = delete;
 		//PlayerInputListener(const PlayerInputListener &) = delete;
+
+		// Destructor
+		~PlayerInputListener();
+
+		// Start listening for input from the given player.
+		void subscribe(trogdor::entity::Player *pPtr);
+
+		// Stop listening for input from the given player.
+		void unsubscribe(std::string playerName);
+
+		// Stop listening for input from the given player.
+		inline void unsubscribe(trogdor::entity::Player *pPtr) {
+
+			unsubscribe(pPtr->getName());
+		}
 
 		// Start the player input listener thread
 		void start();
@@ -133,6 +151,12 @@ class GameContainer {
 
 		// Stops the game referenced by the given id.
 		void stopGame(size_t id);
+
+		// Creates a player and inserts it into the game. Might throw an
+		// instance of trogdor::Exception if player creation is unsuccessful
+		// or GameNotFound if the specified game ID doesn't correspond to an
+		// existing game.
+		trogdor::entity::Player *createPlayer(size_t gameId, std::string playerName);
 };
 
 

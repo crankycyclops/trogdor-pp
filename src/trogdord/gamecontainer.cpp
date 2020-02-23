@@ -1,9 +1,40 @@
 #include "include/filesystem.h"
 #include "include/gamecontainer.h"
 
+#include "include/io/iostream/streamout.h"
+#include <trogdor/iostream/nullin.h>
+
 
 // Singleton instance of GameContainer
 std::unique_ptr<GameContainer> GameContainer::instance = nullptr;
+
+/*****************************************************************************/
+
+PlayerInputListener::~PlayerInputListener() {
+
+	stop();
+}
+
+/*****************************************************************************/
+
+void PlayerInputListener::subscribe(trogdor::entity::Player *pPtr) {
+
+	PlayerFuture pf;
+
+	pf.playerPtr = pPtr;
+	processed[pPtr->getName()] = std::move(pf);
+}
+
+/*****************************************************************************/
+
+void PlayerInputListener::unsubscribe(std::string playerName) {
+
+	// Do the actual removal in the worker thread after we're sure we're not
+	// waiting on anymore commands.
+	if (processed.end() != processed.find(playerName)) {
+		processed[playerName].playerPtr = nullptr;
+	}
+}
 
 /*****************************************************************************/
 
@@ -16,11 +47,7 @@ void PlayerInputListener::start() {
 		// Initialize the worker thread with a list of players whose commands
 		// need to be listened for and processed.
 		for (const auto &player: gamePtr->getPlayers()) {
-
-			PlayerFuture pf;
-
-			pf.playerPtr = static_cast<trogdor::entity::Player *>(player.second.get());
-			processed.push_back(std::move(pf));
+			subscribe(static_cast<trogdor::entity::Player *>(player.second.get()));
 		}
 
 		// Worker thread that will listen for and process player commands.
@@ -38,30 +65,28 @@ void PlayerInputListener::start() {
 					// If a command for this player has already been
 					// processed, or if this is the first time the thread
 					// is executed, process the next command.
-					if (next.isReady() || !next.initialized) {
+					if (!next.second.initialized || next.second.isReady()) {
 
-						if (next.playerPtr) {
+						if (next.second.playerPtr) {
 
-							next.future = std::async(
+							next.second.future = std::async(
 								std::launch::async,
 								[&](trogdor::entity::Player *pPtr) -> bool {
 									gamePtr->processCommand(pPtr);
-std::cout << "processed command!" << std::endl;
 									return true;
 								},
-								next.playerPtr
+								next.second.playerPtr
 							);
 
-							next.initialized = true;
+							next.second.initialized = true;
 						}
 
 						// The player was removed from the game, so stop
 						// listening for their commands.
 						else {
-							processed.erase(
-								std::remove(processed.begin(), processed.end(), next),
-								processed.end()
-							);
+							// TODO: send null command
+							next.second.future.wait();
+							processed.erase(next.first);
 						}
 					}
 				}
@@ -95,10 +120,7 @@ GameContainer::~GameContainer() {
 
 	// Stop listening for player input on all currently running games and free
 	// the listener's memory.
-	for (auto &listener: playerListeners) {
-		listener.second->stop();
-		listener.second = nullptr;
-	}
+	playerListeners.clear();
 
 	// Optimization: this pre-step, along with its corresponding call to
 	// game->shutdown() in the next loop instead of game->stop(), reduces
@@ -113,6 +135,7 @@ GameContainer::~GameContainer() {
 	// Destructor for trogdor::Game will be called once the unique_ptr falls
 	// out of scope.
 	while (!games.empty()) {
+		games.back()->shutdown();
 		games.pop_back();
 	}
 }
@@ -179,7 +202,6 @@ size_t GameContainer::createGame(std::string name, std::string definitionPath) {
 void GameContainer::destroyGame(size_t id) {
 
 	if (games.size() > id && nullptr != games[id]) {
-		playerListeners[id]->stop();
 		playerListeners[id] = nullptr;
 		games[id] = nullptr;
 	}
@@ -203,4 +225,30 @@ void GameContainer::stopGame(size_t id) {
 		games[id]->stop();
 		playerListeners[id]->stop();
 	}
+}
+
+/*****************************************************************************/
+
+trogdor::entity::Player *GameContainer::createPlayer(size_t gameId, std::string playerName) {
+
+	std::unique_ptr<trogdor::Game> &game = getGame(gameId);
+
+	if (!game) {
+		throw GameNotFound();
+	}
+
+	// TODO: use StreamIn instead of NullIn
+	std::shared_ptr<trogdor::entity::Player> player = game->createPlayer(
+		playerName,
+		std::make_unique<StreamOut>(gameId),
+		std::make_unique<trogdor::NullIn>(),
+		Config::get()->err().copy()
+	);
+
+	static_cast<StreamOut *>(&(player->out()))->setEntity(player.get());
+
+	game->insertPlayer(player);
+	playerListeners[gameId]->subscribe(player.get());
+
+	return player.get();
 }
