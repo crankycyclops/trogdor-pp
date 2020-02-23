@@ -4,7 +4,7 @@
 
 // Current version of trogdord
 #define TROGDORD_VERSION_MAJOR 0
-#define TROGDORD_VERSION_MINOR 8
+#define TROGDORD_VERSION_MINOR 9
 #define TROGDORD_VERSION_PATCH 0
 
 
