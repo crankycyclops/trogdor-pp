@@ -174,7 +174,16 @@ void GameContainer::removePlayer(size_t gameId, std::string playerName, std::str
 		throw PlayerNotFound();
 	}
 
-	game->removePlayer(playerName, message);
-	playerListeners[gameId]->unsubscribe(pPtr);
+	// If we're already processing a player's input, we'll have to remove them
+	// from the game after unblocking their input stream.
+	if (static_cast<ServerIn &>(pPtr->in()).isBlocked()) {
+		playerListeners[gameId]->unsubscribe(pPtr, [&game, playerName, message] {
+			game->removePlayer(playerName, message);
+		});
+	}
 
+	else {
+		playerListeners[gameId]->unsubscribe(pPtr);
+		game->removePlayer(playerName, message);
+	}
 }

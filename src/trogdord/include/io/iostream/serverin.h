@@ -32,6 +32,13 @@ class ServerIn: public trogdor::Trogin {
 
 	private:
 
+		// True when a blocking read operation is in progress.
+		bool blocked = false;
+
+		// Set this to true to cancel a read operation that's in progress
+		// (will cause the input value to be returned as an empty string.)
+		bool killSwitch = false;
+
 		// How many milliseconds to sleep before polling for input
 		static const unsigned int INPUT_POLL_INTERVAL = 10;
 
@@ -46,6 +53,20 @@ class ServerIn: public trogdor::Trogin {
 		// Constructor
 		ServerIn() = delete;
 		inline ServerIn(size_t gId): gameId(gId) {}
+
+		// Returns true if a blocking read operation is in progress and false
+		// if not.
+		inline bool isBlocked() {return blocked;}
+
+		// Call this if you need to cancel a read operation that's currently
+		// in progress. The effect will be that an empty string is read as the
+		// input.
+		inline void kill() {
+
+			if (isBlocked()) {
+				killSwitch = true;
+			}
+		}
 
 		// Sets the entity the input stream belongs to. This must be
 		// called BEFORE the stream can be used.

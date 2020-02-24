@@ -1,5 +1,6 @@
 #include "include/config.h"
 #include "include/io/input/driver.h"
+#include "include/io/iostream/serverin.h"
 #include "include/inputlistener.h"
 
 
@@ -30,27 +31,30 @@ void InputListener::_subscribe(trogdor::entity::Player *pPtr, bool lock) {
 
 /*****************************************************************************/
 
-void InputListener::_unsubscribe(std::string playerName, bool lock) {
+void InputListener::unsubscribe(
+	std::string playerName,
+	std::function<void()> afterProcessCommand
+) {
 
-	if (lock) {
-		processedMutex.lock();
-	}
+	processedMutex.lock();
 
 	// Do the actual removal in the worker thread after we're sure we're not
 	// waiting on anymore commands.
 	if (processed.end() != processed.find(playerName)) {
 
+		trogdor::entity::Player *pPtr = processed[playerName].playerPtr;
+
+		// If specified, this is the callback that should be fired by the
+		// async task after game->processCommand() returns.
+		if (afterProcessCommand) {
+			afterCommandCallbacks[pPtr] = afterProcessCommand;
+		}
+
 		processed[playerName].playerPtr = nullptr;
-
-		// Send null input to force Game::processCommand() to return.
-		input::Driver::get(
-			Config::get()->value<std::string>(Config::CONFIG_KEY_INPUT_DRIVER)
-		)->set(gameId, playerName, "");
+		static_cast<ServerIn &>(pPtr->in()).kill();
 	}
 
-	if (lock) {
-		processedMutex.unlock();
-	}
+	processedMutex.unlock();
 }
 
 /*****************************************************************************/
@@ -98,7 +102,16 @@ void InputListener::start() {
 							it->second.future = std::async(
 								std::launch::async,
 								[&](trogdor::entity::Player *pPtr) -> bool {
+
 									gamePtr->processCommand(pPtr);
+
+									// We might have been given a callback to
+									// execute after processCommand() returns.
+									if (afterCommandCallbacks.end() != afterCommandCallbacks.find(pPtr)) {
+										afterCommandCallbacks[pPtr]();
+										afterCommandCallbacks.erase(pPtr);
+									}
+
 									return true;
 								},
 								it->second.playerPtr

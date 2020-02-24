@@ -23,11 +23,24 @@ trogdor::Trogin &ServerIn::operator>> (std::string &val) {
 	);
 
 	// Block until input is available
+	blocked = true;
+
 	while (!inBuffer->isSet(gameId, entityPtr->getName())) {
+
+		// Allows a blocking read operation to be canceled
+		if (killSwitch) {
+			blocked = false;
+			killSwitch = false;
+			val = "";
+			return *this;
+		}
+
 		std::this_thread::sleep_for(pollInterval);
 	}
 
 	val = *inBuffer->consume(gameId, entityPtr->getName());
+
+	blocked = false;
 	return *this;
 }
 

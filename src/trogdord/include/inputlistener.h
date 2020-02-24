@@ -2,6 +2,8 @@
 #define INPUT_LISTENER_H
 
 #include <future>
+#include <functional>
+#include <unordered_map>
 
 #include <trogdor/game.h>
 #include <trogdor/entities/player.h>
@@ -54,6 +56,16 @@ class InputListener {
 		// will stop the worker thread.
 		bool on = false;
 
+		// Callbacks that should be executed once a player's input is
+		// received by the asynchronous call to processCommand(). This is
+		// useful, for example, if you need to destroy the player but can't do
+		// so until we've finished reading from it. Callbacks are set to fire
+		// only once and are removed immediately after being called.
+		std::unordered_map<
+			trogdor::entity::Player *,
+			std::function<void()>
+		> afterCommandCallbacks;
+
 		// I need the game ID to use the input buffer.
 		size_t gameId;
 
@@ -76,12 +88,6 @@ class InputListener {
 		// locking to be turned on and off.
 		void _subscribe(trogdor::entity::Player *pPtr, bool lock = true);
 
-		// Stop listening for input from the given player. Allows mutex
-		// locking to be turned on and off.
-		void _unsubscribe(std::string playerName, bool lock = true);
-
-		void reapUnsubscribed();
-
 	public:
 
 		// Constructor
@@ -101,15 +107,18 @@ class InputListener {
 
 		// Stop listening for input from the given player. This public access
 		// to _unsubscribe forces mutex locking.
-		inline void unsubscribe(std::string playerName) {
-
-			_unsubscribe(playerName);
-		}
+		void unsubscribe(
+			std::string playerName,
+			std::function<void()> afterProcessCommand = {}
+		);
 
 		// Stop listening for input from the given player.
-		inline void unsubscribe(trogdor::entity::Player *pPtr) {
+		inline void unsubscribe(
+			trogdor::entity::Player *pPtr,
+			std::function<void()> afterProcessCommand = {}
+		) {
 
-			_unsubscribe(pPtr->getName());
+			unsubscribe(pPtr->getName(), afterProcessCommand);
 		}
 
 		// Start the player input listener thread
