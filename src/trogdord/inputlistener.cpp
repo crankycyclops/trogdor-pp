@@ -147,10 +147,20 @@ void InputListener::stop() {
 
 	if (on) {
 
+		// Signal to the worker thread that we shouldn't listen for commands
+		// from the players anymore.
 		for (auto &next: processed) {
 			unsubscribe(next.second.playerName);
 		}
 
+		// After signaling to the worker that we shouldn't listen for player
+		// commands anymore, wait for the async tasks doing the listening to
+		// fall out of scope.
+		for (auto &next: processed) {
+			next.second.future.wait();
+		}
+
+		// Finally, kill the worker thread.
 		on = false;
 		worker.join();
 	}
