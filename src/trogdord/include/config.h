@@ -59,6 +59,7 @@ class Config {
 		static const char *CONFIG_KEY_SEND_TCP_KEEPALIVE;
 		static const char *CONFIG_KEY_LOGTO;
 		static const char *CONFIG_KEY_DEFINITIONS_PATH;
+		static const char *CONFIG_KEY_INPUT_DRIVER;
 		static const char *CONFIG_KEY_OUTPUT_DRIVER;
 
 		// Returns singleton instance of Config.

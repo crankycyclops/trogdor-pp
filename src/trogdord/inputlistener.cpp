@@ -1,3 +1,5 @@
+#include "include/config.h"
+#include "include/io/input/driver.h"
 #include "include/inputlistener.h"
 
 
@@ -17,6 +19,8 @@ void InputListener::_subscribe(trogdor::entity::Player *pPtr, bool lock) {
 	}
 
 	pf.playerPtr = pPtr;
+	pf.playerName = pPtr->getName();
+
 	processed[pPtr->getName()] = std::move(pf);
 
 	if (lock) {
@@ -35,7 +39,13 @@ void InputListener::_unsubscribe(std::string playerName, bool lock) {
 	// Do the actual removal in the worker thread after we're sure we're not
 	// waiting on anymore commands.
 	if (processed.end() != processed.find(playerName)) {
+
 		processed[playerName].playerPtr = nullptr;
+
+		// Send null input to force Game::processCommand() to return.
+		input::Driver::get(
+			Config::get()->value<std::string>(Config::CONFIG_KEY_INPUT_DRIVER)
+		)->set(gameId, playerName, "");
 	}
 
 	if (lock) {
@@ -101,10 +111,13 @@ void InputListener::start() {
 						// The player was removed from the game, so stop
 						// listening for their commands.
 						else {
-							// TODO: send null command
 							it->second.future.wait();
 							it = processed.erase(it);
 						}
+					}
+
+					else {
+						it++;
 					}
 				}
 
@@ -120,6 +133,11 @@ void InputListener::start() {
 void InputListener::stop() {
 
 	if (on) {
+
+		for (auto &next: processed) {
+			unsubscribe(next.second.playerName);
+		}
+
 		on = false;
 		worker.join();
 	}

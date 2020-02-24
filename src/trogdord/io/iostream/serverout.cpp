@@ -1,8 +1,8 @@
 #include "../../include/config.h"
 #include "../../include/io/message.h"
-#include "../../include/exception/serverexception.h"
 #include "../../include/io/output/driver.h"
 #include "../../include/io/iostream/serverout.h"
+#include "../../include/exception/serverexception.h"
 
 
 void ServerOut::flush() {

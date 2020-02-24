@@ -95,7 +95,7 @@ size_t GameContainer::createGame(std::string name, std::string definitionPath) {
 	playerListeners.insert(
 		std::make_pair(
 			gameId,
-			std::make_unique<InputListener>(games[gameId].get())
+			std::make_unique<InputListener>(gameId, games[gameId].get())
 		)
 	);
 

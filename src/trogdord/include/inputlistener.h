@@ -18,6 +18,11 @@ struct PlayerFuture {
 	// that we should stop listening for their commands.
 	trogdor::entity::Player *playerPtr;
 
+	// Name of the player who issued the command. Necessary to send null input
+	// to the player's input stream after playerPtr has been set to nullptr by
+	// InputListener's unsubscribe() method.
+	std::string playerName;
+
 	// This will contain a value after trogdor::Game::processCommand() returns.
 	std::future<bool> future;
 
@@ -49,6 +54,9 @@ class InputListener {
 		// will stop the worker thread.
 		bool on = false;
 
+		// I need the game ID to use the input buffer.
+		size_t gameId;
+
 		// The game the input listener processes player commands for
 		trogdor::Game *gamePtr;
 
@@ -72,10 +80,12 @@ class InputListener {
 		// locking to be turned on and off.
 		void _unsubscribe(std::string playerName, bool lock = true);
 
+		void reapUnsubscribed();
+
 	public:
 
 		// Constructor
-		inline InputListener(trogdor::Game *gPtr): gamePtr(gPtr) {}
+		inline InputListener(size_t gId, trogdor::Game *gPtr): gameId(gId), gamePtr(gPtr) {}
 		InputListener() = delete;
 		InputListener(const InputListener &) = delete;
 

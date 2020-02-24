@@ -32,6 +32,9 @@ class ServerIn: public trogdor::Trogin {
 
 	private:
 
+		// How many milliseconds to sleep before polling for input
+		static const unsigned int INPUT_POLL_INTERVAL = 10;
+
 		// ID of the game the input stream belongs to
 		size_t gameId;
 
