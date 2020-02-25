@@ -26,6 +26,7 @@ JSONObject PlayerController::playerToJSONObject(trogdor::entity::Player *pPtr) {
 
 	// TODO: what other values should I include here?
 	player.put("name", pPtr->getName());
+	player.put("type", pPtr->getTypeName());
 
 	return player;
 }
@@ -134,11 +135,9 @@ JSONObject PlayerController::getPlayerList(JSONObject request) {
 		JSONObject players;
 
 		for (const auto &player: game->getPlayers()) {
-
-			JSONObject playerObj;
-
-			playerObj.put_value(player.second->getName());
-			players.push_back(std::make_pair("", playerObj));
+			players.push_back(std::make_pair("",
+				playerToJSONObject(static_cast<trogdor::entity::Player *>(player.second.get()))
+			));
 		}
 
 		// See comment in GameController::getGameList describing use of

@@ -166,6 +166,7 @@ if (Boost_FOUND)
 		src/trogdord/scopes/controller.cpp
 		src/trogdord/scopes/global.cpp
 		src/trogdord/scopes/game.cpp
+		src/trogdord/scopes/entity.cpp
 		src/trogdord/scopes/player.cpp
 		src/trogdord/io/input/driver.cpp
 		src/trogdord/io/input/local.cpp
