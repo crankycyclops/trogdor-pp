@@ -31,7 +31,7 @@ class EntityController: public ScopeController {
 		EntityController(const EntityController &) = delete;
 
 		// Converts an entity to a JSON object
-		static JSONObject entityToJSONObject(trogdor::entity::Entity *ePtr);
+		virtual JSONObject entityToJSONObject(trogdor::entity::Entity *ePtr);
 
 		// Returns a pointer to the game entity of the specified name. More
 		// specific entity controllers should return only pointers of the

@@ -3,30 +3,25 @@
 
 
 #include <trogdor/entities/player.h>
-#include "entity.h"
+#include "being.h"
 
 
-class PlayerController: public EntityController {
+class PlayerController: public BeingController {
 
 	private:
 
 		// Singleton instance of PlayerController
 		static std::unique_ptr<PlayerController> instance;
 
-		// Constructor should only be called internally by get(), which will
-		// ensure we only ever have a single instance of the class.
-		PlayerController();
-		PlayerController(const PlayerController &) = delete;
-
 	protected:
-
-		// Actions served by the "player" scope
-		static const char *LIST_ACTION;
 
 		// Error messages
 		static const char *MISSING_PLAYER_NAME;
 		static const char *INVALID_PLAYER_NAME;
 		static const char *PLAYER_NOT_FOUND;
+
+		// Converts a player to a JSON object
+		virtual JSONObject entityToJSONObject(trogdor::entity::Entity *ePtr);
 
 		// Returns a pointer to the player of the specified name. Throws an
 		// instance of PlayerNotFound if the player doesn't exist.
@@ -39,6 +34,11 @@ class PlayerController: public EntityController {
 		virtual const trogdor::entity::EntityMap getEntityPtrList(
 			std::unique_ptr<trogdor::Game> &game
 		);
+
+		// Constructor should only be called internally by get(), which will
+		// ensure we only ever have a single instance of the class.
+		PlayerController();
+		PlayerController(const PlayerController &) = delete;
 
 	public:
 

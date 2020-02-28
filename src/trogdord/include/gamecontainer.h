@@ -14,7 +14,7 @@
 #include "inputlistener.h"
 
 #include "exception/gamenotfound.h"
-#include "exception/playernotfound.h"
+#include "exception/entity/playernotfound.h"
 
 
 class GameContainer {

@@ -2,14 +2,11 @@
 #include "../include/gamecontainer.h"
 
 #include "../include/scopes/player.h"
-#include "../include/exception/playernotfound.h"
+#include "../include/exception/entity/playernotfound.h"
 
 
 // Scope name that should be used in requests
 const char *PlayerController::SCOPE = "player";
-
-// Actions served by the "player" scope
-const char *PlayerController::LIST_ACTION = "list";
 
 // Error messages
 const char *PlayerController::MISSING_PLAYER_NAME = "missing required player name";
@@ -18,6 +15,16 @@ const char *PlayerController::PLAYER_NOT_FOUND = "player not found";
 
 // Singleton instance of PlayerController
 std::unique_ptr<PlayerController> PlayerController::instance = nullptr;
+
+/*****************************************************************************/
+
+JSONObject PlayerController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+
+	JSONObject player = BeingController::entityToJSONObject(ePtr);
+
+	// TODO: add player-specific properties
+	return player;
+}
 
 /*****************************************************************************/
 
@@ -46,7 +53,7 @@ const trogdor::entity::EntityMap PlayerController::getEntityPtrList(
 
 /*****************************************************************************/
 
-PlayerController::PlayerController(): EntityController() {
+PlayerController::PlayerController(): BeingController() {
 
 	registerAction(Request::POST, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
 		return this->createPlayer(request);

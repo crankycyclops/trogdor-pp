@@ -1,7 +1,7 @@
 #ifndef ENTITY_NOT_FOUND_H
 #define ENTITY_NOT_FOUND_H
 
-#include "serverexception.h"
+#include "../serverexception.h"
 
 
 class EntityNotFound: public ServerException {

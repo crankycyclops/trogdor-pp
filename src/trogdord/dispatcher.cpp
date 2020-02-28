@@ -8,7 +8,6 @@
 
 #include "include/scopes/global.h"
 #include "include/scopes/game.h"
-#include "include/scopes/entity.h"
 #include "include/scopes/player.h"
 
 
@@ -39,6 +38,8 @@ Dispatcher::Dispatcher() {
 	scopes[GlobalController::SCOPE] = GlobalController::get().get();
 	scopes[GameController::SCOPE] = GameController::get().get();
 	scopes[EntityController::SCOPE] = EntityController::get().get();
+	scopes[ThingController::SCOPE] = ThingController::get().get();
+	scopes[BeingController::SCOPE] = BeingController::get().get();
 	scopes[PlayerController::SCOPE] = PlayerController::get().get();
 }
 

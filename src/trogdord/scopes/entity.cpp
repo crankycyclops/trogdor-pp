@@ -3,7 +3,7 @@
 #include "../include/io/output/driver.h"
 
 #include "../include/scopes/entity.h"
-#include "../include/exception/entitynotfound.h"
+#include "../include/exception/entity/entitynotfound.h"
 
 
 // Scope name that should be used in requests
@@ -30,9 +30,6 @@ JSONObject EntityController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
 
 	entity.put("name", ePtr->getName());
 	entity.put("type", ePtr->getTypeName());
-
-	// TODO: I need a good hierarchical way to get additional type-specific
-	// properties for the entity.
 
 	return entity;
 }
