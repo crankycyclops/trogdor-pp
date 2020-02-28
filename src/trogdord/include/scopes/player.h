@@ -3,15 +3,22 @@
 
 
 #include <trogdor/entities/player.h>
-#include "controller.h"
+#include "entity.h"
 
 
-class PlayerController: public ScopeController {
+class PlayerController: public EntityController {
 
-	protected:
+	private:
 
 		// Singleton instance of PlayerController
 		static std::unique_ptr<PlayerController> instance;
+
+		// Constructor should only be called internally by get(), which will
+		// ensure we only ever have a single instance of the class.
+		PlayerController();
+		PlayerController(const PlayerController &) = delete;
+
+	protected:
 
 		// Actions served by the "player" scope
 		static const char *LIST_ACTION;
@@ -21,13 +28,17 @@ class PlayerController: public ScopeController {
 		static const char *INVALID_PLAYER_NAME;
 		static const char *PLAYER_NOT_FOUND;
 
-		// Constructor should only be called internally by get(), which will
-		// ensure we only ever have a single instance of the class.
-		PlayerController();
-		PlayerController(const PlayerController &) = delete;
+		// Returns a pointer to the player of the specified name. Throws an
+		// instance of PlayerNotFound if the player doesn't exist.
+		virtual trogdor::entity::Entity *getEntityPtr(
+			std::unique_ptr<trogdor::Game> &game,
+			std::string entityName
+		);
 
-		// Converts a player to a JSON object
-		JSONObject playerToJSONObject(trogdor::entity::Player *pPtr);
+		// Returns an iterable list of all player pointers in the game.
+		virtual const trogdor::entity::EntityMap getEntityPtrList(
+			std::unique_ptr<trogdor::Game> &game
+		);
 
 	public:
 
@@ -36,12 +47,6 @@ class PlayerController: public ScopeController {
 
 		// Returns singleton instance of PlayerController.
 		static std::unique_ptr<PlayerController> &get();
-
-		// Returns details about the player in the specified game
-		JSONObject getPlayer(JSONObject request);
-
-		// Returns a list of all players in the specified game
-		JSONObject getPlayerList(JSONObject request);
 
 		// Creates a player in the specified game
 		JSONObject createPlayer(JSONObject request);

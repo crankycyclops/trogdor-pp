@@ -2,6 +2,7 @@
 #include "../include/gamecontainer.h"
 
 #include "../include/scopes/player.h"
+#include "../include/exception/playernotfound.h"
 
 
 // Scope name that should be used in requests
@@ -20,28 +21,32 @@ std::unique_ptr<PlayerController> PlayerController::instance = nullptr;
 
 /*****************************************************************************/
 
-JSONObject PlayerController::playerToJSONObject(trogdor::entity::Player *pPtr) {
+trogdor::entity::Entity *PlayerController::getEntityPtr(
+	std::unique_ptr<trogdor::Game> &game,
+	std::string entityName
+) {
 
-	JSONObject player;
+	trogdor::entity::Entity *ePtr = game->getPlayer(entityName);
 
-	// TODO: what other values should I include here?
-	player.put("name", pPtr->getName());
-	player.put("type", pPtr->getTypeName());
+	if (!ePtr) {
+		throw PlayerNotFound();
+	}
 
-	return player;
+	return ePtr;
 }
 
 /*****************************************************************************/
 
-PlayerController::PlayerController() {
+const trogdor::entity::EntityMap PlayerController::getEntityPtrList(
+	std::unique_ptr<trogdor::Game> &game
+) {
 
-	registerAction(Request::GET, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
-		return this->getPlayer(request);
-	});
+	return game->getPlayers();
+}
 
-	registerAction(Request::GET, LIST_ACTION, [&] (JSONObject request) -> JSONObject {
-		return this->getPlayerList(request);
-	});
+/*****************************************************************************/
+
+PlayerController::PlayerController(): EntityController() {
 
 	registerAction(Request::POST, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
 		return this->createPlayer(request);
@@ -61,101 +66,6 @@ std::unique_ptr<PlayerController> &PlayerController::get() {
 	}
 
 	return instance;
-}
-
-/*****************************************************************************/
-
-JSONObject PlayerController::getPlayer(JSONObject request) {
-
-	JSONObject response;
-
-	int gameId;
-	std::string playerName;
-
-	try {
-		gameId = Request::parseGameId(request, "args.game_id");
-		playerName = Request::parseArgument<std::string>(
-			request,
-			"args.name",
-			MISSING_PLAYER_NAME,
-			INVALID_PLAYER_NAME
-		);
-	}
-
-	catch (JSONObject error) {
-		return error;
-	}
-
-	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
-
-	if (!game) {
-
-		response.put("status", 404);
-		response.put("message", GAME_NOT_FOUND);
-
-		return response;
-	}
-
-	trogdor::entity::Player *pPtr = game->getPlayer(playerName);
-
-	if (!pPtr) {
-
-		response.put("status", 404);
-		response.put("message", PLAYER_NOT_FOUND);
-
-		return response;
-	};
-
-	response.put("status", 200);
-	response.add_child("player", playerToJSONObject(pPtr));
-
-	return response;
-}
-
-/*****************************************************************************/
-
-JSONObject PlayerController::getPlayerList(JSONObject request) {
-
-	int gameId;
-
-	JSONObject response;
-
-	try {
-		gameId = Request::parseGameId(request, "args.game_id");
-	}
-
-	catch (JSONObject error) {
-		return error;
-	}
-
-	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
-
-	if (game) {
-
-		JSONObject players;
-
-		for (const auto &player: game->getPlayers()) {
-			players.push_back(std::make_pair("",
-				playerToJSONObject(static_cast<trogdor::entity::Player *>(player.second.get()))
-			));
-		}
-
-		// See comment in GameController::getGameList describing use of
-		// addedGames for an explanation of what I'm doing here.
-		if (!players.size()) {
-			players.push_back(std::make_pair("", JSONObject()));
-		}
-
-		response.put("status", 200);
-		response.add_child("players", players);
-	}
-
-	else {
-		response.put("status", 404);
-		response.put("message", GAME_NOT_FOUND);
-	}
-
-	return response;
 }
 
 /*****************************************************************************/
@@ -184,7 +94,7 @@ JSONObject PlayerController::createPlayer(JSONObject request) {
 	try {
 
 		response.put("status", 200);
-		response.add_child("player", playerToJSONObject(
+		response.add_child("player", entityToJSONObject(
 			GameContainer::get()->createPlayer(gameId, playerName))
 		);
 

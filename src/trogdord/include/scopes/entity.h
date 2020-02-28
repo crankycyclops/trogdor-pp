@@ -2,19 +2,23 @@
 #define SCOPE_ENTITY_H
 
 
-#include <trogdor/entities/entity.h>
+#include <trogdor/entitymap.h>
 #include "controller.h"
 
 
 class EntityController: public ScopeController {
 
-	protected:
+	private:
 
 		// Singleton instance of EntityController
 		static std::unique_ptr<EntityController> instance;
 
+	protected:
+
 		// Actions served by the "entity" scope
 		static const char *LIST_ACTION;
+		static const char *OUTPUT_ACTION;
+		static const char *INPUT_ACTION;
 
 		// Error messages
 		static const char *MISSING_ENTITY_NAME;
@@ -27,7 +31,28 @@ class EntityController: public ScopeController {
 		EntityController(const EntityController &) = delete;
 
 		// Converts an entity to a JSON object
-		JSONObject entityToJSONObject(trogdor::entity::Entity *ePtr);
+		static JSONObject entityToJSONObject(trogdor::entity::Entity *ePtr);
+
+		// Returns a pointer to the game entity of the specified name. More
+		// specific entity controllers should return only pointers of the
+		// correct type. For example, EntityController's implementation will
+		// return the result of Game::getEntity(), while PlayerController's
+		// implementation should return the result of Game::getPlayer().
+		// Should throw an instance of EntityNotFound (or one of its children)
+		// if the entity cannot be found.
+		virtual trogdor::entity::Entity *getEntityPtr(
+			std::unique_ptr<trogdor::Game> &game,
+			std::string entityName
+		);
+
+		// Returns an iterable list of all entity pointers in the game. More
+		// specific entity controllers should only return a list of pointers
+		// of their type. For example, EntityController's implementation calls
+		// Game::getEntities(), while PlayerController's implementation calls
+		// Game::getPlayers().
+		virtual const trogdor::entity::EntityMap getEntityPtrList(
+			std::unique_ptr<trogdor::Game> &game
+		);
 
 	public:
 
@@ -42,6 +67,16 @@ class EntityController: public ScopeController {
 
 		// Returns a list of all entities in the specified game
 		JSONObject getEntityList(JSONObject request);
+
+		// Returns all unfetched output messages from the given channel for an
+		// entity.
+		JSONObject getOutput(JSONObject request);
+
+		// Appends an output message to the given entity on the given channel.
+		JSONObject appendOutput(JSONObject request);
+
+		// Sends input on behalf of an entity.
+		JSONObject postInput(JSONObject request);
 };
 
 
