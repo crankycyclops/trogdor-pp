@@ -170,7 +170,9 @@ if (Boost_FOUND)
 		src/trogdord/scopes/place.cpp
 		src/trogdord/scopes/room.cpp
 		src/trogdord/scopes/thing.cpp
+		src/trogdord/scopes/object.cpp
 		src/trogdord/scopes/being.cpp
+		src/trogdord/scopes/creature.cpp
 		src/trogdord/scopes/player.cpp
 		src/trogdord/io/input/driver.cpp
 		src/trogdord/io/input/local.cpp

@@ -9,6 +9,8 @@
 #include "include/scopes/global.h"
 #include "include/scopes/game.h"
 #include "include/scopes/room.h"
+#include "include/scopes/object.h"
+#include "include/scopes/creature.h"
 #include "include/scopes/player.h"
 
 
@@ -42,7 +44,9 @@ Dispatcher::Dispatcher() {
 	scopes[PlaceController::SCOPE] = PlaceController::get().get();
 	scopes[RoomController::SCOPE] = RoomController::get().get();
 	scopes[ThingController::SCOPE] = ThingController::get().get();
+	scopes[ObjectController::SCOPE] = ObjectController::get().get();
 	scopes[BeingController::SCOPE] = BeingController::get().get();
+	scopes[CreatureController::SCOPE] = CreatureController::get().get();
 	scopes[PlayerController::SCOPE] = PlayerController::get().get();
 }
 
