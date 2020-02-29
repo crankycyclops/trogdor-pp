@@ -74,7 +74,7 @@ std::unique_ptr<GameController> &GameController::get() {
 
 JSONObject GameController::getGame(JSONObject request) {
 
-	int gameId;
+	size_t gameId;
 	JSONObject response;
 
 	try {
@@ -231,7 +231,7 @@ JSONObject GameController::createGame(JSONObject request) {
 
 JSONObject GameController::destroyGame(JSONObject request) {
 
-	int gameId;
+	size_t gameId;
 	JSONObject response;
 
 	try {
@@ -259,7 +259,7 @@ JSONObject GameController::destroyGame(JSONObject request) {
 
 JSONObject GameController::startGame(JSONObject request) {
 
-	int gameId;
+	size_t gameId;
 	JSONObject response;
 
 	try {
@@ -287,7 +287,7 @@ JSONObject GameController::startGame(JSONObject request) {
 
 JSONObject GameController::stopGame(JSONObject request) {
 
-	int gameId;
+	size_t gameId;
 	JSONObject response;
 
 	try {

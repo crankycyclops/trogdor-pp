@@ -81,7 +81,7 @@ JSONObject PlayerController::createPlayer(JSONObject request) {
 
 	JSONObject response;
 
-	int gameId;
+	size_t gameId;
 	std::string playerName;
 
 	try {
@@ -131,7 +131,7 @@ JSONObject PlayerController::destroyPlayer(JSONObject request) {
 
 	JSONObject response;
 
-	int gameId;
+	size_t gameId;
 	std::string playerName;
 
 	// If a removal message is sent as part of the request, it will be sent to

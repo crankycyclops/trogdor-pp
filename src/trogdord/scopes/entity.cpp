@@ -52,6 +52,57 @@ trogdor::entity::Entity *EntityController::getEntityPtr(
 
 /*****************************************************************************/
 
+std::optional<JSONObject> EntityController::getEntityHelper(
+	JSONObject request,
+	size_t &gameId,
+	std::string &entityName,
+	trogdor::entity::Entity *&ePtr
+) {
+
+	try {
+		gameId = Request::parseGameId(request, "args.game_id");
+		entityName = Request::parseArgument<std::string>(
+			request,
+			"args.name",
+			MISSING_ENTITY_NAME,
+			INVALID_ENTITY_NAME
+		);
+	}
+
+	catch (JSONObject error) {
+		return error;
+	}
+
+	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+
+	if (!game) {
+
+		JSONObject response;
+
+		response.put("status", 404);
+		response.put("message", GAME_NOT_FOUND);
+
+		return response;
+	}
+
+	try {
+		ePtr = getEntityPtr(game, entityName);
+		return std::nullopt;
+	}
+
+	catch (EntityNotFound &e) {
+
+		JSONObject response;
+
+		response.put("status", 404);
+		response.put("message", ENTITY_NOT_FOUND);
+
+		return response;
+	}
+}
+
+/*****************************************************************************/
+
 const trogdor::entity::EntityMap EntityController::getEntityPtrList(
 	std::unique_ptr<trogdor::Game> &game
 ) {
@@ -99,56 +150,37 @@ std::unique_ptr<EntityController> &EntityController::get() {
 
 JSONObject EntityController::getEntity(JSONObject request) {
 
-	JSONObject response;
-
-	int gameId;
+	size_t gameId;
 	std::string entityName;
+	trogdor::entity::Entity *ePtr;
 
-	try {
-		gameId = Request::parseGameId(request, "args.game_id");
-		entityName = Request::parseArgument<std::string>(
-			request,
-			"args.name",
-			MISSING_ENTITY_NAME,
-			INVALID_ENTITY_NAME
-		);
+	std::optional<JSONObject> error = getEntityHelper(
+		request,
+		gameId,
+		entityName,
+		ePtr
+	);
+
+	if (error.has_value()) {
+		return *error;
 	}
 
-	catch (JSONObject error) {
-		return error;
-	}
+	else {
 
-	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
-
-	if (!game) {
-
-		response.put("status", 404);
-		response.put("message", GAME_NOT_FOUND);
-
-		return response;
-	}
-
-	try {
-
-		trogdor::entity::Entity *ePtr = getEntityPtr(game, entityName);
+		JSONObject response;
 
 		response.put("status", 200);
 		response.add_child("entity", entityToJSONObject(ePtr));
-	}
 
-	catch (EntityNotFound &e) {
-		response.put("status", 404);
-		response.put("message", ENTITY_NOT_FOUND);	
+		return response;
 	}
-
-	return response;
 }
 
 /*****************************************************************************/
 
 JSONObject EntityController::getEntityList(JSONObject request) {
 
-	int gameId;
+	size_t gameId;
 
 	JSONObject response;
 
@@ -195,6 +227,11 @@ JSONObject EntityController::getEntityList(JSONObject request) {
 JSONObject EntityController::getOutput(JSONObject request) {
 
 	JSONObject response;
+
+	size_t gameId;
+
+	std::string entityName;
+	std::string channel;
 
 	std::unique_ptr<output::Driver> &outBuffer = output::Driver::get(
 		Config::get()->value<std::string>(Config::CONFIG_KEY_OUTPUT_DRIVER)

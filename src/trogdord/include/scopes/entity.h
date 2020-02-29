@@ -54,6 +54,17 @@ class EntityController: public ScopeController {
 			std::unique_ptr<trogdor::Game> &game
 		);
 
+		// Parses a request and sets the gameId, entityName and ePtr
+		// references to their appropriate values. Returns a JSONObject
+		// response if there was an error and nothing if the call was
+		// successful.
+		std::optional<JSONObject> getEntityHelper(
+			JSONObject request,
+			size_t &gameId,
+			std::string &entityName,
+			trogdor::entity::Entity *&ePtr
+		);
+
 	public:
 
 		// Scope name that should be used in requests
