@@ -11,10 +11,13 @@ void ServerOut::flush() {
 		throw ServerException("Entity pointer not set on output stream before use. This is a bug.");
 	}
 
-	output::Message m;
-
 	time_t curTime;
 	time(&curTime);
+
+	output::Message m = {
+		curTime,
+		getBufferStr()
+	};
 
 	std::unique_ptr<output::Driver> &outBuffer = output::Driver::get(
 		Config::get()->value<std::string>(Config::CONFIG_KEY_OUTPUT_DRIVER)
