@@ -63,7 +63,10 @@ namespace output {
 
 		bufferMutex.lock();
 
-		if (!isBufferInitialized(gameId, entityName, channel)) {
+		if (
+			!isBufferInitialized(gameId, entityName, channel) ||
+			!buffer[gameId][entityName][channel].size()
+		) {
 			bufferMutex.unlock();
 			return std::nullopt;
 		}

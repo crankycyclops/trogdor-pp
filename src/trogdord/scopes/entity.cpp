@@ -15,6 +15,8 @@ const char *EntityController::OUTPUT_ACTION = "output";
 const char *EntityController::INPUT_ACTION = "input";
 
 // Error messages
+const char *EntityController::MISSING_CHANNEL = "missing required channel";
+const char *EntityController::INVALID_CHANNEL = "invalid channel";
 const char *EntityController::MISSING_ENTITY_NAME = "missing required entity name";
 const char *EntityController::INVALID_ENTITY_NAME = "invalid entity name";
 const char *EntityController::ENTITY_NOT_FOUND = "entity not found";
@@ -229,6 +231,7 @@ JSONObject EntityController::getOutput(JSONObject request) {
 	JSONObject response;
 
 	size_t gameId;
+	trogdor::entity::Entity *ePtr;
 
 	std::string entityName;
 	std::string channel;
@@ -237,8 +240,48 @@ JSONObject EntityController::getOutput(JSONObject request) {
 		Config::get()->value<std::string>(Config::CONFIG_KEY_OUTPUT_DRIVER)
 	);
 
+	try {
+		channel = Request::parseArgument<std::string>(
+			request,
+			"args.channel",
+			MISSING_CHANNEL,
+			INVALID_CHANNEL
+		);
+	}
+
+	catch (JSONObject error) {
+		return error;
+	}
+
+	std::optional<JSONObject> error = getEntityHelper(
+		request,
+		gameId,
+		entityName,
+		ePtr
+	);
+
+	if (error.has_value()) {
+		return *error;
+	}
+
+	JSONObject messages;
+
+	for (
+		std::optional<output::Message> m = outBuffer->pop(gameId, entityName, channel);
+		m.has_value();
+		m = outBuffer->pop(gameId, entityName, channel)
+	) {
+		messages.push_back(std::make_pair("", (*m).toJSONObject()));
+	};
+
+	// See comment in GameController::getGameList describing use of addedGames
+	// for an explanation of what I'm doing here.
+	if (!messages.size()) {
+		messages.push_back(std::make_pair("", JSONObject()));
+	}
+
 	response.put("status", 200);
-	response.put("message", "TODO");
+	response.add_child("messages", messages);
 
 	return response;
 }
