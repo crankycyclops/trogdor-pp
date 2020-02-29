@@ -136,6 +136,10 @@ namespace trogdor::entity {
 
       public:
 
+         // If no output channel is specified when output is sent to the
+         // Entity's output stream, this is the channel we use
+         static const char *DEFAULT_OUTPUT_CHANNEL;
+
          /*
             Returns true if the given entity or class name is valid and false
             otherwise.
@@ -260,12 +264,12 @@ namespace trogdor::entity {
             entityPtr->out() << "I'm a value!" << std::endl;
 
             Input:
-               Output stream channel (default: notifications)
+               Output stream channel
 
             Output:
                Trogout &
          */
-         Trogout &out(std::string channel = "notifications") {
+         Trogout &out(std::string channel = DEFAULT_OUTPUT_CHANNEL) {
 
             outStream->setChannel(channel);
             return *outStream;
