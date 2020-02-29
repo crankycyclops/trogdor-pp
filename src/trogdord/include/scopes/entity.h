@@ -22,6 +22,7 @@ class EntityController: public ScopeController {
 
 		// Error messages
 		static const char *MISSING_OUTPUT_MESSAGE;
+		static const char *MISSING_COMMAND;
 		static const char *MISSING_CHANNEL;
 		static const char *INVALID_CHANNEL;
 		static const char *MISSING_ENTITY_NAME;

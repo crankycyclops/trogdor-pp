@@ -1,5 +1,6 @@
 #include "../include/request.h"
 #include "../include/gamecontainer.h"
+#include "../include/io/input/driver.h"
 #include "../include/io/output/driver.h"
 
 #include "../include/scopes/entity.h"
@@ -16,6 +17,7 @@ const char *EntityController::INPUT_ACTION = "input";
 
 // Error messages
 const char *EntityController::MISSING_OUTPUT_MESSAGE = "missing required message";
+const char *EntityController::MISSING_COMMAND = "missing required command";
 const char *EntityController::MISSING_CHANNEL = "missing required channel";
 const char *EntityController::INVALID_CHANNEL = "invalid channel";
 const char *EntityController::MISSING_ENTITY_NAME = "missing required entity name";
@@ -307,6 +309,7 @@ JSONObject EntityController::appendOutput(JSONObject request) {
 	}
 
 	if (!messageArg) {
+
 		response.put("status", 400);
 		response.put("message", MISSING_OUTPUT_MESSAGE);
 
@@ -336,8 +339,37 @@ JSONObject EntityController::postInput(JSONObject request) {
 
 	JSONObject response;
 
-	response.put("status", 200);
-	response.put("message", "TODO");
+	size_t gameId;
+	trogdor::entity::Entity *ePtr;
+	std::string entityName;
+
+	std::optional<JSONObject> error = getEntityHelper(
+		request,
+		gameId,
+		entityName,
+		ePtr
+	);
+
+	if (error.has_value()) {
+		return *error;
+	}
+
+	boost::optional command = request.get_optional<std::string>("args.command");
+
+	if (!command) {
+		response.put("status", 400);
+		response.put("message", MISSING_COMMAND);
+	}
+
+	else {
+
+		std::unique_ptr<input::Driver> &inBuffer = input::Driver::get(
+			Config::get()->value<std::string>(Config::CONFIG_KEY_INPUT_DRIVER)
+		);
+
+		inBuffer->set(gameId, entityName, *command);
+		response.put("status", 200);
+	}
 
 	return response;
 }
