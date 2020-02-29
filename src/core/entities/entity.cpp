@@ -8,6 +8,10 @@
 namespace trogdor::entity {
 
 
+   // If no output channel is specified when output is sent to the Entity's
+   // output stream, this is the channel we use
+   const char *Entity::DEFAULT_OUTPUT_CHANNEL = "notifications";
+
    // Special empty lists used for returning .end() iterator pairs in the case
    // of a non-existent list
    PlaceList     emptyPlaceList;
