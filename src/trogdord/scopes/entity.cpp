@@ -15,6 +15,7 @@ const char *EntityController::OUTPUT_ACTION = "output";
 const char *EntityController::INPUT_ACTION = "input";
 
 // Error messages
+const char *EntityController::MISSING_OUTPUT_MESSAGE = "missing required message";
 const char *EntityController::MISSING_CHANNEL = "missing required channel";
 const char *EntityController::INVALID_CHANNEL = "invalid channel";
 const char *EntityController::MISSING_ENTITY_NAME = "missing required entity name";
@@ -292,9 +293,40 @@ JSONObject EntityController::appendOutput(JSONObject request) {
 
 	JSONObject response;
 
-	response.put("status", 200);
-	response.put("message", "TODO");
+	size_t gameId;
+	trogdor::entity::Entity *ePtr;
 
+	std::string entityName;
+	std::string channel = trogdor::entity::Entity::DEFAULT_OUTPUT_CHANNEL;
+
+	boost::optional channelArg = request.get_optional<std::string>("args.channel");
+	boost::optional messageArg = request.get_optional<std::string>("args.message");
+
+	if (channelArg) {
+		channel = *channelArg;
+	}
+
+	if (!messageArg) {
+		response.put("status", 400);
+		response.put("message", MISSING_OUTPUT_MESSAGE);
+
+		return response;
+	}
+
+	std::optional<JSONObject> error = getEntityHelper(
+		request,
+		gameId,
+		entityName,
+		ePtr
+	);
+
+	if (error.has_value()) {
+		return *error;
+	}
+
+	ePtr->out(channel) << *messageArg << std::endl;
+
+	response.put("status", 200);
 	return response;
 }
 
