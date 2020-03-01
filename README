@@ -8,6 +8,8 @@ For this project, you'll require the following tools:
 	- LibXML2 (libxml2-dev package on Ubuntu)
 	- Lua 5.1+ (lua5.x-dev package on Ubuntu, where 5.x is the version you're compiling against)
 
+If you're building the game server, trogodrd, you'll also need the Boost libraries installed to a place where CMake can find it.
+
 By default, trogdor-pp compiles against Lua 5.1, but I've written glue code that enables it to also compile against Lua 5.2+. To set the lua version to something higher than 5.1, just prefix your make command with "LUA_VERSION=5.x".
 
 Build has been tested against Lua 5.1, 5.2, and 5.3.
