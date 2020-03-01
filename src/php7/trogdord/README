@@ -1,0 +1,7 @@
+A PHP module that connects to and provides an interface for one or more instances of trogdord over the network.
+
+To build, issue the following commands:
+
+phpize
+./configure
+make && make install
