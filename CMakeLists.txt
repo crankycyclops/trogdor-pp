@@ -36,6 +36,15 @@ install(DIRECTORY script DESTINATION share/trogdor COMPONENT data)
 
 ###############################################################################
 
+# Trogdord ini starting point
+
+add_custom_target(trogdord_data)
+
+install(FILES src/trogdord/etc/trogdord.ini DESTINATION etc/trogdord COMPONENT trogdord_data)
+install(DIRECTORY DESTINATION var/log COMPONENT trogdord_data)
+
+###############################################################################
+
 add_library(trogdor SHARED
 	src/core/action.cpp
 	src/core/actions.cpp
@@ -134,6 +143,73 @@ target_link_libraries(standalone
 add_definitions(-DGAME_XML_DEFAULT_PATH=\"${CMAKE_INSTALL_PREFIX}/share/trogdor/game.xml\")
 
 install(TARGETS standalone DESTINATION bin COMPONENT standalone OPTIONAL)
+
+###############################################################################
+
+# Build the game server trogdord
+find_package(Boost COMPONENTS system)
+
+if (Boost_FOUND)
+
+	add_executable(trogdord
+		src/trogdord/main.cpp
+		src/trogdord/config.cpp
+		src/trogdord/json.cpp
+		src/trogdord/filesystem.cpp
+		src/trogdord/request.cpp
+		src/trogdord/dispatcher.cpp
+		src/trogdord/gamecontainer.cpp
+		src/trogdord/inputlistener.cpp
+		src/trogdord/exception/requestexception.cpp
+		src/trogdord/network/tcpconnection.cpp
+		src/trogdord/network/tcpserver.cpp
+		src/trogdord/scopes/controller.cpp
+		src/trogdord/scopes/global.cpp
+		src/trogdord/scopes/game.cpp
+		src/trogdord/scopes/entity.cpp
+		src/trogdord/scopes/place.cpp
+		src/trogdord/scopes/room.cpp
+		src/trogdord/scopes/thing.cpp
+		src/trogdord/scopes/object.cpp
+		src/trogdord/scopes/being.cpp
+		src/trogdord/scopes/creature.cpp
+		src/trogdord/scopes/player.cpp
+		src/trogdord/io/input/driver.cpp
+		src/trogdord/io/input/local.cpp
+		src/trogdord/io/input/redis.cpp
+		src/trogdord/io/output/driver.cpp
+		src/trogdord/io/output/local.cpp
+		src/trogdord/io/output/redis.cpp
+		src/trogdord/io/iostream/serverin.cpp
+		src/trogdord/io/iostream/serverout.cpp
+		src/trogdord/io/iostream/servererr.cpp
+	)
+
+	target_include_directories(trogdord
+		PUBLIC ${Boost_INCLUDE_DIRS}
+	)
+
+	target_link_libraries(trogdord
+		PUBLIC trogdor
+		PUBLIC stdc++fs
+		PUBLIC ${Boost_LIBRARIES}
+	)
+
+	add_dependencies(trogdord trogdor trogdord_data)
+
+	# Explose the installation prefix to trogdord
+	add_definitions(-DTROGDORD_INSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
+
+	# Default location where trogdord looks for trogdord.ini
+	add_definitions(-DTROGDORD_INI_PATH=\"${CMAKE_INSTALL_PREFIX}/etc/trogdord/trogdord.ini\")
+
+	install(TARGETS trogdord DESTINATION bin COMPONENT trogdord OPTIONAL)
+
+else(Boost_FOUND)
+
+	add_custom_target(trogdord echo "Skipping trogdord because the Boost C++ libraries are not installed in a place where CMake can find them.")
+
+endif(Boost_FOUND)
 
 ###############################################################################
 

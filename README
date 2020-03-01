@@ -8,6 +8,8 @@ For this project, you'll require the following tools:
 	- LibXML2 (libxml2-dev package on Ubuntu)
 	- Lua 5.1+ (lua5.x-dev package on Ubuntu, where 5.x is the version you're compiling against)
 
+If you're building the game server, trogodrd, you'll also need the Boost libraries installed to a place where CMake can find it.
+
 By default, trogdor-pp compiles against Lua 5.1, but I've written glue code that enables it to also compile against Lua 5.2+. To set the lua version to something higher than 5.1, just prefix your make command with "LUA_VERSION=5.x".
 
 Build has been tested against Lua 5.1, 5.2, and 5.3.
@@ -29,6 +31,10 @@ cd /path/to/src
 cmake -DCMAKE_BUILD_TYPE=Release .
 make standalone && make install
 
+To build the game server trogdord:
+cmake -DCMAKE_BUILD_TYPE=Release .
+make trogdord && make install
+
 You don't have to explicitly build the library first. Building the client will build and link to it automatically as a dependency.
 
 To build any of the above targets with GDB debug symbols, add the following option to your cmake command:
@@ -42,7 +48,5 @@ And if you've already built it using debug symbols and want to switch back to a 
 If you want to install to somewhere other than the default system path, specify the following option to your cmake command:
 
 -DCMAKE_INSTALL_PREFIX:PATH=/custom/install/path
-
-There is code still in the source tree for an old (and now broken) server/client that I wrote as an exercise to teach myself network programming. The code is bad and should not be used. I'm keeping it (for now) only for historical/archival purposes.
 
 Have fun! :)
