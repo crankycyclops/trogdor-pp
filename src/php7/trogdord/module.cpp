@@ -1,5 +1,7 @@
 #include <iostream>
+
 #include "module.h"
+#include "exception.h"
 
 PHP_MINFO_FUNCTION(trogdord) {
 
@@ -13,7 +15,60 @@ PHP_MINFO_FUNCTION(trogdord) {
 
 PHP_MINIT_FUNCTION(trogdord) {
 
-	// TODO
+	defineExceptionClasses();
+
+	// Global namespaced constants that identify entity types and their string
+	// representations. Note: I have to define these string constants here
+	// instead of in a more appropriate location because the
+	// REGISTER_STRING_CONSTANT macro relies on a variable which
+	// PHP_MINIT_FUNCTION provides.
+	REGISTER_STRING_CONSTANT(
+		"Trogdord\\Entity\\Type\\ENTITY",
+		(char *)"entity",
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
+		"Trogdord\\Entity\\Type\\PLACE",
+		(char *)"place",
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
+		"Trogdord\\Entity\\Type\\THING",
+		(char *)"thing",
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
+		"Trogdord\\Entity\\Type\\BEING",
+		(char *)"being",
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
+		"Trogdord\\Entity\\Type\\ROOM",
+		(char *)"room",
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
+		"Trogdord\\Entity\\Type\\OBJECT",
+		(char *)"object",
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
+		"Trogdord\\Entity\\Type\\CREATURE",
+		(char *)"creature",
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
+		"Trogdord\\Entity\\Type\\PLAYER",
+		(char *)"player",
+		CONST_CS | CONST_PERSISTENT
+	);
 
 	return SUCCESS;
 }
