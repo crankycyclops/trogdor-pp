@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "module.h"
+#include "trogdord.h"
 #include "exception.h"
 
 PHP_MINFO_FUNCTION(trogdord) {
@@ -15,6 +16,7 @@ PHP_MINFO_FUNCTION(trogdord) {
 
 PHP_MINIT_FUNCTION(trogdord) {
 
+	defineTrogdordClass();
 	defineExceptionClasses();
 
 	// Global namespaced constants that identify entity types and their string

@@ -1,5 +1,5 @@
-#ifndef PHP_TROGDORD_H
-#define PHP_TROGDORD_H
+#ifndef PHP_TROGDORD_MODULE_H
+#define PHP_TROGDORD_MODULE_H
 
 #define MODULE_NAME     "trogdord"
 
