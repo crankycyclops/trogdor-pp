@@ -4,7 +4,6 @@
 ZEND_DECLARE_MODULE_GLOBALS(trogdord);
 
 /*****************************************************************************/
-/*****************************************************************************/
 
 // Trogdord Constructor (returned instance represents a connection to an
 // instance of trogdord over the network.) Throws instance of
@@ -101,6 +100,7 @@ PHP_METHOD(Trogdord, getGame) {
 	}
 
 	// TODO
+	// Remember to set private property "id" with game's id
 }
 
 /*****************************************************************************/
@@ -135,6 +135,7 @@ PHP_METHOD(Trogdord, newGame) {
 	}
 
 	// TODO
+	// Remember to set private property "id" with game's id
 }
 
 /*****************************************************************************/

@@ -47,7 +47,6 @@ static void freeOutputObject(zend_object *object TSRMLS_DC) {
 // Output Methods
 
 ZEND_BEGIN_ARG_INFO(arginfoOutputCtor, 0)
-	ZEND_ARG_INFO(0, XMLPath)
 ZEND_END_ARG_INFO()
 
 PHP_METHOD(Output, __construct) {
