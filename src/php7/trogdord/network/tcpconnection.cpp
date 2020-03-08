@@ -80,15 +80,14 @@ void TCPConnection::open() {
 
 std::string TCPConnection::read() {
 
-	std::string buffer;
+	boost::asio::streambuf buffer;
+	boost::system::error_code error;
 
 	try {
 
-		// Attempt to connect, but timeout if it takes too long
 		std::future_status status = std::async(std::launch::async, [&] () {
 
-			// TODO: call to boost::asio::read_until()
-			buffer = "";
+			boost::asio::read_until(*socket, buffer, std::string() + EOT, error);
 		}).wait_for(std::chrono::milliseconds{TIMEOUT});
 
 		switch (status) {
@@ -110,19 +109,27 @@ std::string TCPConnection::read() {
 		throw std::runtime_error(e.what());
 	}
 
-	return buffer;
+	if (error) {
+		throw std::runtime_error(error.message());
+	}
+
+	std::string response = boost::asio::buffer_cast<const char *>(buffer.data());
+	response.erase(remove(response.begin(), response.end(), EOT), response.end());
+
+	return response;
 }
 
 /*****************************************************************************/
 
 void TCPConnection::write(std::string message) {
 
+	boost::system::error_code error;
+
 	try {
 
-		// Attempt to connect, but timeout if it takes too long
 		std::future_status status = std::async(std::launch::async, [&] () {
 
-			// TODO: call to boost::asio::write()
+			boost::asio::write(*socket, boost::asio::buffer(message + EOT), error);
 		}).wait_for(std::chrono::milliseconds{TIMEOUT});
 
 		switch (status) {
@@ -142,5 +149,9 @@ void TCPConnection::write(std::string message) {
 
 	catch (const boost::system::system_error &e) {
 		throw std::runtime_error(e.what());
+	}
+
+	if (error) {
+		throw std::runtime_error(error.message());
 	}
 }
