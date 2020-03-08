@@ -10,5 +10,5 @@ if test $PHP_TROGDORD != "no"; then
 	PHP_SUBST(TROGDORD_SHARED_LIBADD)
 	PHP_ADD_LIBRARY(stdc++, 1, TROGDORD_SHARED_LIBADD)
 	PHP_ADD_LIBRARY(boost_system, 1, TROGDORD_SHARED_LIBADD)
-	PHP_NEW_EXTENSION(trogdord, *.cpp, $ext_shared, , -std=c++17, cxx)
+	PHP_NEW_EXTENSION(trogdord, *.cpp */*.cpp, $ext_shared, , -std=c++17, cxx)
 fi
