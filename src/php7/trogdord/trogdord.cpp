@@ -1,3 +1,5 @@
+#include <optional>
+
 #include "trogdord.h"
 #include "exception.h"
 #include "network/tcpconnectionmap.h"
@@ -8,6 +10,36 @@ zend_object_handlers trogdordObjectHandlers;
 
 // This request retrieves statistics about the server and its environment
 static const char *STATS_REQUEST = "{\"method\":\"get\",\"scope\":\"global\",\"action\":\"statistics\"}";
+
+/*****************************************************************************/
+
+// Utility method that sends a request to trogdord and processes the response.
+static std::optional<std::string> makeRequest(zval *thisPtr, std::string request) {
+
+	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(thisPtr));
+
+	try {
+
+		// As long as the connection wasn't closed at any point (either
+		// intentionally or due to error), this should be fast and should only
+		// retrieve an already opened and cached connection.
+		TCPConnection &connection = TCPConnectionMap::get().connect(
+			objWrapper->data.hostname,
+			objWrapper->data.port
+		);
+
+		connection.write(request);
+		std::string response = connection.read();
+
+		// TODO: construct JSON, check return value, throw exception if
+		// necessary, and then return json-decoded array result
+		return "";
+	}
+
+	catch (const std::runtime_error &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+}
 
 /*****************************************************************************/
 
@@ -58,30 +90,13 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Trogdord, statistics) {
 
-	zval *thisPtr = getThis();
-	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(thisPtr));
-
 	ZEND_PARSE_PARAMETERS_NONE();
 
-	try {
+	std::optional<std::string> response = makeRequest(getThis(), STATS_REQUEST);
 
-		// As long as the connection wasn't closed at any point (either
-		// intentionally or due to error), this should be fast and should only
-		// retrieve an already opened and cached connection.
-		TCPConnection &connection = TCPConnectionMap::get().connect(
-			objWrapper->data.hostname,
-			objWrapper->data.port
-		);
+	if (response.has_value()) {
 
-		connection.write(STATS_REQUEST);
-		std::string response = connection.read();
-
-		// TODO: construct JSON, check return value, throw exception if
-		// necessary, and then return json-decoded array result
-	}
-
-	catch (const std::runtime_error &e) {
-		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		// TODO: finish returning appropriate value
 	}
 }
 
