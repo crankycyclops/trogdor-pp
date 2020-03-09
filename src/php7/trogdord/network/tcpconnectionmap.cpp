@@ -21,7 +21,7 @@ TCPConnection &TCPConnectionMap::connect(std::string hostname, unsigned short po
 
 	const std::string key = hostname + ":" + std::to_string(port);
 
-	if (connections.end() == connections.find(key)) {
+	if (connections.end() == connections.find(key) || !connections[key]->isOpen()) {
 		connections[key] = std::make_unique<TCPConnection>(hostname, port);
 	}
 

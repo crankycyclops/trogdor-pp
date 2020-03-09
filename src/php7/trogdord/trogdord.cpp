@@ -4,6 +4,11 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(trogdord);
 
+zend_object_handlers trogdordObjectHandlers;
+
+// This request retrieves statistics about the server and its environment
+static const char *STATS_REQUEST = "{\"method\":\"get\",\"scope\":\"global\",\"action\":\"statistics\"}";
+
 /*****************************************************************************/
 
 // Trogdord Constructor (returned instance represents a connection to an
@@ -15,6 +20,9 @@ ZEND_BEGIN_ARG_INFO(arginfoCtor, 0)
 ZEND_END_ARG_INFO()
 
 PHP_METHOD(Trogdord, __construct) {
+
+	zval *thisPtr = getThis();
+	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(thisPtr));
 
 	char *hostname;
 	size_t hostnameLength;
@@ -28,7 +36,16 @@ PHP_METHOD(Trogdord, __construct) {
 		&port
 	);
 
-	// TODO
+	objWrapper->data.hostname = hostname;
+	objWrapper->data.port = port;
+
+	try {
+		TCPConnectionMap::get().connect(hostname, port);
+	}
+
+	catch (const std::runtime_error &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
 }
 
 /*****************************************************************************/
@@ -41,10 +58,31 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Trogdord, statistics) {
 
-	// Method takes no arguments
+	zval *thisPtr = getThis();
+	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(thisPtr));
+
 	ZEND_PARSE_PARAMETERS_NONE();
 
-	// TODO
+	try {
+
+		// As long as the connection wasn't closed at any point (either
+		// intentionally or due to error), this should be fast and should only
+		// retrieve an already opened and cached connection.
+		TCPConnection &connection = TCPConnectionMap::get().connect(
+			objWrapper->data.hostname,
+			objWrapper->data.port
+		);
+
+		connection.write(STATS_REQUEST);
+		std::string response = connection.read();
+
+		// TODO: construct JSON, check return value, throw exception if
+		// necessary, and then return json-decoded array result
+	}
+
+	catch (const std::runtime_error &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
 }
 
 /*****************************************************************************/
@@ -153,6 +191,39 @@ static const zend_function_entry classMethods[] =  {
 };
 
 /*****************************************************************************/
+/*****************************************************************************/
+
+// Custom Object Handlers
+// See: http://blog.jpauli.tech/2016-01-14-php-7-objects-html/
+
+static zend_object *createObject(zend_class_entry *classEntry TSRMLS_DC) {
+
+	trogdordObject *obj = (trogdordObject *)ecalloc(1, sizeof(*obj) + zend_object_properties_size(classEntry));
+
+	zend_object_std_init(&obj->std, classEntry);
+	object_properties_init(&obj->std, classEntry);
+
+	obj->std.handlers = &trogdordObjectHandlers;
+
+	return &obj->std;
+}
+
+/*****************************************************************************/
+
+static void destroyObject(zend_object *object TSRMLS_DC) {
+
+	zend_objects_destroy_object(object);
+}
+
+/*****************************************************************************/
+
+static void freeObject(zend_object *object TSRMLS_DC) {
+
+	zend_object_std_dtor(object TSRMLS_CC);
+}
+
+/*****************************************************************************/
+/*****************************************************************************/
 
 void defineTrogdordClass() {
 
@@ -163,4 +234,20 @@ void defineTrogdordClass() {
 
 	// Make sure users can't extend the class
 	TROGDORD_GLOBALS(classEntry)->ce_flags |= ZEND_ACC_FINAL;
+
+	// Start out with default object handlers
+	memcpy(
+		&trogdordObjectHandlers,
+		zend_get_std_object_handlers(),
+		sizeof(trogdordObjectHandlers)
+	);
+
+	// Set the specific custom object handlers we need
+	TROGDORD_GLOBALS(classEntry)->create_object = createObject;
+	trogdordObjectHandlers.free_obj = freeObject;
+	trogdordObjectHandlers.dtor_obj = destroyObject;
+
+	// For an explanation of why this is necessary, see:
+	// http://blog.jpauli.tech/2016-01-14-php-7-objects-html/
+	trogdordObjectHandlers.offset = XtOffsetOf(trogdordObject, std);
 }

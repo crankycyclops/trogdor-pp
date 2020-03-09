@@ -4,6 +4,7 @@
 #include "trogdord.h"
 #include "game.h"
 #include "exception.h"
+#include "network/tcpconnectionmap.h"
 
 PHP_MINFO_FUNCTION(trogdord) {
 
@@ -81,8 +82,7 @@ PHP_MINIT_FUNCTION(trogdord) {
 
 PHP_MSHUTDOWN_FUNCTION(trogdord) {
 
-	// TODO
-
+	TCPConnectionMap::get().clear();
 	return SUCCESS;
 }
 

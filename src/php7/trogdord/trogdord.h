@@ -9,6 +9,8 @@ extern "C" {
 	#include "php.h"
 }
 
+#include "network/tcpconnection.h"
+
 // For an explanation of what I'm doing here, see:
 // https://www.php.net/manual/en/internals2.structure.globals.php
 ZEND_BEGIN_MODULE_GLOBALS(trogdord)
@@ -20,6 +22,29 @@ ZEND_END_MODULE_GLOBALS(trogdord)
 #else
 #define TROGDORD_GLOBALS(v) (trogdord_globals.v)
 #endif
+
+// Custom data that will be instantiated alongside the zend_object
+struct customData {
+
+	// The hostname and port we're connecting to
+	std::string hostname;
+	unsigned short port;
+};
+
+// Allows us to wrap instance of PHP class \Trogdord with extra data
+struct trogdordObject {
+	customData data;
+	zend_object std;
+};
+
+// For an explanation of why this is necessary, see:
+// http://blog.jpauli.tech/2016-01-14-php-7-objects-html/
+inline trogdordObject *ZOBJ_TO_TROGDORD(zend_object *zobj) {
+
+	return (trogdordObject *)((char *)(zobj) - XtOffsetOf(trogdordObject, std));
+}
+
+extern zend_object_handlers trogdordObjectHandlers;
 
 /*****************************************************************************/
 
