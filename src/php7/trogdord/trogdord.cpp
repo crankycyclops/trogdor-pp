@@ -77,8 +77,13 @@ PHP_METHOD(Trogdord, statistics) {
 			STATS_REQUEST
 		);
 
-		// TODO: extract values from JSONObject and return PHP array
-		RETURN_STRING(response.get<std::string>("status").c_str());
+		response.erase("status");
+		zval data = JSON::JSONToZval(response);
+
+		// There's some insanity in how this works, so for reference, here's
+		// what I read to help me understand what all the arguments mean:
+		// https://medium.com/@davidtstrauss/copy-and-move-semantics-of-zvals-in-php-7-41427223d784
+		RETURN_ZVAL(&data, 1, 1);
 	}
 
 	catch (const NetworkException &e) {

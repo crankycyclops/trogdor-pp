@@ -6,6 +6,10 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
+extern "C" {
+	#include "php.h"
+}
+
 
 // What we get after deserializing a JSON string. Using iptree instead of ptree
 // allows me to do case-insensitive searches on keys.
@@ -21,6 +25,12 @@ class JSON {
 
 		// JSON string -> JSONObject
 		static JSONObject deserialize(std::string json);
+
+		// JSONObject -> Zend HashTable
+		static HashTable *JSONToHashTable(JSONObject obj);
+
+		// JSONObject -> Zval
+		static zval JSONToZval(JSONObject obj);
 };
 
 
