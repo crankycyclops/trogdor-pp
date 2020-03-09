@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "module.h"
 #include "trogdord.h"
 #include "game.h"

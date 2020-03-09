@@ -1,14 +1,10 @@
 #include <string>
 #include <sstream>
 #include <regex>
-#include <iostream>
 
 #include <boost/algorithm/string.hpp>
 
 #include "json.h"
-
-// TODO: remove
-#include <iostream>
 
 
 std::string JSON::serialize(JSONObject obj) {
@@ -59,7 +55,7 @@ HashTable *JSON::JSONToHashTable(JSONObject obj) {
 
 		zval zData;
 
-		if (pair.second.size()) {
+		if (pair.second.data().empty()) {
 			ZVAL_ARR(&zData, JSONToHashTable(pair.second));
 		}
 

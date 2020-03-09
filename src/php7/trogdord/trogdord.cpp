@@ -16,6 +16,12 @@ zend_object_handlers trogdordObjectHandlers;
 // This request retrieves statistics about the server and its environment
 static const char *STATS_REQUEST = "{\"method\":\"get\",\"scope\":\"global\",\"action\":\"statistics\"}";
 
+// This request retrieves a list of all existing games
+static const char *GAME_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"list\"}";
+
+// This request retrieves a list of all available game definitions
+static const char *DEF_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"definitions\"}";
+
 /*****************************************************************************/
 
 // Trogdord Constructor (returned instance represents a connection to an
@@ -104,12 +110,35 @@ PHP_METHOD(Trogdord, statistics) {
 ZEND_BEGIN_ARG_INFO(arginfoListGames, 0)
 ZEND_END_ARG_INFO()
 
-PHP_METHOD(Trogdord, listGames) {
+PHP_METHOD(Trogdord, games) {
 
-	// Method takes no arguments
+	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(getThis()));
+
 	ZEND_PARSE_PARAMETERS_NONE();
 
-	// TODO
+	try {
+
+		JSONObject response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			GAME_LIST_REQUEST
+		);
+
+		zval data = JSON::JSONToZval(response.get_child("games"));
+
+		// There's some insanity in how this works, so for reference, here's
+		// what I read to help me understand what all the arguments mean:
+		// https://medium.com/@davidtstrauss/copy-and-move-semantics-of-zvals-in-php-7-41427223d784
+		RETURN_ZVAL(&data, 1, 1);
+	}
+
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), 0);
+	}
 }
 
 /*****************************************************************************/
@@ -121,12 +150,35 @@ PHP_METHOD(Trogdord, listGames) {
 ZEND_BEGIN_ARG_INFO(arginfoListDefinitions, 0)
 ZEND_END_ARG_INFO()
 
-PHP_METHOD(Trogdord, listDefinitions) {
+PHP_METHOD(Trogdord, definitions) {
 
-	// Method takes no arguments
+	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(getThis()));
+
 	ZEND_PARSE_PARAMETERS_NONE();
 
-	// TODO
+	try {
+
+		JSONObject response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			DEF_LIST_REQUEST
+		);
+
+		zval data = JSON::JSONToZval(response.get_child("definitions"));
+
+		// There's some insanity in how this works, so for reference, here's
+		// what I read to help me understand what all the arguments mean:
+		// https://medium.com/@davidtstrauss/copy-and-move-semantics-of-zvals-in-php-7-41427223d784
+		RETURN_ZVAL(&data, 1, 1);
+	}
+
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), 0);
+	}
 }
 
 /*****************************************************************************/
@@ -193,8 +245,8 @@ PHP_METHOD(Trogdord, newGame) {
 static const zend_function_entry classMethods[] =  {
 	PHP_ME(Trogdord, __construct, arginfoCtor, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 	PHP_ME(Trogdord, statistics, arginfoStatistics, ZEND_ACC_PUBLIC)
-	PHP_ME(Trogdord, listGames, arginfoListGames, ZEND_ACC_PUBLIC)
-	PHP_ME(Trogdord, listDefinitions, arginfoListDefinitions, ZEND_ACC_PUBLIC)
+	PHP_ME(Trogdord, games, arginfoListGames, ZEND_ACC_PUBLIC)
+	PHP_ME(Trogdord, definitions, arginfoListDefinitions, ZEND_ACC_PUBLIC)
 	PHP_ME(Trogdord, getGame, arginfoGetGame, ZEND_ACC_PUBLIC)
 	PHP_ME(Trogdord, newGame, arginfoNewGame, ZEND_ACC_PUBLIC)
 	PHP_FE_END
