@@ -1,6 +1,7 @@
 #include <string>
 #include <sstream>
 #include <regex>
+#include <iostream>
 
 #include <boost/algorithm/string.hpp>
 
@@ -43,6 +44,10 @@ JSONObject JSON::deserialize(std::string json) {
 
 HashTable *JSON::JSONToHashTable(JSONObject obj) {
 
+	// Used to match and cast values to types other than strings
+	static std::regex integer("[+\\-]?[0-9]+");
+	static std::regex decimal("[+\\-]?[0-9]*\\.[0-9]+");
+
 	HashTable *ht;
 
 	ALLOC_HASHTABLE(ht);
@@ -58,9 +63,21 @@ HashTable *JSON::JSONToHashTable(JSONObject obj) {
 			ZVAL_ARR(&zData, JSONToHashTable(pair.second));
 		}
 
-		// TODO: choose correct data type via regex
 		else {
-			ZVAL_STRING(&zData, pair.second.data().c_str());
+
+			std::string value = pair.second.data();
+
+			if (std::regex_match(value, integer)) {
+				ZVAL_LONG(&zData, std::stoi(value));
+			}
+
+			else if (std::regex_match(value, decimal)) {
+				ZVAL_DOUBLE(&zData, std::stod(value));
+			}
+
+			else {
+				ZVAL_STRING(&zData, value.c_str());
+			}
 		}
 
 		// Numerical index
