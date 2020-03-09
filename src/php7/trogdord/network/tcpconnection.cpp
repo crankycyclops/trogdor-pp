@@ -105,12 +105,12 @@ void TCPConnection::open() {
 
 	catch (const boost::system::system_error &e) {
 		close();
-		throw std::runtime_error(e.what());
+		throw NetworkException(e.what());
 	}
 
 	if (error) {
 		close();
-		throw std::runtime_error(error.message());
+		throw NetworkException(error.message());
 	}
 }
 
@@ -145,12 +145,12 @@ std::string TCPConnection::read() {
 
 	catch (const boost::system::system_error &e) {
 		close();
-		throw std::runtime_error(e.what());
+		throw NetworkException(e.what());
 	}
 
 	if (error) {
 		close();
-		throw std::runtime_error(error.message());
+		throw NetworkException(error.message());
 	}
 
 	std::string response = boost::asio::buffer_cast<const char *>(buffer.data());
@@ -189,11 +189,11 @@ void TCPConnection::write(std::string message) {
 
 	catch (const boost::system::system_error &e) {
 		close();
-		throw std::runtime_error(e.what());
+		throw NetworkException(e.what());
 	}
 
 	if (error) {
 		close();
-		throw std::runtime_error(error.message());
+		throw NetworkException(error.message());
 	}
 }

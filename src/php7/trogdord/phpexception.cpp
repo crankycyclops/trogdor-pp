@@ -1,4 +1,4 @@
-#include "exception.h"
+#include "phpexception.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(exception);
 

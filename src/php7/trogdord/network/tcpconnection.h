@@ -8,6 +8,8 @@
 #include <string>
 #include <boost/asio.hpp>
 
+#include "../exception/networkexception.h"
+
 using boost::asio::ip::tcp;
 
 
@@ -37,7 +39,7 @@ class TCPConnection {
 		inline void timeout() {
 
 			close();
-			throw std::runtime_error("Timeout after " + std::to_string(TIMEOUT) + "ms.");
+			throw NetworkException("Timeout after " + std::to_string(TIMEOUT) + "ms.");
 		}
 
 	public:

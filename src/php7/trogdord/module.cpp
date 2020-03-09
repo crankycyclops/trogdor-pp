@@ -3,7 +3,7 @@
 #include "module.h"
 #include "trogdord.h"
 #include "game.h"
-#include "exception.h"
+#include "phpexception.h"
 #include "network/tcpconnectionmap.h"
 
 PHP_MINFO_FUNCTION(trogdord) {

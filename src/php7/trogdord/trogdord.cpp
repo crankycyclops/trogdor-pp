@@ -1,8 +1,10 @@
 #include <optional>
 
 #include "trogdord.h"
-#include "exception.h"
+#include "json.h"
+#include "phpexception.h"
 #include "network/tcpconnectionmap.h"
+#include "exception/networkexception.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(trogdord);
 
@@ -14,7 +16,7 @@ static const char *STATS_REQUEST = "{\"method\":\"get\",\"scope\":\"global\",\"a
 /*****************************************************************************/
 
 // Utility method that sends a request to trogdord and processes the response.
-static std::optional<std::string> makeRequest(zval *thisPtr, std::string request) {
+static std::optional<JSONObject> makeRequest(zval *thisPtr, std::string request) {
 
 	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(thisPtr));
 
@@ -31,12 +33,31 @@ static std::optional<std::string> makeRequest(zval *thisPtr, std::string request
 		connection.write(request);
 		std::string response = connection.read();
 
-		// TODO: construct JSON, check return value, throw exception if
-		// necessary, and then return json-decoded array result
-		return "";
+		JSONObject responseObj = JSON::deserialize(response);
+		auto status = responseObj.get_optional<int>("status");
+
+		if (!status || 200 != *status) {
+
+			auto message = responseObj.get_optional<std::string>("message");
+
+			zend_throw_exception(EXCEPTION_GLOBALS(
+				requestException),
+				message ? (*message).c_str() : "Invalid request",
+				0
+			);
+
+			return std::nullopt;
+		}
+
+		return responseObj;
 	}
 
-	catch (const std::runtime_error &e) {
+	catch (boost::property_tree::json_parser::json_parser_error &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), "Invalid server response", 0);
+		return std::nullopt;
+	}
+
+	catch (const NetworkException &e) {
 		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
 		return std::nullopt;
 	}
@@ -76,7 +97,7 @@ PHP_METHOD(Trogdord, __construct) {
 		TCPConnectionMap::get().connect(hostname, port);
 	}
 
-	catch (const std::runtime_error &e) {
+	catch (const NetworkException &e) {
 		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
 	}
 }
@@ -93,11 +114,12 @@ PHP_METHOD(Trogdord, statistics) {
 
 	ZEND_PARSE_PARAMETERS_NONE();
 
-	std::optional<std::string> response = makeRequest(getThis(), STATS_REQUEST);
+	std::optional<JSONObject> response = makeRequest(getThis(), STATS_REQUEST);
 
 	if (response.has_value()) {
 
-		// TODO: finish returning appropriate value
+		// TODO: extract values from JSONObject and return PHP array
+		RETURN_STRING((*response).get<std::string>("status").c_str());
 	}
 }
 
