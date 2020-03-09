@@ -1,5 +1,6 @@
 #include "trogdord.h"
 #include "exception.h"
+#include "network/tcpconnectionmap.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(trogdord);
 

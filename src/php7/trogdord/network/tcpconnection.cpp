@@ -63,7 +63,7 @@ void TCPConnection::open() {
 				break;
 
 			case std::future_status::timeout:
-				throw std::runtime_error("Timeout after " + std::to_string(TIMEOUT) + "ms.");
+				timeout();
 				break;
 
 			default:
@@ -97,7 +97,7 @@ std::string TCPConnection::read() {
 				break;
 
 			case std::future_status::timeout:
-				throw std::runtime_error("Timeout after " + std::to_string(TIMEOUT) + "ms.");
+				timeout();
 				break;
 
 			default:
@@ -139,7 +139,7 @@ void TCPConnection::write(std::string message) {
 				break;
 
 			case std::future_status::timeout:
-				throw std::runtime_error("Timeout after " + std::to_string(TIMEOUT) + "ms.");
+				timeout();
 				break;
 
 			default:

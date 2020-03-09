@@ -1,5 +1,5 @@
-#ifndef PHP_TCPCLIENTCONNECTION_H
-#define PHP_TCPCLIENTCONNECTION_H
+#ifndef PHP_TCPCONNECTION_H
+#define PHP_TCPCONNECTION_H
 
 // Signals the end of a transmission
 #define EOT ('\0')
@@ -33,6 +33,13 @@ class TCPConnection {
 		// Opens the connection
 		void open();
 
+		// Call this whenever a connection times out.
+		inline void timeout() {
+
+			close();
+			throw std::runtime_error("Timeout after " + std::to_string(TIMEOUT) + "ms.");
+		}
+
 	public:
 
 		// Default Constructor
@@ -55,7 +62,7 @@ class TCPConnection {
 		void write(std::string message);
 
 		// Returns the hostname or ip address we're connecting to
-		inline std::string getHost() {return hostname;}
+		inline std::string getHostname() {return hostname;}
 
 		// Returns the port trogdord is listening on
 		inline unsigned short getPort() {return port;}
