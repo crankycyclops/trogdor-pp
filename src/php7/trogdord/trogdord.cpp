@@ -38,6 +38,7 @@ static std::optional<std::string> makeRequest(zval *thisPtr, std::string request
 
 	catch (const std::runtime_error &e) {
 		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		return std::nullopt;
 	}
 }
 
