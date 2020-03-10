@@ -18,11 +18,14 @@ JSONObject Request::execute(std::string hostname, unsigned short port, std::stri
 		std::string response = connection.read();
 
 		JSONObject responseObj = JSON::deserialize(response);
-		auto status = responseObj.get_optional<int>("status");
+		auto status = responseObj.get_optional<unsigned>("status");
 
 		if (!status || SUCCESS != *status) {
 			auto message = responseObj.get_optional<std::string>("message");
-			throw RequestException(message ? *message : "Invalid request");
+			throw RequestException(
+				message ? *message : "Invalid request",
+				status ? *status : RequestException::DEFAULT_CODE
+			);
 		}
 
 		return responseObj;

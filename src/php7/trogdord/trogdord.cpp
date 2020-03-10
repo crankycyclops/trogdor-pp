@@ -96,6 +96,7 @@ PHP_METHOD(Trogdord, statistics) {
 		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
 	}
 
+	// TODO: add value of e.getCode() to the PHP exception
 	catch (const RequestException &e) {
 		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), 0);
 	}
