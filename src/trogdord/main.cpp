@@ -11,20 +11,23 @@
 #include "include/network/tcpserver.h"
 
 
+static const char *STARTUP_MESSAGE = "Starting Trogdord.";
+static const char *SHUTDOWN_MESSAGE = "Shutting down Trogdord.";
+
 // serves TCP connections
 static std::unique_ptr<TCPServer> server;
 
 /******************************************************************************/
 
 // Called whenever we receive SIGINT (CTRL-C) or SIGTERM.
-static void shutdownHandler(const boost::system::error_code& error, int signal_number) {
+static void shutdownHandler(const boost::system::error_code &error, int signal_number) {
 
 	// Forces the server's destructor to be called, ensuring that any remaining
 	// connections are closed and that any other cleanup is performed before we
 	// exit.
 	server = nullptr;
 
-	Config::get()->err(trogdor::Trogerr::INFO) << "Shutting down Trogdord." << std::endl;
+	Config::get()->err(trogdor::Trogerr::INFO) << SHUTDOWN_MESSAGE << std::endl;
 	exit(error ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
@@ -33,7 +36,7 @@ static void shutdownHandler(const boost::system::error_code& error, int signal_n
 int main(int argc, char **argv) {
 
 	std::unique_ptr<Config> &config = Config::get();
-	config->err(trogdor::Trogerr::INFO) << "Starting Trogdord." << std::endl;
+	config->err(trogdor::Trogerr::INFO) << STARTUP_MESSAGE << std::endl;
 
 	try {
 
@@ -50,7 +53,13 @@ int main(int argc, char **argv) {
 	}
 
 	catch (std::exception &e) {
+
 		config->err() << e.what() << std::endl;
+
+		// Make sure destructors are called and everything shuts down cleanly
+		server = nullptr;
+		config->err(trogdor::Trogerr::INFO) << SHUTDOWN_MESSAGE << std::endl;
+		return EXIT_FAILURE;
 	}
 
 	return EXIT_SUCCESS;
