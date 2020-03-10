@@ -6,6 +6,14 @@ std::unique_ptr<TCPConnectionMap> TCPConnectionMap::instance = nullptr;
 
 /*****************************************************************************/
 
+TCPConnectionMap::~TCPConnectionMap() {
+
+	// Close all remaining connections
+	clear();
+}
+
+/*****************************************************************************/
+
 TCPConnectionMap &TCPConnectionMap::get() {
 
 	if (!instance) {

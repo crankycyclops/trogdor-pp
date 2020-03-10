@@ -80,7 +80,6 @@ PHP_MINIT_FUNCTION(trogdord) {
 
 PHP_MSHUTDOWN_FUNCTION(trogdord) {
 
-	TCPConnectionMap::get().clear();
 	return SUCCESS;
 }
 

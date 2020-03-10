@@ -23,6 +23,9 @@ class TCPConnectionMap {
 
 	public:
 
+		// Destructor
+		~TCPConnectionMap();
+
 		// Returns singleton instance
 		static TCPConnectionMap &get();
 
