@@ -137,7 +137,7 @@ PHP_METHOD(Trogdord, games) {
 	}
 
 	catch (const RequestException &e) {
-		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), 0);
+		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
 	}
 }
 
@@ -177,7 +177,7 @@ PHP_METHOD(Trogdord, definitions) {
 	}
 
 	catch (const RequestException &e) {
-		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), 0);
+		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
 	}
 }
 
