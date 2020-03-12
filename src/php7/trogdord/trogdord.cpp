@@ -3,6 +3,7 @@
 #include "trogdord.h"
 #include "json.h"
 #include "request.h"
+#include "utility.h"
 #include "phpexception.h"
 #include "network/tcpconnectionmap.h"
 
@@ -21,6 +22,9 @@ static const char *GAME_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\
 
 // This request retrieves a list of all available game definitions
 static const char *DEF_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"definitions\"}";
+
+// This request retrieves details of a specific game
+static const char *GET_GAME_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"args\":{\"game_id\":%gid}}";
 
 /*****************************************************************************/
 
@@ -56,6 +60,7 @@ PHP_METHOD(Trogdord, __construct) {
 		TCPConnectionMap::get().connect(hostname, port);
 	}
 
+	// Throw \Trogord\NetworkException
 	catch (const NetworkException &e) {
 		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
 	}
@@ -92,10 +97,12 @@ PHP_METHOD(Trogdord, statistics) {
 		RETURN_ZVAL(&data, 1, 1);
 	}
 
+	// Throw \Trogord\NetworkException
 	catch (const NetworkException &e) {
 		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
 	}
 
+	// Throw \Trogord\RequestException
 	catch (const RequestException &e) {
 		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
 	}
@@ -132,10 +139,12 @@ PHP_METHOD(Trogdord, games) {
 		RETURN_ZVAL(&data, 1, 1);
 	}
 
+	// Throw \Trogord\NetworkException
 	catch (const NetworkException &e) {
 		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
 	}
 
+	// Throw \Trogord\RequestException
 	catch (const RequestException &e) {
 		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
 	}
@@ -172,10 +181,12 @@ PHP_METHOD(Trogdord, definitions) {
 		RETURN_ZVAL(&data, 1, 1);
 	}
 
+	// Throw \Trogord\NetworkException
 	catch (const NetworkException &e) {
 		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
 	}
 
+	// Throw \Trogord\RequestException
 	catch (const RequestException &e) {
 		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
 	}
@@ -194,14 +205,52 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Trogdord, getGame) {
 
-	long gameId;
+	size_t gameId;
+	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(getThis()));
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &gameId)  == FAILURE) {
 		RETURN_NULL();
 	}
 
-	// TODO
-	// Remember to set private property "id" with game's id
+	try {
+
+		std::string request = GET_GAME_REQUEST;
+		strReplace(request, "%gid", std::to_string(gameId));
+
+		JSONObject response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request
+		);
+
+		zval data = JSON::JSONToZval(response);
+
+		// TODO
+		// Remember to set private property "id" with game's id
+
+		// There's some insanity in how this works, so for reference, here's
+		// what I read to help me understand what all the arguments mean:
+		// https://medium.com/@davidtstrauss/copy-and-move-semantics-of-zvals-in-php-7-41427223d784
+		RETURN_ZVAL(&data, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
