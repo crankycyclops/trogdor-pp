@@ -72,7 +72,12 @@ HashTable *JSON::JSONToHashTable(JSONObject obj) {
 			}
 
 			else {
-				ZVAL_STRING(&zData, value.c_str());
+				// If I call ZVAL_STRING(&zData, value.c_str()) instead of
+				// ZVAL_STR while passing 1 as the last argument to
+				// zend_string_init(), I get a memory leak. PHP's docs kinda
+				// suck, so if you want to know why I need to do this...
+				// *shrugs shoulders and walks away*
+				ZVAL_STR(&zData, zend_string_init(value.c_str(), value.length(), 1));
 			}
 		}
 

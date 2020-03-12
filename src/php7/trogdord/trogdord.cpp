@@ -24,7 +24,7 @@ static const char *GAME_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\
 static const char *DEF_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"definitions\"}";
 
 // This request retrieves details of a specific game
-static const char *GET_GAME_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"args\":{\"game_id\":%gid}}";
+static const char *GET_GAME_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"args\":{\"id\":%gid}}";
 
 /*****************************************************************************/
 
