@@ -26,9 +26,6 @@ class JSON {
 		// JSON string -> JSONObject
 		static JSONObject deserialize(std::string json);
 
-		// JSONObject -> Zend HashTable
-		static HashTable *JSONToHashTable(JSONObject obj);
-
 		// JSONObject -> Zval
 		static zval JSONToZval(JSONObject obj);
 };

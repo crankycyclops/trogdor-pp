@@ -38,25 +38,21 @@ JSONObject JSON::deserialize(std::string json) {
 
 /*****************************************************************************/
 
-HashTable *JSON::JSONToHashTable(JSONObject obj) {
+zval JSON::JSONToZval(JSONObject obj) {
 
 	// Used to match and cast values to types other than strings
 	static std::regex integer("[+\\-]?[0-9]+");
 	static std::regex decimal("[+\\-]?[0-9]*\\.[0-9]+");
 
-	HashTable *ht;
-
-	ALLOC_HASHTABLE(ht);
-
-	// If I use NULL instead of ZVAL_PTR_DTOR, I end up with a memory leak
-	zend_hash_init(ht, 0, NULL, ZVAL_PTR_DTOR, 0);
+	zval array;
+	array_init(&array);
 
 	for(auto pair: obj) {
 
 		zval zData;
 
 		if (pair.second.data().empty()) {
-			ZVAL_ARR(&zData, JSONToHashTable(pair.second));
+			zData = JSONToZval(pair.second);
 		}
 
 		else {
@@ -72,36 +68,19 @@ HashTable *JSON::JSONToHashTable(JSONObject obj) {
 			}
 
 			else {
-				// If I call ZVAL_STRING(&zData, value.c_str()) instead of
-				// ZVAL_STR while passing 1 as the last argument to
-				// zend_string_init(), I get a memory leak. PHP's docs kinda
-				// suck, so if you want to know why I need to do this...
-				// *shrugs shoulders and walks away*
-				ZVAL_STR(&zData, zend_string_init(value.c_str(), value.length(), 1));
+				ZVAL_STRING(&zData, value.c_str());
 			}
 		}
 
 		// Numerical index
 		if (0 == pair.first.compare("")) {
-			zend_hash_next_index_insert(ht, &zData);
-			Z_ADDREF_P(&zData);
+			add_next_index_zval(&array, &zData);
 		}
 
 		else {
-			zend_hash_str_update(ht, pair.first.c_str(), pair.first.length(), &zData);
+			add_assoc_zval(&array, pair.first.c_str(), &zData);
 		}
 	}
 
-	return ht;
-}
-
-/*****************************************************************************/
-
-zval JSON::JSONToZval(JSONObject obj) {
-
-	zval array;
-	HashTable *ht = JSONToHashTable(obj);
-
-	ZVAL_ARR(&array, ht);
 	return array;
 }
