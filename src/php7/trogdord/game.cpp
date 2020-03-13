@@ -1,6 +1,15 @@
+#include "trogdord.h"
+#include "json.h"
+#include "request.h"
+#include "utility.h"
+
+#include "phpexception.h"
+#include "exception/requestexception.h"
+
 #include "game.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(game);
+ZEND_EXTERN_MODULE_GLOBALS(trogdord);
 
 // The private property that stores the game's id
 const char *GAME_ID_PROPERTY_NAME = "id";
@@ -8,6 +17,12 @@ const char *GAME_ID_PROPERTY_NAME = "id";
 // The private property through which an instance of \Trogdord\Game can access
 // the connection that spawned it
 const char *TROGDORD_PROPERTY_NAME = "trogdord";
+
+// This request starts the game
+static const char *GAME_START_REQUEST = "{\"method\":\"set\",\"scope\":\"game\",\"action\":\"start\",\"args\":{\"id\": %gid}}";
+
+// This request stops the game
+static const char *GAME_STOP_REQUEST = "{\"method\":\"set\",\"scope\":\"game\",\"action\":\"stop\",\"args\":{\"id\": %gid}}";
 
 /*****************************************************************************/
 
@@ -20,7 +35,6 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Game, __construct) {
 
 	php_error_docref(NULL, E_ERROR, "Tried to instantiate non-instantiable class.");
-	RETURN_NULL();
 }
 
 /*****************************************************************************/
@@ -71,6 +85,61 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, start) {
 
+	zval rv;
+
+	zval *trogdord = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		TROGDORD_PROPERTY_NAME,
+		strlen(TROGDORD_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	zval *id = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(id)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), "game has already been destroyed", 0);
+	}
+
+	try {
+
+		std::string request = GAME_START_REQUEST;
+		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+
+		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+		JSONObject response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request
+		);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -83,6 +152,61 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, stop) {
 
+	zval rv;
+
+	zval *trogdord = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		TROGDORD_PROPERTY_NAME,
+		strlen(TROGDORD_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	zval *id = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(id)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), "game has already been destroyed", 0);
+	}
+
+	try {
+
+		std::string request = GAME_STOP_REQUEST;
+		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+
+		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+		JSONObject response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request
+		);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -96,6 +220,7 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, destroy) {
 
+	// TODO: set private "id" to NULL so that subsequent calls will fail
 }
 
 /*****************************************************************************/
