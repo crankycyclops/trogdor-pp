@@ -230,7 +230,7 @@ PHP_METHOD(Trogdord, getGame) {
 		);
 
 		if (!createGameObj(return_value, gameId, getThis())) {
-			RETURN_NULL();
+			php_error_docref(NULL, E_ERROR, "failed to instantiate Trogdord\\Game");
 		}
 
 		return;
@@ -301,7 +301,7 @@ PHP_METHOD(Trogdord, newGame) {
 		);
 
 		if (!createGameObj(return_value, response.get<int>("id"), getThis())) {
-			RETURN_NULL();
+			php_error_docref(NULL, E_ERROR, "failed to instantiate Trogdord\\Game");
 		}
 
 		return;
