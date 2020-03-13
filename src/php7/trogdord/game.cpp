@@ -490,6 +490,33 @@ static const zend_function_entry classMethods[] =  {
 
 /*****************************************************************************/
 
+bool createGameObj(zval *gameObj, size_t id, zval *trogdordObj) {
+
+	if (SUCCESS != object_init_ex(gameObj, GAME_GLOBALS(classEntry))) {
+		return false;
+	}
+
+	zend_update_property_long(
+		GAME_GLOBALS(classEntry),
+		gameObj,
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		id
+	);
+
+	zend_update_property(
+		GAME_GLOBALS(classEntry),
+		gameObj,
+		TROGDORD_PROPERTY_NAME,
+		strlen(TROGDORD_PROPERTY_NAME),
+		trogdordObj
+	);
+
+	return true;
+}
+
+/*****************************************************************************/
+
 void defineGameClass() {
 
 	zend_class_entry gameClass;

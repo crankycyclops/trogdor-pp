@@ -29,6 +29,9 @@ static const char *DEF_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"
 // This request retrieves details of a specific game
 static const char *GET_GAME_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"args\":{\"id\":%gid}}";
 
+// This request creates a new game
+static const char *NEW_GAME_REQUEST = "{\"method\":\"post\",\"scope\":\"game\",\"args\":{\"name\":\"%name\",\"definition\":\"%definition\"}}";
+
 /*****************************************************************************/
 
 // Trogdord Constructor (returned instance represents a connection to an
@@ -226,25 +229,9 @@ PHP_METHOD(Trogdord, getGame) {
 			request
 		);
 
-		if (SUCCESS != object_init_ex(return_value, GAME_GLOBALS(classEntry))) {
+		if (!createGameObj(return_value, gameId, getThis())) {
 			RETURN_NULL();
 		}
-
-		zend_update_property_long(
-			GAME_GLOBALS(classEntry),
-			return_value,
-			GAME_ID_PROPERTY_NAME,
-			strlen(GAME_ID_PROPERTY_NAME),
-			gameId
-		);
-
-		zend_update_property(
-			GAME_GLOBALS(classEntry),
-			return_value,
-			TROGDORD_PROPERTY_NAME,
-			strlen(TROGDORD_PROPERTY_NAME),
-			getThis()
-		);
 
 		return;
 	}
@@ -288,6 +275,8 @@ PHP_METHOD(Trogdord, newGame) {
 	char *definition;
 	size_t definitionLength;
 
+	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(getThis()));
+
 	if (zend_parse_parameters(
 		ZEND_NUM_ARGS() TSRMLS_CC,
 		"ss",
@@ -299,8 +288,34 @@ PHP_METHOD(Trogdord, newGame) {
 		RETURN_NULL();
 	}
 
-	// TODO
-	// Remember to set private property "id" with game's id
+	try {
+
+		std::string request = NEW_GAME_REQUEST;
+		strReplace(request, "%name", name);
+		strReplace(request, "%definition", definition);
+
+		JSONObject response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request
+		);
+
+		if (!createGameObj(return_value, response.get<int>("id"), getThis())) {
+			RETURN_NULL();
+		}
+
+		return;
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	// Throw \Trogdord\RequestException
+	catch (const RequestException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+	}
 }
 
 /*****************************************************************************/

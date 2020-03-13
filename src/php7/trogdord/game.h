@@ -26,6 +26,10 @@ extern const char *GAME_ID_PROPERTY_NAME;
 // the connection that spawned it
 extern const char *TROGDORD_PROPERTY_NAME;
 
+// Creates an instance of \Trogdord\Game. Returns true on success and false on
+// error.
+extern bool createGameObj(zval *gameObj, size_t id, zval *trogdordObj);
+
 // Declares Game class to the Zend Engine.
 extern void defineGameClass();
 
