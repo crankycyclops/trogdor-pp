@@ -11,6 +11,9 @@
 ZEND_DECLARE_MODULE_GLOBALS(game);
 ZEND_EXTERN_MODULE_GLOBALS(trogdord);
 
+// Exception message when methods are called on a game that's already been destroyed
+static const char *GAME_ALREADY_DESTROYED = "Game has already been destroyed";
+
 // The private property that stores the game's id
 const char *GAME_ID_PROPERTY_NAME = "id";
 
@@ -27,8 +30,13 @@ static const char *GAME_STOP_REQUEST = "{\"method\":\"set\",\"scope\":\"game\",\
 // This request destroys the game
 static const char *GAME_DESTROY_REQUEST = "{\"method\":\"delete\",\"scope\":\"game\",\"args\":{\"id\": %gid}}";
 
-// Exception message when methods are called on a game that's already been destroyed
-static const char *GAME_ALREADY_DESTROYED = "Game has already been destroyed";
+// These request returns a list of entities of the specified type
+static const char *ENTITY_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"%etype\",\"action\":\"list\",\"args\":{\"game_id\":%gid}}";
+
+// Utility method that retrieves a list of all entities of the given type for
+// the specified game. Caller must be prepared to catch NetworkException and
+// RequestException.
+static zval getEntityList(size_t gameId, std::string type, zval *trogdord);
 
 /*****************************************************************************/
 
@@ -303,8 +311,55 @@ PHP_METHOD(Game, destroy) {
 ZEND_BEGIN_ARG_INFO(arginfoListEntities, 0)
 ZEND_END_ARG_INFO()
 
-PHP_METHOD(Game, listEntities) {
+PHP_METHOD(Game, entities) {
 
+	zval rv;
+
+	zval *trogdord = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		TROGDORD_PROPERTY_NAME,
+		strlen(TROGDORD_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	zval *id = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(id)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval list = getEntityList(Z_LVAL_P(id), "entity", trogdord);
+		RETURN_ZVAL(&list, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -316,8 +371,55 @@ PHP_METHOD(Game, listEntities) {
 ZEND_BEGIN_ARG_INFO(arginfoListPlaces, 0)
 ZEND_END_ARG_INFO()
 
-PHP_METHOD(Game, listPlaces) {
+PHP_METHOD(Game, places) {
 
+	zval rv;
+
+	zval *trogdord = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		TROGDORD_PROPERTY_NAME,
+		strlen(TROGDORD_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	zval *id = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(id)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval list = getEntityList(Z_LVAL_P(id), "place", trogdord);
+		RETURN_ZVAL(&list, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -329,8 +431,55 @@ PHP_METHOD(Game, listPlaces) {
 ZEND_BEGIN_ARG_INFO(arginfoListThings, 0)
 ZEND_END_ARG_INFO()
 
-PHP_METHOD(Game, listThings) {
+PHP_METHOD(Game, things) {
 
+	zval rv;
+
+	zval *trogdord = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		TROGDORD_PROPERTY_NAME,
+		strlen(TROGDORD_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	zval *id = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(id)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval list = getEntityList(Z_LVAL_P(id), "thing", trogdord);
+		RETURN_ZVAL(&list, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -342,8 +491,55 @@ PHP_METHOD(Game, listThings) {
 ZEND_BEGIN_ARG_INFO(arginfoListBeings, 0)
 ZEND_END_ARG_INFO()
 
-PHP_METHOD(Game, listBeings) {
+PHP_METHOD(Game, beings) {
 
+	zval rv;
+
+	zval *trogdord = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		TROGDORD_PROPERTY_NAME,
+		strlen(TROGDORD_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	zval *id = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(id)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval list = getEntityList(Z_LVAL_P(id), "being", trogdord);
+		RETURN_ZVAL(&list, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -355,8 +551,55 @@ PHP_METHOD(Game, listBeings) {
 ZEND_BEGIN_ARG_INFO(arginfoListRooms, 0)
 ZEND_END_ARG_INFO()
 
-PHP_METHOD(Game, listRooms) {
+PHP_METHOD(Game, rooms) {
 
+	zval rv;
+
+	zval *trogdord = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		TROGDORD_PROPERTY_NAME,
+		strlen(TROGDORD_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	zval *id = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(id)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval list = getEntityList(Z_LVAL_P(id), "room", trogdord);
+		RETURN_ZVAL(&list, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -368,8 +611,55 @@ PHP_METHOD(Game, listRooms) {
 ZEND_BEGIN_ARG_INFO(arginfoListObjects, 0)
 ZEND_END_ARG_INFO()
 
-PHP_METHOD(Game, listObjects) {
+PHP_METHOD(Game, objects) {
 
+	zval rv;
+
+	zval *trogdord = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		TROGDORD_PROPERTY_NAME,
+		strlen(TROGDORD_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	zval *id = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(id)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval list = getEntityList(Z_LVAL_P(id), "object", trogdord);
+		RETURN_ZVAL(&list, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -381,8 +671,55 @@ PHP_METHOD(Game, listObjects) {
 ZEND_BEGIN_ARG_INFO(arginfoListCreatures, 0)
 ZEND_END_ARG_INFO()
 
-PHP_METHOD(Game, listCreatures) {
+PHP_METHOD(Game, creatures) {
 
+	zval rv;
+
+	zval *trogdord = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		TROGDORD_PROPERTY_NAME,
+		strlen(TROGDORD_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	zval *id = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(id)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval list = getEntityList(Z_LVAL_P(id), "creature", trogdord);
+		RETURN_ZVAL(&list, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -394,8 +731,55 @@ PHP_METHOD(Game, listCreatures) {
 ZEND_BEGIN_ARG_INFO(arginfoListPlayers, 0)
 ZEND_END_ARG_INFO()
 
-PHP_METHOD(Game, listPlayers) {
+PHP_METHOD(Game, players) {
 
+	zval rv;
+
+	zval *trogdord = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		TROGDORD_PROPERTY_NAME,
+		strlen(TROGDORD_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	zval *id = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(id)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval list = getEntityList(Z_LVAL_P(id), "player", trogdord);
+		RETURN_ZVAL(&list, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -663,14 +1047,14 @@ static const zend_function_entry classMethods[] =  {
 	PHP_ME(Game, start, arginfoStart, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, stop, arginfoStop, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, destroy, arginfoDestroy, ZEND_ACC_PUBLIC)
-	PHP_ME(Game, listEntities, arginfoListEntities, ZEND_ACC_PUBLIC)
-	PHP_ME(Game, listPlaces, arginfoListPlaces, ZEND_ACC_PUBLIC)
-	PHP_ME(Game, listThings, arginfoListThings, ZEND_ACC_PUBLIC)
-	PHP_ME(Game, listBeings, arginfoListBeings, ZEND_ACC_PUBLIC)
-	PHP_ME(Game, listRooms, arginfoListRooms, ZEND_ACC_PUBLIC)
-	PHP_ME(Game, listObjects, arginfoListObjects, ZEND_ACC_PUBLIC)
-	PHP_ME(Game, listCreatures, arginfoListCreatures, ZEND_ACC_PUBLIC)
-	PHP_ME(Game, listPlayers, arginfoListPlayers, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, entities, arginfoListEntities, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, places, arginfoListPlaces, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, things, arginfoListThings, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, beings, arginfoListBeings, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, rooms, arginfoListRooms, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, objects, arginfoListObjects, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, creatures, arginfoListCreatures, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, players, arginfoListPlayers, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, getEntity, arginfoGetEntity, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, getPlace, arginfoGetPlace, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, getThing, arginfoGetThing, ZEND_ACC_PUBLIC)
@@ -683,6 +1067,25 @@ static const zend_function_entry classMethods[] =  {
 	PHP_ME(Game, destroyPlayer, arginfoDestroyPlayer, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
+
+/*****************************************************************************/
+
+static zval getEntityList(size_t gameId, std::string type, zval *trogdord) {
+
+	std::string request = ENTITY_LIST_REQUEST;
+	strReplace(request, "%gid", std::to_string(gameId));
+	strReplace(request, "%etype", type);
+
+	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+	JSONObject response = Request::execute(
+		objWrapper->data.hostname,
+		objWrapper->data.port,
+		request
+	);
+
+	return JSON::JSONToZval(response.get_child("entities"));
+}
 
 /*****************************************************************************/
 
