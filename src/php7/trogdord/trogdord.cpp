@@ -1,16 +1,19 @@
 #include <optional>
 
-#include "trogdord.h"
 #include "json.h"
 #include "request.h"
 #include "utility.h"
-#include "phpexception.h"
 #include "network/tcpconnectionmap.h"
+
+#include "trogdord.h"
+#include "game.h"
+#include "phpexception.h"
 
 #include "exception/networkexception.h"
 #include "exception/requestexception.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(trogdord);
+ZEND_EXTERN_MODULE_GLOBALS(game);
 
 zend_object_handlers trogdordObjectHandlers;
 
@@ -223,15 +226,27 @@ PHP_METHOD(Trogdord, getGame) {
 			request
 		);
 
-		zval data = JSON::JSONToZval(response);
+		if (SUCCESS != object_init_ex(return_value, GAME_GLOBALS(classEntry))) {
+			RETURN_NULL();
+		}
 
-		// TODO
-		// Remember to set private property "id" with game's id
+		zend_update_property_long(
+			GAME_GLOBALS(classEntry),
+			return_value,
+			GAME_ID_PROPERTY_NAME,
+			strlen(GAME_ID_PROPERTY_NAME),
+			gameId
+		);
 
-		// There's some insanity in how this works, so for reference, here's
-		// what I read to help me understand what all the arguments mean:
-		// https://medium.com/@davidtstrauss/copy-and-move-semantics-of-zvals-in-php-7-41427223d784
-		RETURN_ZVAL(&data, 1, 1);
+		zend_update_property(
+			GAME_GLOBALS(classEntry),
+			return_value,
+			TROGDORD_PROPERTY_NAME,
+			strlen(TROGDORD_PROPERTY_NAME),
+			getThis()
+		);
+
+		return;
 	}
 
 	// Throw \Trogord\NetworkException

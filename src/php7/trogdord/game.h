@@ -19,6 +19,13 @@ ZEND_END_MODULE_GLOBALS(game)
 
 /*****************************************************************************/
 
+// The private property that stores the game's id
+extern const char *GAME_ID_PROPERTY_NAME;
+
+// The private property through which an instance of \Trogdord\Game can access
+// the connection that spawned it
+extern const char *TROGDORD_PROPERTY_NAME;
+
 // Declares Game class to the Zend Engine.
 extern void defineGameClass();
 

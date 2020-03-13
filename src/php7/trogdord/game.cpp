@@ -2,6 +2,13 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(game);
 
+// The private property that stores the game's id
+const char *GAME_ID_PROPERTY_NAME = "id";
+
+// The private property through which an instance of \Trogdord\Game can access
+// the connection that spawned it
+const char *TROGDORD_PROPERTY_NAME = "trogdord";
+
 /*****************************************************************************/
 
 // The constructor should NEVER be called in PHP userland. Instead, instances of
@@ -489,6 +496,22 @@ void defineGameClass() {
 
 	INIT_CLASS_ENTRY(gameClass, "Trogdord\\Game", classMethods);
 	GAME_GLOBALS(classEntry) = zend_register_internal_class(&gameClass);
+
+	zend_declare_property_null(
+		GAME_GLOBALS(classEntry),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		ZEND_ACC_PRIVATE
+		TSRMLS_CC
+	);
+
+	zend_declare_property_null(
+		GAME_GLOBALS(classEntry),
+		TROGDORD_PROPERTY_NAME,
+		strlen(TROGDORD_PROPERTY_NAME),
+		ZEND_ACC_PRIVATE
+		TSRMLS_CC
+	);
 
 	// Make sure users can't extend the class
 	GAME_GLOBALS(classEntry)->ce_flags |= ZEND_ACC_FINAL;
