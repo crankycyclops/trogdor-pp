@@ -4,6 +4,15 @@
 #include "phpexception.h"
 #include "network/tcpconnectionmap.h"
 
+#include "entities/entity.h"
+#include "entities/place.h"
+#include "entities/thing.h"
+#include "entities/being.h"
+#include "entities/room.h"
+#include "entities/object.h"
+#include "entities/creature.h"
+#include "entities/player.h"
+
 PHP_MINFO_FUNCTION(trogdord) {
 
 	php_info_print_table_start();
@@ -19,6 +28,16 @@ PHP_MINIT_FUNCTION(trogdord) {
 	defineTrogdordClass();
 	defineGameClass();
 	defineExceptionClasses();
+
+	// Entity class hierarchy
+	defineEntityClass();
+	definePlaceClass();
+	defineThingClass();
+	defineBeingClass();
+	defineRoomClass();
+	defineObjectClass();
+	defineCreatureClass();
+	definePlayerClass();
 
 	// Global namespaced constants that identify entity types and their string
 	// representations. Note: I have to define these string constants here
