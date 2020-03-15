@@ -7,6 +7,7 @@
 #include "exception/requestexception.h"
 
 #include "game.h"
+#include "entities/entity.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(game);
 ZEND_EXTERN_MODULE_GLOBALS(trogdord);
@@ -30,13 +31,21 @@ static const char *GAME_STOP_REQUEST = "{\"method\":\"set\",\"scope\":\"game\",\
 // This request destroys the game
 static const char *GAME_DESTROY_REQUEST = "{\"method\":\"delete\",\"scope\":\"game\",\"args\":{\"id\": %gid}}";
 
-// These request returns a list of entities of the specified type
+// This request returns a list of entities of the specified type
 static const char *ENTITY_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"%etype\",\"action\":\"list\",\"args\":{\"game_id\":%gid}}";
+
+// This request returns the specified entity (if it exists)
+static const char *ENTITY_GET_REQUEST = "{\"method\":\"get\",\"scope\":\"%etype\",\"args\":{\"game_id\":%gid,\"name\":\"%ename\"}}";
 
 // Utility method that retrieves a list of all entities of the given type for
 // the specified game. Caller must be prepared to catch NetworkException and
 // RequestException.
 static zval getEntityList(size_t gameId, std::string type, zval *trogdord);
+
+// Retrieve an entity from a game and instantiate a PHP entity class that wraps
+// around it. Caller must be prepared to catch NetworkException and
+// RequestException.
+static zval getEntity(std::string name, std::string type, zval *game);
 
 /*****************************************************************************/
 
@@ -1073,6 +1082,7 @@ static const zend_function_entry classMethods[] =  {
 static zval getEntityList(size_t gameId, std::string type, zval *trogdord) {
 
 	std::string request = ENTITY_LIST_REQUEST;
+
 	strReplace(request, "%gid", std::to_string(gameId));
 	strReplace(request, "%etype", type);
 
@@ -1085,6 +1095,52 @@ static zval getEntityList(size_t gameId, std::string type, zval *trogdord) {
 	);
 
 	return JSON::JSONToZval(response.get_child("entities"));
+}
+
+/*****************************************************************************/
+
+static zval getEntity(std::string name, std::string type, zval *game) {
+
+	std::string request = ENTITY_GET_REQUEST;
+	zval rv; // ???
+
+	zval *gameId = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		game,
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	zval *trogdord = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		game,
+		TROGDORD_PROPERTY_NAME,
+		strlen(TROGDORD_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	strReplace(request, "%gid", std::to_string(Z_LVAL_P(gameId)));
+	strReplace(request, "%etype", type);
+	strReplace(request, "%ename", name);
+
+	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+	JSONObject response = Request::execute(
+		objWrapper->data.hostname,
+		objWrapper->data.port,
+		request
+	);
+
+	zval entity;
+
+	if (!createEntityObj(&entity, response.get_child("entity"), game)) {
+		php_error_docref(NULL, E_ERROR, "failed to instantiate entity");
+	}
+
+	return entity;
 }
 
 /*****************************************************************************/
