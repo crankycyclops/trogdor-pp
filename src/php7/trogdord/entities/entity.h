@@ -22,9 +22,6 @@ ZEND_END_MODULE_GLOBALS(entity)
 // The private property which contains the entity's name
 extern const char *ENTITY_PROPERTY_NAME;
 
-// Maps entity type names to their zend class entries
-extern const std::unordered_map<std::string, zend_class_entry *> EntityTypes;
-
 /*****************************************************************************/
 
 // Creates a PHP instance corresponding to the given trogdord entity. Returns

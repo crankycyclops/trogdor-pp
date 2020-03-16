@@ -20,13 +20,6 @@ ZEND_EXTERN_MODULE_GLOBALS(player);
 // The private property which contains the entity's name
 const char *ENTITY_PROPERTY_NAME = "name";
 
-const std::unordered_map<std::string, zend_class_entry *> EntityTypes = {
-	{"room",     ROOM_GLOBALS(classEntry)},
-	{"object",   OBJECT_GLOBALS(classEntry)},
-	{"creature", CREATURE_GLOBALS(classEntry)},
-	{"player",   PLAYER_GLOBALS(classEntry)},
-};
-
 /*****************************************************************************/
 
 // Entity Methods
@@ -43,16 +36,34 @@ bool createEntityObj(zval *entityObj, JSONObject properties, zval *gameObj) {
 	std::string eType = properties.get<std::string>("type");
 	std::string eName = properties.get<std::string>("name");
 
-	if (EntityTypes.end() == EntityTypes.find(eType)) {
+	zend_class_entry *eClassEntry;
+
+	if (0 == eType.compare("room")) {
+		eClassEntry = ROOM_GLOBALS(classEntry);
+	}
+
+	else if (0 == eType.compare("object")) {
+		eClassEntry = OBJECT_GLOBALS(classEntry);
+	}
+
+	else if (0 == eType.compare("creature")) {
+		eClassEntry = CREATURE_GLOBALS(classEntry);
+	}
+
+	else if (0 == eType.compare("player")) {
+		eClassEntry = PLAYER_GLOBALS(classEntry);
+	}
+
+	else {
 		throw std::runtime_error("Entity type '" + eType + "' not recognized. This is a bug.");
 	}
 
-	if (SUCCESS != object_init_ex(entityObj, EntityTypes.find(eType)->second)) {
+	if (SUCCESS != object_init_ex(entityObj, eClassEntry)) {
 		return false;
 	}
 
 	zend_update_property_string(
-		EntityTypes.find(eType)->second,
+		eClassEntry,
 		entityObj,
 		ENTITY_PROPERTY_NAME,
 		strlen(ENTITY_PROPERTY_NAME),

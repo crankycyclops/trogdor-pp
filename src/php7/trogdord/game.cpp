@@ -814,7 +814,50 @@ PHP_METHOD(Game, getEntity) {
 		RETURN_NULL()
 	}
 
-	// TODO
+	zval *gameId = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(gameId)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval entity = getEntity(name, "entity", getThis());
+		RETURN_ZVAL(&entity, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		if (404 == e.getCode()) {
+
+			// Throw \Trogdord\GameNotFound
+			if (0 == strcmp(e.what(), "game not found")) {
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			}
+
+			// Throw \Trogdord\EntityNotFound
+			else {
+				zend_throw_exception(EXCEPTION_GLOBALS(entityNotFound), e.what(), 0);
+			}
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
