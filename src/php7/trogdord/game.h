@@ -17,24 +17,6 @@ ZEND_END_MODULE_GLOBALS(game)
 #define GAME_GLOBALS(v) (game_globals.v)
 #endif
 
-/*****************************************************************************/
-
-// The private property that stores the game's id
-extern const char *GAME_ID_PROPERTY_NAME;
-
-// The private property through which an instance of \Trogdord\Game can access
-// the connection that spawned it
-extern const char *TROGDORD_PROPERTY_NAME;
-
-// Creates an instance of \Trogdord\Game. Returns true on success and false on
-// error.
-extern bool createGameObj(zval *gameObj, size_t id, zval *trogdordObj);
-
-// Declares Game class to the Zend Engine.
-extern void defineGameClass();
-
-/*****************************************************************************/
-
 // Retrieve the specified property for an instance of \Trogdord\Game. Return
 // type is zval *.
 #define GAME_TO_PROP_VAL(THIS_PTR, RV, PROPERTY) zend_read_property(\
@@ -53,5 +35,21 @@ if (IS_NULL == ZVAL_ID) { \
 	zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0); \
 	RETURN_NULL(); \
 }
+
+/*****************************************************************************/
+
+// The private property that stores the game's id
+extern const char *GAME_ID_PROPERTY_NAME;
+
+// The private property through which an instance of \Trogdord\Game can access
+// the connection that spawned it
+extern const char *TROGDORD_PROPERTY_NAME;
+
+// Creates an instance of \Trogdord\Game. Returns true on success and false on
+// error.
+extern bool createGameObj(zval *gameObj, size_t id, zval *trogdordObj);
+
+// Declares Game class to the Zend Engine.
+extern void defineGameClass();
 
 #endif /* PHP_GAME_H */
