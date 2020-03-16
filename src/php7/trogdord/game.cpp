@@ -883,7 +883,50 @@ PHP_METHOD(Game, getPlace) {
 		RETURN_NULL()
 	}
 
-	// TODO
+	zval *gameId = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(gameId)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval entity = getEntity(name, "place", getThis());
+		RETURN_ZVAL(&entity, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		if (404 == e.getCode()) {
+
+			// Throw \Trogdord\GameNotFound
+			if (0 == strcmp(e.what(), "game not found")) {
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			}
+
+			// Throw \Trogdord\PlaceNotFound
+			else {
+				zend_throw_exception(EXCEPTION_GLOBALS(placeNotFound), e.what(), 0);
+			}
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -909,7 +952,50 @@ PHP_METHOD(Game, getThing) {
 		RETURN_NULL()
 	}
 
-	// TODO
+	zval *gameId = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(gameId)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval entity = getEntity(name, "thing", getThis());
+		RETURN_ZVAL(&entity, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		if (404 == e.getCode()) {
+
+			// Throw \Trogdord\GameNotFound
+			if (0 == strcmp(e.what(), "game not found")) {
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			}
+
+			// Throw \Trogdord\ThingNotFound
+			else {
+				zend_throw_exception(EXCEPTION_GLOBALS(thingNotFound), e.what(), 0);
+			}
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -935,7 +1021,50 @@ PHP_METHOD(Game, getBeing) {
 		RETURN_NULL()
 	}
 
-	// TODO
+	zval *gameId = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(gameId)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval entity = getEntity(name, "being", getThis());
+		RETURN_ZVAL(&entity, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		if (404 == e.getCode()) {
+
+			// Throw \Trogdord\GameNotFound
+			if (0 == strcmp(e.what(), "game not found")) {
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			}
+
+			// Throw \Trogdord\BeingNotFound
+			else {
+				zend_throw_exception(EXCEPTION_GLOBALS(beingNotFound), e.what(), 0);
+			}
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -960,7 +1089,50 @@ PHP_METHOD(Game, getRoom) {
 		RETURN_NULL()
 	}
 
-	// TODO
+	zval *gameId = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(gameId)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval entity = getEntity(name, "room", getThis());
+		RETURN_ZVAL(&entity, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		if (404 == e.getCode()) {
+
+			// Throw \Trogdord\GameNotFound
+			if (0 == strcmp(e.what(), "game not found")) {
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			}
+
+			// Throw \Trogdord\RoomNotFound
+			else {
+				zend_throw_exception(EXCEPTION_GLOBALS(roomNotFound), e.what(), 0);
+			}
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -985,7 +1157,50 @@ PHP_METHOD(Game, getObject) {
 		RETURN_NULL()
 	}
 
-	// TODO
+	zval *gameId = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(gameId)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval entity = getEntity(name, "object", getThis());
+		RETURN_ZVAL(&entity, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		if (404 == e.getCode()) {
+
+			// Throw \Trogdord\GameNotFound
+			if (0 == strcmp(e.what(), "game not found")) {
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			}
+
+			// Throw \Trogdord\ObjectNotFound
+			else {
+				zend_throw_exception(EXCEPTION_GLOBALS(objectNotFound), e.what(), 0);
+			}
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -1011,7 +1226,50 @@ PHP_METHOD(Game, getCreature) {
 		RETURN_NULL()
 	}
 
-	// TODO
+	zval *gameId = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(gameId)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval entity = getEntity(name, "creature", getThis());
+		RETURN_ZVAL(&entity, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		if (404 == e.getCode()) {
+
+			// Throw \Trogdord\GameNotFound
+			if (0 == strcmp(e.what(), "game not found")) {
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			}
+
+			// Throw \Trogdord\CreatureNotFound
+			else {
+				zend_throw_exception(EXCEPTION_GLOBALS(creatureNotFound), e.what(), 0);
+			}
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -1036,7 +1294,50 @@ PHP_METHOD(Game, getPlayer) {
 		RETURN_NULL()
 	}
 
-	// TODO
+	zval *gameId = zend_read_property(
+		GAME_GLOBALS(classEntry),
+		getThis(),
+		GAME_ID_PROPERTY_NAME,
+		strlen(GAME_ID_PROPERTY_NAME),
+		1,
+		&rv TSRMLS_CC
+	);
+
+	if (IS_NULL == Z_TYPE_P(gameId)) {
+		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
+		RETURN_NULL();
+	}
+
+	try {
+		zval entity = getEntity(name, "player", getThis());
+		RETURN_ZVAL(&entity, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		if (404 == e.getCode()) {
+
+			// Throw \Trogdord\GameNotFound
+			if (0 == strcmp(e.what(), "game not found")) {
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			}
+
+			// Throw \Trogdord\PlayerNotFound
+			else {
+				zend_throw_exception(EXCEPTION_GLOBALS(playerNotFound), e.what(), 0);
+			}
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
