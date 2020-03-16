@@ -72,25 +72,12 @@ PHP_METHOD(Game, __get) {
 	char *key;
 	int keyLength;
 
-	zval *propVal, rv;
-
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &keyLength) == FAILURE) {
 		RETURN_NULL()
 	}
 
-	// If I return whatever zend_read_property sets rv to, I get an UNKNOWN
-	// zval type when I var_dump the result, but when I return
-	// zend_read_property's return value instead, it works like it's supposed
-	// to. WTF is the rv argument for? Dunno, because PHP's documentation
-	// regarding internals is no good. Oh well.
-	propVal = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		key,
-		keyLength,
-		1,
-		&rv TSRMLS_CC
-	);
+	zval rv; // ???
+	zval *propVal = GAME_TO_PROP_VAL(getThis(), &rv, key);
 
 	// There's some insanity in how this works, so for reference, here's what
 	// I read to help me understand what all the arguments mean:
@@ -108,30 +95,12 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, start) {
 
-	zval rv;
+	zval rv; // ???
 
-	zval *trogdord = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		TROGDORD_PROPERTY_NAME,
-		strlen(TROGDORD_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	zval *id = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(id)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
-		RETURN_NULL();
-	}
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
 
 	try {
 
@@ -179,30 +148,12 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, stop) {
 
-	zval rv;
+	zval rv; // ???
 
-	zval *trogdord = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		TROGDORD_PROPERTY_NAME,
-		strlen(TROGDORD_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	zval *id = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(id)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
-		RETURN_NULL();
-	}
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
 
 	try {
 
@@ -251,30 +202,12 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, destroy) {
 
-	zval rv;
+	zval rv; // ???
 
-	zval *trogdord = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		TROGDORD_PROPERTY_NAME,
-		strlen(TROGDORD_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	zval *id = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(id)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
-		RETURN_NULL();
-	}
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
 
 	try {
 
@@ -1281,23 +1214,8 @@ static zval getEntity(std::string name, std::string type, zval *game) {
 	std::string request = ENTITY_GET_REQUEST;
 	zval rv; // ???
 
-	zval *gameId = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		game,
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	zval *trogdord = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		game,
-		TROGDORD_PROPERTY_NAME,
-		strlen(TROGDORD_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
+	zval *gameId = GAME_TO_ID(game, &rv);
+	zval *trogdord = GAME_TO_TROGDORD(game, &rv);
 
 	strReplace(request, "%gid", std::to_string(Z_LVAL_P(gameId)));
 	strReplace(request, "%etype", type);

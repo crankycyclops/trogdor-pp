@@ -35,15 +35,17 @@ extern void defineGameClass();
 
 /*****************************************************************************/
 
+// Retrieve the specified property for an instance of \Trogdord\Game. Return
+// type is zval *.
+#define GAME_TO_PROP_VAL(THIS_PTR, RV, PROPERTY) zend_read_property(\
+GAME_GLOBALS(classEntry), (THIS_PTR), (PROPERTY), \
+strlen((PROPERTY)), 1, (RV) TSRMLS_CC)
+
 // Retrieve the instance of \Trogdord that spawned the instance of \Trogdord\Game.
-#define GAME_TO_TROGDORD(thisPtr, rv) zend_read_property(\
-GAME_GLOBALS(classEntry), thisPtr, TROGDORD_PROPERTY_NAME, \
-strlen(TROGDORD_PROPERTY_NAME), 1, rv TSRMLS_CC)
+#define GAME_TO_TROGDORD(THIS_PTR, RV) GAME_TO_PROP_VAL(THIS_PTR, RV, TROGDORD_PROPERTY_NAME)
 
 // Retrieve the game id from an instance of \Trogdord\Game.
-#define GAME_TO_ID(thisPtr, rv) zend_read_property(\
-GAME_GLOBALS(classEntry), thisPtr, GAME_ID_PROPERTY_NAME, \
-strlen(GAME_ID_PROPERTY_NAME), 1, rv TSRMLS_CC)
+#define GAME_TO_ID(THIS_PTR, RV) GAME_TO_PROP_VAL(THIS_PTR, RV, GAME_ID_PROPERTY_NAME)
 
 // Validate the instance of \Trogdord\Game before proceeding with an operation.
 #define ASSERT_GAME_ID_IS_VALID(ZVAL_ID) \
