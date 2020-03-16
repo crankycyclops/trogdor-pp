@@ -428,7 +428,7 @@ namespace trogdor {
          */
          inline Place *getPlace(const std::string name) {
 
-            if (!things.isEntitySet(name)) {
+            if (!places.isEntitySet(name)) {
                return nullptr;
             }
 
