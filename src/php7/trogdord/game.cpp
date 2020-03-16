@@ -331,30 +331,12 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, entities) {
 
-	zval rv;
+	zval rv; // ???
 
-	zval *trogdord = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		TROGDORD_PROPERTY_NAME,
-		strlen(TROGDORD_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	zval *id = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(id)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
-		RETURN_NULL();
-	}
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), "entity", trogdord);
@@ -394,30 +376,12 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, places) {
 
-	zval rv;
+	zval rv; // ???
 
-	zval *trogdord = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		TROGDORD_PROPERTY_NAME,
-		strlen(TROGDORD_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	zval *id = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(id)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
-		RETURN_NULL();
-	}
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), "place", trogdord);
@@ -457,30 +421,12 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, things) {
 
-	zval rv;
+	zval rv; // ???
 
-	zval *trogdord = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		TROGDORD_PROPERTY_NAME,
-		strlen(TROGDORD_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	zval *id = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(id)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
-		RETURN_NULL();
-	}
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), "thing", trogdord);
@@ -520,30 +466,12 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, beings) {
 
-	zval rv;
+	zval rv; // ???
 
-	zval *trogdord = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		TROGDORD_PROPERTY_NAME,
-		strlen(TROGDORD_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	zval *id = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(id)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
-		RETURN_NULL();
-	}
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), "being", trogdord);
@@ -583,30 +511,12 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, rooms) {
 
-	zval rv;
+	zval rv; // ???
 
-	zval *trogdord = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		TROGDORD_PROPERTY_NAME,
-		strlen(TROGDORD_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	zval *id = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(id)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
-		RETURN_NULL();
-	}
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), "room", trogdord);
@@ -646,30 +556,12 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, objects) {
 
-	zval rv;
+	zval rv; // ???
 
-	zval *trogdord = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		TROGDORD_PROPERTY_NAME,
-		strlen(TROGDORD_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	zval *id = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(id)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
-		RETURN_NULL();
-	}
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), "object", trogdord);
@@ -709,30 +601,12 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, creatures) {
 
-	zval rv;
+	zval rv; // ???
 
-	zval *trogdord = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		TROGDORD_PROPERTY_NAME,
-		strlen(TROGDORD_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	zval *id = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(id)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
-		RETURN_NULL();
-	}
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), "creature", trogdord);
@@ -772,30 +646,12 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, players) {
 
-	zval rv;
+	zval rv; // ???
 
-	zval *trogdord = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		TROGDORD_PROPERTY_NAME,
-		strlen(TROGDORD_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	zval *id = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(id)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
-		RETURN_NULL();
-	}
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), "player", trogdord);
@@ -841,25 +697,14 @@ PHP_METHOD(Game, getEntity) {
 	char *name;
 	int nameLength;
 
-	zval *propVal, rv;
-
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
-		RETURN_NULL()
-	}
-
-	zval *gameId = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(gameId)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
 		RETURN_NULL();
 	}
+
+	zval rv;
+	zval *gameId = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
 
 	try {
 		zval entity = getEntity(name, "entity", getThis());
@@ -914,25 +759,14 @@ PHP_METHOD(Game, getPlace) {
 	char *name;
 	int nameLength;
 
-	zval *propVal, rv;
-
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
-		RETURN_NULL()
-	}
-
-	zval *gameId = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(gameId)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
 		RETURN_NULL();
 	}
+
+	zval rv;
+	zval *gameId = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
 
 	try {
 		zval entity = getEntity(name, "place", getThis());
@@ -987,25 +821,14 @@ PHP_METHOD(Game, getThing) {
 	char *name;
 	int nameLength;
 
-	zval *propVal, rv;
-
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
-		RETURN_NULL()
-	}
-
-	zval *gameId = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(gameId)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
 		RETURN_NULL();
 	}
+
+	zval rv;
+	zval *gameId = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
 
 	try {
 		zval entity = getEntity(name, "thing", getThis());
@@ -1060,25 +883,14 @@ PHP_METHOD(Game, getBeing) {
 	char *name;
 	int nameLength;
 
-	zval *propVal, rv;
-
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
-		RETURN_NULL()
-	}
-
-	zval *gameId = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(gameId)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
 		RETURN_NULL();
 	}
+
+	zval rv;
+	zval *gameId = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
 
 	try {
 		zval entity = getEntity(name, "being", getThis());
@@ -1132,25 +944,14 @@ PHP_METHOD(Game, getRoom) {
 	char *name;
 	int nameLength;
 
-	zval *propVal, rv;
-
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
-		RETURN_NULL()
-	}
-
-	zval *gameId = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(gameId)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
 		RETURN_NULL();
 	}
+
+	zval rv;
+	zval *gameId = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
 
 	try {
 		zval entity = getEntity(name, "room", getThis());
@@ -1204,25 +1005,14 @@ PHP_METHOD(Game, getObject) {
 	char *name;
 	int nameLength;
 
-	zval *propVal, rv;
-
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
-		RETURN_NULL()
-	}
-
-	zval *gameId = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(gameId)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
 		RETURN_NULL();
 	}
+
+	zval rv;
+	zval *gameId = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
 
 	try {
 		zval entity = getEntity(name, "object", getThis());
@@ -1277,25 +1067,14 @@ PHP_METHOD(Game, getCreature) {
 	char *name;
 	int nameLength;
 
-	zval *propVal, rv;
-
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
-		RETURN_NULL()
-	}
-
-	zval *gameId = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(gameId)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
 		RETURN_NULL();
 	}
+
+	zval rv;
+	zval *gameId = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
 
 	try {
 		zval entity = getEntity(name, "creature", getThis());
@@ -1349,25 +1128,14 @@ PHP_METHOD(Game, getPlayer) {
 	char *name;
 	int nameLength;
 
-	zval *propVal, rv;
-
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
-		RETURN_NULL()
-	}
-
-	zval *gameId = zend_read_property(
-		GAME_GLOBALS(classEntry),
-		getThis(),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
-		1,
-		&rv TSRMLS_CC
-	);
-
-	if (IS_NULL == Z_TYPE_P(gameId)) {
-		zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0);
 		RETURN_NULL();
 	}
+
+	zval rv;
+	zval *gameId = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
 
 	try {
 		zval entity = getEntity(name, "player", getThis());

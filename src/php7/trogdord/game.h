@@ -33,4 +33,23 @@ extern bool createGameObj(zval *gameObj, size_t id, zval *trogdordObj);
 // Declares Game class to the Zend Engine.
 extern void defineGameClass();
 
+/*****************************************************************************/
+
+// Retrieve the instance of \Trogdord that spawned the instance of \Trogdord\Game.
+#define GAME_TO_TROGDORD(thisPtr, rv) zend_read_property(\
+GAME_GLOBALS(classEntry), thisPtr, TROGDORD_PROPERTY_NAME, \
+strlen(TROGDORD_PROPERTY_NAME), 1, rv TSRMLS_CC)
+
+// Retrieve the game id from an instance of \Trogdord\Game.
+#define GAME_TO_ID(thisPtr, rv) zend_read_property(\
+GAME_GLOBALS(classEntry), thisPtr, GAME_ID_PROPERTY_NAME, \
+strlen(GAME_ID_PROPERTY_NAME), 1, rv TSRMLS_CC)
+
+// Validate the instance of \Trogdord\Game before proceeding with an operation.
+#define ASSERT_GAME_ID_IS_VALID(ZVAL_ID) \
+if (IS_NULL == ZVAL_ID) { \
+	zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0); \
+	RETURN_NULL(); \
+}
+
 #endif /* PHP_GAME_H */
