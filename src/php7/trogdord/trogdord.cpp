@@ -44,8 +44,7 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Trogdord, __construct) {
 
-	zval *thisPtr = getThis();
-	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(thisPtr));
+	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(getThis()));
 
 	char *hostname;
 	size_t hostnameLength;
