@@ -19,8 +19,24 @@ ZEND_END_MODULE_GLOBALS(entity)
 #define ENTITY_GLOBALS(v) (entity_globals.v)
 #endif
 
+// Retrieve the specified property for an instance of \Trogdord\Entity. Return
+// type is zval *.
+#define ENTITY_TO_PROP_VAL(THIS_PTR, RV, PROPERTY) zend_read_property(\
+ENTITY_GLOBALS(classEntry), (THIS_PTR), (PROPERTY), \
+strlen((PROPERTY)), 1, (RV) TSRMLS_CC)
+
 // The private property which contains the entity's name
 extern const char *ENTITY_PROPERTY_NAME;
+
+// String representations of each entity type
+extern const char *ENTITY_TYPE_STR;
+extern const char *PLACE_TYPE_STR;
+extern const char *THING_TYPE_STR;
+extern const char *BEING_TYPE_STR;
+extern const char *ROOM_TYPE_STR;
+extern const char *OBJECT_TYPE_STR;
+extern const char *CREATURE_TYPE_STR;
+extern const char *PLAYER_TYPE_STR;
 
 /*****************************************************************************/
 

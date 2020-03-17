@@ -46,49 +46,49 @@ PHP_MINIT_FUNCTION(trogdord) {
 	// PHP_MINIT_FUNCTION provides.
 	REGISTER_STRING_CONSTANT(
 		"Trogdord\\Entity\\Type\\ENTITY",
-		(char *)"entity",
+		(char *)ENTITY_TYPE_STR,
 		CONST_CS | CONST_PERSISTENT
 	);
 
 	REGISTER_STRING_CONSTANT(
 		"Trogdord\\Entity\\Type\\PLACE",
-		(char *)"place",
+		(char *)PLACE_TYPE_STR,
 		CONST_CS | CONST_PERSISTENT
 	);
 
 	REGISTER_STRING_CONSTANT(
 		"Trogdord\\Entity\\Type\\THING",
-		(char *)"thing",
+		(char *)THING_TYPE_STR,
 		CONST_CS | CONST_PERSISTENT
 	);
 
 	REGISTER_STRING_CONSTANT(
 		"Trogdord\\Entity\\Type\\BEING",
-		(char *)"being",
+		(char *)BEING_TYPE_STR,
 		CONST_CS | CONST_PERSISTENT
 	);
 
 	REGISTER_STRING_CONSTANT(
 		"Trogdord\\Entity\\Type\\ROOM",
-		(char *)"room",
+		(char *)ROOM_TYPE_STR,
 		CONST_CS | CONST_PERSISTENT
 	);
 
 	REGISTER_STRING_CONSTANT(
 		"Trogdord\\Entity\\Type\\OBJECT",
-		(char *)"object",
+		(char *)OBJECT_TYPE_STR,
 		CONST_CS | CONST_PERSISTENT
 	);
 
 	REGISTER_STRING_CONSTANT(
 		"Trogdord\\Entity\\Type\\CREATURE",
-		(char *)"creature",
+		(char *)CREATURE_TYPE_STR,
 		CONST_CS | CONST_PERSISTENT
 	);
 
 	REGISTER_STRING_CONSTANT(
 		"Trogdord\\Entity\\Type\\PLAYER",
-		(char *)"player",
+		(char *)PLAYER_TYPE_STR,
 		CONST_CS | CONST_PERSISTENT
 	);
 

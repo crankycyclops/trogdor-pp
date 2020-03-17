@@ -4,8 +4,25 @@ ZEND_DECLARE_MODULE_GLOBALS(player);
 
 /*****************************************************************************/
 
+// Removes the player from the game. Throws an instance of
+// \Trogdord\NetworkException if the call fails due to network connectivity
+// issues. If the game the player belongs to no longer exists,
+// \TrogdordGameNotFound will be thrown. If the player has already been
+// destroyed, \Trogdord\PlayerNotFound will be thrown.
+ZEND_BEGIN_ARG_INFO(arginfoDestroy, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Player, destroy) {
+
+	// TODO
+	RETURN_NULL();
+}
+
+/*****************************************************************************/
+
 // PHP Player class methods
 static const zend_function_entry playerMethods[] =  {
+	PHP_ME(Player, destroy, arginfoDestroy, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 
