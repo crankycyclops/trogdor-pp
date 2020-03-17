@@ -38,6 +38,9 @@ if (IS_NULL == ZVAL_ID) { \
 
 /*****************************************************************************/
 
+// Exception message when methods are called on a game that's already been destroyed
+extern const char *GAME_ALREADY_DESTROYED;
+
 // The private property that stores the game's id
 extern const char *GAME_ID_PROPERTY_NAME;
 

@@ -25,8 +25,14 @@ ZEND_END_MODULE_GLOBALS(entity)
 ENTITY_GLOBALS(classEntry), (THIS_PTR), (PROPERTY), \
 strlen((PROPERTY)), 1, (RV) TSRMLS_CC)
 
+// Retrieve the game id from an instance of \Trogdord\Game.
+#define ENTITY_TO_NAME(THIS_PTR, RV) ENTITY_TO_PROP_VAL(THIS_PTR, RV, NAME_PROPERTY_NAME)
+
+// Retrieve the game id from an instance of \Trogdord\Game.
+#define ENTITY_TO_GAME(THIS_PTR, RV) ENTITY_TO_PROP_VAL(THIS_PTR, RV, GAME_PROPERTY_NAME)
+
 // The private property which contains the entity's name
-extern const char *ENTITY_PROPERTY_NAME;
+extern const char *NAME_PROPERTY_NAME;
 
 // The private property that contains reference to the game the entity belongs to
 extern const char *GAME_PROPERTY_NAME;

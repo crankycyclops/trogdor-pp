@@ -13,7 +13,7 @@ ZEND_DECLARE_MODULE_GLOBALS(game);
 ZEND_EXTERN_MODULE_GLOBALS(trogdord);
 
 // Exception message when methods are called on a game that's already been destroyed
-static const char *GAME_ALREADY_DESTROYED = "Game has already been destroyed";
+const char *GAME_ALREADY_DESTROYED = "Game has already been destroyed";
 
 // The private property that stores the game's id
 const char *GAME_ID_PROPERTY_NAME = "id";

@@ -15,9 +15,19 @@ ZEND_END_MODULE_GLOBALS(player)
 #define PLAYER_GLOBALS(v) (player_globals.v)
 #endif
 
+// Validate the instance of \Trogdord\Player before proceeding with an operation.
+#define ASSERT_PLAYER_NAME_IS_VALID(ZVAL_NAME) \
+if (IS_NULL == ZVAL_NAME) { \
+	zend_throw_exception(EXCEPTION_GLOBALS(playerNotFound), PLAYER_ALREADY_DESTROYED, 0); \
+	RETURN_NULL(); \
+}
+
 ZEND_EXTERN_MODULE_GLOBALS(being);
 
 /*****************************************************************************/
+
+// Exception message when methods are called on a player that's already been destroyed
+extern const char *PLAYER_ALREADY_DESTROYED;
 
 // Declares the PHP Player class to the Zend engine.
 extern void definePlayerClass();

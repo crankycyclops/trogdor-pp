@@ -1,6 +1,21 @@
+#include "../trogdord.h"
+#include "../game.h"
+#include "../utility.h"
+#include "../request.h"
+
+#include "../phpexception.h"
+#include "../exception/requestexception.h"
+
 #include "player.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(player);
+ZEND_EXTERN_MODULE_GLOBALS(game);
+
+// Exception message when methods are called on a game that's already been destroyed
+const char *PLAYER_ALREADY_DESTROYED = "Player has already been destroyed";
+
+// This request removes a player from a game
+static const char *PLAYER_DESTROY_REQUEST = "{\"method\":\"delete\",\"scope\":\"player\",\"args\":{\"game_id\": %gid,\"name\":\"%pname\"}}";
 
 /*****************************************************************************/
 
@@ -14,8 +29,68 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Player, destroy) {
 
-	// TODO
-	RETURN_NULL();
+	zval rv; // ???
+
+	zval *pName = ENTITY_TO_NAME(getThis(), &rv);
+	zval *game = ENTITY_TO_GAME(getThis(), &rv);
+	zval *trogdord = GAME_TO_TROGDORD(game, &rv);
+	zval *gameId = GAME_TO_ID(game, &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
+	ASSERT_PLAYER_NAME_IS_VALID(Z_TYPE_P(pName));
+
+	try {
+
+		std::string request = PLAYER_DESTROY_REQUEST;
+		strReplace(request, "%gid", std::to_string(Z_LVAL_P(gameId)));
+		strReplace(request, "%pname", Z_STRVAL_P(pName));
+
+		trogdordObject *trogdordObjWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+		JSONObject response = Request::execute(
+			trogdordObjWrapper->data.hostname,
+			trogdordObjWrapper->data.port,
+			request
+		);
+
+		// Set the player name to null so the object can't be used anymore
+		zend_update_property_null(
+			ENTITY_GLOBALS(classEntry),
+			getThis(),
+			NAME_PROPERTY_NAME,
+			strlen(NAME_PROPERTY_NAME)
+		);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		RETURN_NULL();
+	}
+
+	catch (const RequestException &e) {
+
+		if (404 == e.getCode()) {
+
+			// Throw \Trogdord\GameNotFound
+			if (0 == strcmp(e.what(), "game not found")) {
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+				RETURN_NULL();
+			}
+
+			// Throw \Trogdord\PlayerNotFound
+			else {
+				zend_throw_exception(EXCEPTION_GLOBALS(playerNotFound), e.what(), 0);
+				RETURN_NULL();
+			}
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+	}
 }
 
 /*****************************************************************************/
