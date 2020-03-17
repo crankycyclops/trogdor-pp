@@ -17,8 +17,11 @@ ZEND_EXTERN_MODULE_GLOBALS(object);
 ZEND_EXTERN_MODULE_GLOBALS(creature);
 ZEND_EXTERN_MODULE_GLOBALS(player);
 
-// The private property which contains the entity's name
+// The private property that contains the entity's name
 const char *ENTITY_PROPERTY_NAME = "name";
+
+// The private property that contains reference to the game the entity belongs to
+const char *GAME_PROPERTY_NAME = "game";
 
 // String representations of each entity type
 const char *ENTITY_TYPE_STR = "entity";
@@ -118,6 +121,14 @@ bool createEntityObj(zval *entityObj, JSONObject properties, zval *gameObj) {
 		eName.c_str()
 	);
 
+	zend_update_property(
+		eClassEntry,
+		entityObj,
+		GAME_PROPERTY_NAME,
+		strlen(GAME_PROPERTY_NAME),
+		gameObj
+	);
+
 	return true;
 }
 
@@ -134,8 +145,15 @@ void defineEntityClass() {
 	// Declare the Entity class's properties
 	zend_declare_property_null(
 		ENTITY_GLOBALS(classEntry),
-		"name",
-		sizeof("name") - 1,
+		ENTITY_PROPERTY_NAME,
+		strlen(ENTITY_PROPERTY_NAME),
+		ZEND_ACC_PROTECTED TSRMLS_CC
+	);
+
+	zend_declare_property_null(
+		ENTITY_GLOBALS(classEntry),
+		GAME_PROPERTY_NAME,
+		strlen(GAME_PROPERTY_NAME),
 		ZEND_ACC_PROTECTED TSRMLS_CC
 	);
 }

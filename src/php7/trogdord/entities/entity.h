@@ -28,6 +28,9 @@ strlen((PROPERTY)), 1, (RV) TSRMLS_CC)
 // The private property which contains the entity's name
 extern const char *ENTITY_PROPERTY_NAME;
 
+// The private property that contains reference to the game the entity belongs to
+extern const char *GAME_PROPERTY_NAME;
+
 // String representations of each entity type
 extern const char *ENTITY_TYPE_STR;
 extern const char *PLACE_TYPE_STR;
