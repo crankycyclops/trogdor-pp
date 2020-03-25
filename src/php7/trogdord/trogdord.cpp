@@ -1,5 +1,6 @@
 #include <optional>
 
+#include "compatibility.h"
 #include "json.h"
 #include "request.h"
 #include "utility.h"
