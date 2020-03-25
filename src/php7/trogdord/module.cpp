@@ -39,6 +39,15 @@ PHP_MINIT_FUNCTION(trogdord) {
 	defineCreatureClass();
 	definePlayerClass();
 
+	// This is the default port used to establish a connection to an instance
+	// of trogdord when no port is specified in the call to \Trogdord's
+	// constructor.
+	REGISTER_LONG_CONSTANT(
+		"Trogdord\\DEFAULT_PORT",
+		TROGDORD_DEFAULT_PORT,
+		CONST_CS | CONST_PERSISTENT
+	);
+
 	// Global namespaced constants that identify entity types and their string
 	// representations. Note: I have to define these string constants here
 	// instead of in a more appropriate location because the

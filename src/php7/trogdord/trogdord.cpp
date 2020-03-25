@@ -1,6 +1,5 @@
 #include <optional>
 
-#include "compatibility.h"
 #include "json.h"
 #include "request.h"
 #include "utility.h"
@@ -12,6 +11,8 @@
 
 #include "exception/networkexception.h"
 #include "exception/requestexception.h"
+
+#include "compatibility.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(trogdord);
 ZEND_EXTERN_MODULE_GLOBALS(game);
