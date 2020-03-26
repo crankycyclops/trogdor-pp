@@ -5,6 +5,9 @@
 #include "include/io/iostream/serverout.h"
 
 
+// Key names for various game meta data
+const char *GameContainer::META_KEY_NAME = "_trogdord_name";
+
 // Singleton instance of GameContainer
 std::unique_ptr<GameContainer> GameContainer::instance = nullptr;
 
@@ -69,7 +72,11 @@ std::unique_ptr<trogdor::Game> &GameContainer::getGame(size_t id) {
 
 /*****************************************************************************/
 
-size_t GameContainer::createGame(std::string name, std::string definitionPath) {
+size_t GameContainer::createGame(
+	std::string definitionPath,
+	std::string name,
+	std::unordered_map<std::string, std::string> meta
+) {
 
 	definitionPath = Filesystem::getFullDefinitionsPath(definitionPath);
 
@@ -87,7 +94,13 @@ size_t GameContainer::createGame(std::string name, std::string definitionPath) {
 		throw ServerException("failed to initialize game");
 	}
 
-	game->setMeta("name", name);
+	game->setMeta(META_KEY_NAME, name);
+
+	// If any custom meta data was specified, set it
+	for (auto &pair: meta) {
+		game->setMeta(pair.first, pair.second);
+	}
+
 	games.push_back(std::move(game));
 
 	size_t gameId = games.size() - 1;
@@ -130,6 +143,45 @@ void GameContainer::stopGame(size_t id) {
 		games[id]->stop();
 		playerListeners[id]->stop();
 	}
+}
+
+/*****************************************************************************/
+
+std::unordered_map<std::string, std::string> GameContainer::getMetaAll(size_t gameId) {
+
+	std::unique_ptr<trogdor::Game> &game = getGame(gameId);
+
+	if (!game) {
+		throw GameNotFound();
+	}
+
+	return std::unordered_map<std::string, std::string>(game->getMetaAll());
+}
+
+/*****************************************************************************/
+
+std::string GameContainer::getMeta(size_t gameId, std::string key) {
+
+	std::unique_ptr<trogdor::Game> &game = getGame(gameId);
+
+	if (!game) {
+		throw GameNotFound();
+	}
+
+	return game->getMeta(key);
+}
+
+/*****************************************************************************/
+
+void GameContainer::setMeta(size_t gameId, std::string key, std::string value) {
+
+	std::unique_ptr<trogdor::Game> &game = getGame(gameId);
+
+	if (!game) {
+		throw GameNotFound();
+	}
+
+	game->setMeta(key, value);
 }
 
 /*****************************************************************************/

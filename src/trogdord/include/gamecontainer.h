@@ -37,6 +37,9 @@ class GameContainer {
 
 	public:
 
+		// Key names for various game meta data
+		static const char *META_KEY_NAME;
+
 		// Ensures all games are properly shutdown before the server goes down
 		~GameContainer();
 
@@ -55,10 +58,16 @@ class GameContainer {
 		std::unique_ptr<trogdor::Game> &getGame(size_t id);
 
 		// Creates a new game and returns its id. Takes as input a name that
-		// the game should be identified by and a relative path to the
-		// definition that should be used to create it. Throws an instance of
-		// ServerException or trogdor::Exception if the game cannot be created.
-		size_t createGame(std::string name, std::string definitionPath);
+		// the game should be identified by, a relative path to the definition
+		// that should be used to create it, an an optional map of key => value
+		// pairs representing meta data that should be inserted into the game.
+		// Throws an instance of ServerException or trogdor::Exception if the
+		// game cannot be created.
+		size_t createGame(
+			std::string definitionPath,
+			std::string name,
+			std::unordered_map<std::string, std::string> meta = {}
+		);
 
 		// Destroys the game referenced by the given id (does nothing if the
 		// game doesn't exist.)
@@ -69,6 +78,15 @@ class GameContainer {
 
 		// Stops the game referenced by the given id.
 		void stopGame(size_t id);
+
+		// Returns all set meta key, value pairs in the game.
+		std::unordered_map<std::string, std::string> getMetaAll(size_t gameId);
+
+		// Returns the specified meta value from the game.
+		std::string getMeta(size_t gameId, std::string key);
+
+		// Sets the specified meta value in the game.
+		void setMeta(size_t gameId, std::string key, std::string value);
 
 		// Creates a player and inserts it into the game. Might throw an
 		// instance of trogdor::Exception if player creation is unsuccessful
