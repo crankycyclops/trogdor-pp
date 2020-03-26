@@ -9,6 +9,8 @@
 #include "game.h"
 #include "entities/entity.h"
 
+#include <iostream>
+
 ZEND_DECLARE_MODULE_GLOBALS(game);
 ZEND_EXTERN_MODULE_GLOBALS(trogdord);
 
@@ -30,6 +32,12 @@ static const char *GAME_STOP_REQUEST = "{\"method\":\"set\",\"scope\":\"game\",\
 
 // This request destroys the game
 static const char *GAME_DESTROY_REQUEST = "{\"method\":\"delete\",\"scope\":\"game\",\"args\":{\"id\": %gid}}";
+
+// This request retrieves meta data associated with the game
+static const char *GAME_GET_META_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"meta\",\"args\":{\"id\":%gid%metaarg}}";
+
+// This request sets meta data for the game
+static const char *GAME_SET_META_REQUEST = "{\"method\":\"set\",\"scope\":\"game\",\"action\":\"meta\",\"args\":{\"id\":%gid,\"meta\":{%values}}}";
 
 // This request returns a list of entities of the specified type
 static const char *ENTITY_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"%etype\",\"action\":\"list\",\"args\":{\"game_id\":%gid}}";
@@ -232,6 +240,204 @@ PHP_METHOD(Game, destroy) {
 			GAME_ID_PROPERTY_NAME,
 			strlen(GAME_ID_PROPERTY_NAME)
 		);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		RETURN_NULL();
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			RETURN_NULL();
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+	}
+}
+
+/*****************************************************************************/
+
+// Returns meta data associated with the game. Takes an optional array argument
+// (numerically indexed list of meta keys) that determines which values should
+// be returned. If no argument is passed to this method, all meta data will be
+// returned. Throws an instance of \Trogdord\NetworkException if the call fails
+// due to network connectivity issues. If the game has already been destroyed,
+// \Trogdord\GameNotFound will be thrown.
+ZEND_BEGIN_ARG_INFO(arginfoGetMeta, 0)
+	ZEND_ARG_TYPE_INFO(0, keys, IS_ARRAY, 1)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, getMeta) {
+
+	zval rv; // ???
+
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+
+	zval *keys = nullptr;
+	std::string metaArg;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|a", &keys) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	if (nullptr != keys && zend_array_count(Z_ARRVAL_P(keys))) {
+
+		zval *entry;
+		HashPosition pos;
+
+		bool firstEntryVisited = false;
+		metaArg = ",\"meta\":[";
+
+		for (
+			zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(keys), &pos);
+			entry = zend_hash_get_current_data_ex(Z_ARRVAL_P(keys), &pos);
+			zend_hash_move_forward_ex(Z_ARRVAL_P(keys), &pos)
+		) {
+
+			convert_to_string(entry);
+
+			if (!firstEntryVisited) {
+				firstEntryVisited = true;
+			} else {
+				metaArg += ",";
+			}
+
+			metaArg += "\"";
+			metaArg += Z_STRVAL_P(entry);
+			metaArg += "\"";
+		}
+
+		metaArg += "]";
+	}
+
+	try {
+
+		std::string request = GAME_GET_META_REQUEST;
+		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+		strReplace(request, "%metaarg", metaArg);
+
+		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+		JSONObject response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request
+		);
+
+		zval meta = JSON::JSONToZval(response.get_child("meta"));
+		RETURN_ZVAL(&meta, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		RETURN_NULL();
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			RETURN_NULL();
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+	}
+}
+
+/*****************************************************************************/
+
+ZEND_BEGIN_ARG_INFO(arginfoSetMeta, 0)
+	ZEND_ARG_TYPE_INFO(0, meta, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, setMeta) {
+
+	zval rv; // ???
+
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+
+	zval *meta;
+	std::string valuesArg;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &meta) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	zval *entry;
+	HashPosition pos;
+
+	bool firstEntryVisited = false;
+
+	for (
+		zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(meta), &pos);
+		entry = zend_hash_get_current_data_ex(Z_ARRVAL_P(meta), &pos);
+		zend_hash_move_forward_ex(Z_ARRVAL_P(meta), &pos)
+	) {
+
+		zend_string *strIndex;
+		zend_ulong nIndex;
+
+		std::string key;
+		std::string value;
+
+		switch(zend_hash_get_current_key_ex(Z_ARRVAL_P(meta), &strIndex, &nIndex, &pos)) {
+
+			case HASH_KEY_IS_LONG:
+				key = std::to_string(nIndex);
+				break;
+
+			case HASH_KEY_IS_STRING:
+				key = ZSTR_VAL(strIndex);
+				break;
+		}
+
+		convert_to_string(entry);
+
+		if (!firstEntryVisited) {
+			firstEntryVisited = true;
+		} else {
+			valuesArg += ",";
+		}
+
+		valuesArg += std::string("\"") + key + "\":\"" + Z_STRVAL_P(entry) + "\"";
+	}
+
+	try {
+
+		std::string request = GAME_SET_META_REQUEST;
+		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+		strReplace(request, "%values", valuesArg);
+
+		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+		JSONObject response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request
+		);
+
+		RETURN_NULL();
 	}
 
 	// Throw \Trogord\NetworkException
@@ -1194,6 +1400,8 @@ static const zend_function_entry classMethods[] =  {
 	PHP_ME(Game, start, arginfoStart, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, stop, arginfoStop, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, destroy, arginfoDestroy, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, getMeta, arginfoGetMeta, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, setMeta, arginfoSetMeta, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, entities, arginfoListEntities, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, places, arginfoListPlaces, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, things, arginfoListThings, ZEND_ACC_PUBLIC)
