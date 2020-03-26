@@ -9,8 +9,6 @@
 #include "game.h"
 #include "entities/entity.h"
 
-#include <iostream>
-
 ZEND_DECLARE_MODULE_GLOBALS(game);
 ZEND_EXTERN_MODULE_GLOBALS(trogdord);
 
@@ -314,9 +312,7 @@ PHP_METHOD(Game, getMeta) {
 				metaArg += ",";
 			}
 
-			metaArg += "\"";
-			metaArg += Z_STRVAL_P(entry);
-			metaArg += "\"";
+			metaArg += std::string("\"") + Z_STRVAL_P(entry) + "\"";
 		}
 
 		metaArg += "]";
@@ -397,9 +393,7 @@ PHP_METHOD(Game, setMeta) {
 
 		zend_string *strIndex;
 		zend_ulong nIndex;
-
 		std::string key;
-		std::string value;
 
 		switch(zend_hash_get_current_key_ex(Z_ARRVAL_P(meta), &strIndex, &nIndex, &pos)) {
 

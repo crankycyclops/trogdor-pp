@@ -23,7 +23,7 @@ zend_object_handlers trogdordObjectHandlers;
 static const char *STATS_REQUEST = "{\"method\":\"get\",\"scope\":\"global\",\"action\":\"statistics\"}";
 
 // This request retrieves a list of all existing games
-static const char *GAME_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"list\"}";
+static const char *GAME_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"list\"%meta}";
 
 // This request retrieves a list of all available game definitions
 static const char *DEF_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"definitions\"}";
@@ -32,7 +32,7 @@ static const char *DEF_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"
 static const char *GET_GAME_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"args\":{\"id\":%gid}}";
 
 // This request creates a new game
-static const char *NEW_GAME_REQUEST = "{\"method\":\"post\",\"scope\":\"game\",\"args\":{\"name\":\"%name\",\"definition\":\"%definition\"}}";
+static const char *NEW_GAME_REQUEST = "{\"method\":\"post\",\"scope\":\"game\",\"args\":{\"name\":\"%name\",\"definition\":\"%definition\"%meta}}";
 
 /*****************************************************************************/
 
@@ -118,24 +118,62 @@ PHP_METHOD(Trogdord, statistics) {
 /*****************************************************************************/
 
 // Returns a list of all existing games in an instance of trogdord (could be an
-// empty array if no games currently exist.) Throws an instance of
-// \Trogdord\NetworkException if there's an issue with the network connection
-// that prevents this call from returning a valid list.
+// empty array if no games currently exist.) Takes as input an optional array of
+// meta values that should be returned along with the id and name of each game.
+// Throws an instance of \Trogdord\NetworkException if there's an issue with the
+// network connection that prevents this call from returning a valid list.
 ZEND_BEGIN_ARG_INFO(arginfoListGames, 0)
+	ZEND_ARG_TYPE_INFO(0, keys, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
 
 PHP_METHOD(Trogdord, games) {
 
+	zval *keys = nullptr;
+	std::string metaArg;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|a", &keys) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	if (nullptr != keys && zend_array_count(Z_ARRVAL_P(keys))) {
+
+		zval *entry;
+		HashPosition pos;
+
+		bool firstEntryVisited = false;
+		metaArg = ",\"args\":{\"include_meta\":[";
+
+		for (
+			zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(keys), &pos);
+			entry = zend_hash_get_current_data_ex(Z_ARRVAL_P(keys), &pos);
+			zend_hash_move_forward_ex(Z_ARRVAL_P(keys), &pos)
+		) {
+
+			convert_to_string(entry);
+
+			if (!firstEntryVisited) {
+				firstEntryVisited = true;
+			} else {
+				metaArg += ",";
+			}
+
+			metaArg += std::string("\"") + Z_STRVAL_P(entry) + "\"";
+		}
+
+		metaArg += "]}";
+	}
+
 	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(getThis()));
 
-	ZEND_PARSE_PARAMETERS_NONE();
-
 	try {
+
+		std::string request = GAME_LIST_REQUEST;
+		strReplace(request, "%meta", metaArg);
 
 		JSONObject response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			GAME_LIST_REQUEST
+			request
 		);
 
 		zval data = JSON::JSONToZval(response.get_child("games"));
@@ -259,13 +297,16 @@ PHP_METHOD(Trogdord, getGame) {
 /*****************************************************************************/
 
 // Creates a new game inside an instance of trogdord and returns an instance of
-// the PHP class \Trogdord\Game, which wraps around it. Throws
-// \Trogdord\RequestException if there's an issue creating the game and
-// \Trogdord\NetworkException if there's an issue with the network connection
-// that prevents this call from creating a new game.
+// the PHP class \Trogdord\Game, which wraps around it. Takes an optional array
+// argument representing a list of key => value meta data pairs that should be
+// set on the game at the moment it's created. Throws \Trogdord\RequestException
+// if there's an issue creating the game and \Trogdord\NetworkException if
+// there's an issue with the network connection that prevents this call from
+// creating a new game.
 ZEND_BEGIN_ARG_INFO(arginfoNewGame, 0)
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, definition, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, meta, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
 
 PHP_METHOD(Trogdord, newGame) {
@@ -276,17 +317,53 @@ PHP_METHOD(Trogdord, newGame) {
 	char *definition;
 	size_t definitionLength;
 
+	zval *meta = nullptr;
+	std::string metaArg;
+
 	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(getThis()));
 
 	if (zend_parse_parameters(
 		ZEND_NUM_ARGS() TSRMLS_CC,
-		"ss",
+		"ss|a",
 		&name,
 		&nameLength,
 		&definition,
-		&definitionLength
+		&definitionLength,
+		&meta
 	)  == FAILURE) {
 		RETURN_NULL();
+	}
+
+	if (nullptr != meta && zend_array_count(Z_ARRVAL_P(meta))) {
+
+		zval *entry;
+		HashPosition pos;
+
+		for (
+			zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(meta), &pos);
+			entry = zend_hash_get_current_data_ex(Z_ARRVAL_P(meta), &pos);
+			zend_hash_move_forward_ex(Z_ARRVAL_P(meta), &pos)
+		) {
+
+			zend_string *strIndex;
+			zend_ulong nIndex;
+			std::string key;
+
+			switch(zend_hash_get_current_key_ex(Z_ARRVAL_P(meta), &strIndex, &nIndex, &pos)) {
+
+				case HASH_KEY_IS_LONG:
+					key = std::to_string(nIndex);
+					break;
+
+				case HASH_KEY_IS_STRING:
+					key = ZSTR_VAL(strIndex);
+					break;
+			}
+
+			convert_to_string(entry);
+
+			metaArg += std::string(",\"") + key + "\":\"" + Z_STRVAL_P(entry) + "\"";
+		}
 	}
 
 	try {
@@ -294,6 +371,7 @@ PHP_METHOD(Trogdord, newGame) {
 		std::string request = NEW_GAME_REQUEST;
 		strReplace(request, "%name", name);
 		strReplace(request, "%definition", definition);
+		strReplace(request, "%meta", metaArg);
 
 		JSONObject response = Request::execute(
 			objWrapper->data.hostname,
