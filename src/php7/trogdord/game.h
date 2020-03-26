@@ -24,10 +24,10 @@ GAME_GLOBALS(classEntry), (THIS_PTR), (PROPERTY), \
 strlen((PROPERTY)), 1, (RV) TSRMLS_CC)
 
 // Retrieve the instance of \Trogdord that spawned the instance of \Trogdord\Game.
-#define GAME_TO_TROGDORD(THIS_PTR, RV) GAME_TO_PROP_VAL(THIS_PTR, RV, TROGDORD_PROPERTY_NAME)
+#define GAME_TO_TROGDORD(THIS_PTR, RV) GAME_TO_PROP_VAL(THIS_PTR, RV, TROGDORD_PROPERTY)
 
 // Retrieve the game id from an instance of \Trogdord\Game.
-#define GAME_TO_ID(THIS_PTR, RV) GAME_TO_PROP_VAL(THIS_PTR, RV, GAME_ID_PROPERTY_NAME)
+#define GAME_TO_ID(THIS_PTR, RV) GAME_TO_PROP_VAL(THIS_PTR, RV, GAME_ID_PROPERTY)
 
 // Validate the instance of \Trogdord\Game before proceeding with an operation.
 #define ASSERT_GAME_ID_IS_VALID(ZVAL_ID) \
@@ -41,16 +41,19 @@ if (IS_NULL == ZVAL_ID) { \
 // Exception message when methods are called on a game that's already been destroyed
 extern const char *GAME_ALREADY_DESTROYED;
 
+// The private property that stores the game's name
+extern const char *GAME_NAME_PROPERTY;
+
 // The private property that stores the game's id
-extern const char *GAME_ID_PROPERTY_NAME;
+extern const char *GAME_ID_PROPERTY;
 
 // The private property through which an instance of \Trogdord\Game can access
 // the connection that spawned it
-extern const char *TROGDORD_PROPERTY_NAME;
+extern const char *TROGDORD_PROPERTY;
 
 // Creates an instance of \Trogdord\Game. Returns true on success and false on
 // error.
-extern bool createGameObj(zval *gameObj, size_t id, zval *trogdordObj);
+extern bool createGameObj(zval *gameObj, std::string name, size_t id, zval *trogdordObj);
 
 // Declares Game class to the Zend Engine.
 extern void defineGameClass();

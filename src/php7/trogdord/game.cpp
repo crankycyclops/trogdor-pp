@@ -15,12 +15,15 @@ ZEND_EXTERN_MODULE_GLOBALS(trogdord);
 // Exception message when methods are called on a game that's already been destroyed
 const char *GAME_ALREADY_DESTROYED = "Game has already been destroyed";
 
+// The private property that stores the game's name
+const char *GAME_NAME_PROPERTY = "name";
+
 // The private property that stores the game's id
-const char *GAME_ID_PROPERTY_NAME = "id";
+const char *GAME_ID_PROPERTY = "id";
 
 // The private property through which an instance of \Trogdord\Game can access
 // the connection that spawned it
-const char *TROGDORD_PROPERTY_NAME = "trogdord";
+const char *TROGDORD_PROPERTY = "trogdord";
 
 // This request starts the game
 static const char *GAME_START_REQUEST = "{\"method\":\"set\",\"scope\":\"game\",\"action\":\"start\",\"args\":{\"id\": %gid}}";
@@ -235,8 +238,8 @@ PHP_METHOD(Game, destroy) {
 		zend_update_property_null(
 			GAME_GLOBALS(classEntry),
 			getThis(),
-			GAME_ID_PROPERTY_NAME,
-			strlen(GAME_ID_PROPERTY_NAME)
+			GAME_ID_PROPERTY,
+			strlen(GAME_ID_PROPERTY)
 		);
 	}
 
@@ -1469,25 +1472,33 @@ static zval getEntity(std::string name, std::string type, zval *game) {
 
 /*****************************************************************************/
 
-bool createGameObj(zval *gameObj, size_t id, zval *trogdordObj) {
+bool createGameObj(zval *gameObj, std::string name, size_t id, zval *trogdordObj) {
 
 	if (SUCCESS != object_init_ex(gameObj, GAME_GLOBALS(classEntry))) {
 		return false;
 	}
 
+	zend_update_property_string(
+		GAME_GLOBALS(classEntry),
+		gameObj,
+		GAME_NAME_PROPERTY,
+		strlen(GAME_NAME_PROPERTY),
+		name.c_str()
+	);
+
 	zend_update_property_long(
 		GAME_GLOBALS(classEntry),
 		gameObj,
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
+		GAME_ID_PROPERTY,
+		strlen(GAME_ID_PROPERTY),
 		id
 	);
 
 	zend_update_property(
 		GAME_GLOBALS(classEntry),
 		gameObj,
-		TROGDORD_PROPERTY_NAME,
-		strlen(TROGDORD_PROPERTY_NAME),
+		TROGDORD_PROPERTY,
+		strlen(TROGDORD_PROPERTY),
 		trogdordObj
 	);
 
@@ -1505,16 +1516,24 @@ void defineGameClass() {
 
 	zend_declare_property_null(
 		GAME_GLOBALS(classEntry),
-		GAME_ID_PROPERTY_NAME,
-		strlen(GAME_ID_PROPERTY_NAME),
+		GAME_NAME_PROPERTY,
+		strlen(GAME_NAME_PROPERTY),
 		ZEND_ACC_PRIVATE
 		TSRMLS_CC
 	);
 
 	zend_declare_property_null(
 		GAME_GLOBALS(classEntry),
-		TROGDORD_PROPERTY_NAME,
-		strlen(TROGDORD_PROPERTY_NAME),
+		GAME_ID_PROPERTY,
+		strlen(GAME_ID_PROPERTY),
+		ZEND_ACC_PRIVATE
+		TSRMLS_CC
+	);
+
+	zend_declare_property_null(
+		GAME_GLOBALS(classEntry),
+		TROGDORD_PROPERTY,
+		strlen(TROGDORD_PROPERTY),
 		ZEND_ACC_PRIVATE
 		TSRMLS_CC
 	);
