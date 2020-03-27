@@ -2,7 +2,7 @@
 #include "utility.h"
 
 
-extern bool strReplace(std::string &str, const std::string &substr, const std::string &replacement) {
+bool strReplace(std::string &str, const std::string &substr, const std::string &replacement) {
 
 	size_t start = str.find(substr);
 
