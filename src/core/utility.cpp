@@ -6,17 +6,10 @@
 #include <algorithm> 
 #include <functional>
 #include <locale>
+#include <vector>
 
 
 namespace trogdor {
-
-   /*
-      Replaces all instances of substr with replacement.
-
-      Input: subject string, substring we're replacing, and the replacement substring
-      Output: lowercase version of string
-   */
-   bool strReplace(std::string &str, const std::string &substr, const std::string &replacement);
 
    /*
       Converts a string to lowercase.
@@ -54,6 +47,32 @@ namespace trogdor {
    std::string &trim(std::string &s);
 
    /*
+      Replaces all instances of search with replace in str. Returns a new string
+      and leaves the original unmodified.
+
+      Input:
+         String to modify
+         Substring search
+         Substring replacement
+
+      Output:
+         (none)
+   */
+   std::string replaceAll(const std::string &str, const std::string &search, const std::string &replace);
+
+   /*
+      Utility method that converts a vector of strings into a comma-delimited list.
+
+      Input:
+         Vector of strings (vector<string>)
+         Conjunction (string)
+
+      Output:
+         Comma-delimited list (string)
+   */
+   std::string vectorToStr(std::vector<std::string> list, std::string conjunction = "and");
+
+   /*
       Checks if a string represents a valid integer.
 
       Input: string
@@ -69,19 +88,6 @@ namespace trogdor {
       Output: true if the string is a valid double and false if not
    */
    bool isValidDouble(const std::string &s);
-
-
-   bool strReplace(std::string &str, const std::string &substr, const std::string &replacement) {
-
-      size_t start = str.find(substr);
-
-      if (start == std::string::npos) {
-         return false;
-      }
-
-      str.replace(start, substr.length(), replacement);
-      return true;
-   }
 
 
    std::string strToLower(std::string str) {
@@ -108,6 +114,39 @@ namespace trogdor {
 
    std::string &trim(std::string &s) {
          return ltrim(rtrim(s));
+   }
+
+
+   std::string replaceAll(const std::string &str, const std::string &search, const std::string &replace) {
+
+      std::string strCopy = std::string(str);
+
+      for (size_t i = strCopy.find(search); i != std::string::npos; i = strCopy.find(search, i + replace.length())) {
+         strCopy.replace(i, search.length(), replace);
+      }
+
+      return strCopy;
+   }
+
+
+   std::string vectorToStr(std::vector<std::string> list, std::string conjunction) {
+
+      std::string str;
+
+      for (unsigned int i = 0; i < list.size(); i++) {
+
+         str += list[i];
+
+         if (list.size() > 1 && i < list.size() - 2) {
+            str += ", ";
+         }
+
+         else if (i < list.size() - 1) {
+            str += " " + conjunction + " ";
+         }
+      }
+
+      return str;
    }
 
 

@@ -24,8 +24,8 @@ std::string JSON::serialize(JSONObject obj) {
 	json = std::regex_replace(json, reg, "$1");
 
 	// Hack #3 to support boolean types (*sigh* again)
-	trogdor::strReplace(json, "\"\\\\true\\\\\"", "true");
-	trogdor::strReplace(json, "\"\\\\false\\\\\"", "false");
+	json = trogdor::replaceAll(json, "\"\\\\true\\\\\"", "true");
+	json = trogdor::replaceAll(json, "\"\\\\false\\\\\"", "false");
 
 	return json;
 }

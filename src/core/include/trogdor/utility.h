@@ -4,20 +4,13 @@
 
 #include <string>
 #include <cctype>
+#include <vector>
 
 /* macro to clip a value within a given range */
 #define CLAMP(V, MIN, MAX)  (((V) > (MAX)) ? (MAX) : (((V) < (MIN)) ? (MIN) : (V)))
 
 
 namespace trogdor {
-
-   /*
-      Replaces all instances of substr with replacement.
-
-      Input: subject string, substring we're replacing, and the replacement substring
-      Output: lowercase version of string
-   */
-   extern bool strReplace(std::string &str, const std::string &substr, const std::string &replacement);
 
    /*
       Converts a string to lowercase.
@@ -54,6 +47,32 @@ namespace trogdor {
       Output: reference to the same string, which has been modified
    */
    extern std::string &trim(std::string &s);
+
+   /*
+      Replaces all instances of search with replace in str. Returns a new string
+      and leaves the original unmodified.
+
+      Input:
+         String to modify
+         Substring search
+         Substring replacement
+
+      Output:
+         (none)
+   */
+   extern std::string replaceAll(const std::string &str, const std::string &search, const std::string &replace);
+
+   /*
+      Utility method that converts a vector of strings into a comma-delimited list.
+
+      Input:
+         Vector of strings (std::vector<std::string>)
+         Conjunction (std::string)
+
+      Output:
+         Comma-delimited list (std::string)
+   */
+   extern std::string vectorToStr(std::vector<std::string> list, std::string conjunction = "and");
 
    /*
       Checks if a string represents a valid integer.
