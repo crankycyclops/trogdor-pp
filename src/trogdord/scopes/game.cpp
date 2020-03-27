@@ -104,7 +104,7 @@ JSONObject GameController::getGame(JSONObject request) {
 		response.put("id", gameId);
 		response.put("name", game->getMeta(GameContainer::META_KEY_NAME));
 		response.put("current_time", game->getTime());
-		response.put("running", game->inProgress());
+		response.put("running", game->inProgress() ? "\\true\\" : "\\false\\");
 	}
 
 	else {
@@ -246,8 +246,8 @@ JSONObject GameController::createGame(JSONObject request) {
 
 	else {
 
-		*name = trim(*name);
-		*definition = trim(*definition);
+		*name = trogdor::trim(*name);
+		*definition = trogdor::trim(*definition);
 
 		// If any custom meta data was included in the request, set it when we
 		// create the game.
