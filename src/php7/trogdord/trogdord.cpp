@@ -284,7 +284,7 @@ PHP_METHOD(Trogdord, getGame) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 		}
 
 		// Throw \Trogdord\RequestException

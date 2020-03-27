@@ -74,13 +74,13 @@ PHP_METHOD(Player, destroy) {
 
 			// Throw \Trogdord\GameNotFound
 			if (0 == strcmp(e.what(), "game not found")) {
-				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 
 			// Throw \Trogdord\PlayerNotFound
 			else {
-				zend_throw_exception(EXCEPTION_GLOBALS(playerNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(playerNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 		}

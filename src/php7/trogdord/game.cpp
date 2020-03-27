@@ -138,7 +138,7 @@ PHP_METHOD(Game, start) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 			RETURN_NULL();
 		}
 
@@ -191,7 +191,7 @@ PHP_METHOD(Game, stop) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 			RETURN_NULL();
 		}
 
@@ -253,7 +253,7 @@ PHP_METHOD(Game, destroy) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 			RETURN_NULL();
 		}
 
@@ -349,7 +349,7 @@ PHP_METHOD(Game, getMeta) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 			RETURN_NULL();
 		}
 
@@ -447,7 +447,7 @@ PHP_METHOD(Game, setMeta) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 			RETURN_NULL();
 		}
 
@@ -492,7 +492,7 @@ PHP_METHOD(Game, entities) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 			RETURN_NULL();
 		}
 
@@ -537,7 +537,7 @@ PHP_METHOD(Game, places) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 			RETURN_NULL();
 		}
 
@@ -582,7 +582,7 @@ PHP_METHOD(Game, things) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 			RETURN_NULL();
 		}
 
@@ -627,7 +627,7 @@ PHP_METHOD(Game, beings) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 			RETURN_NULL();
 		}
 
@@ -672,7 +672,7 @@ PHP_METHOD(Game, rooms) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 			RETURN_NULL();
 		}
 
@@ -717,7 +717,7 @@ PHP_METHOD(Game, objects) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 			RETURN_NULL();
 		}
 
@@ -762,7 +762,7 @@ PHP_METHOD(Game, creatures) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 			RETURN_NULL();
 		}
 
@@ -807,7 +807,7 @@ PHP_METHOD(Game, players) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 			RETURN_NULL();
 		}
 
@@ -862,13 +862,13 @@ PHP_METHOD(Game, getEntity) {
 
 			// Throw \Trogdord\GameNotFound
 			if (0 == strcmp(e.what(), "game not found")) {
-				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 
 			// Throw \Trogdord\EntityNotFound
 			else {
-				zend_throw_exception(EXCEPTION_GLOBALS(entityNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(entityNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 		}
@@ -924,13 +924,13 @@ PHP_METHOD(Game, getPlace) {
 
 			// Throw \Trogdord\GameNotFound
 			if (0 == strcmp(e.what(), "game not found")) {
-				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 
 			// Throw \Trogdord\PlaceNotFound
 			else {
-				zend_throw_exception(EXCEPTION_GLOBALS(placeNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(placeNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 		}
@@ -986,13 +986,13 @@ PHP_METHOD(Game, getThing) {
 
 			// Throw \Trogdord\GameNotFound
 			if (0 == strcmp(e.what(), "game not found")) {
-				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 
 			// Throw \Trogdord\ThingNotFound
 			else {
-				zend_throw_exception(EXCEPTION_GLOBALS(thingNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(thingNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 		}
@@ -1048,13 +1048,13 @@ PHP_METHOD(Game, getBeing) {
 
 			// Throw \Trogdord\GameNotFound
 			if (0 == strcmp(e.what(), "game not found")) {
-				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 
 			// Throw \Trogdord\BeingNotFound
 			else {
-				zend_throw_exception(EXCEPTION_GLOBALS(beingNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(beingNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 		}
@@ -1109,13 +1109,13 @@ PHP_METHOD(Game, getRoom) {
 
 			// Throw \Trogdord\GameNotFound
 			if (0 == strcmp(e.what(), "game not found")) {
-				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 
 			// Throw \Trogdord\RoomNotFound
 			else {
-				zend_throw_exception(EXCEPTION_GLOBALS(roomNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(roomNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 		}
@@ -1170,13 +1170,13 @@ PHP_METHOD(Game, getObject) {
 
 			// Throw \Trogdord\GameNotFound
 			if (0 == strcmp(e.what(), "game not found")) {
-				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 
 			// Throw \Trogdord\ObjectNotFound
 			else {
-				zend_throw_exception(EXCEPTION_GLOBALS(objectNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(objectNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 		}
@@ -1232,13 +1232,13 @@ PHP_METHOD(Game, getCreature) {
 
 			// Throw \Trogdord\GameNotFound
 			if (0 == strcmp(e.what(), "game not found")) {
-				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 
 			// Throw \Trogdord\CreatureNotFound
 			else {
-				zend_throw_exception(EXCEPTION_GLOBALS(creatureNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(creatureNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 		}
@@ -1293,13 +1293,13 @@ PHP_METHOD(Game, getPlayer) {
 
 			// Throw \Trogdord\GameNotFound
 			if (0 == strcmp(e.what(), "game not found")) {
-				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 
 			// Throw \Trogdord\PlayerNotFound
 			else {
-				zend_throw_exception(EXCEPTION_GLOBALS(playerNotFound), e.what(), 0);
+				zend_throw_exception(EXCEPTION_GLOBALS(playerNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 		}
@@ -1376,7 +1376,7 @@ PHP_METHOD(Game, createPlayer) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), 0);
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 			RETURN_NULL();
 		}
 
