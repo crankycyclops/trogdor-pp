@@ -15,6 +15,7 @@ class GameController: public ScopeController {
 
 		// Actions served by the "game" scope
 		static const char *LIST_ACTION;
+		static const char *META_ACTION;
 		static const char *DEFINITIONS_ACTION;
 		static const char *START_ACTION;
 		static const char *STOP_ACTION;
@@ -23,6 +24,9 @@ class GameController: public ScopeController {
 		static const char *MISSING_REQUIRED_NAME;
 		static const char *MISSING_REQUIRED_DEFINITION;
 		static const char *DEFINITION_NOT_RELATIVE;
+		static const char *MISSING_META;
+		static const char *INVALID_META;
+		static const char *INVALID_META_KEYS;
 
 		// Constructor should only be called internally by get(), which will
 		// ensure we only ever have a single instance of the class.
@@ -57,6 +61,12 @@ class GameController: public ScopeController {
 
 		// Stops a game
 		JSONObject stopGame(JSONObject request);
+
+		// Returns the requested meta values
+		JSONObject getMeta(JSONObject request);
+
+		// Sets the requested meta values
+		JSONObject setMeta(JSONObject request);
 };
 
 

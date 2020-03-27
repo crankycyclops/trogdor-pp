@@ -39,8 +39,7 @@ namespace trogdor {
       if (NULL == reader) {
          throw ParseException(
             std::string("failed to open ") +
-            STD_FILESYSTEM::path(gamefilePath).filename().string() +
-            "!\n"
+            STD_FILESYSTEM::path(gamefilePath).filename().string()
          );
       }
 

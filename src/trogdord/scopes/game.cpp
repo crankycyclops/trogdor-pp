@@ -14,6 +14,7 @@ const char *GameController::SCOPE = "game";
 
 // Actions served by the "game" scope
 const char *GameController::LIST_ACTION = "list";
+const char *GameController::META_ACTION = "meta";
 const char *GameController::DEFINITIONS_ACTION = "definitions";
 const char *GameController::START_ACTION = "start";
 const char *GameController::STOP_ACTION = "stop";
@@ -22,6 +23,9 @@ const char *GameController::STOP_ACTION = "stop";
 const char *GameController::MISSING_REQUIRED_NAME = "missing required name";
 const char *GameController::MISSING_REQUIRED_DEFINITION = "missing required definition path";
 const char *GameController::DEFINITION_NOT_RELATIVE = "definition path must be relative";
+const char *GameController::MISSING_META = "missing required meta key, value pairs";
+const char *GameController::INVALID_META = "meta values cannot be objects or arrays";
+const char *GameController::INVALID_META_KEYS = "invalid meta keys";
 
 // Singleton instance of GameController
 std::unique_ptr<GameController> GameController::instance = nullptr;
@@ -38,12 +42,20 @@ GameController::GameController() {
 		return this->getGameList(request);
 	});
 
+	registerAction(Request::GET, META_ACTION, [&] (JSONObject request) -> JSONObject {
+		return this->getMeta(request);
+	});
+
 	registerAction(Request::GET, DEFINITIONS_ACTION, [&] (JSONObject request) -> JSONObject {
 		return this->getDefinitionList(request);
 	});
 
 	registerAction(Request::POST, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
 		return this->createGame(request);
+	});
+
+	registerAction(Request::SET, META_ACTION, [&] (JSONObject request) -> JSONObject {
+		return this->setMeta(request);
 	});
 
 	registerAction(Request::SET, START_ACTION, [&] (JSONObject request) -> JSONObject {
@@ -90,7 +102,7 @@ JSONObject GameController::getGame(JSONObject request) {
 	if (game) {
 		response.put("status", 200);
 		response.put("id", gameId);
-		response.put("name", game->getMeta("name"));
+		response.put("name", game->getMeta(GameContainer::META_KEY_NAME));
 		response.put("current_time", game->getTime());
 		response.put("running", game->inProgress());
 	}
@@ -110,7 +122,28 @@ JSONObject GameController::getGameList(JSONObject request) {
 	JSONObject response;
 	JSONObject gameList;
 
+	std::vector<std::string> metaKeys;
+	auto includeMeta = request.get_child_optional("args.include_meta");
+
 	auto &gamePtrs = GameContainer::get()->getGames();
+
+	if (includeMeta && (*includeMeta).size()) {
+
+		for (const auto &key: *includeMeta) {
+
+			if (key.second.empty()) {
+				metaKeys.push_back(key.second.data());
+			}
+
+			else {
+
+				response.put("status", 400);
+				response.put("message", INVALID_META_KEYS);
+
+				return response;
+			}
+		}
+	}
 
 	for (size_t i = 0; i < gamePtrs.size(); i++) {
 
@@ -119,7 +152,15 @@ JSONObject GameController::getGameList(JSONObject request) {
 			JSONObject game;
 
 			game.put("id", i);
-			game.put("name", gamePtrs[i]->getMeta("name"));
+			game.put("name", gamePtrs[i]->getMeta(GameContainer::META_KEY_NAME));
+
+			// If an include_meta argument is included, it specifies Game
+			// meta data values that should be included along with the game's
+			// ID and name in the returned list.
+			for (const auto &key: metaKeys) {
+				game.put(key, gamePtrs[i]->getMeta(key));
+			}
+
 			gameList.push_back(std::make_pair("", game));
 		}
 	}
@@ -208,9 +249,31 @@ JSONObject GameController::createGame(JSONObject request) {
 		*name = trim(*name);
 		*definition = trim(*definition);
 
+		// If any custom meta data was included in the request, set it when we
+		// create the game.
+		std::unordered_map<std::string, std::string> meta;
+
+		for (const auto &requestItem: request.get_child("args")) {
+
+			if (requestItem.first.compare("name") && requestItem.first.compare("definition")) {
+
+				if (requestItem.second.empty()) {
+					meta[requestItem.first] = requestItem.second.data();
+				}
+
+				else {
+
+					response.put("status", 400);
+					response.put("message", INVALID_META);
+
+					return response;
+				}
+			}
+		}
+
 		try {
 			response.put("status", 200);
-			response.put("id", GameContainer::get()->createGame(*name, *definition));
+			response.put("id", GameContainer::get()->createGame(*definition, *name, meta));
 		}
 
 		catch (trogdor::Exception &e) {
@@ -306,6 +369,122 @@ JSONObject GameController::stopGame(JSONObject request) {
 	else {
 		response.put("status", 404);
 		response.put("message", GAME_NOT_FOUND);
+	}
+
+	return response;
+}
+
+/*****************************************************************************/
+
+JSONObject GameController::getMeta(JSONObject request) {
+
+	size_t gameId;
+	JSONObject response;
+
+	try {
+		gameId = Request::parseGameId(request);
+	}
+
+	catch (JSONObject error) {
+		return error;
+	}
+
+	if (!GameContainer::get()->getGame(gameId)) {
+		response.put("status", 404);
+		response.put("message", GAME_NOT_FOUND);
+	}
+
+	else {
+
+		JSONObject meta;
+
+		auto metaKeys = request.get_child_optional("args.meta");
+
+		// Client is only requesting a certain set of meta values
+		if (metaKeys && (*metaKeys).size()) {
+
+			for (const auto &key: *metaKeys) {
+
+				if (key.second.empty()) {
+					meta.put(
+						key.second.data(),
+						GameContainer::get()->getMeta(gameId, key.second.data())
+					);
+				}
+
+				else {
+
+					response.put("status", 400);
+					response.put("message", INVALID_META_KEYS);
+
+					return response;
+				}
+			}
+		}
+
+		// Client is requesting all set meta values
+		else {
+
+			for (auto &metaVal: GameContainer::get()->getMetaAll(gameId)) {
+				meta.put(metaVal.first, metaVal.second);
+			}
+		}
+
+		response.put("status", 200);
+		response.put_child("meta", meta);
+	}
+
+	return response;
+}
+
+/*****************************************************************************/
+
+JSONObject GameController::setMeta(JSONObject request) {
+
+	size_t gameId;
+	JSONObject response;
+
+	try {
+		gameId = Request::parseGameId(request);
+	}
+
+	catch (JSONObject error) {
+		return error;
+	}
+
+	if (!GameContainer::get()->getGame(gameId)) {
+		response.put("status", 404);
+		response.put("message", GAME_NOT_FOUND);
+	}
+
+	else {
+
+		auto meta = request.get_child_optional("args.meta");
+
+		if (meta && (*meta).size()) {
+
+			for (const auto &key: *meta) {
+
+				if (key.second.empty()) {
+					GameContainer::get()->setMeta(gameId, key.first, key.second.data());
+				}
+
+				else {
+
+					response.put("status", 400);
+					response.put("message", INVALID_META_KEYS);
+
+					return response;
+				}
+			}
+
+			response.put("status", 200);
+		}
+
+		else {
+			response.put("status", 400);
+			response.put("message", MISSING_META);
+		}
 	}
 
 	return response;

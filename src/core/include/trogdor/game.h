@@ -211,6 +211,17 @@ namespace trogdor {
          }
 
          /*
+            Returns an iterable list of all meta pairs.
+
+            Input:
+               (none)
+
+            Output:
+               const std::unordered_map<std::string, std::string> const &
+         */
+         inline const std::unordered_map<std::string, std::string> &getMetaAll() const {return meta;}
+
+         /*
             Gets a meta data value.  If the value isn't set, an empty string is
             returned.
 
