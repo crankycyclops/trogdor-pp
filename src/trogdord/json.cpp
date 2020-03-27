@@ -2,6 +2,7 @@
 #include <sstream>
 #include <regex>
 
+#include <trogdor/utility.h>
 #include <boost/algorithm/string.hpp>
 
 #include "include/json.h"
@@ -21,6 +22,10 @@ std::string JSON::serialize(JSONObject obj) {
 	// (*sigh*)
 	std::regex reg("\\\"([0-9]+\\.{0,1}[0-9]*)\\\"");
 	json = std::regex_replace(json, reg, "$1");
+
+	// Hack #3 to support boolean types (*sigh* again)
+	json = trogdor::replaceAll(json, "\"\\\\true\\\\\"", "true");
+	json = trogdor::replaceAll(json, "\"\\\\false\\\\\"", "false");
 
 	return json;
 }

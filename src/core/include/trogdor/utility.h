@@ -60,7 +60,7 @@ namespace trogdor {
       Output:
          (none)
    */
-   std::string replaceAll(const std::string &str, const std::string &search, const std::string &replace);
+   extern std::string replaceAll(const std::string &str, const std::string &search, const std::string &replace);
 
    /*
       Utility method that converts a vector of strings into a comma-delimited list.
@@ -72,7 +72,7 @@ namespace trogdor {
       Output:
          Comma-delimited list (std::string)
    */
-   std::string vectorToStr(std::vector<std::string> list, std::string conjunction = "and");
+   extern std::string vectorToStr(std::vector<std::string> list, std::string conjunction = "and");
 
    /*
       Checks if a string represents a valid integer.

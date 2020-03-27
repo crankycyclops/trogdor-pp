@@ -94,7 +94,7 @@ std::string Dispatcher::parseRequestComponent(JSONObject requestObj, std::string
 	boost::optional value = requestObj.get_optional<std::string>(component);
 
 	if (value) {
-		return strToLower(*value);
+		return trogdor::strToLower(*value);
 	} else {
 		throw RequestException(invalidMsgs[component], 400);
 	}
@@ -135,7 +135,7 @@ std::string Dispatcher::dispatch(std::shared_ptr<TCPConnection> &connection, std
 	std::string action;
 
 	// Log all incoming requests
-	connection->log(trogdor::Trogerr::INFO, std::string("request: ") + trim(request));
+	connection->log(trogdor::Trogerr::INFO, std::string("request: ") + trogdor::trim(request));
 
 	try {
 
