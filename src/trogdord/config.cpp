@@ -75,7 +75,7 @@ void Config::initErrorLogger() noexcept {
 
 	logFileStream = nullptr;
 
-	std::string logto = strToLower(ini.get<std::string>(CONFIG_KEY_LOGTO));
+	std::string logto = trogdor::strToLower(ini.get<std::string>(CONFIG_KEY_LOGTO));
 
 	if (0 == logto.compare("stderr")) {
 		errStream = std::make_unique<ServerErr>(&std::cerr);
