@@ -39,6 +39,14 @@ PHP_MINIT_FUNCTION(trogdord) {
 	defineCreatureClass();
 	definePlayerClass();
 
+	// A defined constant that allows userland PHP to determine the extension's
+	// version.
+	REGISTER_STRING_CONSTANT(
+		"Trogdord\\EXTENSION_VERSION",
+		PHP_TROGDORD_VERSION,
+		CONST_CS | CONST_PERSISTENT
+	);
+
 	// This is the default port used to establish a connection to an instance
 	// of trogdord when no port is specified in the call to \Trogdord's
 	// constructor.
