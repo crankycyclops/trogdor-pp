@@ -49,6 +49,12 @@ static const char *ENTITY_GET_REQUEST = "{\"method\":\"get\",\"scope\":\"%etype\
 // This request creates a new player in the specified game
 static const char *NEW_PLAYER_REQUEST = "{\"method\":\"post\",\"scope\":\"player\",\"args\":{\"game_id\":%gid,\"name\":\"%pname\"}}";
 
+// This request retrieves the current time in the given game
+static const char *GAME_TIME_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"time\",\"args\":{\"id\":%gid}}";
+
+// This request retrieves whether or not the specified game is running
+static const char *GAME_IS_RUNNING_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"is_running\",\"args\":{\"id\":%gid}}";
+
 // Utility method that retrieves a list of all entities of the given type for
 // the specified game. Caller must be prepared to catch NetworkException and
 // RequestException.
@@ -179,6 +185,118 @@ PHP_METHOD(Game, stop) {
 			objWrapper->data.port,
 			request
 		);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		RETURN_NULL();
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+	}
+}
+
+/*****************************************************************************/
+
+// Returns the game's current time. Throws an instance of
+// \Trogdord\NetworkException if the call fails due to network connectivity
+// issues. If the game has already been destroyed, \Trogdord\GameNotFound will
+// be thrown.
+ZEND_BEGIN_ARG_INFO(arginfoGetTime, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, getTime) {
+
+	zval rv; // ???
+
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+
+	try {
+
+		std::string request = GAME_TIME_REQUEST;
+		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+
+		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+		JSONObject response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request
+		);
+
+		RETURN_LONG(response.get<int>("current_time"));
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		RETURN_NULL();
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+	}
+}
+
+/*****************************************************************************/
+
+// Returns whether or not the game is currently running. Throws an instance of
+// \Trogdord\NetworkException if the call fails due to network connectivity
+// issues. If the game has already been destroyed, \Trogdord\GameNotFound will
+// be thrown.
+ZEND_BEGIN_ARG_INFO(arginfoIsRunning, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, isRunning) {
+
+	zval rv; // ???
+
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+
+	try {
+
+		std::string request = GAME_IS_RUNNING_REQUEST;
+		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+
+		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+		JSONObject response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request
+		);
+
+		RETURN_BOOL(response.get<bool>("is_running"));
 	}
 
 	// Throw \Trogord\NetworkException
@@ -1396,6 +1514,8 @@ static const zend_function_entry classMethods[] =  {
 	PHP_ME(Game, __get, arginfoMagicGet, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, start, arginfoStart, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, stop, arginfoStop, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, getTime, arginfoGetTime, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, isRunning, arginfoIsRunning, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, destroy, arginfoDestroy, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, getMeta, arginfoGetMeta, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, setMeta, arginfoSetMeta, ZEND_ACC_PUBLIC)
