@@ -39,6 +39,9 @@ class GameWrapper {
 
 		// Return the game definition path that was used to instantiate the game
 		inline const std::string getDefinition() const {return definition;}
+
+		// Returns the current number of players in the game
+		inline const size_t getNumPlayers() const {return gamePtr->getPlayers().size();}
 };
 
 #endif

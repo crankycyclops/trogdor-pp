@@ -13,6 +13,7 @@
 const char *GameController::SCOPE = "game";
 
 // Actions served by the "game" scope
+const char *GameController::STATISTICS_ACTION = "statistics";
 const char *GameController::LIST_ACTION = "list";
 const char *GameController::META_ACTION = "meta";
 const char *GameController::DEFINITIONS_ACTION = "definitions";
@@ -46,6 +47,10 @@ GameController::GameController() {
 
 	registerAction(Request::GET, META_ACTION, [&] (JSONObject request) -> JSONObject {
 		return this->getMeta(request);
+	});
+
+	registerAction(Request::GET, STATISTICS_ACTION, [&] (JSONObject request) -> JSONObject {
+		return this->getStatistics(request);
 	});
 
 	registerAction(Request::GET, TIME_ACTION, [&] (JSONObject request) -> JSONObject {
@@ -226,6 +231,38 @@ JSONObject GameController::getDefinitionList(JSONObject request) {
 	catch (STD_FILESYSTEM::filesystem_error &e) {
 		response.put("status", 500);
 		response.put("message", e.what());
+	}
+
+	return response;
+}
+
+/*****************************************************************************/
+
+JSONObject GameController::getStatistics(JSONObject request) {
+
+	size_t gameId;
+	JSONObject response;
+
+	try {
+		gameId = Request::parseGameId(request);
+	}
+
+	catch (JSONObject error) {
+		return error;
+	}
+
+	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
+
+	if (game) {
+		response.put("status", 200);
+		response.put("players", game->getNumPlayers());
+		response.put("current_time", game->get()->getTime());
+		response.put("is_running", game->get()->inProgress() ? "\\true\\" : "\\false\\");
+	}
+
+	else {
+		response.put("status", 404);
+		response.put("message", GAME_NOT_FOUND);
 	}
 
 	return response;

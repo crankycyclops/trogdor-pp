@@ -19,6 +19,9 @@ class GameContainer {
 
 	protected:
 
+		// A combined tally of all players in all games
+		size_t numPlayers = 0;
+
 		// Singleton instance of GameContainer.
 		static std::unique_ptr<GameContainer> instance;
 
@@ -63,6 +66,9 @@ class GameContainer {
 			std::string name,
 			std::unordered_map<std::string, std::string> meta = {}
 		);
+
+		// Returns the current combined total of all players in all games
+		inline const size_t getNumPlayers() const {return numPlayers;}
 
 		// Destroys the game referenced by the given id (does nothing if the
 		// game doesn't exist.)

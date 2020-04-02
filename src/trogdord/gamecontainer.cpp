@@ -94,10 +94,8 @@ size_t GameContainer::createGame(
 
 void GameContainer::destroyGame(size_t id) {
 
-	// TODO: update player statistics here
-	// Subtract number of players in game from global total
-
 	if (games.size() > id && nullptr != games[id]) {
+		numPlayers -= games[id]->getNumPlayers();
 		playerListeners[id] = nullptr;
 		games[id] = nullptr;
 	}
@@ -185,8 +183,7 @@ trogdor::entity::Player *GameContainer::createPlayer(size_t gameId, std::string 
 	game->get()->insertPlayer(player);
 	playerListeners[gameId]->subscribe(player.get());
 
-	// TODO: update player statistics here (global and per-game)
-
+	numPlayers++;
 	return player.get();
 }
 
@@ -219,5 +216,5 @@ void GameContainer::removePlayer(size_t gameId, std::string playerName, std::str
 		game->get()->removePlayer(playerName, message);
 	}
 
-	// TODO: update player statistics here (both global and per-game)
+	numPlayers--;
 }
