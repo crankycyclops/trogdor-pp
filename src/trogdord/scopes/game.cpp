@@ -107,14 +107,14 @@ JSONObject GameController::getGame(JSONObject request) {
 		return error;
 	}
 
-	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (game) {
 		response.put("status", 200);
 		response.put("id", gameId);
-		response.put("name", game->getMeta(GameContainer::META_KEY_NAME));
-		response.put("current_time", game->getTime());
-		response.put("is_running", game->inProgress() ? "\\true\\" : "\\false\\");
+		response.put("name", game->get()->getMeta(GameContainer::META_KEY_NAME));
+		response.put("current_time", game->get()->getTime());
+		response.put("is_running", game->get()->inProgress() ? "\\true\\" : "\\false\\");
 	}
 
 	else {
@@ -162,13 +162,13 @@ JSONObject GameController::getGameList(JSONObject request) {
 			JSONObject game;
 
 			game.put("id", i);
-			game.put("name", gamePtrs[i]->getMeta(GameContainer::META_KEY_NAME));
+			game.put("name", gamePtrs[i]->get()->getMeta(GameContainer::META_KEY_NAME));
 
 			// If an include_meta argument is included, it specifies Game
 			// meta data values that should be included along with the game's
 			// ID and name in the returned list.
 			for (const auto &key: metaKeys) {
-				game.put(key, gamePtrs[i]->getMeta(key));
+				game.put(key, gamePtrs[i]->get()->getMeta(key));
 			}
 
 			gameList.push_back(std::make_pair("", game));
@@ -515,11 +515,11 @@ JSONObject GameController::getTime(JSONObject request) {
 		return error;
 	}
 
-	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (game) {
 		response.put("status", 200);
-		response.put("current_time", game->getTime());
+		response.put("current_time", game->get()->getTime());
 	}
 
 	else {
@@ -545,11 +545,11 @@ JSONObject GameController::getIsRunning(JSONObject request) {
 		return error;
 	}
 
-	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (game) {
 		response.put("status", 200);
-		response.put("is_running", game->inProgress() ? "\\true\\" : "\\false\\");
+		response.put("is_running", game->get()->inProgress() ? "\\true\\" : "\\false\\");
 	}
 
 	else {

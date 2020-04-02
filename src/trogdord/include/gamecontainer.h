@@ -8,9 +8,9 @@
 #include <queue>
 #include <unordered_map>
 
-#include <trogdor/game.h>
 #include <trogdor/parser/parsers/xmlparser.h>
 
+#include "gamewrapper.h"
 #include "inputlistener.h"
 
 #include "exception/gamenotfound.h"
@@ -25,7 +25,7 @@ class GameContainer {
 		static std::unique_ptr<GameContainer> instance;
 
 		// All currently existing games reside here.
-		std::vector<std::unique_ptr<trogdor::Game>> games;
+		std::vector<std::unique_ptr<GameWrapper>> games;
 
 		// Each game gets its own worker thread to process player input
 		std::unordered_map<size_t, std::unique_ptr<InputListener>> playerListeners;
@@ -51,11 +51,11 @@ class GameContainer {
 
 		// Returns a read-only reference to games so that we can iterate over
 		// it from the outside.
-		inline const std::vector<std::unique_ptr<trogdor::Game>> &getGames() {return games;}
+		inline const std::vector<std::unique_ptr<GameWrapper>> &getGames() {return games;}
 
 		// Returns the game referenced by the given id (returns nullptr if
 		// it doesn't exist.)
-		std::unique_ptr<trogdor::Game> &getGame(size_t id);
+		std::unique_ptr<GameWrapper> &getGame(size_t id);
 
 		// Creates a new game and returns its id. Takes as input a name that
 		// the game should be identified by, a relative path to the definition
