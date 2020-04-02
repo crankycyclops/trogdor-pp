@@ -78,7 +78,7 @@ std::optional<JSONObject> EntityController::getEntityHelper(
 		return error;
 	}
 
-	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (!game) {
 
@@ -91,7 +91,7 @@ std::optional<JSONObject> EntityController::getEntityHelper(
 	}
 
 	try {
-		ePtr = getEntityPtr(game, entityName);
+		ePtr = getEntityPtr(game->get(), entityName);
 		return std::nullopt;
 	}
 
@@ -197,13 +197,13 @@ JSONObject EntityController::getEntityList(JSONObject request) {
 		return error;
 	}
 
-	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (game) {
 
 		JSONObject entities;
 
-		for (const auto &entity: getEntityPtrList(game)) {
+		for (const auto &entity: getEntityPtrList(game->get())) {
 			entities.push_back(std::make_pair("",
 				entityToJSONObject(entity.second.get())
 			));

@@ -2,6 +2,7 @@
 
 #include "../include/version.h"
 #include "../include/request.h"
+#include "../include/gamecontainer.h"
 #include "../include/scopes/global.h"
 
 
@@ -50,8 +51,9 @@ JSONObject GlobalController::statistics(JSONObject request) {
 	libVersion.put("minor", TROGDOR_VERSION_MINOR);
 	libVersion.put("patch", TROGDOR_VERSION_PATCH);
 
-	// TODO: add number of existing games and other stats
+	// TODO: add number of existing games after I change from ids to names
 	response.put("status", 200);
+	response.put("players", GameContainer::get()->getNumPlayers());
 	response.add_child("version", version);
 	response.add_child("lib_version", libVersion);
 

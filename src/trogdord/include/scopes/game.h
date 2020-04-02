@@ -14,6 +14,7 @@ class GameController: public ScopeController {
 		static std::unique_ptr<GameController> instance;
 
 		// Actions served by the "game" scope
+		static const char *STATISTICS_ACTION;
 		static const char *LIST_ACTION;
 		static const char *META_ACTION;
 		static const char *DEFINITIONS_ACTION;
@@ -51,6 +52,9 @@ class GameController: public ScopeController {
 
 		// Returns a list of all available game definitions
 		JSONObject getDefinitionList(JSONObject request);
+
+		// Returns all per-game statistics for a given game
+		JSONObject getStatistics(JSONObject request);
 
 		// Instantiates a new game and returns its id
 		JSONObject createGame(JSONObject request);
