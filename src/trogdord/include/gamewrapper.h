@@ -11,6 +11,9 @@ class GameWrapper {
 		// The game's name
 		std::string name;
 
+		// The game's definition filename (relative path)
+		std::string definition;
+
 		// The actual underlying game object
 		std::unique_ptr<trogdor::Game> gamePtr;
 
@@ -33,6 +36,9 @@ class GameWrapper {
 
 		// Returns the game's name
 		inline const std::string getName() const {return name;}
+
+		// Return the game definition path that was used to instantiate the game
+		inline const std::string getDefinition() const {return definition;}
 };
 
 #endif

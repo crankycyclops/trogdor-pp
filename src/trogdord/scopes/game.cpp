@@ -113,6 +113,7 @@ JSONObject GameController::getGame(JSONObject request) {
 		response.put("status", 200);
 		response.put("id", gameId);
 		response.put("name", game->getName());
+		response.put("definition", game->getDefinition());
 		response.put("current_time", game->get()->getTime());
 		response.put("is_running", game->get()->inProgress() ? "\\true\\" : "\\false\\");
 	}

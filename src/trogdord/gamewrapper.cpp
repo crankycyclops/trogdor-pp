@@ -11,7 +11,7 @@ GameWrapper::GameWrapper(
 	std::string definitionPath,
 	std::string name,
 	std::unordered_map<std::string, std::string> meta
-): name(name) {
+): name(name), definition(definitionPath) {
 
 	definitionPath = Filesystem::getFullDefinitionsPath(definitionPath);
 
