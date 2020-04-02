@@ -19,6 +19,8 @@ class GameController: public ScopeController {
 		static const char *DEFINITIONS_ACTION;
 		static const char *START_ACTION;
 		static const char *STOP_ACTION;
+		static const char *TIME_ACTION;
+		static const char *IS_RUNNING_ACTION;
 
 		// Error messages
 		static const char *MISSING_REQUIRED_NAME;
@@ -67,6 +69,12 @@ class GameController: public ScopeController {
 
 		// Sets the requested meta values
 		JSONObject setMeta(JSONObject request);
+
+		// Returns the current game time
+		JSONObject getTime(JSONObject request);
+
+		// Returns whether or not the game is currently running
+		JSONObject getIsRunning(JSONObject request);
 };
 
 
