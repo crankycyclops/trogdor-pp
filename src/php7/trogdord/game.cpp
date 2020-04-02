@@ -18,6 +18,9 @@ const char *GAME_ALREADY_DESTROYED = "Game has already been destroyed";
 // The private property that stores the game's name
 const char *GAME_NAME_PROPERTY = "name";
 
+// The private property that stores the game's definition filename
+const char *GAME_DEFINITION_PROPERTY = "definition";
+
 // The private property that stores the game's id
 const char *GAME_ID_PROPERTY = "id";
 
@@ -54,6 +57,9 @@ static const char *GAME_TIME_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\
 
 // This request retrieves whether or not the specified game is running
 static const char *GAME_IS_RUNNING_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"is_running\",\"args\":{\"id\":%gid}}";
+
+// This request retrieves all statistics associated with a game
+static const char *GAME_STATISTICS_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"statistics\",\"args\":{\"id\":%gid}}";
 
 // Utility method that retrieves a list of all entities of the given type for
 // the specified game. Caller must be prepared to catch NetworkException and
@@ -297,6 +303,64 @@ PHP_METHOD(Game, isRunning) {
 		);
 
 		RETURN_BOOL(response.get<bool>("is_running"));
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		RETURN_NULL();
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+	}
+}
+
+/*****************************************************************************/
+
+// Returns all statistical data associated with the game. Throws an instance of
+// \Trogdord\NetworkException if the call fails due to network connectivity
+// issues. If the game has already been destroyed, \Trogdord\GameNotFound will
+// be thrown.
+ZEND_BEGIN_ARG_INFO(arginfoStatistics, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, statistics) {
+
+	zval rv; // ???
+
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+
+	try {
+
+		std::string request = GAME_STATISTICS_REQUEST;
+		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+
+		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+		JSONObject response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request
+		);
+
+		response.erase("status");
+		zval stats = JSON::JSONToZval(response);
+		RETURN_ZVAL(&stats, 1, 1);
 	}
 
 	// Throw \Trogord\NetworkException
@@ -1516,6 +1580,7 @@ static const zend_function_entry classMethods[] =  {
 	PHP_ME(Game, stop, arginfoStop, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, getTime, arginfoGetTime, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, isRunning, arginfoIsRunning, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, statistics, arginfoStatistics, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, destroy, arginfoDestroy, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, getMeta, arginfoGetMeta, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, setMeta, arginfoSetMeta, ZEND_ACC_PUBLIC)
@@ -1592,7 +1657,13 @@ static zval getEntity(std::string name, std::string type, zval *game) {
 
 /*****************************************************************************/
 
-bool createGameObj(zval *gameObj, std::string name, size_t id, zval *trogdordObj) {
+bool createGameObj(
+	zval *gameObj,
+	std::string name,
+	std::string definition,
+	size_t id,
+	zval *trogdordObj
+) {
 
 	if (SUCCESS != object_init_ex(gameObj, GAME_GLOBALS(classEntry))) {
 		return false;
@@ -1604,6 +1675,14 @@ bool createGameObj(zval *gameObj, std::string name, size_t id, zval *trogdordObj
 		GAME_NAME_PROPERTY,
 		strlen(GAME_NAME_PROPERTY),
 		name.c_str()
+	);
+
+	zend_update_property_string(
+		GAME_GLOBALS(classEntry),
+		gameObj,
+		GAME_DEFINITION_PROPERTY,
+		strlen(GAME_DEFINITION_PROPERTY),
+		definition.c_str()
 	);
 
 	zend_update_property_long(
@@ -1638,6 +1717,14 @@ void defineGameClass() {
 		GAME_GLOBALS(classEntry),
 		GAME_NAME_PROPERTY,
 		strlen(GAME_NAME_PROPERTY),
+		ZEND_ACC_PRIVATE
+		TSRMLS_CC
+	);
+
+	zend_declare_property_null(
+		GAME_GLOBALS(classEntry),
+		GAME_DEFINITION_PROPERTY,
+		strlen(GAME_DEFINITION_PROPERTY),
 		ZEND_ACC_PRIVATE
 		TSRMLS_CC
 	);

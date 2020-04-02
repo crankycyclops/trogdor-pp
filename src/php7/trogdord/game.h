@@ -44,6 +44,9 @@ extern const char *GAME_ALREADY_DESTROYED;
 // The private property that stores the game's name
 extern const char *GAME_NAME_PROPERTY;
 
+// The private property that stores the game's definition filename
+extern const char *GAME_DEFINITION_PROPERTY;
+
 // The private property that stores the game's id
 extern const char *GAME_ID_PROPERTY;
 
@@ -53,7 +56,13 @@ extern const char *TROGDORD_PROPERTY;
 
 // Creates an instance of \Trogdord\Game. Returns true on success and false on
 // error.
-extern bool createGameObj(zval *gameObj, std::string name, size_t id, zval *trogdordObj);
+extern bool createGameObj(
+	zval *gameObj,
+	std::string name,
+	std::string definition,
+	size_t id,
+	zval *trogdordObj
+);
 
 // Declares Game class to the Zend Engine.
 extern void defineGameClass();

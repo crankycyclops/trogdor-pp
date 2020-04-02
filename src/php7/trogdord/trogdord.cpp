@@ -268,7 +268,13 @@ PHP_METHOD(Trogdord, getGame) {
 			request
 		);
 
-		if (!createGameObj(return_value, response.get<std::string>("name"), gameId, getThis())) {
+		if (!createGameObj(
+			return_value,
+			response.get<std::string>("name"),
+			response.get<std::string>("definition"),
+			gameId,
+			getThis()
+		)) {
 			php_error_docref(NULL, E_ERROR, "failed to instantiate Trogdord\\Game");
 		}
 
@@ -379,7 +385,7 @@ PHP_METHOD(Trogdord, newGame) {
 			request
 		);
 
-		if (!createGameObj(return_value, name, response.get<int>("id"), getThis())) {
+		if (!createGameObj(return_value, name, definition, response.get<int>("id"), getThis())) {
 			php_error_docref(NULL, E_ERROR, "failed to instantiate Trogdord\\Game");
 		}
 
