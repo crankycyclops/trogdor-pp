@@ -124,6 +124,14 @@ namespace trogdor { namespace entity {
          inline void clear() {entities.clear();}
 
          /*
+            Returns the number of entities in the map.
+
+            Input: (none)
+            Output: size_t
+         */
+         inline const size_t size() const {return entities.size();}
+
+         /*
             Returns a const iterator pointing to the beginning of the map. Used
             to iterate over all contained entities.
 

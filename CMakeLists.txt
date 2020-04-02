@@ -161,6 +161,7 @@ if (Boost_FOUND)
 		src/trogdord/filesystem.cpp
 		src/trogdord/request.cpp
 		src/trogdord/dispatcher.cpp
+		src/trogdord/gamewrapper.cpp
 		src/trogdord/gamecontainer.cpp
 		src/trogdord/inputlistener.cpp
 		src/trogdord/exception/requestexception.cpp

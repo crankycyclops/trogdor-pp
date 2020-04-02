@@ -13,6 +13,7 @@
 const char *GameController::SCOPE = "game";
 
 // Actions served by the "game" scope
+const char *GameController::STATISTICS_ACTION = "statistics";
 const char *GameController::LIST_ACTION = "list";
 const char *GameController::META_ACTION = "meta";
 const char *GameController::DEFINITIONS_ACTION = "definitions";
@@ -46,6 +47,10 @@ GameController::GameController() {
 
 	registerAction(Request::GET, META_ACTION, [&] (JSONObject request) -> JSONObject {
 		return this->getMeta(request);
+	});
+
+	registerAction(Request::GET, STATISTICS_ACTION, [&] (JSONObject request) -> JSONObject {
+		return this->getStatistics(request);
 	});
 
 	registerAction(Request::GET, TIME_ACTION, [&] (JSONObject request) -> JSONObject {
@@ -107,14 +112,15 @@ JSONObject GameController::getGame(JSONObject request) {
 		return error;
 	}
 
-	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (game) {
 		response.put("status", 200);
 		response.put("id", gameId);
-		response.put("name", game->getMeta(GameContainer::META_KEY_NAME));
-		response.put("current_time", game->getTime());
-		response.put("is_running", game->inProgress() ? "\\true\\" : "\\false\\");
+		response.put("name", game->getName());
+		response.put("definition", game->getDefinition());
+		response.put("current_time", game->get()->getTime());
+		response.put("is_running", game->get()->inProgress() ? "\\true\\" : "\\false\\");
 	}
 
 	else {
@@ -162,13 +168,13 @@ JSONObject GameController::getGameList(JSONObject request) {
 			JSONObject game;
 
 			game.put("id", i);
-			game.put("name", gamePtrs[i]->getMeta(GameContainer::META_KEY_NAME));
+			game.put("name", gamePtrs[i]->getName());
 
 			// If an include_meta argument is included, it specifies Game
 			// meta data values that should be included along with the game's
 			// ID and name in the returned list.
 			for (const auto &key: metaKeys) {
-				game.put(key, gamePtrs[i]->getMeta(key));
+				game.put(key, gamePtrs[i]->get()->getMeta(key));
 			}
 
 			gameList.push_back(std::make_pair("", game));
@@ -225,6 +231,38 @@ JSONObject GameController::getDefinitionList(JSONObject request) {
 	catch (STD_FILESYSTEM::filesystem_error &e) {
 		response.put("status", 500);
 		response.put("message", e.what());
+	}
+
+	return response;
+}
+
+/*****************************************************************************/
+
+JSONObject GameController::getStatistics(JSONObject request) {
+
+	size_t gameId;
+	JSONObject response;
+
+	try {
+		gameId = Request::parseGameId(request);
+	}
+
+	catch (JSONObject error) {
+		return error;
+	}
+
+	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
+
+	if (game) {
+		response.put("status", 200);
+		response.put("players", game->getNumPlayers());
+		response.put("current_time", game->get()->getTime());
+		response.put("is_running", game->get()->inProgress() ? "\\true\\" : "\\false\\");
+	}
+
+	else {
+		response.put("status", 404);
+		response.put("message", GAME_NOT_FOUND);
 	}
 
 	return response;
@@ -515,11 +553,11 @@ JSONObject GameController::getTime(JSONObject request) {
 		return error;
 	}
 
-	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (game) {
 		response.put("status", 200);
-		response.put("current_time", game->getTime());
+		response.put("current_time", game->get()->getTime());
 	}
 
 	else {
@@ -545,11 +583,11 @@ JSONObject GameController::getIsRunning(JSONObject request) {
 		return error;
 	}
 
-	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (game) {
 		response.put("status", 200);
-		response.put("is_running", game->inProgress() ? "\\true\\" : "\\false\\");
+		response.put("is_running", game->get()->inProgress() ? "\\true\\" : "\\false\\");
 	}
 
 	else {

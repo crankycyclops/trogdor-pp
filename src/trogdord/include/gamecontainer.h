@@ -8,9 +8,7 @@
 #include <queue>
 #include <unordered_map>
 
-#include <trogdor/game.h>
-#include <trogdor/parser/parsers/xmlparser.h>
-
+#include "gamewrapper.h"
 #include "inputlistener.h"
 
 #include "exception/gamenotfound.h"
@@ -21,11 +19,14 @@ class GameContainer {
 
 	protected:
 
+		// A combined tally of all players in all games
+		size_t numPlayers = 0;
+
 		// Singleton instance of GameContainer.
 		static std::unique_ptr<GameContainer> instance;
 
 		// All currently existing games reside here.
-		std::vector<std::unique_ptr<trogdor::Game>> games;
+		std::vector<std::unique_ptr<GameWrapper>> games;
 
 		// Each game gets its own worker thread to process player input
 		std::unordered_map<size_t, std::unique_ptr<InputListener>> playerListeners;
@@ -36,9 +37,6 @@ class GameContainer {
 		GameContainer(const GameContainer &) = delete;
 
 	public:
-
-		// Key names for various game meta data
-		static const char *META_KEY_NAME;
 
 		// Ensures all games are properly shutdown before the server goes down
 		~GameContainer();
@@ -51,11 +49,11 @@ class GameContainer {
 
 		// Returns a read-only reference to games so that we can iterate over
 		// it from the outside.
-		inline const std::vector<std::unique_ptr<trogdor::Game>> &getGames() {return games;}
+		inline const std::vector<std::unique_ptr<GameWrapper>> &getGames() {return games;}
 
 		// Returns the game referenced by the given id (returns nullptr if
 		// it doesn't exist.)
-		std::unique_ptr<trogdor::Game> &getGame(size_t id);
+		std::unique_ptr<GameWrapper> &getGame(size_t id);
 
 		// Creates a new game and returns its id. Takes as input a name that
 		// the game should be identified by, a relative path to the definition
@@ -68,6 +66,9 @@ class GameContainer {
 			std::string name,
 			std::unordered_map<std::string, std::string> meta = {}
 		);
+
+		// Returns the current combined total of all players in all games
+		inline const size_t getNumPlayers() const {return numPlayers;}
 
 		// Destroys the game referenced by the given id (does nothing if the
 		// game doesn't exist.)
