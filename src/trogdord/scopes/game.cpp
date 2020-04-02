@@ -18,6 +18,8 @@ const char *GameController::META_ACTION = "meta";
 const char *GameController::DEFINITIONS_ACTION = "definitions";
 const char *GameController::START_ACTION = "start";
 const char *GameController::STOP_ACTION = "stop";
+const char *GameController::TIME_ACTION = "time";
+const char *GameController::IS_RUNNING_ACTION = "is_running";
 
 // Error messages
 const char *GameController::MISSING_REQUIRED_NAME = "missing required name";
@@ -44,6 +46,14 @@ GameController::GameController() {
 
 	registerAction(Request::GET, META_ACTION, [&] (JSONObject request) -> JSONObject {
 		return this->getMeta(request);
+	});
+
+	registerAction(Request::GET, TIME_ACTION, [&] (JSONObject request) -> JSONObject {
+		return this->getTime(request);
+	});
+
+	registerAction(Request::GET, IS_RUNNING_ACTION, [&] (JSONObject request) -> JSONObject {
+		return this->getIsRunning(request);
 	});
 
 	registerAction(Request::GET, DEFINITIONS_ACTION, [&] (JSONObject request) -> JSONObject {
@@ -104,7 +114,7 @@ JSONObject GameController::getGame(JSONObject request) {
 		response.put("id", gameId);
 		response.put("name", game->getMeta(GameContainer::META_KEY_NAME));
 		response.put("current_time", game->getTime());
-		response.put("running", game->inProgress() ? "\\true\\" : "\\false\\");
+		response.put("is_running", game->inProgress() ? "\\true\\" : "\\false\\");
 	}
 
 	else {
@@ -485,6 +495,66 @@ JSONObject GameController::setMeta(JSONObject request) {
 			response.put("status", 400);
 			response.put("message", MISSING_META);
 		}
+	}
+
+	return response;
+}
+
+/*****************************************************************************/
+
+JSONObject GameController::getTime(JSONObject request) {
+
+	size_t gameId;
+	JSONObject response;
+
+	try {
+		gameId = Request::parseGameId(request);
+	}
+
+	catch (JSONObject error) {
+		return error;
+	}
+
+	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+
+	if (game) {
+		response.put("status", 200);
+		response.put("current_time", game->getTime());
+	}
+
+	else {
+		response.put("status", 404);
+		response.put("message", GAME_NOT_FOUND);
+	}
+
+	return response;
+}
+
+/*****************************************************************************/
+
+JSONObject GameController::getIsRunning(JSONObject request) {
+
+	size_t gameId;
+	JSONObject response;
+
+	try {
+		gameId = Request::parseGameId(request);
+	}
+
+	catch (JSONObject error) {
+		return error;
+	}
+
+	std::unique_ptr<trogdor::Game> &game = GameContainer::get()->getGame(gameId);
+
+	if (game) {
+		response.put("status", 200);
+		response.put("is_running", game->inProgress() ? "\\true\\" : "\\false\\");
+	}
+
+	else {
+		response.put("status", 404);
+		response.put("message", GAME_NOT_FOUND);
 	}
 
 	return response;
