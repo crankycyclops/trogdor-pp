@@ -8,8 +8,6 @@
 #include <queue>
 #include <unordered_map>
 
-#include <trogdor/parser/parsers/xmlparser.h>
-
 #include "gamewrapper.h"
 #include "inputlistener.h"
 
@@ -36,9 +34,6 @@ class GameContainer {
 		GameContainer(const GameContainer &) = delete;
 
 	public:
-
-		// Key names for various game meta data
-		static const char *META_KEY_NAME;
 
 		// Ensures all games are properly shutdown before the server goes down
 		~GameContainer();

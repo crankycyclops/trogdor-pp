@@ -112,7 +112,7 @@ JSONObject GameController::getGame(JSONObject request) {
 	if (game) {
 		response.put("status", 200);
 		response.put("id", gameId);
-		response.put("name", game->get()->getMeta(GameContainer::META_KEY_NAME));
+		response.put("name", game->getName());
 		response.put("current_time", game->get()->getTime());
 		response.put("is_running", game->get()->inProgress() ? "\\true\\" : "\\false\\");
 	}
@@ -162,7 +162,7 @@ JSONObject GameController::getGameList(JSONObject request) {
 			JSONObject game;
 
 			game.put("id", i);
-			game.put("name", gamePtrs[i]->get()->getMeta(GameContainer::META_KEY_NAME));
+			game.put("name", gamePtrs[i]->getName());
 
 			// If an include_meta argument is included, it specifies Game
 			// meta data values that should be included along with the game's

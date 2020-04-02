@@ -5,9 +5,6 @@
 #include "include/io/iostream/serverout.h"
 
 
-// Key names for various game meta data
-const char *GameContainer::META_KEY_NAME = "_trogdord_name";
-
 // Singleton instance of GameContainer
 std::unique_ptr<GameContainer> GameContainer::instance = nullptr;
 
@@ -78,30 +75,7 @@ size_t GameContainer::createGame(
 	std::unordered_map<std::string, std::string> meta
 ) {
 
-	definitionPath = Filesystem::getFullDefinitionsPath(definitionPath);
-
-	// TODO: will need better and more specific error logging than just a
-	// simple copy of the global server error logger
-	std::unique_ptr<trogdor::Game> game = std::make_unique<trogdor::Game>(
-		Config::get()->err().copy()
-	);
-
-	std::unique_ptr<trogdor::XMLParser> parser = std::make_unique<trogdor::XMLParser>(
-		game->makeInstantiator(), game->getVocabulary()
-	);
-
-	if (!game->initialize(parser.get(), definitionPath)) {
-		throw ServerException("failed to initialize game");
-	}
-
-	game->setMeta(META_KEY_NAME, name);
-
-	// If any custom meta data was specified, set it
-	for (auto &pair: meta) {
-		game->setMeta(pair.first, pair.second);
-	}
-
-	games.push_back(std::make_unique<GameWrapper>(game));
+	games.push_back(std::make_unique<GameWrapper>(definitionPath, name, meta));
 
 	size_t gameId = games.size() - 1;
 
