@@ -51,7 +51,7 @@ zval JSON::JSONToZval(JSONObject obj) {
 
 		zval zData;
 
-		if (pair.second.data().empty()) {
+		if (!pair.second.empty() && pair.second.data().empty()) {
 			zData = JSONToZval(pair.second);
 		}
 
