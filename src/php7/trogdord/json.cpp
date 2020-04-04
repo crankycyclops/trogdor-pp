@@ -67,6 +67,19 @@ zval JSON::JSONToZval(JSONObject obj) {
 				ZVAL_DOUBLE(&zData, std::stod(value));
 			}
 
+			// Boolean detection is EXTREMELY error prone (it's very plausible
+			// that I'll need a string with the values "true" or "false" and
+			// get the wrong type as a result of this.) For now, there's not
+			// much I can do, but in the long term, I'm going to have to
+			// replace boost::ptree with a *real* JSON library.
+			else if (value.compare("true")) {
+				ZVAL_BOOL(&zData, 1);
+			}
+
+			else if (value.compare("false")) {
+				ZVAL_BOOL(&zData, 0);
+			}
+
 			else {
 				ZVAL_STRING(&zData, value.c_str());
 			}
