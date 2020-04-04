@@ -72,11 +72,11 @@ zval JSON::JSONToZval(JSONObject obj) {
 			// get the wrong type as a result of this.) For now, there's not
 			// much I can do, but in the long term, I'm going to have to
 			// replace boost::ptree with a *real* JSON library.
-			else if (value.compare("true")) {
+			else if (0 == value.compare("true")) {
 				ZVAL_BOOL(&zData, 1);
 			}
 
-			else if (value.compare("false")) {
+			else if (0 == value.compare("false")) {
 				ZVAL_BOOL(&zData, 0);
 			}
 
