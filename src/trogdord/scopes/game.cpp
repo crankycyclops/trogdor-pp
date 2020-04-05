@@ -1,4 +1,5 @@
 #include <utility>
+#include <iomanip>
 
 #include <trogdor/utility.h>
 #include <trogdor/filesystem.h>
@@ -255,6 +256,7 @@ JSONObject GameController::getStatistics(JSONObject request) {
 
 	if (game) {
 		response.put("status", 200);
+		response.put("created", std::put_time(std::gmtime(&game->getCreated()), "%Y-%m-%d %H:%M:%S UTC"));
 		response.put("players", game->getNumPlayers());
 		response.put("current_time", game->get()->getTime());
 		response.put("is_running", game->get()->inProgress() ? "\\true\\" : "\\false\\");
