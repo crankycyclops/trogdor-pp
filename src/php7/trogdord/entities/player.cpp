@@ -15,7 +15,7 @@ ZEND_EXTERN_MODULE_GLOBALS(game);
 const char *PLAYER_ALREADY_DESTROYED = "Player has already been destroyed";
 
 // This request removes a player from a game
-static const char *PLAYER_DESTROY_REQUEST = "{\"method\":\"delete\",\"scope\":\"player\",\"args\":{\"game_id\": %gid,\"name\":\"%pname\"}}";
+static const char *PLAYER_DESTROY_REQUEST = "{\"method\":\"delete\",\"scope\":\"player\",\"args\":{\"game_id\":%gid,\"name\":\"%pname\"%msgarg}}";
 
 /*****************************************************************************/
 
@@ -25,6 +25,7 @@ static const char *PLAYER_DESTROY_REQUEST = "{\"method\":\"delete\",\"scope\":\"
 // \TrogdordGameNotFound will be thrown. If the player has already been
 // destroyed, \Trogdord\PlayerNotFound will be thrown.
 ZEND_BEGIN_ARG_INFO(arginfoDestroy, 0)
+	ZEND_ARG_TYPE_INFO(0, removeMsg, IS_STRING, 1)
 ZEND_END_ARG_INFO()
 
 PHP_METHOD(Player, destroy) {
@@ -36,6 +37,13 @@ PHP_METHOD(Player, destroy) {
 	zval *trogdord = GAME_TO_TROGDORD(game, &rv);
 	zval *gameId = GAME_TO_ID(game, &rv);
 
+	char *removeMsg = nullptr;
+	size_t removeMsgLen = 0;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &removeMsg, &removeMsgLen) == FAILURE) {
+		RETURN_NULL();
+	}
+
 	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
 	ASSERT_PLAYER_NAME_IS_VALID(Z_TYPE_P(pName));
 
@@ -44,6 +52,7 @@ PHP_METHOD(Player, destroy) {
 		std::string request = PLAYER_DESTROY_REQUEST;
 		strReplace(request, "%gid", std::to_string(Z_LVAL_P(gameId)));
 		strReplace(request, "%pname", Z_STRVAL_P(pName));
+		strReplace(request, "%msgarg", removeMsgLen ? std::string(",\"message\":\"") + removeMsg + "\"" : "");
 
 		trogdordObject *trogdordObjWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
