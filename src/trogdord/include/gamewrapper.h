@@ -2,6 +2,7 @@
 #define GAME_WRAPPER_H
 
 #include <memory>
+#include <ctime>
 #include <trogdor/game.h>
 
 class GameWrapper {
@@ -13,6 +14,9 @@ class GameWrapper {
 
 		// The game's definition filename (relative path)
 		std::string definition;
+
+		// When the game was created
+		std::time_t created;
 
 		// The actual underlying game object
 		std::unique_ptr<trogdor::Game> gamePtr;
@@ -39,6 +43,9 @@ class GameWrapper {
 
 		// Return the game definition path that was used to instantiate the game
 		inline const std::string getDefinition() const {return definition;}
+
+		// Returns the time the game was created
+		inline const std::time_t &getCreated() const {return created;}
 
 		// Returns the current number of players in the game
 		inline const size_t getNumPlayers() const {return gamePtr->getPlayers().size();}

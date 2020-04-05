@@ -29,6 +29,9 @@ GameWrapper::GameWrapper(
 		throw ServerException("failed to initialize game");
 	}
 
+	// Record when the game was created
+	created = std::time(nullptr);
+
 	// If any custom meta data was specified, set it
 	for (auto &pair: meta) {
 		gamePtr->setMeta(pair.first, pair.second);
