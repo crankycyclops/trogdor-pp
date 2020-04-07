@@ -375,6 +375,11 @@ namespace trogdor {
                   players.get(name)->out("notifications") << message << std::endl;
                }
 
+               // if the Player is located in a Place, make sure to remove it
+               if (players.get(name)->getLocation()) {
+                  players.get(name)->getLocation()->removeThing(players.get(name));
+               }
+
                entities.erase(name);
                things.erase(name);
                beings.erase(name);
