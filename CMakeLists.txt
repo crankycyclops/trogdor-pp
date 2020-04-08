@@ -206,8 +206,13 @@ if (Boost_FOUND)
 	# Link in the redis input and output drivers
 	if (ENABLE_REDIS)
 
+		target_include_directories(trogdord
+			PUBLIC ${HIREDIS_INCLUDE_DIRS}
+		)
+
 		target_link_libraries(trogdord
-			PUBLIC trogdord_redis
+			PRIVATE trogdord_redis
+			PUBLIC ${HIREDIS_LIBRARIES}
 		)
 
 		add_dependencies(trogdord trogdord_redis)
