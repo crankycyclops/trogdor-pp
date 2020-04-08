@@ -17,7 +17,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Don't force every optional component to build as a prerequisite to "make install"
-SET(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY True)
+set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY True)
+
+# If we're building trogdord, this indicates that we should build it with redis support
+option(ENABLE_REDIS "Enable Redis support" OFF)
 
 ###############################################################################
 
@@ -154,6 +157,18 @@ find_package(Boost COMPONENTS system)
 
 if (Boost_FOUND)
 
+	if (ENABLE_REDIS)
+
+		add_definitions(-DENABLE_REDIS)
+		pkg_check_modules (HIREDIS REQUIRED hiredis>=0.13)
+
+		add_library(trogdord_redis STATIC
+			src/trogdord/io/output/redis.cpp
+			src/trogdord/io/input/redis.cpp
+		)
+
+	endif (ENABLE_REDIS)
+
 	add_executable(trogdord
 		src/trogdord/main.cpp
 		src/trogdord/config.cpp
@@ -180,10 +195,8 @@ if (Boost_FOUND)
 		src/trogdord/scopes/player.cpp
 		src/trogdord/io/input/driver.cpp
 		src/trogdord/io/input/local.cpp
-		src/trogdord/io/input/redis.cpp
 		src/trogdord/io/output/driver.cpp
 		src/trogdord/io/output/local.cpp
-		src/trogdord/io/output/redis.cpp
 		src/trogdord/io/iostream/serverin.cpp
 		src/trogdord/io/iostream/serverout.cpp
 		src/trogdord/io/iostream/servererr.cpp
@@ -192,6 +205,17 @@ if (Boost_FOUND)
 	target_include_directories(trogdord
 		PUBLIC ${Boost_INCLUDE_DIRS}
 	)
+
+	# Link in the redis input and output drivers
+	if (ENABLE_REDIS)
+
+		target_link_libraries(trogdord
+			PUBLIC trogdord_redis
+		)
+
+		add_dependencies(trogdord trogdord_redis)
+
+	endif (ENABLE_REDIS)
 
 	target_link_libraries(trogdord
 		PUBLIC trogdor
