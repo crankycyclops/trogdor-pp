@@ -2,7 +2,10 @@
 #include "../../include/exception/serverexception.h"
 
 #include "../../include/io/input/local.h"
-#include "../../include/io/input/redis.h"
+
+#ifdef ENABLE_REDIS
+	#include "../../include/io/input/redis.h"
+#endif
 
 namespace input {
 
@@ -17,7 +20,10 @@ namespace input {
 	void Driver::instantiateDrivers() {
 
 		drivers[Local::DRIVER_NAME] = std::make_unique<Local>();
-		drivers[Redis::DRIVER_NAME] = std::make_unique<Redis>();
+
+		#ifdef ENABLE_REDIS
+			drivers[Redis::DRIVER_NAME] = std::make_unique<Redis>();
+		#endif
 
 		driversInstantiated = true;
 	}
