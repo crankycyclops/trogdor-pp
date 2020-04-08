@@ -2,7 +2,10 @@
 #include "../../include/exception/serverexception.h"
 
 #include "../../include/io/output/local.h"
-#include "../../include/io/output/redis.h"
+
+#ifdef ENABLE_REDIS
+	#include "../../include/io/output/redis.h"
+#endif
 
 namespace output {
 
@@ -18,7 +21,10 @@ namespace output {
 	void Driver::instantiateDrivers() {
 
 		drivers[Local::DRIVER_NAME] = std::make_unique<Local>();
-		drivers[Redis::DRIVER_NAME] = std::make_unique<Redis>();
+
+		#ifdef ENABLE_REDIS
+			drivers[Redis::DRIVER_NAME] = std::make_unique<Redis>();
+		#endif
 
 		driversInstantiated = true;
 	}
