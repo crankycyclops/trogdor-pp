@@ -61,6 +61,12 @@ class Config {
 		static const char *CONFIG_KEY_DEFINITIONS_PATH;
 		static const char *CONFIG_KEY_INPUT_DRIVER;
 		static const char *CONFIG_KEY_OUTPUT_DRIVER;
+		static const char *CONFIG_KEY_REDIS_HOST;
+		static const char *CONFIG_KEY_REDIS_PORT;
+		static const char *CONFIG_KEY_REDIS_CONNECTION_TIMEOUT;
+		static const char *CONFIG_KEY_REDIS_CONNECTION_RETRY_INTERVAL;
+		static const char *CONFIG_KEY_REDIS_OUTPUT_CHANNEL;
+		static const char *CONFIG_KEY_REDIS_INPUT_CHANNEL;
 
 		// Returns singleton instance of Config.
 		static std::unique_ptr<Config> &get() noexcept;

@@ -78,4 +78,8 @@ namespace output {
 		bufferMutex.unlock();
 		return m;
 	}
+
+	/************************************************************************/
+
+	Local::~Local() {}
 }

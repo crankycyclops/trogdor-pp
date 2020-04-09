@@ -26,7 +26,21 @@ namespace output {
 			// called once.)
 			static void instantiateDrivers();
 
+		protected:
+
+			// Returns true if the driver has been activated and false if
+			// not. Provides a trivial default implementation for drivers
+			// that don't actually require any activation.
+			virtual bool activated();
+
+			// Any code that needs to be executed after instantiation and
+			// before the driver can actually be used.
+			virtual void activate();
+
 		public:
+
+			// Every driver should implement a destructor.
+			virtual ~Driver() = 0;
 
 			// Returns the singleton instance of Driver matching the given name
 			// (throws ServerException if the specified driver name hasn't
