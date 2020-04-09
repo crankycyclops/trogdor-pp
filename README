@@ -8,7 +8,7 @@ For this project, you'll require the following tools:
 	- LibXML2 (libxml2-dev package on Ubuntu)
 	- Lua 5.1+ (lua5.x-dev package on Ubuntu, where 5.x is the version you're compiling against)
 
-If you're building the game server, trogodrd, you'll also need the Boost libraries installed to a place where CMake can find it.
+If you're building the game server, trogodrd, you'll also need the Boost libraries installed to a place where CMake can find it, and if you're building trogdord with redis support (required if you want to do anything with web sockets), you'll have to install hiredis 0.13 or later.
 
 By default, trogdor-pp compiles against Lua 5.1, but I've written glue code that enables it to also compile against Lua 5.2+. To set the lua version to something higher than 5.1, just prefix your make command with "LUA_VERSION=5.x".
 
@@ -31,9 +31,11 @@ cd /path/to/src
 cmake -DCMAKE_BUILD_TYPE=Release .
 make standalone && make install
 
-To build the game server trogdord:
+To build the game server, trogdord:
 cmake -DCMAKE_BUILD_TYPE=Release .
 make trogdord && make install
+
+To build trogdord with redis support, add -DENABLE_REDIS=ON to your cmake command above.
 
 You don't have to explicitly build the library first. Building the client will build and link to it automatically as a dependency.
 
