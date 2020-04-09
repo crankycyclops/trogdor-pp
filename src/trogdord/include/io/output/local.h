@@ -59,6 +59,9 @@ namespace output {
 
 		public:
 
+			// Destructor
+			virtual ~Local();
+
 			// String representation of the driver's name.
 			static const char *DRIVER_NAME;
 

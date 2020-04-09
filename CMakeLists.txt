@@ -159,7 +159,6 @@ if (Boost_FOUND)
 
 	if (ENABLE_REDIS)
 
-		add_definitions(-DENABLE_REDIS)
 		pkg_check_modules (HIREDIS REQUIRED hiredis>=0.13)
 
 		add_library(trogdord_redis STATIC
@@ -209,10 +208,16 @@ if (Boost_FOUND)
 	# Link in the redis input and output drivers
 	if (ENABLE_REDIS)
 
-		target_link_libraries(trogdord
-			PUBLIC trogdord_redis
+		target_include_directories(trogdord_redis
+			PUBLIC ${HIREDIS_INCLUDE_DIRS}
 		)
 
+		target_link_libraries(trogdord
+			PRIVATE trogdord_redis
+			PUBLIC ${HIREDIS_LIBRARIES}
+		)
+
+		add_definitions(-DENABLE_REDIS)
 		add_dependencies(trogdord trogdord_redis)
 
 	endif (ENABLE_REDIS)
