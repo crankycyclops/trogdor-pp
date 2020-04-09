@@ -4,6 +4,7 @@
 #include "../include/io/output/driver.h"
 
 #include "../include/scopes/entity.h"
+#include "../include/exception/unsupportedoperation.h"
 #include "../include/exception/entity/entitynotfound.h"
 
 
@@ -269,22 +270,30 @@ JSONObject EntityController::getOutput(JSONObject request) {
 
 	JSONObject messages;
 
-	for (
-		std::optional<output::Message> m = outBuffer->pop(gameId, entityName, channel);
-		m.has_value();
-		m = outBuffer->pop(gameId, entityName, channel)
-	) {
-		messages.push_back(std::make_pair("", (*m).toJSONObject()));
-	};
+	try {
 
-	// See comment in GameController::getGameList describing use of addedGames
-	// for an explanation of what I'm doing here.
-	if (!messages.size()) {
-		messages.push_back(std::make_pair("", JSONObject()));
+		for (
+			std::optional<output::Message> m = outBuffer->pop(gameId, entityName, channel);
+			m.has_value();
+			m = outBuffer->pop(gameId, entityName, channel)
+		) {
+			messages.push_back(std::make_pair("", (*m).toJSONObject()));
+		};
+
+		// See comment in GameController::getGameList describing use of addedGames
+		// for an explanation of what I'm doing here.
+		if (!messages.size()) {
+			messages.push_back(std::make_pair("", JSONObject()));
+		}
+
+		response.put("status", 200);
+		response.add_child("messages", messages);
 	}
 
-	response.put("status", 200);
-	response.add_child("messages", messages);
+	catch (UnsupportedOperation &e) {
+		response.put("status", 501);
+		response.put("message", e.what());
+	}
 
 	return response;
 }

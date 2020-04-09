@@ -41,6 +41,27 @@ namespace output {
 			throw ServerException(name + " is not a valid output driver.");
 		}
 
+		if (!drivers[name]->activated()) {
+			drivers[name]->activate();
+		}
+
 		return drivers[name];
 	}
+
+	/************************************************************************/
+
+	// Default implementation for driver's that don't actually require
+	// activation
+	bool Driver::activated() {
+
+		return true;
+	}
+
+	/************************************************************************/
+
+	void Driver::activate() {}
+
+	/************************************************************************/
+
+	Driver::~Driver() {}
 }
