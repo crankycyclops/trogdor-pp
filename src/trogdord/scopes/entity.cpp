@@ -372,9 +372,7 @@ JSONObject EntityController::postInput(JSONObject request) {
 
 	else {
 
-		std::unique_ptr<input::Driver> &inBuffer = input::Driver::get(
-			Config::get()->value<std::string>(Config::CONFIG_KEY_INPUT_DRIVER)
-		);
+		std::unique_ptr<input::Driver> &inBuffer = input::Driver::get();
 
 		inBuffer->set(gameId, entityName, *command);
 		response.put("status", 200);

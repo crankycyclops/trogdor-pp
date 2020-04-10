@@ -160,7 +160,6 @@ if (Boost_FOUND)
 
 		add_library(trogdord_redis STATIC
 			src/trogdord/io/output/redis.cpp
-			src/trogdord/io/input/redis.cpp
 		)
 
 	endif (ENABLE_REDIS)
@@ -190,7 +189,6 @@ if (Boost_FOUND)
 		src/trogdord/scopes/creature.cpp
 		src/trogdord/scopes/player.cpp
 		src/trogdord/io/input/driver.cpp
-		src/trogdord/io/input/local.cpp
 		src/trogdord/io/output/driver.cpp
 		src/trogdord/io/output/local.cpp
 		src/trogdord/io/iostream/serverin.cpp
