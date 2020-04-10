@@ -18,9 +18,7 @@ trogdor::Trogin &ServerIn::operator>> (std::string &val) {
 		throw ServerException("Entity pointer not set on input stream before use. This is a bug.");
 	}
 
-	std::unique_ptr<input::Driver> &inBuffer = input::Driver::get(
-		Config::get()->value<std::string>(Config::CONFIG_KEY_INPUT_DRIVER)
-	);
+	std::unique_ptr<input::Driver> &inBuffer = input::Driver::get();
 
 	// Block until input is available
 	blocked = true;

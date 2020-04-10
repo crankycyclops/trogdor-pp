@@ -1,45 +1,85 @@
 #include "../../include/config.h"
 #include "../../include/exception/serverexception.h"
 
-#include "../../include/io/input/local.h"
-
-#ifdef ENABLE_REDIS
-	#include "../../include/io/input/redis.h"
-#endif
+#include "../../include/io/input/driver.h"
 
 namespace input {
 
-	// Indicates that the singleton drivers have been instantiated.
-	bool Driver::driversInstantiated = false;
 
-	// Driver names mapped to singleton instances of Driver
-	std::unordered_map<std::string, std::unique_ptr<Driver>> Driver::drivers;
+	// Singleton instance of input::Driver
+	std::unique_ptr<Driver> Driver::instance = nullptr;
 
 	/************************************************************************/
 
-	void Driver::instantiateDrivers() {
+	Driver::Driver() {}
 
-		drivers[Local::DRIVER_NAME] = std::make_unique<Local>();
+	/************************************************************************/
 
-		#ifdef ENABLE_REDIS
-			drivers[Redis::DRIVER_NAME] = std::make_unique<Redis>();
-		#endif
+	std::unique_ptr<Driver> &Driver::get() {
 
-		driversInstantiated = true;
+		if (!instance) {
+			instance = std::unique_ptr<Driver>(new Driver());
+		}
+
+		return instance;
 	}
 
 	/************************************************************************/
 
-	std::unique_ptr<Driver> &Driver::get(std::string name) {
+	bool Driver::isSet(
+		size_t gameId,
+		std::string entityName
+	) {
 
-		if (!driversInstantiated) {
-			instantiateDrivers();
+		bufferMutex.lock();
+
+		bool exists = bufferExists(gameId, entityName) &&
+			inputBuffers[gameId][entityName].isSet ? true : false;
+
+		bufferMutex.unlock();
+		return exists;
+	}
+
+	/************************************************************************/
+
+	void Driver::set(
+		size_t gameId,
+		std::string entityName,
+		std::string input
+	) {
+
+		bufferMutex.lock();
+
+		if (inputBuffers.end() == inputBuffers.find(gameId)) {
+			inputBuffers[gameId] = {};
 		}
 
-		if (drivers.end() == drivers.find(name)) {
-			throw ServerException(name + " is not a valid input driver.");
+		inputBuffers[gameId][entityName] = {true, input};
+		bufferMutex.unlock();
+	}
+
+	/************************************************************************/
+
+	std::optional<std::string> Driver::consume(
+		size_t gameId,
+		std::string entityName
+	) {
+
+		bufferMutex.lock();
+
+		if (!bufferExists(gameId, entityName) || !inputBuffers[gameId][entityName].isSet) {
+			bufferMutex.unlock();
+			return std::nullopt;
 		}
 
-		return drivers[name];
+		else {
+
+			std::string value = inputBuffers[gameId][entityName].buffer;
+
+			inputBuffers[gameId][entityName].isSet = false;
+			bufferMutex.unlock();
+
+			return value;
+		}
 	}
 }

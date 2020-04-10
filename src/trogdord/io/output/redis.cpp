@@ -134,7 +134,7 @@ namespace output {
 		std::string channel
 	) {
 
-		throw UnsupportedOperation("output::Redis::size is unsupported");
+		throw UnsupportedOperation("redis output driver does not support this operation");
 		return 0;
 	}
 
@@ -169,7 +169,7 @@ namespace output {
 		std::string channel
 	) {
 
-		throw UnsupportedOperation("output::Redis::pop is unsupported");
+		throw UnsupportedOperation("redis output driver does not support this operation");
 		return std::nullopt;
 	}
 }
