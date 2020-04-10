@@ -17,7 +17,6 @@ const char *Config::CONFIG_KEY_DEFINITIONS_PATH = "resources.definitions_path";
 const char *Config::CONFIG_KEY_REUSE_ADDRESS = "network.reuse_address";
 const char *Config::CONFIG_KEY_SEND_TCP_KEEPALIVE = "network.send_keepalive";
 const char *Config::CONFIG_KEY_LOGTO = "logging.logto";
-const char *Config::CONFIG_KEY_INPUT_DRIVER = "input.driver";
 const char *Config::CONFIG_KEY_OUTPUT_DRIVER = "output.driver";
 const char *Config::CONFIG_KEY_REDIS_HOST = "redis.host";
 const char *Config::CONFIG_KEY_REDIS_PORT = "redis.port";
@@ -33,7 +32,6 @@ const std::unordered_map<std::string, std::string> Config::DEFAULTS = {
 	{CONFIG_KEY_SEND_TCP_KEEPALIVE,               "true"},
 	{CONFIG_KEY_LOGTO,                            "stderr"},
 	{CONFIG_KEY_DEFINITIONS_PATH,                 "share/trogdor"},
-	{CONFIG_KEY_INPUT_DRIVER,                     "local"},
 	{CONFIG_KEY_OUTPUT_DRIVER,                    "local"},
 	{CONFIG_KEY_REDIS_HOST,                       "localhost"},
 	{CONFIG_KEY_REDIS_PORT,                       "6379"},
