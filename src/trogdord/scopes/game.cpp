@@ -229,7 +229,7 @@ JSONObject GameController::getDefinitionList(JSONObject request) {
 		response.add_child("definitions", definitions);
 	}
 
-	catch (STD_FILESYSTEM::filesystem_error &e) {
+	catch (const STD_FILESYSTEM::filesystem_error &e) {
 		response.put("status", 500);
 		response.put("message", e.what());
 	}
@@ -326,12 +326,12 @@ JSONObject GameController::createGame(JSONObject request) {
 			response.put("id", GameContainer::get()->createGame(*definition, *name, meta));
 		}
 
-		catch (trogdor::Exception &e) {
+		catch (const trogdor::Exception &e) {
 			response.put("status", 500);
 			response.put("message", e.what());
 		}
 
-		catch (ServerException &e) {
+		catch (const ServerException &e) {
 			response.put("status", 500);
 			response.put("message", e.what());
 		}
