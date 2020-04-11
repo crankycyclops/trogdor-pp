@@ -5,6 +5,7 @@
 #include <boost/asio.hpp>
 
 #include "include/config.h"
+#include "include/io/input/listenercontainer.h"
 
 #include "include/network/tcpcommon.h"
 #include "include/network/tcpconnection.h"
@@ -39,6 +40,11 @@ int main(int argc, char **argv) {
 	config->err(trogdor::Trogerr::INFO) << STARTUP_MESSAGE << std::endl;
 
 	try {
+
+		// Retrieving the singleton instance of ListenerContainer will
+		// make sure it gets initialized and that the listeners get started
+		// right away.
+		input::ListenerContainer::get();
 
 		boost::asio::io_service io;
 

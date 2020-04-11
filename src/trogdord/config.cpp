@@ -17,6 +17,7 @@ const char *Config::CONFIG_KEY_DEFINITIONS_PATH = "resources.definitions_path";
 const char *Config::CONFIG_KEY_REUSE_ADDRESS = "network.reuse_address";
 const char *Config::CONFIG_KEY_SEND_TCP_KEEPALIVE = "network.send_keepalive";
 const char *Config::CONFIG_KEY_LOGTO = "logging.logto";
+const char *Config::CONFIG_KEY_INPUT_LISTENERS = "input.listeners";
 const char *Config::CONFIG_KEY_OUTPUT_DRIVER = "output.driver";
 const char *Config::CONFIG_KEY_REDIS_HOST = "redis.host";
 const char *Config::CONFIG_KEY_REDIS_PORT = "redis.port";
@@ -32,6 +33,7 @@ const std::unordered_map<std::string, std::string> Config::DEFAULTS = {
 	{CONFIG_KEY_SEND_TCP_KEEPALIVE,               "true"},
 	{CONFIG_KEY_LOGTO,                            "stderr"},
 	{CONFIG_KEY_DEFINITIONS_PATH,                 "share/trogdor"},
+	{CONFIG_KEY_INPUT_LISTENERS,                  "[]"},
 	{CONFIG_KEY_OUTPUT_DRIVER,                    "local"},
 	{CONFIG_KEY_REDIS_HOST,                       "localhost"},
 	{CONFIG_KEY_REDIS_PORT,                       "6379"},
@@ -58,7 +60,7 @@ Config::Config(std::string iniPath) noexcept {
 		}
 
 		// Error logging hasn't been setup yet, so I have to write to stderr.
-		catch (boost::property_tree::ini_parser::ini_parser_error &e) {
+		catch (const boost::property_tree::ini_parser::ini_parser_error &e) {
 			std::cerr << "Error: " << e.what() << std::endl;
 			exit(EXIT_INI_ERROR);
 		}
@@ -118,7 +120,7 @@ void Config::initErrorLogger() noexcept {
 		// If for whatever reason we failed to open the file for writing
 		// (maybe the process doesn't have the necessary permissions?), fall
 		// back to std::cerr.
-		catch (std::exception &e) {
+		catch (const std::exception &e) {
 
 			std::cerr << e.what() << std::endl;
 			std::cerr << "WARNING: failed to open " << logto << " for writing. Falling back to stderr." << std::endl;
