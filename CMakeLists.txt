@@ -193,6 +193,7 @@ if (Boost_FOUND)
 		src/trogdord/scopes/creature.cpp
 		src/trogdord/scopes/player.cpp
 		src/trogdord/io/input/driver.cpp
+		src/trogdord/io/input/listeners/listener.cpp
 		src/trogdord/io/input/listenercontainer.cpp
 		src/trogdord/io/output/driver.cpp
 		src/trogdord/io/output/local.cpp
