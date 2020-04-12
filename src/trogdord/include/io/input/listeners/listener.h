@@ -1,6 +1,7 @@
 #ifndef INPUT_LISTENER_H
 #define INPUT_LISTENER_H
 
+#include <string>
 #include <memory>
 
 namespace input {
@@ -21,6 +22,11 @@ namespace input {
 			// associated with the listener have stopped. Not doing so will
 			// result in undefined behavior.
 			virtual void stop() = 0;
+
+			// Takes as input a string received by the input listener, and if
+			// the input is valid, sends it to the input driver. If the
+			// input is invalid, it is ignored.
+			void dispatch(std::string input);
 	};
 }
 
