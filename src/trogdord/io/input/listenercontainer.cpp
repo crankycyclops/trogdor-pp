@@ -47,7 +47,7 @@ namespace input {
 				if (listeners.find(listener.second.data()) != listeners.end()) {
 					listeners[listener.second.data()]->start();
 					Config::get()->err(trogdor::Trogerr::INFO) <<
-						"Started " + listener.second.data() + " input listener." <<
+						"Starting " + listener.second.data() + " input listener." <<
 						std::endl;
 				}
 
