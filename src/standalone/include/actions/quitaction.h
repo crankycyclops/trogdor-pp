@@ -1,5 +1,5 @@
-#ifndef TIMEACTION_H
-#define TIMEACTION_H
+#ifndef QUITACTION_H
+#define QUITACTION_H
 
 
 #include <memory>
@@ -7,10 +7,9 @@
 
 
 /*
-   TimeAction outputs the current game time to whichever player issues
-   the command.
+   The Quit action removes the player who issued the command from the game.
 */
-class TimeAction: public trogdor::Action {
+class QuitAction: public trogdor::Action {
 
    public:
 
@@ -21,8 +20,8 @@ class TimeAction: public trogdor::Action {
       */
       virtual bool checkSyntax(const std::shared_ptr<trogdor::Command> &command);
 
-      virtual void execute(trogdor::entity::Player *player,
-      const std::shared_ptr<trogdor::Command> &command, trogdor::Game *game);
+      virtual void execute(Player *player,
+	 const std::shared_ptr<trogdor::Command> &command, trogdor::Game *game);
 };
 
 

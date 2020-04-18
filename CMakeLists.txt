@@ -137,6 +137,7 @@ add_executable(standalone
 	src/standalone/streamout.cpp
 	src/standalone/streamerr.cpp
 	src/standalone/actions/timeaction.cpp
+	src/standalone/actions/quitaction.cpp
 )
 
 add_dependencies(standalone trogdor)

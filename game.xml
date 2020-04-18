@@ -145,9 +145,9 @@ This is an introduction. If introductions are enabled, new players will have to 
            to redefine an existing synonym. -->
       <synonyms>
 
-         <!-- this example maps the new word "shutdown" to the existing verb
-              "quit." -->
-         <verb verb="quit">shutdown</verb>
+         <!-- this example maps the new word "steal" to the existing verb
+              "take." -->
+         <verb verb="take">steal</verb>
 
          <!-- this example maps the new synonym "sideway" to the direction
               "sideways," which we defined above. Note that this synonym must
