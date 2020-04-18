@@ -15,6 +15,7 @@
 #include "include/streamout.h"
 #include "include/streamerr.h"
 #include "include/actions/timeaction.h"
+#include "include/actions/quitaction.h"
 
 
 int main(int argc, char **argv) {
@@ -48,11 +49,12 @@ int main(int argc, char **argv) {
       currentGame->makeInstantiator(), currentGame->getVocabulary()
    );
 
-   // The client can add its own synonyms for built-in verbs
-   currentGame->insertVerbSynonym("escape", "quit");
-
    // The client can also write and set its own custom game actions
    currentGame->insertVerbAction("time", std::make_unique<TimeAction>());
+   currentGame->insertVerbAction("quit", std::make_unique<QuitAction>());
+
+   // The client can add its own synonyms for built-in verbs
+   currentGame->insertVerbSynonym("escape", "quit");
 
    if (currentGame->initialize(parser.get(), gameXML, true)) {
 

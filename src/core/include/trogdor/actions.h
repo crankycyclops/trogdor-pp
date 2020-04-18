@@ -9,25 +9,6 @@ namespace trogdor {
 
 
    /*
-      The Quit action removes the player who issued the command from the game.
-   */
-   class QuitAction: public Action {
-
-      public:
-
-         /*
-            See documentation in action.h.  A valid syntax for the Quit action
-            is to have a command with just a verb and no direct object or
-            indirect object.
-         */
-         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
-
-         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game);
-   };
-
-/******************************************************************************/
-
-   /*
       The Cuss action responds to players when they cuss ;)
    */
    class CussAction: public Action {
