@@ -21,19 +21,23 @@ Trogdor-pp itself is a library, but in src/standalone, you'll find a simple sing
 
 To build just the library, issue these commands:
 
-cd /path/to/src
 cmake -DCMAKE_BUILD_TYPE=Release .
 make trogdor && make install
 
 To build the single player client demo, use these commands:
 
-cd /path/to/src
 cmake -DCMAKE_BUILD_TYPE=Release .
 make standalone && make install
 
 To build the game server, trogdord:
+
 cmake -DCMAKE_BUILD_TYPE=Release .
 make trogdord && make install
+
+To build the PHP 7 module that can connect to and interact with trogdord:
+
+cd src/php7/trogdord
+phpize && ./configure && make && make install
 
 To build trogdord with redis support, add -DENABLE_REDIS=ON to your cmake command above.
 
