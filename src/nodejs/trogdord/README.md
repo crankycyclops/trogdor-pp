@@ -95,7 +95,7 @@ connection.on('close', () => {
 
 ### Making a Raw Request
 
-Raw JSON requests are a low level mechanism that should, under ordinary circumstances, be made only by class methods whose underlying implementations are abstracted from the client. Nevertheless, you might run into a situation where making a raw request is desireable, and for this reason, the makeRequest method exist.
+Raw JSON requests are a low level mechanism that should, under ordinary circumstances, be made only by class methods whose underlying implementations are abstracted from the client. Nevertheless, you might run into a situation where making a raw request is advantageous or even necessary, and for this reason, the makeRequest method exists.
 
 Example:
 
