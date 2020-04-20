@@ -13,7 +13,8 @@ const {
 const {
 	DEFAULT_HOST,
 	DEFAULT_PORT,
-	DEFAULT_CONNECT_TIMEOUT_MS
+	DEFAULT_CONNECT_TIMEOUT_MS,
+	DEFAULT_REQUEST_TIMEOUT_MS
 } = require('./defaults');
 
 /**
@@ -125,6 +126,52 @@ class Trogdord extends EventEmitter {
 	get connected() {
 
 		return !this.#connection.destroyed && !this.#connection.connecting ? true : false;
+	}
+
+	/**
+	 * Sends a request and returns a promise that resolves to a JSON response
+	 * object.
+	 * 
+	 * @param {Object} request A JSON object representing a trogdord request.
+	 * @param {Integer} timeout Number of milliseconds to wait before timing out (optional)
+	 */
+	makeRequest(request, timeout = DEFAULT_REQUEST_TIMEOUT_MS) {
+
+		if (!this.connected) {
+			throw new Error(ENOTCONN);
+		}
+
+		return new Promise((resolve, reject) => {
+
+			const dataChunks = [];
+
+			let onError = (error) => {
+				this.#connection.setTimeout(0);
+				reject(error);
+			};
+
+			let onData = (data) => {
+
+				dataChunks.push(data);
+				let dataStr = Buffer.concat(dataChunks).toString().trim();
+
+				// Keep appending data to the buffer until we reach the end
+				if (dataStr.indexOf(TCP_DELIMITER) != -1) {
+
+					this.#connection.removeListener('data', onData);
+					this.#connection.removeListener('error', onError);
+
+					this.#connection.setTimeout(0);
+					resolve(JSON.parse(dataStr.slice(0, -1)));
+				}
+			};
+
+			this.#connection.on('data', onData);
+			this.#connection.once('error', onError);
+
+			this.#connection.setTimeout(timeout);
+			this.#connection.write(JSON.stringify(request) + TCP_DELIMITER);
+		});
 	}
 
 	/**

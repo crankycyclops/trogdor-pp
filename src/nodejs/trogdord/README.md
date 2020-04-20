@@ -92,3 +92,46 @@ connection.on('close', () => {
 	// cleanup code goes here
 })
 ```
+
+### Making a Raw Request
+
+Raw JSON requests are a low level mechanism that should, under ordinary circumstances, be made only by class methods whose underlying implementations are abstracted from the client. Nevertheless, you might run into a situation where making a raw request is desireable, and for this reason, the makeRequest method exist.
+
+Example:
+
+```javascript
+const connection = new Trogdord()
+
+connection.on('connect', () => {
+
+	connection.makeRequest({
+		method: "get",
+		scope: "global",
+		action: "statistics"
+	}).then((response) => {
+		// ...Do something with the JSON response...
+	}).catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+By default, the request timeout is three seconds, but you can change that by passing in a different value (in milliseconds) as an optional second argument to makeRequest:
+
+```javascript
+const connection = new Trogdord()
+
+connection.on('connect', () => {
+
+	// Request times out in half a second instead of three
+	connection.makeRequest({
+		method: "get",
+		scope: "global",
+		action: "statistics"
+	}, 500).then((response) => {
+		// ...
+	}).catch((error) => {
+		// ...
+	});
+});
+```
