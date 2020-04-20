@@ -8,11 +8,11 @@ TODO: will publish to npm once I complete the first working version
 
 ## Dependencies
 
-Requires Node.js version 12 or above.
+Requires Node.js 12.0 or above.
 
 ## How to use
 
-### Establishing a connection
+### Establishing a Connection
 
 By default, the Trogdord object will attempt to connect to localhost:1040 (1040 is the default port that trogdord runs on.) If those values are correct, then all you need to do is this:
 
@@ -91,6 +91,36 @@ connection.on('close', () => {
 
 	// cleanup code goes here
 })
+```
+
+### Retrieving Trogdord Statistics
+
+This method retrieves useful statistical data about the instance of trogdord we're connected to:
+
+Example:
+
+```javascript
+const connection = new Trogdord()
+
+connection.on('connect', () => {
+
+	connection.statistics()
+	.then((stats) => {
+		console.log(stats);
+	}).catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+{
+  players: 0,
+  version: { major: 0, minor: 29, patch: 0 },
+  lib_version: { major: 0, minor: 5, patch: 0 }
+}
 ```
 
 ### Making a Raw Request
