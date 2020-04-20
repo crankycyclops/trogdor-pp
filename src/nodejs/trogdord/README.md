@@ -51,15 +51,13 @@ The following options are supported:
 
 * **connectTimeout**: the number of milliseconds to wait while attempting to connect to trogdord before timing out
 
-### Event Handling
-
-The trogdord module emits the following events:
+The trogdord module emits the following events while attempting to connect or when the connection is closed:
 
 * **connect**: connection has been established
 * **close**: connection has been closed
 * **error**: an error occurred while attempting to connect
 
-To use the connection, listen on the **connect** event:
+To make use of the connection after it's established, listen for the **connect** event:
 
 ```javascript
 const connection = new Trogdord()
@@ -70,7 +68,7 @@ connection.on('connect', () => {
 })
 ```
 
-To handle errors, listen on the **error** event:
+To handle errors, listen for the **error** event:
 
 ```javascript
 const connection = new Trogdord()
@@ -82,7 +80,7 @@ connection.on('error', (error) => {
 })
 ```
 
-If you want to trigger a block of code once the connection is closed, listen on the **close** event:
+If you want to trigger a block of code once the connection is closed, listen for the **close** event:
 
 ```javascript
 const connection = new Trogdord()
@@ -123,7 +121,7 @@ Result:
 }
 ```
 
-### Making a Raw Request
+### Making a Raw JSON Request
 
 Raw JSON requests are a low level mechanism that should, under ordinary circumstances, be made only by class methods whose underlying implementations are abstracted from the client. Nevertheless, you might run into a situation where making a raw request is advantageous or even necessary, and for this reason, the makeRequest method exists.
 
