@@ -21,6 +21,9 @@ class Game {
 	// The game's name
 	#name;
 
+	// The game's definition file
+	#definition;
+
 	// Instance of Trogdord that spawned this instance of Game
 	#trogdord;
 
@@ -31,10 +34,11 @@ class Game {
 	 * @param {String} name The game's name
 	 * @param {Object} trogdord Connection to the instance of trogdord the game belongs to
 	 */
-	constructor(id, name, trogdord) {
+	constructor(id, name, definition, trogdord) {
 
 		this.#id = id;
 		this.#name = name;
+		this.#definition = definition;
 		this.#trogdord = trogdord;
 	}
 
@@ -52,6 +56,14 @@ class Game {
 	get name() {
 
 		return this.#name;
+	}
+
+	/**
+	 * Returns the game's definition.
+	 */
+	get definition() {
+
+		return this.#definition;
 	}
 
 	/**

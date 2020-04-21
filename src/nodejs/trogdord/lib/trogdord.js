@@ -266,7 +266,7 @@ class Trogdord extends EventEmitter {
 					reject(error);
 				}
 
-				resolve(new this.#Game(response.id, response.name, this));
+				resolve(new this.#Game(response.id, response.name, response.definition, this));
 
 			}).catch((error) => {
 				reject(error);
@@ -320,7 +320,7 @@ class Trogdord extends EventEmitter {
 					reject(error);
 				}
 
-				resolve(new this.#Game(response.id, response.name, this));
+				resolve(new this.#Game(response.id, name, definition, this));
 
 			}).catch((error) => {
 				reject(error);
