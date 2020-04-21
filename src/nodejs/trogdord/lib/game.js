@@ -75,6 +75,38 @@ class Game {
 	}
 
 	/**
+	 * Returns a promise that resolves to an object containing game-specific
+	 * statistics.
+	 */
+	statistics() {
+
+		return new Promise((resolve, reject) => {
+
+			this.#trogdord.makeRequest({
+				method: "get",
+				scope: "game",
+				action: "statistics",
+				args: {id: this.#id}
+			}).then((response) => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				delete response.status;
+				resolve(response);
+
+			}).catch((error) => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
 	 * Returns a promise that resolves to true if the game is running and false
 	 * if it's not.
 	 */

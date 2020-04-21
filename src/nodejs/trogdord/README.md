@@ -234,6 +234,42 @@ connection.on('connect', () => {
 });
 ```
 
+### Returning Game-Specific Statistics
+
+Game.statistics() returns statistical data associated with a specific game.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// Get an existing game and return its statistics
+	connection.getGame(0)
+	.then((game) => {
+		return game.statistics();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+{
+  created: '2020-04-21 21:20:50 UTC',
+  players: 1,
+  current_time: 25,
+  is_running: true
+}
+```
+
 ### Checking if a Game is Running
 
 Game.isRunning() will return true if the game is running and false if not.
