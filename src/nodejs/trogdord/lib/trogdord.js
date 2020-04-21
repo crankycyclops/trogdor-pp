@@ -22,6 +22,11 @@ const {
  */
 class Trogdord extends EventEmitter {
 
+	// Game objects represent games that exist inside the trogdord instance.
+	// Only the Trogdord class should be able to instantiate this class, which
+	// is why I've imported it as a private field.
+	#Game = require('./game');
+
 	// Underlying socket connection
 	#connection;
 
@@ -152,6 +157,170 @@ class Trogdord extends EventEmitter {
 
 				delete response.status;
 				resolve(response);
+
+			}).catch((error) => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
+	 * Returns a promise that resolves to a JSON object containing a list of
+	 * all available game definitions.
+	 */
+	definitions() {
+
+		return new Promise((resolve, reject) => {
+
+			this.makeRequest({
+				method: "get",
+				scope: "game",
+				action: "definitions"
+			}).then((response) => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				delete response.status;
+				resolve(response.definitions);
+
+			}).catch((error) => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
+	 * Returns a promise that resolves to a JSON object containing all games
+	 * that currently exist on the server.
+	 */
+	games() {
+
+		return new Promise((resolve, reject) => {
+
+			this.makeRequest({
+				method: "get",
+				scope: "game",
+				action: "list"
+			}).then((response) => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				try {
+
+					let games = [];
+
+					response.games.forEach((game, index) => {
+						games.push(new this.#Game(game.id, game.name, this));
+					});
+
+					resolve(games);
+				}
+
+				catch (e) {
+					reject(e);
+				}
+
+			}).catch((error) => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
+	 * Returns a promise that resolves to an instance of the game referenced by
+	 * the given id.
+	 * 
+	 * @param {Integer} id The game's id
+	 */
+	getGame(id) {
+
+		return new Promise((resolve, reject) => {
+
+			if (!id && 0 != id) {
+				reject(new Error('passed invalid or undefined game id'));
+			}
+
+			this.makeRequest({
+				method: "get",
+				scope: "game",
+				args: {id: id}
+			}).then((response) => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(new this.#Game(response.id, response.name, this));
+
+			}).catch((error) => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
+	 * Returns a promise that resolves to an instance of the new game.
+	 * 
+	 * @param {String} name The game's name
+	 * @param {String} name The game's definition file
+	 * @param {String} meta Any game meta data that should be set (optional)
+	 */
+	newGame(name, definition, meta = {}) {
+
+		return new Promise((resolve, reject) => {
+
+			name = name.trim();
+			definition = definition.trim();
+
+			if (!name) {
+				reject(new Error('invalid or undefined name'));
+			}
+
+			else if (!definition) {
+				reject(new Error('invalid or undefined game definition filename'));
+			}
+
+			let request = {
+				method: "post",
+				scope: "game",
+				args: {
+					name: name,
+					definition: definition
+				}
+			};
+
+			Object.keys(meta).forEach((key, index) => {
+				request.args[key] = meta[key];
+			});
+
+			this.makeRequest(request)
+			.then((response) => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(new this.#Game(response.id, response.name, this));
 
 			}).catch((error) => {
 				reject(error);

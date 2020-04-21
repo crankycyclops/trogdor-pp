@@ -17,25 +17,25 @@ Requires Node.js 12.0 or above.
 By default, the Trogdord object will attempt to connect to localhost:1040 (1040 is the default port that trogdord runs on.) If those values are correct, then all you need to do is this:
 
 ```javascript
-const connection = new Trogdord()
+const connection = new Trogdord();
 ```
 
 To specify a different hostname, pass it into the first argument of the constructor:
 
 ```javascript
-const connection = new Trogdord('myhostname.com')
+const connection = new Trogdord('myhostname.com');
 ```
 
 Or if your host is an IP address (note that, at the time of this writing, trogdord only supports IPV4):
 
 ```javascript
-const connection = new Trogdord('192.168.0.1')
+const connection = new Trogdord('192.168.0.1');
 ```
 
 Finally, if trogdord is running on a non-standard port:
 
 ```javascript
-const connection = new Trogdord('myhostname.com', 1041)
+const connection = new Trogdord('myhostname.com', 1041);
 ```
 
 The constructor also takes a third optional argument for additional settings:
@@ -44,7 +44,7 @@ The constructor also takes a third optional argument for additional settings:
 // Connection attempt will timeout in 1 second instead of the default 3.
 const connection = new Trogdord('myhostname.com, 1041, {
 	connectTimeout: 1000
-})
+});
 ```
 
 The following options are supported:
@@ -60,7 +60,7 @@ The trogdord module emits the following events while attempting to connect or wh
 To make use of the connection after it's established, listen for the **connect** event:
 
 ```javascript
-const connection = new Trogdord()
+const connection = new Trogdord();
 
 connection.on('connect', () => {
 
@@ -71,19 +71,19 @@ connection.on('connect', () => {
 To handle errors, listen for the **error** event:
 
 ```javascript
-const connection = new Trogdord()
+const connection = new Trogdord();
 
 connection.on('error', (error) => {
 
 	// Uh oh!
-	console.log(error) 
+	console.log(error);
 })
 ```
 
 If you want to trigger a block of code once the connection is closed, listen for the **close** event:
 
 ```javascript
-const connection = new Trogdord()
+const connection = new Trogdord();
 
 connection.on('close', () => {
 
@@ -98,7 +98,7 @@ This method retrieves useful statistical data about the instance of trogdord we'
 Example:
 
 ```javascript
-const connection = new Trogdord()
+const connection = new Trogdord();
 
 connection.on('connect', () => {
 
@@ -119,6 +119,122 @@ Result:
   version: { major: 0, minor: 29, patch: 0 },
   lib_version: { major: 0, minor: 5, patch: 0 }
 }
+```
+
+### Retrieving Available Game Definitions
+
+This method retrieves a list of all game definition files that are available to the server:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.definitions()
+	.then((definitions) => {
+		console.log(definitions);
+	}).catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+[ 'game.xml' ]
+```
+
+### Retrieving All Games
+
+This method retrieves all games that currently exist on the server:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.games()
+	.then((games) => {
+		games.forEach(game, index) => {
+			console.log(game.id);
+			console.log(game.name);
+		});
+	}).catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result (an array of Game objects):
+
+```
+[ Game {} ]
+```
+
+### Retrieving a Single Game
+
+This method retrieves the game corresponding to a specific id:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// Retrieving game with id 0
+	connection.getGame(0)
+	.then((game) => {
+		console.log(game);
+	}).catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result (a Game object):
+
+```
+Game {}
+```
+
+### Creating a New Game
+
+This method creates a new game:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.newGame('Game Name', 'game.xml')
+	.then((game) => {
+		console.log(game);
+	}).catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result (a Game object):
+
+```
+Game {}
+```
+
+You can also set some initial meta data for the game:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.newGame('Game Name', 'game.xml', {metaKey1: 'value1', metaKey2: 'value2'})
+	.then((game) => {
+		console.log(game);
+	}).catch((error) => {
+		// ...Handle error...
+	});
+});
 ```
 
 ### Making a Raw JSON Request
