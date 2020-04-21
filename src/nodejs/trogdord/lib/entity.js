@@ -1,7 +1,5 @@
 'use strict';
 
-const Game = require('./game');
-
 class Entity {
 
 };

@@ -7,6 +7,14 @@ const Trogdord = require('./trogdord');
  */
 class Game {
 
+	// Private class definitions for each entity type
+	#EntityTypes = {
+		room: require('./room'),
+		object: require('./object'),
+		creature: require('./creature'),
+		player: require('./player')
+	};
+
 	// The game's numeric id
 	#id;
 

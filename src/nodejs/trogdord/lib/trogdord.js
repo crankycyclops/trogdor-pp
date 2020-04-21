@@ -7,7 +7,7 @@ const {
 	TCP_DELIMITER,
 	ENOTCONN,
 	ETIMEDOUT
-} = require ('./constants');
+} = require('./constants');
 
 // Default connection settings
 const {
