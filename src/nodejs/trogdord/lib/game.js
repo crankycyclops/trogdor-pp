@@ -257,6 +257,53 @@ class Game {
 			});
 		});
 	}
+
+	/**
+	 * Returns a promise that resolves to game-specific metadata. If the keys
+	 * argument is specified, it should contain the meta keys whose values
+	 * should be returned. If no argument is given, all existing metadata will
+	 * be returned.
+	 *
+	 * @param {Array} keys Metadata values to retrieve (optional)
+	 */
+	getMeta(keys = []) {
+
+		let args = {id: this.#id};
+
+		// If the user just wants to retrieve a single metadata value, let
+		// them pass in just that string as a shortcut.
+		if ('string' == typeof keys) {
+			keys = [keys];
+		}
+
+		if (keys.length) {
+			args.meta = keys;
+		}
+
+		return new Promise((resolve, reject) => {
+
+			this.#trogdord.makeRequest({
+				method: "get",
+				scope: "game",
+				action: "meta",
+				args: args
+			}).then((response) => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(response.meta);
+
+			}).catch((error) => {
+				reject(error);
+			});
+		});
+	}
 };
 
 module.exports = Game;

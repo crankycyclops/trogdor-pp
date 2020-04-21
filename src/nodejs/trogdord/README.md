@@ -218,7 +218,7 @@ Result (a Game object):
 Game {}
 ```
 
-You can also set some initial meta data for the game:
+You can also set some initial metadata for the game:
 
 ```javascript
 const connection = new Trogdord();
@@ -420,6 +420,103 @@ connection.on('connect', () => {
 		// ...Handle error...
 	});
 });
+```
+
+### Getting a Game's Metadata
+
+Game.getMeta() returns one or more metadata values associated with a game.
+
+If you don't pass an argument, all metadata values will be returned.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and print all of its associated metadata
+	connection.getGame(0)
+	.then((game) => {
+		return game.getMeta();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+{ author: 'James Colannino', title: 'Super Funtime Sample Game', synopsis: "A rootin' tootin' good time!" }
+```
+
+You can also pass in specific metadata keys and only get those values back:
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and print some of its associated metadata
+	connection.getGame(0)
+	.then((game) => {
+		return game.getMeta(['author', 'title']);
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+{ author: 'James Colannino', title: 'Super Funtime Sample Game' }
+```
+
+Finally, if you only need a specific metadata value, you can skip the array and just pass in a string containing the desired key.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and print a metadata value
+	connection.getGame(0)
+	.then((game) => {
+		return game.getMeta('author');
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+{ author: 'James Colannino' }
 ```
 
 ### Making a Raw JSON Request
