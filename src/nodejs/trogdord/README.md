@@ -259,6 +259,32 @@ connection.on('connect', () => {
 });
 ```
 
+### Getting Current In-Game Time
+
+Game.getTime() will return the current in-time game.
+
+Example:
+
+```javascript
+	// Get an existing game and check its current time
+	connection.getGame(0)
+	.then((game) => {
+		return game.getTime();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+```
+
+Result (means the game timer has been running for 60 seconds):
+
+```
+60
+```
+
 ### Starting a Game
 
 Game.start() will start a game.

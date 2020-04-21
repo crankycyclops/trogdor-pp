@@ -94,6 +94,36 @@ class Game {
 	}
 
 	/**
+	 * Returns a promise that resolves to the current time in the game.
+	 */
+	getTime() {
+
+		return new Promise((resolve, reject) => {
+
+			this.#trogdord.makeRequest({
+				method: "get",
+				scope: "game",
+				action: "time",
+				args: {id: this.#id}
+			}).then((response) => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(response.current_time);
+
+			}).catch((error) => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
 	 * Starts the game.
 	 */
 	start() {
