@@ -156,10 +156,7 @@ connection.on('connect', () => {
 
 	connection.games()
 	.then((games) => {
-		games.forEach(game, index) => {
-			console.log(game.id);
-			console.log(game.name);
-		});
+		console.log(games);
 	}).catch((error) => {
 		// ...Handle error...
 	});
