@@ -61,6 +61,107 @@ class Game {
 
 		return this.#trogdord;
 	}
+
+	/**
+	 * Returns a promise that resolves to true if the game is running and false
+	 * if it's not.
+	 */
+	isRunning() {
+
+		return new Promise((resolve, reject) => {
+
+			this.#trogdord.makeRequest({
+				method: "get",
+				scope: "game",
+				action: "is_running",
+				args: {id: this.#id}
+			}).then((response) => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(response.is_running);
+
+			}).catch((error) => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
+	 * Starts the game.
+	 */
+	start() {
+
+		return new Promise((resolve, reject) => {
+
+			this.#trogdord.makeRequest({
+				method: "set",
+				scope: "game",
+				action: "start",
+				args: {id: this.#id}
+			}).then((response) => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(response);
+
+			}).catch((error) => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
+	 * Stops the game.
+	 */
+	stop() {
+
+		return new Promise((resolve, reject) => {
+
+			this.#trogdord.makeRequest({
+				method: "set",
+				scope: "game",
+				action: "stop",
+				args: {id: this.#id}
+			}).then((response) => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(response);
+
+			}).catch((error) => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
+	 * Destroys the game. From this point forward, the Game object will be
+	 * invalid and network requests that originate from it will result in a
+	 * 404 game not found error.
+	 */
+	destroy() {
+
+		// TODO
+	}
 };
 
 module.exports = Game;

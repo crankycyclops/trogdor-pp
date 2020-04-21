@@ -234,6 +234,105 @@ connection.on('connect', () => {
 });
 ```
 
+### Checking if a Game is Running
+
+Game.isRunning() will return true if the game is running an false if not.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// Get an existing game and check if it's running
+	connection.getGame(0)
+	.then((game) => {
+		return game.isRunning();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+### Starting a Game
+
+Game.start() will start a game.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Create a new game and then start it
+	connection.newGame('Game Name', 'game.xml')
+	.then((newGame) => {
+		game = newGame;
+		return game.start();
+	})
+	.then((response) => {
+		return game.isRunning();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+true
+```
+
+### Stopping a Game
+
+Game.stop() will stop a game.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and stop it
+	connection.getGame(0)
+	.then((_game) => {
+		game = _game;
+		return game.stop();
+	})
+	.then((response) => {
+		return game.isRunning();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+false
+```
+
 ### Making a Raw JSON Request
 
 Raw JSON requests are a low level mechanism that should, under ordinary circumstances, be made only by class methods whose underlying implementations are abstracted from the client. Nevertheless, you might run into a situation where making a raw request is advantageous or even necessary, and for this reason, the makeRequest method exists.
