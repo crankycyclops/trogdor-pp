@@ -236,7 +236,7 @@ connection.on('connect', () => {
 
 ### Checking if a Game is Running
 
-Game.isRunning() will return true if the game is running an false if not.
+Game.isRunning() will return true if the game is running and false if not.
 
 Example:
 
@@ -331,6 +331,33 @@ Result:
 
 ```
 false
+```
+
+### Destroying a Game
+
+Game.destroy() will destroy the game on the server side. Once the game has been destroyed, invoking further requests from the same object will result in 404 game not found errors.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and destroy it
+	connection.getGame(0)
+	.then((game) => {
+		return game.destroy();
+	})
+	.then((response) => {
+		// ...Any code that needs to run after game has been destroyed...
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
 ```
 
 ### Making a Raw JSON Request

@@ -160,7 +160,28 @@ class Game {
 	 */
 	destroy() {
 
-		// TODO
+		return new Promise((resolve, reject) => {
+
+			this.#trogdord.makeRequest({
+				method: "delete",
+				scope: "game",
+				args: {id: this.#id}
+			}).then((response) => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(response);
+
+			}).catch((error) => {
+				reject(error);
+			});
+		});
 	}
 };
 
