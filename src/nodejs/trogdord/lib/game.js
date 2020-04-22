@@ -74,6 +74,43 @@ class Game {
 	}
 
 	/**
+	 * Returns a promise that resolves to an object representing an entity in a game.
+	 *
+	 * @param {String} scope The desired entity's type
+	 * @param {String} name The desired entity's name
+	 */
+	#getEntityObject = (scope, name) => {
+
+		return new Promise((resolve, reject) => {
+
+			this.#trogdord.makeRequest({
+				method: "get",
+				scope: scope,
+				args: {
+					game_id: this.#id,
+					name: name
+				}
+			}).then((response) => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(new this.#EntityTypes[response.entity.type](
+					this, response.entity.name)
+				);
+
+			}).catch((error) => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
 	 * Create a new object representing a game inside an instance of trogdord.
 	 *
 	 * @param {Integer} id The game's id
@@ -466,6 +503,86 @@ class Game {
 	players(returnEntities = true) {
 
 		return this.#getEntityList('player', returnEntities);
+	}
+
+	/**
+	 * Returns a promise that resolves to an object representing an entity in the game.
+	 *
+	 * @param {String} name The desired entity's name
+	 */
+	getEntity(name) {
+
+		return this.#getEntityObject('entity', name);
+	}
+
+	/**
+	 * Returns a promise that resolves to an object representing a place in the game.
+	 *
+	 * @param {String} name The desired place's name
+	 */
+	getPlace(name) {
+
+		return this.#getEntityObject('place', name);
+	}
+
+	/**
+	 * Returns a promise that resolves to an object representing a thing in the game.
+	 *
+	 * @param {String} name The desired thing's name
+	 */
+	getThing(name) {
+
+		return this.#getEntityObject('thing', name);
+	}
+
+	/**
+	 * Returns a promise that resolves to an object representing a being in the game.
+	 *
+	 * @param {String} name The desired being's name
+	 */
+	getBeing(name) {
+
+		return this.#getEntityObject('being', name);
+	}
+
+	/**
+	 * Returns a promise that resolves to an object representing a room in the game.
+	 *
+	 * @param {String} name The desired room's name
+	 */
+	getRoom(name) {
+
+		return this.#getEntityObject('room', name);
+	}
+
+	/**
+	 * Returns a promise that resolves to an object representing a TObject in the game.
+	 *
+	 * @param {String} name The desired object's name
+	 */
+	getObject(name) {
+
+		return this.#getEntityObject('object', name);
+	}
+
+	/**
+	 * Returns a promise that resolves to an object representing a creature in the game.
+	 *
+	 * @param {String} name The desired creature's name
+	 */
+	getCreature(name) {
+
+		return this.#getEntityObject('creature', name);
+	}
+
+	/**
+	 * Returns a promise that resolves to an object representing a player in the game.
+	 *
+	 * @param {String} name The desired player's name
+	 */
+	getPlayer(name) {
+
+		return this.#getEntityObject('player', name);
 	}
 };
 

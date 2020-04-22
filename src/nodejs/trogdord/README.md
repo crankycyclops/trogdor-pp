@@ -697,6 +697,104 @@ Result:
 
 Lists of all entity types can be requested.
 
+### Getting a Specific Entity in a Game
+
+Game.getEntity() returns a specific entity in the game.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get the room named 'start' from the game with id = 0
+	connection.getGame(0)
+	.then((game) => {
+		return game.getEntity('start');
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+Room {}
+```
+
+You can also request more specific types of entities. For example, Game.getBeing(name) will return either a creature or a player by the given name. A method exists for each entity type.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get the TObject named 'stick' from the game with id = 0
+	connection.getGame(0)
+	.then((game) => {
+		return game.getObject('stick');
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+Object {}
+```
+
+If an entity by the specified name exists in the game but does not match the requested type, an entity not found error will be returned.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// An entity named 'start' exists, but it's a room, not an object.
+	connection.getGame(0)
+	.then((game) => {
+		return game.getObject('start');
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+```
+Error: entity not found
+    at nodejs/trogdord/lib/game.js:97:18
+    at processTicksAndRejections (internal/process/task_queues.js:94:5) {
+  status: 404
+}
+```
+
 ### Making a Raw JSON Request
 
 Raw JSON requests are a low level mechanism that should, under ordinary circumstances, be made only by class methods whose underlying implementations are abstracted from the client. Nevertheless, you might run into a situation where making a raw request is advantageous or even necessary, and for this reason, the makeRequest method exists.
