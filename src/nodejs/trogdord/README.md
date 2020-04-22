@@ -521,7 +521,7 @@ Result:
 
 ### Setting Game Metadata
 
-Game.setMeta() takes as input an object of key, value pairs and sets them as metadata for the game.
+Game.setMeta({key: value, ...}) takes as input an object of key, value pairs and sets them as metadata for the game.
 
 Example:
 
@@ -699,7 +699,7 @@ Lists of all entity types can be requested.
 
 ### Getting a Specific Entity in a Game
 
-Game.getEntity() returns a specific entity in the game.
+Game.getEntity(name) returns a specific entity in the game.
 
 Example:
 
@@ -789,10 +789,42 @@ connection.on('connect', () => {
 Result:
 ```
 Error: entity not found
-    at nodejs/trogdord/lib/game.js:97:18
+    at node_modules/trogdord/lib/game.js:97:18
     at processTicksAndRejections (internal/process/task_queues.js:94:5) {
   status: 404
 }
+```
+
+### Creating a New Player
+
+Creating a new player in a game can be accomplished by a call to Game.createPlayer(name).
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Create a player in an existing game
+	connection.getGame(0)
+	.then((game) => {
+		return game.createPlayer('n00bslay3r');
+	})
+	.then((player) => {
+		console.log(player);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+```
+Player {}
 ```
 
 ### Making a Raw JSON Request

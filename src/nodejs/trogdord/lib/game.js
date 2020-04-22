@@ -584,6 +584,41 @@ class Game {
 
 		return this.#getEntityObject('player', name);
 	}
+
+	/**
+	 * Returns a promise that resolves to an instance of Player representing
+	 * the new player in the game.
+	 *
+	 * @param {String} name The new player's name
+	 */
+	createPlayer(name) {
+
+		return new Promise((resolve, reject) => {
+
+			this.#trogdord.makeRequest({
+				method: "post",
+				scope: "player",
+				args: {
+					game_id: this.#id,
+					name: name
+				}
+			}).then((response) => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(new this.#EntityTypes['player'](this, name));
+
+			}).catch((error) => {
+				reject(error);
+			});
+		});
+	}
 };
 
 module.exports = Game;
