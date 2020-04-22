@@ -548,7 +548,7 @@ connection.on('connect', () => {
 
 ### Getting All Entities in the Game
 
-Game.entities() will return all entities in the game.
+Game.entities() will return all entities in the game. **Fun Fact**: Objects are called TObject because naming a JavaScript class "Object" doesn't work so well. Yes, I realized this the hard way.
 
 Example:
 
