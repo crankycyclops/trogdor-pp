@@ -1,0 +1,839 @@
+# Trogdord Node.js Module
+
+The official Node.js client for trogdord.
+
+## Installaton
+
+TODO: will publish to npm once I complete the first working version
+
+## Dependencies
+
+Requires Node.js 12.0 or above.
+
+## How to use
+
+### Establishing a Connection
+
+By default, the Trogdord object will attempt to connect to localhost:1040 (1040 is the default port that trogdord runs on.) If those values are correct, then all you need to do is this:
+
+```javascript
+const connection = new Trogdord();
+```
+
+To specify a different hostname, pass it into the first argument of the constructor:
+
+```javascript
+const connection = new Trogdord('myhostname.com');
+```
+
+Or if your host is an IP address (note that, at the time of this writing, trogdord only supports IPV4):
+
+```javascript
+const connection = new Trogdord('192.168.0.1');
+```
+
+Finally, if trogdord is running on a non-standard port:
+
+```javascript
+const connection = new Trogdord('myhostname.com', 1041);
+```
+
+The constructor also takes a third optional argument for additional settings:
+
+```javascript
+// Connection attempt will timeout in 1 second instead of the default 3.
+const connection = new Trogdord('myhostname.com, 1041, {
+	connectTimeout: 1000
+});
+```
+
+The following options are supported:
+
+* **connectTimeout**: the number of milliseconds to wait while attempting to connect to trogdord before timing out
+
+The trogdord module emits the following events while attempting to connect or when the connection is closed:
+
+* **connect**: connection has been established
+* **close**: connection has been closed
+* **error**: an error occurred while attempting to connect
+
+To make use of the connection after it's established, listen for the **connect** event:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// use the connection here
+})
+```
+
+To handle errors, listen for the **error** event:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('error', (error) => {
+
+	// Uh oh!
+	console.log(error);
+})
+```
+
+If you want to trigger a block of code once the connection is closed, listen for the **close** event:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('close', () => {
+
+	// cleanup code goes here
+})
+```
+
+### Retrieving Trogdord Statistics
+
+This method retrieves useful statistical data about the instance of trogdord we're connected to:
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.statistics()
+	.then((stats) => {
+		console.log(stats);
+	}).catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+{
+  players: 0,
+  version: { major: 0, minor: 29, patch: 0 },
+  lib_version: { major: 0, minor: 5, patch: 0 }
+}
+```
+
+### Retrieving Available Game Definitions
+
+This method retrieves a list of all game definition files that are available to the server:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.definitions()
+	.then((definitions) => {
+		console.log(definitions);
+	}).catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+[ 'game.xml' ]
+```
+
+### Retrieving All Games
+
+This method retrieves all games that currently exist on the server:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.games()
+	.then((games) => {
+		console.log(games);
+	}).catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result (an array of Game objects):
+
+```
+[ Game {} ]
+```
+
+### Retrieving a Single Game
+
+This method retrieves the game corresponding to a specific id:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// Retrieving game with id 0
+	connection.getGame(0)
+	.then((game) => {
+		console.log(game);
+	}).catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result (a Game object):
+
+```
+Game {}
+```
+
+### Creating a New Game
+
+This method creates a new game:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.newGame('Game Name', 'game.xml')
+	.then((game) => {
+		console.log(game);
+	}).catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result (a Game object):
+
+```
+Game {}
+```
+
+You can also set some initial metadata for the game:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.newGame('Game Name', 'game.xml', {metaKey1: 'value1', metaKey2: 'value2'})
+	.then((game) => {
+		console.log(game);
+	}).catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+### Returning Game-Specific Statistics
+
+Game.statistics() returns statistical data associated with a specific game.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// Get an existing game and return its statistics
+	connection.getGame(0)
+	.then((game) => {
+		return game.statistics();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+{
+  created: '2020-04-21 21:20:50 UTC',
+  players: 1,
+  current_time: 25,
+  is_running: true
+}
+```
+
+### Checking if a Game is Running
+
+Game.isRunning() will return true if the game is running and false if not.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// Get an existing game and check if it's running
+	connection.getGame(0)
+	.then((game) => {
+		return game.isRunning();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+### Getting Current In-Game Time
+
+Game.getTime() will return the current in-time game.
+
+Example:
+
+```javascript
+	// Get an existing game and check its current time
+	connection.getGame(0)
+	.then((game) => {
+		return game.getTime();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+```
+
+Result (means the game timer has been running for 60 seconds):
+
+```
+60
+```
+
+### Starting a Game
+
+Game.start() will start a game.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Create a new game and then start it
+	connection.newGame('Game Name', 'game.xml')
+	.then((newGame) => {
+		game = newGame;
+		return game.start();
+	})
+	.then((response) => {
+		return game.isRunning();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+true
+```
+
+### Stopping a Game
+
+Game.stop() will stop a game.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and stop it
+	connection.getGame(0)
+	.then((_game) => {
+		game = _game;
+		return game.stop();
+	})
+	.then((response) => {
+		return game.isRunning();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+false
+```
+
+### Destroying a Game
+
+Game.destroy() will destroy the game on the server side. Once the game has been destroyed, invoking further requests from the same object will result in 404 game not found errors.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and destroy it
+	connection.getGame(0)
+	.then((game) => {
+		return game.destroy();
+	})
+	.then((response) => {
+		// ...Any code that needs to run after game has been destroyed...
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+### Getting a Game's Metadata
+
+Game.getMeta() returns one or more metadata values associated with a game.
+
+If you don't pass an argument, all metadata values will be returned.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and print all of its associated metadata
+	connection.getGame(0)
+	.then((game) => {
+		return game.getMeta();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+{ author: 'James Colannino', title: 'Super Funtime Sample Game', synopsis: "A rootin' tootin' good time!" }
+```
+
+You can also pass in specific metadata keys and only get those values back:
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and print some of its associated metadata
+	connection.getGame(0)
+	.then((game) => {
+		return game.getMeta(['author', 'title']);
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+{ author: 'James Colannino', title: 'Super Funtime Sample Game' }
+```
+
+Finally, if you only need a specific metadata value, you can skip the array and just pass in a string containing the desired key.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and print a metadata value
+	connection.getGame(0)
+	.then((game) => {
+		return game.getMeta('author');
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+{ author: 'James Colannino' }
+```
+
+### Setting Game Metadata
+
+Game.setMeta() takes as input an object of key, value pairs and sets them as metadata for the game.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game with id 0 and set some metadata
+	connection.getGame(0)
+	.then((game) => {
+		return game.setMeta({key1: 'value1', key2: 'value2'});
+	})
+	.then((response) => {
+		// ... do something once we know the metadata is set...
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+### Getting All Entities in the Game
+
+Game.entities() will return all entities in the game. **Fun Fact**: Objects are called TObject because naming a JavaScript class "Object" doesn't work so well. Yes, I realized this the hard way.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and return all of its entities
+	connection.getGame(0)
+	.then((game) => {
+		return game.entities();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+[
+  TObject {},  TObject {},
+  TObject {},  TObject {},
+  TObject {},  Room {},
+  Room {},     Room {},
+  Room {},     Creature {},
+  Creature {}
+]
+```
+
+If you'd like to get back an array of simple objects containing just the name and type of each entity, pass in false for the first optional argument.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and return all of its entities
+	connection.getGame(0)
+	.then((game) => {
+		return game.entities(false);
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+[
+  { name: 'stick', type: 'object' },
+  { name: 'boulder', type: 'object' },
+  { name: 'rock', type: 'object' },
+  { name: 'sword', type: 'object' },
+  { name: 'candle', type: 'object' },
+  { name: 'mysticalhall', type: 'room' },
+  { name: 'start', type: 'room' },
+  { name: 'chamber', type: 'room' },
+  { name: 'cave', type: 'room' },
+  { name: 'trogdor', type: 'creature' },
+  { name: 'casper', type: 'creature' }
+]
+```
+
+You can also return more specific lists of things. For example, to return all
+entities that inherit from Thing:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and return all of its things
+	connection.getGame(0)
+	.then((game) => {
+		return game.things();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+[
+  TObject {},  TObject {},
+  TObject {},  TObject {},
+  TObject {},  Creature {},
+  Creature {}
+]
+```
+
+And to just return all creatures:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and return all of its creatures
+	connection.getGame(0)
+	.then((game) => {
+		return game.creatures();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+[
+  Creature {},  Creature {}
+]
+```
+
+Lists of all entity types can be requested.
+
+### Getting a Specific Entity in a Game
+
+Game.getEntity() returns a specific entity in the game.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get the room named 'start' from the game with id = 0
+	connection.getGame(0)
+	.then((game) => {
+		return game.getEntity('start');
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+Room {}
+```
+
+You can also request more specific types of entities. For example, Game.getBeing(name) will return either a creature or a player by the given name. A method exists for each entity type.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get the TObject named 'stick' from the game with id = 0
+	connection.getGame(0)
+	.then((game) => {
+		return game.getObject('stick');
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+Object {}
+```
+
+If an entity by the specified name exists in the game but does not match the requested type, an entity not found error will be returned.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// An entity named 'start' exists, but it's a room, not an object.
+	connection.getGame(0)
+	.then((game) => {
+		return game.getObject('start');
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+```
+Error: entity not found
+    at nodejs/trogdord/lib/game.js:97:18
+    at processTicksAndRejections (internal/process/task_queues.js:94:5) {
+  status: 404
+}
+```
+
+### Making a Raw JSON Request
+
+Raw JSON requests are a low level mechanism that should, under ordinary circumstances, be made only by class methods whose underlying implementations are abstracted from the client. Nevertheless, you might run into a situation where making a raw request is advantageous or even necessary, and for this reason, the makeRequest method exists.
+
+Example:
+
+```javascript
+const connection = new Trogdord()
+
+connection.on('connect', () => {
+
+	connection.makeRequest({
+		method: "get",
+		scope: "global",
+		action: "statistics"
+	}).then((response) => {
+		// ...Do something with the JSON response...
+	}).catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+By default, the request timeout is three seconds, but you can change that by passing in a different value (in milliseconds) as an optional second argument to makeRequest:
+
+```javascript
+const connection = new Trogdord()
+
+connection.on('connect', () => {
+
+	// Request times out in half a second instead of three
+	connection.makeRequest({
+		method: "get",
+		scope: "global",
+		action: "statistics"
+	}, 500).then((response) => {
+		// ...
+	}).catch((error) => {
+		// ...
+	});
+});
+```
