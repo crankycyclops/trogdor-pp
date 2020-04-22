@@ -827,6 +827,33 @@ Result:
 Player {}
 ```
 
+### Sending a Command to an Entity's Input Stream
+
+Entity.input(command) will send a command to the entity's input stream. Return value will be a promise that resolves to a successful response object.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Retrieve a player from an existing game and send a command on its behalf
+	connection.getGame(0)
+	.then((game) => {
+		return game.getPlayer('n00bslay3r');
+	})
+	.then((player) => {
+		player.input('go north');
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
 ### Making a Raw JSON Request
 
 Raw JSON requests are a low level mechanism that should, under ordinary circumstances, be made only by class methods whose underlying implementations are abstracted from the client. Nevertheless, you might run into a situation where making a raw request is advantageous or even necessary, and for this reason, the makeRequest method exists.
