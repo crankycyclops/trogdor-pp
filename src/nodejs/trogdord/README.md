@@ -113,7 +113,7 @@ connection.on('connect', () => {
 
 Result:
 
-```
+```json
 {
   players: 0,
   version: { major: 0, minor: 29, patch: 0 },
@@ -141,7 +141,7 @@ connection.on('connect', () => {
 
 Result:
 
-```
+```json
 [ 'game.xml' ]
 ```
 
@@ -165,7 +165,7 @@ connection.on('connect', () => {
 
 Result (an array of Game objects):
 
-```
+```json
 [ Game {} ]
 ```
 
@@ -261,7 +261,7 @@ connection.on('connect', () => {
 
 Result:
 
-```
+```json
 {
   created: '2020-04-21 21:20:50 UTC',
   players: 1,
@@ -453,7 +453,7 @@ connection.on('connect', () => {
 
 Result:
 
-```
+```json
 { author: 'James Colannino', title: 'Super Funtime Sample Game', synopsis: "A rootin' tootin' good time!" }
 ```
 
@@ -484,7 +484,7 @@ connection.on('connect', () => {
 
 Result:
 
-```
+```json
 { author: 'James Colannino', title: 'Super Funtime Sample Game' }
 ```
 
@@ -515,7 +515,7 @@ connection.on('connect', () => {
 
 Result:
 
-```
+```json
 { author: 'James Colannino' }
 ```
 
@@ -575,7 +575,7 @@ connection.on('connect', () => {
 
 Result:
 
-```
+```json
 [
   TObject {},  TObject {},
   TObject {},  TObject {},
@@ -613,7 +613,7 @@ connection.on('connect', () => {
 
 Result:
 
-```
+```json
 [
   { name: 'stick', type: 'object' },
   { name: 'boulder', type: 'object' },
@@ -655,7 +655,7 @@ connection.on('connect', () => {
 
 Result:
 
-```
+```json
 [
   TObject {},  TObject {},
   TObject {},  TObject {},
@@ -689,7 +689,7 @@ connection.on('connect', () => {
 
 Result:
 
-```
+```json
 [
   Creature {},  Creature {}
 ]
@@ -847,6 +847,97 @@ connection.on('connect', () => {
 	})
 	.then((player) => {
 		player.input('go north');
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+### Retrieving Entity Output Messages
+
+To retrieve the output messages for an entity (for example, a player), call Entity.output(channel).
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Retrieve a player's output on the 'display' channel
+	connection.getGame(0)
+	.then((game) => {
+		return game.getPlayer('n00bslay3r');
+	})
+	.then((player) => {
+		return player.output('display');
+	})
+	.then((output) => {
+		console.log(output);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```json
+[
+  { timestamp: 1587598549, content: 'The Palace\n' },
+  { timestamp: 1587598549, content: '\n' },
+  {
+    timestamp: 1587598549,
+    content: "You're standing in the middle of a sprawling white marble castle, the walls lined with portraits of long deceased ancestors of some forgotten king.  Servants are bustling about, rushing around with steaming plates of meats and cooked vegetables, rushing in and out of rooms to serve princes and heads of state. Legend has it that going sideways can transport you to a strange and mystical land.\n" +
+      '\n' +
+      'To the north, you see a dark hole in the wall big enough to walk through.\n'
+  },
+  { timestamp: 1587598549, content: '\n' },
+  { timestamp: 1587598549, content: 'You see a candle.\n' },
+  { timestamp: 1587598549, content: '\n' },
+  { timestamp: 1587598549, content: 'You see the Sword of Hope.\n' }
+]
+```
+
+This will only work if the output driver trogdord is configured to use supports retrieving messages. If it doesn't (looking at you, redis driver), you'll get an error instead.
+
+Result if trogdord is configured to use the redis output driver:
+
+```
+Error: redis output driver does not support this operation
+    at node_modules/trogdord/lib/entity.js:106:19
+    at processTicksAndRejections (internal/process/task_queues.js:94:5) {
+  status: 501
+}
+```
+
+### Appending Message to an Entity's Output Stream
+
+Entity.output() can also append a new message to an Entity's output stream provided a second argument is specified.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Send a new message to a player's output stream
+	connection.getGame(0)
+	.then((game) => {
+		return game.getPlayer('n00bslay3r');
+	})
+	.then((player) => {
+		return player.output('notifications', 'You were naughty. Be aware that further abuse will result in a permanent ban.');
+	})
+	.then((output) => {
+		console.log(output);
 	})
 	.catch((error) => {
 		// ...Handle error...
