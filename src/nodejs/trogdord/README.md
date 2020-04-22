@@ -519,6 +519,33 @@ Result:
 { author: 'James Colannino' }
 ```
 
+### Setting Game Metadata
+
+Game.setMeta() takes as input an object of key, value pairs and sets them as metadata for the game.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game with id 0 and set some metadata
+	connection.getGame(0)
+	.then((game) => {
+		return game.setMeta({key1: 'value1', key2: 'value2'});
+	})
+	.then((response) => {
+		// ... do something once we know the metadata is set...
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
 ### Making a Raw JSON Request
 
 Raw JSON requests are a low level mechanism that should, under ordinary circumstances, be made only by class methods whose underlying implementations are abstracted from the client. Nevertheless, you might run into a situation where making a raw request is advantageous or even necessary, and for this reason, the makeRequest method exists.

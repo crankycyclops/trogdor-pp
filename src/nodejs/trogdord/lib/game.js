@@ -304,6 +304,45 @@ class Game {
 			});
 		});
 	}
+
+	/**
+	 * Takes as input an object of key, value pairs and sets them as metadata
+	 * for the game. Returns a promise that notifies the client of whether or
+	 * not the trogdord request was successful.
+	 *
+	 * @param {Object} meta Metadata key, value pairs to set on the game
+	 */
+	setMeta(meta) {
+
+		let args = {id: this.#id};
+
+		return new Promise((resolve, reject) => {
+
+			this.#trogdord.makeRequest({
+				method: "set",
+				scope: "game",
+				action: "meta",
+				args: {
+					id: this.#id,
+					meta: meta
+				}
+			}).then((response) => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(response);
+
+			}).catch((error) => {
+				reject(error);
+			});
+		});
+	}
 };
 
 module.exports = Game;
