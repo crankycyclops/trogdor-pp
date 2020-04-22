@@ -28,6 +28,52 @@ class Game {
 	#trogdord;
 
 	/**
+	 * Returns a promise that resolves to an array of all entities in the game.
+	 *
+	 * @param {String} scope The type of entities to return
+	 * @param {Boolean} returnEntities If true, return an array of Entities instead of simple objects
+	 */
+	#getEntityList = (scope, returnEntities) => {
+
+		return new Promise((resolve, reject) => {
+
+			this.#trogdord.makeRequest({
+				method: "get",
+				scope: scope,
+				action: "list",
+				args: {game_id: this.#id}
+			}).then((response) => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				if (returnEntities) {
+
+					let entities = [];
+
+					response.entities.forEach((entity, index) => {
+						entities.push(new this.#EntityTypes[entity.type](this, entity.name));
+					});
+
+					resolve(entities);
+				}
+
+				else {
+					resolve(response.entities);
+				}
+
+			}).catch((error) => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
 	 * Create a new object representing a game inside an instance of trogdord.
 	 *
 	 * @param {Integer} id The game's id
@@ -349,42 +395,77 @@ class Game {
 	 */
 	entities(returnEntities = true) {
 
-		return new Promise((resolve, reject) => {
+		return this.#getEntityList('entity', returnEntities);
+	}
 
-			this.#trogdord.makeRequest({
-				method: "get",
-				scope: "entity",
-				action: "list",
-				args: {game_id: this.#id}
-			}).then((response) => {
+	/**
+	 * Returns a promise that resolves to an array of all places in the game.
+	 *
+	 * @param {Boolean} returnEntities If true, return an array of Places instead of simple objects (optional)
+	 */
+	places(returnEntities = true) {
 
-				if (200 != response.status) {
+		return this.#getEntityList('place', returnEntities);
+	}
 
-					let error = new Error(response.message);
+	/**
+	 * Returns a promise that resolves to an array of all things in the game.
+	 *
+	 * @param {Boolean} returnEntities If true, return an array of Things instead of simple objects (optional)
+	 */
+	things(returnEntities = true) {
 
-					error.status = response.status;
-					reject(error);
-				}
+		return this.#getEntityList('thing', returnEntities);
+	}
 
-				if (returnEntities) {
+	/**
+	 * Returns a promise that resolves to an array of all beings in the game.
+	 *
+	 * @param {Boolean} returnEntities If true, return an array of Beings instead of simple objects (optional)
+	 */
+	beings(returnEntities = true) {
 
-					let entities = [];
+		return this.#getEntityList('being', returnEntities);
+	}
 
-					response.entities.forEach((entity, index) => {
-						entities.push(new this.#EntityTypes[entity.type](this, entity.name));
-					});
+	/**
+	 * Returns a promise that resolves to an array of all rooms in the game.
+	 *
+	 * @param {Boolean} returnEntities If true, return an array of Rooms instead of simple objects (optional)
+	 */
+	rooms(returnEntities = true) {
 
-					resolve(entities);
-				}
+		return this.#getEntityList('room', returnEntities);
+	}
 
-				else {
-					resolve(response.entities);
-				}
+	/**
+	 * Returns a promise that resolves to an array of all objects in the game.
+	 *
+	 * @param {Boolean} returnEntities If true, return an array of Objects instead of simple objects (optional)
+	 */
+	objects(returnEntities = true) {
 
-			}).catch((error) => {
-				reject(error);
-			});
-		});
+		return this.#getEntityList('object', returnEntities);
+	}
+
+	/**
+	 * Returns a promise that resolves to an array of all creatures in the game.
+	 *
+	 * @param {Boolean} returnEntities If true, return an array of Creatures instead of simple objects (optional)
+	 */
+	creatures(returnEntities = true) {
+
+		return this.#getEntityList('creature', returnEntities);
+	}
+
+	/**
+	 * Returns a promise that resolves to an array of all players in the game.
+	 *
+	 * @param {Boolean} returnEntities If true, return an array of Players instead of simple objects (optional)
+	 */
+	players(returnEntities = true) {
+
+		return this.#getEntityList('player', returnEntities);
 	}
 };
 

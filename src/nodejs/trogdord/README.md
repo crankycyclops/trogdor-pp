@@ -629,6 +629,74 @@ Result:
 ]
 ```
 
+You can also return more specific lists of things. For example, to return all
+entities that inherit from Thing:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and return all of its things
+	connection.getGame(0)
+	.then((game) => {
+		return game.things();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+[
+  TObject {},  TObject {},
+  TObject {},  TObject {},
+  TObject {},  Creature {},
+  Creature {}
+]
+```
+
+And to just return all creatures:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and return all of its creatures
+	connection.getGame(0)
+	.then((game) => {
+		return game.creatures();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+[
+  Creature {},  Creature {}
+]
+```
+
+Lists of all entity types can be requested.
+
 ### Making a Raw JSON Request
 
 Raw JSON requests are a low level mechanism that should, under ordinary circumstances, be made only by class methods whose underlying implementations are abstracted from the client. Nevertheless, you might run into a situation where making a raw request is advantageous or even necessary, and for this reason, the makeRequest method exists.
