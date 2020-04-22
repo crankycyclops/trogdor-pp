@@ -406,8 +406,6 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get an existing game and destroy it
 	connection.getGame(0)
 	.then((game) => {
@@ -434,8 +432,6 @@ Example:
 const connection = new Trogdord();
 
 connection.on('connect', () => {
-
-	let game;
 
 	// Get an existing game and print all of its associated metadata
 	connection.getGame(0)
@@ -466,8 +462,6 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get an existing game and print some of its associated metadata
 	connection.getGame(0)
 	.then((game) => {
@@ -496,8 +490,6 @@ Example:
 const connection = new Trogdord();
 
 connection.on('connect', () => {
-
-	let game;
 
 	// Get an existing game and print a metadata value
 	connection.getGame(0)
@@ -530,8 +522,6 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get an existing game with id 0 and set some metadata
 	connection.getGame(0)
 	.then((game) => {
@@ -556,8 +546,6 @@ Example:
 const connection = new Trogdord();
 
 connection.on('connect', () => {
-
-	let game;
 
 	// Get an existing game and return all of its entities
 	connection.getGame(0)
@@ -594,8 +582,6 @@ Example:
 const connection = new Trogdord();
 
 connection.on('connect', () => {
-
-	let game;
 
 	// Get an existing game and return all of its entities
 	connection.getGame(0)
@@ -637,8 +623,6 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get an existing game and return all of its things
 	connection.getGame(0)
 	.then((game) => {
@@ -670,8 +654,6 @@ And to just return all creatures:
 const connection = new Trogdord();
 
 connection.on('connect', () => {
-
-	let game;
 
 	// Get an existing game and return all of its creatures
 	connection.getGame(0)
@@ -708,8 +690,6 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get the room named 'start' from the game with id = 0
 	connection.getGame(0)
 	.then((game) => {
@@ -739,8 +719,6 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get the TObject named 'stick' from the game with id = 0
 	connection.getGame(0)
 	.then((game) => {
@@ -769,8 +747,6 @@ Example:
 const connection = new Trogdord();
 
 connection.on('connect', () => {
-
-	let game;
 
 	// An entity named 'start' exists, but it's a room, not an object.
 	connection.getGame(0)
@@ -806,8 +782,6 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Create a player in an existing game
 	connection.getGame(0)
 	.then((game) => {
@@ -838,8 +812,6 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Retrieve a player from an existing game and send a command on its behalf
 	connection.getGame(0)
 	.then((game) => {
@@ -864,8 +836,6 @@ Example:
 const connection = new Trogdord();
 
 connection.on('connect', () => {
-
-	let game;
 
 	// Retrieve a player's output on the 'display' channel
 	connection.getGame(0)
@@ -926,8 +896,6 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Send a new message to a player's output stream
 	connection.getGame(0)
 	.then((game) => {
@@ -938,6 +906,37 @@ connection.on('connect', () => {
 	})
 	.then((output) => {
 		console.log(output);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+### Removing (Destroying) a Player
+
+Removing a player can be accomplished with a call to Player.destroy(). Note that, at the time of this writing, no other entity type can be destroyed.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let player;
+
+	// Remove an evil player from a game
+	connection.getGame(0)
+	.then((game) => {
+		return game.getPlayer('n00bslay3r');
+	})
+	.then((_player) => {
+		player = _player;
+		return player.output('notifications', "You've been a bad monkey and are now banned.");
+	})
+	.then((response) => {
+		player.destroy();
 	})
 	.catch((error) => {
 		// ...Handle error...
