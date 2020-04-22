@@ -546,6 +546,89 @@ connection.on('connect', () => {
 });
 ```
 
+### Getting All Entities in the Game
+
+Game.entities() will return all entities in the game.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and return all of its entities
+	connection.getGame(0)
+	.then((game) => {
+		return game.entities();
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+[
+  TObject {},  TObject {},
+  TObject {},  TObject {},
+  TObject {},  Room {},
+  Room {},     Room {},
+  Room {},     Creature {},
+  Creature {}
+]
+```
+
+If you'd like to get back an array of simple objects containing just the name and type of each entity, pass in false for the first optional argument.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let game;
+
+	// Get an existing game and return all of its entities
+	connection.getGame(0)
+	.then((game) => {
+		return game.entities(false);
+	})
+	.then((response) => {
+		console.log(response);
+	})
+	.catch((error) => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+[
+  { name: 'stick', type: 'object' },
+  { name: 'boulder', type: 'object' },
+  { name: 'rock', type: 'object' },
+  { name: 'sword', type: 'object' },
+  { name: 'candle', type: 'object' },
+  { name: 'mysticalhall', type: 'room' },
+  { name: 'start', type: 'room' },
+  { name: 'chamber', type: 'room' },
+  { name: 'cave', type: 'room' },
+  { name: 'trogdor', type: 'creature' },
+  { name: 'casper', type: 'creature' }
+]
+```
+
 ### Making a Raw JSON Request
 
 Raw JSON requests are a low level mechanism that should, under ordinary circumstances, be made only by class methods whose underlying implementations are abstracted from the client. Nevertheless, you might run into a situation where making a raw request is advantageous or even necessary, and for this reason, the makeRequest method exists.

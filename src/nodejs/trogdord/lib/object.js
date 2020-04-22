@@ -2,7 +2,9 @@
 
 const Thing = require('./thing');
 
-class Object extends Thing {
+// The 'T' in the name stands for Trogdord. I tried naming this class Object,
+// but that didn't go so well :)
+class TObject extends Thing {
 
 	/**
 	 * Create a new object representing an object inside of a trogdord game.
@@ -16,4 +18,4 @@ class Object extends Thing {
 	}
 };
 
-module.exports = Object;
+module.exports = TObject;
