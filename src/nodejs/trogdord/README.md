@@ -113,7 +113,7 @@ connection.on('connect', () => {
 
 Result:
 
-```json
+```
 {
   players: 0,
   version: { major: 0, minor: 29, patch: 0 },
@@ -141,7 +141,7 @@ connection.on('connect', () => {
 
 Result:
 
-```json
+```
 [ 'game.xml' ]
 ```
 
@@ -165,7 +165,7 @@ connection.on('connect', () => {
 
 Result (an array of Game objects):
 
-```json
+```
 [ Game {} ]
 ```
 
@@ -261,7 +261,7 @@ connection.on('connect', () => {
 
 Result:
 
-```json
+```
 {
   created: '2020-04-21 21:20:50 UTC',
   players: 1,
@@ -449,7 +449,7 @@ connection.on('connect', () => {
 
 Result:
 
-```json
+```
 { author: 'James Colannino', title: 'Super Funtime Sample Game', synopsis: "A rootin' tootin' good time!" }
 ```
 
@@ -478,7 +478,7 @@ connection.on('connect', () => {
 
 Result:
 
-```json
+```
 { author: 'James Colannino', title: 'Super Funtime Sample Game' }
 ```
 
@@ -507,7 +507,7 @@ connection.on('connect', () => {
 
 Result:
 
-```json
+```
 { author: 'James Colannino' }
 ```
 
@@ -563,7 +563,7 @@ connection.on('connect', () => {
 
 Result:
 
-```json
+```
 [
   TObject {},  TObject {},
   TObject {},  TObject {},
@@ -599,7 +599,7 @@ connection.on('connect', () => {
 
 Result:
 
-```json
+```
 [
   { name: 'stick', type: 'object' },
   { name: 'boulder', type: 'object' },
@@ -639,7 +639,7 @@ connection.on('connect', () => {
 
 Result:
 
-```json
+```
 [
   TObject {},  TObject {},
   TObject {},  TObject {},
@@ -671,7 +671,7 @@ connection.on('connect', () => {
 
 Result:
 
-```json
+```
 [
   Creature {},  Creature {}
 ]
@@ -856,7 +856,7 @@ connection.on('connect', () => {
 
 Result:
 
-```json
+```
 [
   { timestamp: 1587598549, content: 'The Palace\n' },
   { timestamp: 1587598549, content: '\n' },
