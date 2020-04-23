@@ -4,7 +4,7 @@ The official Node.js client for trogdord.
 
 ## Installaton
 
-TODO: will publish to npm once I complete the first working version
+npm install trogdord
 
 ## Dependencies
 
