@@ -42,7 +42,7 @@ The constructor also takes a third optional argument for additional settings:
 
 ```javascript
 // Connection attempt will timeout in 1 second instead of the default 3.
-const connection = new Trogdord('myhostname.com, 1041, {
+const connection = new Trogdord('myhostname.com', 1041, {
 	connectTimeout: 1000
 });
 ```
