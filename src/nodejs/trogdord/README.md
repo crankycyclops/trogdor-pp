@@ -904,9 +904,6 @@ connection.on('connect', () => {
 	.then((player) => {
 		return player.output('notifications', 'You were naughty. Be aware that further abuse will result in a permanent ban.');
 	})
-	.then((output) => {
-		console.log(output);
-	})
 	.catch((error) => {
 		// ...Handle error...
 	});
@@ -915,7 +912,7 @@ connection.on('connect', () => {
 
 ### Removing (Destroying) a Player
 
-Removing a player can be accomplished with a call to Player.destroy(). Note that, at the time of this writing, no other entity type can be destroyed.
+Removing a player can be accomplished with a call to Player.destroy(). Note that, at the time of this writing, no other entity type can be destroyed via a trogdord request.
 
 Example:
 
