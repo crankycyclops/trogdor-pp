@@ -73,7 +73,7 @@ To handle errors, listen for the **error** event:
 ```javascript
 const connection = new Trogdord();
 
-connection.on('error', (error) => {
+connection.on('error', error => {
 
 	// Uh oh!
 	console.log(error);
@@ -103,9 +103,9 @@ const connection = new Trogdord();
 connection.on('connect', () => {
 
 	connection.statistics()
-	.then((stats) => {
+	.then(stats => {
 		console.log(stats);
-	}).catch((error) => {
+	}).catch(error => {
 		// ...Handle error...
 	});
 });
@@ -131,9 +131,9 @@ const connection = new Trogdord();
 connection.on('connect', () => {
 
 	connection.definitions()
-	.then((definitions) => {
+	.then(definitions => {
 		console.log(definitions);
-	}).catch((error) => {
+	}).catch(error => {
 		// ...Handle error...
 	});
 });
@@ -155,9 +155,9 @@ const connection = new Trogdord();
 connection.on('connect', () => {
 
 	connection.games()
-	.then((games) => {
+	.then(games => {
 		console.log(games);
-	}).catch((error) => {
+	}).catch(error => {
 		// ...Handle error...
 	});
 });
@@ -180,9 +180,9 @@ connection.on('connect', () => {
 
 	// Retrieving game with id 0
 	connection.getGame(0)
-	.then((game) => {
+	.then(game => {
 		console.log(game);
-	}).catch((error) => {
+	}).catch(error => {
 		// ...Handle error...
 	});
 });
@@ -204,9 +204,9 @@ const connection = new Trogdord();
 connection.on('connect', () => {
 
 	connection.newGame('Game Name', 'game.xml')
-	.then((game) => {
+	.then(game => {
 		console.log(game);
-	}).catch((error) => {
+	}).catch(error => {
 		// ...Handle error...
 	});
 });
@@ -226,9 +226,9 @@ const connection = new Trogdord();
 connection.on('connect', () => {
 
 	connection.newGame('Game Name', 'game.xml', {metaKey1: 'value1', metaKey2: 'value2'})
-	.then((game) => {
+	.then(game => {
 		console.log(game);
-	}).catch((error) => {
+	}).catch(error => {
 		// ...Handle error...
 	});
 });
@@ -247,13 +247,11 @@ connection.on('connect', () => {
 
 	// Get an existing game and return its statistics
 	connection.getGame(0)
-	.then((game) => {
-		return game.statistics();
-	})
-	.then((response) => {
+	.then(game => game.statistics())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -283,13 +281,11 @@ connection.on('connect', () => {
 
 	// Get an existing game and check if it's running
 	connection.getGame(0)
-	.then((game) => {
-		return game.isRunning();
-	})
-	.then((response) => {
+	.then(game => game.isRunning())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -304,13 +300,11 @@ Example:
 ```javascript
 	// Get an existing game and check its current time
 	connection.getGame(0)
-	.then((game) => {
-		return game.getTime();
-	})
-	.then((response) => {
+	.then(game => game.getTime())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 ```
@@ -336,17 +330,15 @@ connection.on('connect', () => {
 
 	// Create a new game and then start it
 	connection.newGame('Game Name', 'game.xml')
-	.then((newGame) => {
+	.then(newGame => {
 		game = newGame;
 		return game.start();
 	})
-	.then((response) => {
-		return game.isRunning();
-	})
-	.then((response) => {
+	.then(response => game.isRunning())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -373,17 +365,15 @@ connection.on('connect', () => {
 
 	// Get an existing game and stop it
 	connection.getGame(0)
-	.then((_game) => {
+	.then(_game => {
 		game = _game;
 		return game.stop();
 	})
-	.then((response) => {
-		return game.isRunning();
-	})
-	.then((response) => {
+	.then(response => game.isRunning())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -408,13 +398,11 @@ connection.on('connect', () => {
 
 	// Get an existing game and destroy it
 	connection.getGame(0)
-	.then((game) => {
-		return game.destroy();
-	})
-	.then((response) => {
+	.then(game => game.destroy())
+	.then(response => {
 		// ...Any code that needs to run after game has been destroyed...
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -435,13 +423,11 @@ connection.on('connect', () => {
 
 	// Get an existing game and print all of its associated metadata
 	connection.getGame(0)
-	.then((game) => {
-		return game.getMeta();
-	})
-	.then((response) => {
+	.then(game => game.getMeta())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -464,13 +450,11 @@ connection.on('connect', () => {
 
 	// Get an existing game and print some of its associated metadata
 	connection.getGame(0)
-	.then((game) => {
-		return game.getMeta(['author', 'title']);
-	})
-	.then((response) => {
+	.then(game => game.getMeta(['author', 'title']))
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -493,13 +477,11 @@ connection.on('connect', () => {
 
 	// Get an existing game and print a metadata value
 	connection.getGame(0)
-	.then((game) => {
-		return game.getMeta('author');
-	})
-	.then((response) => {
+	.then(game => game.getMeta('author'))
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -524,13 +506,11 @@ connection.on('connect', () => {
 
 	// Get an existing game with id 0 and set some metadata
 	connection.getGame(0)
-	.then((game) => {
-		return game.setMeta({key1: 'value1', key2: 'value2'});
-	})
-	.then((response) => {
+	.then(game => game.setMeta({key1: 'value1', key2: 'value2'}))
+	.then(response => {
 		// ... do something once we know the metadata is set...
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -549,13 +529,11 @@ connection.on('connect', () => {
 
 	// Get an existing game and return all of its entities
 	connection.getGame(0)
-	.then((game) => {
-		return game.entities();
-	})
-	.then((response) => {
+	.then(game => game.entities())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -585,13 +563,11 @@ connection.on('connect', () => {
 
 	// Get an existing game and return all of its entities
 	connection.getGame(0)
-	.then((game) => {
-		return game.entities(false);
-	})
-	.then((response) => {
+	.then(game => game.entities(false))
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -625,13 +601,11 @@ connection.on('connect', () => {
 
 	// Get an existing game and return all of its things
 	connection.getGame(0)
-	.then((game) => {
-		return game.things();
-	})
-	.then((response) => {
+	.then(game => game.things())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -657,13 +631,11 @@ connection.on('connect', () => {
 
 	// Get an existing game and return all of its creatures
 	connection.getGame(0)
-	.then((game) => {
-		return game.creatures();
-	})
-	.then((response) => {
+	.then(game => game.creatures())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -692,13 +664,11 @@ connection.on('connect', () => {
 
 	// Get the room named 'start' from the game with id = 0
 	connection.getGame(0)
-	.then((game) => {
-		return game.getEntity('start');
-	})
-	.then((response) => {
+	.then(game => game.getEntity('start'))
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -721,13 +691,11 @@ connection.on('connect', () => {
 
 	// Get the TObject named 'stick' from the game with id = 0
 	connection.getGame(0)
-	.then((game) => {
-		return game.getObject('stick');
-	})
-	.then((response) => {
+	.then(game => game.getObject('stick'))
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -750,13 +718,11 @@ connection.on('connect', () => {
 
 	// An entity named 'start' exists, but it's a room, not an object.
 	connection.getGame(0)
-	.then((game) => {
-		return game.getObject('start');
-	})
-	.then((response) => {
+	.then(game => game.getObject('start'))
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -784,13 +750,11 @@ connection.on('connect', () => {
 
 	// Create a player in an existing game
 	connection.getGame(0)
-	.then((game) => {
-		return game.createPlayer('n00bslay3r');
-	})
-	.then((player) => {
+	.then(game => game.createPlayer('n00bslay3r'))
+	.then(player => {
 		console.log(player);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -814,13 +778,11 @@ connection.on('connect', () => {
 
 	// Retrieve a player from an existing game and send a command on its behalf
 	connection.getGame(0)
-	.then((game) => {
-		return game.getPlayer('n00bslay3r');
-	})
-	.then((player) => {
+	.then(game => game.getPlayer('n00bslay3r'))
+	.then(player => {
 		player.input('go north');
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -839,16 +801,12 @@ connection.on('connect', () => {
 
 	// Retrieve a player's output on the 'display' channel
 	connection.getGame(0)
-	.then((game) => {
-		return game.getPlayer('n00bslay3r');
-	})
-	.then((player) => {
-		return player.output('display');
-	})
-	.then((output) => {
+	.then(game => game.getPlayer('n00bslay3r'))
+	.then(player => player.output('display'))
+	.then(output => {
 		console.log(output);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -898,13 +856,11 @@ connection.on('connect', () => {
 
 	// Send a new message to a player's output stream
 	connection.getGame(0)
-	.then((game) => {
-		return game.getPlayer('n00bslay3r');
+	.then(game => game.getPlayer('n00bslay3r'))
+	.then(player => {
+		player.output('notifications', 'You were naughty. Be aware that further abuse will result in a permanent ban.');
 	})
-	.then((player) => {
-		return player.output('notifications', 'You were naughty. Be aware that further abuse will result in a permanent ban.');
-	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -925,17 +881,15 @@ connection.on('connect', () => {
 
 	// Remove an evil player from a game
 	connection.getGame(0)
-	.then((game) => {
-		return game.getPlayer('n00bslay3r');
-	})
-	.then((_player) => {
+	.then(game => game.getPlayer('n00bslay3r'))
+	.then(_player => {
 		player = _player;
 		return player.output('notifications', "You've been a bad monkey and are now banned.");
 	})
-	.then((response) => {
+	.then(response => {
 		player.destroy();
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -956,9 +910,9 @@ connection.on('connect', () => {
 		method: "get",
 		scope: "global",
 		action: "statistics"
-	}).then((response) => {
+	}).then(response => {
 		// ...Do something with the JSON response...
-	}).catch((error) => {
+	}).catch(error => {
 		// ...Handle error...
 	});
 });
@@ -976,9 +930,9 @@ connection.on('connect', () => {
 		method: "get",
 		scope: "global",
 		action: "statistics"
-	}, 500).then((response) => {
+	}, 500).then(response => {
 		// ...
-	}).catch((error) => {
+	}).catch(error => {
 		// ...
 	});
 });

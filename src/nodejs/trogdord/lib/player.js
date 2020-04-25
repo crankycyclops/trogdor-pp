@@ -26,7 +26,7 @@ class Player extends Being {
 					game_id: this.game.id,
 					name: this.name
 				}
-			}).then((response) => {
+			}).then(response => {
 
 				if (200 != response.status) {
 
@@ -38,7 +38,7 @@ class Player extends Being {
 
 				resolve(response);
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});

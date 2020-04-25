@@ -55,7 +55,7 @@ class Entity {
 					name: this.#name,
 					command: command
 				}
-			}).then((response) => {
+			}).then(response => {
 
 				if (200 != response.status) {
 
@@ -67,7 +67,7 @@ class Entity {
 
 				resolve(response);
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -99,7 +99,7 @@ class Entity {
 						name: this.#name,
 						channel: channel
 					}
-				}).then((response) => {
+				}).then(response => {
 	
 					if (200 != response.status) {
 	
@@ -111,7 +111,7 @@ class Entity {
 	
 					resolve(response.messages);
 	
-				}).catch((error) => {
+				}).catch(error => {
 					reject(error);
 				});
 			});
@@ -132,7 +132,7 @@ class Entity {
 						channel: channel,
 						message: message
 					}
-				}).then((response) => {
+				}).then(response => {
 	
 					if (200 != response.status) {
 	
@@ -144,7 +144,7 @@ class Entity {
 	
 					resolve(response);
 	
-				}).catch((error) => {
+				}).catch(error => {
 					reject(error);
 				});
 			});
