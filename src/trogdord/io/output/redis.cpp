@@ -149,8 +149,9 @@ namespace output {
 
 		JSONObject msg = message.toJSONObject();
 
-		msg.put("channel", channel);
+		msg.put("game_id", gameId);
 		msg.put("entity", entityName);
+		msg.put("channel", channel);
 
 		std::unique_lock<std::mutex> lock(redisMutex);
 		msgQueue.push(msg);
