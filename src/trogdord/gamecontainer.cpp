@@ -181,7 +181,10 @@ trogdor::entity::Player *GameContainer::createPlayer(size_t gameId, std::string 
 	static_cast<ServerOut *>(&(player->out()))->setEntity(player.get());
 
 	game->get()->insertPlayer(player);
-	playerListeners[gameId]->subscribe(player.get());
+
+	if (game->get()->inProgress()) {
+		playerListeners[gameId]->subscribe(player.get());
+	}
 
 	numPlayers++;
 	return player.get();
