@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 	std::unique_ptr<Config> &config = Config::get();
 	config->err(trogdor::Trogerr::INFO) << STARTUP_MESSAGE << std::endl;
 
-	try {
+//	try {
 
 		// Retrieving the singleton instance of ListenerContainer will
 		// make sure it gets initialized and that the listeners get started
@@ -56,8 +56,8 @@ int main(int argc, char **argv) {
 		// on the needs of existing connections as well as accepting new ones.
 		server = std::make_unique<TCPServer>(io, config->value<int>(Config::CONFIG_KEY_PORT));
 		io.run();
-	}
-
+//	}
+/*
 	catch (std::exception &e) {
 
 		config->err() << e.what() << std::endl;
@@ -67,6 +67,6 @@ int main(int argc, char **argv) {
 		config->err(trogdor::Trogerr::INFO) << SHUTDOWN_MESSAGE << std::endl;
 		return EXIT_FAILURE;
 	}
-
+*/
 	return EXIT_SUCCESS;
 }

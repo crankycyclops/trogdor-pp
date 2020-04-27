@@ -114,6 +114,12 @@ namespace trogdor {
       inGame = true;
       timer->start();
       resourceMutex.unlock();
+
+      if (callbacks.end() != callbacks.find("start")) {
+         for (const auto &callback: callbacks["start"]) {
+            (*callback)();
+         }
+      }
    }
 
    /***************************************************************************/
@@ -124,6 +130,12 @@ namespace trogdor {
       timer->stop();
       inGame = false;
       resourceMutex.unlock();
+
+      if (callbacks.end() != callbacks.find("stop")) {
+         for (const auto &callback: callbacks["stop"]) {
+            (*callback)();
+         }
+      }
    }
 
    /***************************************************************************/
@@ -280,5 +292,45 @@ namespace trogdor {
    void Game::insertVerbAction(std::string verb, std::unique_ptr<Action> action) {
 
       vocabulary.insertVerbAction(verb, std::move(action));
+   }
+
+   /***************************************************************************/
+
+   void Game::addCallback(std::string operation, std::shared_ptr<std::function<void()>> callback) {
+
+      if (callbacks.end() == callbacks.find(operation)) {
+         callbacks[operation] = {};
+      }
+   
+      callbacks[operation].push_back(callback);
+   }
+
+   /***************************************************************************/
+
+   size_t Game::removeCallbacks(std::string operation) {
+
+      if (callbacks.end() != callbacks.find(operation)) {
+
+         size_t size = callbacks[operation].size();
+
+         callbacks.erase(operation);
+         return size;
+      }
+
+      return 0;
+   }
+
+   /***************************************************************************/
+
+   void Game::removeCallback(std::string operation, const std::shared_ptr<std::function<void()>> &callback) {
+
+      if (callbacks.end() != callbacks.find(operation)) {
+
+         auto it = std::find(callbacks[operation].begin(), callbacks[operation].end(), callback);
+
+         if (it != callbacks[operation].end()) {
+            callbacks[operation].erase(it);
+         }
+      }
    }
 }

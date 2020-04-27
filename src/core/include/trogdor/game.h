@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <iostream>
+#include <functional>
 #include <sstream>
 #include <string>
 #include <cstdlib>
@@ -115,6 +116,10 @@ namespace trogdor {
 
          /* global error stream */
          std::unique_ptr<Trogerr> errStream;
+
+         // One or more callbacks that will be executed when various operations
+         // occur within the game.
+         std::unordered_map<std::string, std::vector<std::shared_ptr<std::function<void()>>>> callbacks;
 
          /*
             Called by initialize().  This initializes event handling in the game.
@@ -802,6 +807,9 @@ namespace trogdor {
 
             To pause and resume a game, simply stop and start it.
 
+            If one or more callbacks have been added with the key 'start', they
+            will be called after the game is started.
+
             Input: (none)
             Output: (none)
          */
@@ -813,6 +821,9 @@ namespace trogdor {
             are not executed.
 
             To pause and resume a game, simply stop and start it.
+
+            If one or more callbacks have been added with the key 'stop', they
+            will be called after the game is started.
 
             Input: (none)
             Output: (none)
@@ -980,6 +991,45 @@ namespace trogdor {
             events->addListener(eventListener.get());
             return events->event(event);
          }
+
+         /*
+            Adds a callback that should be called when a certain operation
+            occurs in the game.
+
+            Input:
+               Operation the callback should be attached to (std::string)
+               Callback (std::shared_ptr<std::function<void()>>)
+
+            Output:
+               (none)
+         */
+         void addCallback(std::string operation, std::shared_ptr<std::function<void()>> callback);
+
+         /*
+            Removes all callbacks associated with the specified operations and
+            returns the number of callbacks removed.
+
+            Input:
+               Operation whose callbacks should be removed (std::string)
+
+            Output:
+               Number of callbacks removed (size_t)
+         */
+         size_t removeCallbacks(std::string operation);
+
+         /*
+            Removes the specific callback associated with the specified
+            operation. This method is why I chose to store shared_ptrs instead
+            of the function itself (std::functions can't be compared.)
+
+            Input:
+               Operation whose callbacks should be removed (std::string)
+               The specific callback to remove (const std::shared_ptr<std::function<void()>> &)
+
+            Output:
+               (none)
+         */
+         void removeCallback(std::string operation, const std::shared_ptr<std::function<void()>> &callback);
    };
 }
 

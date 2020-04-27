@@ -6,6 +6,7 @@
 #include <mutex>
 #include <vector>
 #include <queue>
+#include <set>
 #include <unordered_map>
 
 #include "gamewrapper.h"
@@ -31,6 +32,21 @@ class GameContainer {
 		// Each game gets its own worker thread to process player input
 		std::unordered_map<size_t, std::unique_ptr<InputListener>> playerListeners;
 
+		// Indices are used by filters to quickly return a set of games based
+		// on various search criteria.
+		struct {
+
+			// Synchronizes the manipulation of indices within threads
+			std::mutex mutex;
+
+			// Set of all existing game ids
+			std::set<size_t> all;
+
+			// Maps true to the set of all game ids currently running and
+			// false to all game ids that exist but are currently stopped.
+			std::unordered_map<bool, std::set<size_t>> running;
+		} indices;
+
 		// Protected constructor, making get() the only way to return an
 		// instance.
 		GameContainer();
@@ -47,9 +63,9 @@ class GameContainer {
 		// Returns the current number of existing games.
 		inline size_t size() {return games.size();}
 
-		// Returns a read-only reference to games so that we can iterate over
-		// it from the outside.
-		inline const std::vector<std::unique_ptr<GameWrapper>> &getGames() {return games;}
+		// Returns an iterable set of game ids matching certain criteria (or
+		// all game ids if no filters are specified.)
+		const std::set<size_t> getGames();
 
 		// Returns the game referenced by the given id (returns nullptr if
 		// it doesn't exist.)

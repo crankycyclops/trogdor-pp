@@ -12,7 +12,8 @@ std::unique_ptr<GameContainer> GameContainer::instance = nullptr;
 
 GameContainer::GameContainer() {
 
-	// TODO
+	indices.running[true] = {};
+	indices.running[false] = {};
 }
 
 /*****************************************************************************/
@@ -58,6 +59,14 @@ std::unique_ptr<GameContainer> &GameContainer::get() {
 
 /*****************************************************************************/
 
+const std::set<size_t> GameContainer::getGames() {
+
+	// TODO: support filters
+	return indices.all;
+}
+
+/*****************************************************************************/
+
 std::unique_ptr<GameWrapper> &GameContainer::getGame(size_t id) {
 
 	// Special null unique_ptr that we can return a reference to when a game
@@ -87,6 +96,32 @@ size_t GameContainer::createGame(
 		)
 	);
 
+	// Update the running index whenever the game is started
+	games[gameId]->get()->addCallback("start", std::make_shared<std::function<void()>>([&] {
+
+		indices.mutex.lock();
+
+		indices.running[false].erase(gameId);
+		indices.running[true].insert(gameId);
+
+		indices.mutex.unlock();
+	}));
+
+	// Update the running index whenever the game is stopped
+	games[gameId]->get()->addCallback("stop", std::make_shared<std::function<void()>>([&] {
+
+		indices.mutex.lock();
+
+		indices.running[true].erase(gameId);
+		indices.running[false].insert(gameId);
+
+		indices.mutex.unlock();
+	}));
+
+	indices.mutex.lock();
+	indices.all.insert(gameId);
+	indices.mutex.unlock();
+
 	return gameId;
 }
 
@@ -95,8 +130,16 @@ size_t GameContainer::createGame(
 void GameContainer::destroyGame(size_t id) {
 
 	if (games.size() > id && nullptr != games[id]) {
+
 		numPlayers -= games[id]->getNumPlayers();
 		playerListeners[id] = nullptr;
+
+		indices.mutex.lock();
+		indices.running[true].erase(id);
+		indices.running[false].erase(id);
+		indices.all.erase(id);
+		indices.mutex.unlock();
+
 		games[id] = nullptr;
 	}
 }
