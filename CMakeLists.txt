@@ -3,6 +3,12 @@ include(FindPkgConfig)
 
 project(Trogdor-pp)
 
+# Enable conditional compilation in the case of a debug build
+string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_lower)
+if(build_type_lower STREQUAL "debug")
+	add_definitions(-DDEBUG)
+endif(build_type_lower STREQUAL "debug")
+
 # By default, we compile against Lua 5.1, but 5.2 and 5.3 have also been tested
 # and are known to work.
 if(NOT DEFINED ENV{LUA_VERSION})
@@ -177,6 +183,7 @@ if (Boost_FOUND)
 		src/trogdord/gamecontainer.cpp
 		src/trogdord/inputlistener.cpp
 		src/trogdord/exception/requestexception.cpp
+		src/trogdord/filter/filter.cpp
 		src/trogdord/network/tcpconnection.cpp
 		src/trogdord/network/tcpserver.cpp
 		src/trogdord/scopes/controller.cpp

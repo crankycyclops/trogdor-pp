@@ -59,9 +59,15 @@ std::unique_ptr<GameContainer> &GameContainer::get() {
 
 /*****************************************************************************/
 
-const std::set<size_t> GameContainer::getGames() {
+const std::set<size_t> GameContainer::getGames(Filter::Union s) {
 
-	// TODO: support filters
+	// Simple optimization to avoid unnecessary filter resolution if the list
+	// of games is currently empty.
+	if (!indices.all.size()) {
+		return indices.all;
+	}
+
+	// TODO: implement filter resolution
 	return indices.all;
 }
 

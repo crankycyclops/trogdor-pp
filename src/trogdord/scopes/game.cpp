@@ -140,7 +140,10 @@ JSONObject GameController::getGameList(JSONObject request) {
 	JSONObject gameList;
 
 	std::vector<std::string> metaKeys;
+	Filter::Union filters;
+
 	auto includeMeta = request.get_child_optional("args.include_meta");
+	auto filtersArg = request.get_child_optional("args.filters");
 
 	if (includeMeta && (*includeMeta).size()) {
 
@@ -160,7 +163,11 @@ JSONObject GameController::getGameList(JSONObject request) {
 		}
 	}
 
-	for (const auto &gameId: GameContainer::get()->getGames()) {
+	if (filtersArg && (*filtersArg).size()) {
+		filters = Filter::JSONToFilterUnion(*filtersArg);
+	}
+
+	for (const auto &gameId: GameContainer::get()->getGames(filters)) {
 
 		JSONObject gameJSON;
 

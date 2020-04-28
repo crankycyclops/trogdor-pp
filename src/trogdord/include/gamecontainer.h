@@ -9,6 +9,8 @@
 #include <set>
 #include <unordered_map>
 
+#include "filter/filter.h"
+
 #include "gamewrapper.h"
 #include "inputlistener.h"
 
@@ -65,7 +67,7 @@ class GameContainer {
 
 		// Returns an iterable set of game ids matching certain criteria (or
 		// all game ids if no filters are specified.)
-		const std::set<size_t> getGames();
+		const std::set<size_t> getGames(Filter::Union s = {});
 
 		// Returns the game referenced by the given id (returns nullptr if
 		// it doesn't exist.)
