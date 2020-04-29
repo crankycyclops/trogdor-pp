@@ -6,9 +6,9 @@
 
 Filter Filter::makeFilter(std::string type, std::string value) {
 
-	static std::regex integer("[+\\-]?[0-9]+");
+	static std::regex positiveInt("[+]?[0-9]+");
 
-	if (std::regex_match(value, integer)) {
+	if (std::regex_match(value, positiveInt)) {
 
 		size_t intVal;
 		std::stringstream sstream(value);
@@ -31,7 +31,7 @@ Filter Filter::makeFilter(std::string type, std::string value) {
 	}
 
 	else {
-		return{type, value};
+		return {type, value};
 	}
 }
 

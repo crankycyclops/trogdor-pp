@@ -14,6 +14,11 @@ GameContainer::GameContainer() {
 
 	indices.running[true] = {};
 	indices.running[false] = {};
+
+	gamesResolver.addRule("is_running", [&](Filter filter) -> std::set<size_t> {
+
+		return indices.running[filter.getValue<bool>()];
+	});
 }
 
 /*****************************************************************************/
@@ -61,14 +66,18 @@ std::unique_ptr<GameContainer> &GameContainer::get() {
 
 const std::set<size_t> GameContainer::getGames(Filter::Union s) {
 
-	// Simple optimization to avoid unnecessary filter resolution if the list
-	// of games is currently empty.
-	if (!indices.all.size()) {
+	// If there are no filters, we just return everything
+	if (!s.size()) {
 		return indices.all;
 	}
 
-	// TODO: implement filter resolution
-	return indices.all;
+	// Simple optimization to avoid unnecessary filter resolution if the list
+	// of games is currently empty.
+	else if (!indices.all.size()) {
+		return indices.all;
+	}
+
+	return gamesResolver.resolve(s);
 }
 
 /*****************************************************************************/
@@ -103,7 +112,7 @@ size_t GameContainer::createGame(
 	);
 
 	// Update the running index whenever the game is started
-	games[gameId]->get()->addCallback("start", std::make_shared<std::function<void()>>([&] {
+	games[gameId]->get()->addCallback("start", std::make_shared<std::function<void()>>([&, gameId] {
 
 		indices.mutex.lock();
 
@@ -114,7 +123,7 @@ size_t GameContainer::createGame(
 	}));
 
 	// Update the running index whenever the game is stopped
-	games[gameId]->get()->addCallback("stop", std::make_shared<std::function<void()>>([&] {
+	games[gameId]->get()->addCallback("stop", std::make_shared<std::function<void()>>([&, gameId] {
 
 		indices.mutex.lock();
 
@@ -124,8 +133,10 @@ size_t GameContainer::createGame(
 		indices.mutex.unlock();
 	}));
 
+	// Note that the game is always initialized in a stopped state.
 	indices.mutex.lock();
 	indices.all.insert(gameId);
+	indices.running[false].insert(gameId);
 	indices.mutex.unlock();
 
 	return gameId;

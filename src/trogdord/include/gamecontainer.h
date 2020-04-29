@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "filter/filter.h"
+#include "filter/resolver.h"
 
 #include "gamewrapper.h"
 #include "inputlistener.h"
@@ -21,6 +22,9 @@
 class GameContainer {
 
 	protected:
+
+		// Used to filter a set of game ids according to various criteria.
+		FilterResolver<size_t> gamesResolver;
 
 		// A combined tally of all players in all games
 		size_t numPlayers = 0;
