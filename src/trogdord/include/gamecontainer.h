@@ -48,6 +48,9 @@ class GameContainer {
 			// Set of all existing game ids
 			std::set<size_t> all;
 
+			// Indexes game ids by game name.
+			std::unordered_map<std::string, std::set<size_t>> name;
+
 			// Maps true to the set of all game ids currently running and
 			// false to all game ids that exist but are currently stopped.
 			std::unordered_map<bool, std::set<size_t>> running;

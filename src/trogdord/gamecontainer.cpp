@@ -15,9 +15,39 @@ GameContainer::GameContainer() {
 	indices.running[true] = {};
 	indices.running[false] = {};
 
-	gamesResolver.addRule("is_running", [&](Filter filter) -> std::set<size_t> {
+	// Filter rule that returns games that are either running or not running
+	gamesResolver.addRule("is_running", [&] (Filter filter) -> std::set<size_t> {
 
 		return indices.running[filter.getValue<bool>()];
+	});
+
+	// Filter rule that returns all games that start with a certain substring
+	gamesResolver.addRule("name_starts", [&] (Filter filter) -> std::set<size_t> {
+
+		std::set<size_t> matches;
+
+		// TODO: Iterating through all game names probably isn't the best
+		// approach. I'll do some more research into a better solution and
+		// re-write the logic and index data structure.
+		for (auto const &game: indices.name) {
+
+			if (game.first.rfind(filter.getValue<std::string>(), 0) == 0) {
+
+				std::set<size_t> next;
+
+				std::merge(
+					matches.begin(),
+					matches.end(),
+					game.second.begin(),
+					game.second.end(),
+					std::inserter(next, next.begin())
+				);
+
+				matches = std::move(next);
+			}
+		}
+
+		return matches;
 	});
 }
 
@@ -66,13 +96,13 @@ std::unique_ptr<GameContainer> &GameContainer::get() {
 
 const std::set<size_t> GameContainer::getGames(Filter::Union s) {
 
-	// If there are no filters, we just return everything
+	// If there are no filters, we just return everything.
 	if (!s.size()) {
 		return indices.all;
 	}
 
-	// Simple optimization to avoid unnecessary filter resolution if the list
-	// of games is currently empty.
+	// Simple optimization to avoid unnecessary filtering if the list of games
+	// is currently empty.
 	else if (!indices.all.size()) {
 		return indices.all;
 	}
@@ -135,8 +165,16 @@ size_t GameContainer::createGame(
 
 	// Note that the game is always initialized in a stopped state.
 	indices.mutex.lock();
+
 	indices.all.insert(gameId);
 	indices.running[false].insert(gameId);
+
+	if (indices.name.end() == indices.name.find(name)) {
+		indices.name[name] = {};
+	}
+
+	indices.name[name].insert(gameId);
+
 	indices.mutex.unlock();
 
 	return gameId;
@@ -152,9 +190,17 @@ void GameContainer::destroyGame(size_t id) {
 		playerListeners[id] = nullptr;
 
 		indices.mutex.lock();
+
 		indices.running[true].erase(id);
 		indices.running[false].erase(id);
 		indices.all.erase(id);
+
+		indices.name[games[id]->getName()].erase(id);
+
+		if (!indices.name[games[id]->getName()].size()) {
+			indices.name.erase(games[id]->getName());
+		}
+
 		indices.mutex.unlock();
 
 		games[id] = nullptr;
