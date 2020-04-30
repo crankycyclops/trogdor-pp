@@ -217,24 +217,6 @@ connection.on('connect', () => {
 });
 ```
 
-Finally, if you need to AND more than one filter of the same type, you can pass an array of filter values, like the following example that returns all games that start with "we" and "wee":
-
-```javascript
-const connection = new Trogdord();
-
-connection.on('connect', () => {
-
-	connection.games({name_starts: ["we", "wee"]}})
-	.then(games => {
-		// ...Do something with list of games...
-	}).catch(error => {
-		// ...Handle error...
-	});
-});
-```
-
-Yes, the above example is stupid, but at the time of this writing, the only two filters that exist are is_running and name_starts, and I don't really have a better one to demonstrate the filter syntax. Once I've implemented more filters, I'll update this to a more useful example.
-
 Currently supported filters for game lists:
 
 * **is_running**: Takes a boolean value and returns games that are either running or not running
