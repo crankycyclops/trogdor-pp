@@ -169,6 +169,77 @@ Result (an array of Game objects):
 [ Game {} ]
 ```
 
+You can also pass an optional list of filters to only return games matching certain criteria. For example, the following code returns only games that are currently running:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.games({is_running: true})
+	.then(games => {
+		// ...Do something with list of games...
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+You can AND more filters together like the following example, which only returns games that are running and whose names start with the prefix "we":
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.games({is_running: true, name_starts: "we"})
+	.then(games => {
+		// ...Do something with list of games...
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+If you need OR logic, you can pass in an array of filter groups like the following example, which returns all games that are running OR not running and start with the prefix "we":
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.games([{is_running: true}, {is_running: false, name_starts: "we"}]})
+	.then(games => {
+		// ...Do something with list of games...
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+Finally, if you need to AND more than one filter of the same type, you can pass an array of filter values, like the following example that returns all games that start with "we" and "wee":
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.games({name_starts: ["we", "wee"]}})
+	.then(games => {
+		// ...Do something with list of games...
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+Yes, the above example is stupid, but at the time of this writing, the only two filters that exist are is_running and name_starts, and I don't really have a better one to demonstrate the filter syntax. Once I've implemented more filters, I'll update this to a more useful example.
+
+Currently supported filters for game lists:
+
+* **is_running**: Takes a boolean value and returns games that are either running or not running
+* **name_starts**: Takes a string value and returns games whose names start with the given value
+
 ### Retrieving a Single Game
 
 This method retrieves the game corresponding to a specific id:

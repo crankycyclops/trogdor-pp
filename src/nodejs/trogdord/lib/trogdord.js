@@ -199,15 +199,22 @@ class Trogdord extends EventEmitter {
 	 * Returns a promise that resolves to a JSON object containing all games
 	 * that currently exist on the server.
 	 */
-	games() {
+	games(filters = null) {
 
 		return new Promise((resolve, reject) => {
 
-			this.makeRequest({
+			let data = {
 				method: "get",
 				scope: "game",
 				action: "list"
-			}).then(response => {
+			};
+
+			if (filters) {
+				data.args = {};
+				data.args.filters = filters;
+			}
+
+			this.makeRequest(data).then(response => {
 
 				if (200 != response.status) {
 
