@@ -26,24 +26,32 @@ GameContainer::GameContainer() {
 
 		std::set<size_t> matches;
 
-		// TODO: Iterating through all game names probably isn't the best
-		// approach. I'll do some more research into a better solution and
-		// re-write the logic and index data structure.
-		for (auto const &game: indices.name) {
-
-			if (game.first.rfind(filter.getValue<std::string>(), 0) == 0) {
+		// std::map is an ordered data structure that allows me to start
+		// iterating at the point where all words with a certain prefix begin.
+		// That's why I chose to implement this index using std::map and why
+		// I'm using the lower_bound method to find my first iterator position.
+		for (
+			auto i = indices.name.lower_bound(filter.getValue<std::string>());
+			i != indices.name.end();
+			i++
+		) {
+			if (0 == (*i).first.rfind(filter.getValue<std::string>(), 0)) {
 
 				std::set<size_t> next;
 
 				std::merge(
 					matches.begin(),
 					matches.end(),
-					game.second.begin(),
-					game.second.end(),
+					(*i).second.begin(),
+					(*i).second.end(),
 					std::inserter(next, next.begin())
 				);
 
 				matches = std::move(next);
+			}
+
+			else {
+				break;
 			}
 		}
 

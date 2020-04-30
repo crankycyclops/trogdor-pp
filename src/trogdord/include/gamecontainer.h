@@ -7,6 +7,7 @@
 #include <vector>
 #include <queue>
 #include <set>
+#include <map>
 #include <unordered_map>
 
 #include "filter/filter.h"
@@ -48,8 +49,10 @@ class GameContainer {
 			// Set of all existing game ids
 			std::set<size_t> all;
 
-			// Indexes game ids by game name.
-			std::unordered_map<std::string, std::set<size_t>> name;
+			// Indexes game ids by game name. I chose the map instead of the
+			// unordered_map because it allows for efficient searching based
+			// on string prefixes.
+			std::map<std::string, std::set<size_t>> name;
 
 			// Maps true to the set of all game ids currently running and
 			// false to all game ids that exist but are currently stopped.
