@@ -46,46 +46,60 @@ class FilterResolver {
 		// Reduces a filter group to a set
 		std::set<T> resolveGroup(Filter::Group group) {
 
-			bool started = false;
-			std::set<T> result;
-
+			// If we only have one filter in the group, we can just return
+			// that filter's result.
 			if (1 == group.size()) {
 				return resolveFilter(*group.begin());
 			}
 
-			// TODO: this solution seems very suboptimal. I'll have to
-			// investigate what I'm doing further.
+			// This is where the intersection for the whole group will be
+			// stored.
+			std::set<T> intersection;
+
+			// This is where we store each filter's result until we're ready
+			// to calculate their intersection.
+			std::vector<std::set<T>> intermediate;
+
+			// The basic idea here is this: we're going to resolve filters
+			// sequentially, and if any of them return an empty result, we
+			// know the whole filter group is going to be empty and we can
+			// return an empty set without having to calculate their
+			// intersection. If, on the other hand, all of the resulting sets
+			// contain at least one item, we know we'll have to complete the
+			// operation.
 			for (auto const &filter: group) {
 
-				if (!started) {
-					result = std::move(resolveFilter(filter));
-					started = true;
-				}
+				intermediate.push_back(resolveFilter(filter));
 
-				else {
-
-					// Simple optimization: if we know the current result
-					// is empty, we don't have to compare the other sets.
-					if (!result.size()) {
-						return {};
-					}
-
-					std::set<T> filterSet = resolveFilter(filter);
-					std::set<T> intersection;
-
-					std::set_intersection(
-						result.begin(),
-						result.end(),
-						filterSet.begin(),
-						filterSet.end(),
-						std::inserter(intersection, intersection.begin())
-					);
-
-					result = std::move(intersection);
+				// Yay! Since a filter group is basically an AND and since
+				// one of our filters returned an empty result, we know we
+				// can return an empty set for the whole group.
+				if (!intermediate.back().size()) {
+					return {};
 				}
 			}
 
-			return result;
+			// We got a non-zero result for each filter, so we'll have to
+			// take some time to calculate their intersection.
+			auto i = intermediate.begin();
+			intersection = *i;
+
+			for (i++; i != intermediate.end(); i++) {
+
+				std::set<T> newIntersection;
+
+				std::set_intersection(
+					intersection.begin(),
+					intersection.end(),
+					(*i).begin(),
+					(*i).end(),
+					std::inserter(newIntersection, newIntersection.begin())
+				);
+
+				intersection = std::move(newIntersection);
+			}
+
+			return intersection;
 		}
 
 	public:
