@@ -163,11 +163,11 @@ size_t GameContainer::createGame(
 		indices.mutex.unlock();
 	}));
 
-	// Note that the game is always initialized in a stopped state.
 	indices.mutex.lock();
 
-	indices.all.insert(gameId);
+	// Note that the game is always initialized in a stopped state.
 	indices.running[false].insert(gameId);
+	indices.all.insert(gameId);
 
 	if (indices.name.end() == indices.name.find(name)) {
 		indices.name[name] = {};
@@ -176,7 +176,6 @@ size_t GameContainer::createGame(
 	indices.name[name].insert(gameId);
 
 	indices.mutex.unlock();
-
 	return gameId;
 }
 
