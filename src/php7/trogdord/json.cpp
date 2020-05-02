@@ -10,9 +10,6 @@
 #include "json.h"
 #include "exception/jsonexception.h"
 
-// TODO: remove
-#include <iostream>
-
 using namespace rapidjson;
 
 
@@ -175,8 +172,6 @@ Value JSON::ArrayZvalToJSON(Document &result, zval *z, int depth) {
 // Private and called internally by ZvalToJSON
 Value JSON::ObjectZvalToJSON(Document &result, zval *z, int depth) {
 
-std::cout << "Entering ObjectZvalToJSON" << std::endl;
-
 	// Prevent us from recursing so deeply that we crash the PHP process
 	if (depth > ZVAL_TO_JSON_MAX_DEPTH) {
 		throw JSONException(
@@ -235,8 +230,6 @@ std::cout << "Entering ObjectZvalToJSON" << std::endl;
 
 // Private and called internally by ZvalToJSON
 Value JSON::ScalarZvalToJSON(Document &result, zval *z, int depth) {
-
-std::cout << "Entering ScalarZvalToJSON" << std::endl;
 
 	// Prevent us from recursing so deeply that we crash the PHP process
 	if (depth > ZVAL_TO_JSON_MAX_DEPTH) {
