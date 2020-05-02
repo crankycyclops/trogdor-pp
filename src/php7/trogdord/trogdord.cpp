@@ -9,6 +9,7 @@
 #include "game.h"
 #include "phpexception.h"
 
+#include "exception/jsonexception.h"
 #include "exception/networkexception.h"
 #include "exception/requestexception.h"
 
@@ -23,7 +24,7 @@ zend_object_handlers trogdordObjectHandlers;
 static const char *STATS_REQUEST = "{\"method\":\"get\",\"scope\":\"global\",\"action\":\"statistics\"}";
 
 // This request retrieves a list of all existing games
-static const char *GAME_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"list\"%meta}";
+static const char *GAME_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"list\"%args}";
 
 // This request retrieves a list of all available game definitions
 static const char *DEF_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"definitions\"}";
@@ -89,13 +90,13 @@ PHP_METHOD(Trogdord, statistics) {
 
 	try {
 
-		JSONObject response = Request::execute(
+		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			STATS_REQUEST
 		);
 
-		response.erase("status");
+		response.RemoveMember("status");
 		zval data = JSON::JSONToZval(response);
 
 		// There's some insanity in how this works, so for reference, here's
@@ -123,25 +124,46 @@ PHP_METHOD(Trogdord, statistics) {
 // Throws an instance of \Trogdord\NetworkException if there's an issue with the
 // network connection that prevents this call from returning a valid list.
 ZEND_BEGIN_ARG_INFO(arginfoListGames, 0)
+	ZEND_ARG_TYPE_INFO(0, filters, IS_ARRAY, 1)
 	ZEND_ARG_TYPE_INFO(0, keys, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
 
 PHP_METHOD(Trogdord, games) {
 
+	zval *filters = nullptr;
 	zval *keys = nullptr;
+
+	std::string args;
+	std::string filterArg;
 	std::string metaArg;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|a", &keys) == FAILURE) {
+	// The ! character tells us that if we pass in a literal null for the first
+	// argument, filters will be set to a nullptr rather than us getting a
+	// warning about the first parameter not being of the correct type.
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|a!a", &filters, &keys) == FAILURE) {
 		RETURN_NULL();
 	}
 
+	// We're only returning games matching specific criteria
+	if (nullptr != filters && zend_array_count(Z_ARRVAL_P(filters))) {
+
+		try {
+			filterArg = std::string("\"filters\":") + JSON::serialize(JSON::ZvalToJSON(filters));
+		}
+
+		catch (const JSONException &e) {
+			zend_throw_exception(EXCEPTION_GLOBALS(filterException), e.what(), 0);
+		}
+	}
+
+	// We need to include meta values in the list of returned games
 	if (nullptr != keys && zend_array_count(Z_ARRVAL_P(keys))) {
 
 		zval *entry;
 		HashPosition pos;
 
 		bool firstEntryVisited = false;
-		metaArg = ",\"args\":{\"include_meta\":[";
+		metaArg = "\"include_meta\":[";
 
 		for (
 			zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(keys), &pos);
@@ -160,7 +182,23 @@ PHP_METHOD(Trogdord, games) {
 			metaArg += std::string("\"") + Z_STRVAL_P(entry) + "\"";
 		}
 
-		metaArg += "]}";
+		metaArg += "]";
+	}
+
+	if (filterArg.length() || metaArg.length()) {
+
+		args = ",\"args\":{";
+
+		if (filterArg.length()) {
+			args += filterArg;
+		}
+
+		if (metaArg.length()) {
+			args += filterArg.length() ? "," : "";
+			args += metaArg;
+		}
+
+		args += "}";
 	}
 
 	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(getThis()));
@@ -168,15 +206,15 @@ PHP_METHOD(Trogdord, games) {
 	try {
 
 		std::string request = GAME_LIST_REQUEST;
-		strReplace(request, "%meta", metaArg);
+		strReplace(request, "%args", args);
 
-		JSONObject response = Request::execute(
+		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			request
 		);
 
-		zval data = JSON::JSONToZval(response.get_child("games"));
+		zval data = JSON::JSONToZval(response["games"]);
 
 		// There's some insanity in how this works, so for reference, here's
 		// what I read to help me understand what all the arguments mean:
@@ -212,13 +250,13 @@ PHP_METHOD(Trogdord, definitions) {
 
 	try {
 
-		JSONObject response = Request::execute(
+		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			DEF_LIST_REQUEST
 		);
 
-		zval data = JSON::JSONToZval(response.get_child("definitions"));
+		zval data = JSON::JSONToZval(response["definitions"]);
 
 		// There's some insanity in how this works, so for reference, here's
 		// what I read to help me understand what all the arguments mean:
@@ -262,7 +300,7 @@ PHP_METHOD(Trogdord, getGame) {
 		std::string request = GET_GAME_REQUEST;
 		strReplace(request, "%gid", std::to_string(gameId));
 
-		JSONObject response = Request::execute(
+		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			request
@@ -270,8 +308,8 @@ PHP_METHOD(Trogdord, getGame) {
 
 		if (!createGameObj(
 			return_value,
-			response.get<std::string>("name"),
-			response.get<std::string>("definition"),
+			response["name"].GetString(),
+			response["definition"].GetString(),
 			gameId,
 			getThis()
 		)) {
@@ -379,13 +417,19 @@ PHP_METHOD(Trogdord, newGame) {
 		strReplace(request, "%definition", definition);
 		strReplace(request, "%meta", metaArg);
 
-		JSONObject response = Request::execute(
+		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			request
 		);
 
-		if (!createGameObj(return_value, name, definition, response.get<int>("id"), getThis())) {
+		#ifdef ZEND_ENABLE_ZVAL_LONG64
+			int64_t id = response["id"].GetInt64();
+		#else
+			int id = response["id"].GetInt();
+		#endif
+
+		if (!createGameObj(return_value, name, definition, id, getThis())) {
 			php_error_docref(NULL, E_ERROR, "failed to instantiate Trogdord\\Game");
 		}
 

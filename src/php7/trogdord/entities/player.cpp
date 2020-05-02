@@ -56,7 +56,7 @@ PHP_METHOD(Player, destroy) {
 
 		trogdordObject *trogdordObjWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
-		JSONObject response = Request::execute(
+		Document response = Request::execute(
 			trogdordObjWrapper->data.hostname,
 			trogdordObjWrapper->data.port,
 			request

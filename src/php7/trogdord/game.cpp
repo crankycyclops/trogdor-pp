@@ -9,6 +9,8 @@
 #include "game.h"
 #include "entities/entity.h"
 
+using namespace rapidjson;
+
 ZEND_DECLARE_MODULE_GLOBALS(game);
 ZEND_EXTERN_MODULE_GLOBALS(trogdord);
 
@@ -133,7 +135,7 @@ PHP_METHOD(Game, start) {
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
-		JSONObject response = Request::execute(
+		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			request
@@ -186,7 +188,7 @@ PHP_METHOD(Game, stop) {
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
-		JSONObject response = Request::execute(
+		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			request
@@ -240,13 +242,19 @@ PHP_METHOD(Game, getTime) {
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
-		JSONObject response = Request::execute(
+		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			request
 		);
 
-		RETURN_LONG(response.get<int>("current_time"));
+		#ifdef ZEND_ENABLE_ZVAL_LONG64
+			int64_t time = response["current_time"].GetInt64();
+		#else
+			int time = response["current_time"].GetInt();
+		#endif
+
+		RETURN_LONG(time);
 	}
 
 	// Throw \Trogord\NetworkException
@@ -296,13 +304,13 @@ PHP_METHOD(Game, isRunning) {
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
-		JSONObject response = Request::execute(
+		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			request
 		);
 
-		RETURN_BOOL(response.get<bool>("is_running"));
+		RETURN_BOOL(response["is_running"].GetBool());
 	}
 
 	// Throw \Trogord\NetworkException
@@ -352,13 +360,13 @@ PHP_METHOD(Game, statistics) {
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
-		JSONObject response = Request::execute(
+		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			request
 		);
 
-		response.erase("status");
+		response.RemoveMember("status");
 		zval stats = JSON::JSONToZval(response);
 		RETURN_ZVAL(&stats, 1, 1);
 	}
@@ -410,7 +418,7 @@ PHP_METHOD(Game, destroy) {
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
-		JSONObject response = Request::execute(
+		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			request
@@ -511,13 +519,13 @@ PHP_METHOD(Game, getMeta) {
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
-		JSONObject response = Request::execute(
+		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			request
 		);
 
-		zval meta = JSON::JSONToZval(response.get_child("meta"));
+		zval meta = JSON::JSONToZval(response["meta"]);
 		RETURN_ZVAL(&meta, 1, 1);
 	}
 
@@ -610,7 +618,7 @@ PHP_METHOD(Game, setMeta) {
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
-		JSONObject response = Request::execute(
+		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			request
@@ -1530,16 +1538,22 @@ PHP_METHOD(Game, createPlayer) {
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
-		JSONObject response = Request::execute(
+		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			request
 		);
 
-		JSONObject player;
+		Document player;
 
-		player.put("name", name);
-		player.put("type", PLAYER_TYPE_STR);
+		Value JSONName;
+		Value JSONType;
+
+		JSONName.SetString(name, nameLength, player.GetAllocator());
+		JSONType.SetString(PLAYER_TYPE_STR, strlen(PLAYER_TYPE_STR), player.GetAllocator());
+
+		player.AddMember("name", JSONName, player.GetAllocator());
+		player.AddMember("type", JSONType, player.GetAllocator());
 
 		if (!createEntityObj(return_value, player, getThis())) {
 			php_error_docref(NULL, E_ERROR, "failed to instantiate Trogdord\\Player");
@@ -1615,13 +1629,13 @@ static zval getEntityList(size_t gameId, std::string type, zval *trogdord) {
 
 	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
-	JSONObject response = Request::execute(
+	Document response = Request::execute(
 		objWrapper->data.hostname,
 		objWrapper->data.port,
 		request
 	);
 
-	return JSON::JSONToZval(response.get_child("entities"));
+	return JSON::JSONToZval(response["entities"]);
 }
 
 /*****************************************************************************/
@@ -1640,7 +1654,7 @@ static zval getEntity(std::string name, std::string type, zval *game) {
 
 	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
-	JSONObject response = Request::execute(
+	Document response = Request::execute(
 		objWrapper->data.hostname,
 		objWrapper->data.port,
 		request
@@ -1648,7 +1662,7 @@ static zval getEntity(std::string name, std::string type, zval *game) {
 
 	zval entity;
 
-	if (!createEntityObj(&entity, response.get_child("entity"), game)) {
+	if (!createEntityObj(&entity, response["entity"], game)) {
 		php_error_docref(NULL, E_ERROR, "failed to instantiate entity");
 	}
 

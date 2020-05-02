@@ -51,7 +51,7 @@ extern const char *PLAYER_TYPE_STR;
 
 // Creates a PHP instance corresponding to the given trogdord entity. Returns
 // true on success and false on error.
-extern bool createEntityObj(zval *entityObj, JSONObject properties, zval *gameObj);
+extern bool createEntityObj(zval *entityObj, Value &properties, zval *gameObj);
 
 // Declares the PHP Entity class to the Zend engine.
 extern void defineEntityClass();
