@@ -39,6 +39,8 @@ To build the PHP 7 module that can connect to and interact with trogdord:
 cd src/php7/trogdord
 phpize && ./configure && make && make install
 
+Note that the PHP module requires the rapidjson library (apt-get install rapidjson-dev on Ubuntu)
+
 To build trogdord with redis support, add -DENABLE_REDIS=ON to your cmake command above.
 
 You don't have to explicitly build the library first. Building the client will build and link to it automatically as a dependency.
