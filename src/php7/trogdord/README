@@ -1,7 +1,0 @@
-A PHP module that connects to and provides an interface for one or more instances of trogdord over the network. The configure script doesn't currently check for it, but the Boost Asio library must be installed in a place where the compiler can find it. If it's not, the build will fail.
-
-To compile and install, issue the following commands:
-
-phpize
-./configure
-make && make install

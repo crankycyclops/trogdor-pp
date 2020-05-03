@@ -10,8 +10,6 @@
 #include "json.h"
 #include "exception/jsonexception.h"
 
-using namespace rapidjson;
-
 
 // Private and called internally by JSONToZval
 zval JSON::ArrayToZval(Value const &value) {

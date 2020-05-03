@@ -4,7 +4,9 @@ The official Node.js client for trogdord.
 
 ## Installaton
 
+```
 npm install trogdord
+```
 
 ## Dependencies
 
@@ -145,9 +147,9 @@ Result:
 [ 'game.xml' ]
 ```
 
-### Retrieving All Games
+### Retrieving Games
 
-This method retrieves all games that currently exist on the server:
+This method retrieves a list of games that currently exist on the server:
 
 ```javascript
 const connection = new Trogdord();
