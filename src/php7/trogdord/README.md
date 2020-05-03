@@ -361,4 +361,113 @@ catch (\Trogdord\RequestException $e) {
 }
 ```
 
-TODO: finish documentation
+Result:
+
+```
+array(1) {
+  [0]=>
+  string(9) "game1.xml"
+  [1]=>
+  string(9) "game2.xml"
+  [2]=>
+  string(9) "game3.xml"
+}
+```
+
+### Retrieving a Single Game
+
+TODO
+
+### Creating a New Game
+
+TODO
+
+### Returning Game-Specific Statistics
+
+TODO
+
+### Checking if a Game is Running
+
+TODO
+
+### Getting Current In-Game Time
+
+TODO
+
+### Starting a Game
+
+TODO
+
+### Stopping a Game
+
+TODO
+
+### Destroying a Game
+
+TODO
+
+### Getting a Game's Metadata
+
+TODO
+
+### Setting Game Metadata
+
+TODO
+
+### Getting All Entities in the Game
+
+TODO
+
+### Getting a Specific Entity in a Game
+
+TODO
+
+### Creating a New Player
+
+TODO
+
+### Sending a Command to an Entity's Input Stream
+
+TODO
+
+### Retrieving Entity Output Messages
+
+TODO
+
+### Appending Message to an Entity's Output Stream
+
+TODO
+
+### Removing (Destroying) a Player
+
+TODO
+
+## Exception Handling
+
+The trogdord extension throws various exceptions, all of which are outlined here:
+
+* `\Trogdord\Exception` — All exceptions inherit from this one. If you want to
+write a single block that will capture every possible error, this is the type
+you'd want to catch.
+
+* `\Trogdord\FilterException` — If you attempt to pass invalid filters to a
+method that accepts them (for example, `\Trogdord::games()`), this exception will
+be thrown. This inherits from `\Trogdord\Exception`.
+
+* `\Trogord\NetworkException` — This is thrown whenever an error occurs with the
+underlying TCP connection. For example, if we attempt to start or stop a game
+but trogdord has gone down and the extension can't connect to it, you'll see
+this exception. This inherits from `\Trogdord\Exception`.
+
+* `\Trogdord\RequestException` — You'll see this whenever a non-connection-related
+exception occurs while making a request to trogord. For example, if you attempt
+to start a game that no longer exists, an instance of `\Trogdord\GameNotFound`
+will be thrown, which inherits from this. Includes both a message and a code
+(the code in this case is the status code that comes back in trogdord's response.)
+This inherits from `\Trogdord\Exception`.
+
+* `\Trogdord\GameNotFound` — If you attempt to call a method on an instance of
+`\Trogdord\Game` representing a game that no longer exists, this exception will
+be thrown. This inherits from `\Trogdord\RequestException`.
+
+TODO: finish listing remaining exceptions
