@@ -376,7 +376,62 @@ array(1) {
 
 ### Retrieving a Single Game
 
-TODO
+`\Trogdord::getGame(id)` retrieves a single game from trogdord if it exists and
+throws an instance of `\Trogdord\GameNotFound` if not.
+
+```php
+try {
+
+	$connection = new \Trogdord("localhost");
+	$game = $connection->getGame(0);
+
+	var_dump($game);
+}
+
+catch (\Trogdord\NetworkException $e) {
+	// Handle connection-related error
+}
+
+catch (\Trogdord\GameNotFound $e) {
+	// Game doesn't exist
+}
+```
+
+Result:
+
+```
+object(Trogdord\Game)#3 (4) {
+  ["name":"Trogdord\Game":private]=>
+  string(6) "mygame"
+  ["definition":"Trogdord\Game":private]=>
+  string(8) "game.xml"
+  ["id":"Trogdord\Game":private]=>
+  int(0)
+  ["trogdord":"Trogdord\Game":private]=>
+  object(Trogdord)#1 (0) {
+  }
+}
+```
+
+Note that `\Trogdord\Game` contains an instance of the connection that spawned it. The actual property is private, but you can access it through `\Trogdord\Game::__get`. Thus, if you need to, you can access it like in the following example:
+
+```php
+$game->trogdord->statistics();
+```
+
+The name and id are also available as read-only properties, courtesy of `\Trogdord\Game::__get`:
+
+```php
+var_dump($game->name);
+var_dump($game->id);
+```
+
+Result:
+
+```
+string(6) "mygame"
+int(0)
+```
 
 ### Creating a New Game
 
@@ -442,16 +497,60 @@ TODO
 
 TODO
 
-## Exception Handling
+## Classes
 
-The trogdord extension throws various exceptions, all of which are outlined here:
+The `trogdord` extension defines the following classes:
+
+### \Trogdord
+
+ TODO
+
+### \Trogdord\Game
+
+TODO
+
+### \Trogdord\Entity
+
+TODO
+
+### \Trogdord\Place
+
+TODO
+
+### \Trogdord\Thing
+
+TODO
+
+### \Trogdord\Being
+
+TODO
+
+### \Trogdord\Room
+
+TODO
+
+### \Trogdord\Object
+
+TODO
+
+### \Trogdord\Creature
+
+TODO
+
+### \Trogdord\Player
+
+TODO
+
+## Exceptions
+
+The `trogdord` extension throws various exceptions, all of which are outlined here:
 
 * `\Trogdord\Exception` — All exceptions inherit from this one. If you want to
 write a single block that will capture every possible error, this is the type
 you'd want to catch.
 
 * `\Trogdord\FilterException` — If you attempt to pass invalid filters to a
-method that accepts them (for example, `\Trogdord::games()`), this exception will
+method that accepts them (for example, `\Trogdord::games`), this exception will
 be thrown. This inherits from `\Trogdord\Exception`.
 
 * `\Trogord\NetworkException` — This is thrown whenever an error occurs with the
@@ -460,7 +559,7 @@ but trogdord has gone down and the extension can't connect to it, you'll see
 this exception. This inherits from `\Trogdord\Exception`.
 
 * `\Trogdord\RequestException` — You'll see this whenever a non-connection-related
-exception occurs while making a request to trogord. For example, if you attempt
+exception occurs while making a request to trogdord. For example, if you attempt
 to start a game that no longer exists, an instance of `\Trogdord\GameNotFound`
 will be thrown, which inherits from this. Includes both a message and a code
 (the code in this case is the status code that comes back in trogdord's response.)
