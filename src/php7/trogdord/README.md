@@ -503,39 +503,39 @@ The `trogdord` extension defines the following classes:
 
 ### \Trogdord
 
-Represents a connection to trogdord and is used to create or retrieve games, as
+Represents a connection to trogdord and is used to create and retrieve games, as
 well as to return statistical information about the server.
 
 Below is a complete list of public methods (all methods including the constructor
 throw an instance of `\Trogdord\NetworkException` if anything goes wrong with the
 connection):
 
-* `__construct(string hostname, int port = 1040)` — Establish a connection to an instance
-of trogdord over the network.
+* `__construct(string hostname, int port = 1040)` — Establish a connection to an
+instance of trogdord over the network.
 
-* `statistics()` — Return useful statistics about the instance of trogdord.
+* `statistics(): array` — Return useful statistics about the instance of trogdord.
 Throws `\Trogdord\RequestException` if anything goes wrong with the request (you
 shouldn't ever get this exception from this method unless there's a bug in the
 server or the extension.)
 
-* `games(array filters = null, array metaKeys = null)` — Returns a list of games
-that exist on the server. Filters can be used to only include games matching
+* `games(array filters = null, array metaKeys = null): array` — Returns a list of
+games that exist on the server. Filters can be used to only include games matching
 certain criteria (see examples above) and metaKeys can be used to include certain
 meta data values for each game in the list. Throws `\Trogdord\RequestException`
 if anything goes wrong with the request (you shouldn't ever get this exception
 from this method unless there's a bug in the server or the extension.)
 
-* `definitions()` — Returns a list of all game definition files available to the
-server. `\Trogdord\RequestException` if anything goes wrong with the request (you
-shouldn't ever get this exception from this method unless there's a bug in the
-server or the extension.)
+* `definitions(): array` — Returns a list of all game definition files available
+to the server. `\Trogdord\RequestException` if anything goes wrong with the
+request (you shouldn't ever get this exception from this method unless there's a
+bug in the server or the extension.)
 
-* `getGame(int id)` — Returns an instance of `\Trogdord\Game` representing the
-game with the specified id. Throws `\Trogdord\GameNotFound` if the game with the
-specified id doesn't exist.
+* `getGame(int id): \Trogdord\Game` — Returns an instance of `\Trogdord\Game`
+representing the game with the specified id. Throws `\Trogdord\GameNotFound` if
+the game with the specified id doesn't exist.
 
-* `newGame(string name, string definition)` — Creates a new game and returns an
-instance of `\Trogdord\Game` that represents it. Throws
+* `newGame(string name, string definition): \Trogdord\Game` — Creates a new game
+and returns an instance of `\Trogdord\Game` that represents it. Throws
 `\Trogdord\RequestException` if anything goes wrong with the request.
 
 ### \Trogdord\Game
