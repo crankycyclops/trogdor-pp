@@ -435,7 +435,49 @@ int(0)
 
 ### Creating a New Game
 
-TODO
+`newGame(name, definition)` creates a new game with the specified name and based
+on the passed definition file (must be one of the definitions available to the
+connected instance of trogdord) and returns an instance of \Trogdord\Game.
+Throws an instance of `\Trogdord\NetworkException` if an issue arises with the
+connection and an instance of `\Trogdord\RequestException` if anything goes
+wrong with the request (for example, if the game definition filename passed in
+isn't available to the server.)
+
+Example:
+
+```php
+try {
+
+	$connection = new \Trogdord("localhost");
+	$game = $connection->newGame('mycoolgame', 'game.xml');
+
+	var_dump($game);
+}
+
+catch (\Trogdord\NetworkException $e) {
+	// Handle connection-related error
+}
+
+catch (\Trogdord\GameNotFound $e) {
+	// Game doesn't exist
+}
+```
+
+Result:
+
+```
+object(Trogdord\Game)#3 (4) {
+  ["name":"Trogdord\Game":private]=>
+  string(6) "mygame"
+  ["definition":"Trogdord\Game":private]=>
+  string(8) "game.xml"
+  ["id":"Trogdord\Game":private]=>
+  int(0)
+  ["trogdord":"Trogdord\Game":private]=>
+  object(Trogdord)#1 (0) {
+  }
+}
+```
 
 ### Returning Game-Specific Statistics
 
