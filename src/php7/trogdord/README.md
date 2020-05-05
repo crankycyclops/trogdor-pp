@@ -455,11 +455,11 @@ try {
 }
 
 catch (\Trogdord\NetworkException $e) {
-	// Handle connection-related error
+	// Handle error
 }
 
-catch (\Trogdord\GameNotFound $e) {
-	// Game doesn't exist
+catch (\Trogdord\RequestException $e) {
+	// Handle error
 }
 ```
 
