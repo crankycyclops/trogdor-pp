@@ -435,7 +435,7 @@ int(0)
 
 ### Creating a New Game
 
-`newGame(name, definition)` creates a new game with the specified name and based
+`\Trogdord::newGame(name, definition)` creates a new game with the specified name and based
 on the passed definition file (must be one of the definitions available to the
 connected instance of trogdord) and returns an instance of \Trogdord\Game.
 Throws an instance of `\Trogdord\NetworkException` if an issue arises with the
