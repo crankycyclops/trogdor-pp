@@ -1549,6 +1549,8 @@ PHP_METHOD(Game, createPlayer) {
 		Value JSONName;
 		Value JSONType;
 
+		player.SetObject();
+
 		JSONName.SetString(name, nameLength, player.GetAllocator());
 		JSONType.SetString(PLAYER_TYPE_STR, strlen(PLAYER_TYPE_STR), player.GetAllocator());
 
