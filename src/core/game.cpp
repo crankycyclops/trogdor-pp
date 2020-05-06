@@ -23,7 +23,7 @@
 #include <trogdor/iostream/trogout.h>
 #include <trogdor/iostream/trogerr.h>
 
-#include <trogdor/exception/entityexception.h>
+#include <trogdor/exception/duplicateentity.h>
 
 
 namespace trogdor {
@@ -162,7 +162,7 @@ namespace trogdor {
 
       // Make sure there are no name conflicts before creating the new player
       if (entities.isEntitySet(name)) {
-         throw entity::EntityException(
+         throw entity::DuplicateEntity(
             std::string("Entity with name '") + name + "' already exists"
          );
       }
@@ -182,7 +182,7 @@ namespace trogdor {
 
       // Make sure there are no name conflicts before inserting the new player
       if (entities.isEntitySet(player->getName())) {
-         throw entity::EntityException(
+         throw entity::DuplicateEntity(
             std::string("Entity with name '") + player->getName() + "' already exists"
          );
       }

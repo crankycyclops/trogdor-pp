@@ -468,7 +468,7 @@ Result:
 ```
 object(Trogdord\Game)#3 (4) {
   ["name":"Trogdord\Game":private]=>
-  string(6) "mygame"
+  string(10) "mycoolgame"
   ["definition":"Trogdord\Game":private]=>
   string(8) "game.xml"
   ["id":"Trogdord\Game":private]=>
