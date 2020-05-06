@@ -147,6 +147,7 @@ namespace output {
 		Message message
 	) {
 
+		message.order = nextOrder(gameId, entityName, channel);
 		JSONObject msg = message.toJSONObject();
 
 		msg.put("game_id", gameId);
