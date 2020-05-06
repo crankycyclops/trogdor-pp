@@ -861,8 +861,10 @@ namespace trogdor::entity {
             }
          }
 
-         user->out() << "? \n\n> ";
-         user->out().flush();
+         user->out() << "?" << std::endl;
+
+         user->out("prompt") << "\n> ";
+         user->out("prompt").flush();
 
          std::string answer;
          user->in() >> answer;
