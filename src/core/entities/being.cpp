@@ -203,14 +203,12 @@ namespace trogdor::entity {
 
          // Notify every entity in the room that the object has been taken
          // EXCEPT the one who's doing the taking
-         auto thingsInRoom = object->getLocation()->getThings();
-
-         for_each(thingsInRoom.begin, thingsInRoom.end, [&](Thing * const &thing) {
+         for (auto const &thing: object->getLocation()->getThings()) {
             if (thing != this) {
                thing->out("notifications") << getTitle() << " takes "
                   << object->getTitle() << "." << std::endl;
             }
-         });
+         };
 
          object->getLocation()->removeThing(object);
       }
@@ -256,14 +254,12 @@ namespace trogdor::entity {
 
       // Notify every entity in the room that the object has been dropped EXCEPT
       // the one who's doing the dropping
-      auto thingsInRoom = location->getThings();
-
-      for_each(thingsInRoom.begin, thingsInRoom.end, [&](Thing * const &thing) {
+      for (auto const &thing: location->getThings()) {
          if (thing != this) {
             thing->out("notifications") << getTitle() << " drops "
                << object->getTitle() << "." << std::endl;
          }
-      });
+      };
 
       location->insertThing(object);
       removeFromInventory(object);

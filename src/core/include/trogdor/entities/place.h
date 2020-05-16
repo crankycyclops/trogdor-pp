@@ -203,30 +203,18 @@ namespace trogdor::entity {
          }
 
          /*
-            Returns const_iterator to things.begin() and things.end(), so
-            that something outside can iterate over all Things in a Place
-            without modifying them.
+            Returns iterable list of all Things in a Place.
 
             Input:
                (None)
 
             Output:
-               things.begin() and things.end() (ThingListCItPair)
+               const ThingList &
          */
-         inline ThingListCItPair getThings() const {
-
-            ThingListCItPair iterators;
-
-            iterators.begin = things.begin();
-            iterators.end   = things.end();
-
-            return iterators;
-         }
+         inline const ThingList &getThings() const {return things;}
 
          /*
-            Returns const_iterator to creatures.begin() and creatures.end(), so
-            that something outside can iterate over all Creatures in a Place
-            without modifying them.
+            Returns iterable list of all Creatures in a Place.
 
             Input:
                (None)
@@ -234,15 +222,7 @@ namespace trogdor::entity {
             Output:
                creatures.begin() and creatures.end() (CreatureListCItPair)
          */
-         inline CreatureListCItPair getCreatures() const {
-
-            CreatureListCItPair iterators;
-
-            iterators.begin = creatures.begin();
-            iterators.end   = creatures.end();
-
-            return iterators;
-         }
+         inline const CreatureList &getCreatures() const {return creatures;}
    };
 }
 
