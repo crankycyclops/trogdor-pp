@@ -371,7 +371,6 @@ namespace trogdor::entity {
          */
          inline const ObjectList &getInventoryObjectsByName(std::string name) const {
 
-            ObjectListCItPair objects;
             ObjectsByNameMap::const_iterator i = inventory.objectsByName.find(name);
 
             if (i == inventory.objectsByName.end()) {

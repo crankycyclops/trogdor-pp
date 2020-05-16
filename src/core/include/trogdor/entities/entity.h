@@ -5,7 +5,6 @@
 #include <list>
 #include <set>
 #include <memory>
-#include <algorithm>
 #include <regex>
 #include <unordered_set>
 
@@ -719,57 +718,6 @@ namespace trogdor::entity {
    typedef std::list<Creature *> CreatureList;
    typedef std::list<Object *>   ObjectList;
 
-   typedef PlaceList::const_iterator    PlaceListCIt;
-   typedef RoomList::const_iterator     RoomListCIt;
-   typedef ThingList::const_iterator    ThingListCIt;
-   typedef BeingList::const_iterator    BeingListCIt;
-   typedef PlayerList::const_iterator   PlayerListCIt;
-   typedef CreatureList::const_iterator CreatureListCIt;
-   typedef ObjectList::const_iterator   ObjectListCIt;
-
-   struct PlaceListCItPair {
-      PlaceListCIt begin;
-      PlaceListCIt end;
-   };
-
-   struct RoomListCItPair {
-      RoomListCIt begin;
-      RoomListCIt end;
-   };
-
-   struct ThingListCItPair {
-      ThingListCIt begin;
-      ThingListCIt end;
-   };
-
-   struct BeingListCItPair {
-      BeingListCIt begin;
-      BeingListCIt end;
-   };
-
-   struct PlayerListCItPair {
-      PlayerListCIt begin;
-      PlayerListCIt end;
-   };
-
-   struct CreatureListCItPair {
-      CreatureListCIt begin;
-      CreatureListCIt end;
-   };
-
-   struct ObjectListCItPair {
-      ObjectListCIt begin;
-      ObjectListCIt end;
-   };
-
-   typedef PlaceList::iterator    PlaceListIt;
-   typedef RoomList::iterator     RoomListIt;
-   typedef ThingList::iterator    ThingListIt;
-   typedef BeingList::iterator    BeingListIt;
-   typedef PlayerList::iterator   PlayerListIt;
-   typedef CreatureList::iterator CreatureListIt;
-   typedef ObjectList::iterator   ObjectListIt;
-
    typedef std::set<Place *, EntityAlphaComparator>    PlaceSet;
    typedef std::set<Room *, EntityAlphaComparator>     RoomSet;
    typedef std::set<Thing *, EntityAlphaComparator>    ThingSet;
@@ -777,19 +725,6 @@ namespace trogdor::entity {
    typedef std::set<Player *, EntityAlphaComparator>   PlayerSet;
    typedef std::set<Creature *, EntityAlphaComparator> CreatureSet;
    typedef std::set<Object *, EntityAlphaComparator>   ObjectSet;
-
-   typedef PlaceSet::const_iterator    PlaceSetCIt;
-   typedef RoomSet::const_iterator     RoomSetCIt;
-   typedef ThingSet::const_iterator    ThingSetCIt;
-   typedef BeingSet::const_iterator    BeingSetCIt;
-   typedef PlayerSet::const_iterator   PlayerSetCIt;
-   typedef CreatureSet::const_iterator CreatureSetCIt;
-   typedef ObjectSet::const_iterator   ObjectSetCIt;
-
-   struct ObjectSetCItPair {
-      ObjectSetCIt begin;
-      ObjectSetCIt end;
-   };
 
    typedef std::unordered_map<std::string, ThingList>    ThingsByNameMap;
    typedef std::unordered_map<std::string, BeingList>    BeingsByNameMap;
@@ -799,8 +734,7 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   // Special empty lists used for returning .end() iterator pairs in the case
-   // of a non-existent list
+   // Special empty lists used for returning results when no result exists
    extern PlaceList     emptyPlaceList;
    extern RoomList      emptyRoomList;
    extern ThingList     emptyThingList;

@@ -220,7 +220,7 @@ namespace trogdor::entity {
                (None)
 
             Output:
-               creatures.begin() and creatures.end() (CreatureListCItPair)
+               const CreatureList &
          */
          inline const CreatureList &getCreatures() const {return creatures;}
    };
