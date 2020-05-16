@@ -248,34 +248,6 @@ namespace trogdor::entity {
          }
 
          /*
-            Returns iterators over all Objects that match the given name in the
-            Being's inventory.
-
-            Input:
-               name (std::string)
-
-            Output:
-               Pair of begin and end iterators (ObjectListCItPair)
-         */
-         inline ObjectListCItPair getInventoryObjectsByName(std::string name) const {
-
-            ObjectListCItPair objects;
-            ObjectsByNameMap::const_iterator i = inventory.objectsByName.find(name);
-
-            if (i == inventory.objectsByName.end()) {
-               objects.begin = emptyObjectList.begin();
-               objects.end   = emptyObjectList.end();
-            }
-
-            else {
-               objects.begin = i->second.begin();
-               objects.end   = i->second.end();
-            }
-
-            return objects;
-         }
-
-         /*
             Returns amount of damage Being does with its bare hands.
 
             Input:
@@ -386,6 +358,30 @@ namespace trogdor::entity {
                const ObjectSet &
          */
          inline const ObjectSet &getInventoryObjects() const {return inventory.objects;}
+
+         /*
+            Returns iteratable list of all Objects that match the given name in
+            the Being's inventory.
+
+            Input:
+               name (std::string)
+
+            Output:
+               const ObjectList &
+         */
+         inline const ObjectList &getInventoryObjectsByName(std::string name) const {
+
+            ObjectListCItPair objects;
+            ObjectsByNameMap::const_iterator i = inventory.objectsByName.find(name);
+
+            if (i == inventory.objectsByName.end()) {
+               return emptyObjectList;
+            }
+
+            else {
+               return i->second;
+            }
+         }
 
          /*
             Return raw point value for an attribute.

@@ -679,10 +679,8 @@ namespace trogdor::entity {
             if there's more than one and returns the chosen Entity.
 
             Template Arguments:
-               CItStruct  -- struct containing begin and end iterators (one of
-                             ThingListCItPair, etc.)
-               CItType    -- constant iterator type (one of ThingListCIt, etc.)
-               ResultType -- one of Entity, Thing, Being, etc.
+               ContainerType  -- iterable container type that contains entities
+               ResultType     -- one of Entity, Thing, Being, etc.
 
             Input:
                Iterators over entities to choose from
@@ -695,8 +693,8 @@ namespace trogdor::entity {
                If the user types a name that isn't presented as a choice, the
                name the user provided is thrown as an exception.
          */
-         template <typename CItStruct, typename CItType, typename ResultType>
-         static ResultType clarifyEntity(CItStruct items, Entity *user);
+         template <typename ContainerType, typename ResultType>
+         static ResultType clarifyEntity(ContainerType items, Entity *user);
    };
 
    /***************************************************************************/
@@ -813,17 +811,17 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   template <typename CItStruct, typename CItType, typename ResultType>
-   ResultType Entity::clarifyEntity(CItStruct objects, Entity *user) {
+   template <typename ContainerType, typename ResultType>
+   ResultType Entity::clarifyEntity(ContainerType objects, Entity *user) {
 
-      CItType i = objects.begin;
+      auto i = objects.begin();
 
-      if (i == objects.end) {
+      if (i == objects.end()) {
          return 0;
       }
 
       // pre-increment for looking ahead by one
-      else if (++i == objects.end) {
+      else if (++i == objects.end()) {
          return *(--i);
       }
 
@@ -839,24 +837,24 @@ namespace trogdor::entity {
          // the existing loop to make it work with bi-directional iterators
          // where i don't know the number of elements.  I apologize in advance
          // to whoever is forced to read it...
-         for (i = objects.begin; i != objects.end; ) {
+         for (i = objects.begin(); i != objects.end(); ) {
 
             user->out() << (*i)->getName();
             i++;
 
             // hackety hack
-            if (i == objects.end) {
+            if (i == objects.end()) {
                break;
             }
 
             // temporary lookahead on a bi-directional const_iterator
-            else if (++i == objects.end) {
+            else if (++i == objects.end()) {
                user->out() << " or the ";
                i--;
             }
 
             // pre-decrement to undo temporary lookahead
-            else if (--i != objects.begin) {
+            else if (--i != objects.begin()) {
                user->out() << ", ";
             }
          }
@@ -869,7 +867,7 @@ namespace trogdor::entity {
          std::string answer;
          user->in() >> answer;
 
-         for (i = objects.begin; i != objects.end; i++) {
+         for (i = objects.begin(); i != objects.end(); i++) {
             if (0 == answer.compare((*i)->getName())) {
                return *i;
             }

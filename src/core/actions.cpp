@@ -1,5 +1,4 @@
 #include <memory>
-#include <algorithm>
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
@@ -141,30 +140,22 @@ namespace trogdor {
          Place *location = player->getLocation();
 
          // consider matching inventory items, if there are any
-         ObjectListCItPair invItems = player->getInventoryObjectsByName(object);
-         for_each(invItems.begin, invItems.end, [&](Object * const &invObject) {
+         for (auto const &invObject: player->getInventoryObjectsByName(object)) {
                items.push_front(invObject);
-         });
+         };
 
          // also consider matching items in the room, if there are any
-         ThingListCItPair roomItems = location->getThingsByName(object);
-         for_each(roomItems.begin, roomItems.end, [&](Thing * const &roomThing) {
+         for (auto const &roomThing: location->getThingsByName(object)) {
             items.push_front(roomThing);
-         });
+         };
 
          if (0 == items.size()) {
             player->out("display") << "There is no " << object << " here!" << std::endl;
             return;
          }
 
-         ThingListCItPair itemsIt;
-         itemsIt.begin = items.begin();
-         itemsIt.end   = items.end();
-
          try {
-            Thing *thing =
-               Entity::clarifyEntity<ThingListCItPair, ThingListCIt, Thing *>(itemsIt,
-               player);
+            Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(items, player);
             thing->observe(player, true, true);
          }
 
@@ -192,10 +183,10 @@ namespace trogdor {
 
    void TakeAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
-      Place            *location = player->getLocation();
-      ThingListCItPair roomItems = location->getThingsByName(command->getDirectObject());
+      Place *location = player->getLocation();
+      auto roomItems = location->getThingsByName(command->getDirectObject());
 
-      if (roomItems.begin == roomItems.end) {
+      if (roomItems.begin() == roomItems.end()) {
          player->out("display") << "There is no " << command->getDirectObject()
             << " here!" << std::endl;
          return;
@@ -203,9 +194,7 @@ namespace trogdor {
 
       try {
 
-         Thing *thing =
-            Entity::clarifyEntity<ThingListCItPair, ThingListCIt, Thing *>(roomItems,
-            player);
+         Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(roomItems, player);
 
          if (ENTITY_OBJECT != thing->getType()) {
             player->out("display") << "You can't take that!" << std::endl;
@@ -276,11 +265,9 @@ namespace trogdor {
    // TODO: consider custom messages
    void DropAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
-      ObjectListCItPair invItems;
+      auto invItems = player->getInventoryObjectsByName(command->getDirectObject());
 
-      invItems = player->getInventoryObjectsByName(command->getDirectObject());
-
-      if (invItems.begin == invItems.end) {
+      if (invItems.begin() == invItems.end()) {
          player->out("display") << "You don't have a " << command->getDirectObject()
             << "!" << std::endl;
          return;
@@ -288,9 +275,7 @@ namespace trogdor {
 
       try {
 
-         Object *object =
-            Entity::clarifyEntity<ObjectListCItPair, ObjectListCIt, Object *>(invItems,
-            player);
+         Object *object = Entity::clarifyEntity<ObjectList, Object *>(invItems, player);
 
          try {
 
@@ -424,10 +409,10 @@ namespace trogdor {
 
    void AttackAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
-      Place            *location = player->getLocation();
-      BeingListCItPair beings = location->getBeingsByName(command->getDirectObject());
+      Place *location = player->getLocation();
+      auto beings = location->getBeingsByName(command->getDirectObject());
 
-      if (beings.begin == beings.end) {
+      if (beings.begin() == beings.end()) {
          player->out("display") << "There is no " << command->getDirectObject()
             << " here!" << std::endl;
          return;
@@ -438,24 +423,20 @@ namespace trogdor {
          std::string weaponName = command->getIndirectObject();
          Object *weapon = 0;
 
-         Being *defender =
-            Entity::clarifyEntity<BeingListCItPair, BeingListCIt, Being *>(beings,
-            player);
+         Being *defender = Entity::clarifyEntity<BeingList, Being *>(beings, player);
 
          if (weaponName.length() > 0) {
 
-            ObjectListCItPair items = player->getInventoryObjectsByName(weaponName);
+            auto items = player->getInventoryObjectsByName(weaponName);
 
-            if (items.begin == items.end) {
+            if (items.begin() == items.end()) {
                player->out("display") << "You don't have a " << weaponName << "!" << std::endl;
                return;
             }
 
             try {
 
-               weapon =
-                  Entity::clarifyEntity<ObjectListCItPair, ObjectListCIt, Object *>(items,
-                  player);
+               weapon = Entity::clarifyEntity<ObjectList, Object *>(items, player);
 
                // TODO: this check should be made inside Being (we'd have an
                // exception to catch)
