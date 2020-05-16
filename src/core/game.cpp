@@ -117,7 +117,7 @@ namespace trogdor {
 
       if (callbacks.end() != callbacks.find("start")) {
          for (const auto &callback: callbacks["start"]) {
-            (*callback)();
+            (*callback)(nullptr);
          }
       }
    }
@@ -133,7 +133,7 @@ namespace trogdor {
 
       if (callbacks.end() != callbacks.find("stop")) {
          for (const auto &callback: callbacks["stop"]) {
-            (*callback)();
+            (*callback)(nullptr);
          }
       }
    }
@@ -209,6 +209,40 @@ namespace trogdor {
 
       // Player must see an initial description of where they are
       player->getLocation()->observe(player, false);
+
+      if (callbacks.end() != callbacks.find("insertPlayer")) {
+         for (const auto &callback: callbacks["insertPlayer"]) {
+            (*callback)(player);
+         }
+      }
+   }
+
+   /***************************************************************************/
+
+   void Game::removePlayer(const std::string name, const std::string message) {
+
+      if (players.isEntitySet(name)) {
+
+         if (callbacks.end() != callbacks.find("removePlayer")) {
+            for (const auto &callback: callbacks["removePlayer"]) {
+               (*callback)(players.get(name));
+            }
+         }
+
+         if (message.length()) {
+            players.get(name)->out("notifications") << message << std::endl;
+         }
+
+         // if the Player is located in a Place, make sure to remove it
+         if (players.get(name)->getLocation()) {
+            players.get(name)->getLocation()->removeThing(players.get(name));
+         }
+
+         entities.erase(name);
+         things.erase(name);
+         beings.erase(name);
+         players.erase(name);
+      }
    }
 
    /***************************************************************************/
@@ -296,7 +330,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Game::addCallback(std::string operation, std::shared_ptr<std::function<void()>> callback) {
+   void Game::addCallback(std::string operation, std::shared_ptr<std::function<void(std::any)>> callback) {
 
       if (callbacks.end() == callbacks.find(operation)) {
          callbacks[operation] = {};
@@ -322,7 +356,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Game::removeCallback(std::string operation, const std::shared_ptr<std::function<void()>> &callback) {
+   void Game::removeCallback(std::string operation, const std::shared_ptr<std::function<void(std::any)>> &callback) {
 
       if (callbacks.end() != callbacks.find(operation)) {
 

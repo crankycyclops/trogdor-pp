@@ -76,11 +76,9 @@ namespace trogdor {
 
       else {
 
-         ObjectSetCItPair invItems = player->getInventoryObjects();
-
          player->out("display") << "Items in your inventory:" << std::endl << std::endl;
 
-         for_each(invItems.begin, invItems.end, [&](Object * const &obj) {
+         for (auto const &obj: player->getInventoryObjects()) {
 
             player->out("display") << obj->getTitle();
 
@@ -99,7 +97,7 @@ namespace trogdor {
             }
 
             player->out("display") << std::endl;
-         });
+         };
 
          if (player->getInventoryMaxWeight() > 0) {
             player->out("display") << std::endl << "You are currently using "

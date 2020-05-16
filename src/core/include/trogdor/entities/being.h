@@ -377,24 +377,15 @@ namespace trogdor::entity {
          inline unsigned const getInventoryCount() const {return inventory.count;}
 
          /*
-            Returns pair of const_iterators over the Objects in the Being's
-            inventory.
+            Returns all objects in the Being's inventory.
 
             Input:
                (none)
 
             Output:
-               inventory.objects.begin() and end() (ObjectSetCItPair)
+               const ObjectSet &
          */
-         inline ObjectSetCItPair getInventoryObjects() const {
-
-            ObjectSetCItPair objects;
-
-            objects.begin = inventory.objects.begin();
-            objects.end   = inventory.objects.end();
-
-            return objects;
-         }
+         inline const ObjectSet &getInventoryObjects() const {return inventory.objects;}
 
          /*
             Return raw point value for an attribute.

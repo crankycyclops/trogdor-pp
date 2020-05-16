@@ -2,6 +2,7 @@
 #define GAME_H
 
 
+#include <any>
 #include <memory>
 #include <iostream>
 #include <functional>
@@ -119,7 +120,7 @@ namespace trogdor {
 
          // One or more callbacks that will be executed when various operations
          // occur within the game.
-         std::unordered_map<std::string, std::vector<std::shared_ptr<std::function<void()>>>> callbacks;
+         std::unordered_map<std::string, std::vector<std::shared_ptr<std::function<void(std::any)>>>> callbacks;
 
          /*
             Called by initialize().  This initializes event handling in the game.
@@ -359,37 +360,6 @@ namespace trogdor {
          inline std::unique_ptr<entity::Player> &getDefaultPlayer() {
 
             return defaultPlayer;
-         }
-
-         /*
-            Removes a player from the game.  Does nothing if the player with the
-            specified name doesn't exist.
-
-            Input:
-               Name of player (std::string)
-               Message to output to player before removing (std::string: default is none)
-
-            Output:
-               (none)
-         */
-         inline void removePlayer(const std::string name, const std::string message = "") {
-
-            if (players.isEntitySet(name)) {
-
-               if (message.length()) {
-                  players.get(name)->out("notifications") << message << std::endl;
-               }
-
-               // if the Player is located in a Place, make sure to remove it
-               if (players.get(name)->getLocation()) {
-                  players.get(name)->getLocation()->removeThing(players.get(name));
-               }
-
-               entities.erase(name);
-               things.erase(name);
-               beings.erase(name);
-               players.erase(name);
-            }
          }
 
          /*
@@ -919,6 +889,19 @@ namespace trogdor {
          std::function<void()> confirmationCallback = nullptr);
 
          /*
+            Removes a player from the game.  Does nothing if the player with the
+            specified name doesn't exist.
+
+            Input:
+               Name of player (std::string)
+               Message to output to player before removing (std::string: default is none)
+
+            Output:
+               (none)
+         */
+         void removePlayer(const std::string name, const std::string message = "");
+
+         /*
             Wraps around Timer API.  See timer.h for documentation.
          */
          void insertTimerJob(std::shared_ptr<TimerJob> j);
@@ -998,12 +981,12 @@ namespace trogdor {
 
             Input:
                Operation the callback should be attached to (std::string)
-               Callback (std::shared_ptr<std::function<void()>>)
+               Callback (std::shared_ptr<std::function<void(std::any)>>)
 
             Output:
                (none)
          */
-         void addCallback(std::string operation, std::shared_ptr<std::function<void()>> callback);
+         void addCallback(std::string operation, std::shared_ptr<std::function<void(std::any)>> callback);
 
          /*
             Removes all callbacks associated with the specified operations and
@@ -1024,12 +1007,12 @@ namespace trogdor {
 
             Input:
                Operation whose callbacks should be removed (std::string)
-               The specific callback to remove (const std::shared_ptr<std::function<void()>> &)
+               The specific callback to remove (const std::shared_ptr<std::function<void(std::any)>> &)
 
             Output:
                (none)
          */
-         void removeCallback(std::string operation, const std::shared_ptr<std::function<void()>> &callback);
+         void removeCallback(std::string operation, const std::shared_ptr<std::function<void(std::any)>> &callback);
    };
 }
 

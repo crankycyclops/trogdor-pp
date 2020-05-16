@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <trogdor/event/triggers/deathdrop.h>
 
 namespace trogdor::event {
@@ -11,10 +10,9 @@ namespace trogdor::event {
 
       // TODO: should we only drop with some probability?
       // TODO: right now, we drop undroppable objects; should we?
-      entity::ObjectSetCItPair invItems = being->getInventoryObjects();
-      std::for_each(invItems.begin, invItems.end, [&](entity::Object * const &object) {
+      for (auto const &object: being->getInventoryObjects()) {
          drops.push_back(object);
-      });
+      };
 
       for_each(drops.begin(), drops.end(), [&](entity::Object * const &object) {
          being->drop(object, false);

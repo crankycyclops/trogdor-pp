@@ -1,5 +1,3 @@
-#include <algorithm>
-
 #include <trogdor/game.h>
 #include <trogdor/entities/creature.h>
 
@@ -11,9 +9,7 @@ namespace trogdor::entity {
    // whole list each time a weapon is added or removed from an inventory
    void Creature::buildWeaponCache() {
 
-      ObjectSetCItPair objs = getInventoryObjects();
-
-      for_each(objs.begin, objs.end, [&](Object * const &object) {
+      for (auto const &object: getInventoryObjects()) {
 
          if (object->isTagSet(Object::WeaponTag)) {
 
@@ -34,7 +30,7 @@ namespace trogdor::entity {
                weaponCache.push_back(object);
             }
          }
-      });
+      };
    }
 
    Object *Creature::selectWeapon() {
