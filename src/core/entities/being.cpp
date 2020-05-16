@@ -1,4 +1,5 @@
 #include <cmath>
+#include <algorithm>
 
 #include <trogdor/entities/being.h>
 #include <trogdor/entities/creature.h>
@@ -199,8 +200,18 @@ namespace trogdor::entity {
       }
 
       else {
-         object->getLocation()->out("notifications") << getTitle() << " takes "
-            << object->getTitle() << "." << std::endl;
+
+         // Notify every entity in the room that the object has been taken
+         // EXCEPT the one who's doing the taking
+         auto thingsInRoom = object->getLocation()->getThings();
+
+         for_each(thingsInRoom.begin, thingsInRoom.end, [&](Thing * const &thing) {
+            if (thing != this) {
+               thing->out("notifications") << getTitle() << " takes "
+                  << object->getTitle() << "." << std::endl;
+            }
+         });
+
          object->getLocation()->removeThing(object);
       }
 
@@ -243,8 +254,17 @@ namespace trogdor::entity {
          throw BeingException("", BeingException::DROP_UNDROPPABLE);
       }
 
-      location->out("notifications") << getTitle() << " drops "
-         << object->getTitle() << "." << std::endl;
+      // Notify every entity in the room that the object has been dropped EXCEPT
+      // the one who's doing the dropping
+      auto thingsInRoom = location->getThings();
+
+      for_each(thingsInRoom.begin, thingsInRoom.end, [&](Thing * const &thing) {
+         if (thing != this) {
+            thing->out("notifications") << getTitle() << " drops "
+               << object->getTitle() << "." << std::endl;
+         }
+      });
+
       location->insertThing(object);
       removeFromInventory(object);
 
