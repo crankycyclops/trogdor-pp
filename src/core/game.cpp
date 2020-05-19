@@ -93,8 +93,6 @@ namespace trogdor {
             err() << e.what() << std::endl;
             return false;
          }
-
-         initEvents();
       }
 
       // In some cases (like the PHP 7 module I'm writing that wraps around
@@ -103,6 +101,7 @@ namespace trogdor {
          parser->parse(gamefile);
       }
 
+      initEvents();
       return true;
    }
 

@@ -17,11 +17,15 @@ namespace trogdor::event {
 
          if (creature->getAutoAttackEnabled()) {
 
-            int in = creature->getAutoAttackInterval();
-            int e  = creature->getAutoAttackRepeat() ? -1 : 1;
-            int s  = creature->getAutoAttackInterval();
+            std::shared_ptr<AutoAttackTimerJob> j = std::make_shared<AutoAttackTimerJob>(
+               game,
+               creature->getAutoAttackInterval(),
+               creature->getAutoAttackRepeat() ? -1 : 1,
+               creature->getAutoAttackInterval(),
+               creature,
+               being
+            );
 
-            std::shared_ptr<AutoAttackTimerJob> j = std::make_shared<AutoAttackTimerJob>(game, in, e, s, creature, being);
             game->insertTimerJob(j);
          }
       };
