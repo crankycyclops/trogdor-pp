@@ -28,7 +28,7 @@ namespace trogdor {
       static const char *responses[] = {
          "Such language!",
          "You, sir, have a foul mouth!",
-         "Well, ?&*@! to you too!",
+         "Well, ?&*@! to you, too!",
          "Do you kiss your mother with that mouth?",
          "Classy.",
          "Swear much?"
