@@ -409,7 +409,10 @@ namespace trogdor {
 
    void AttackAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
-      // The player is committing suicide
+      // The player is self-terminating
+      // TODO: you can say "attack myself with fish" even if you don't have a
+      // fish in your inventory. While technically not a big deal in the case of
+      // self-termination, I should probably fix this.
       if (0 == strToLower(command->getDirectObject()).compare("myself")) {
 
          static const char *suicideResponses[] = {
