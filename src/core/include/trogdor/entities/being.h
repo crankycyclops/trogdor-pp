@@ -49,9 +49,13 @@ namespace trogdor::entity {
 
       protected:
 
-         int health;            // number of health points the being currently has
-         int maxHealth;         // maximum number of health points (0 for immortal)
-         bool alive;            // whether or not the being is alive
+         // Once the value for health has been initialized, set this to true.
+         // This is used to determine whether setMaxHealth should also
+         // initialize the value of health.
+         bool healthInitialized = false;
+
+         int health = 0;        // number of health points the being currently has
+         int maxHealth = 0;     // maximum number of health points (0 for immortal)
 
          double woundRate;      // max probability of being hit when attacked
          int damageBareHands;   // damage done during combat without a weapon
@@ -229,9 +233,8 @@ namespace trogdor::entity {
          */
          inline Being(const Being &b, std::string n): Thing(b, n) {
 
-            health = b.health;
-            maxHealth = b.maxHealth;
-            alive = b.alive;
+            setHealth(b.health);
+            setMaxHealth(b.maxHealth);
             woundRate = b.woundRate;
             damageBareHands = b.damageBareHands;
 
@@ -267,7 +270,7 @@ namespace trogdor::entity {
             Output:
                bool
          */
-         inline bool isAlive() const {return alive;}
+         inline bool isAlive() const {return health || !maxHealth ? true : false;}
 
          /*
             Returns true if the Being is immortal and false if it's not.
@@ -415,15 +418,20 @@ namespace trogdor::entity {
          }
 
          /*
-            Puts the Being in either an alive (true) or a dead (false) state.
+            Send out a JSON update every time the player's health is changed.
 
             Input:
-               True for alive and False for dead
+               (none)
 
             Output:
                (none)
          */
-         inline void setAlive(bool state) {alive = state;}
+         inline void notifyHealth() {
+
+            out("health") << std::string("{\"health\":") + std::to_string(health) +
+               ",\"maxHealth\":" + std::to_string(maxHealth) + '}';
+            out("health").flush();
+         }
 
          /*
             Sets the Being's health.
@@ -436,8 +444,12 @@ namespace trogdor::entity {
          */
          inline void setHealth(int h) {
 
-            // TODO: should I intelligently handle player dying here?
+            // TODO: should I intelligently handle player dying here instead of
+            // in the separate method die()? I think that makes more sense
+            healthInitialized = true;
             health = h;
+
+            notifyHealth();
          }
 
          /*
@@ -449,7 +461,16 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setMaxHealth(int h) {maxHealth = h;}
+         inline void setMaxHealth(int h) {
+
+            // If we haven't already initialized the value for health, do so now
+            // (the default value is the same value as maxHealth.)
+            if (!healthInitialized) {
+               setHealth(h);
+            }
+
+            maxHealth = h;
+         }
 
          /*
             Sets Being's wound rate, which is a factor in how likely it is to be

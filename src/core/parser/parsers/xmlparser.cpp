@@ -929,7 +929,7 @@ namespace trogdor {
    void XMLParser::parseDefaultPlayer() {
 
       static std::unordered_map<std::string, std::string> tagToProperty({
-         {"alive", "alive"}, {"health", "health"}, {"maxhealth", "maxhealth"},
+         {"health", "health"}, {"maxhealth", "maxhealth"},
          {"woundrate", "woundrate"}, {"damagebarehands", "damagebarehands"}
       });
 
@@ -1049,7 +1049,7 @@ namespace trogdor {
 
       static std::unordered_map<std::string, std::string> tagToProperty({
          {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"},
-         {"alive", "alive"}, {"health", "health"}, {"maxhealth", "maxhealth"},
+         {"health", "health"}, {"maxhealth", "maxhealth"},
          {"woundrate", "woundrate"}, {"damagebarehands", "damagebarehands"},
          {"counterattack", "counterattack"}, {"allegiance", "allegiance"}
       });

@@ -251,16 +251,17 @@ This is an introduction. If introductions are enabled, new players will have to 
 
          </respawn>
 
-         <!-- whether or not player starts out alive or dead (optional:
-              default is 1 for alive) -->
-         <alive>1</alive>
-
-         <!-- default starting health (optional: default is 0) -->
-         <health>10</health>
-
          <!-- a max health of 0 means the creature is immortal (optional:
               default is 0 for immortal) -->
          <maxHealth>10</maxHealth>
+
+         <!-- default starting health (optional: default is value of maxHealth.)
+         A value of 0 means the player starts out dead. If you really want to,
+         you can set maxHealth = 0 and health to some value greater than 0 if
+         you want to allow a situation where a health value gets decremented
+         even though the player won't actually die. This could possibly be used
+         to interesting effect. This will also work in creature definitions. -->
+         <health>10</health>
 
          <!-- default maximum probability of being hit during combat
               (optional: default is 0.5) -->
@@ -454,16 +455,13 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
               does with his bare hands (optional: default is 3) -->
          <damagebarehands>10</damagebarehands>
 
-         <!-- whether or not creature starts out alive or dead (optional:
-              default is 1 for alive) -->
-         <alive>1</alive>
-
-         <!-- default starting health (optional: default is 0) -->
-         <health>20</health>
-
          <!-- a max health of 0 means the creature is immortal (optional:
               default is 0 for immortal) -->
          <maxHealth>25</maxHealth>
+
+         <!-- default starting health (optional: default is value of maxHealth.)
+         A value of 0 means the creature starts out dead. -->
+         <health>20</health>
 
          <!-- Creatures can also be given attributes that affect their behavior
               (by default, creatures are given an even spread of 10 points
@@ -500,8 +498,6 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
          <description>
 He's white, transparent and floating six or seven feet off the ground.  He smiles and winks when you look up at him, clearly letting you know he means no harm.
          </description>
-
-         <alive>1</alive>
 
          <!-- Indicates that the creature is a friend to all players. Friends
               will not automatically retaliate when attacked, whereas creatures

@@ -572,15 +572,6 @@ namespace trogdor {
 
       /**********/
 
-      // Set whether or not a Being is alive
-      propSetters["creature"]["alive"] =
-      propSetters["player"]["alive"] = [](Game *game, entity::Entity *being,
-      std::string value) {
-         dynamic_cast<entity::Being *>(being)->setAlive(stoi(value));
-      };
-
-      /**********/
-
       // Set a Being's default starting health
       propSetters["creature"]["health"] =
       propSetters["player"]["health"] = [](Game *game, entity::Entity *being,

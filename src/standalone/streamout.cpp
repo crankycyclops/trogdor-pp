@@ -5,6 +5,7 @@
 StreamOut::StreamOut(std::ostream *s): trogdor::Trogout(), stream(s) {
 
    ignoredChannels.insert("location");
+   ignoredChannels.insert("health");
 }
 
 void StreamOut::flush() {

@@ -214,6 +214,11 @@ namespace trogdor {
             (*callback)(player);
          }
       }
+
+      // Make sure the player's health information is sent out when they're
+      // first inserted into the game. This should be the only time we have to
+      // call this method outside of Being::setHealth.
+      player->notifyHealth();
    }
 
    /***************************************************************************/
