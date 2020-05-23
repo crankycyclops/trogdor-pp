@@ -3,6 +3,7 @@
 
 
 #include <memory>
+#include <unordered_set>
 #include <trogdor/iostream/trogout.h>
 
 
@@ -15,11 +16,15 @@ class StreamOut: public trogdor::Trogout {
 
    private:
 
-      std::ostream *stream; // output stream where flush() sends data
+      // These are channels we should ignore when sending output
+      std::unordered_set<std::string> ignoredChannels;
+
+      // output stream where flush() sends data
+      std::ostream *stream;
 
    public:
 
-      inline StreamOut(std::ostream *s) {stream = s;}
+      StreamOut(std::ostream *s);
 
       /*
          See include/iostream/trogout.h for details.
