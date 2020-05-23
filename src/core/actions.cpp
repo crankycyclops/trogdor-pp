@@ -409,6 +409,41 @@ namespace trogdor {
 
    void AttackAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
+      // The player is committing suicide
+      if (0 == strToLower(command->getDirectObject()).compare("myself")) {
+
+         static const char *suicideResponses[] = {
+            "Done.",
+            "If you insist...",
+            "You know, they have hotlines for that sort of thing.",
+            "Was life really so hard?",
+            "I hope you left a note.",
+            "You'll be missed."
+         };
+
+         static int arrSize = sizeof(suicideResponses) / sizeof (const char *);
+
+         if (player->isAlive()) {
+
+            int i = (rand() % arrSize) - 1;
+
+            if (i < 0) {
+               i = 0;
+            }
+
+            srand(time(NULL));
+
+            player->out("display") << suicideResponses[i] << std::endl;
+            player->die(true);
+         }
+
+         else {
+            player->out("display") << "You're already dead." << std::endl;
+         }
+
+         return;
+      }
+
       Place *location = player->getLocation();
       auto beings = location->getBeingsByName(command->getDirectObject());
 
