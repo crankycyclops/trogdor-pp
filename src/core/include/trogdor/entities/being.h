@@ -6,9 +6,9 @@
 #include <algorithm>
 #include <memory>
 #include <unordered_map>
+#include <random>
 
 #include <trogdor/utility.h>
-#include <trogdor/dice.h>
 
 #include <trogdor/entities/thing.h>
 #include <trogdor/entities/place.h>
@@ -175,13 +175,15 @@ namespace trogdor::entity {
          */
          inline bool isAttackSuccessful(Being *defender) {
 
-            Dice d;
+            static std::random_device rd;
+            static std::mt19937 generator(rd());
+            static std::uniform_real_distribution<double> distribution(0, 1);
 
             // probability that the attack will be successful
             double p = CLAMP(getAttributeFactor("strength") * (defender->woundRate / 2) +
                (defender->woundRate / 2), 0.0, defender->woundRate);
 
-            if (d.get() < p) {
+            if (distribution(generator) < p) {
                return true;
             }
 
