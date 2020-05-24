@@ -1,3 +1,5 @@
+#include <random>
+
 #include <trogdor/game.h>
 #include <trogdor/entities/creature.h>
 
@@ -35,14 +37,16 @@ namespace trogdor::entity {
 
    Object *Creature::selectWeapon() {
 
-      Dice d;
+      static std::random_device rd;
+      static std::mt19937 generator(rd());
+      static std::uniform_real_distribution<double> distribution(0, 1);
 
       // calculate probability that Creature will use a weapon
       double p = getAttributeFactor("dexterity") * 0.8;
       p = p > 0.0 ? p + 0.2 : 0.0;
 
       // creature was able to use a weapon
-      if (d.get() < p) {
+      if (distribution(generator) < p) {
 
          if (0 == weaponCache.size()) {
             buildWeaponCache();
@@ -54,7 +58,7 @@ namespace trogdor::entity {
          // select the next strongest weapon with some probability determined by
          // intelligence
          for (auto &weapon: weaponCache) {
-            if (d.roll() < pSelectWeapon) {
+            if (distribution(generator) < pSelectWeapon) {
                return weapon;
             }
          }

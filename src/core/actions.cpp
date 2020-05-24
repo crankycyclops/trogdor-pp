@@ -1,7 +1,7 @@
 #include <memory>
 #include <iostream>
 #include <cstring>
-#include <cstdlib>
+#include <random>
 
 #include <trogdor/vocabulary.h>
 #include <trogdor/actions.h>
@@ -36,14 +36,11 @@ namespace trogdor {
 
       static int arrSize = sizeof(responses) / sizeof (const char *);
 
-      int i = (rand() % arrSize) - 1;
+      static std::random_device rd;
+      static std::minstd_rand generator(rd());
+      static std::uniform_int_distribution<unsigned> distribution(0, arrSize - 1);
 
-      if (i < 0) {
-         i = 0;
-      }
-
-      srand(time(NULL));
-      player->out("display") << responses[i] << std::endl;
+      player->out("display") << responses[distribution(generator)] << std::endl;
    }
 
 /******************************************************************************/
@@ -426,17 +423,13 @@ namespace trogdor {
 
          static int arrSize = sizeof(suicideResponses) / sizeof (const char *);
 
+         static std::random_device rd;
+         static std::minstd_rand generator(rd());
+         static std::uniform_int_distribution<unsigned> distribution(0, arrSize - 1);
+
          if (player->isAlive()) {
 
-            int i = (rand() % arrSize) - 1;
-
-            if (i < 0) {
-               i = 0;
-            }
-
-            srand(time(NULL));
-
-            player->out("display") << suicideResponses[i] << std::endl;
+            player->out("display") << suicideResponses[distribution(generator)] << std::endl;
             player->die(true);
          }
 

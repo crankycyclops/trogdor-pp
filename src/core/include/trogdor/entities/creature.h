@@ -4,9 +4,7 @@
 
 #include <memory>
 
-#include <trogdor/dice.h>
 #include <trogdor/entities/being.h>
-
 #include <trogdor/iostream/nullin.h>
 #include <trogdor/exception/validationexception.h>
 

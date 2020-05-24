@@ -1,4 +1,4 @@
-#include <trogdor/dice.h>
+#include <random>
 #include <trogdor/timer/jobs/wander.h>
 
 
@@ -9,7 +9,9 @@ namespace trogdor {
 
    void WanderTimerJob::execute() {
 
-      Dice d;
+      static std::random_device rd;
+      static std::mt19937 generator(rd());
+      static std::uniform_real_distribution<double> probabilityDist(0, 1);
 
       // make sure wandering wasn't turned off
       if (!wanderer->getWanderEnabled()) {
@@ -24,13 +26,9 @@ namespace trogdor {
       }
 
       // creature considers moving or staying; which will he pick?
-      else if (d.get() > wanderer->getWanderLust()) {
+      else if (probabilityDist(generator) > wanderer->getWanderLust()) {
          return;
       }
-
-      // TODO: use AI to select destination more intelligently; currently random
-      // The whole rest of this function will change when we do...
-      d.roll();
 
       Room *curLoc = static_cast<Room *>(wanderer->getLocation());
       unsigned int nConnections = curLoc->getNumConnections();
@@ -40,8 +38,10 @@ namespace trogdor {
          return;
       }
 
-      unsigned int selection = d.getNormalized(nConnections);
-      wanderer->gotoLocation(curLoc->getConnectionByIndex(selection));
+      // TODO: use AI to select destination more intelligently; currently random
+      // The whole rest of this function will change when we do...
+      std::uniform_int_distribution<int> connectionsDist(0, nConnections - 1);
+      wanderer->gotoLocation(curLoc->getConnectionByIndex(connectionsDist(generator)));
 
       // if wander interval ever changes, we should make sure it's updated
       setInterval(wanderer->getWanderInterval());
