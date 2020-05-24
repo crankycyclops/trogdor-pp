@@ -140,9 +140,10 @@ JSONObject GameController::getGameList(JSONObject request) {
 	JSONObject gameList;
 
 	std::vector<std::string> metaKeys;
-	auto includeMeta = request.get_child_optional("args.include_meta");
+	Filter::Union filters;
 
-	auto &gamePtrs = GameContainer::get()->getGames();
+	auto includeMeta = request.get_child_optional("args.include_meta");
+	auto filtersArg = request.get_child_optional("args.filters");
 
 	if (includeMeta && (*includeMeta).size()) {
 
@@ -162,24 +163,25 @@ JSONObject GameController::getGameList(JSONObject request) {
 		}
 	}
 
-	for (size_t i = 0; i < gamePtrs.size(); i++) {
+	if (filtersArg && (*filtersArg).size()) {
+		filters = Filter::JSONToFilterUnion(*filtersArg);
+	}
 
-		if (gamePtrs[i]) {
+	for (const auto &gameId: GameContainer::get()->getGames(filters)) {
 
-			JSONObject game;
+		JSONObject gameJSON;
 
-			game.put("id", i);
-			game.put("name", gamePtrs[i]->getName());
+		gameJSON.put("id", gameId);
+		gameJSON.put("name", GameContainer::get()->getGame(gameId)->getName());
 
-			// If an include_meta argument is included, it specifies Game
-			// meta data values that should be included along with the game's
-			// ID and name in the returned list.
-			for (const auto &key: metaKeys) {
-				game.put(key, gamePtrs[i]->get()->getMeta(key));
-			}
-
-			gameList.push_back(std::make_pair("", game));
+		// If an include_meta argument is included, it specifies Game
+		// meta data values that should be included along with the game's
+		// ID and name in the returned list.
+		for (const auto &key: metaKeys) {
+			gameJSON.put(key, GameContainer::get()->getGame(gameId)->get()->getMeta(key));
 		}
+
+		gameList.push_back(std::make_pair("", gameJSON));
 	}
 
 	// This kludge, if there are no games in GameContainer to list, results in

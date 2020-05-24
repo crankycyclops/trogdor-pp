@@ -2,10 +2,19 @@
 #include "include/streamout.h"
 
 
+StreamOut::StreamOut(std::ostream *s): trogdor::Trogout(), stream(s) {
+
+   ignoredChannels.insert("location");
+   ignoredChannels.insert("health");
+}
+
 void StreamOut::flush() {
 
-   *stream << getBufferStr();
-   stream->flush();
+   if (ignoredChannels.end() == ignoredChannels.find(getChannel())) {
+      *stream << getBufferStr();
+      stream->flush();
+   }
+
    clear();
 }
 

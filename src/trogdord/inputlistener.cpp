@@ -124,7 +124,11 @@ void InputListener::start() {
 						// The player was removed from the game, so stop
 						// listening for their commands.
 						else {
-							it->second.future.wait();
+
+							if (it->second.future.valid()) {
+								it->second.future.wait();
+							}
+
 							it = processed.erase(it);
 						}
 					}
@@ -147,6 +151,8 @@ void InputListener::stop() {
 
 	if (on) {
 
+		processedMutex.lock();
+
 		// Signal to the worker thread that we shouldn't listen for commands
 		// from the players anymore.
 		for (auto &next: processed) {
@@ -162,6 +168,8 @@ void InputListener::stop() {
 
 		// Finally, kill the worker thread.
 		on = false;
+
+		processedMutex.unlock();
 		worker.join();
 	}
 }

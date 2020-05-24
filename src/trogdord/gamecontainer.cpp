@@ -1,3 +1,5 @@
+#include <any>
+
 #include "include/filesystem.h"
 #include "include/gamecontainer.h"
 
@@ -12,7 +14,51 @@ std::unique_ptr<GameContainer> GameContainer::instance = nullptr;
 
 GameContainer::GameContainer() {
 
-	// TODO
+	indices.running[true] = {};
+	indices.running[false] = {};
+
+	// Filter rule that returns games that are either running or not running
+	gamesResolver.addRule("is_running", [&] (Filter filter) -> std::set<size_t> {
+
+		return indices.running[filter.getValue<bool>()];
+	});
+
+	// Filter rule that returns all games that start with a certain substring
+	gamesResolver.addRule("name_starts", [&] (Filter filter) -> std::set<size_t> {
+
+		std::set<size_t> matches;
+
+		// std::map is an ordered data structure that allows me to start
+		// iterating at the point where all words with a certain prefix begin.
+		// That's why I chose to implement this index using std::map and why
+		// I'm using the lower_bound method to find my first iterator position.
+		for (
+			auto i = indices.name.lower_bound(filter.getValue<std::string>());
+			i != indices.name.end();
+			i++
+		) {
+			if (0 == (*i).first.rfind(filter.getValue<std::string>(), 0)) {
+
+				std::set<size_t> next;
+
+				std::merge(
+					matches.begin(),
+					matches.end(),
+					(*i).second.begin(),
+					(*i).second.end(),
+					std::inserter(next, next.begin())
+				);
+
+				matches = std::move(next);
+			}
+
+			else {
+				break;
+			}
+		}
+
+		return matches;
+	});
 }
 
 /*****************************************************************************/
@@ -58,6 +104,24 @@ std::unique_ptr<GameContainer> &GameContainer::get() {
 
 /*****************************************************************************/
 
+const std::set<size_t> GameContainer::getGames(Filter::Union s) {
+
+	// If there are no filters, we just return everything.
+	if (!s.size()) {
+		return indices.all;
+	}
+
+	// Simple optimization to avoid unnecessary filtering if the list of games
+	// is currently empty.
+	else if (!indices.all.size()) {
+		return indices.all;
+	}
+
+	return gamesResolver.resolve(s);
+}
+
+/*****************************************************************************/
+
 std::unique_ptr<GameWrapper> &GameContainer::getGame(size_t id) {
 
 	// Special null unique_ptr that we can return a reference to when a game
@@ -87,6 +151,55 @@ size_t GameContainer::createGame(
 		)
 	);
 
+	// Update the running index whenever the game is started
+	games[gameId]->get()->addCallback("start",
+	std::make_shared<std::function<void(std::any)>>([&, gameId](std::any data) {
+
+		indices.mutex.lock();
+
+		indices.running[false].erase(gameId);
+		indices.running[true].insert(gameId);
+
+		indices.mutex.unlock();
+	}));
+
+	// Update the running index whenever the game is stopped
+	games[gameId]->get()->addCallback("stop",
+	std::make_shared<std::function<void(std::any)>>([&, gameId](std::any data) {
+
+		indices.mutex.lock();
+
+		indices.running[true].erase(gameId);
+		indices.running[false].insert(gameId);
+
+		indices.mutex.unlock();
+	}));
+
+	// Make sure players drop their inventory (including droppable objects)
+	// when they're removed from the game so that no items are lost
+	games[gameId]->get()->addCallback("removePlayer",
+	std::make_shared<std::function<void(std::any)>>([&](std::any player) {
+
+		auto invObjects = std::any_cast<trogdor::entity::Player *>(player)->getInventoryObjects();
+
+		for (auto &object: invObjects) {
+			std::any_cast<trogdor::entity::Player *>(player)->drop(object, false, false);
+		}
+	}));
+
+	indices.mutex.lock();
+
+	// Note that the game is always initialized in a stopped state.
+	indices.running[false].insert(gameId);
+	indices.all.insert(gameId);
+
+	if (indices.name.end() == indices.name.find(name)) {
+		indices.name[name] = {};
+	}
+
+	indices.name[name].insert(gameId);
+
+	indices.mutex.unlock();
 	return gameId;
 }
 
@@ -95,8 +208,24 @@ size_t GameContainer::createGame(
 void GameContainer::destroyGame(size_t id) {
 
 	if (games.size() > id && nullptr != games[id]) {
+
 		numPlayers -= games[id]->getNumPlayers();
 		playerListeners[id] = nullptr;
+
+		indices.mutex.lock();
+
+		indices.running[true].erase(id);
+		indices.running[false].erase(id);
+		indices.all.erase(id);
+
+		indices.name[games[id]->getName()].erase(id);
+
+		if (!indices.name[games[id]->getName()].size()) {
+			indices.name.erase(games[id]->getName());
+		}
+
+		indices.mutex.unlock();
+
 		games[id] = nullptr;
 	}
 }
@@ -181,7 +310,10 @@ trogdor::entity::Player *GameContainer::createPlayer(size_t gameId, std::string 
 	static_cast<ServerOut *>(&(player->out()))->setEntity(player.get());
 
 	game->get()->insertPlayer(player);
-	playerListeners[gameId]->subscribe(player.get());
+
+	if (game->get()->inProgress()) {
+		playerListeners[gameId]->subscribe(player.get());
+	}
 
 	numPlayers++;
 	return player.get();

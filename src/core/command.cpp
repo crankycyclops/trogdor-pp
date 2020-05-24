@@ -29,8 +29,8 @@ namespace trogdor {
       std::string commandStr;
 
       // Prompt the user for a response
-      user->out() << "\n> ";
-      user->out().flush();
+      user->out("prompt") << "\n> ";
+      user->out("prompt").flush();
       user->in() >> commandStr;
 
       trim(commandStr);

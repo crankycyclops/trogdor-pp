@@ -2,98 +2,362 @@
 #include <sstream>
 #include <regex>
 
+#include <rapidjson/writer.h>
+#include <rapidjson/error/en.h>
+
 #include <boost/algorithm/string.hpp>
 
 #include "json.h"
+#include "exception/jsonexception.h"
 
 
-std::string JSON::serialize(JSONObject obj) {
-
-	std::stringstream jsonStream;
-
-	write_json(jsonStream, obj, false);
-	std::string json = jsonStream.str();
-
-	// Hack #1 to support empty arrays, since ptrees don't actually support arrays
-	boost::replace_all(json, "[\"\"]", "[]");
-
-	// Hack #2 to support numeric types, since ptrees don't do any typing either
-	// (*sigh*)
-	std::regex reg("\\\"([0-9]+\\.{0,1}[0-9]*)\\\"");
-	json = std::regex_replace(json, reg, "$1");
-
-	return json;
-}
-
-/*****************************************************************************/
-
-JSONObject JSON::deserialize(std::string json) {
-
-	JSONObject obj;
-	std::stringstream jsonStream(json);
-
-	read_json(jsonStream, obj);
-	return obj;
-}
-
-/*****************************************************************************/
-
-zval JSON::JSONToZval(JSONObject obj) {
-
-	// Used to match and cast values to types other than strings
-	static std::regex integer("[+\\-]?[0-9]+");
-	static std::regex decimal("[+\\-]?[0-9]*\\.[0-9]+");
+// Private and called internally by JSONToZval
+zval JSON::ArrayToZval(Value const &value) {
 
 	zval array;
 	array_init(&array);
 
-	for(auto pair: obj) {
-
-		zval zData;
-
-		if (!pair.second.empty() && pair.second.data().empty()) {
-			zData = JSONToZval(pair.second);
-		}
-
-		else {
-
-			std::string value = pair.second.data();
-
-			if (std::regex_match(value, integer)) {
-				ZVAL_LONG(&zData, std::stoi(value));
-			}
-
-			else if (std::regex_match(value, decimal)) {
-				ZVAL_DOUBLE(&zData, std::stod(value));
-			}
-
-			// Boolean detection is EXTREMELY error prone (it's very plausible
-			// that I'll need a string with the values "true" or "false" and
-			// get the wrong type as a result of this.) For now, there's not
-			// much I can do, but in the long term, I'm going to have to
-			// replace boost::ptree with a *real* JSON library.
-			else if (0 == value.compare("true")) {
-				ZVAL_BOOL(&zData, 1);
-			}
-
-			else if (0 == value.compare("false")) {
-				ZVAL_BOOL(&zData, 0);
-			}
-
-			else {
-				ZVAL_STRING(&zData, value.c_str());
-			}
-		}
-
-		// Numerical index
-		if (0 == pair.first.compare("")) {
-			add_next_index_zval(&array, &zData);
-		}
-
-		else {
-			add_assoc_zval(&array, pair.first.c_str(), &zData);
-		}
+	for (auto const &next: value.GetArray()) {
+		zval zData = JSONToZval(next);
+		add_next_index_zval(&array, &zData);
 	}
 
 	return array;
+}
+
+/*****************************************************************************/
+
+// Private and called internally by JSONToZval
+zval JSON::ObjectToZval(Value const &value) {
+
+	zval object;
+	array_init(&object);
+
+	for (auto const &next: value.GetObject()) {
+		zval zData = JSONToZval(next.value);
+		add_assoc_zval(&object, next.name.GetString(), &zData);
+	}
+
+	return object;
+}
+
+/*****************************************************************************/
+
+// Private and called internally by JSONToZval
+zval JSON::ScalarToZval(Value const &value) {
+
+	zval zData;
+
+	switch(value.GetType()) {
+
+		case kNullType:
+
+			ZVAL_NULL(&zData);
+			break;
+
+		case kTrueType:
+
+			ZVAL_BOOL(&zData, 1);
+			break;
+
+		case kFalseType:
+
+			ZVAL_BOOL(&zData, 0);
+			break;
+
+		case kStringType:
+
+			ZVAL_STRING(&zData, value.GetString());
+			break;
+
+		case kNumberType:
+
+			if (value.IsDouble()) {
+				ZVAL_DOUBLE(&zData, value.GetDouble());
+			} else {
+				#ifdef ZEND_ENABLE_ZVAL_LONG64
+					ZVAL_LONG(&zData, value.GetInt64());
+				#else
+					ZVAL_LONG(&zData, value.GetInt());
+				#endif
+			}
+
+			break;
+
+		default:
+			throw JSONException("Unknown JSON value type in ScalarToZval");
+	}
+
+	return zData;
+}
+
+/*****************************************************************************/
+
+// Private and called internally by ZvalToJSON
+int JSON::GetZvalArrayType(zval *z) {
+
+	int type;
+	HashPosition pos;
+
+	zend_string *key;
+	zend_ulong idx;
+
+	zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(z), &pos);
+	type = zend_hash_get_current_key_ex(Z_ARRVAL_P(z), &key, &idx, &pos);
+
+	return type;
+}
+
+/*****************************************************************************/
+
+// Private and called internally by ZvalToJSON
+Value JSON::ArrayZvalToJSON(Document &result, zval *z, int depth) {
+
+	// Prevent us from recursing so deeply that we crash the PHP process
+	if (depth > ZVAL_TO_JSON_MAX_DEPTH) {
+		throw JSONException(
+			std::string("Maximum array depth of ") +
+			std::to_string(ZVAL_TO_JSON_MAX_DEPTH) +
+			" exceeded"
+		);
+	}
+
+	// The resulting JSON Object
+	Value root(kArrayType);
+
+	// Current position in the PHP array
+	HashPosition pos;
+
+	for (
+		zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(z), &pos);
+		zend_hash_has_more_elements_ex(Z_ARRVAL_P(z), &pos) == SUCCESS;
+		zend_hash_move_forward_ex(Z_ARRVAL_P(z), &pos)
+	) {
+		Value JSONValue;
+
+		int type;
+		zval *data;
+
+		zend_string *key;
+		zend_ulong idx;
+
+		type = zend_hash_get_current_key_ex(Z_ARRVAL_P(z), &key, &idx, &pos);
+		data = zend_hash_get_current_data_ex(Z_ARRVAL_P(z), &pos);
+
+		if (HASH_KEY_IS_LONG != type) {
+			throw JSONException("Cannot convert an array with a mix of numeric and associative keys to JSON");
+		}
+
+		if (IS_ARRAY == Z_TYPE_P(data)) {
+
+			if (HASH_KEY_IS_STRING == GetZvalArrayType(data)) {
+				root.PushBack(ObjectZvalToJSON(result, data, depth + 1), result.GetAllocator());
+			} else {
+				root.PushBack(ArrayZvalToJSON(result, data, depth + 1), result.GetAllocator());
+			}
+		}
+
+		else {
+			root.PushBack(ScalarZvalToJSON(result, data, depth + 1), result.GetAllocator());
+		}
+	}
+
+	return root;
+}
+
+/*****************************************************************************/
+
+// Private and called internally by ZvalToJSON
+Value JSON::ObjectZvalToJSON(Document &result, zval *z, int depth) {
+
+	// Prevent us from recursing so deeply that we crash the PHP process
+	if (depth > ZVAL_TO_JSON_MAX_DEPTH) {
+		throw JSONException(
+			std::string("Maximum array depth of ") +
+			std::to_string(ZVAL_TO_JSON_MAX_DEPTH) +
+			" exceeded"
+		);
+	}
+
+	// The resulting JSON Object
+	Value root(kObjectType);
+
+	// Current position in the PHP array
+	HashPosition pos;
+
+	for (
+		zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(z), &pos);
+		zend_hash_has_more_elements_ex(Z_ARRVAL_P(z), &pos) == SUCCESS;
+		zend_hash_move_forward_ex(Z_ARRVAL_P(z), &pos)
+	) {
+		Value JSONValue;
+
+		int type;
+		zval *data;
+
+		zend_string *key;
+		zend_ulong idx;
+
+		type = zend_hash_get_current_key_ex(Z_ARRVAL_P(z), &key, &idx, &pos);
+		data = zend_hash_get_current_data_ex(Z_ARRVAL_P(z), &pos);
+
+		if (HASH_KEY_IS_STRING != type) {
+			throw JSONException("Cannot convert an array with a mix of numeric and associative keys to JSON");
+		}
+
+		Value NextKey(key->val, result.GetAllocator());
+
+		if (IS_ARRAY == Z_TYPE_P(data)) {
+
+			if (HASH_KEY_IS_STRING == GetZvalArrayType(data)) {
+				root.AddMember(NextKey, ObjectZvalToJSON(result, data, depth + 1), result.GetAllocator());
+			} else {
+				root.AddMember(NextKey, ArrayZvalToJSON(result, data, depth + 1), result.GetAllocator());
+			}
+		}
+
+		else {
+			root.AddMember(NextKey, ScalarZvalToJSON(result, data, depth + 1), result.GetAllocator());
+		}
+	}
+
+	return root;
+}
+
+/*****************************************************************************/
+
+// Private and called internally by ZvalToJSON
+Value JSON::ScalarZvalToJSON(Document &result, zval *z, int depth) {
+
+	// Prevent us from recursing so deeply that we crash the PHP process
+	if (depth > ZVAL_TO_JSON_MAX_DEPTH) {
+		throw JSONException(
+			std::string("Maximum array depth of ") +
+			std::to_string(ZVAL_TO_JSON_MAX_DEPTH) +
+			" exceeded"
+		);
+	}
+
+	Value JSONValue;
+
+	switch(Z_TYPE_P(z)) {
+
+		// Warning: this WILL break until I switch to a real JSON library
+		case IS_NULL:
+			JSONValue.SetNull();
+			break;
+
+		case IS_LONG:
+
+			#ifdef ZEND_ENABLE_ZVAL_LONG64
+				JSONValue.SetInt64(Z_LVAL_P(z));
+			#else
+				JSONValue.SetInt(Z_LVAL_P(z));
+			#endif
+
+			break;
+
+		case IS_DOUBLE:
+			JSONValue.SetDouble(Z_DVAL_P(z));
+			break;
+
+		case IS_TRUE:
+			JSONValue.SetBool(true);
+			break;
+
+		case IS_FALSE:
+			JSONValue.SetBool(false);
+			break;
+
+		case IS_STRING:
+			JSONValue.SetString(Z_STR_P(z)->val, Z_STR_P(z)->len, result.GetAllocator());
+			break;
+
+		case IS_OBJECT:
+		case IS_RESOURCE:
+			throw JSONException("Cannot convert an object or a resource into a JSON value");
+
+		default:
+			throw JSONException("Encountered unknown data type in ScalarZvalToJSON");
+	}
+
+	return JSONValue;
+}
+
+/*****************************************************************************/
+
+// Private and called internally by ZvalToJSON
+Value JSON::ZvalToJSONValue(Document &result, zval *z, int depth) {
+
+	Value root;
+
+	if (IS_ARRAY == Z_TYPE_P(z)) {
+
+		if (HASH_KEY_IS_STRING == GetZvalArrayType(z)) {
+			root = ObjectZvalToJSON(result, z, depth);
+		} else {
+			root = ArrayZvalToJSON(result, z, depth);
+		}
+	}
+
+	else {
+		root = ScalarZvalToJSON(result, z, depth);
+	}
+
+	return root;
+}
+
+/*****************************************************************************/
+
+std::string JSON::serialize(Document document) {
+
+	StringBuffer buffer;
+
+	buffer.Clear();
+
+	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+	document.Accept(writer);
+
+	return std::string(buffer.GetString());
+}
+
+/*****************************************************************************/
+
+Document JSON::deserialize(std::string json) {
+
+	Document document;
+	ParseResult status = document.Parse(json.c_str());
+
+	if (!status) {
+		throw JSONException(GetParseError_En(status.Code()));
+	}
+
+	return document;
+}
+
+/*****************************************************************************/
+
+zval JSON::JSONToZval(Value const &value) {
+
+	if (value.IsArray()) {
+		return ArrayToZval(value);
+	}
+
+	else if (value.IsObject()) {
+		return ObjectToZval(value);
+	}
+
+	else {
+		return ScalarToZval(value);
+	}
+}
+
+/*****************************************************************************/
+
+Document JSON::ZvalToJSON(zval *z) {
+
+	Document result;
+
+	result.CopyFrom(ZvalToJSONValue(result, z, 1), result.GetAllocator());
+	return result;
 }

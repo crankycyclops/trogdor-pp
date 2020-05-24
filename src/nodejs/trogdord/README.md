@@ -4,7 +4,9 @@ The official Node.js client for trogdord.
 
 ## Installaton
 
-TODO: will publish to npm once I complete the first working version
+```
+npm install trogdord
+```
 
 ## Dependencies
 
@@ -42,7 +44,7 @@ The constructor also takes a third optional argument for additional settings:
 
 ```javascript
 // Connection attempt will timeout in 1 second instead of the default 3.
-const connection = new Trogdord('myhostname.com, 1041, {
+const connection = new Trogdord('myhostname.com', 1041, {
 	connectTimeout: 1000
 });
 ```
@@ -73,7 +75,7 @@ To handle errors, listen for the **error** event:
 ```javascript
 const connection = new Trogdord();
 
-connection.on('error', (error) => {
+connection.on('error', error => {
 
 	// Uh oh!
 	console.log(error);
@@ -103,9 +105,9 @@ const connection = new Trogdord();
 connection.on('connect', () => {
 
 	connection.statistics()
-	.then((stats) => {
+	.then(stats => {
 		console.log(stats);
-	}).catch((error) => {
+	}).catch(error => {
 		// ...Handle error...
 	});
 });
@@ -131,9 +133,9 @@ const connection = new Trogdord();
 connection.on('connect', () => {
 
 	connection.definitions()
-	.then((definitions) => {
+	.then(definitions => {
 		console.log(definitions);
-	}).catch((error) => {
+	}).catch(error => {
 		// ...Handle error...
 	});
 });
@@ -145,9 +147,9 @@ Result:
 [ 'game.xml' ]
 ```
 
-### Retrieving All Games
+### Retrieving Games
 
-This method retrieves all games that currently exist on the server:
+This method retrieves a list of games that currently exist on the server:
 
 ```javascript
 const connection = new Trogdord();
@@ -155,9 +157,9 @@ const connection = new Trogdord();
 connection.on('connect', () => {
 
 	connection.games()
-	.then((games) => {
+	.then(games => {
 		console.log(games);
-	}).catch((error) => {
+	}).catch(error => {
 		// ...Handle error...
 	});
 });
@@ -168,6 +170,59 @@ Result (an array of Game objects):
 ```
 [ Game {} ]
 ```
+
+You can also pass an optional list of filters to only return games matching certain criteria. For example, the following code returns only games that are currently running:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.games({is_running: true})
+	.then(games => {
+		// ...Do something with list of games...
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+You can AND more filters together like the following example, which only returns games that are running and whose names start with the prefix "we":
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.games({is_running: true, name_starts: "we"})
+	.then(games => {
+		// ...Do something with list of games...
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+If you need OR logic, you can pass in an array of filter groups like the following example, which returns all games that are running OR not running and start with the prefix "we":
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.games([{is_running: true}, {is_running: false, name_starts: "we"}]})
+	.then(games => {
+		// ...Do something with list of games...
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+Currently supported filters for game lists:
+
+* **is_running**: Takes a boolean value and returns games that are either running or not running
+* **name_starts**: Takes a string value and returns games whose names start with the given value
 
 ### Retrieving a Single Game
 
@@ -180,9 +235,9 @@ connection.on('connect', () => {
 
 	// Retrieving game with id 0
 	connection.getGame(0)
-	.then((game) => {
+	.then(game => {
 		console.log(game);
-	}).catch((error) => {
+	}).catch(error => {
 		// ...Handle error...
 	});
 });
@@ -204,9 +259,9 @@ const connection = new Trogdord();
 connection.on('connect', () => {
 
 	connection.newGame('Game Name', 'game.xml')
-	.then((game) => {
+	.then(game => {
 		console.log(game);
-	}).catch((error) => {
+	}).catch(error => {
 		// ...Handle error...
 	});
 });
@@ -226,9 +281,9 @@ const connection = new Trogdord();
 connection.on('connect', () => {
 
 	connection.newGame('Game Name', 'game.xml', {metaKey1: 'value1', metaKey2: 'value2'})
-	.then((game) => {
+	.then(game => {
 		console.log(game);
-	}).catch((error) => {
+	}).catch(error => {
 		// ...Handle error...
 	});
 });
@@ -247,13 +302,11 @@ connection.on('connect', () => {
 
 	// Get an existing game and return its statistics
 	connection.getGame(0)
-	.then((game) => {
-		return game.statistics();
-	})
-	.then((response) => {
+	.then(game => game.statistics())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -283,13 +336,11 @@ connection.on('connect', () => {
 
 	// Get an existing game and check if it's running
 	connection.getGame(0)
-	.then((game) => {
-		return game.isRunning();
-	})
-	.then((response) => {
+	.then(game => game.isRunning())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -304,13 +355,11 @@ Example:
 ```javascript
 	// Get an existing game and check its current time
 	connection.getGame(0)
-	.then((game) => {
-		return game.getTime();
-	})
-	.then((response) => {
+	.then(game => game.getTime())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 ```
@@ -336,17 +385,15 @@ connection.on('connect', () => {
 
 	// Create a new game and then start it
 	connection.newGame('Game Name', 'game.xml')
-	.then((newGame) => {
+	.then(newGame => {
 		game = newGame;
 		return game.start();
 	})
-	.then((response) => {
-		return game.isRunning();
-	})
-	.then((response) => {
+	.then(response => game.isRunning())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -373,17 +420,15 @@ connection.on('connect', () => {
 
 	// Get an existing game and stop it
 	connection.getGame(0)
-	.then((_game) => {
+	.then(_game => {
 		game = _game;
 		return game.stop();
 	})
-	.then((response) => {
-		return game.isRunning();
-	})
-	.then((response) => {
+	.then(response => game.isRunning())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -406,17 +451,13 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get an existing game and destroy it
 	connection.getGame(0)
-	.then((game) => {
-		return game.destroy();
-	})
-	.then((response) => {
+	.then(game => game.destroy())
+	.then(response => {
 		// ...Any code that needs to run after game has been destroyed...
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -435,17 +476,13 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get an existing game and print all of its associated metadata
 	connection.getGame(0)
-	.then((game) => {
-		return game.getMeta();
-	})
-	.then((response) => {
+	.then(game => game.getMeta())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -466,17 +503,13 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get an existing game and print some of its associated metadata
 	connection.getGame(0)
-	.then((game) => {
-		return game.getMeta(['author', 'title']);
-	})
-	.then((response) => {
+	.then(game => game.getMeta(['author', 'title']))
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -497,17 +530,13 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get an existing game and print a metadata value
 	connection.getGame(0)
-	.then((game) => {
-		return game.getMeta('author');
-	})
-	.then((response) => {
+	.then(game => game.getMeta('author'))
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -521,7 +550,7 @@ Result:
 
 ### Setting Game Metadata
 
-Game.setMeta() takes as input an object of key, value pairs and sets them as metadata for the game.
+Game.setMeta({key: value, ...}) takes as input an object of key, value pairs and sets them as metadata for the game.
 
 Example:
 
@@ -530,17 +559,13 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get an existing game with id 0 and set some metadata
 	connection.getGame(0)
-	.then((game) => {
-		return game.setMeta({key1: 'value1', key2: 'value2'});
-	})
-	.then((response) => {
+	.then(game => game.setMeta({key1: 'value1', key2: 'value2'}))
+	.then(response => {
 		// ... do something once we know the metadata is set...
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -557,17 +582,13 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get an existing game and return all of its entities
 	connection.getGame(0)
-	.then((game) => {
-		return game.entities();
-	})
-	.then((response) => {
+	.then(game => game.entities())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -595,17 +616,13 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get an existing game and return all of its entities
 	connection.getGame(0)
-	.then((game) => {
-		return game.entities(false);
-	})
-	.then((response) => {
+	.then(game => game.entities(false))
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -637,17 +654,13 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get an existing game and return all of its things
 	connection.getGame(0)
-	.then((game) => {
-		return game.things();
-	})
-	.then((response) => {
+	.then(game => game.things())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -671,17 +684,13 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get an existing game and return all of its creatures
 	connection.getGame(0)
-	.then((game) => {
-		return game.creatures();
-	})
-	.then((response) => {
+	.then(game => game.creatures())
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -699,7 +708,7 @@ Lists of all entity types can be requested.
 
 ### Getting a Specific Entity in a Game
 
-Game.getEntity() returns a specific entity in the game.
+Game.getEntity(name) returns a specific entity in the game.
 
 Example:
 
@@ -708,17 +717,13 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get the room named 'start' from the game with id = 0
 	connection.getGame(0)
-	.then((game) => {
-		return game.getEntity('start');
-	})
-	.then((response) => {
+	.then(game => game.getEntity('start'))
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -739,17 +744,13 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// Get the TObject named 'stick' from the game with id = 0
 	connection.getGame(0)
-	.then((game) => {
-		return game.getObject('stick');
-	})
-	.then((response) => {
+	.then(game => game.getObject('stick'))
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -770,17 +771,13 @@ const connection = new Trogdord();
 
 connection.on('connect', () => {
 
-	let game;
-
 	// An entity named 'start' exists, but it's a room, not an object.
 	connection.getGame(0)
-	.then((game) => {
-		return game.getObject('start');
-	})
-	.then((response) => {
+	.then(game => game.getObject('start'))
+	.then(response => {
 		console.log(response);
 	})
-	.catch((error) => {
+	.catch(error => {
 		// ...Handle error...
 	});
 });
@@ -789,10 +786,168 @@ connection.on('connect', () => {
 Result:
 ```
 Error: entity not found
-    at nodejs/trogdord/lib/game.js:97:18
+    at node_modules/trogdord/lib/game.js:97:18
     at processTicksAndRejections (internal/process/task_queues.js:94:5) {
   status: 404
 }
+```
+
+### Creating a New Player
+
+Creating a new player in a game can be accomplished by a call to Game.createPlayer(name).
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// Create a player in an existing game
+	connection.getGame(0)
+	.then(game => game.createPlayer('n00bslay3r'))
+	.then(player => {
+		console.log(player);
+	})
+	.catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+```
+Player {}
+```
+
+### Sending a Command to an Entity's Input Stream
+
+Entity.input(command) will send a command to the entity's input stream. Return value will be a promise that resolves to a successful response object.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// Retrieve a player from an existing game and send a command on its behalf
+	connection.getGame(0)
+	.then(game => game.getPlayer('n00bslay3r'))
+	.then(player => {
+		player.input('go north');
+	})
+	.catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+### Retrieving Entity Output Messages
+
+To retrieve the output messages for an entity (for example, a player), call Entity.output(channel).
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// Retrieve a player's output on the 'display' channel
+	connection.getGame(0)
+	.then(game => game.getPlayer('n00bslay3r'))
+	.then(player => player.output('display'))
+	.then(output => {
+		console.log(output);
+	})
+	.catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+[
+  { timestamp: 1587598549, content: 'The Palace\n' },
+  { timestamp: 1587598549, content: '\n' },
+  {
+    timestamp: 1587598549,
+    content: "You're standing in the middle of a sprawling white marble castle, the walls lined with portraits of long deceased ancestors of some forgotten king.  Servants are bustling about, rushing around with steaming plates of meats and cooked vegetables, rushing in and out of rooms to serve princes and heads of state. Legend has it that going sideways can transport you to a strange and mystical land.\n" +
+      '\n' +
+      'To the north, you see a dark hole in the wall big enough to walk through.\n'
+  },
+  { timestamp: 1587598549, content: '\n' },
+  { timestamp: 1587598549, content: 'You see a candle.\n' },
+  { timestamp: 1587598549, content: '\n' },
+  { timestamp: 1587598549, content: 'You see the Sword of Hope.\n' }
+]
+```
+
+This will only work if the output driver trogdord is configured to use supports retrieving messages. If it doesn't (looking at you, redis driver), you'll get an error instead.
+
+Result if trogdord is configured to use the redis output driver:
+
+```
+Error: redis output driver does not support this operation
+    at node_modules/trogdord/lib/entity.js:106:19
+    at processTicksAndRejections (internal/process/task_queues.js:94:5) {
+  status: 501
+}
+```
+
+### Appending Message to an Entity's Output Stream
+
+Entity.output() can also append a new message to an Entity's output stream provided a second argument is specified.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// Send a new message to a player's output stream
+	connection.getGame(0)
+	.then(game => game.getPlayer('n00bslay3r'))
+	.then(player => {
+		player.output('notifications', 'You were naughty. Be aware that further abuse will result in a permanent ban.');
+	})
+	.catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+### Removing (Destroying) a Player
+
+Removing a player can be accomplished with a call to Player.destroy(). Note that, at the time of this writing, no other entity type can be destroyed via a trogdord request.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	let player;
+
+	// Remove an evil player from a game
+	connection.getGame(0)
+	.then(game => game.getPlayer('n00bslay3r'))
+	.then(_player => {
+		player = _player;
+		return player.output('notifications', "You've been a bad monkey and are now banned.");
+	})
+	.then(response => {
+		player.destroy();
+	})
+	.catch(error => {
+		// ...Handle error...
+	});
+});
 ```
 
 ### Making a Raw JSON Request
@@ -810,9 +965,9 @@ connection.on('connect', () => {
 		method: "get",
 		scope: "global",
 		action: "statistics"
-	}).then((response) => {
+	}).then(response => {
 		// ...Do something with the JSON response...
-	}).catch((error) => {
+	}).catch(error => {
 		// ...Handle error...
 	});
 });
@@ -830,9 +985,9 @@ connection.on('connect', () => {
 		method: "get",
 		scope: "global",
 		action: "statistics"
-	}, 500).then((response) => {
+	}, 500).then(response => {
 		// ...
-	}).catch((error) => {
+	}).catch(error => {
 		// ...
 	});
 });

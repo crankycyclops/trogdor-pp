@@ -14,6 +14,35 @@ class Player extends Being {
 
 		super(game, name);
 	}
+
+	destroy() {
+
+		return new Promise((resolve, reject) => {
+
+			this.game.trogdord.makeRequest({
+				method: "delete",
+				scope: "player",
+				args: {
+					game_id: this.game.id,
+					name: this.name
+				}
+			}).then(response => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(response);
+
+			}).catch(error => {
+				reject(error);
+			});
+		});
+	}
 };
 
 module.exports = Player;

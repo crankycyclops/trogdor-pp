@@ -42,7 +42,7 @@ class Game {
 				scope: scope,
 				action: "list",
 				args: {game_id: this.#id}
-			}).then((response) => {
+			}).then(response => {
 
 				if (200 != response.status) {
 
@@ -67,7 +67,7 @@ class Game {
 					resolve(response.entities);
 				}
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -90,7 +90,7 @@ class Game {
 					game_id: this.#id,
 					name: name
 				}
-			}).then((response) => {
+			}).then(response => {
 
 				if (200 != response.status) {
 
@@ -104,7 +104,7 @@ class Game {
 					this, response.entity.name)
 				);
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -170,7 +170,7 @@ class Game {
 				scope: "game",
 				action: "statistics",
 				args: {id: this.#id}
-			}).then((response) => {
+			}).then(response => {
 
 				if (200 != response.status) {
 
@@ -183,7 +183,7 @@ class Game {
 				delete response.status;
 				resolve(response);
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -202,7 +202,7 @@ class Game {
 				scope: "game",
 				action: "is_running",
 				args: {id: this.#id}
-			}).then((response) => {
+			}).then(response => {
 
 				if (200 != response.status) {
 
@@ -214,7 +214,7 @@ class Game {
 
 				resolve(response.is_running);
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -232,7 +232,7 @@ class Game {
 				scope: "game",
 				action: "time",
 				args: {id: this.#id}
-			}).then((response) => {
+			}).then(response => {
 
 				if (200 != response.status) {
 
@@ -244,7 +244,7 @@ class Game {
 
 				resolve(response.current_time);
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -262,7 +262,7 @@ class Game {
 				scope: "game",
 				action: "start",
 				args: {id: this.#id}
-			}).then((response) => {
+			}).then(response => {
 
 				if (200 != response.status) {
 
@@ -274,7 +274,7 @@ class Game {
 
 				resolve(response);
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -292,7 +292,7 @@ class Game {
 				scope: "game",
 				action: "stop",
 				args: {id: this.#id}
-			}).then((response) => {
+			}).then(response => {
 
 				if (200 != response.status) {
 
@@ -304,7 +304,7 @@ class Game {
 
 				resolve(response);
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -323,7 +323,7 @@ class Game {
 				method: "delete",
 				scope: "game",
 				args: {id: this.#id}
-			}).then((response) => {
+			}).then(response => {
 
 				if (200 != response.status) {
 
@@ -335,7 +335,7 @@ class Game {
 
 				resolve(response);
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -370,7 +370,7 @@ class Game {
 				scope: "game",
 				action: "meta",
 				args: args
-			}).then((response) => {
+			}).then(response => {
 
 				if (200 != response.status) {
 
@@ -382,7 +382,7 @@ class Game {
 
 				resolve(response.meta);
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -407,7 +407,7 @@ class Game {
 					id: this.#id,
 					meta: meta
 				}
-			}).then((response) => {
+			}).then(response => {
 
 				if (200 != response.status) {
 
@@ -419,7 +419,7 @@ class Game {
 
 				resolve(response);
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -583,6 +583,41 @@ class Game {
 	getPlayer(name) {
 
 		return this.#getEntityObject('player', name);
+	}
+
+	/**
+	 * Returns a promise that resolves to an instance of Player representing
+	 * the new player in the game.
+	 *
+	 * @param {String} name The new player's name
+	 */
+	createPlayer(name) {
+
+		return new Promise((resolve, reject) => {
+
+			this.#trogdord.makeRequest({
+				method: "post",
+				scope: "player",
+				args: {
+					game_id: this.#id,
+					name: name
+				}
+			}).then(response => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(new this.#EntityTypes['player'](this, name));
+
+			}).catch(error => {
+				reject(error);
+			});
+		});
 	}
 };
 

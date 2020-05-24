@@ -13,7 +13,7 @@ class Request {
 		static const int SUCCESS = 200;
 
 		// Sends a request to trogdord and processes the response.
-		static JSONObject execute(
+		static Document execute(
 			std::string hostname,
 			unsigned short port,
 			std::string request

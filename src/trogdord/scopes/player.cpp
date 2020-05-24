@@ -4,6 +4,8 @@
 #include "../include/scopes/player.h"
 #include "../include/exception/entity/playernotfound.h"
 
+#include <trogdor/exception/duplicateentity.h>
+
 
 // Scope name that should be used in requests
 const char *PlayerController::SCOPE = "player";
@@ -94,7 +96,7 @@ JSONObject PlayerController::createPlayer(JSONObject request) {
 		);
 	}
 
-	catch (JSONObject error) {
+	catch (const JSONObject &error) {
 		return error;
 	}
 
@@ -108,7 +110,7 @@ JSONObject PlayerController::createPlayer(JSONObject request) {
 		return response;
 	}
 
-	catch (GameNotFound &e) {
+	catch (const GameNotFound &e) {
 
 		response.put("status", 404);
 		response.put("message", GAME_NOT_FOUND);
@@ -116,7 +118,15 @@ JSONObject PlayerController::createPlayer(JSONObject request) {
 		return response;
 	}
 
-	catch (trogdor::Exception &e) {
+	catch (const trogdor::entity::DuplicateEntity &e) {
+
+		response.put("status", 409);
+		response.put("message", e.what());
+
+		return response;
+	}
+
+	catch (const trogdor::Exception &e) {
 
 		response.put("status", 500);
 		response.put("message", e.what());
@@ -154,7 +164,7 @@ JSONObject PlayerController::destroyPlayer(JSONObject request) {
 		);
 	}
 
-	catch (JSONObject error) {
+	catch (const JSONObject &error) {
 		return error;
 	}
 
@@ -166,7 +176,7 @@ JSONObject PlayerController::destroyPlayer(JSONObject request) {
 		return response;
 	}
 
-	catch (GameNotFound &e) {
+	catch (const GameNotFound &e) {
 
 		response.put("status", 404);
 		response.put("message", GAME_NOT_FOUND);
@@ -174,7 +184,7 @@ JSONObject PlayerController::destroyPlayer(JSONObject request) {
 		return response;
 	}
 
-	catch (PlayerNotFound &e) {
+	catch (const PlayerNotFound &e) {
 
 		response.put("status", 404);
 		response.put("message", PLAYER_NOT_FOUND);

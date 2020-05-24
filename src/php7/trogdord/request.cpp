@@ -1,11 +1,12 @@
 #include "request.h"
 #include "network/tcpconnectionmap.h"
 
+#include "exception/jsonexception.h"
 #include "exception/networkexception.h"
 #include "exception/requestexception.h"
 
 
-JSONObject Request::execute(std::string hostname, unsigned short port, std::string request) {
+Document Request::execute(std::string hostname, unsigned short port, std::string request) {
 
 	try {
 
@@ -17,21 +18,21 @@ JSONObject Request::execute(std::string hostname, unsigned short port, std::stri
 		connection.write(request);
 		std::string response = connection.read();
 
-		JSONObject responseObj = JSON::deserialize(response);
-		auto status = responseObj.get_optional<unsigned>("status");
+		Document responseObj = JSON::deserialize(response);
 
-		if (!status || SUCCESS != *status) {
-			auto message = responseObj.get_optional<std::string>("message");
+		uint status = RequestException::DEFAULT_CODE;
+
+		if (!responseObj.HasMember("status") || SUCCESS != (status = responseObj["status"].GetUint())) {
 			throw RequestException(
-				message ? *message : "Invalid request",
-				status ? *status : RequestException::DEFAULT_CODE
+				responseObj.HasMember("message") ? responseObj["message"].GetString() : "Invalid request",
+				status
 			);
 		}
 
 		return responseObj;
 	}
 
-	catch (boost::property_tree::json_parser::json_parser_error &e) {
+	catch (const JSONException &e) {
 		throw NetworkException("Invalid response");
 	}
 }

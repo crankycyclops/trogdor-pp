@@ -26,6 +26,23 @@ namespace output {
 			// called once.)
 			static void instantiateDrivers();
 
+			// Used to keep track of the order in which messages should be
+			// received. Each (game_id, entity name, channel) gets a separate
+			// unsigned value that's incremented every time a message is
+			// inserted into the output buffer. This ensures that clients who
+			// receive messages over an unreliable network will be able to
+			// put them in order before displaying them.
+			std::unordered_map<
+				size_t,
+				std::unordered_map<
+					std::string,
+					std::unordered_map<
+						std::string,
+						size_t
+					>
+				>
+			> messageOrder;
+
 		protected:
 
 			// Returns true if the driver has been activated and false if
@@ -36,6 +53,32 @@ namespace output {
 			// Any code that needs to be executed after instantiation and
 			// before the driver can actually be used.
 			virtual void activate();
+
+			// Returns the current message order for the given game id,
+			// entity name, and channel, then auto-increments the value.
+			inline size_t nextOrder(
+				size_t gameId,
+				std::string entity,
+				std::string channel
+			) {
+
+				if (messageOrder.end() == messageOrder.find(gameId)) {
+					messageOrder[gameId] = {};
+				}
+
+				if (messageOrder[gameId].end() == messageOrder[gameId].find(entity)) {
+					messageOrder[gameId][entity] = {};
+				}
+
+				if (messageOrder[gameId][entity].end() == messageOrder[gameId][entity].find(channel)) {
+					messageOrder[gameId][entity][channel] = {};
+				}
+
+				size_t order = messageOrder[gameId][entity][channel];
+				messageOrder[gameId][entity][channel]++;
+
+				return order;
+			}
 
 		public:
 

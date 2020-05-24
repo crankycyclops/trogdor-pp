@@ -60,7 +60,7 @@ class Trogdord extends EventEmitter {
 		}, connectTimeout);
 
 		// Fires when there's a problem connecting to trogdord
-		let onConnectionError = (error) => {
+		let onConnectionError = error => {
 
 			clearTimeout(connectTimer);
 			this.emit('error', error);
@@ -75,7 +75,7 @@ class Trogdord extends EventEmitter {
 			// errors.
 			this.#connection.removeListener('error', onConnectionError);
 
-			let onData = (data) => {
+			let onData = data => {
 
 				dataChunks.push(data);
 				let dataStr = Buffer.concat(dataChunks).toString().trim();
@@ -145,7 +145,7 @@ class Trogdord extends EventEmitter {
 				method: "get",
 				scope: "global",
 				action: "statistics"
-			}).then((response) => {
+			}).then(response => {
 
 				if (200 != response.status) {
 
@@ -158,7 +158,7 @@ class Trogdord extends EventEmitter {
 				delete response.status;
 				resolve(response);
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -176,7 +176,7 @@ class Trogdord extends EventEmitter {
 				method: "get",
 				scope: "game",
 				action: "definitions"
-			}).then((response) => {
+			}).then(response => {
 
 				if (200 != response.status) {
 
@@ -189,7 +189,7 @@ class Trogdord extends EventEmitter {
 				delete response.status;
 				resolve(response.definitions);
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -199,15 +199,22 @@ class Trogdord extends EventEmitter {
 	 * Returns a promise that resolves to a JSON object containing all games
 	 * that currently exist on the server.
 	 */
-	games() {
+	games(filters = null) {
 
 		return new Promise((resolve, reject) => {
 
-			this.makeRequest({
+			let data = {
 				method: "get",
 				scope: "game",
 				action: "list"
-			}).then((response) => {
+			};
+
+			if (filters) {
+				data.args = {};
+				data.args.filters = filters;
+			}
+
+			this.makeRequest(data).then(response => {
 
 				if (200 != response.status) {
 
@@ -232,7 +239,7 @@ class Trogdord extends EventEmitter {
 					reject(e);
 				}
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -256,7 +263,7 @@ class Trogdord extends EventEmitter {
 				method: "get",
 				scope: "game",
 				args: {id: id}
-			}).then((response) => {
+			}).then(response => {
 
 				if (200 != response.status) {
 
@@ -268,7 +275,7 @@ class Trogdord extends EventEmitter {
 
 				resolve(new this.#Game(response.id, response.name, response.definition, this));
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -310,7 +317,7 @@ class Trogdord extends EventEmitter {
 			});
 
 			this.makeRequest(request)
-			.then((response) => {
+			.then(response => {
 
 				if (200 != response.status) {
 
@@ -322,7 +329,7 @@ class Trogdord extends EventEmitter {
 
 				resolve(new this.#Game(response.id, name, definition, this));
 
-			}).catch((error) => {
+			}).catch(error => {
 				reject(error);
 			});
 		});
@@ -345,12 +352,12 @@ class Trogdord extends EventEmitter {
 
 			const dataChunks = [];
 
-			let onError = (error) => {
+			let onError = error => {
 				this.#connection.setTimeout(0);
 				reject(error);
 			};
 
-			let onData = (data) => {
+			let onData = data => {
 
 				dataChunks.push(data);
 				let dataStr = Buffer.concat(dataChunks).toString().trim();

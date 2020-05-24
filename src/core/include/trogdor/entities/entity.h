@@ -5,7 +5,6 @@
 #include <list>
 #include <set>
 #include <memory>
-#include <algorithm>
 #include <regex>
 #include <unordered_set>
 
@@ -679,10 +678,8 @@ namespace trogdor::entity {
             if there's more than one and returns the chosen Entity.
 
             Template Arguments:
-               CItStruct  -- struct containing begin and end iterators (one of
-                             ThingListCItPair, etc.)
-               CItType    -- constant iterator type (one of ThingListCIt, etc.)
-               ResultType -- one of Entity, Thing, Being, etc.
+               ContainerType  -- iterable container type that contains entities
+               ResultType     -- one of Entity, Thing, Being, etc.
 
             Input:
                Iterators over entities to choose from
@@ -695,8 +692,8 @@ namespace trogdor::entity {
                If the user types a name that isn't presented as a choice, the
                name the user provided is thrown as an exception.
          */
-         template <typename CItStruct, typename CItType, typename ResultType>
-         static ResultType clarifyEntity(CItStruct items, Entity *user);
+         template <typename ContainerType, typename ResultType>
+         static ResultType clarifyEntity(ContainerType items, Entity *user);
    };
 
    /***************************************************************************/
@@ -721,57 +718,6 @@ namespace trogdor::entity {
    typedef std::list<Creature *> CreatureList;
    typedef std::list<Object *>   ObjectList;
 
-   typedef PlaceList::const_iterator    PlaceListCIt;
-   typedef RoomList::const_iterator     RoomListCIt;
-   typedef ThingList::const_iterator    ThingListCIt;
-   typedef BeingList::const_iterator    BeingListCIt;
-   typedef PlayerList::const_iterator   PlayerListCIt;
-   typedef CreatureList::const_iterator CreatureListCIt;
-   typedef ObjectList::const_iterator   ObjectListCIt;
-
-   struct PlaceListCItPair {
-      PlaceListCIt begin;
-      PlaceListCIt end;
-   };
-
-   struct RoomListCItPair {
-      RoomListCIt begin;
-      RoomListCIt end;
-   };
-
-   struct ThingListCItPair {
-      ThingListCIt begin;
-      ThingListCIt end;
-   };
-
-   struct BeingListCItPair {
-      BeingListCIt begin;
-      BeingListCIt end;
-   };
-
-   struct PlayerListCItPair {
-      PlayerListCIt begin;
-      PlayerListCIt end;
-   };
-
-   struct CreatureListCItPair {
-      CreatureListCIt begin;
-      CreatureListCIt end;
-   };
-
-   struct ObjectListCItPair {
-      ObjectListCIt begin;
-      ObjectListCIt end;
-   };
-
-   typedef PlaceList::iterator    PlaceListIt;
-   typedef RoomList::iterator     RoomListIt;
-   typedef ThingList::iterator    ThingListIt;
-   typedef BeingList::iterator    BeingListIt;
-   typedef PlayerList::iterator   PlayerListIt;
-   typedef CreatureList::iterator CreatureListIt;
-   typedef ObjectList::iterator   ObjectListIt;
-
    typedef std::set<Place *, EntityAlphaComparator>    PlaceSet;
    typedef std::set<Room *, EntityAlphaComparator>     RoomSet;
    typedef std::set<Thing *, EntityAlphaComparator>    ThingSet;
@@ -779,19 +725,6 @@ namespace trogdor::entity {
    typedef std::set<Player *, EntityAlphaComparator>   PlayerSet;
    typedef std::set<Creature *, EntityAlphaComparator> CreatureSet;
    typedef std::set<Object *, EntityAlphaComparator>   ObjectSet;
-
-   typedef PlaceSet::const_iterator    PlaceSetCIt;
-   typedef RoomSet::const_iterator     RoomSetCIt;
-   typedef ThingSet::const_iterator    ThingSetCIt;
-   typedef BeingSet::const_iterator    BeingSetCIt;
-   typedef PlayerSet::const_iterator   PlayerSetCIt;
-   typedef CreatureSet::const_iterator CreatureSetCIt;
-   typedef ObjectSet::const_iterator   ObjectSetCIt;
-
-   struct ObjectSetCItPair {
-      ObjectSetCIt begin;
-      ObjectSetCIt end;
-   };
 
    typedef std::unordered_map<std::string, ThingList>    ThingsByNameMap;
    typedef std::unordered_map<std::string, BeingList>    BeingsByNameMap;
@@ -801,8 +734,7 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   // Special empty lists used for returning .end() iterator pairs in the case
-   // of a non-existent list
+   // Special empty lists used for returning results when no result exists
    extern PlaceList     emptyPlaceList;
    extern RoomList      emptyRoomList;
    extern ThingList     emptyThingList;
@@ -813,17 +745,17 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   template <typename CItStruct, typename CItType, typename ResultType>
-   ResultType Entity::clarifyEntity(CItStruct objects, Entity *user) {
+   template <typename ContainerType, typename ResultType>
+   ResultType Entity::clarifyEntity(ContainerType objects, Entity *user) {
 
-      CItType i = objects.begin;
+      auto i = objects.begin();
 
-      if (i == objects.end) {
+      if (i == objects.end()) {
          return 0;
       }
 
       // pre-increment for looking ahead by one
-      else if (++i == objects.end) {
+      else if (++i == objects.end()) {
          return *(--i);
       }
 
@@ -839,35 +771,37 @@ namespace trogdor::entity {
          // the existing loop to make it work with bi-directional iterators
          // where i don't know the number of elements.  I apologize in advance
          // to whoever is forced to read it...
-         for (i = objects.begin; i != objects.end; ) {
+         for (i = objects.begin(); i != objects.end(); ) {
 
             user->out() << (*i)->getName();
             i++;
 
             // hackety hack
-            if (i == objects.end) {
+            if (i == objects.end()) {
                break;
             }
 
             // temporary lookahead on a bi-directional const_iterator
-            else if (++i == objects.end) {
+            else if (++i == objects.end()) {
                user->out() << " or the ";
                i--;
             }
 
             // pre-decrement to undo temporary lookahead
-            else if (--i != objects.begin) {
+            else if (--i != objects.begin()) {
                user->out() << ", ";
             }
          }
 
-         user->out() << "? \n\n> ";
-         user->out().flush();
+         user->out() << "?" << std::endl;
+
+         user->out("prompt") << "\n> ";
+         user->out("prompt").flush();
 
          std::string answer;
          user->in() >> answer;
 
-         for (i = objects.begin; i != objects.end; i++) {
+         for (i = objects.begin(); i != objects.end(); i++) {
             if (0 == answer.compare((*i)->getName())) {
                return *i;
             }

@@ -259,7 +259,7 @@ static void sendEntityInput(zval *entityObj, std::string command) {
 
 	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(GAME_TO_TROGDORD(gameObj, &rv)));
 
-	JSONObject response = Request::execute(
+	Document response = Request::execute(
 		objWrapper->data.hostname,
 		objWrapper->data.port,
 		request
@@ -281,13 +281,13 @@ static zval getEntityOutput(zval *entityObj, std::string channel) {
 
 	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(GAME_TO_TROGDORD(gameObj, &rv)));
 
-	JSONObject response = Request::execute(
+	Document response = Request::execute(
 		objWrapper->data.hostname,
 		objWrapper->data.port,
 		request
 	);
 
-	return JSON::JSONToZval(response.get_child("messages"));
+	return JSON::JSONToZval(response["messages"]);
 }
 
 /*****************************************************************************/
@@ -306,7 +306,7 @@ static void appendToEntityOutput(zval *entityObj, std::string channel, std::stri
 
 	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(GAME_TO_TROGDORD(gameObj, &rv)));
 
-	JSONObject response = Request::execute(
+	Document response = Request::execute(
 		objWrapper->data.hostname,
 		objWrapper->data.port,
 		request
@@ -315,14 +315,14 @@ static void appendToEntityOutput(zval *entityObj, std::string channel, std::stri
 
 /*****************************************************************************/
 
-bool createEntityObj(zval *entityObj, JSONObject properties, zval *gameObj) {
+bool createEntityObj(zval *entityObj, Value &properties, zval *gameObj) {
 
 	zend_class_entry *eClassEntry;
 
 	// My first *ever* use of this C++17 feature (I feel so grown up):
 	// https://en.cppreference.com/w/cpp/language/if#If_Statements_with_Initializer
 	if (
-		std::string eType = properties.get<std::string>("type");
+		std::string eType = properties["type"].GetString();
 		0 == eType.compare(ROOM_TYPE_STR)
 	) {
 		eClassEntry = ROOM_GLOBALS(classEntry);
@@ -353,7 +353,7 @@ bool createEntityObj(zval *entityObj, JSONObject properties, zval *gameObj) {
 		entityObj,
 		NAME_PROPERTY_NAME,
 		strlen(NAME_PROPERTY_NAME),
-		properties.get<std::string>("name").c_str()
+		properties["name"].GetString()
 	);
 
 	zend_update_property(

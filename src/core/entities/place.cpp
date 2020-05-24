@@ -232,6 +232,9 @@ namespace trogdor::entity {
 
    void Place::display(Being *observer, bool displayFull) {
 
+      observer->out("location") << getTitle();
+      observer->out("location").flush();
+
       observer->out("display") << getTitle() << std::endl << std::endl;
       Entity::display(observer, displayFull);
 

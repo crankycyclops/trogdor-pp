@@ -20,6 +20,10 @@ void defineExceptionClasses() {
 	INIT_CLASS_ENTRY(ce, "Trogdord\\RequestException", NULL);
 	EXCEPTION_GLOBALS(requestException) = zend_register_internal_class_ex(&ce, EXCEPTION_GLOBALS(baseException));
 
+	// Thrown any time an array representing a filter group or union is invalid
+	INIT_CLASS_ENTRY(ce, "Trogdord\\FilterException", NULL);
+	EXCEPTION_GLOBALS(filterException) = zend_register_internal_class_ex(&ce, EXCEPTION_GLOBALS(baseException));
+
 	// Thrown if a request refers to a speciic game but that game doesn't exist
 	INIT_CLASS_ENTRY(ce, "Trogdord\\GameNotFound", NULL);
 	EXCEPTION_GLOBALS(gameNotFound) = zend_register_internal_class_ex(&ce, EXCEPTION_GLOBALS(requestException));

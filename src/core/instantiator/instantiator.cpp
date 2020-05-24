@@ -783,10 +783,6 @@ namespace trogdor {
       entityPropValidators["creature"]["shortDesc"] =
       entityPropValidators["player"]["shortDesc"] = assertString;
 
-      // Whether or not a Being starts out alive
-      entityPropValidators["creature"]["alive"] =
-      entityPropValidators["player"]["alive"] = assertBool;
-
       // A Being's default starting health
       entityPropValidators["creature"]["health"] =
       entityPropValidators["player"]["health"] = assertInt;

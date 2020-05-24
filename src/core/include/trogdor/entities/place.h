@@ -173,102 +173,56 @@ namespace trogdor::entity {
          inline void removeThing(std::shared_ptr<Thing> thing) {removeThing(thing.get());}
 
          /*
-            Returns iterators over a list of all Things that match the given
-            name.  If there are no matches, iterators.begin == iterators.end.
+            Returns iterable list of Things that match the given name.
 
             Input:
                name (std::string)
 
             Output:
-               begin and end iterators over list of Things (ThingListCItPair)
+               const ThingList &
          */
-         inline ThingListCItPair getThingsByName(std::string name) const {
+         inline const ThingList &getThingsByName(std::string name) const {
 
-            ThingListCItPair things;
             ThingsByNameMap::const_iterator i = thingsByName.find(name);
-
-            if (i == thingsByName.end()) {
-               things.begin = emptyThingList.begin();
-               things.end   = emptyThingList.end();
-            }
-
-            else {
-               things.begin = i->second.begin();
-               things.end   = i->second.end();
-            }
-
-            return things;
+            return i == thingsByName.end() ? emptyThingList : i->second;
          }
 
          /*
-            Returns iterators over a list of all Beings that match the given
-            name.  If there are no matches, iterators.begin == iterators.end.
+            Returns iterable list of Beings that match the given name.
 
             Input:
                name (std::string)
 
             Output:
-               begin and end iterators over list of Beings (BeingListCItPair)
+               const BeingList &
          */
-         inline BeingListCItPair getBeingsByName(std::string name) const {
+         inline const BeingList &getBeingsByName(std::string name) const {
 
-            BeingListCItPair beings;
             BeingsByNameMap::const_iterator i = beingsByName.find(name);
-
-            if (i == beingsByName.end()) {
-               beings.begin = emptyBeingList.begin();
-               beings.end   = emptyBeingList.end();
-            }
-
-            else {
-               beings.begin = i->second.begin();
-               beings.end   = i->second.end();
-            }
-
-            return beings;
+            return i == beingsByName.end() ? emptyBeingList : i->second;
          }
 
          /*
-            Returns const_iterator to things.begin() and things.end(), so
-            that something outside can iterate over all Things in a Place
-            without modifying them.
+            Returns iterable list of all Things in a Place.
 
             Input:
                (None)
 
             Output:
-               things.begin() and things.end() (ThingListCItPair)
+               const ThingList &
          */
-         inline ThingListCItPair getThings() const {
-
-            ThingListCItPair iterators;
-
-            iterators.begin = things.begin();
-            iterators.end   = things.end();
-
-            return iterators;
-         }
+         inline const ThingList &getThings() const {return things;}
 
          /*
-            Returns const_iterator to creatures.begin() and creatures.end(), so
-            that something outside can iterate over all Creatures in a Place
-            without modifying them.
+            Returns iterable list of all Creatures in a Place.
 
             Input:
                (None)
 
             Output:
-               creatures.begin() and creatures.end() (CreatureListCItPair)
+               const CreatureList &
          */
-         inline CreatureListCItPair getCreatures() const {
-
-            CreatureListCItPair iterators;
-
-            iterators.begin = creatures.begin();
-            iterators.end   = creatures.end();
-
-            return iterators;
-         }
+         inline const CreatureList &getCreatures() const {return creatures;}
    };
 }
 

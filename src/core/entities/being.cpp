@@ -1,4 +1,5 @@
 #include <cmath>
+#include <algorithm>
 
 #include <trogdor/entities/being.h>
 #include <trogdor/entities/creature.h>
@@ -20,7 +21,7 @@ namespace trogdor::entity {
 
       if (ENTITY_PLAYER == observer->getType()) {
 
-         if (!alive) {
+         if (!isAlive()) {
 
             std::string descDead = getMessage("description_dead");
 
@@ -45,7 +46,7 @@ namespace trogdor::entity {
 
       if (ENTITY_PLAYER == observer->getType()) {
 
-         if (!alive) {
+         if (!isAlive()) {
 
             observer->out("display") << "You see the corpse of " << getTitle() << '.';
 
@@ -199,8 +200,16 @@ namespace trogdor::entity {
       }
 
       else {
-         object->getLocation()->out("notifications") << getTitle() << " takes "
-            << object->getTitle() << "." << std::endl;
+
+         // Notify every entity in the room that the object has been taken
+         // EXCEPT the one who's doing the taking
+         for (auto const &thing: object->getLocation()->getThings()) {
+            if (thing != this) {
+               thing->out("notifications") << getTitle() << " takes "
+                  << object->getTitle() << "." << std::endl;
+            }
+         };
+
          object->getLocation()->removeThing(object);
       }
 
@@ -243,8 +252,15 @@ namespace trogdor::entity {
          throw BeingException("", BeingException::DROP_UNDROPPABLE);
       }
 
-      location->out("notifications") << getTitle() << " drops "
-         << object->getTitle() << "." << std::endl;
+      // Notify every entity in the room that the object has been dropped EXCEPT
+      // the one who's doing the dropping
+      for (auto const &thing: location->getThings()) {
+         if (thing != this) {
+            thing->out("notifications") << getTitle() << " drops "
+               << object->getTitle() << "." << std::endl;
+         }
+      };
+
       location->insertThing(object);
       removeFromInventory(object);
 
@@ -469,11 +485,10 @@ namespace trogdor::entity {
          return;
       }
 
-      health += up;
+      int tmpHealth = health;
+      tmpHealth += up;
 
-      if (!allowOverflow && health > maxHealth) {
-         health = maxHealth;
-      }
+      setHealth(!allowOverflow && tmpHealth > maxHealth ? maxHealth : tmpHealth);
 
       game->setupEventHandler();
       game->addEventListener(triggers.get());
@@ -496,15 +511,18 @@ namespace trogdor::entity {
          return;
       }
 
-      health -= down;
+      int tmpHealth = health;
+      tmpHealth -= down;
 
-      if (health <= 0) {
-
-         health = 0; // just in case it's a negative number, we clip at 0
+      if (tmpHealth <= 0) {
 
          if (allowDeath) {
             die(true);
          }
+      }
+
+      else {
+         setHealth(tmpHealth);
       }
 
       game->setupEventHandler();
@@ -528,7 +546,9 @@ namespace trogdor::entity {
          return;
       }
 
-      alive = false;
+      // TODO: I need a way to support programmatically killing an immortal
+      // player.
+      setHealth(0);
 
       if (showMessage) {
          getLocation()->out("notifications") << title << " dies." << std::endl;
@@ -578,8 +598,7 @@ namespace trogdor::entity {
          return;
       }
 
-      alive = true;
-      health = maxHealth;
+      setHealth(maxHealth);
 
       game->setupEventHandler();
       game->addEventListener(triggers.get());

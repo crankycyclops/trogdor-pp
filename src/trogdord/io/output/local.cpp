@@ -46,6 +46,7 @@ namespace output {
 			buffer[gameId][entityName][channel] = {};
 		}
 
+		message.order = nextOrder(gameId, entityName, channel);
 		buffer[gameId][entityName][channel].push(message);
 
 		bufferMutex.unlock();

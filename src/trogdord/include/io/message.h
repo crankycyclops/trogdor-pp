@@ -14,6 +14,7 @@ namespace output {
 
 		time_t timestamp;
 		std::string content;
+		size_t order = 0;
 
 		// Converts Message to a JSON object
 		inline JSONObject toJSONObject() {
@@ -22,6 +23,7 @@ namespace output {
 
 			o.put("timestamp", timestamp);
 			o.put("content", content);
+			o.put("order", order);
 
 			return o;
 		}

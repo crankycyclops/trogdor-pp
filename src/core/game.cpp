@@ -23,7 +23,7 @@
 #include <trogdor/iostream/trogout.h>
 #include <trogdor/iostream/trogerr.h>
 
-#include <trogdor/exception/entityexception.h>
+#include <trogdor/exception/duplicateentity.h>
 
 
 namespace trogdor {
@@ -93,8 +93,6 @@ namespace trogdor {
             err() << e.what() << std::endl;
             return false;
          }
-
-         initEvents();
       }
 
       // In some cases (like the PHP 7 module I'm writing that wraps around
@@ -102,6 +100,8 @@ namespace trogdor {
       else {
          parser->parse(gamefile);
       }
+
+      initEvents();
 
       // Only return true if we've successfully parsed and instantiated one or
       // more entities
@@ -118,6 +118,12 @@ namespace trogdor {
       inGame = true;
       timer->start();
       resourceMutex.unlock();
+
+      if (callbacks.end() != callbacks.find("start")) {
+         for (const auto &callback: callbacks["start"]) {
+            (*callback)(nullptr);
+         }
+      }
    }
 
    /***************************************************************************/
@@ -128,6 +134,12 @@ namespace trogdor {
       timer->stop();
       inGame = false;
       resourceMutex.unlock();
+
+      if (callbacks.end() != callbacks.find("stop")) {
+         for (const auto &callback: callbacks["stop"]) {
+            (*callback)(nullptr);
+         }
+      }
    }
 
    /***************************************************************************/
@@ -154,7 +166,7 @@ namespace trogdor {
 
       // Make sure there are no name conflicts before creating the new player
       if (entities.isEntitySet(name)) {
-         throw entity::EntityException(
+         throw entity::DuplicateEntity(
             std::string("Entity with name '") + name + "' already exists"
          );
       }
@@ -174,7 +186,7 @@ namespace trogdor {
 
       // Make sure there are no name conflicts before inserting the new player
       if (entities.isEntitySet(player->getName())) {
-         throw entity::EntityException(
+         throw entity::DuplicateEntity(
             std::string("Entity with name '") + player->getName() + "' already exists"
          );
       }
@@ -201,6 +213,45 @@ namespace trogdor {
 
       // Player must see an initial description of where they are
       player->getLocation()->observe(player, false);
+
+      if (callbacks.end() != callbacks.find("insertPlayer")) {
+         for (const auto &callback: callbacks["insertPlayer"]) {
+            (*callback)(player);
+         }
+      }
+
+      // Make sure the player's health information is sent out when they're
+      // first inserted into the game. This should be the only time we have to
+      // call this method outside of Being::setHealth.
+      player->notifyHealth();
+   }
+
+   /***************************************************************************/
+
+   void Game::removePlayer(const std::string name, const std::string message) {
+
+      if (players.isEntitySet(name)) {
+
+         if (callbacks.end() != callbacks.find("removePlayer")) {
+            for (const auto &callback: callbacks["removePlayer"]) {
+               (*callback)(players.get(name));
+            }
+         }
+
+         if (message.length()) {
+            players.get(name)->out("notifications") << message << std::endl;
+         }
+
+         // if the Player is located in a Place, make sure to remove it
+         if (players.get(name)->getLocation()) {
+            players.get(name)->getLocation()->removeThing(players.get(name));
+         }
+
+         entities.erase(name);
+         things.erase(name);
+         beings.erase(name);
+         players.erase(name);
+      }
    }
 
    /***************************************************************************/
@@ -284,5 +335,45 @@ namespace trogdor {
    void Game::insertVerbAction(std::string verb, std::unique_ptr<Action> action) {
 
       vocabulary.insertVerbAction(verb, std::move(action));
+   }
+
+   /***************************************************************************/
+
+   void Game::addCallback(std::string operation, std::shared_ptr<std::function<void(std::any)>> callback) {
+
+      if (callbacks.end() == callbacks.find(operation)) {
+         callbacks[operation] = {};
+      }
+   
+      callbacks[operation].push_back(callback);
+   }
+
+   /***************************************************************************/
+
+   size_t Game::removeCallbacks(std::string operation) {
+
+      if (callbacks.end() != callbacks.find(operation)) {
+
+         size_t size = callbacks[operation].size();
+
+         callbacks.erase(operation);
+         return size;
+      }
+
+      return 0;
+   }
+
+   /***************************************************************************/
+
+   void Game::removeCallback(std::string operation, const std::shared_ptr<std::function<void(std::any)>> &callback) {
+
+      if (callbacks.end() != callbacks.find(operation)) {
+
+         auto it = std::find(callbacks[operation].begin(), callbacks[operation].end(), callback);
+
+         if (it != callbacks[operation].end()) {
+            callbacks[operation].erase(it);
+         }
+      }
    }
 }
