@@ -17,6 +17,55 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   Being::Being(Game *g, std::string n, std::unique_ptr<Trogout> o,
+   std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e): Thing(g, n,
+   std::move(o), std::move(i), std::move(e)),
+   maxHealth(DEFAULT_MAX_HEALTH),
+   damageBareHands(DEFAULT_DAMAGE_BARE_HANDS) {
+
+      respawnSettings.enabled  = DEFAULT_RESPAWN_ENABLED;
+      respawnSettings.interval = DEFAULT_RESPAWN_INTERVAL;
+      respawnSettings.lives    = DEFAULT_RESPAWN_LIVES;
+
+      setAttribute("strength", DEFAULT_ATTRIBUTE_STRENGTH);
+      setAttribute("dexterity", DEFAULT_ATTRIBUTE_DEXTERITY);
+      setAttribute("intelligence", DEFAULT_ATTRIBUTE_INTELLIGENCE);
+      setAttributesInitialTotal();
+
+      inventory.count         = 0;
+      inventory.weight        = DEFAULT_INVENTORY_WEIGHT;
+      inventory.currentWeight = 0;
+
+      types.push_back(ENTITY_BEING);
+
+      if (DEFAULT_ATTACKABLE) {
+         setTag(AttackableTag);
+      }
+   }
+
+   /***************************************************************************/
+
+   Being::Being(const Being &b, std::string n): Thing(b, n) {
+
+      setHealth(b.health);
+      setMaxHealth(b.maxHealth);
+      woundRate = b.woundRate;
+      damageBareHands = b.damageBareHands;
+
+      respawnSettings.enabled = b.respawnSettings.enabled;
+      respawnSettings.interval = b.respawnSettings.interval;
+      respawnSettings.lives = b.respawnSettings.lives;
+
+      attributes.values = b.attributes.values;
+      attributes.initialTotal = b.attributes.initialTotal;
+
+      inventory.count = 0;
+      inventory.weight = b.inventory.weight;
+      inventory.currentWeight = 0;
+   }
+
+   /***************************************************************************/
+
    void Being::display(Being *observer, bool displayFull) {
 
       if (ENTITY_PLAYER == observer->getType()) {
@@ -293,11 +342,31 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   // TODO: I *think* I used this in order to account for defense, like armor...
    double Being::getDamageRatio() {
 
       // TODO: this doesn't actually do anything yet...
       return 1;
+   }
+
+   /***************************************************************************/
+
+   bool Being::isAttackSuccessful(Being *defender) {
+
+      static std::random_device rd;
+      static std::mt19937 generator(rd());
+      static std::uniform_real_distribution<double> distribution(0, 1);
+
+      // probability that the attack will be successful
+      double p = CLAMP(getAttributeFactor("strength") * (defender->woundRate / 2) +
+         (defender->woundRate / 2), 0.0, defender->woundRate);
+
+      if (distribution(generator) < p) {
+         return true;
+      }
+
+      else {
+         return false;
+      }
    }
 
    /***************************************************************************/

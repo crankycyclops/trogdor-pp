@@ -9,6 +9,31 @@
 namespace trogdor::entity {
 
 
+   Thing::Thing(Game *g, std::string n, std::unique_ptr<Trogout> o,
+   std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e): Entity(g, n,
+   std::move(o), std::move(i), std::move(e)), location(nullptr) {
+
+      types.push_back(ENTITY_THING);
+
+      // Name is also an alias that we can reference a Thing by
+      aliases.push_back(n);
+   }
+
+   /***************************************************************************/
+
+   Thing::Thing(const Thing &t, std::string n): Entity(t, n) {
+
+      location = t.location;
+
+      // copy over existing aliases, minus the original Thing's name, and
+      // then add the new name to our list of aliases
+      aliases = t.aliases;
+      aliases.erase(find(aliases.begin(), aliases.end(), t.name));
+      aliases.push_back(n);
+   }
+
+   /***************************************************************************/
+
    void Thing::display(Being *observer, bool displayFull) {
 
       observer->out("display") << "You see " << getTitle() << '.' << std::endl;

@@ -29,21 +29,13 @@ namespace trogdor::entity {
             Constructor for creating a new Room.  Requires reference to the
             containing Game object and a name.
          */
-         inline Room(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogerr> e): Place(g, n, std::move(o), std::move(e)) {
-
-            types.push_back(ENTITY_ROOM);
-            setClass("room");
-         }
+         Room(Game *g, std::string n, std::unique_ptr<Trogout> o,
+         std::unique_ptr<Trogerr> e);
 
          /*
             Constructor for cloning an existing Room.  Requires a unique name.
          */
-         inline Room(const Room &r, std::string n): Place(r, n) {
-
-            // TODO: trying to decide if this makes sense?
-            connections = r.connections;
-         }
+         Room(const Room &r, std::string n);
 
          /*
             Returns room connected by the specified direction.  Returns 0 if
