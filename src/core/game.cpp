@@ -234,7 +234,7 @@ namespace trogdor {
          }
 
          if (message.length()) {
-            players.get(name)->out("notifications") << message << std::endl;
+            players.get(name)->out("system") << message << std::endl;
          }
 
          // Signal to the player that they're being removed from the game by
