@@ -237,6 +237,10 @@ namespace trogdor {
             players.get(name)->out("notifications") << message << std::endl;
          }
 
+         // Signal to the player that they're being removed from the game by
+         // sending an empty message on the "removed" channel
+         players.get(name)->out("removed") << std::endl;
+
          // if the Player is located in a Place, make sure to remove it
          if (players.get(name)->getLocation()) {
             players.get(name)->getLocation()->removeThing(players.get(name));
