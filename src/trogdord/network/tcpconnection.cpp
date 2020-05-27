@@ -48,8 +48,6 @@ void TCPConnection::handleRead(
 			callback(shared_from_this(), callbackArg);
 		}
 	}
-
-	// TODO: error handling
 }
 
 /******************************************************************************/
@@ -64,8 +62,6 @@ void TCPConnection::handleWrite(
 			callback(shared_from_this(), callbackArg);
 		}
 	}
-
-	// TODO: error handling
 }
 
 /******************************************************************************/
