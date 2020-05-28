@@ -60,28 +60,13 @@ namespace trogdor::entity {
             Constructor for creating a new Object.  Requires reference to the
             containing Game object and a name.
          */
-         inline Object(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o),
-         std::make_unique<NullIn>(), std::move(e)), owner(nullptr),
-         weight(DEFAULT_WEIGHT), damage(DEFAULT_DAMAGE) {
-
-            if (DEFAULT_IS_WEAPON) {
-               setTag(WeaponTag);
-            }
-
-            types.push_back(ENTITY_OBJECT);
-            setClass("object");
-         }
+         Object(Game *g, std::string n, std::unique_ptr<Trogout> o,
+         std::unique_ptr<Trogerr> e);
 
          /*
             Constructor for cloning an Object.  Requires a unique name.
          */
-         inline Object(const Object &o, std::string n): Thing(o, n) {
-
-            owner = o.owner;
-            weight = o.weight;
-            damage = o.damage;
-         }
+         Object(const Object &o, std::string n);
 
          /*
             Returns the owner of the Object (0 if there is no owner.)

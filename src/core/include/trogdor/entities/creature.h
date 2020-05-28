@@ -64,31 +64,15 @@ namespace trogdor::entity {
             Constructor for creating a new Creature.  Requires reference to the
             containing Game object and a name.
          */
-         inline Creature(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogerr> e): Being(g, n, std::move(o),
-         std::make_unique<NullIn>(), std::move(e)),
-         counterAttack(DEFAULT_COUNTER_ATTACK), allegiance(DEFAULT_ALLEGIANCE) {
-
-            types.push_back(ENTITY_CREATURE);
-            setClass("creature");
-
-            autoAttack.enabled = DEFAULT_AUTO_ATTACK_ENABLED;
-            autoAttack.interval = DEFAULT_AUTO_ATTACK_INTERVAL;
-            autoAttack.repeat = DEFAULT_AUTO_ATTACK_REPEAT;
-         }
+         Creature(Game *g, std::string n, std::unique_ptr<Trogout> o,
+         std::unique_ptr<Trogerr> e);
 
          /*
             Constructor that clones a Creature into another separate and unique
             Creature with identical properties.  Requires a unique name, which
             won't be copied.
          */
-         inline Creature(const Creature &c, std::string n): Being(c, n) {
-
-            autoAttack = c.autoAttack;
-            wanderSettings = c.wanderSettings;
-            counterAttack = c.counterAttack;
-            allegiance = c.allegiance;
-         }
+         Creature(const Creature &c, std::string n);
 
          /*
             Clears the cached sorted list of weapons in the Creature's inventory.

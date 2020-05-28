@@ -7,6 +7,31 @@
 namespace trogdor::entity {
 
 
+   Creature::Creature(Game *g, std::string n, std::unique_ptr<Trogout> o,
+   std::unique_ptr<Trogerr> e): Being(g, n, std::move(o),
+   std::make_unique<NullIn>(), std::move(e)),
+   counterAttack(DEFAULT_COUNTER_ATTACK), allegiance(DEFAULT_ALLEGIANCE) {
+
+      types.push_back(ENTITY_CREATURE);
+      setClass("creature");
+
+      autoAttack.enabled = DEFAULT_AUTO_ATTACK_ENABLED;
+      autoAttack.interval = DEFAULT_AUTO_ATTACK_INTERVAL;
+      autoAttack.repeat = DEFAULT_AUTO_ATTACK_REPEAT;
+   }
+
+   /***************************************************************************/
+
+   Creature::Creature(const Creature &c, std::string n): Being(c, n) {
+
+      autoAttack = c.autoAttack;
+      wanderSettings = c.wanderSettings;
+      counterAttack = c.counterAttack;
+      allegiance = c.allegiance;
+   }
+
+   /***************************************************************************/
+
    // TODO: I can reimplement this as a BST so I don't have to rebuilt the
    // whole list each time a weapon is added or removed from an inventory
    void Creature::buildWeaponCache() {
@@ -34,6 +59,8 @@ namespace trogdor::entity {
          }
       };
    }
+
+   /***************************************************************************/
 
    Object *Creature::selectWeapon() {
 

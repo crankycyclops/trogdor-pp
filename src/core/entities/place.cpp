@@ -25,6 +25,12 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   Place::Place(const Place &p, std::string n): Entity(p, n) {
+
+   }
+
+   /***************************************************************************/
+
    void Place::insertThingByName(Thing *thing) {
 
       std::vector<std::string> aliases = thing->getAliases();

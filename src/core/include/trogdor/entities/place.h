@@ -145,7 +145,7 @@ namespace trogdor::entity {
             NOTE: Objects that are in a Place will not be copied, in order to
             maintain sanity.
          */
-         inline Place(const Place &p, std::string n): Entity(p, n) {}
+         Place(const Place &p, std::string n);
 
          /*
             Inserts a Thing that resides inside the Place.  An example would

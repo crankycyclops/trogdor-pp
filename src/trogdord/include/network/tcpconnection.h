@@ -46,6 +46,9 @@ class TCPConnection: public std::enable_shared_from_this<TCPConnection> {
 		boost::asio::streambuf inBuffer;
 		std::string bufferStr;
 
+		// Records the client's hostname/IP address for logging
+		std::string clientHost = "";
+
 		// Constructor should only be called internally by create().
 		TCPConnection(boost::asio::io_service &io_service, TCPServer *s);
 
@@ -105,10 +108,19 @@ class TCPConnection: public std::enable_shared_from_this<TCPConnection> {
 		// Logs a message associated with the connection.
 		inline void log(trogdor::Trogerr::ErrorLevel severity, std::string message) {
 
-			Config::get()->err(severity) <<
-				socket.remote_endpoint().address().to_string() << ": " <<
-				message << std::endl;
+			// Get and cache the client's hostname/IP only once
+			if (!clientHost.length()) {
 
+				try {
+					clientHost = socket.remote_endpoint().address().to_string();
+				}
+
+				catch (const std::exception &e) {
+					clientHost = "(null)";
+				}
+			}
+
+			Config::get()->err(severity) << clientHost << ": " << message << std::endl;
 			return;
 		}
 

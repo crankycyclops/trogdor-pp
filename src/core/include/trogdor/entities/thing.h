@@ -50,29 +50,13 @@ namespace trogdor::entity {
             Constructor for creating a new Thing.  Requires reference to the
             containing Game object and a name.
          */
-         inline Thing(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e): Entity(g, n,
-         std::move(o), std::move(i), std::move(e)), location(nullptr) {
-
-            types.push_back(ENTITY_THING);
-
-            // Name is also an alias that we can reference a Thing by
-            aliases.push_back(n);
-         }
+         Thing(Game *g, std::string n, std::unique_ptr<Trogout> o,
+         std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e);
 
          /*
             Constructor for cloning a Thing.  Requires a unique name.
          */
-         inline Thing(const Thing &t, std::string n): Entity(t, n) {
-
-				location = t.location;
-
-            // copy over existing aliases, minus the original Thing's name, and
-            // then add the new name to our list of aliases
-            aliases = t.aliases;
-            aliases.erase(find(aliases.begin(), aliases.end(), t.name));
-            aliases.push_back(n);
-         }
+         Thing(const Thing &t, std::string n);
 
          /*
             Returns the Thing's current location in the game.  If the Thing

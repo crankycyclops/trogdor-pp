@@ -4,5 +4,27 @@
 
 namespace trogdor::entity {
 
-   // TODO: keeping this around just in case I ever need it again...
+   Player::Player(Game *g, std::string n, std::unique_ptr<Trogout> o,
+   std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e): Being(g, n,
+   std::move(o), std::move(i), std::move(e)) {
+
+      types.push_back(ENTITY_PLAYER);
+      setClass("player");
+
+      setLongDescription(name + " is a player.");
+   }
+
+   /**************************************************************************/
+
+   Player::Player(const Player &p, std::string n, std::unique_ptr<Trogout> o,
+   std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e): Being(p, n) {
+
+      title = n;
+
+      outStream = std::move(o);
+      inStream = std::move(i);
+      errStream = std::move(e);
+
+      setLongDescription(name + " is a player.");
+   }
 }
