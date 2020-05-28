@@ -44,8 +44,13 @@ namespace trogdor::entity {
 
    void Thing::displayShort(Being *observer) {
 
-      observer->out("display") << "You see " << getTitle() << '.' << std::endl;
-      Entity::displayShort(observer);
+      if (shortDesc.length()) {
+         Entity::displayShort(observer);
+      }
+
+      else {
+         observer->out("display") << "You see " << getTitle() << '.' << std::endl;
+      }
    }
 
    /***************************************************************************/
