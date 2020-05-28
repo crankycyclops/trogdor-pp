@@ -17,21 +17,24 @@ namespace trogdor::event {
 
       private:
 
+         // Any Lua errors that occur should be written to this error stream
+         Trogerr &errStream;
+
          std::string function;         // name of the function to execute
          std::shared_ptr<LuaState> L;  // lua state in which we'll execute the function
 
       public:
 
          /*
-            Constructor for the LuaEventTrigger class. Takes as input the name
-            of the Lua function to execute and a LuaState object which should
-            contain the function.
+            Constructor for the LuaEventTrigger class. Takes as input an error
+            stream, the name of the Lua function to execute, and a LuaState
+            object which should contain the function.
          */
-         inline LuaEventTrigger(std::string newfunc, std::shared_ptr<LuaState> newL): EventTrigger() {
-
-            function = newfunc;
-            L = newL;
-         }
+         inline LuaEventTrigger(
+            Trogerr &e,
+            std::string newfunc,
+            std::shared_ptr<LuaState> newL
+         ): EventTrigger(), errStream(e), function(newfunc), L(newL) {}
 
          /*
             Executes the function specified by the controller. WARNING: this

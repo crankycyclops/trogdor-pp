@@ -5,51 +5,62 @@ namespace trogdor::event {
 
    void LuaEventTrigger::execute(EventArgumentList args) {
 
-      L->call(function);
+      try {
 
-      for (unsigned int i = 0; i < args.size(); i++) {
+         L->call(function);
 
-         switch (args[i].index()) {
+         for (unsigned int i = 0; i < args.size(); i++) {
 
-            case 0: // int
-               L->pushArgument((double)std::get<int>(args[i]));
-               break;
+            switch (args[i].index()) {
 
-            case 1: // double
-               L->pushArgument(std::get<double>(args[i]));
-               break;
+               case 0: // int
+                  L->pushArgument((double)std::get<int>(args[i]));
+                  break;
 
-            case 2: // bool
-               L->pushArgument(std::get<bool>(args[i]));
-               break;
+               case 1: // double
+                  L->pushArgument(std::get<double>(args[i]));
+                  break;
 
-            case 3: // string
-               L->pushArgument(std::get<std::string>(args[i]));
-               break;
+               case 2: // bool
+                  L->pushArgument(std::get<bool>(args[i]));
+                  break;
 
-            // TODO: we should pass the Game once we have a Lua object for it
-            case 4: // we ignore Game *
-               break;
+               case 3: // string
+                  L->pushArgument(std::get<std::string>(args[i]));
+                  break;
 
-            default: // it's some kind of Entity
+               // TODO: we should pass the Game once we have a Lua object for it
+               case 4: // we ignore Game *
+                  break;
 
-               entity::Entity *arg = std::get<entity::Entity *>(args[i]);
+               default: // it's some kind of Entity
 
-               if (nullptr == arg) {
-                  L->pushNilArgument();
-               }
+                  entity::Entity *arg = std::get<entity::Entity *>(args[i]);
 
-               else {
-                  L->pushArgument(arg);
-               }
+                  if (nullptr == arg) {
+                     L->pushNilArgument();
+                  }
 
-               break;
+                  else {
+                     L->pushArgument(arg);
+                  }
+
+                  break;
+            }
          }
+
+         L->execute(2);
+
+         continueExecutionFlag = L->getBoolean(0);
+         allowActionFlag = L->getBoolean(1);
       }
 
-      L->execute(2);
+      catch (const LuaException &e) {
 
-      continueExecutionFlag = L->getBoolean(0);
-      allowActionFlag = L->getBoolean(1);
+         errStream << e.what() << std::endl;
+
+         continueExecutionFlag = true;
+         allowActionFlag = true;
+      }
    }
 }

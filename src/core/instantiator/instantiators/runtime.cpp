@@ -338,7 +338,7 @@ namespace trogdor {
                operation->getChildren()[3]->getValue()
             );
 
-            LuaEventTrigger *trigger = new LuaEventTrigger(function, entity->getLuaState());
+            LuaEventTrigger *trigger = new LuaEventTrigger(game->err(), function, entity->getLuaState());
             entity->getEventListener()->add(event.c_str(), trigger);
          }
 
@@ -346,13 +346,13 @@ namespace trogdor {
 
             entity::Entity *entityClass = typeClasses[operation->getChildren()[3]->getValue()].get();
 
-            LuaEventTrigger *trigger = new LuaEventTrigger(function, entityClass->getLuaState());
+            LuaEventTrigger *trigger = new LuaEventTrigger(game->err(), function, entityClass->getLuaState());
             entityClass->getEventListener()->add(event.c_str(), trigger);
          }
 
          else {
             // TODO: modify Lua and event code so I can use smart pointers
-            LuaEventTrigger *trigger = new LuaEventTrigger(function, game->getLuaState());
+            LuaEventTrigger *trigger = new LuaEventTrigger(game->err(), function, game->getLuaState());
             game->getEventListener()->add(event.c_str(), trigger);
          }
       });

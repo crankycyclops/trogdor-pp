@@ -80,7 +80,10 @@ namespace trogdor::entity {
 
    void Entity::setTag(std::string tag) {
 
-      tags.insert(tag);
+      // Make sure the tag only gets inserted once
+      if (tags.end() == tags.find(tag)) {
+         tags.insert(tag);
+      }
    }
 
    /***************************************************************************/
