@@ -58,6 +58,22 @@ namespace trogdor {
 
 /******************************************************************************/
 
+   class ReadAction: public Action {
+
+         /*
+            See documentation in action.h.  A valid syntax for the Read action
+            is to have a command with just a verb and a direct object. If the
+            Thing referenced by the direct object has a value for
+            getMeta("text"), that value will be read back. Otherwise, the player
+            will be told that there is nothing to read.
+         */
+         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
+
+         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game); 
+   };
+
+/******************************************************************************/
+
    class TakeAction: public Action {
 
          /*

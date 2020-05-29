@@ -165,6 +165,88 @@ namespace trogdor {
 /******************************************************************************/
 
    /*
+      Methods for the Read action.
+   */
+
+   bool ReadAction::checkSyntax(const std::shared_ptr<Command> &command) {
+
+      // we must have a direct object and only a direct object
+      if (!command->getDirectObject().length() || command->getIndirectObject().length()) {
+         return false;
+      }
+
+      return true;
+   }
+
+   void ReadAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
+
+      std::string thingName = command->getDirectObject();
+
+      if (thingName.length() == 0) {
+         player->getLocation()->observe(player, true, true);
+      }
+
+      else {
+
+         ThingList items;
+         Place *location = player->getLocation();
+
+         // consider matching inventory items, if there are any
+         for (auto const &invObject: player->getInventoryObjectsByName(thingName)) {
+               items.push_front(invObject);
+         };
+
+         // also consider matching items in the room, if there are any
+         for (auto const &roomThing: location->getThingsByName(thingName)) {
+            items.push_front(roomThing);
+         };
+
+         if (0 == items.size()) {
+            player->out("display") << "There is no " << thingName << " here!" << std::endl;
+            return;
+         }
+
+         try {
+
+            Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(items, player);
+            std::string text = thing->getMeta("text");
+
+            EventArgumentList eventArgs;
+
+            eventArgs.push_back(player);
+            eventArgs.push_back(thing);
+
+            game->setupEventHandler();
+            game->addEventListener(player->getEventListener());
+            game->addEventListener(thing->getEventListener());
+
+            if (!game->event("beforeRead", eventArgs)) {
+               return;
+            }
+
+            if (text.length()) {
+               player->out("display") << text << std::endl;
+            }
+
+            else {
+               player->out("display") << "There's nothing to read." << std::endl;
+            }
+
+            game->setupEventHandler();
+            game->addEventListener(player->getEventListener());
+            game->addEventListener(thing->getEventListener());
+            game->event("afterRead", eventArgs);
+         }
+
+         catch (const std::string &name) {
+            player->out("display") << "There is no " << name << " here!" << std::endl;
+         }
+      }
+   }
+
+/******************************************************************************/
+
+   /*
       Methods for the Take action.
    */
 
