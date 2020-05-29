@@ -184,6 +184,8 @@ namespace trogdor {
       insertVerbSynonym("describe", "look");
       insertVerbSynonym("examine", "look");
 
+      insertVerbAction("read", std::make_unique<ReadAction>());
+
       insertVerbAction("take", std::make_unique<TakeAction>());
 
       insertVerbSynonym("acquire", "take");

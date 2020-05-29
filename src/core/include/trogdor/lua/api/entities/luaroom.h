@@ -84,6 +84,18 @@ namespace trogdor::entity {
          static int newRoom(lua_State *L);
 
          /*
+            Creates a copy of an existing Room.
+
+            Lua input:
+               New room name (string)
+               Existing room (Room)
+
+            Lua output:
+               Instance of Room or nil on error
+         */
+         static int cloneRoom(lua_State *L);
+
+         /*
             Gets the Room from the global game object referenced by the given
             name. If the Room doesn't exist, returns nil.
 

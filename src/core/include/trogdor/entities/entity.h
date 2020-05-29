@@ -226,7 +226,10 @@ namespace trogdor::entity {
          std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e);
 
          /*
-            Constructor for cloning an Entity into another (with a unique name.)
+            Constructor for cloning an Entity into another. IMPORTANT: this does
+            NOT automatically assign the entity to a game. A call to
+            game->insertEntity() must still be made, and it's possible, if the
+            name isn't unique, that doing so will throw an error.
 
             Input:
                Reference to entity to copy

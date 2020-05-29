@@ -380,8 +380,16 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
 A smooth metallic sheen covers its surface, which looks to be of recent make and in good repair.
          </description>
 
+         <short>You see the Sword of Hope, which bears an inscription.</short>
+
          <!-- Overrides default value of 1 in <weapon> class -->
          <damage>10</damage>
+
+         <!-- Setting the "text" meta value will allow the player to read an object.
+         In this case, "read sword" will print out this block of text. -->
+         <meta>
+            <text>The bearer of this sword must be an awesome adventurer!</text>
+         </meta>
 
       </weapon>
 

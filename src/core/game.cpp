@@ -207,6 +207,8 @@ namespace trogdor {
       beings.set(player->getName(), player);
       players.set(player->getName(), player);
 
+      player->setGame(this);
+
       // set Player's initial location
       player->setLocation(places.get("start"));
       places.get("start")->insertThing(player);

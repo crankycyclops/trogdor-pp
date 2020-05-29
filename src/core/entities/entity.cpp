@@ -45,7 +45,9 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Entity::Entity(const Entity &e, std::string n) {
+   Entity::Entity(const Entity &e, std::string n): msgs(e.msgs), tags(e.tags),
+   types(e.types), game(nullptr), name(n), className(e.className), title(e.title),
+   longDesc(e.longDesc), shortDesc(e.shortDesc) {
 
       if (!isNameValid(n)) {
          throw ValidationException(std::string("name '") + n
@@ -53,23 +55,14 @@ namespace trogdor::entity {
             "and dashes.)");
       }
 
-      name = n;
-
-      types = e.types;
-      className = e.className;
-      game = e.game;
-      title = e.title;
-      longDesc = e.longDesc;
-      shortDesc = e.shortDesc;
-      msgs = e.msgs;
-      tags = e.tags;
       outStream = e.outStream->clone();
       errStream = e.errStream->copy();
       inStream = e.inStream->clone();
 
       L = std::make_shared<LuaState>(*e.L);
-      // TODO: we need to do some kind of intelligent copying for event handlers
-      triggers = std::make_unique<event::EventListener>();
+      // TODO: how do I pass in L when I create a fresh LuaEventTrigger in the
+      //EventListener's copy constructor?
+      triggers = std::make_unique<event::EventListener>(*e.triggers);
    }
 
    /***************************************************************************/
@@ -80,7 +73,10 @@ namespace trogdor::entity {
 
    void Entity::setTag(std::string tag) {
 
-      tags.insert(tag);
+      // Make sure the tag only gets inserted once
+      if (tags.end() == tags.find(tag)) {
+         tags.insert(tag);
+      }
    }
 
    /***************************************************************************/

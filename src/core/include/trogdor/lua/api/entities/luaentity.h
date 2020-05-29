@@ -144,6 +144,39 @@ namespace trogdor::entity {
          static int setMeta(lua_State *L);
 
          /*
+            Lua binding to Entity->setTag(tagName).
+
+            Lua input:
+               Tag name to set
+
+            Lua output:
+               (none)
+         */
+         static int setTag(lua_State *L);
+
+         /*
+            Lua binding to Entity->removeTag(tagName).
+
+            Lua input:
+               Tag name to remove
+
+            Lua output:
+               (none)
+         */
+         static int removeTag(lua_State *L);
+
+         /*
+            Lua binding to Entity->isTagSet(tagName).
+
+            Lua input:
+               Tag name
+
+            Lua output:
+               true if the tag is set and false if it's not
+         */
+         static int isTagSet(lua_State *L);
+
+         /*
             Lua binding to Entity->getMeta(key).
 
             Lua input:

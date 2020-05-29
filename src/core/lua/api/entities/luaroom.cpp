@@ -23,8 +23,9 @@ namespace trogdor::entity {
    // functions that take a Room as an input (new, get, etc.)
    // format of call: Room.new(e), where e is a Room
    static const luaL_Reg functions[] = {
-      {"new", LuaRoom::newRoom},
-      {"get", LuaRoom::getRoom},
+      {"new",   LuaRoom::newRoom},
+      {"clone", LuaRoom::cloneRoom},
+      {"get",   LuaRoom::getRoom},
       {0, 0}
    };
 
@@ -99,6 +100,26 @@ namespace trogdor::entity {
       r->setClass(Entity::typeToStr(entity::ENTITY_ROOM));
       LuaState::pushEntity(L, r);
 
+      return 1;
+   }
+
+   /***************************************************************************/
+
+   int LuaRoom::cloneRoom(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (n < 2) {
+         return luaL_error(L, "prototype instance of Room and new name required");
+      }
+
+      Room *prototype = checkRoom(L, -2);
+      std::string name = luaL_checkstring(L, -1);
+
+      // Room will not exist in the game unless it's manually inserted
+      Room *r = new Room(*prototype, name);
+
+      LuaState::pushEntity(L, r);
       return 1;
    }
 

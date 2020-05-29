@@ -84,6 +84,18 @@ namespace trogdor::entity {
          static int newCreature(lua_State *L);
 
          /*
+            Creates a copy of an existing Creature.
+
+            Lua input:
+               New creature name (string)
+               Existing creature (Creature)
+
+            Lua output:
+               Instance of Creature or nil on error
+         */
+         static int cloneCreature(lua_State *L);
+
+         /*
             Gets the Creature from the global game object referenced by the given
             name. If the Creature doesn't exist, returns nil.
 

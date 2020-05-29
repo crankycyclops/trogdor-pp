@@ -44,6 +44,9 @@ namespace trogdor::entity {
       {"out",          LuaEntity::out},
       {"getMeta",      LuaEntity::getMeta},
       {"setMeta",      LuaEntity::setMeta},
+      {"setTag",       LuaEntity::setTag},
+      {"removeTag",    LuaEntity::removeTag},
+      {"isTagSet",     LuaEntity::isTagSet},
       {"getMessage",   LuaEntity::getMessage},
       {"setMessage",   LuaEntity::setMessage},
       {"isType",       LuaEntity::isType},
@@ -258,6 +261,66 @@ namespace trogdor::entity {
 
       e->setMeta(luaL_checkstring(L, -2), luaL_checkstring(L, -1));
       return 0;
+   }
+
+   /***************************************************************************/
+
+   int LuaEntity::setTag(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (2 != n) {
+         return luaL_error(L, "takes one string argument");
+      }
+
+      Entity *e = checkEntity(L, -2);
+
+      if (nullptr == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      e->setTag(luaL_checkstring(L, -1));
+      return 0;
+   }
+
+   /***************************************************************************/
+
+   int LuaEntity::removeTag(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (2 != n) {
+         return luaL_error(L, "takes one string argument");
+      }
+
+      Entity *e = checkEntity(L, -2);
+
+      if (nullptr == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      e->removeTag(luaL_checkstring(L, -1));
+      return 0;
+   }
+
+   /***************************************************************************/
+
+   int LuaEntity::isTagSet(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (2 != n) {
+         return luaL_error(L, "takes one string argument");
+      }
+
+      Entity *e = checkEntity(L, -2);
+
+      if (nullptr == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      lua_pushboolean(L, e->isTagSet(luaL_checkstring(L, -1)));
+      return 1;
    }
 
    /***************************************************************************/

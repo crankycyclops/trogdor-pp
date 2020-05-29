@@ -664,36 +664,12 @@ namespace trogdor {
                   insertEntity(name, std::dynamic_pointer_cast<entity::Creature>(entity));
                   break;
 
-               case entity::ENTITY_PLAYER:
-                  insertEntity(name, std::dynamic_pointer_cast<entity::Player>(entity));
-                  break;
-
+               // Note: Player is a special case that's handled by insertPlayer()
                default:
                   throw UndefinedException("Game::insertEntity: unsupported entity type");
             }
 
             entity->setGame(this);
-         }
-
-         /*
-            Inserts a player into the game.
-
-            Input:
-               shared_ptr<entity::Player>
-
-            Output:
-               (none)
-         */
-         inline void insertEntity(std::string name, std::shared_ptr<entity::Player> player) {
-
-            if (entities.isEntitySet(name)) {
-               throw entity::EntityException(std::string("Entity '") + name + "' already exists");
-            }
-
-            entities.set(name, player);
-            things.set(name, player);
-            beings.set(name, player);
-            players.set(name, player);
          }
 
          /*
