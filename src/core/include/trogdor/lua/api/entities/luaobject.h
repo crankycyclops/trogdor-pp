@@ -84,6 +84,18 @@ namespace trogdor::entity {
          static int newObject(lua_State *L);
 
          /*
+            Creates a copy of an existing Object.
+
+            Lua input:
+               New object name (string)
+               Existing object (Object)
+
+            Lua output:
+               Instance of Object or nil on error
+         */
+         static int cloneObject(lua_State *L);
+
+         /*
             Gets the Object from the global game object referenced by the given
             name. If the Object doesn't exist, returns nil.
 

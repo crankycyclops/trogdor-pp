@@ -31,12 +31,8 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Object::Object(const Object &o, std::string n): Thing(o, n) {
-
-      owner = o.owner;
-      weight = o.weight;
-      damage = o.damage;
-   }
+   Object::Object(const Object &o, std::string n): Thing(o, n), owner(nullptr),
+   weight(o.weight), damage(o.damage) {}
 
    /***************************************************************************/
 

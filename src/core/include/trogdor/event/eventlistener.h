@@ -35,30 +35,16 @@ namespace trogdor::event {
       public:
 
          /*
-            Constructor for the EventListener class.
+            Constructors for the EventListener class.
          */
-         inline EventListener() {
-
-            reset();
-         }
+         EventListener();
+         EventListener(const EventListener &original);
+         // TODO: assignment operator that does same thing as copy constructor
 
          /*
             Destructor for the EventListener class.
          */
-         inline ~EventListener() {
-
-            // TODO: rewrite these for loops as range-based?
-            for (EventTriggersMap::iterator i = triggers.begin();
-            i != triggers.end(); i++) {
-
-               for (EventTriggerList::iterator j = i->second->begin();
-               j != i->second->end(); j++) {
-                  delete *j;
-               }
-
-               delete i->second;
-            }
-         }
+         ~EventListener();
 
          inline void reset() {
 

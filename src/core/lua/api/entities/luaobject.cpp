@@ -23,8 +23,9 @@ namespace trogdor::entity {
    // functions that take an Object as an input (new, get, etc.)
    // format of call: Object.new(e), where e is an Object
    static const luaL_Reg functions[] = {
-      {"new", LuaObject::newObject},
-      {"get", LuaObject::getObject},
+      {"new",   LuaObject::newObject},
+      {"clone", LuaObject::cloneObject},
+      {"get",   LuaObject::getObject},
       {0, 0}
    };
 
@@ -92,13 +93,33 @@ namespace trogdor::entity {
       lua_getglobal(L, LuaGame::globalName);
       Game *g = LuaGame::checkGame(L, -1);
 
-      // Object does not exist in the game unless it's manually inserted
+      // Object will not exist in the game unless it's manually inserted
       Object *o = new Object(nullptr, name, std::make_unique<NullOut>(), g->err().copy());
 
       // TODO: replace with class name once I support that
       o->setClass(Entity::typeToStr(entity::ENTITY_OBJECT));
       LuaState::pushEntity(L, o);
 
+      return 1;
+   }
+
+   /***************************************************************************/
+
+   int LuaObject::cloneObject(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (n < 2) {
+         return luaL_error(L, "prototype instance of Object and new name required");
+      }
+
+      Object *prototype = checkObject(L, -2);
+      std::string name = luaL_checkstring(L, -1);
+
+      // Object will not exist in the game unless it's manually inserted
+      Object *o = new Object(*prototype, name);
+
+      LuaState::pushEntity(L, o);
       return 1;
    }
 

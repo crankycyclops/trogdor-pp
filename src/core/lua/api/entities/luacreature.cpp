@@ -23,8 +23,9 @@ namespace trogdor::entity {
    // functions that take a Creature as an input (new, get, etc.)
    // format of call: Creature.new(e), where e is a Creature
    static const luaL_Reg functions[] = {
-      {"new", LuaCreature::newCreature},
-      {"get", LuaCreature::getCreature},
+      {"new",   LuaCreature::newCreature},
+      {"clone", LuaCreature::cloneCreature},
+      {"get",   LuaCreature::getCreature},
       {0, 0}
    };
 
@@ -100,6 +101,26 @@ namespace trogdor::entity {
       c->setClass(Entity::typeToStr(entity::ENTITY_CREATURE));
       LuaState::pushEntity(L, c);
 
+      return 1;
+   }
+
+   /***************************************************************************/
+
+   int LuaCreature::cloneCreature(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (n < 2) {
+         return luaL_error(L, "prototype instance of Creature and new name required");
+      }
+
+      Creature *prototype = checkCreature(L, -2);
+      std::string name = luaL_checkstring(L, -1);
+
+      // Creature will not exist in the game unless it's manually inserted
+      Creature *c = new Creature(*prototype, name);
+
+      LuaState::pushEntity(L, c);
       return 1;
    }
 
