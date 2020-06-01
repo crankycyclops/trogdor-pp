@@ -340,7 +340,7 @@ namespace trogdor {
             );
 
             entity->getEventListener()->addTrigger(
-               event.c_str(), std::make_unique<event::LuaEventTrigger>(
+               event, std::make_unique<event::LuaEventTrigger>(
                   game->err(), function, entity->getLuaState()
                )
             );
@@ -351,7 +351,7 @@ namespace trogdor {
             entity::Entity *entityClass = typeClasses[operation->getChildren()[3]->getValue()].get();
 
             entityClass->getEventListener()->addTrigger(
-               event.c_str(), std::make_unique<event::LuaEventTrigger>(
+               event, std::make_unique<event::LuaEventTrigger>(
                   game->err(), function, entityClass->getLuaState()
                )
             );
@@ -359,7 +359,7 @@ namespace trogdor {
 
          else {
             game->getEventListener()->addTrigger(
-               event.c_str(), std::make_unique<event::LuaEventTrigger>(
+               event, std::make_unique<event::LuaEventTrigger>(
                   game->err(), function, game->getLuaState()
                )
             );
