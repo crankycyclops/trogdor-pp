@@ -1,4 +1,5 @@
 #include <trogdor/entities/entity.h>
+#include <trogdor/event/triggers/luaeventtrigger.h>
 
 #include <trogdor/game.h>
 #include <trogdor/event/eventlistener.h>
@@ -60,9 +61,22 @@ namespace trogdor::entity {
       inStream = e.inStream->clone();
 
       L = std::make_shared<LuaState>(*e.L);
-      // TODO: how do I pass in L when I create a fresh LuaEventTrigger in the
-      //EventListener's copy constructor?
       triggers = std::make_unique<event::EventListener>(*e.triggers);
+
+      // When instances of LuaEventTrigger are copied, the Lua state associated
+      // with them doesn't change. There's no way for me to update them
+      // automatically in the event trigger's copy constructor; I have to do
+      // that here instead. This particular line is a dummy instance of
+      // LuaEventTrigger that I'm using for dynamic type checking.
+      static event::LuaEventTrigger dummyL(err(), "", nullptr);
+
+      for (const auto &event: triggers->getTriggers()) {
+         for (auto &trigger: event.second) {
+            if (typeid(dummyL) == typeid(*(trigger.get()))) {
+               dynamic_cast<event::LuaEventTrigger *>(trigger.get())->setLuaState(L);
+            }
+         }
+      }
    }
 
    /***************************************************************************/

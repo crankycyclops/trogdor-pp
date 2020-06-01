@@ -39,6 +39,17 @@ namespace trogdor::event {
          void addTrigger(std::string eventName, std::unique_ptr<EventTrigger> trigger);
 
          /*
+            Returns all triggers currently contained in the event listener.
+
+            Input:
+               (none)
+
+            Output:
+               Const reference to all triggers
+         */
+         const auto &getTriggers() const {return triggers;}
+
+         /*
             Executes all EventTriggers for a given event.  
 
             Input:
