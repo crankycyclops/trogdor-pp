@@ -12,6 +12,7 @@
 
 #include <trogdor/lua/luatable.h>
 #include <trogdor/lua/luastate.h>
+#include <trogdor/event/eventlistener.h>
 
 #include <trogdor/iostream/trogin.h>
 #include <trogdor/iostream/trogout.h>
@@ -22,14 +23,7 @@ namespace trogdor {
 
    class Game;
    class Parser;
-
-   namespace event {
-
-      class EventListener;
-   }
-}
-
-using namespace trogdor::event;
+};
 
 namespace trogdor::entity {
 
@@ -98,8 +92,8 @@ namespace trogdor::entity {
          std::string longDesc;
          std::string shortDesc;
 
+         std::unique_ptr<event::EventListener> triggers;
          std::shared_ptr<LuaState> L;
-         std::unique_ptr<EventListener> triggers;
 
          // Input and output streams
          std::unique_ptr<Trogout> outStream;
@@ -464,16 +458,15 @@ namespace trogdor::entity {
          inline std::shared_ptr<LuaState> &getLuaState() {return L;}
 
          /*
-            Returns raw pointer to Entity's EventListener.
-            TODO: make this consistent with Game::getEventListener.
+            Returns reference to entity's event listener.
 
             Input:
                (none)
 
             Output:
-               Pointer to EventListener
+               Reference to event listener (EventListener &)
          */
-         inline EventListener *getEventListener() const {return triggers.get();}
+         inline event::EventListener *getEventListener() {return triggers.get();}
 
          /*
             Returns whether or not a given Being has observed the Entity.

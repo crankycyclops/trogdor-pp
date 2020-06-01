@@ -37,7 +37,6 @@ namespace trogdor {
 
          inGame = false;
          timer = std::make_unique<Timer>(this);
-         events = std::make_unique<event::EventHandler>();
 
          introduction.enabled           = DEFAULT_INTRODUCTION_ENABLED;
          introduction.text              = "";
@@ -70,13 +69,11 @@ namespace trogdor {
    /***************************************************************************/
 
    // NOTE: order is important!
-   // TODO: does it make more sense for these events to be added via the trigger
-   // objects themselves?
    void Game::initEvents() {
 
-      eventListener->add("afterGotoLocation", new AutoAttackEventTrigger());
-      eventListener->add("afterDie", new DeathDropEventTrigger());
-      eventListener->add("afterDie", new RespawnEventTrigger());
+      eventListener->addTrigger("afterGotoLocation", std::make_unique<event::AutoAttackEventTrigger>());
+      eventListener->addTrigger("afterDie", std::make_unique<event::DeathDropEventTrigger>());
+      eventListener->addTrigger("afterDie", std::make_unique<event::RespawnEventTrigger>());
    }
 
    /***************************************************************************/

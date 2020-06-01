@@ -10,6 +10,7 @@
 #include <trogdor/iostream/placeout.h>
 
 #include <trogdor/timer/jobs/wander.h>
+#include <trogdor/event/triggers/luaeventtrigger.h>
 
 #include <trogdor/exception/entityexception.h>
 #include <trogdor/exception/undefinedexception.h>
@@ -338,22 +339,30 @@ namespace trogdor {
                operation->getChildren()[3]->getValue()
             );
 
-            LuaEventTrigger *trigger = new LuaEventTrigger(game->err(), function, entity->getLuaState());
-            entity->getEventListener()->add(event.c_str(), trigger);
+            entity->getEventListener()->addTrigger(
+               event.c_str(), std::make_unique<event::LuaEventTrigger>(
+                  game->err(), function, entity->getLuaState()
+               )
+            );
          }
 
          else if (0 == targetType.compare("class")) {
 
             entity::Entity *entityClass = typeClasses[operation->getChildren()[3]->getValue()].get();
 
-            LuaEventTrigger *trigger = new LuaEventTrigger(game->err(), function, entityClass->getLuaState());
-            entityClass->getEventListener()->add(event.c_str(), trigger);
+            entityClass->getEventListener()->addTrigger(
+               event.c_str(), std::make_unique<event::LuaEventTrigger>(
+                  game->err(), function, entityClass->getLuaState()
+               )
+            );
          }
 
          else {
-            // TODO: modify Lua and event code so I can use smart pointers
-            LuaEventTrigger *trigger = new LuaEventTrigger(game->err(), function, game->getLuaState());
-            game->getEventListener()->add(event.c_str(), trigger);
+            game->getEventListener()->addTrigger(
+               event.c_str(), std::make_unique<event::LuaEventTrigger>(
+                  game->err(), function, game->getLuaState()
+               )
+            );
          }
       });
 

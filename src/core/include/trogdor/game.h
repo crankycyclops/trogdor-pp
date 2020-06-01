@@ -16,6 +16,7 @@
 #include <trogdor/vocabulary.h>
 #include <trogdor/command.h>
 #include <trogdor/event/eventhandler.h>
+#include <trogdor/event/eventlistener.h>
 #include <trogdor/entitymap.h>
 #include <trogdor/iostream/trogerr.h>
 #include <trogdor/instantiator/instantiators/runtime.h>
@@ -84,13 +85,13 @@ namespace trogdor {
          Vocabulary vocabulary;
 
          // used to call subscribed event listeners
-         std::unique_ptr<event::EventHandler> events;
-
-         // Global Lua state for the entire game
-         std::shared_ptr<LuaState> L;
+         event::EventHandler events;
 
          // Global EventListener for the entire game
          std::unique_ptr<event::EventListener> eventListener;
+
+         // Global Lua state for the entire game
+         std::shared_ptr<LuaState> L;
 
          // Player object representing default settings for all new players
          std::unique_ptr<entity::Player> defaultPlayer;
@@ -190,9 +191,9 @@ namespace trogdor {
                (none)
 
             Output:
-               Game's EventListener (const &event::EventListener)
+               Pointer to Game's EventListener (event::EventListener *)
          */
-         std::unique_ptr<event::EventListener> &getEventListener() {return eventListener;}
+         event::EventListener *getEventListener() {return eventListener.get();}
 
          /*
             Returns a reference to the Entity's error stream.  A typical use
@@ -918,37 +919,11 @@ namespace trogdor {
          /*
             Wraps around EventHandler API.  See eventhandler.h for documentation.
          */
-         inline void setupEventHandler() {
-
-            events->setup();
-         }
-
-         /*
-            Wraps around EventHandler API.  See eventhandler.h for documentation.
-         */
-         inline void addEventListener(event::EventListener *l) {
-
-            events->addListener(l);
-         }
-
-         /*
-            Wraps around EventHandler API.  See eventhandler.h for documentation.
-         */
-         inline bool event(const char *event, event::EventArgumentList &args) {
+         inline bool event(event::Event e) {
 
             // make sure global EventListener is always listening
-            events->addListener(eventListener.get());
-            return events->event(event, args);
-         }
-
-         /*
-            Wraps around EventHandler API.  See eventhandler.h for documentation.
-         */
-         inline bool event(const char *event) {
-
-            // make sure global EventListener is always listening
-            events->addListener(eventListener.get());
-            return events->event(event);
+            e.prependListener(eventListener.get());
+            return events.dispatch(e);
          }
 
          /*

@@ -3,10 +3,7 @@
 namespace trogdor::event {
 
 
-   EventListener::EventListener() {
-
-      reset();
-   }
+   EventListener::EventListener() {}
 
    /***************************************************************************/
 
@@ -15,70 +12,49 @@ namespace trogdor::event {
       // TODO: right now, this just creates a fresh copy. I need to actually do
       // a deep copy. I'm not sure how I'm going to get the correct LuaState to
       // any LuaEventTriggers that might be here...
-      reset();
    }
 
    /***************************************************************************/
 
-   EventListener::~EventListener() {
+   void EventListener::addTrigger(std::string eventName, std::unique_ptr<EventTrigger> trigger) {
 
-      // TODO: rewrite these for loops as range-based?
-      for (EventTriggersMap::iterator i = triggers.begin();
-      i != triggers.end(); i++) {
-
-         for (EventTriggerList::iterator j = i->second->begin();
-         j != i->second->end(); j++) {
-            delete *j;
-         }
-
-         delete i->second;
+      // Not sure why I can't just write triggers[eventName] = {};
+      if (triggers.end() == triggers.find(eventName)) {
+         triggers[eventName] = std::vector<std::unique_ptr<EventTrigger>>();
       }
+
+      triggers[eventName].push_back(std::move(trigger));
    }
 
    /***************************************************************************/
 
-   void EventListener::add(std::string event, EventTrigger *trigger) {
+   EventReturn EventListener::dispatch(Event e) {
 
-      EventTriggerList *triggerList;
+      // If at any point this gets set to false, we should signal by the
+      // return value of this method that the action which triggered the
+      // event should be suppressed.
+      bool allowAction = true;
 
-      EventTriggersMap::const_iterator i = triggers.find(event);
+      if (triggers.end() != triggers.find(e.getName())) {
 
-      if (i == triggers.end()) {
-         triggerList = new EventTriggerList();
-         triggers[event] = triggerList;
-      }
+         for (auto const &trigger: triggers[e.getName()]) {
 
-      else {
-         triggerList = i->second;
-      }
+            EventReturn rv = (*trigger)(e);
 
-      triggerList->insert(triggerList->end(), trigger);
-   }
+            // Once one event trigger has signaled that the action triggering
+            // the event should be suppressed, this value should no longer be
+            // changed.
+            if (rv.allowAction) {
+               allowAction = rv.allowAction;
+            }
 
-   /***************************************************************************/
-
-   void EventListener::execute(std::string event, EventArgumentList args) {
-
-      EventTriggersMap::const_iterator i = triggers.find(event);
-
-      if (i == triggers.end()) {
-         return;
-      }
-
-      for (EventTriggerList::const_iterator j = i->second->begin();
-      j != i->second->end(); j++) {
-
-         (*j)->execute(args);
-
-         // if we already disabled the action, make sure it stays disabled
-         if (allowActionFlag) {
-            allowActionFlag = (*j)->allowAction();
-         }
-
-         if (!(*j)->continueExecution()) {
-            continueExecutionFlag = false;
-            break;
+            // No further event triggers should be executed; return imemdiately
+            if (!rv.continueExecution) {
+               return {allowAction, false};
+            }
          }
       }
+
+      return {allowAction, true};
    }
 }

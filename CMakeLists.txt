@@ -88,6 +88,7 @@ add_library(trogdor SHARED
 	src/core/iostream/trogin.cpp
 	src/core/iostream/trogout.cpp
 	src/core/iostream/trogerr.cpp
+	src/core/event/event.cpp
 	src/core/event/eventhandler.cpp
 	src/core/event/eventlistener.cpp
 	src/core/event/eventtrigger.cpp
@@ -149,6 +150,10 @@ target_link_libraries(standalone
 	PUBLIC trogdor
 )
 
+target_include_directories(standalone
+	PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
+)
+
 # Default location where standalone looks for game.xml
 add_definitions(-DGAME_XML_DEFAULT_PATH=\"${CMAKE_INSTALL_PREFIX}/share/trogdor/game.xml\")
 
@@ -168,6 +173,10 @@ if (Boost_FOUND)
 		add_library(trogdord_redis STATIC
 			src/trogdord/io/output/redis.cpp
 			src/trogdord/io/input/listeners/redis.cpp
+		)
+
+		target_include_directories(trogdord_redis
+			PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
 		)
 
 	endif (ENABLE_REDIS)
@@ -209,6 +218,7 @@ if (Boost_FOUND)
 
 	target_include_directories(trogdord
 		PUBLIC ${Boost_INCLUDE_DIRS}
+		PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
 	)
 
 	# Link in the redis input and output drivers

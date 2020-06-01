@@ -6,10 +6,10 @@
 namespace trogdor::event {
 
 
-   void RespawnEventTrigger::execute(EventArgumentList args) {
+   EventReturn RespawnEventTrigger::operator()(Event e) {
 
-      Game  *game  = std::get<Game *>(args[0]);
-      Being *being = static_cast<Being *>(std::get<Entity *>(args[1]));
+      Game  *game  = std::get<Game *>(e.getArguments()[0]);
+      Being *being = static_cast<Being *>(std::get<Entity *>(e.getArguments()[1]));
 
       if (being->getRespawnEnabled()) {
 
@@ -27,7 +27,6 @@ namespace trogdor::event {
          }
       }
 
-      continueExecutionFlag = true;
-      allowActionFlag = true;
+      return {true, true};
    }
 }

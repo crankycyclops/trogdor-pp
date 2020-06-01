@@ -6,6 +6,7 @@
 
 #include <trogdor/lua/luastate.h>
 #include <trogdor/lua/api/entities/luaentity.h>
+#include <trogdor/iostream/trogerr.h>
 
 #include <trogdor/event/eventtrigger.h>
 
@@ -42,12 +43,15 @@ namespace trogdor::event {
             function. Make sure to catch this!
 
             Input:
-               list of arguments to pass to the Lua function
+               The event that triggered this method call (Event &e)
 
             Output:
-               (none)
+               A pair of flags that determine whether or not execution of event
+               listeners an their associated triggers should continue and
+               whether or not the action that triggered the event should be
+               allowed to continue or be suppressed (EventReturn)
          */
-         virtual void execute(EventArgumentList args);
+         virtual EventReturn operator()(Event e);
    };
 }
 
