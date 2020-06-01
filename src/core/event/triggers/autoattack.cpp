@@ -6,11 +6,11 @@
 namespace trogdor::event {
 
 
-   void AutoAttackEventTrigger::execute(EventArgumentList args) {
+   EventReturn AutoAttackEventTrigger::operator()(Event e) {
 
-      Game  *game  = std::get<Game *>(args[0]);
-      Being *being = static_cast<Being *>(std::get<Entity *>(args[1]));
-      Place *place = static_cast<Place *>(std::get<Entity *>(args[3]));
+      Game  *game  = std::get<Game *>(e.getArguments()[0]);
+      Being *being = static_cast<Being *>(std::get<Entity *>(e.getArguments()[1]));
+      Place *place = static_cast<Place *>(std::get<Entity *>(e.getArguments()[3]));
 
       // each Creature that has auto-attack enabled should be setup to attack
       for (auto const &creature: place->getCreatures()) {
@@ -30,7 +30,6 @@ namespace trogdor::event {
          }
       };
 
-      continueExecutionFlag = true;
-      allowActionFlag = true;
+      return {true, true};
    }
 }

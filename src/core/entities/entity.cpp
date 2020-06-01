@@ -126,29 +126,23 @@ namespace trogdor::entity {
 
    void Entity::observe(Being *observer, bool triggerEvents, bool displayFull) {
 
-      EventArgumentList eventArgs;
-
-      if (triggerEvents) {
-
-         eventArgs.push_back(this);
-         eventArgs.push_back(observer);
-
-         game->setupEventHandler();
-         game->addEventListener(triggers.get());
-         game->addEventListener(observer->getEventListener());
-         if (!game->event("beforeObserve", eventArgs)) {
-            return;
-         }
+      if (triggerEvents && !game->event({
+         "beforeObserve",
+         {triggers.get(), observer->getEventListener()},
+         {this, observer}
+      })) {
+         return;
       }
 
       display(observer, displayFull);
       observedByMap.insert(observer);
 
       if (triggerEvents) {
-         game->setupEventHandler();
-         game->addEventListener(triggers.get());
-         game->addEventListener(observer->getEventListener());
-         game->event("afterObserve", eventArgs);
+         game->event({
+            "afterObserve",
+            {triggers.get(), observer->getEventListener()},
+            {this, observer}
+         });
       }
    }
 
@@ -156,29 +150,23 @@ namespace trogdor::entity {
 
    void Entity::glance(Being *observer, bool triggerEvents) {
 
-      EventArgumentList eventArgs;
-
-      if (triggerEvents) {
-
-         eventArgs.push_back(this);
-         eventArgs.push_back(observer);
-
-         game->setupEventHandler();
-         game->addEventListener(triggers.get());
-         game->addEventListener(observer->getEventListener());
-         if (!game->event("beforeGlance", eventArgs)) {
-            return;
-         }
+      if (triggerEvents && !game->event({
+         "beforeGlance",
+         {triggers.get(), observer->getEventListener()},
+         {this, observer}
+      })) {
+         return;
       }
 
       displayShort(observer);
       glancedByMap.insert(observer);
 
       if (triggerEvents) {
-         game->setupEventHandler();
-         game->addEventListener(triggers.get());
-         game->addEventListener(observer->getEventListener());
-         game->event("afterGlance", eventArgs);
+         game->event({
+            "afterGlance",
+            {triggers.get(), observer->getEventListener()},
+            {this, observer}
+         });
       }
    }
 }

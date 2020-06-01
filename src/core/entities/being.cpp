@@ -168,19 +168,11 @@ namespace trogdor::entity {
 
    void Being::gotoLocation(Place *l) {
 
-      EventArgumentList eventArgs;
-
-      // this argument will be ignored by Lua events
-      eventArgs.push_back(game);
-
-      eventArgs.push_back(this);
-      eventArgs.push_back(location);
-      eventArgs.push_back(l);
-
-      game->setupEventHandler();
-      game->addEventListener(l->getEventListener());
-      game->addEventListener(triggers.get());
-      if (!game->event("beforeGotoLocation", eventArgs)) {
+      if (!game->event({
+         "beforeGotoLocation",
+         {l->getEventListener(), triggers.get()},
+         {game, this, location, l}
+      })) {
          return;
       }
 
@@ -200,37 +192,33 @@ namespace trogdor::entity {
 
       oldLoc->out("notifications") << getTitle() << " leaves." << std::endl;
 
-      game->setupEventHandler();
-      game->addEventListener(l->getEventListener());
-      game->addEventListener(triggers.get());
-      game->event("afterGotoLocation", eventArgs);
+      game->event({
+         "afterGotoLocation",
+         {l->getEventListener(), triggers.get()},
+         {game, this, location, l}
+      });
    }
 
    /***************************************************************************/
 
    void Being::take(Object *object, bool checkUntakeable, bool doEvents) {
 
-      EventArgumentList eventArgs;
-
-      if (doEvents) {
-         eventArgs.push_back(this);
-         eventArgs.push_back(object);
-
-         game->setupEventHandler();
-         game->addEventListener(triggers.get());
-         game->addEventListener(object->getEventListener());
-         if (!game->event("beforeTake", eventArgs)) {
-            return;
-         }
+      if (doEvents && !game->event({
+         "beforeTake",
+         {triggers.get(), object->getEventListener()},
+         {this, object}
+      })) {
+         return;
       }
 
       if (checkUntakeable && object->isTagSet(Object::UntakeableTag)) {
 
          if (doEvents) {
-            game->setupEventHandler();
-            game->addEventListener(triggers.get());
-            game->addEventListener(object->getEventListener());
-            game->event("takeUntakeable", eventArgs);
+            game->event({
+               "takeUntakeable",
+               {triggers.get(), object->getEventListener()},
+               {this, object}
+            });
          }
 
          throw BeingException("", BeingException::TAKE_UNTAKEABLE);
@@ -239,10 +227,11 @@ namespace trogdor::entity {
       if (!insertIntoInventory(object)) {
 
          if (doEvents) {
-            game->setupEventHandler();
-            game->addEventListener(triggers.get());
-            game->addEventListener(object->getEventListener());
-            game->event("takeTooHeavy", eventArgs);
+            game->event({
+               "takeTooHeavy",
+               {triggers.get(), object->getEventListener()},
+               {this, object}
+            });
          }
 
          throw BeingException("", BeingException::TAKE_TOO_HEAVY);
@@ -263,10 +252,11 @@ namespace trogdor::entity {
       }
 
       if (doEvents) {
-         game->setupEventHandler();
-         game->addEventListener(triggers.get());
-         game->addEventListener(object->getEventListener());
-         game->event("afterTake", eventArgs);
+         game->event({
+            "afterTake",
+            {triggers.get(), object->getEventListener()},
+            {this, object}
+         });
       }
    }
 
@@ -274,28 +264,22 @@ namespace trogdor::entity {
 
    void Being::drop(Object *object, bool checkUndroppable, bool doEvents) {
 
-      EventArgumentList eventArgs;
-
-      if (doEvents) {
-
-         eventArgs.push_back(this);
-         eventArgs.push_back(object);
-
-         game->setupEventHandler();
-         game->addEventListener(triggers.get());
-         game->addEventListener(object->getEventListener());
-         if (!game->event("beforeDrop", eventArgs)) {
-            return;
-         }
+      if (doEvents && !game->event({
+         "beforeDrop",
+         {triggers.get(), object->getEventListener()},
+         {this, object}
+      })) {
+         return;
       }
 
       if (checkUndroppable && object->isTagSet(Object::UndroppableTag)) {
 
          if (doEvents) {
-            game->setupEventHandler();
-            game->addEventListener(triggers.get());
-            game->addEventListener(object->getEventListener());
-            game->event("dropUndroppable", eventArgs);
+            game->event({
+               "dropUndroppable",
+               {triggers.get(), object->getEventListener()},
+               {this, object}
+            });
          }
 
          throw BeingException("", BeingException::DROP_UNDROPPABLE);
@@ -314,10 +298,11 @@ namespace trogdor::entity {
       removeFromInventory(object);
 
       if (doEvents) {
-         game->setupEventHandler();
-         game->addEventListener(triggers.get());
-         game->addEventListener(object->getEventListener());
-         game->event("afterDrop", eventArgs);
+         game->event({
+            "afterDrop",
+            {triggers.get(), object->getEventListener()},
+            {this, object}
+         });
       }
    }
 
@@ -373,33 +358,21 @@ namespace trogdor::entity {
 
    void Being::attack(Being *defender, Object *weapon, bool allowCounterAttack) {
 
-      EventArgumentList eventArgs;
+      std::list<event::EventListener *> listeners = {triggers.get(), defender->getEventListener()};
+      std::vector<event::EventArgument> args = {this, defender};
 
-      eventArgs.push_back(this);
-      eventArgs.push_back(defender);
-      eventArgs.push_back(weapon);
-
-      game->setupEventHandler();
-      game->addEventListener(triggers.get());
-      game->addEventListener(defender->getEventListener());
       if (0 != weapon) {
-         game->addEventListener(weapon->getEventListener());
+         listeners.push_back(weapon->getEventListener());
+         args.push_back(weapon);
       }
 
-      if (!game->event("beforeAttack", eventArgs)) {
+      if (!game->event({"beforeAttack", listeners, args})) {
          return;
       }
 
       if (!isAlive()) {
 
-         game->setupEventHandler();
-         game->addEventListener(triggers.get());
-         game->addEventListener(defender->getEventListener());
-         if (0 != weapon) {
-            game->addEventListener(weapon->getEventListener());
-         }
-
-         if (!game->event("attackAggressorAlreadyDead", eventArgs)) {
+         if (!game->event({"attackAggressorAlreadyDead", listeners, args})) {
             return;
          }
 
@@ -409,14 +382,7 @@ namespace trogdor::entity {
 
       if (!defender->isAlive()) {
 
-         game->setupEventHandler();
-         game->addEventListener(triggers.get());
-         game->addEventListener(defender->getEventListener());
-         if (0 != weapon) {
-            game->addEventListener(weapon->getEventListener());
-         }
-
-         if (!game->event("attackDefenderAlreadyDead", eventArgs)) {
+         if (!game->event({"attackDefenderAlreadyDead", listeners, args})) {
             return;
          }
 
@@ -427,14 +393,7 @@ namespace trogdor::entity {
       // if defender is immortal, then there's really no point...
       if (defender->isImmortal()) {
 
-         game->setupEventHandler();
-         game->addEventListener(triggers.get());
-         game->addEventListener(defender->getEventListener());
-         if (0 != weapon) {
-            game->addEventListener(weapon->getEventListener());
-         }
-
-         if (!game->event("attackDefenderIsImmortal", eventArgs)) {
+         if (!game->event({"attackDefenderIsImmortal", listeners, args})) {
             return;
          }
 
@@ -446,28 +405,13 @@ namespace trogdor::entity {
       // Defender isn't attackable
       else if (!defender->isTagSet(Being::AttackableTag)) {
 
-         game->setupEventHandler();
-         game->addEventListener(triggers.get());
-         game->addEventListener(defender->getEventListener());
-         if (0 != weapon) {
-            game->addEventListener(weapon->getEventListener());
-         }
-
-         if (!game->event("attackDefenderNotAttackable", eventArgs)) {
+         if (!game->event({"attackDefenderNotAttackable", listeners, args})) {
             return;
          }
 
          out("combat") << defender->getTitle()
             << " cannot be attacked." << std::endl;
          return;
-      }
-
-      // used either if the attack is successful or if it fails
-      game->setupEventHandler();
-      game->addEventListener(triggers.get());
-      game->addEventListener(defender->getEventListener());
-      if (0 != weapon) {
-         game->addEventListener(weapon->getEventListener());
       }
 
       // send notification to the aggressor
@@ -490,7 +434,7 @@ namespace trogdor::entity {
 
       if (isAttackSuccessful(defender)) {
 
-         if (!game->event("attackSuccess", eventArgs)) {
+         if (!game->event({"attackSuccess", listeners, args})) {
             return;
          }
 
@@ -511,7 +455,7 @@ namespace trogdor::entity {
 
       else {
 
-         if (!game->event("attackFailure", eventArgs)) {
+         if (!game->event({"attackFailure", listeners, args})) {
             return;
          }
 
@@ -528,29 +472,14 @@ namespace trogdor::entity {
          defender->attack(this, static_cast<Creature *>(defender)->selectWeapon(), false);
       }
 
-      game->setupEventHandler();
-      game->addEventListener(triggers.get());
-      game->addEventListener(defender->getEventListener());
-      if (0 != weapon) {
-         game->addEventListener(weapon->getEventListener());
-      }
-
-      game->event("afterAttack", eventArgs);
+      game->event({"afterAttack", listeners, args});
    }
 
    /***************************************************************************/
 
    void Being::addHealth(int up, bool allowOverflow) {
 
-      EventArgumentList eventArgs;
-
-      eventArgs.push_back(this);
-      eventArgs.push_back(health);
-      eventArgs.push_back(up);
-
-      game->setupEventHandler();
-      game->addEventListener(triggers.get());
-      if (!game->event("beforeAddHealth", eventArgs)) {
+      if (!game->event({"beforeAddHealth", {triggers.get()}, {this, health, up}})) {
          return;
       }
 
@@ -558,25 +487,14 @@ namespace trogdor::entity {
       tmpHealth += up;
 
       setHealth(!allowOverflow && tmpHealth > maxHealth ? maxHealth : tmpHealth);
-
-      game->setupEventHandler();
-      game->addEventListener(triggers.get());
-      game->event("afterAddHealth", eventArgs);
+      game->event({"afterAddHealth", {triggers.get()}, {this, health, up}});
    }
 
    /***************************************************************************/
 
    void Being::removeHealth(int down, bool allowDeath) {
 
-      EventArgumentList eventArgs;
-
-      eventArgs.push_back(this);
-      eventArgs.push_back(health);
-      eventArgs.push_back(down);
-
-      game->setupEventHandler();
-      game->addEventListener(triggers.get());
-      if (!game->event("beforeRemoveHealth", eventArgs)) {
+      if (!game->event({"beforeRemoveHealth", {triggers.get()}, {this, health, down}})) {
          return;
       }
 
@@ -594,24 +512,14 @@ namespace trogdor::entity {
          setHealth(tmpHealth);
       }
 
-      game->setupEventHandler();
-      game->addEventListener(triggers.get());
-      game->event("afterRemoveHealth", eventArgs);
+      game->event({"afterRemoveHealth", {triggers.get()}, {this, health, down}});
    }
 
    /***************************************************************************/
 
    void Being::die(bool showMessage) {
 
-      EventArgumentList eventArgs;
-
-      // the game argument will be ignored by Lua events
-      eventArgs.push_back(game);
-      eventArgs.push_back(this);
-
-      game->setupEventHandler();
-      game->addEventListener(triggers.get());
-      if (!game->event("beforeDie", eventArgs)) {
+      if (!game->event({"beforeDie", {triggers.get()}, {game, this}})) {
          return;
       }
 
@@ -623,9 +531,7 @@ namespace trogdor::entity {
          getLocation()->out("notifications") << title << " dies." << std::endl;
       }
 
-      game->setupEventHandler();
-      game->addEventListener(triggers.get());
-      game->event("afterDie", eventArgs);
+      game->event({"afterDie", {triggers.get()}, {game, this}});
    }
 
    /***************************************************************************/
@@ -655,22 +561,11 @@ namespace trogdor::entity {
 
    void Being::respawn() {
 
-      EventArgumentList eventArgs;
-
-      // the game argument will be ignored by Lua events
-      eventArgs.push_back(game);
-      eventArgs.push_back(this);
-
-      game->setupEventHandler();
-      game->addEventListener(triggers.get());
-      if (!game->event("beforeRespawn", eventArgs)) {
+      if (!game->event({"beforeRespawn", {triggers.get()}, {game, this}})) {
          return;
       }
 
       setHealth(maxHealth);
-
-      game->setupEventHandler();
-      game->addEventListener(triggers.get());
-      game->event("afterRespawn", eventArgs);
+      game->event({"afterRespawn", {triggers.get()}, {game, this}});
    }
 }

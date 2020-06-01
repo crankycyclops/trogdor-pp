@@ -1,12 +1,13 @@
+#include <trogdor/entities/being.h>
 #include <trogdor/event/triggers/deathdrop.h>
 
 namespace trogdor::event {
 
 
-   void DeathDropEventTrigger::execute(EventArgumentList args) {
+   EventReturn DeathDropEventTrigger::operator()(Event e) {
 
       entity::ObjectList drops;
-      entity::Being *being = static_cast<entity::Being *>(std::get<entity::Entity *>(args[1]));
+      entity::Being *being = static_cast<entity::Being *>(std::get<entity::Entity *>(e.getArguments()[1]));
 
       // TODO: should we only drop with some probability?
       // TODO: right now, we drop undroppable objects; should we?
@@ -18,7 +19,6 @@ namespace trogdor::event {
          being->drop(object, false);
       });
 
-      continueExecutionFlag = true;
-      allowActionFlag = true;
+      return {true, true};
    }
 }

@@ -1,46 +1,33 @@
-#include <cstdarg>
 #include <trogdor/event/eventhandler.h>
+#include <trogdor/event/eventlistener.h>
 
 namespace trogdor::event {
 
 
-   bool EventHandler::event(const char *event, EventArgumentList &args) {
+   bool EventHandler::dispatch(Event e) {
 
-      EventListenerList *listeners = sessions.back();
-
-      // false if we should not allow the action that triggered the event to
-      // continue
+      // If at any point this gets set to false, we should signal by the
+      // return value of this method that the action which triggered the
+      // event should be suppressed.
       bool allowAction = true;
 
-      for (EventListenerList::const_iterator i = listeners->begin();
-      i != listeners->end(); i++) {
+      for (auto const listener: e.getListeners()) {
 
-         (*i)->execute(event, args);
+         EventReturn rv = listener->dispatch(e);
 
-         // if we turn off allowAction, make sure it stays off
-         if (allowAction) {
-            allowAction = (*i)->allowAction();
+         // Once one event trigger has signaled that the action triggering
+         // the event should be suppressed, this value should no longer be
+         // changed.
+         if (rv.allowAction) {
+            allowAction = rv.allowAction;
          }
 
-         (*i)->reset();
-
-         if (!(*i)->continueExecution()) {
+         // No further event triggers should be executed; return imemdiately
+         if (!rv.continueExecution) {
             break;
          }
       }
 
-      // restore previous event handling session
-      delete listeners;
-      sessions.pop_back();
-
       return allowAction;
-   }
-
-   /***************************************************************************/
-
-   bool EventHandler::event(const char *event) {
-
-      EventArgumentList empty;
-      return EventHandler::event(event, empty);
    }
 }

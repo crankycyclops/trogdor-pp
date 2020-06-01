@@ -5,6 +5,7 @@
 
 #include <trogdor/vocabulary.h>
 #include <trogdor/actions.h>
+#include <trogdor/event/event.h>
 
 #include <trogdor/exception/beingexception.h>
 
@@ -211,16 +212,11 @@ namespace trogdor {
             Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(items, player);
             std::string text = thing->getMeta("text");
 
-            EventArgumentList eventArgs;
-
-            eventArgs.push_back(player);
-            eventArgs.push_back(thing);
-
-            game->setupEventHandler();
-            game->addEventListener(player->getEventListener());
-            game->addEventListener(thing->getEventListener());
-
-            if (!game->event("beforeRead", eventArgs)) {
+            if (!game->event({
+               "beforeRead",
+               {player->getEventListener(), thing->getEventListener()},
+               {player, thing}
+            })) {
                return;
             }
 
@@ -232,10 +228,11 @@ namespace trogdor {
                player->out("display") << "There's nothing to read." << std::endl;
             }
 
-            game->setupEventHandler();
-            game->addEventListener(player->getEventListener());
-            game->addEventListener(thing->getEventListener());
-            game->event("afterRead", eventArgs);
+            game->event({
+               "afterRead",
+               {player->getEventListener(), thing->getEventListener()},
+               {player, thing}
+            });
          }
 
          catch (const std::string &name) {
