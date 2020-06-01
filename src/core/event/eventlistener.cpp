@@ -1,5 +1,12 @@
 #include <trogdor/event/eventlistener.h>
 
+#include <trogdor/event/triggers/autoattack.h>
+#include <trogdor/event/triggers/deathdrop.h>
+#include <trogdor/event/triggers/respawn.h>
+#include <trogdor/event/triggers/luaeventtrigger.h>
+
+#include <trogdor/exception/undefinedexception.h>
+
 namespace trogdor::event {
 
 
@@ -7,11 +14,56 @@ namespace trogdor::event {
 
    /***************************************************************************/
 
+   // Necessary because I can't just rely on a default copy constructor for
+   // a bunch of unique_ptrs.
    EventListener::EventListener(const EventListener &original) {
 
-      // TODO: right now, this just creates a fresh copy. I need to actually do
-      // a deep copy. I'm not sure how I'm going to get the correct LuaState to
-      // any LuaEventTriggers that might be here...
+      // Dummy instances of specific event triggers used for dynamic type
+      // checking (this doesn't feel like good code, but I know no other way.)
+      static AutoAttackEventTrigger autoAttackDummy;
+      static DeathDropEventTrigger deathDropDummy;
+      static RespawnEventTrigger respawnDummy;
+
+      // I have to check the type of each event trigger and insert a new copy of
+      // each.
+      for (const auto &event: triggers) {
+
+         triggers[event.first] = std::vector<std::unique_ptr<EventTrigger>>();
+
+         for (const auto &trigger: event.second) {
+
+            if (typeid(autoAttackDummy) == typeid(*trigger)) {
+               triggers[event.first].push_back(std::make_unique<AutoAttackEventTrigger>(
+                  *dynamic_cast<AutoAttackEventTrigger *>(trigger.get())
+               ));
+            }
+
+            else if (typeid(deathDropDummy) == typeid(*trigger)) {
+               triggers[event.first].push_back(std::make_unique<DeathDropEventTrigger>(
+                  *dynamic_cast<DeathDropEventTrigger *>(trigger.get())
+               ));
+            }
+
+            else if (typeid(respawnDummy) == typeid(*trigger)) {
+               triggers[event.first].push_back(std::make_unique<RespawnEventTrigger>(
+                  *dynamic_cast<RespawnEventTrigger *>(trigger.get())
+               ));
+            }
+
+            else {
+
+               try {
+                  triggers[event.first].push_back(std::make_unique<LuaEventTrigger>(
+                     *dynamic_cast<LuaEventTrigger *>(trigger.get())
+                  ));
+               }
+
+               catch (const std::bad_cast &e) {
+                  throw UndefinedException("Unknown event trigger type encountered in EventListener copy constructor");
+               }
+            }
+         }
+      }
    }
 
    /***************************************************************************/

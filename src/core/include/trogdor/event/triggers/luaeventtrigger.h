@@ -38,6 +38,19 @@ namespace trogdor::event {
          ): EventTrigger(), errStream(e), function(newfunc), L(newL) {}
 
          /*
+            Sets a new Lua state for the event trigger. This is necessary when
+            an instance of LuaEventTrigger is copied for a new entity and needs
+            to be assigned that new entity's Lua state.
+
+            Input:
+               New state (std::shared_ptr<LuaState>)
+
+            Output:
+               (none)
+         */
+         inline void setLuaState(std::shared_ptr<LuaState> newL) {L = newL;}
+
+         /*
             Executes the function specified by the controller. WARNING: this
             method will throw an exception if it fails to execute the given Lua
             function. Make sure to catch this!
