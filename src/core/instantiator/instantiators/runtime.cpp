@@ -437,7 +437,7 @@ namespace trogdor {
          }
 
          else {
-            being = game->getDefaultPlayer().get();
+            being = game->getDefaultPlayer();
          }
 
          dynamic_cast<entity::Being *>(being)->setAttribute(attribute, stoi(value));
@@ -469,7 +469,7 @@ namespace trogdor {
 
          else if (0 == targetType.compare("defaultPlayer")) {
             propSetters[game->getDefaultPlayer()->getTypeName()][property](
-               game, game->getDefaultPlayer().get(), value
+               game, game->getDefaultPlayer(), value
             );
          }
 
