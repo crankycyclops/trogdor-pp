@@ -113,7 +113,7 @@ namespace trogdor {
          // they're first added to the game
          struct {
             bool enabled;            // whether to show new players an intro
-            std::string text;             // introduction's content
+            std::string text;        // introduction's content
          } introduction;
 
          /* global error stream */
@@ -176,16 +176,22 @@ namespace trogdor {
             that need to interact directly with this. THIS IS A DANGEROUS METHOD.
             You have been warned.
 
+            I'm returning a const reference to a shared_ptr per this advice:
+            "Use a const shared_ptr& as a parameter only if you're not sure
+            whether or not you'll take a copy and share ownership," which I
+            found here:
+            https://herbsutter.com/2013/06/05/gotw-91-solution-smart-pointer-parameters/
+
             Input:
                (none)
 
             Output:
                Game's Lua State (const &LuaState)
          */
-         std::shared_ptr<LuaState> &getLuaState() {return L;}
+         const std::shared_ptr<LuaState> &getLuaState() {return L;}
 
          /*
-            Returns a reference to Game instance's EventListener.
+            Returns a pointer to Game instance's EventListener.
 
             Input:
                (none)
@@ -356,11 +362,11 @@ namespace trogdor {
                (none)
 
             Output:
-               Reference to unique_ptr<entity::Player>
+               entity::Player *
          */
-         inline std::unique_ptr<entity::Player> &getDefaultPlayer() {
+         inline entity::Player *getDefaultPlayer() {
 
-            return defaultPlayer;
+            return defaultPlayer.get();
          }
 
          /*
