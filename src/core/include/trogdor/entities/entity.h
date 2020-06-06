@@ -714,14 +714,6 @@ namespace trogdor::entity {
    typedef std::list<Creature *> CreatureList;
    typedef std::list<Object *>   ObjectList;
 
-   typedef std::set<Place *, EntityAlphaComparator>    PlaceSet;
-   typedef std::set<Room *, EntityAlphaComparator>     RoomSet;
-   typedef std::set<Thing *, EntityAlphaComparator>    ThingSet;
-   typedef std::set<Being *, EntityAlphaComparator>    BeingSet;
-   typedef std::set<Player *, EntityAlphaComparator>   PlayerSet;
-   typedef std::set<Creature *, EntityAlphaComparator> CreatureSet;
-   typedef std::set<Object *, EntityAlphaComparator>   ObjectSet;
-
    typedef std::unordered_map<std::string, ThingList>    ThingsByNameMap;
    typedef std::unordered_map<std::string, BeingList>    BeingsByNameMap;
    typedef std::unordered_map<std::string, PlayerList>   PlayersByNameMap;

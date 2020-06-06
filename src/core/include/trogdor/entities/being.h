@@ -306,21 +306,21 @@ namespace trogdor::entity {
                (none)
 
             Output:
-               const ObjectSet &
+               Set of objects in the inventory
          */
-         inline const ObjectSet &getInventoryObjects() const {return inventory.objects;}
+         inline const auto &getInventoryObjects() const {return inventory.objects;}
 
          /*
-            Returns iteratable list of all Objects that match the given name in
+            Returns iterable list of all Objects that match the given name in
             the Being's inventory.
 
             Input:
                name (std::string)
 
             Output:
-               const ObjectList &
+               List of all inventory objects matching the given name
          */
-         inline const ObjectList &getInventoryObjectsByName(std::string name) const {
+         inline const auto &getInventoryObjectsByName(std::string name) const {
 
             ObjectsByNameMap::const_iterator i = inventory.objectsByName.find(name);
 
