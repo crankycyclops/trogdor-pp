@@ -27,7 +27,7 @@ trogdor::entity::Entity *BeingController::getEntityPtr(
 	std::string entityName
 ) {
 
-	trogdor::entity::Entity *ePtr = game->getBeing(entityName);
+	trogdor::entity::Entity *ePtr = game->getBeing(entityName).get();
 
 	if (!ePtr) {
 		throw BeingNotFound();
@@ -38,11 +38,17 @@ trogdor::entity::Entity *BeingController::getEntityPtr(
 
 /*****************************************************************************/
 
-const trogdor::entity::EntityMap BeingController::getEntityPtrList(
+std::vector<trogdor::entity::Entity *> BeingController::getEntityPtrList(
 	std::unique_ptr<trogdor::Game> &game
 ) {
 
-	return game->getBeings();
+	std::vector<trogdor::entity::Entity *> beings;
+
+	for (const auto &being: game->getBeings()) {
+		beings.push_back(being.second.get());
+	}
+
+	return beings;
 }
 
 /*****************************************************************************/

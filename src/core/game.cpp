@@ -162,7 +162,7 @@ namespace trogdor {
    std::unique_ptr<Trogin> inStream, std::unique_ptr<Trogerr> errStream) {
 
       // Make sure there are no name conflicts before creating the new player
-      if (entities.isEntitySet(name)) {
+      if (entities.find(name) != entities.end()) {
          throw entity::DuplicateEntity(
             std::string("Entity with name '") + name + "' already exists"
          );
@@ -182,7 +182,7 @@ namespace trogdor {
    std::function<void()> confirmationCallback) {
 
       // Make sure there are no name conflicts before inserting the new player
-      if (entities.isEntitySet(player->getName())) {
+      if (entities.find(player->getName()) != entities.end()) {
          throw entity::DuplicateEntity(
             std::string("Entity with name '") + player->getName() + "' already exists"
          );
@@ -199,16 +199,20 @@ namespace trogdor {
          }
       }
 
-      entities.set(player->getName(), player);
-      things.set(player->getName(), player);
-      beings.set(player->getName(), player);
-      players.set(player->getName(), player);
+      resourceMutex.lock();
+
+      entities[player->getName()] = player;
+      things[player->getName()] = player;
+      beings[player->getName()] = player;
+      players[player->getName()] = player;
 
       player->setGame(this);
 
       // set Player's initial location
-      player->setLocation(places.get("start"));
-      places.get("start")->insertThing(player);
+      player->setLocation(places["start"]);
+      places["start"]->insertThing(player);
+
+      resourceMutex.unlock();
 
       // Player must see an initial description of where they are
       player->getLocation()->observe(player, false);
@@ -227,33 +231,45 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Game::removePlayer(const std::string name, const std::string message) {
+   void Game::removePlayer(
+      const std::string name,
+      const std::string message,
+      const bool lockOnResourceMutex
+   ) {
 
-      if (players.isEntitySet(name)) {
+      if (players.find(name) != players.end()) {
 
          if (callbacks.end() != callbacks.find("removePlayer")) {
             for (const auto &callback: callbacks["removePlayer"]) {
-               (*callback)(players.get(name));
+               (*callback)(players[name]);
             }
          }
 
          if (message.length()) {
-            players.get(name)->out("system") << message << std::endl;
+            players[name]->out("system") << message << std::endl;
          }
 
          // Signal to the player that they're being removed from the game by
          // sending an empty message on the "removed" channel
-         players.get(name)->out("removed") << std::endl;
+         players[name]->out("removed") << std::endl;
 
          // if the Player is located in a Place, make sure to remove it
-         if (players.get(name)->getLocation()) {
-            players.get(name)->getLocation()->removeThing(players.get(name));
+         if (players[name]->getLocation()) {
+            players[name]->getLocation()->removeThing(players[name]);
+         }
+
+         if (lockOnResourceMutex) {
+            resourceMutex.lock();
          }
 
          entities.erase(name);
          things.erase(name);
          beings.erase(name);
          players.erase(name);
+
+         if (lockOnResourceMutex) {
+            resourceMutex.unlock();
+         }
       }
    }
 

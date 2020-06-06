@@ -2,7 +2,7 @@
 #define SCOPE_ENTITY_H
 
 
-#include <trogdor/entitymap.h>
+#include <vector>
 #include "controller.h"
 
 
@@ -54,7 +54,7 @@ class EntityController: public ScopeController {
 		// of their type. For example, EntityController's implementation calls
 		// Game::getEntities(), while PlayerController's implementation calls
 		// Game::getPlayers().
-		virtual const trogdor::entity::EntityMap getEntityPtrList(
+		virtual std::vector<trogdor::entity::Entity *> getEntityPtrList(
 			std::unique_ptr<trogdor::Game> &game
 		);
 

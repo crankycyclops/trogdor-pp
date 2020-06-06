@@ -329,7 +329,7 @@ void GameContainer::removePlayer(size_t gameId, std::string playerName, std::str
 		throw GameNotFound();
 	}
 
-	trogdor::entity::Player *pPtr = game->get()->getPlayer(playerName);
+	trogdor::entity::Player *pPtr = game->get()->getPlayer(playerName).get();
 
 	if (!pPtr) {
 		throw PlayerNotFound();

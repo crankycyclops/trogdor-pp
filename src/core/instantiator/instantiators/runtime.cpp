@@ -36,13 +36,11 @@ namespace trogdor {
 
       // For each creature, check if wandering was enabled, and if so, insert a
       // timer job for it
-      for (auto &creatureMapEntry: game->getCreatures()) {
+      for (auto &creature: game->getCreatures()) {
 
-         Creature *creature = dynamic_cast<Creature *>(creatureMapEntry.second.get());
-
-         if (creature->getWanderEnabled()) {
-            game->insertTimerJob(std::make_shared<WanderTimerJob>(game, creature->getWanderInterval(),
-               -1, creature->getWanderInterval(), creature));
+         if (creature.second->getWanderEnabled()) {
+            game->insertTimerJob(std::make_shared<WanderTimerJob>(game, creature.second->getWanderInterval(),
+               -1, creature.second->getWanderInterval(), creature.second.get()));
          }
       }
    }
@@ -337,7 +335,7 @@ namespace trogdor {
 
             entity::Entity *entity = game->getEntity(
                operation->getChildren()[3]->getValue()
-            );
+            ).get();
 
             entity->getEventListener()->addTrigger(
                event, std::make_unique<event::LuaEventTrigger>(
@@ -379,7 +377,7 @@ namespace trogdor {
          if (0 == targetType.compare("entity")) {
             thing = game->getEntity(
                operation->getChildren()[2]->getValue()
-            );
+            ).get();
          }
 
          else {
@@ -429,7 +427,7 @@ namespace trogdor {
          if (0 == targetType.compare("entity")) {
             being = game->getEntity(
                operation->getChildren()[3]->getValue()
-            );
+            ).get();
          }
 
          else if (0 == targetType.compare("class")) {
@@ -458,7 +456,7 @@ namespace trogdor {
          if (0 == targetType.compare("entity")) {
             entity = game->getEntity(
                operation->getChildren()[3]->getValue()
-            );
+            ).get();
             propSetters[entity->getTypeName()][property](game, entity, value);
          }
 
@@ -483,8 +481,8 @@ namespace trogdor {
       registerOperation(INSERT_INTO_INVENTORY, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         Object *object = game->getObject(operation->getChildren()[0]->getValue());
-         Being *owner = game->getBeing(operation->getChildren()[1]->getValue());
+         Object *object = game->getObject(operation->getChildren()[0]->getValue()).get();
+         Being *owner = game->getBeing(operation->getChildren()[1]->getValue()).get();
 
          owner->insertIntoInventory(object, false);
       });
@@ -494,8 +492,8 @@ namespace trogdor {
       registerOperation(INSERT_INTO_PLACE, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         Thing *thing = game->getThing(operation->getChildren()[0]->getValue());
-         Room *room = game->getRoom(operation->getChildren()[1]->getValue());
+         Thing *thing = game->getThing(operation->getChildren()[0]->getValue()).get();
+         Room *room = game->getRoom(operation->getChildren()[1]->getValue()).get();
 
          room->insertThing(thing);
       });
@@ -506,14 +504,14 @@ namespace trogdor {
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
          Room *room;
-         Room *connectToRoom = game->getRoom(operation->getChildren()[2]->getValue());
+         Room *connectToRoom = game->getRoom(operation->getChildren()[2]->getValue()).get();
 
          std::string targetType = operation->getChildren()[0]->getValue();
          std::string sourceRoomOrClass = operation->getChildren()[1]->getValue();
          std::string direction = operation->getChildren()[3]->getValue();
 
          if (0 == targetType.compare("entity")) {
-            room = game->getRoom(sourceRoomOrClass);
+            room = game->getRoom(sourceRoomOrClass).get();
          }
 
          else {

@@ -35,7 +35,7 @@ trogdor::entity::Entity *PlayerController::getEntityPtr(
 	std::string entityName
 ) {
 
-	trogdor::entity::Entity *ePtr = game->getPlayer(entityName);
+	trogdor::entity::Entity *ePtr = game->getPlayer(entityName).get();
 
 	if (!ePtr) {
 		throw PlayerNotFound();
@@ -46,11 +46,17 @@ trogdor::entity::Entity *PlayerController::getEntityPtr(
 
 /*****************************************************************************/
 
-const trogdor::entity::EntityMap PlayerController::getEntityPtrList(
+std::vector<trogdor::entity::Entity *> PlayerController::getEntityPtrList(
 	std::unique_ptr<trogdor::Game> &game
 ) {
 
-	return game->getPlayers();
+	std::vector<trogdor::entity::Entity *> players;
+
+	for (const auto &player: game->getPlayers()) {
+		players.push_back(player.second.get());
+	}
+
+	return players;
 }
 
 /*****************************************************************************/
