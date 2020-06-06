@@ -166,19 +166,26 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   void Being::gotoLocation(Place *l) {
+   void Being::gotoLocation(const std::shared_ptr<Place> &l) {
+
+      auto oldLoc = location.lock();
+      std::vector<event::EventArgument> eventArgs = {game, this};
+
+      if (oldLoc) {
+         eventArgs.push_back(oldLoc.get());
+      }
+
+      eventArgs.push_back(l.get());
 
       if (!game->event({
          "beforeGotoLocation",
          {l->getEventListener(), triggers.get()},
-         {game, this, location, l}
+         eventArgs
       })) {
          return;
       }
 
-      Place *oldLoc = location;
-
-      if (0 != oldLoc) {
+      if (oldLoc) {
          oldLoc->removeThing(getShared());
       }
 
@@ -195,7 +202,7 @@ namespace trogdor::entity {
       game->event({
          "afterGotoLocation",
          {l->getEventListener(), triggers.get()},
-         {game, this, location, l}
+         eventArgs
       });
    }
 
@@ -207,60 +214,63 @@ namespace trogdor::entity {
       bool doEvents
    ) {
 
-      if (doEvents && !game->event({
-         "beforeTake",
-         {triggers.get(), object->getEventListener()},
-         {this, object.get()}
-      })) {
-         return;
-      }
+      if (auto location = object->getLocation().lock()) {
 
-      if (checkUntakeable && object->isTagSet(Object::UntakeableTag)) {
-
-         if (doEvents) {
-            game->event({
-               "takeUntakeable",
-               {triggers.get(), object->getEventListener()},
-               {this, object.get()}
-            });
-         }
-
-         throw BeingException("", BeingException::TAKE_UNTAKEABLE);
-      }
-
-      if (!insertIntoInventory(object)) {
-
-         if (doEvents) {
-            game->event({
-               "takeTooHeavy",
-               {triggers.get(), object->getEventListener()},
-               {this, object.get()}
-            });
-         }
-
-         throw BeingException("", BeingException::TAKE_TOO_HEAVY);
-      }
-
-      else {
-
-         // Notify every entity in the room that the object has been taken
-         // EXCEPT the one who's doing the taking
-         for (auto const &thing: object->getLocation()->getThings()) {
-            if (thing.get() != this) {
-               thing->out("notifications") << getTitle() << " takes "
-                  << object->getTitle() << "." << std::endl;
-            }
-         };
-
-         object->getLocation()->removeThing(object);
-      }
-
-      if (doEvents) {
-         game->event({
-            "afterTake",
+         if (doEvents && !game->event({
+            "beforeTake",
             {triggers.get(), object->getEventListener()},
             {this, object.get()}
-         });
+         })) {
+            return;
+         }
+
+         if (checkUntakeable && object->isTagSet(Object::UntakeableTag)) {
+
+            if (doEvents) {
+               game->event({
+                  "takeUntakeable",
+                  {triggers.get(), object->getEventListener()},
+                  {this, object.get()}
+               });
+            }
+
+            throw BeingException("", BeingException::TAKE_UNTAKEABLE);
+         }
+
+         if (!insertIntoInventory(object)) {
+
+            if (doEvents) {
+               game->event({
+                  "takeTooHeavy",
+                  {triggers.get(), object->getEventListener()},
+                  {this, object.get()}
+               });
+            }
+
+            throw BeingException("", BeingException::TAKE_TOO_HEAVY);
+         }
+
+         else {
+
+            // Notify every entity in the room that the object has been taken
+            // EXCEPT the one who's doing the taking
+            for (auto const &thing: location->getThings()) {
+               if (thing.get() != this) {
+                  thing->out("notifications") << getTitle() << " takes "
+                     << object->getTitle() << "." << std::endl;
+               }
+            };
+
+            location->removeThing(object);
+         }
+
+         if (doEvents) {
+            game->event({
+               "afterTake",
+               {triggers.get(), object->getEventListener()},
+               {this, object.get()}
+            });
+         }
       }
    }
 
@@ -272,45 +282,48 @@ namespace trogdor::entity {
       bool doEvents
    ) {
 
-      if (doEvents && !game->event({
-         "beforeDrop",
-         {triggers.get(), object->getEventListener()},
-         {this, object.get()}
-      })) {
-         return;
-      }
+      if (auto location = object->getLocation().lock()) {
 
-      if (checkUndroppable && object->isTagSet(Object::UndroppableTag)) {
+         if (doEvents && !game->event({
+            "beforeDrop",
+            {triggers.get(), object->getEventListener()},
+            {this, object.get()}
+         })) {
+            return;
+         }
+
+         if (checkUndroppable && object->isTagSet(Object::UndroppableTag)) {
+
+            if (doEvents) {
+               game->event({
+                  "dropUndroppable",
+                  {triggers.get(), object->getEventListener()},
+                  {this, object.get()}
+               });
+            }
+
+            throw BeingException("", BeingException::DROP_UNDROPPABLE);
+         }
+
+         // Notify every entity in the room that the object has been dropped EXCEPT
+         // the one who's doing the dropping
+         for (auto const &thing: location->getThings()) {
+            if (thing.get() != this) {
+               thing->out("notifications") << getTitle() << " drops "
+                  << object->getTitle() << "." << std::endl;
+            }
+         };
+
+         location->insertThing(object);
+         removeFromInventory(object);
 
          if (doEvents) {
             game->event({
-               "dropUndroppable",
+               "afterDrop",
                {triggers.get(), object->getEventListener()},
                {this, object.get()}
             });
          }
-
-         throw BeingException("", BeingException::DROP_UNDROPPABLE);
-      }
-
-      // Notify every entity in the room that the object has been dropped EXCEPT
-      // the one who's doing the dropping
-      for (auto const &thing: location->getThings()) {
-         if (thing.get() != this) {
-            thing->out("notifications") << getTitle() << " drops "
-               << object->getTitle() << "." << std::endl;
-         }
-      };
-
-      location->insertThing(object);
-      removeFromInventory(object);
-
-      if (doEvents) {
-         game->event({
-            "afterDrop",
-            {triggers.get(), object->getEventListener()},
-            {this, object.get()}
-         });
       }
    }
 
@@ -535,8 +548,10 @@ namespace trogdor::entity {
       // player.
       setHealth(0);
 
-      if (showMessage) {
-         getLocation()->out("notifications") << title << " dies." << std::endl;
+      auto location = getLocation().lock();
+
+      if (showMessage && location) {
+         location->out("notifications") << title << " dies." << std::endl;
       }
 
       game->event({"afterDie", {triggers.get()}, {game, this}});
@@ -560,7 +575,9 @@ namespace trogdor::entity {
                msg = name + " comes back to life.";
             }
 
-            getLocation()->out("notifications") << std::endl << msg << std::endl;
+            if (auto location = getLocation().lock()) {
+               location->out("notifications") << std::endl << msg << std::endl;
+            }
          }
       }
    }

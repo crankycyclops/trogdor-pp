@@ -16,7 +16,7 @@ namespace trogdor::entity {
 
       protected:
 
-         Place *location;                     // where the Thing is located
+         std::weak_ptr<Place> location;       // where the Thing is located
          std::vector<std::string>  aliases;   // list of aliases
 
          /*
@@ -83,9 +83,9 @@ namespace trogdor::entity {
                (none)
 
             Output:
-               Place *
+               std::weak_ptr<Place>
          */
-         inline Place *getLocation() const {return location;}
+         inline std::weak_ptr<Place> getLocation() const {return location;}
 
          /*
             Returns list of Thing's aliases.
@@ -107,8 +107,7 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setLocation(Place *l) {location = l;}
-         inline void setLocation(std::shared_ptr<Place> l) {setLocation(l.get());}
+         inline void setLocation(std::weak_ptr<Place> l) {location = l;}
 
          /*
             Adds an alias to the Thing, which is another name that the Thing can

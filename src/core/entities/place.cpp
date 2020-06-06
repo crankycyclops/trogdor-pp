@@ -44,7 +44,7 @@ namespace trogdor::entity {
          playersByName[alias].push_back(player.get());
       }
 
-      player->setLocation(this);
+      player->setLocation(getShared());
    }
 
    /****************************************************************************/
@@ -62,7 +62,7 @@ namespace trogdor::entity {
          creaturesByName[alias].push_back(creature.get());
       }
 
-      creature->setLocation(this);
+      creature->setLocation(getShared());
    }
 
    /****************************************************************************/
@@ -78,7 +78,7 @@ namespace trogdor::entity {
          objectsByName[alias].push_back(object.get());
       }
 
-      object->setLocation(this);
+      object->setLocation(getShared());
    }
 
    /****************************************************************************/
@@ -129,7 +129,7 @@ namespace trogdor::entity {
       beings.remove(player);
       things.remove(player);
 
-      player->setLocation(nullptr);
+      player->setLocation(std::weak_ptr<Place>());
    }
 
    /****************************************************************************/
@@ -155,7 +155,7 @@ namespace trogdor::entity {
       beings.remove(creature);
       things.remove(creature);
 
-      creature->setLocation(nullptr);
+      creature->setLocation(std::weak_ptr<Place>());
    }
 
    /****************************************************************************/
@@ -176,7 +176,7 @@ namespace trogdor::entity {
       objects.remove(object);
       things.remove(object);
 
-      object->setLocation(nullptr);
+      object->setLocation(std::weak_ptr<Place>());
    }
 
    /****************************************************************************/

@@ -16,7 +16,7 @@ namespace trogdor {
          return;
       }
 
-      else if (aggressor->getLocation() != defender->getLocation()) {
+      else if (aggressor->getLocation().lock() != defender->getLocation().lock()) {
          setExecutions(0);
          return;
       }

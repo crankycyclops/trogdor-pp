@@ -19,29 +19,32 @@ namespace trogdor {
          return;
       }
 
-      // make sure Creature isn't in some special non-Room Place with no
-      // connections
-      else if (ENTITY_ROOM != wanderer->getLocation()->getType()) {
-         return;
+      if (auto location = wanderer->getLocation().lock()) {
+
+         // make sure Creature isn't in some special non-Room Place with no
+         // connections
+         if (ENTITY_ROOM != location->getType()) {
+            return;
+         }
+
+         // creature considers moving or staying; which will he pick?
+         else if (probabilityDist(generator) > wanderer->getWanderLust()) {
+            return;
+         }
+
+         auto curLoc = std::static_pointer_cast<Room>(location);
+         unsigned int nConnections = curLoc->getNumConnections();
+
+         // don't do anything if Creature is stuck in a room with no exits
+         if (0 == nConnections) {
+            return;
+         }
+
+         // TODO: use AI to select destination more intelligently; currently random
+         // The whole rest of this function will change when we do...
+         std::uniform_int_distribution<int> connectionsDist(0, nConnections - 1);
+         wanderer->gotoLocation(curLoc->getConnectionByIndex(connectionsDist(generator))->getShared());
       }
-
-      // creature considers moving or staying; which will he pick?
-      else if (probabilityDist(generator) > wanderer->getWanderLust()) {
-         return;
-      }
-
-      Room *curLoc = static_cast<Room *>(wanderer->getLocation());
-      unsigned int nConnections = curLoc->getNumConnections();
-
-      // don't do anything if Creature is stuck in a room with no exits
-      if (0 == nConnections) {
-         return;
-      }
-
-      // TODO: use AI to select destination more intelligently; currently random
-      // The whole rest of this function will change when we do...
-      std::uniform_int_distribution<int> connectionsDist(0, nConnections - 1);
-      wanderer->gotoLocation(curLoc->getConnectionByIndex(connectionsDist(generator)));
 
       // if wander interval ever changes, we should make sure it's updated
       setInterval(wanderer->getWanderInterval());

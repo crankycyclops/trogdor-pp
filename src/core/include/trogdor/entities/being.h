@@ -575,7 +575,7 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         void gotoLocation(Place *location);
+         void gotoLocation(const std::shared_ptr<Place> &location);
 
          /*
             Allows a Being to take an object.  Calls insertIntoInventory() and

@@ -119,9 +119,7 @@ namespace trogdor::entity {
          return luaL_error(L, "not a Place!");
       }
 
-      Place *oldLocation = t->getLocation();
-
-      if (oldLocation) {
+      if (auto oldLocation = t->getLocation().lock()) {
          oldLocation->removeThing(t->getShared());
       }
 
