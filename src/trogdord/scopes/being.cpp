@@ -27,7 +27,7 @@ trogdor::entity::Entity *BeingController::getEntityPtr(
 	std::string entityName
 ) {
 
-	trogdor::entity::Entity *ePtr = game->getBeing(entityName);
+	trogdor::entity::Entity *ePtr = game->getBeing(entityName).get();
 
 	if (!ePtr) {
 		throw BeingNotFound();

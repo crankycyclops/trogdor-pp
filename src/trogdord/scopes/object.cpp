@@ -27,7 +27,7 @@ trogdor::entity::Entity *ObjectController::getEntityPtr(
 	std::string entityName
 ) {
 
-	trogdor::entity::Entity *ePtr = game->getObject(entityName);
+	trogdor::entity::Entity *ePtr = game->getObject(entityName).get();
 
 	if (!ePtr) {
 		throw ObjectNotFound();

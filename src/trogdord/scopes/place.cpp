@@ -27,7 +27,7 @@ trogdor::entity::Entity *PlaceController::getEntityPtr(
 	std::string entityName
 ) {
 
-	trogdor::entity::Entity *ePtr = game->getPlace(entityName);
+	trogdor::entity::Entity *ePtr = game->getPlace(entityName).get();
 
 	if (!ePtr) {
 		throw PlaceNotFound();

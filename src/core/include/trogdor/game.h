@@ -393,15 +393,17 @@ namespace trogdor {
                Name of Thing (std::string)
 
             Output:
-               Thing *
+               const shared_ptr<Entity> &
          */
-         inline Entity *getEntity(const std::string name) {
+         inline const std::shared_ptr<Entity> &getEntity(const std::string name) {
+
+            static std::shared_ptr<Entity> nullEntity(nullptr);
 
             if (entities.find(name) == entities.end()) {
-               return nullptr;
+               return nullEntity;
             }
 
-            return entities[name].get();
+            return entities[name];
          }
 
          /*
@@ -425,13 +427,15 @@ namespace trogdor {
             Output:
                Place *
          */
-         inline Place *getPlace(const std::string name) {
+         inline const std::shared_ptr<Place> &getPlace(const std::string name) {
+
+            static std::shared_ptr<Place> nullPlace(nullptr);
 
             if (places.find(name) == places.end()) {
-               return nullptr;
+               return nullPlace;
             }
 
-            return places[name].get();
+            return places[name];
          }
 
          /*
@@ -455,13 +459,15 @@ namespace trogdor {
             Output:
                Thing *
          */
-         inline Thing *getThing(const std::string name) {
+         inline const std::shared_ptr<Thing> &getThing(const std::string name) {
+
+            static std::shared_ptr<Thing> nullThing(nullptr);
 
             if (things.find(name) == things.end()) {
-               return nullptr;
+               return nullThing;
             }
 
-            return things[name].get();
+            return things[name];
          }
 
          /*
@@ -485,13 +491,15 @@ namespace trogdor {
             Output:
                Being *
          */
-         inline Being *getBeing(const std::string name) {
+         inline const std::shared_ptr<Being> &getBeing(const std::string name) {
+
+            static std::shared_ptr<Being> nullBeing(nullptr);
 
             if (beings.find(name) == beings.end()) {
-               return nullptr;
+               return nullBeing;
             }
 
-            return beings[name].get();
+            return beings[name];
          }
 
          /*
@@ -515,13 +523,15 @@ namespace trogdor {
             Output:
                Player *
          */
-         inline Player *getPlayer(const std::string name) {
+         inline const std::shared_ptr<Player> &getPlayer(const std::string name) {
+
+            static std::shared_ptr<Player> nullPlayer(nullptr);
 
             if (players.find(name) == players.end()) {
-               return nullptr;
+               return nullPlayer;
             }
 
-            return players[name].get();
+            return players[name];
          }
 
          /*
@@ -545,13 +555,15 @@ namespace trogdor {
             Output:
                Creature *
          */
-         inline Creature *getCreature(const std::string name) {
+         inline const std::shared_ptr<Creature> &getCreature(const std::string name) {
+
+            static std::shared_ptr<Creature> nullCreature(nullptr);
 
             if (creatures.find(name) == creatures.end()) {
-               return nullptr;
+               return nullCreature;
             }
 
-            return creatures[name].get();
+            return creatures[name];
          }
 
          /*
@@ -575,13 +587,15 @@ namespace trogdor {
             Output:
                Object *
          */
-         inline Object *getObject(const std::string name) {
+         inline const std::shared_ptr<Object> &getObject(const std::string name) {
+
+            static std::shared_ptr<Object> nullObject(nullptr);
 
             if (objects.find(name) == objects.end()) {
-               return nullptr;
+               return nullObject;
             }
 
-            return objects[name].get();
+            return objects[name];
          }
 
          /*
@@ -605,13 +619,15 @@ namespace trogdor {
             Output:
                Room *
          */
-         inline Room *getRoom(const std::string name) {
+         inline const std::shared_ptr<Room> &getRoom(const std::string name) {
+
+            static std::shared_ptr<Room> nullRoom(nullptr);
 
             if (rooms.find(name) == rooms.end()) {
-               return nullptr;
+               return nullRoom;
             }
 
-            return rooms[name].get();
+            return rooms[name];
          }
 
          /*

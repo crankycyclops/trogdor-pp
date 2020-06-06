@@ -27,7 +27,7 @@ trogdor::entity::Entity *RoomController::getEntityPtr(
 	std::string entityName
 ) {
 
-	trogdor::entity::Entity *ePtr = game->getRoom(entityName);
+	trogdor::entity::Entity *ePtr = game->getRoom(entityName).get();
 
 	if (!ePtr) {
 		throw RoomNotFound();

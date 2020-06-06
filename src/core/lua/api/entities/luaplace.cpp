@@ -87,7 +87,7 @@ namespace trogdor::entity {
       lua_getglobal(L, LuaGame::globalName);
       Game *g = LuaGame::checkGame(L, -1);
 
-      Place *p = g->getPlace(name);
+      Place *p = g->getPlace(name).get();
 
       if (p) {
          LuaState::pushEntity(L, p);
