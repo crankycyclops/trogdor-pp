@@ -49,10 +49,10 @@ namespace trogdor::entity {
 
       protected:
 
-         Being *owner;     // a Being might own the object
+         int weight;  // how much weight Object uses in a Being's inventory
+         int damage;  // how much damage Object does if it's a weapon
 
-         int weight;       // how much weight Object uses in a Being's inventory
-         int damage;       // how much damage Object does if it's a weapon
+         std::weak_ptr<Being> owner;  // a Being might own the object
 
       public:
 
@@ -69,16 +69,33 @@ namespace trogdor::entity {
          Object(const Object &o, std::string n);
 
          /*
-            Returns the owner of the Object (0 if there is no owner.)
+            Returns a smart pointer representing a raw Object pointer. Be careful
+            with this and only call it on Entities you know are managed by smart
+            pointers. If, for example, you call this method on entities that are
+            managed by Lua using new and delete, you're going to have a bad time.
 
             Input:
                (none)
 
             Output:
-               Being *
+               std::shared_ptr<Object>
          */
-         inline Being *getOwner() const {return owner;};
+         inline std::shared_ptr<Object> getShared() {
 
+            return std::dynamic_pointer_cast<Object>(Entity::getShared());
+         }
+
+         /*
+            Returns the owner of the Object (returns an invalid weak_ptr if
+            there is no owner.)
+
+            Input:
+               (none)
+
+            Output:
+               std::weak_ptr<Being>
+         */
+         inline std::weak_ptr<Being> getOwner() const {return owner;}
 
          /*
             Returns the Object's weight.
@@ -111,7 +128,7 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setOwner(Being *being) {owner = being;}
+         inline void setOwner(std::weak_ptr<Being> being) {owner = being;}
 
          /*
             Sets the Object's weight (how much space it uses in a Being's

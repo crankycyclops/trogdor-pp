@@ -16,7 +16,7 @@ namespace trogdor::entity {
 
       protected:
 
-         Place *location;                     // where the Thing is located
+         std::weak_ptr<Place> location;       // where the Thing is located
          std::vector<std::string>  aliases;   // list of aliases
 
          /*
@@ -59,6 +59,23 @@ namespace trogdor::entity {
          Thing(const Thing &t, std::string n);
 
          /*
+            Returns a smart pointer representing a raw Thing pointer. Be careful
+            with this and only call it on Entities you know are managed by smart
+            pointers. If, for example, you call this method on entities that are
+            managed by Lua using new and delete, you're going to have a bad time.
+
+            Input:
+               (none)
+
+            Output:
+               std::shared_ptr<Thing>
+         */
+         inline std::shared_ptr<Thing> getShared() {
+
+            return std::dynamic_pointer_cast<Thing>(Entity::getShared());
+         }
+
+         /*
             Returns the Thing's current location in the game.  If the Thing
             hasn't been placed anywhere, 0 will be returned.
 
@@ -66,9 +83,9 @@ namespace trogdor::entity {
                (none)
 
             Output:
-               Place *
+               std::weak_ptr<Place>
          */
-         inline Place *getLocation() const {return location;}
+         inline std::weak_ptr<Place> getLocation() const {return location;}
 
          /*
             Returns list of Thing's aliases.
@@ -90,8 +107,7 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setLocation(Place *l) {location = l;}
-         inline void setLocation(std::shared_ptr<Place> l) {setLocation(l.get());}
+         inline void setLocation(std::weak_ptr<Place> l) {location = l;}
 
          /*
             Adds an alias to the Thing, which is another name that the Thing can

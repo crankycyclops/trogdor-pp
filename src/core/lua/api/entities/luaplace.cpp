@@ -119,22 +119,20 @@ namespace trogdor::entity {
          return luaL_error(L, "not a Place!");
       }
 
-      Place *oldLocation = t->getLocation();
-
-      if (oldLocation) {
-         oldLocation->removeThing(t);
+      if (auto oldLocation = t->getLocation().lock()) {
+         oldLocation->removeThing(t->getShared());
       }
 
       if (ENTITY_OBJECT == t->getType()) {
 
-         Being *owner = static_cast<Object *>(t)->getOwner();
+         std::shared_ptr<Object> objShared = static_cast<Object *>(t)->getShared();
 
-         if (owner) {
-            owner->removeFromInventory(static_cast<Object *>(t));
+         if (std::shared_ptr<Being> owner = objShared->getOwner().lock()) {
+            owner->removeFromInventory(objShared);
          }
       }
 
-      p->insertThing(t);
+      p->insertThing(t->getShared());
       return 0;
    }
 
@@ -159,7 +157,7 @@ namespace trogdor::entity {
          return luaL_error(L, "not a Place!");
       }
 
-      p->removeThing(t);
+      p->removeThing(t->getShared());
       return 0;
    }
 }

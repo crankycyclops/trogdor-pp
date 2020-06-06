@@ -11,7 +11,7 @@ namespace trogdor::entity {
 
    Thing::Thing(Game *g, std::string n, std::unique_ptr<Trogout> o,
    std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e): Entity(g, n,
-   std::move(o), std::move(i), std::move(e)), location(nullptr) {
+   std::move(o), std::move(i), std::move(e)), location(std::weak_ptr<Place>()) {
 
       types.push_back(ENTITY_THING);
 
@@ -66,10 +66,10 @@ namespace trogdor::entity {
 
          // If we're adding the alias after the Thing is already at a location, we
          // need to re-insert it to update the Place's thingsByName map.
-         if (location != nullptr) {
-            Place *p = location; // removeThing sets location back to nullptr, so...
-            p->removeThing(this);
-            p->insertThing(this);
+         if (auto place = location.lock()) {
+            // removeThing sets location back to nullptr, so...
+            place->removeThing(getShared());
+            place->insertThing(getShared());
          }
       }
    }

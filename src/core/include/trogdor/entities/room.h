@@ -38,6 +38,23 @@ namespace trogdor::entity {
          Room(const Room &r, std::string n);
 
          /*
+            Returns a smart pointer representing a raw Room pointer. Be careful
+            with this and only call it on Entities you know are managed by smart
+            pointers. If, for example, you call this method on entities that are
+            managed by Lua using new and delete, you're going to have a bad time.
+
+            Input:
+               (none)
+
+            Output:
+               std::shared_ptr<Room>
+         */
+         inline std::shared_ptr<Room> getShared() {
+
+            return std::dynamic_pointer_cast<Room>(Entity::getShared());
+         }
+
+         /*
             Returns room connected by the specified direction.  Returns 0 if
             the connection does not exist.
 

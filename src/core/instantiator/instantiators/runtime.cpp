@@ -481,8 +481,8 @@ namespace trogdor {
       registerOperation(INSERT_INTO_INVENTORY, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         Object *object = game->getObject(operation->getChildren()[0]->getValue()).get();
-         Being *owner = game->getBeing(operation->getChildren()[1]->getValue()).get();
+         const std::shared_ptr<Object> &object = game->getObject(operation->getChildren()[0]->getValue());
+         const std::shared_ptr<Being> &owner = game->getBeing(operation->getChildren()[1]->getValue());
 
          owner->insertIntoInventory(object, false);
       });
@@ -492,8 +492,8 @@ namespace trogdor {
       registerOperation(INSERT_INTO_PLACE, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         Thing *thing = game->getThing(operation->getChildren()[0]->getValue()).get();
-         Room *room = game->getRoom(operation->getChildren()[1]->getValue()).get();
+         auto thing = game->getThing(operation->getChildren()[0]->getValue());
+         auto room = game->getRoom(operation->getChildren()[1]->getValue());
 
          room->insertThing(thing);
       });

@@ -128,37 +128,39 @@ namespace trogdor {
          object = command->getIndirectObject();
       }
 
-      if (object.length() == 0) {
-         player->getLocation()->observe(player, true, true);
-      }
+      if (auto location = player->getLocation().lock()) {
 
-      else {
-
-         ThingList items;
-         Place *location = player->getLocation();
-
-         // consider matching inventory items, if there are any
-         for (auto const &invObject: player->getInventoryObjectsByName(object)) {
-               items.push_front(invObject);
-         };
-
-         // also consider matching items in the room, if there are any
-         for (auto const &roomThing: location->getThingsByName(object)) {
-            items.push_front(roomThing);
-         };
-
-         if (0 == items.size()) {
-            player->out("display") << "There is no " << object << " here!" << std::endl;
-            return;
+         if (object.length() == 0) {
+            location->observe(player, true, true);
          }
 
-         try {
-            Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(items, player);
-            thing->observe(player, true, true);
-         }
+         else {
 
-         catch (const std::string &name) {
-            player->out("display") << "There is no " << name << " here!" << std::endl;
+            ThingList items;
+
+            // consider matching inventory items, if there are any
+            for (auto const &invObject: player->getInventoryObjectsByName(object)) {
+                  items.push_front(invObject);
+            };
+
+            // also consider matching items in the room, if there are any
+            for (auto const &roomThing: location->getThingsByName(object)) {
+               items.push_front(roomThing);
+            };
+
+            if (0 == items.size()) {
+               player->out("display") << "There is no " << object << " here!" << std::endl;
+               return;
+            }
+
+            try {
+               Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(items, player);
+               thing->observe(player, true, true);
+            }
+
+            catch (const std::string &name) {
+               player->out("display") << "There is no " << name << " here!" << std::endl;
+            }
          }
       }
    }
@@ -183,60 +185,62 @@ namespace trogdor {
 
       std::string thingName = command->getDirectObject();
 
-      if (thingName.length() == 0) {
-         player->getLocation()->observe(player, true, true);
-      }
+      if (auto location = player->getLocation().lock()) {
 
-      else {
-
-         ThingList items;
-         Place *location = player->getLocation();
-
-         // consider matching inventory items, if there are any
-         for (auto const &invObject: player->getInventoryObjectsByName(thingName)) {
-               items.push_front(invObject);
-         };
-
-         // also consider matching items in the room, if there are any
-         for (auto const &roomThing: location->getThingsByName(thingName)) {
-            items.push_front(roomThing);
-         };
-
-         if (0 == items.size()) {
-            player->out("display") << "There is no " << thingName << " here!" << std::endl;
-            return;
+         if (thingName.length() == 0) {
+            location->observe(player, true, true);
          }
 
-         try {
+         else {
 
-            Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(items, player);
-            std::string text = thing->getMeta("text");
+            ThingList items;
 
-            if (!game->event({
-               "beforeRead",
-               {player->getEventListener(), thing->getEventListener()},
-               {player, thing}
-            })) {
+            // consider matching inventory items, if there are any
+            for (auto const &invObject: player->getInventoryObjectsByName(thingName)) {
+               items.push_front(invObject);
+            };
+
+            // also consider matching items in the room, if there are any
+            for (auto const &roomThing: location->getThingsByName(thingName)) {
+               items.push_front(roomThing);
+            };
+
+            if (0 == items.size()) {
+               player->out("display") << "There is no " << thingName << " here!" << std::endl;
                return;
             }
 
-            if (text.length()) {
-               player->out("display") << text << std::endl;
+            try {
+
+               Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(items, player);
+               std::string text = thing->getMeta("text");
+
+               if (!game->event({
+                  "beforeRead",
+                  {player->getEventListener(), thing->getEventListener()},
+                  {player, thing}
+               })) {
+                  return;
+               }
+
+               if (text.length()) {
+                  player->out("display") << text << std::endl;
+               }
+
+               else {
+                  player->out("display") << "There's nothing to read." << std::endl;
+               }
+
+               game->event({
+                  "afterRead",
+                  {player->getEventListener(), thing->getEventListener()},
+                  {player, thing}
+               });
             }
 
-            else {
-               player->out("display") << "There's nothing to read." << std::endl;
+            catch (const std::string &name) {
+               player->out("display") << "There is no " << name << " here!" << std::endl;
             }
-
-            game->event({
-               "afterRead",
-               {player->getEventListener(), thing->getEventListener()},
-               {player, thing}
-            });
-         }
-
-         catch (const std::string &name) {
-            player->out("display") << "There is no " << name << " here!" << std::endl;
          }
       }
    }
@@ -259,66 +263,68 @@ namespace trogdor {
 
    void TakeAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
 
-      Place *location = player->getLocation();
-      auto roomItems = location->getThingsByName(command->getDirectObject());
+      if (auto location = player->getLocation().lock()) {
 
-      if (roomItems.begin() == roomItems.end()) {
-         player->out("display") << "There is no " << command->getDirectObject()
-            << " here!" << std::endl;
-         return;
-      }
+         auto roomItems = location->getThingsByName(command->getDirectObject());
 
-      try {
-
-         Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(roomItems, player);
-
-         if (ENTITY_OBJECT != thing->getType()) {
-            player->out("display") << "You can't take that!" << std::endl;
+         if (roomItems.begin() == roomItems.end()) {
+            player->out("display") << "There is no " << command->getDirectObject()
+               << " here!" << std::endl;
+            return;
          }
 
-         else {
+         try {
 
-            try {
+            Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(roomItems, player);
 
-               player->take(static_cast<Object *>(thing));
-
-               std::string message = thing->getMessage("take");
-               if (message.length() > 0) {
-                  player->out("display") << message << std::endl;
-               }
-
-               else {
-                  player->out("display") << "You take the " << thing->getName()
-                     << "." << std::endl;
-               }
+            if (ENTITY_OBJECT != thing->getType()) {
+               player->out("display") << "You can't take that!" << std::endl;
             }
 
-            catch (const entity::BeingException &e) {
+            else {
 
-               // TODO: consider custom messages
-               switch (e.getErrorCode()) {
+               try {
 
-                  case entity::BeingException::TAKE_TOO_HEAVY:
-                     player->out("display") << command->getDirectObject()
-                        << " is too heavy.  Try dropping something first."
-                        << std::endl;
-                     break;
+                  player->take(static_cast<Object *>(thing)->getShared());
 
-                  case entity::BeingException::TAKE_UNTAKEABLE:
-                     player->out("display") << "You can't take that!" << std::endl;
-                     break;
+                  std::string message = thing->getMessage("take");
+                  if (message.length() > 0) {
+                     player->out("display") << message << std::endl;
+                  }
 
-                  default:
-                     player->err() << "Unknown error taking object.  "
-                        << "This is a bug." << std::endl;
-                     break;
+                  else {
+                     player->out("display") << "You take the " << thing->getName()
+                        << "." << std::endl;
+                  }
+               }
+
+               catch (const entity::BeingException &e) {
+
+                  // TODO: consider custom messages
+                  switch (e.getErrorCode()) {
+
+                     case entity::BeingException::TAKE_TOO_HEAVY:
+                        player->out("display") << command->getDirectObject()
+                           << " is too heavy.  Try dropping something first."
+                           << std::endl;
+                        break;
+
+                     case entity::BeingException::TAKE_UNTAKEABLE:
+                        player->out("display") << "You can't take that!" << std::endl;
+                        break;
+
+                     default:
+                        player->err() << "Unknown error taking object.  "
+                           << "This is a bug." << std::endl;
+                        break;
+                  }
                }
             }
          }
-      }
 
-      catch (const std::string &name) {
-         player->out("display") << "There is no " << name << " here!" << std::endl;
+         catch (const std::string &name) {
+            player->out("display") << "There is no " << name << " here!" << std::endl;
+         }
       }
    }
 
@@ -355,7 +361,7 @@ namespace trogdor {
 
          try {
 
-            player->drop(object);
+            player->drop(object->getShared());
 
             std::string message = object->getMessage("drop");
             if (message.length() > 0) {
@@ -422,45 +428,48 @@ namespace trogdor {
       auto &vocab = command->getVocabulary();
       std::string direction = "";
 
-      // direction is implied in the verb
-      if (vocab.isDirection(command->getVerb()) || vocab.isDirectionSynonym(command->getVerb())) {
-         direction = vocab.getDirection(command->getVerb());
+      if (auto location = player->getLocation().lock()) {
+
+         // direction is implied in the verb
+         if (vocab.isDirection(command->getVerb()) || vocab.isDirectionSynonym(command->getVerb())) {
+            direction = vocab.getDirection(command->getVerb());
+         }
+
+         // direction was supplied as the direct or indirect object of another
+         // verb like "move" or "go"
+         if (0 == direction.length()) {
+            direction = vocab.getDirection(command->getDirectObject().length() > 0 ?
+               command->getDirectObject() : command->getIndirectObject());
+         }
+
+         // only Rooms have connections to eachother
+         if (ENTITY_ROOM != location->getType()) {
+            player->out("display") << "You can't go that way." << std::endl;
+            // TODO: fire can't go that way event?
+            return;
+         }
+
+         auto next = (std::static_pointer_cast<Room>(location))->getConnection(direction);
+
+         if (nullptr == next) {
+            player->out("display") << "You can't go that way." << std::endl;
+            // TODO: fire can't go that way event?
+            return;
+         }
+
+         std::string enterMessage = next->getMessage("enter" + direction);
+         std::string goMessage = location->getMessage("go" + direction);
+
+         if (goMessage.length() > 0) {
+            player->out("display") << goMessage << std::endl << std::endl;
+         }
+
+         if (enterMessage.length() > 0) {
+            player->out("display") << enterMessage << std::endl << std::endl;
+         }
+
+         player->gotoLocation(next->getShared());
       }
-
-      // direction was supplied as the direct or indirect object of another
-      // verb like "move" or "go"
-      if (0 == direction.length()) {
-         direction = vocab.getDirection(command->getDirectObject().length() > 0 ?
-            command->getDirectObject() : command->getIndirectObject());
-      }
-
-      // only Rooms have connections to eachother
-      if (ENTITY_ROOM != player->getLocation()->getType()) {
-         player->out("display") << "You can't go that way." << std::endl;
-         // TODO: fire can't go that way event?
-         return;
-      }
-
-      Room *next = (dynamic_cast<Room *>(player->getLocation()))->getConnection(direction);
-
-      if (nullptr == next) {
-         player->out("display") << "You can't go that way." << std::endl;
-         // TODO: fire can't go that way event?
-         return;
-      }
-
-      std::string enterMessage = next->getMessage("enter" + direction);
-      std::string goMessage = player->getLocation()->getMessage("go" + direction);
-
-      if (goMessage.length() > 0) {
-         player->out("display") << goMessage << std::endl << std::endl;
-      }
-
-      if (enterMessage.length() > 0) {
-         player->out("display") << enterMessage << std::endl << std::endl;
-      }
-
-      player->gotoLocation(next);
    }
 
 /******************************************************************************/
@@ -519,54 +528,56 @@ namespace trogdor {
          return;
       }
 
-      Place *location = player->getLocation();
-      auto beings = location->getBeingsByName(command->getDirectObject());
+      if (auto location = player->getLocation().lock()) {
 
-      if (beings.begin() == beings.end()) {
-         player->out("display") << "There is no " << command->getDirectObject()
-            << " here!" << std::endl;
-         return;
-      }
+         auto beings = location->getBeingsByName(command->getDirectObject());
 
-      try {
+         if (beings.begin() == beings.end()) {
+            player->out("display") << "There is no " << command->getDirectObject()
+               << " here!" << std::endl;
+            return;
+         }
 
-         std::string weaponName = command->getIndirectObject();
-         Object *weapon = 0;
+         try {
 
-         Being *defender = Entity::clarifyEntity<BeingList, Being *>(beings, player);
+            std::string weaponName = command->getIndirectObject();
+            Object *weapon = 0;
 
-         if (weaponName.length() > 0) {
+            Being *defender = Entity::clarifyEntity<BeingList, Being *>(beings, player);
 
-            auto items = player->getInventoryObjectsByName(weaponName);
+            if (weaponName.length() > 0) {
 
-            if (items.begin() == items.end()) {
-               player->out("display") << "You don't have a " << weaponName << "!" << std::endl;
-               return;
-            }
+               auto items = player->getInventoryObjectsByName(weaponName);
 
-            try {
+               if (items.begin() == items.end()) {
+                  player->out("display") << "You don't have a " << weaponName << "!" << std::endl;
+                  return;
+               }
 
-               weapon = Entity::clarifyEntity<ObjectList, Object *>(items, player);
+               try {
 
-               // TODO: this check should be made inside Being (we'd have an
-               // exception to catch)
-               if (!weapon->isTagSet(Object::WeaponTag)) {
-                  player->out("display") << "The " << weaponName << " isn't a weapon!" << std::endl;
+                  weapon = Entity::clarifyEntity<ObjectList, Object *>(items, player);
+
+                  // TODO: this check should be made inside Being (we'd have an
+                  // exception to catch)
+                  if (!weapon->isTagSet(Object::WeaponTag)) {
+                     player->out("display") << "The " << weaponName << " isn't a weapon!" << std::endl;
+                     return;
+                  }
+               }
+
+               catch (const std::string &name) {
+                  player->out("display") << "You don't have a " << weaponName << "!" << std::endl;
                   return;
                }
             }
 
-            catch (const std::string &name) {
-               player->out("display") << "You don't have a " << weaponName << "!" << std::endl;
-               return;
-            }
+            player->attack(defender, weapon);
          }
 
-         player->attack(defender, weapon);
-      }
-
-      catch (const std::string &name) {
-         player->out("display") << "There is no " << name << " here!" << std::endl;
+         catch (const std::string &name) {
+            player->out("display") << "There is no " << name << " here!" << std::endl;
+         }
       }
    }
 }

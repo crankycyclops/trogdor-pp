@@ -215,7 +215,7 @@ namespace trogdor {
       resourceMutex.unlock();
 
       // Player must see an initial description of where they are
-      player->getLocation()->observe(player, false);
+      player->getLocation().lock()->observe(player, false);
 
       if (callbacks.end() != callbacks.find("insertPlayer")) {
          for (const auto &callback: callbacks["insertPlayer"]) {
@@ -254,8 +254,8 @@ namespace trogdor {
          players[name]->out("removed") << std::endl;
 
          // if the Player is located in a Place, make sure to remove it
-         if (players[name]->getLocation()) {
-            players[name]->getLocation()->removeThing(players[name]);
+         if (auto location = players[name]->getLocation().lock()) {
+            location->removeThing(players[name]);
          }
 
          if (lockOnResourceMutex) {

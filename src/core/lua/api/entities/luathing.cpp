@@ -187,7 +187,9 @@ namespace trogdor::entity {
       }
 
       // pushEntity will take care of case where location is null
-      LuaState::pushEntity(L, t->getLocation());
+      auto location = t->getLocation().lock();
+
+      LuaState::pushEntity(L, location ? location.get() : nullptr);
       return 1;
    }
 
@@ -218,15 +220,14 @@ namespace trogdor::entity {
          // it from the owner's inventory first
          if (ENTITY_OBJECT == t->getType()) {
 
-            Object *objRef = dynamic_cast<Object *>(t);
-            Being *owner = objRef->getOwner();
+            std::shared_ptr<Object> objRef = dynamic_cast<Object *>(t)->getShared();
 
-            if (owner) {
+            if (std::shared_ptr<Being> owner = objRef->getOwner().lock()) {
                owner->removeFromInventory(objRef);
             }
          }
 
-         t->setLocation(p);
+         t->setLocation(p->getShared());
          return 0;
       }
 
@@ -253,10 +254,8 @@ namespace trogdor::entity {
 
       try {
 
-         Place *p = t->getLocation();
-
-         if (p) {
-            p->removeThing(t);
+         if (auto place = t->getLocation().lock()) {
+            place->removeThing(t->getShared());
          }
 
          return 0;

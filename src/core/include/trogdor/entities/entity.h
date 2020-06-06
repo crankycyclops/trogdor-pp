@@ -55,7 +55,7 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   class Entity {
+   class Entity: public std::enable_shared_from_this<Entity> {
 
       private:
 
@@ -230,6 +230,20 @@ namespace trogdor::entity {
                Name of copy (std::string)
          */
          Entity(const Entity &e, std::string n);
+
+         /*
+            Returns a smart pointer representing a raw Entity pointer. Be careful
+            with this and only call it on Entities you know are managed by smart
+            pointers. If, for example, you call this method on entities that are
+            managed by Lua using new and delete, you're going to have a bad time.
+
+            Input:
+               (none)
+
+            Output:
+               std::shared_ptr<Entity>
+         */
+         inline std::shared_ptr<Entity> getShared() {return shared_from_this();}
 
          /*
             Entity Destructor.
@@ -694,13 +708,26 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   // used by std::set to order Entities (referenced by pointers) alphabetically
+   // used to order sets of Entities or Entity pointers alphabetically
    class EntityAlphaComparator {
 
       public:
 
+         // Compares two Entity objects
+         inline bool operator()(const Entity &lhs, const Entity &rhs) {
+            return lhs.getName() < rhs.getName();
+         }
+
+         // Compares two raw Entity pointers
          inline bool operator()(const Entity* const &lhs, const Entity* const &rhs) {
-            return lhs->getName() < rhs->getName();
+            return (*this)(*lhs, *rhs);
+         }
+
+         // Compares two Entity smart pointers
+         inline bool operator()(
+            const std::shared_ptr<Entity> &lhs,
+            const std::shared_ptr<Entity> &rhs) {
+            return (*this)(*lhs, *rhs);
          }
    };
 
@@ -713,14 +740,6 @@ namespace trogdor::entity {
    typedef std::list<Player *>   PlayerList;
    typedef std::list<Creature *> CreatureList;
    typedef std::list<Object *>   ObjectList;
-
-   typedef std::set<Place *, EntityAlphaComparator>    PlaceSet;
-   typedef std::set<Room *, EntityAlphaComparator>     RoomSet;
-   typedef std::set<Thing *, EntityAlphaComparator>    ThingSet;
-   typedef std::set<Being *, EntityAlphaComparator>    BeingSet;
-   typedef std::set<Player *, EntityAlphaComparator>   PlayerSet;
-   typedef std::set<Creature *, EntityAlphaComparator> CreatureSet;
-   typedef std::set<Object *, EntityAlphaComparator>   ObjectSet;
 
    typedef std::unordered_map<std::string, ThingList>    ThingsByNameMap;
    typedef std::unordered_map<std::string, BeingList>    BeingsByNameMap;

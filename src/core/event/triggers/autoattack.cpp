@@ -22,7 +22,7 @@ namespace trogdor::event {
                creature->getAutoAttackInterval(),
                creature->getAutoAttackRepeat() ? -1 : 1,
                creature->getAutoAttackInterval(),
-               creature,
+               creature.get(),
                being
             );
 

@@ -29,209 +29,179 @@ namespace trogdor::entity {
 
    }
 
-   /***************************************************************************/
+   /****************************************************************************/
 
-   void Place::insertThingByName(Thing *thing) {
+   void Place::insertPlayer(const std::shared_ptr<Player> &player) {
 
-      std::vector<std::string> aliases = thing->getAliases();
+      things.insert(things.end(), player);
+      beings.insert(beings.end(), player);
+      players.insert(players.end(), player);
 
-      for (int i = aliases.size() - 1; i >= 0; i--) {
-         indexThingName(aliases[i], thing);
+      // Index by alias
+      for (const auto &alias: player->getAliases()) {
+         thingsByName[alias].push_back(player.get());
+         beingsByName[alias].push_back(player.get());
+         playersByName[alias].push_back(player.get());
       }
+
+      player->setLocation(getShared());
    }
 
    /****************************************************************************/
 
-   void Place::insertThingByName(Being *being) {
+   void Place::insertCreature(const std::shared_ptr<Creature> &creature) {
 
-      std::vector<std::string> aliases = being->getAliases();
+      things.insert(things.end(), creature);
+      beings.insert(beings.end(), creature);
+      creatures.insert(creatures.end(), creature);
 
-      for (int i = aliases.size() - 1; i >= 0; i--) {
-         indexBeingName(aliases[i], being);
+      // Index by alias
+      for (const auto &alias: creature->getAliases()) {
+         thingsByName[alias].push_back(creature.get());
+         beingsByName[alias].push_back(creature.get());
+         creaturesByName[alias].push_back(creature.get());
       }
+
+      creature->setLocation(getShared());
    }
 
    /****************************************************************************/
 
-   void Place::insertThingByName(Player *player) {
+   void Place::insertObject(const std::shared_ptr<Object> &object) {
 
-      std::vector<std::string> aliases = player->getAliases();
+      things.insert(things.end(), object);
+      objects.insert(objects.end(), object);
 
-      for (int i = aliases.size() - 1; i >= 0; i--) {
-
-         if (playersByName.find(aliases[i]) == playersByName.end()) {
-            PlayerList newList;
-            playersByName[aliases[i]] = newList;
-         }
-
-         playersByName.find(aliases[i])->second.push_back(player);
+      // Index by alias
+      for (const auto &alias: object->getAliases()) {
+         thingsByName[alias].push_back(object.get());
+         objectsByName[alias].push_back(object.get());
       }
+
+      object->setLocation(getShared());
    }
 
    /****************************************************************************/
 
-   void Place::insertThingByName(Creature *creature) {
-
-      std::vector<std::string> aliases = creature->getAliases();
-
-      for (int i = aliases.size() - 1; i >= 0; i--) {
-
-         if (creaturesByName.find(aliases[i]) == creaturesByName.end()) {
-            CreatureList newList;
-            creaturesByName[aliases[i]] = newList;
-         }
-
-         creaturesByName.find(aliases[i])->second.push_back(creature);
-      }
-   }
-
-   /****************************************************************************/
-
-   void Place::insertThingByName(Object *object) {
-
-      std::vector<std::string> aliases = object->getAliases();
-
-      for (int i = aliases.size() - 1; i >= 0; i--) {
-
-         if (objectsByName.find(aliases[i]) == objectsByName.end()) {
-            ObjectList newList;
-            objectsByName[aliases[i]] = newList;
-         }
-
-         objectsByName.find(aliases[i])->second.push_back(object);
-      }
-   }
-
-   /****************************************************************************/
-
-   void Place::insertThing(Thing *thing) {
+   void Place::insertThing(const std::shared_ptr<Thing> &thing) {
 
       switch (thing->getType()) {
 
          case ENTITY_PLAYER:
-
-            beings.insert(beings.end(), static_cast<Being *>(thing));
-            players.insert(players.end(), static_cast<Player *>(thing));
-            insertThingByName(static_cast<Being *>(thing));
-            insertThingByName(static_cast<Player *>(thing));
+            insertPlayer(std::static_pointer_cast<Player>(thing));
             break;
 
          case ENTITY_CREATURE:
-
-            beings.insert(beings.end(), static_cast<Being *>(thing));
-            creatures.insert(creatures.end(), static_cast<Creature *>(thing));
-            insertThingByName(static_cast<Being *>(thing));
-            insertThingByName(static_cast<Creature *>(thing));
+            insertCreature(std::static_pointer_cast<Creature>(thing));
             break;
 
          case ENTITY_OBJECT:
-
-            objects.insert(objects.end(), static_cast<Object *>(thing));
-            insertThingByName(static_cast<Object *>(thing));
+            insertObject(std::static_pointer_cast<Object>(thing));
             break;
 
          default:
-
             throw UndefinedException(
                std::string("Place::insertThing(): attempting to insert unsupported type '")
                + thing->getTypeName() + "'");
       }
-
-      things.insert(things.end(), thing);
-      insertThingByName(thing);
-
-      // Things require a reference to the containing Place
-      thing->setLocation(this);
    }
 
    /****************************************************************************/
 
-   void Place::removeThingByName(Thing *thing) {
+   void Place::removePlayer(const std::shared_ptr<Player> &player) {
 
-      std::vector<std::string> aliases = thing->getAliases();
+      for (const auto &alias: player->getAliases()) {
 
-      for (unsigned i = 0; i < aliases.size(); i++) {
-
-         switch (thing->getType()) {
-
-            case ENTITY_PLAYER:
-
-               if (beingsByName.find(aliases[i]) != beingsByName.end()) {
-                  beingsByName.find(aliases[i])->second.remove(static_cast<Being *>(thing));
-               }
-
-               if (playersByName.find(aliases[i]) != playersByName.end()) {
-                  playersByName.find(aliases[i])->second.remove(static_cast<Player *>(thing));
-               }
-
-               break;
-
-            case ENTITY_CREATURE:
-
-               if (beingsByName.find(aliases[i]) != beingsByName.end()) {
-                  beingsByName.find(aliases[i])->second.remove(static_cast<Being *>(thing));
-               }
-
-               if (creaturesByName.find(aliases[i]) != creaturesByName.end()) {
-                  creaturesByName.find(aliases[i])->second.remove(static_cast<Creature *>(thing));
-               }
-
-               break;
-
-            case ENTITY_OBJECT:
-
-               if (objectsByName.find(aliases[i]) != objectsByName.end()) {
-                  objectsByName.find(aliases[i])->second.remove(static_cast<Object *>(thing));
-               }
-
-               break;
-
-            default:
-               throw UndefinedException(
-                  std::string("RemoveThingByName called on unsupported Entity type '")
-                  + thing->getTypeName() + "'. This is a bug.");
+         if (playersByName.find(alias) != playersByName.end()) {
+            playersByName.find(alias)->second.remove(player.get());
          }
 
-         if (thingsByName.find(aliases[i]) != thingsByName.end()) {
-            thingsByName.find(aliases[i])->second.remove(thing);
+         if (beingsByName.find(alias) != beingsByName.end()) {
+            beingsByName.find(alias)->second.remove(player.get());
+         }
+
+         if (thingsByName.find(alias) != thingsByName.end()) {
+            thingsByName.find(alias)->second.remove(player.get());
          }
       }
+
+      players.remove(player);
+      beings.remove(player);
+      things.remove(player);
+
+      player->setLocation(std::weak_ptr<Place>());
    }
 
    /****************************************************************************/
 
-   void Place::removeThing(Thing *thing) {
+   void Place::removeCreature(const std::shared_ptr<Creature> &creature) {
+
+      for (const auto &alias: creature->getAliases()) {
+
+         if (creaturesByName.find(alias) != creaturesByName.end()) {
+            creaturesByName.find(alias)->second.remove(creature.get());
+         }
+
+         if (beingsByName.find(alias) != beingsByName.end()) {
+            beingsByName.find(alias)->second.remove(creature.get());
+         }
+
+         if (thingsByName.find(alias) != thingsByName.end()) {
+            thingsByName.find(alias)->second.remove(creature.get());
+         }
+      }
+
+      creatures.remove(creature);
+      beings.remove(creature);
+      things.remove(creature);
+
+      creature->setLocation(std::weak_ptr<Place>());
+   }
+
+   /****************************************************************************/
+
+   void Place::removeObject(const std::shared_ptr<Object> &object) {
+
+      for (const auto &alias: object->getAliases()) {
+
+         if (objectsByName.find(alias) != objectsByName.end()) {
+            objectsByName.find(alias)->second.remove(object.get());
+         }
+
+         if (thingsByName.find(alias) != thingsByName.end()) {
+            thingsByName.find(alias)->second.remove(object.get());
+         }
+      }
+
+      objects.remove(object);
+      things.remove(object);
+
+      object->setLocation(std::weak_ptr<Place>());
+   }
+
+   /****************************************************************************/
+
+   void Place::removeThing(const std::shared_ptr<Thing> &thing) {
 
       switch (thing->getType()) {
 
          case ENTITY_PLAYER:
-
-            beings.remove(static_cast<Being *>(thing));
-            players.remove(static_cast<Player *>(thing));
+            removePlayer(std::static_pointer_cast<Player>(thing));
             break;
 
          case ENTITY_CREATURE:
-
-            beings.remove(static_cast<Being *>(thing));
-            creatures.remove(static_cast<Creature *>(thing));
+            removeCreature(std::static_pointer_cast<Creature>(thing));
             break;
 
          case ENTITY_OBJECT:
-
-            objects.remove(static_cast<Object *>(thing));
+            removeObject(std::static_pointer_cast<Object>(thing));
             break;
 
          default:
-
             throw UndefinedException(
             std::string("Place::removeThing(): attempting to remove unsupported type '")
                + thing->getTypeName() + "'");
       }
-
-      things.remove(thing);
-      removeThingByName(thing);
-
-      thing->setLocation(0);
    }
 
    /****************************************************************************/
@@ -244,8 +214,8 @@ namespace trogdor::entity {
       observer->out("display") << getTitle() << std::endl << std::endl;
       Entity::display(observer, displayFull);
 
-      for_each(things.begin(), things.end(), [&](Thing *&thing) {
-         if (observer != static_cast<Being *>(thing)) { // dirty, but it works
+      for_each(things.begin(), things.end(), [&](const std::shared_ptr<Thing> &thing) {
+         if (observer != static_cast<Being *>(thing.get())) { // dirty, but it works
             observer->out("display") << std::endl;
             thing->glance(observer);
          }
