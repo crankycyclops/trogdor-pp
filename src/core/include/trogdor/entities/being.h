@@ -66,19 +66,22 @@ namespace trogdor::entity {
             int  lives;
          } respawnSettings;
 
-         typedef std::unordered_map<std::string, int> AttributesMap;
-
          struct {
-            AttributesMap values;
+            std::unordered_map<std::string, int> values;
             int initialTotal;   // total attributes that the Being started with
          } attributes;
 
          struct {
+
             int weight;         // how much weight inventory can hold
             int currentWeight;  // how much weight is currently used
             unsigned count;     // number of objects in the inventory
-            ObjectSet objects;
-            ObjectsByNameMap objectsByName;
+
+            // Inventory items
+            std::set<Object *, EntityAlphaComparator> objects;
+
+            // Inventory items indexed by alias
+            std::unordered_map<std::string, std::list<Object *>> objectsByName;
          } inventory;
 
          /*
@@ -499,9 +502,8 @@ namespace trogdor::entity {
 
             attributes.initialTotal = 0;
 
-            for (AttributesMap::iterator i = attributes.values.begin();
-            i != attributes.values.end(); i++) {
-               attributes.initialTotal += i->second;
+            for (const auto &attribute: attributes.values) {
+               attributes.initialTotal += attribute.second;
             }
          }
 
