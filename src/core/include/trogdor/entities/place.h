@@ -26,29 +26,7 @@ namespace trogdor::entity {
 
       private:
 
-         /*
-            Processes the insertion of indexes by alias.
-
-            Input:
-               Thing pointer
-
-            Output:
-               (none)
-         */
-         // TODO: try to templatize these?
-         void insertThingByName(Thing *thing);
-         void insertThingByName(Being *thing);
-         void insertThingByName(Player *thing);
-         void insertThingByName(Creature *thing);
-         void insertThingByName(Object *thing);
-         inline void insertThingByName(std::shared_ptr<Thing> thing) {insertThingByName(thing.get());}
-         inline void insertThingByName(std::shared_ptr<Being> being) {insertThingByName(being.get());}
-         inline void insertThingByName(std::shared_ptr<Player> player) {insertThingByName(player.get());}
-         inline void insertThingByName(std::shared_ptr<Creature> creature) {insertThingByName(creature.get());}
-         inline void insertThingByName(std::shared_ptr<Object> object) {insertThingByName(object.get());}
-
          void removeThingByName(Thing *thing);
-         inline void removeThingByName(std::shared_ptr<Thing> thing) {removeThingByName(thing.get());}
 
       protected:
 
@@ -78,58 +56,6 @@ namespace trogdor::entity {
                (none)
          */
          virtual void display(Being *observer, bool displayFull = false);
-
-         /*
-            Indexes a Thing's alias so that it can be referenced by
-            name.
-
-            Input:
-               Alias (std::string)
-               Thing to be indexed (Thing *)
-
-            Output:
-               (none)
-         */
-         inline void indexThingName(std::string alias, Thing *thing) {
-
-            if (thingsByName.find(alias) == thingsByName.end()) {
-               ThingList newList;
-               thingsByName[alias] = newList;
-            }
-
-            thingsByName.find(alias)->second.push_back(thing);
-         }
-
-         inline void indexThingName(std::string alias, std::shared_ptr<Thing> thing) {
-
-            indexThingName(alias, thing.get());
-         }
-
-         /*
-            Indexes a Being's alias so that it can be referenced by
-            name.
-
-            Input:
-               Alias (string)
-               Being to be indexed (Being *)
-
-            Output:
-               (none)
-         */
-         inline void indexBeingName(std::string alias, Being *being) {
-
-            if (beingsByName.find(alias) == beingsByName.end()) {
-               BeingList newList;
-               beingsByName[alias] = newList;
-            }
-
-            beingsByName.find(alias)->second.push_back(being);
-         }
-
-         inline void indexBeingName(std::string alias, std::shared_ptr<Being> being) {
-
-            indexBeingName(alias, being.get());
-         }
 
       public:
 
@@ -165,8 +91,42 @@ namespace trogdor::entity {
          }
 
          /*
-            Inserts a Thing that resides inside the Place.  An example would
-            be an Object inside a Room.
+            Inserts a Player that resides inside the Place.
+
+            Input:
+               Player pointer
+
+            Output:
+               (none)
+         */
+         void insertPlayer(Player *thing);
+
+         /*
+            Inserts a Creature that resides inside the Place.
+
+            Input:
+               Creature pointer
+
+            Output:
+               (none)
+         */
+         void insertCreature(Creature *thing);
+
+         /*
+            Inserts an Object that's contained inside the Place. This Object
+            should NOT be in a Being's inventory.
+
+            Input:
+               Object pointer
+
+            Output:
+               (none)
+         */
+         void insertObject(Object *thing);
+
+         /*
+            Inserts any Thing that resides/is contained inside the Place (calls
+            one of insertPlayer, insertCreature, or insertObject.)
 
             Input:
                Pointer to Thing

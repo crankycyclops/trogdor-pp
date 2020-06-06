@@ -29,77 +29,56 @@ namespace trogdor::entity {
 
    }
 
-   /***************************************************************************/
+   /****************************************************************************/
 
-   void Place::insertThingByName(Thing *thing) {
+   void Place::insertPlayer(Player *player) {
 
-      std::vector<std::string> aliases = thing->getAliases();
+      things.insert(things.end(), player);
+      beings.insert(beings.end(), player);
+      players.insert(players.end(), player);
 
-      for (int i = aliases.size() - 1; i >= 0; i--) {
-         indexThingName(aliases[i], thing);
+      // Index by alias
+      for (const auto &alias: player->getAliases()) {
+         thingsByName[alias].push_back(player);
+         beingsByName[alias].push_back(player);
+         playersByName[alias].push_back(player);
       }
+
+      player->setLocation(this);
    }
 
    /****************************************************************************/
 
-   void Place::insertThingByName(Being *being) {
+   void Place::insertCreature(Creature *creature) {
 
-      std::vector<std::string> aliases = being->getAliases();
+      things.insert(things.end(), creature);
+      beings.insert(beings.end(), creature);
+      creatures.insert(creatures.end(), creature);
 
-      for (int i = aliases.size() - 1; i >= 0; i--) {
-         indexBeingName(aliases[i], being);
+      // Index by alias
+      for (const auto &alias: creature->getAliases()) {
+         thingsByName[alias].push_back(creature);
+         beingsByName[alias].push_back(creature);
+         creaturesByName[alias].push_back(creature);
       }
+
+      creature->setLocation(this);
    }
 
    /****************************************************************************/
 
-   void Place::insertThingByName(Player *player) {
+   void Place::insertObject(Object *object) {
 
-      std::vector<std::string> aliases = player->getAliases();
+      things.insert(things.end(), object);
+      objects.insert(objects.end(), object);
 
-      for (int i = aliases.size() - 1; i >= 0; i--) {
-
-         if (playersByName.find(aliases[i]) == playersByName.end()) {
-            PlayerList newList;
-            playersByName[aliases[i]] = newList;
-         }
-
-         playersByName.find(aliases[i])->second.push_back(player);
+      // Index by alias
+      for (const auto &alias: object->getAliases()) {
+         thingsByName[alias].push_back(object);
+         objectsByName[alias].push_back(object);
       }
-   }
 
-   /****************************************************************************/
-
-   void Place::insertThingByName(Creature *creature) {
-
-      std::vector<std::string> aliases = creature->getAliases();
-
-      for (int i = aliases.size() - 1; i >= 0; i--) {
-
-         if (creaturesByName.find(aliases[i]) == creaturesByName.end()) {
-            CreatureList newList;
-            creaturesByName[aliases[i]] = newList;
-         }
-
-         creaturesByName.find(aliases[i])->second.push_back(creature);
-      }
-   }
-
-   /****************************************************************************/
-
-   void Place::insertThingByName(Object *object) {
-
-      std::vector<std::string> aliases = object->getAliases();
-
-      for (int i = aliases.size() - 1; i >= 0; i--) {
-
-         if (objectsByName.find(aliases[i]) == objectsByName.end()) {
-            ObjectList newList;
-            objectsByName[aliases[i]] = newList;
-         }
-
-         objectsByName.find(aliases[i])->second.push_back(object);
-      }
+      object->setLocation(this);
    }
 
    /****************************************************************************/
@@ -109,25 +88,15 @@ namespace trogdor::entity {
       switch (thing->getType()) {
 
          case ENTITY_PLAYER:
-
-            beings.insert(beings.end(), static_cast<Being *>(thing));
-            players.insert(players.end(), static_cast<Player *>(thing));
-            insertThingByName(static_cast<Being *>(thing));
-            insertThingByName(static_cast<Player *>(thing));
+            insertPlayer(static_cast<Player *>(thing));
             break;
 
          case ENTITY_CREATURE:
-
-            beings.insert(beings.end(), static_cast<Being *>(thing));
-            creatures.insert(creatures.end(), static_cast<Creature *>(thing));
-            insertThingByName(static_cast<Being *>(thing));
-            insertThingByName(static_cast<Creature *>(thing));
+            insertCreature(static_cast<Creature *>(thing));
             break;
 
          case ENTITY_OBJECT:
-
-            objects.insert(objects.end(), static_cast<Object *>(thing));
-            insertThingByName(static_cast<Object *>(thing));
+            insertObject(static_cast<Object *>(thing));
             break;
 
          default:
@@ -136,12 +105,6 @@ namespace trogdor::entity {
                std::string("Place::insertThing(): attempting to insert unsupported type '")
                + thing->getTypeName() + "'");
       }
-
-      things.insert(things.end(), thing);
-      insertThingByName(thing);
-
-      // Things require a reference to the containing Place
-      thing->setLocation(this);
    }
 
    /****************************************************************************/
