@@ -694,13 +694,26 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   // used by std::set to order Entities (referenced by pointers) alphabetically
+   // used to order sets of Entities or Entity pointers alphabetically
    class EntityAlphaComparator {
 
       public:
 
+         // Compares two Entity objects
+         inline bool operator()(const Entity &lhs, const Entity &rhs) {
+            return lhs.getName() < rhs.getName();
+         }
+
+         // Compares two raw Entity pointers
          inline bool operator()(const Entity* const &lhs, const Entity* const &rhs) {
-            return lhs->getName() < rhs->getName();
+            return (*this)(*lhs, *rhs);
+         }
+
+         // Compares two Entity smart pointers
+         inline bool operator()(
+            const std::shared_ptr<Entity> &lhs,
+            const std::shared_ptr<Entity> &rhs) {
+            return (*this)(*lhs, *rhs);
          }
    };
 

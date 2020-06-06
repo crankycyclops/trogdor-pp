@@ -123,8 +123,7 @@ namespace trogdor::entity {
          inline void indexInventoryItemName(std::string alias, Object *object) {
 
             if (inventory.objectsByName.find(alias) == inventory.objectsByName.end()) {
-               ObjectList newList;
-               inventory.objectsByName[alias] = newList;
+               inventory.objectsByName[alias] = {};
             }
 
             inventory.objectsByName.find(alias)->second.push_back(object);
