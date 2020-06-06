@@ -135,7 +135,7 @@ namespace trogdor::entity {
       }
 
       inventory.count++;
-      object->setOwner(this->getShared());
+      object->setOwner(getShared());
 
       if (isType(ENTITY_CREATURE) && object->isTagSet(Object::WeaponTag)) {
          static_cast<Creature *>(this)->clearWeaponCache();
@@ -148,12 +148,12 @@ namespace trogdor::entity {
 
    void Being::removeFromInventory(const std::shared_ptr<Object> &object) {
 
-      inventory.objects.erase(object);
-
       std::vector<std::string> objAliases = object->getAliases();
       for (int i = objAliases.size() - 1; i >= 0; i--) {
          inventory.objectsByName.find(objAliases[i])->second.remove(object.get());
       }
+
+      inventory.objects.erase(object);
 
       inventory.count--;
       inventory.currentWeight -= object->getWeight();
@@ -179,14 +179,14 @@ namespace trogdor::entity {
       Place *oldLoc = location;
 
       if (0 != oldLoc) {
-         oldLoc->removeThing(this);
+         oldLoc->removeThing(getShared());
       }
 
       // I do this first, and the other message second so that the Being that's
       // leaving won't see messages about its own departure and arrival ;)
       l->out("notifications") << getTitle() << " arrives." << std::endl;
 
-      l->insertThing(this);
+      l->insertThing(getShared());
       setLocation(l);
       l->observe(this);
 
@@ -246,7 +246,7 @@ namespace trogdor::entity {
          // Notify every entity in the room that the object has been taken
          // EXCEPT the one who's doing the taking
          for (auto const &thing: object->getLocation()->getThings()) {
-            if (thing != this) {
+            if (thing.get() != this) {
                thing->out("notifications") << getTitle() << " takes "
                   << object->getTitle() << "." << std::endl;
             }
@@ -296,7 +296,7 @@ namespace trogdor::entity {
       // Notify every entity in the room that the object has been dropped EXCEPT
       // the one who's doing the dropping
       for (auto const &thing: location->getThings()) {
-         if (thing != this) {
+         if (thing.get() != this) {
             thing->out("notifications") << getTitle() << " drops "
                << object->getTitle() << "." << std::endl;
          }

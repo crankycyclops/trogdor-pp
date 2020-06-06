@@ -68,8 +68,8 @@ namespace trogdor::entity {
          // need to re-insert it to update the Place's thingsByName map.
          if (location != nullptr) {
             Place *p = location; // removeThing sets location back to nullptr, so...
-            p->removeThing(this);
-            p->insertThing(this);
+            p->removeThing(getShared());
+            p->insertThing(getShared());
          }
       }
    }

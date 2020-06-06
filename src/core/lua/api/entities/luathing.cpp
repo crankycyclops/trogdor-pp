@@ -255,7 +255,7 @@ namespace trogdor::entity {
          Place *p = t->getLocation();
 
          if (p) {
-            p->removeThing(t);
+            p->removeThing(t->getShared());
          }
 
          return 0;

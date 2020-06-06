@@ -31,7 +31,7 @@ namespace trogdor::entity {
 
    /****************************************************************************/
 
-   void Place::insertPlayer(Player *player) {
+   void Place::insertPlayer(const std::shared_ptr<Player> &player) {
 
       things.insert(things.end(), player);
       beings.insert(beings.end(), player);
@@ -39,9 +39,9 @@ namespace trogdor::entity {
 
       // Index by alias
       for (const auto &alias: player->getAliases()) {
-         thingsByName[alias].push_back(player);
-         beingsByName[alias].push_back(player);
-         playersByName[alias].push_back(player);
+         thingsByName[alias].push_back(player.get());
+         beingsByName[alias].push_back(player.get());
+         playersByName[alias].push_back(player.get());
       }
 
       player->setLocation(this);
@@ -49,7 +49,7 @@ namespace trogdor::entity {
 
    /****************************************************************************/
 
-   void Place::insertCreature(Creature *creature) {
+   void Place::insertCreature(const std::shared_ptr<Creature> &creature) {
 
       things.insert(things.end(), creature);
       beings.insert(beings.end(), creature);
@@ -57,9 +57,9 @@ namespace trogdor::entity {
 
       // Index by alias
       for (const auto &alias: creature->getAliases()) {
-         thingsByName[alias].push_back(creature);
-         beingsByName[alias].push_back(creature);
-         creaturesByName[alias].push_back(creature);
+         thingsByName[alias].push_back(creature.get());
+         beingsByName[alias].push_back(creature.get());
+         creaturesByName[alias].push_back(creature.get());
       }
 
       creature->setLocation(this);
@@ -67,15 +67,15 @@ namespace trogdor::entity {
 
    /****************************************************************************/
 
-   void Place::insertObject(Object *object) {
+   void Place::insertObject(const std::shared_ptr<Object> &object) {
 
       things.insert(things.end(), object);
       objects.insert(objects.end(), object);
 
       // Index by alias
       for (const auto &alias: object->getAliases()) {
-         thingsByName[alias].push_back(object);
-         objectsByName[alias].push_back(object);
+         thingsByName[alias].push_back(object.get());
+         objectsByName[alias].push_back(object.get());
       }
 
       object->setLocation(this);
@@ -83,20 +83,20 @@ namespace trogdor::entity {
 
    /****************************************************************************/
 
-   void Place::insertThing(Thing *thing) {
+   void Place::insertThing(const std::shared_ptr<Thing> &thing) {
 
       switch (thing->getType()) {
 
          case ENTITY_PLAYER:
-            insertPlayer(static_cast<Player *>(thing));
+            insertPlayer(std::static_pointer_cast<Player>(thing));
             break;
 
          case ENTITY_CREATURE:
-            insertCreature(static_cast<Creature *>(thing));
+            insertCreature(std::static_pointer_cast<Creature>(thing));
             break;
 
          case ENTITY_OBJECT:
-            insertObject(static_cast<Object *>(thing));
+            insertObject(std::static_pointer_cast<Object>(thing));
             break;
 
          default:
@@ -108,20 +108,20 @@ namespace trogdor::entity {
 
    /****************************************************************************/
 
-   void Place::removePlayer(Player *player) {
+   void Place::removePlayer(const std::shared_ptr<Player> &player) {
 
       for (const auto &alias: player->getAliases()) {
 
          if (playersByName.find(alias) != playersByName.end()) {
-            playersByName.find(alias)->second.remove(player);
+            playersByName.find(alias)->second.remove(player.get());
          }
 
          if (beingsByName.find(alias) != beingsByName.end()) {
-            beingsByName.find(alias)->second.remove(player);
+            beingsByName.find(alias)->second.remove(player.get());
          }
 
          if (thingsByName.find(alias) != thingsByName.end()) {
-            thingsByName.find(alias)->second.remove(player);
+            thingsByName.find(alias)->second.remove(player.get());
          }
       }
 
@@ -134,20 +134,20 @@ namespace trogdor::entity {
 
    /****************************************************************************/
 
-   void Place::removeCreature(Creature *creature) {
+   void Place::removeCreature(const std::shared_ptr<Creature> &creature) {
 
       for (const auto &alias: creature->getAliases()) {
 
          if (creaturesByName.find(alias) != creaturesByName.end()) {
-            creaturesByName.find(alias)->second.remove(creature);
+            creaturesByName.find(alias)->second.remove(creature.get());
          }
 
          if (beingsByName.find(alias) != beingsByName.end()) {
-            beingsByName.find(alias)->second.remove(creature);
+            beingsByName.find(alias)->second.remove(creature.get());
          }
 
          if (thingsByName.find(alias) != thingsByName.end()) {
-            thingsByName.find(alias)->second.remove(creature);
+            thingsByName.find(alias)->second.remove(creature.get());
          }
       }
 
@@ -160,16 +160,16 @@ namespace trogdor::entity {
 
    /****************************************************************************/
 
-   void Place::removeObject(Object *object) {
+   void Place::removeObject(const std::shared_ptr<Object> &object) {
 
       for (const auto &alias: object->getAliases()) {
 
          if (objectsByName.find(alias) != objectsByName.end()) {
-            objectsByName.find(alias)->second.remove(object);
+            objectsByName.find(alias)->second.remove(object.get());
          }
 
          if (thingsByName.find(alias) != thingsByName.end()) {
-            thingsByName.find(alias)->second.remove(object);
+            thingsByName.find(alias)->second.remove(object.get());
          }
       }
 
@@ -181,20 +181,20 @@ namespace trogdor::entity {
 
    /****************************************************************************/
 
-   void Place::removeThing(Thing *thing) {
+   void Place::removeThing(const std::shared_ptr<Thing> &thing) {
 
       switch (thing->getType()) {
 
          case ENTITY_PLAYER:
-            removePlayer(static_cast<Player *>(thing));
+            removePlayer(std::static_pointer_cast<Player>(thing));
             break;
 
          case ENTITY_CREATURE:
-            removeCreature(static_cast<Creature *>(thing));
+            removeCreature(std::static_pointer_cast<Creature>(thing));
             break;
 
          case ENTITY_OBJECT:
-            removeObject(static_cast<Object *>(thing));
+            removeObject(std::static_pointer_cast<Object>(thing));
             break;
 
          default:
@@ -214,8 +214,8 @@ namespace trogdor::entity {
       observer->out("display") << getTitle() << std::endl << std::endl;
       Entity::display(observer, displayFull);
 
-      for_each(things.begin(), things.end(), [&](Thing *&thing) {
-         if (observer != static_cast<Being *>(thing)) { // dirty, but it works
+      for_each(things.begin(), things.end(), [&](const std::shared_ptr<Thing> &thing) {
+         if (observer != static_cast<Being *>(thing.get())) { // dirty, but it works
             observer->out("display") << std::endl;
             thing->glance(observer);
          }

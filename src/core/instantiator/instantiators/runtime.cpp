@@ -492,8 +492,8 @@ namespace trogdor {
       registerOperation(INSERT_INTO_PLACE, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         Thing *thing = game->getThing(operation->getChildren()[0]->getValue()).get();
-         Room *room = game->getRoom(operation->getChildren()[1]->getValue()).get();
+         auto thing = game->getThing(operation->getChildren()[0]->getValue());
+         auto room = game->getRoom(operation->getChildren()[1]->getValue());
 
          room->insertThing(thing);
       });

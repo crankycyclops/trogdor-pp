@@ -27,18 +27,18 @@ namespace trogdor::entity {
       protected:
 
          // sequential list of all entities in a place
-         ThingList    things;
-         BeingList    beings;
-         PlayerList   players;
-         CreatureList creatures;
-         ObjectList   objects;
+         std::list<std::shared_ptr<Thing>>    things;
+         std::list<std::shared_ptr<Being>>    beings;
+         std::list<std::shared_ptr<Player>>   players;
+         std::list<std::shared_ptr<Creature>> creatures;
+         std::list<std::shared_ptr<Object>>   objects;
 
-         // name -> entity list mappings (accomodates synonyms)
-         ThingsByNameMap    thingsByName;
-         BeingsByNameMap    beingsByName;
-         PlayersByNameMap   playersByName;
-         CreaturesByNameMap creaturesByName;
-         ObjectsByNameMap   objectsByName;
+         // alias -> entity list indices
+         std::unordered_map<std::string, std::list<Thing *>>    thingsByName;
+         std::unordered_map<std::string, std::list<Being *>>    beingsByName;
+         std::unordered_map<std::string, std::list<Player *>>   playersByName;
+         std::unordered_map<std::string, std::list<Creature *>> creaturesByName;
+         std::unordered_map<std::string, std::list<Object *>>   objectsByName;
 
          /*
             Overrides Entity::display() and shows a Place's description in the
@@ -95,7 +95,7 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         void insertPlayer(Player *thing);
+         void insertPlayer(const std::shared_ptr<Player> &player);
 
          /*
             Inserts a Creature that resides inside the Place.
@@ -106,7 +106,7 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         void insertCreature(Creature *thing);
+         void insertCreature(const std::shared_ptr<Creature> &creature);
 
          /*
             Inserts an Object that's contained inside the Place. This Object
@@ -118,7 +118,7 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         void insertObject(Object *thing);
+         void insertObject(const std::shared_ptr<Object> &thing);
 
          /*
             Inserts any Thing that resides/is contained inside the Place (calls
@@ -130,8 +130,7 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         void insertThing(Thing *thing);
-         inline void insertThing(std::shared_ptr<Thing> thing) {insertThing(thing.get());}
+         void insertThing(const std::shared_ptr<Thing> &thing);
 
          /*
             Removes a Player from the Place.
@@ -142,7 +141,7 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         void removePlayer(Player *player);
+         void removePlayer(const std::shared_ptr<Player> &player);
 
          /*
             Removes a Creature from the Place.
@@ -153,7 +152,7 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         void removeCreature(Creature *creature);
+         void removeCreature(const std::shared_ptr<Creature> &creature);
 
          /*
             Removes an Object from the Place.
@@ -164,7 +163,7 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         void removeObject(Object *object);
+         void removeObject(const std::shared_ptr<Object> &object);
 
          /*
             Removes a Thing from the Place.
@@ -175,8 +174,7 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         void removeThing(Thing *thing);
-         inline void removeThing(std::shared_ptr<Thing> thing) {removeThing(thing.get());}
+         void removeThing(const std::shared_ptr<Thing> &thing);
 
          /*
             Returns iterable list of Things that match the given name.
@@ -185,11 +183,11 @@ namespace trogdor::entity {
                name (std::string)
 
             Output:
-               const ThingList &
+               const std::list<std::shared_ptr<Thing>> &
          */
-         inline const ThingList &getThingsByName(std::string name) const {
+         inline const auto &getThingsByName(std::string name) const {
 
-            ThingsByNameMap::const_iterator i = thingsByName.find(name);
+            auto i = thingsByName.find(name);
             return i == thingsByName.end() ? emptyThingList : i->second;
          }
 
@@ -200,11 +198,11 @@ namespace trogdor::entity {
                name (std::string)
 
             Output:
-               const BeingList &
+               const std::list<std::shared_ptr<Being>> &
          */
-         inline const BeingList &getBeingsByName(std::string name) const {
+         inline const auto &getBeingsByName(std::string name) const {
 
-            BeingsByNameMap::const_iterator i = beingsByName.find(name);
+            auto i = beingsByName.find(name);
             return i == beingsByName.end() ? emptyBeingList : i->second;
          }
 
@@ -215,9 +213,9 @@ namespace trogdor::entity {
                (None)
 
             Output:
-               const ThingList &
+               const std::list<std::shared_ptr<Thing>> &
          */
-         inline const ThingList &getThings() const {return things;}
+         inline const auto &getThings() const {return things;}
 
          /*
             Returns iterable list of all Creatures in a Place.
@@ -226,9 +224,9 @@ namespace trogdor::entity {
                (None)
 
             Output:
-               const CreatureList &
+               const std::list<std::shared_ptr<Creature>> &
          */
-         inline const CreatureList &getCreatures() const {return creatures;}
+         inline const auto &getCreatures() const {return creatures;}
    };
 }
 

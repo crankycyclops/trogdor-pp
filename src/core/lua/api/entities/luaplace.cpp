@@ -122,7 +122,7 @@ namespace trogdor::entity {
       Place *oldLocation = t->getLocation();
 
       if (oldLocation) {
-         oldLocation->removeThing(t);
+         oldLocation->removeThing(t->getShared());
       }
 
       if (ENTITY_OBJECT == t->getType()) {
@@ -134,7 +134,7 @@ namespace trogdor::entity {
          }
       }
 
-      p->insertThing(t);
+      p->insertThing(t->getShared());
       return 0;
    }
 
@@ -159,7 +159,7 @@ namespace trogdor::entity {
          return luaL_error(L, "not a Place!");
       }
 
-      p->removeThing(t);
+      p->removeThing(t->getShared());
       return 0;
    }
 }
