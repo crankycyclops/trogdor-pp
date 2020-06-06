@@ -135,7 +135,7 @@ namespace trogdor::entity {
       }
 
       inventory.count++;
-      object->setOwner(this);
+      object->setOwner(this->getShared());
 
       if (isType(ENTITY_CREATURE) && object->isTagSet(Object::WeaponTag)) {
          static_cast<Creature *>(this)->clearWeaponCache();
@@ -157,7 +157,7 @@ namespace trogdor::entity {
 
       inventory.count--;
       inventory.currentWeight -= object->getWeight();
-      object->setOwner(0);
+      object->setOwner(std::weak_ptr<Being>());
 
       if (isType(ENTITY_CREATURE) && object->isTagSet(Object::WeaponTag)) {
          static_cast<Creature *>(this)->clearWeaponCache();

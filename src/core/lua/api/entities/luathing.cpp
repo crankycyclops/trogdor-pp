@@ -218,11 +218,10 @@ namespace trogdor::entity {
          // it from the owner's inventory first
          if (ENTITY_OBJECT == t->getType()) {
 
-            Object *objRef = dynamic_cast<Object *>(t);
-            Being *owner = objRef->getOwner();
+            std::shared_ptr<Object> objRef = dynamic_cast<Object *>(t)->getShared();
 
-            if (owner) {
-               owner->removeFromInventory(objRef->getShared());
+            if (std::shared_ptr<Being> owner = objRef->getOwner().lock()) {
+               owner->removeFromInventory(objRef);
             }
          }
 

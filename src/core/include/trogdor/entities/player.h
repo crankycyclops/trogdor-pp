@@ -11,10 +11,6 @@ namespace trogdor::entity {
 
    class Player: public Being {
 
-      private:
-
-      protected:
-
       public:
 
          /*

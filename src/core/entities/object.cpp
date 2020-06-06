@@ -18,8 +18,8 @@ namespace trogdor::entity {
 
    Object::Object(Game *g, std::string n, std::unique_ptr<Trogout> o,
    std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o),
-   std::make_unique<NullIn>(), std::move(e)), owner(nullptr),
-   weight(DEFAULT_WEIGHT), damage(DEFAULT_DAMAGE) {
+   std::make_unique<NullIn>(), std::move(e)), weight(DEFAULT_WEIGHT),
+   damage(DEFAULT_DAMAGE), owner(std::weak_ptr<Being>()) {
 
       if (DEFAULT_IS_WEAPON) {
          setTag(WeaponTag);
@@ -31,15 +31,17 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Object::Object(const Object &o, std::string n): Thing(o, n), owner(nullptr),
-   weight(o.weight), damage(o.damage) {}
+   Object::Object(const Object &o, std::string n): Thing(o, n),
+   weight(o.weight), damage(o.damage), owner(std::weak_ptr<Being>()) {}
 
    /***************************************************************************/
 
    void Object::updateOwnerWeaponCache() {
 
-      if (owner != nullptr && owner->isType(ENTITY_CREATURE)) {
-         static_cast<Creature *>(owner)->clearWeaponCache();
+      std::shared_ptr<Being> ownerShared = owner.lock();
+
+      if (ownerShared && ownerShared->isType(ENTITY_CREATURE)) {
+         std::dynamic_pointer_cast<Creature>(ownerShared)->clearWeaponCache();
       }
    }
 
@@ -48,9 +50,10 @@ namespace trogdor::entity {
    void Object::addAlias(std::string alias) {
 
       Thing::addAlias(alias);
+      std::shared_ptr<Being> ownerShared = owner.lock();
 
-      if (owner) {
-         owner->indexInventoryItemName(alias, this);
+      if (ownerShared) {
+         ownerShared->indexInventoryItemName(alias, this);
       }
    }
 

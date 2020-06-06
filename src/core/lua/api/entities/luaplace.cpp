@@ -127,10 +127,10 @@ namespace trogdor::entity {
 
       if (ENTITY_OBJECT == t->getType()) {
 
-         Being *owner = static_cast<Object *>(t)->getOwner();
+         std::shared_ptr<Object> objShared = static_cast<Object *>(t)->getShared();
 
-         if (owner) {
-            owner->removeFromInventory(static_cast<Object *>(t)->getShared());
+         if (std::shared_ptr<Being> owner = objShared->getOwner().lock()) {
+            owner->removeFromInventory(objShared);
          }
       }
 

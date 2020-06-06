@@ -49,10 +49,10 @@ namespace trogdor::entity {
 
       protected:
 
-         Being *owner;     // a Being might own the object
+         int weight;  // how much weight Object uses in a Being's inventory
+         int damage;  // how much damage Object does if it's a weapon
 
-         int weight;       // how much weight Object uses in a Being's inventory
-         int damage;       // how much damage Object does if it's a weapon
+         std::weak_ptr<Being> owner;  // a Being might own the object
 
       public:
 
@@ -86,16 +86,16 @@ namespace trogdor::entity {
          }
 
          /*
-            Returns the owner of the Object (0 if there is no owner.)
+            Returns the owner of the Object (returns an invalid weak_ptr if
+            there is no owner.)
 
             Input:
                (none)
 
             Output:
-               Being *
+               std::weak_ptr<Being>
          */
-         inline Being *getOwner() const {return owner;};
-
+         inline std::weak_ptr<Being> getOwner() const {return owner;}
 
          /*
             Returns the Object's weight.
@@ -128,7 +128,7 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setOwner(Being *being) {owner = being;}
+         inline void setOwner(std::weak_ptr<Being> being) {owner = being;}
 
          /*
             Sets the Object's weight (how much space it uses in a Being's
