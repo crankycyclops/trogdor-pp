@@ -15,7 +15,6 @@
 
 #include <trogdor/utility.h>
 #include <trogdor/vocabulary.h>
-#include <trogdor/entitymap.h>
 #include <trogdor/entities/player.h>
 #include <trogdor/lua/luastate.h>
 

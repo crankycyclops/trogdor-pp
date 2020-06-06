@@ -95,19 +95,6 @@ namespace trogdor {
          // Player object representing default settings for all new players
          std::unique_ptr<entity::Player> defaultPlayer;
 
-         // Hash table of all entities in the game
-         // Note: the logical conclusion of having a hierarchical mapping of
-         // object types is that no object of any type can share the same name!
-         // This can be worked around via aliases :)
-         std::unordered_map<std::string, std::shared_ptr<Entity>> entities;
-         std::unordered_map<std::string, std::shared_ptr<Place>> places;
-         std::unordered_map<std::string, std::shared_ptr<Thing>> things;
-         std::unordered_map<std::string, std::shared_ptr<Room>> rooms;
-         std::unordered_map<std::string, std::shared_ptr<Being>> beings;
-         std::unordered_map<std::string, std::shared_ptr<Player>> players;
-         std::unordered_map<std::string, std::shared_ptr<Creature>> creatures;
-         std::unordered_map<std::string, std::shared_ptr<Object>> objects;
-
          // defines if and how a player is presented with an introduction when
          // they're first added to the game
          struct {
@@ -124,6 +111,19 @@ namespace trogdor {
             std::string,
             std::vector<std::shared_ptr<std::function<void(std::any)>>>
          > callbacks;
+
+         // Hash table of all entities in the game
+         // Note: the logical conclusion of having a hierarchical mapping of
+         // object types is that no object of any type can share the same name!
+         // This can be worked around via aliases :)
+         std::unordered_map<std::string, std::shared_ptr<Entity>> entities;
+         std::unordered_map<std::string, std::shared_ptr<Place>> places;
+         std::unordered_map<std::string, std::shared_ptr<Thing>> things;
+         std::unordered_map<std::string, std::shared_ptr<Room>> rooms;
+         std::unordered_map<std::string, std::shared_ptr<Being>> beings;
+         std::unordered_map<std::string, std::shared_ptr<Player>> players;
+         std::unordered_map<std::string, std::shared_ptr<Creature>> creatures;
+         std::unordered_map<std::string, std::shared_ptr<Object>> objects;
 
          /*
             Called by initialize().  This initializes event handling in the game.
