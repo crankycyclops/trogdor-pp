@@ -194,6 +194,8 @@ namespace trogdor {
          }
       }
 
+      resourceMutex.lock();
+
       entities[player->getName()] = player;
       things[player->getName()] = player;
       beings[player->getName()] = player;
@@ -204,6 +206,8 @@ namespace trogdor {
       // set Player's initial location
       player->setLocation(places["start"]);
       places["start"]->insertThing(player);
+
+      resourceMutex.unlock();
 
       // Player must see an initial description of where they are
       player->getLocation()->observe(player, false);
@@ -222,7 +226,11 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Game::removePlayer(const std::string name, const std::string message) {
+   void Game::removePlayer(
+      const std::string name,
+      const std::string message,
+      const bool lockOnResourceMutex
+   ) {
 
       if (players.find(name) != players.end()) {
 
@@ -245,10 +253,18 @@ namespace trogdor {
             players[name]->getLocation()->removeThing(players[name]);
          }
 
+         if (lockOnResourceMutex) {
+            resourceMutex.lock();
+         }
+
          entities.erase(name);
          things.erase(name);
          beings.erase(name);
          players.erase(name);
+
+         if (lockOnResourceMutex) {
+            resourceMutex.unlock();
+         }
       }
    }
 

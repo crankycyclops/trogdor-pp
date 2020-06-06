@@ -658,6 +658,8 @@ namespace trogdor {
                throw entity::EntityException(std::string("Entity '") + name + "' already exists");
             }
 
+            resourceMutex.lock();
+
             switch (entity->getType()) {
 
                case entity::ENTITY_ROOM:
@@ -691,6 +693,8 @@ namespace trogdor {
 
             entities[name] = entity;
             entity->setGame(this);
+
+            resourceMutex.unlock();
          }
 
          /*
@@ -796,7 +800,7 @@ namespace trogdor {
                Pointer to an error stream (Trogerr *)
 
             Output:
-               Player *
+               std::shared_ptr<Player>
          */
          std::shared_ptr<Player> createPlayer(std::string name,
          std::unique_ptr<Trogout> outStream, std::unique_ptr<Trogin> inStream,
@@ -831,11 +835,19 @@ namespace trogdor {
             Input:
                Name of player (std::string)
                Message to output to player before removing (std::string: default is none)
+               Whether or not to lock on resourceMutex (default is true)
+                  . This avoids deadlock in the situation where processCommand,
+                    which locks on the same mutex, then results in the player
+                    being removed.
 
             Output:
                (none)
          */
-         void removePlayer(const std::string name, const std::string message = "");
+         void removePlayer(
+            const std::string name,
+            const std::string message = "",
+            const bool lockOnResourceMutex = true
+         );
 
          /*
             Wraps around Timer API.  See timer.h for documentation.

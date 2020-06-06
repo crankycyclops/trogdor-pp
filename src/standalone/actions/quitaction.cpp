@@ -19,5 +19,5 @@ bool QuitAction::checkSyntax(const std::shared_ptr<trogdor::Command> &command) {
 void QuitAction::execute(Player *player,
 const std::shared_ptr<trogdor::Command> &command, trogdor::Game *game) {
 
-   game->removePlayer(player->getName());
+   game->removePlayer(player->getName(), "", false);
 }
