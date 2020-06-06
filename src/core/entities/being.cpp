@@ -116,7 +116,7 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   bool Being::insertIntoInventory(Object *object, bool considerWeight) {
+   bool Being::insertIntoInventory(const std::shared_ptr<Object> &object, bool considerWeight) {
 
       // make sure the Object will fit
       if (considerWeight && inventory.weight > 0 &&
@@ -131,7 +131,7 @@ namespace trogdor::entity {
       // allow referencing of inventory Objects by name and aliases
       std::vector<std::string> objAliases = object->getAliases();
       for (int i = objAliases.size() - 1; i >= 0; i--) {
-         indexInventoryItemName(objAliases[i], object);
+         indexInventoryItemName(objAliases[i], object.get());
       }
 
       inventory.count++;
@@ -146,13 +146,13 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   void Being::removeFromInventory(Object *object) {
+   void Being::removeFromInventory(const std::shared_ptr<Object> &object) {
 
       inventory.objects.erase(object);
 
       std::vector<std::string> objAliases = object->getAliases();
       for (int i = objAliases.size() - 1; i >= 0; i--) {
-         inventory.objectsByName.find(objAliases[i])->second.remove(object);
+         inventory.objectsByName.find(objAliases[i])->second.remove(object.get());
       }
 
       inventory.count--;
@@ -201,12 +201,16 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   void Being::take(Object *object, bool checkUntakeable, bool doEvents) {
+   void Being::take(
+      const std::shared_ptr<Object> &object,
+      bool checkUntakeable,
+      bool doEvents
+   ) {
 
       if (doEvents && !game->event({
          "beforeTake",
          {triggers.get(), object->getEventListener()},
-         {this, object}
+         {this, object.get()}
       })) {
          return;
       }
@@ -217,7 +221,7 @@ namespace trogdor::entity {
             game->event({
                "takeUntakeable",
                {triggers.get(), object->getEventListener()},
-               {this, object}
+               {this, object.get()}
             });
          }
 
@@ -230,7 +234,7 @@ namespace trogdor::entity {
             game->event({
                "takeTooHeavy",
                {triggers.get(), object->getEventListener()},
-               {this, object}
+               {this, object.get()}
             });
          }
 
@@ -255,19 +259,23 @@ namespace trogdor::entity {
          game->event({
             "afterTake",
             {triggers.get(), object->getEventListener()},
-            {this, object}
+            {this, object.get()}
          });
       }
    }
 
    /***************************************************************************/
 
-   void Being::drop(Object *object, bool checkUndroppable, bool doEvents) {
+   void Being::drop(
+      const std::shared_ptr<Object> &object,
+      bool checkUndroppable,
+      bool doEvents
+   ) {
 
       if (doEvents && !game->event({
          "beforeDrop",
          {triggers.get(), object->getEventListener()},
-         {this, object}
+         {this, object.get()}
       })) {
          return;
       }
@@ -278,7 +286,7 @@ namespace trogdor::entity {
             game->event({
                "dropUndroppable",
                {triggers.get(), object->getEventListener()},
-               {this, object}
+               {this, object.get()}
             });
          }
 
@@ -301,7 +309,7 @@ namespace trogdor::entity {
          game->event({
             "afterDrop",
             {triggers.get(), object->getEventListener()},
-            {this, object}
+            {this, object.get()}
          });
       }
    }

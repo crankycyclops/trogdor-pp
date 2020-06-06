@@ -59,6 +59,23 @@ namespace trogdor::entity {
          Thing(const Thing &t, std::string n);
 
          /*
+            Returns a smart pointer representing a raw Thing pointer. Be careful
+            with this and only call it on Entities you know are managed by smart
+            pointers. If, for example, you call this method on entities that are
+            managed by Lua using new and delete, you're going to have a bad time.
+
+            Input:
+               (none)
+
+            Output:
+               std::shared_ptr<Thing>
+         */
+         inline std::shared_ptr<Thing> getShared() {
+
+            return std::dynamic_pointer_cast<Thing>(Entity::getShared());
+         }
+
+         /*
             Returns the Thing's current location in the game.  If the Thing
             hasn't been placed anywhere, 0 will be returned.
 

@@ -280,7 +280,7 @@ namespace trogdor {
 
             try {
 
-               player->take(static_cast<Object *>(thing));
+               player->take(static_cast<Object *>(thing)->getShared());
 
                std::string message = thing->getMessage("take");
                if (message.length() > 0) {
@@ -355,7 +355,7 @@ namespace trogdor {
 
          try {
 
-            player->drop(object);
+            player->drop(object->getShared());
 
             std::string message = object->getMessage("drop");
             if (message.length() > 0) {

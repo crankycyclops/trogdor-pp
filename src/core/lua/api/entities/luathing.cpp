@@ -222,7 +222,7 @@ namespace trogdor::entity {
             Being *owner = objRef->getOwner();
 
             if (owner) {
-               owner->removeFromInventory(objRef);
+               owner->removeFromInventory(objRef->getShared());
             }
          }
 

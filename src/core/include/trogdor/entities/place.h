@@ -148,6 +148,23 @@ namespace trogdor::entity {
          Place(const Place &p, std::string n);
 
          /*
+            Returns a smart pointer representing a raw Place pointer. Be careful
+            with this and only call it on Entities you know are managed by smart
+            pointers. If, for example, you call this method on entities that are
+            managed by Lua using new and delete, you're going to have a bad time.
+
+            Input:
+               (none)
+
+            Output:
+               std::shared_ptr<Place>
+         */
+         inline std::shared_ptr<Place> getShared() {
+
+            return std::dynamic_pointer_cast<Place>(Entity::getShared());
+         }
+
+         /*
             Inserts a Thing that resides inside the Place.  An example would
             be an Object inside a Room.
 

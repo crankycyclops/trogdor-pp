@@ -75,6 +75,23 @@ namespace trogdor::entity {
          Creature(const Creature &c, std::string n);
 
          /*
+            Returns a smart pointer representing a raw Creature pointer. Be careful
+            with this and only call it on Entities you know are managed by smart
+            pointers. If, for example, you call this method on entities that are
+            managed by Lua using new and delete, you're going to have a bad time.
+
+            Input:
+               (none)
+
+            Output:
+               std::shared_ptr<Creature>
+         */
+         inline std::shared_ptr<Creature> getShared() {
+
+            return std::dynamic_pointer_cast<Creature>(Entity::getShared());
+         }
+
+         /*
             Clears the cached sorted list of weapons in the Creature's inventory.
             The interface needs to be public so that if an Object in the
             Creature's inventory has its weapon attribute turned off, perhaps by

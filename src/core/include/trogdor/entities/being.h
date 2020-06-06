@@ -78,7 +78,7 @@ namespace trogdor::entity {
             unsigned count;     // number of objects in the inventory
 
             // Inventory items
-            std::set<Object *, EntityAlphaComparator> objects;
+            std::set<std::shared_ptr<Object>, EntityAlphaComparator> objects;
 
             // Inventory items indexed by alias
             std::unordered_map<std::string, std::list<Object *>> objectsByName;
@@ -196,6 +196,23 @@ namespace trogdor::entity {
             carry the same object, right? ;)
          */
          Being(const Being &b, std::string n);
+
+         /*
+            Returns a smart pointer representing a raw Being pointer. Be careful
+            with this and only call it on Entities you know are managed by smart
+            pointers. If, for example, you call this method on entities that are
+            managed by Lua using new and delete, you're going to have a bad time.
+
+            Input:
+               (none)
+
+            Output:
+               std::shared_ptr<Being>
+         */
+         inline std::shared_ptr<Being> getShared() {
+
+            return std::dynamic_pointer_cast<Being>(Entity::getShared());
+         }
 
          /*
             Returns amount of damage Being does with its bare hands.
@@ -527,13 +544,13 @@ namespace trogdor::entity {
             parsing of game.xml.)
 
             Input:
-               Object *
+               const std::shared_ptr<Object> &
                Whether or not to check the inventory's weight before inserting (default = true)
 
             Output:
                bool (true on success and false on failure)
          */
-         bool insertIntoInventory(Object *object, bool considerWeight = true);
+         bool insertIntoInventory(const std::shared_ptr<Object> &object, bool considerWeight = true);
 
          /*
             Removes an object from a Being's inventory.  If the Object isn't in
@@ -545,7 +562,7 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         void removeFromInventory(Object *object);
+         void removeFromInventory(const std::shared_ptr<Object> &object);
 
          /*
             Make the Being move to the specified Place.  This both sets the
@@ -577,7 +594,11 @@ namespace trogdor::entity {
                   TAKE_TOO_HEAVY - object is too heavy
                   TAKE_UNTAKEABLE - attempted to take an untakeable object
          */
-         void take(Object *object, bool checkUntakeable = true, bool doEvents = true);
+         void take(
+            const std::shared_ptr<Object> &object,
+            bool checkUntakeable = true,
+            bool doEvents = true
+         );
 
          /*
             Allows a Being to drop an object.  Calls removeIntoInventory() and
@@ -595,7 +616,11 @@ namespace trogdor::entity {
                Throws the following errors:
                   DROP_UNDROPPABLE - attempt to drop an undroppable object
          */
-         void drop(Object *object, bool checkUndroppable = true, bool doEvents = true);
+         void drop(
+            const std::shared_ptr<Object> &object,
+            bool checkUndroppable = true,
+            bool doEvents = true
+         );
 
          /*
             Initiate an attack against defender, possibly using an optional

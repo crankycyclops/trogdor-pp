@@ -130,7 +130,7 @@ namespace trogdor::entity {
          Being *owner = static_cast<Object *>(t)->getOwner();
 
          if (owner) {
-            owner->removeFromInventory(static_cast<Object *>(t));
+            owner->removeFromInventory(static_cast<Object *>(t)->getShared());
          }
       }
 

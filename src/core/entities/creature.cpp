@@ -46,7 +46,7 @@ namespace trogdor::entity {
             // here because I need the iterator to insert at the correct position)
             for (auto i = weaponCache.begin(); i != weaponCache.end(); i++) {
                if (object->getDamage() >= (*i)->getDamage()) {
-                  weaponCache.insert(i, object);
+                  weaponCache.insert(i, object.get());
                   inserted = true;
                   break;
                }
@@ -54,7 +54,7 @@ namespace trogdor::entity {
 
             // object belongs at the very back
             if (!inserted) {
-               weaponCache.push_back(object);
+               weaponCache.push_back(object.get());
             }
          }
       };

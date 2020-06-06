@@ -55,7 +55,7 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   class Entity {
+   class Entity: public std::enable_shared_from_this<Entity> {
 
       private:
 
@@ -230,6 +230,20 @@ namespace trogdor::entity {
                Name of copy (std::string)
          */
          Entity(const Entity &e, std::string n);
+
+         /*
+            Returns a smart pointer representing a raw Entity pointer. Be careful
+            with this and only call it on Entities you know are managed by smart
+            pointers. If, for example, you call this method on entities that are
+            managed by Lua using new and delete, you're going to have a bad time.
+
+            Input:
+               (none)
+
+            Output:
+               std::shared_ptr<Entity>
+         */
+         inline std::shared_ptr<Entity> getShared() {return shared_from_this();}
 
          /*
             Entity Destructor.
