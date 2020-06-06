@@ -109,11 +109,17 @@ std::optional<JSONObject> EntityController::getEntityHelper(
 
 /*****************************************************************************/
 
-const trogdor::entity::EntityMap EntityController::getEntityPtrList(
+std::vector<trogdor::entity::Entity *> EntityController::getEntityPtrList(
 	std::unique_ptr<trogdor::Game> &game
 ) {
 
-	return game->getEntities();
+	std::vector<trogdor::entity::Entity *> entities;
+
+	for (const auto &entity: game->getEntities()) {
+		entities.push_back(entity.second.get());
+	}
+
+	return entities;
 }
 
 /*****************************************************************************/
@@ -206,7 +212,7 @@ JSONObject EntityController::getEntityList(JSONObject request) {
 
 		for (const auto &entity: getEntityPtrList(game->get())) {
 			entities.push_back(std::make_pair("",
-				entityToJSONObject(entity.second.get())
+				entityToJSONObject(entity)
 			));
 		}
 

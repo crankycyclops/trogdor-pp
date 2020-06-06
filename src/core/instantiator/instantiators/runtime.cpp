@@ -36,13 +36,11 @@ namespace trogdor {
 
       // For each creature, check if wandering was enabled, and if so, insert a
       // timer job for it
-      for (auto &creatureMapEntry: game->getCreatures()) {
+      for (auto &creature: game->getCreatures()) {
 
-         Creature *creature = dynamic_cast<Creature *>(creatureMapEntry.second.get());
-
-         if (creature->getWanderEnabled()) {
-            game->insertTimerJob(std::make_shared<WanderTimerJob>(game, creature->getWanderInterval(),
-               -1, creature->getWanderInterval(), creature));
+         if (creature.second->getWanderEnabled()) {
+            game->insertTimerJob(std::make_shared<WanderTimerJob>(game, creature.second->getWanderInterval(),
+               -1, creature.second->getWanderInterval(), creature.second.get()));
          }
       }
    }

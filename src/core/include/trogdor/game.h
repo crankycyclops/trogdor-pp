@@ -17,7 +17,6 @@
 #include <trogdor/command.h>
 #include <trogdor/event/eventhandler.h>
 #include <trogdor/event/eventlistener.h>
-#include <trogdor/entitymap.h>
 #include <trogdor/iostream/trogerr.h>
 #include <trogdor/instantiator/instantiators/runtime.h>
 
@@ -100,14 +99,14 @@ namespace trogdor {
          // Note: the logical conclusion of having a hierarchical mapping of
          // object types is that no object of any type can share the same name!
          // This can be worked around via aliases :)
-         entity::EntityMap    entities;
-         entity::PlaceMap     places;
-         entity::ThingMap     things;
-         entity::RoomMap      rooms;
-         entity::BeingMap     beings;
-         entity::PlayerMap    players;
-         entity::CreatureMap  creatures;
-         entity::ObjectMap    objects;
+         std::unordered_map<std::string, std::shared_ptr<Entity>> entities;
+         std::unordered_map<std::string, std::shared_ptr<Place>> places;
+         std::unordered_map<std::string, std::shared_ptr<Thing>> things;
+         std::unordered_map<std::string, std::shared_ptr<Room>> rooms;
+         std::unordered_map<std::string, std::shared_ptr<Being>> beings;
+         std::unordered_map<std::string, std::shared_ptr<Player>> players;
+         std::unordered_map<std::string, std::shared_ptr<Creature>> creatures;
+         std::unordered_map<std::string, std::shared_ptr<Object>> objects;
 
          // defines if and how a player is presented with an introduction when
          // they're first added to the game
@@ -121,7 +120,10 @@ namespace trogdor {
 
          // One or more callbacks that will be executed when various operations
          // occur within the game.
-         std::unordered_map<std::string, std::vector<std::shared_ptr<std::function<void(std::any)>>>> callbacks;
+         std::unordered_map<
+            std::string,
+            std::vector<std::shared_ptr<std::function<void(std::any)>>>
+         > callbacks;
 
          /*
             Called by initialize().  This initializes event handling in the game.
@@ -381,12 +383,11 @@ namespace trogdor {
          */
          inline bool playerIsInGame(const std::string name) const {
 
-            return players.isEntitySet(name);
+            return players.find(name) == players.end() ? false : true;
          }
 
         /*
-            Returns the Entity associated with the specified name. Throws an
-            exception if the Entity doesn't exist.
+            Returns the Entity associated with the specified name.
 
             Input:
                Name of Thing (std::string)
@@ -396,27 +397,27 @@ namespace trogdor {
          */
          inline Entity *getEntity(const std::string name) {
 
-            if (!entities.isEntitySet(name)) {
+            if (entities.find(name) == entities.end()) {
                return nullptr;
             }
 
-            return entities.get(name);
+            return entities[name].get();
          }
 
          /*
-            Returns a read-only reference to entities that can be iterated over.
+            Returns a read-only unordered_map of all entities
+            (shared_ptr<Entity>) in the game.
 
             Input:
                (none)
 
             Output:
-               const entity::EntityMap &
+               const unordered_map<string, shared_ptr<Entity>> &
          */
-         inline const entity::EntityMap &getEntities() const {return entities;}
+         inline const auto &getEntities() const {return entities;}
 
         /*
-            Returns the Place object associated with the specified name. Throws
-            an exception if the Place doesn't exist.
+            Returns the Place object associated with the specified name.
 
             Input:
                Name of Place (std::string)
@@ -426,30 +427,27 @@ namespace trogdor {
          */
          inline Place *getPlace(const std::string name) {
 
-            if (!places.isEntitySet(name)) {
+            if (places.find(name) == places.end()) {
                return nullptr;
             }
 
-            return places.get(name);
+            return places[name].get();
          }
 
          /*
-            Returns a read-only reference to all places in the game that can be
-            iterated over. The underline pointers are of type shared_ptr<Entity>
-            and must be cast to shared_ptr<Place> when accessing Place-specific
-            methods.
+            Returns a read-only unordered_map of all places (shared_ptr<Place>)
+            in the game.
 
             Input:
                (none)
 
             Output:
-               const entity::PlaceMap &
+               const unordered_map<string, shared_ptr<Room>> &
          */
-         inline const entity::PlaceMap &getPlaces() const {return places;}
+         inline const auto &getPlaces() const {return places;}
 
         /*
-            Returns the Thing object associated with the specified name. Throws
-            an exception if the Thing doesn't exist.
+            Returns the Thing object associated with the specified name.
 
             Input:
                Name of Thing (std::string)
@@ -459,30 +457,27 @@ namespace trogdor {
          */
          inline Thing *getThing(const std::string name) {
 
-            if (!things.isEntitySet(name)) {
+            if (things.find(name) == things.end()) {
                return nullptr;
             }
 
-            return things.get(name);
+            return things[name].get();
          }
 
          /*
-            Returns a read-only reference to all things in the game that can be
-            iterated over. The underline pointers are of type shared_ptr<Entity>
-            and must be cast to shared_ptr<Thing> when accessing Thing-specific
-            methods.
+            Returns a read-only unordered_map of all things (shared_ptr<Thing>)
+            in the game.
 
             Input:
                (none)
 
             Output:
-               const entity::ThingMap &
+               const unordered_map<string, shared_ptr<Thing>> &
          */
-         inline const entity::ThingMap &getThings() const {return things;}
+         inline const auto &getThings() const {return things;}
 
          /*
             Returns the Being object associated with the specified being name.
-            Throws an exception if the specified being name doesn't exist.
 
             Input:
                Name of being (std::string)
@@ -492,30 +487,27 @@ namespace trogdor {
          */
          inline Being *getBeing(const std::string name) {
 
-            if (!beings.isEntitySet(name)) {
+            if (beings.find(name) == beings.end()) {
                return nullptr;
             }
 
-            return beings.get(name);
+            return beings[name].get();
          }
 
          /*
-            Returns a read-only reference to all beings in the game that can be
-            iterated over. The underline pointers are of type shared_ptr<Entity>
-            and must be cast to shared_ptr<Being> when accessing Being-specific
-            methods.
+            Returns a read-only unordered_map of all beings (shared_ptr<Being>)
+            in the game.
 
             Input:
                (none)
 
             Output:
-               const entity::BeingMap &
+               const unordered_map<string, shared_ptr<Being>> &
          */
-         inline const entity::BeingMap &getBeings() const {return beings;}
+         inline const auto &getBeings() const {return beings;}
 
          /*
             Returns the Player object associated with the specified player name.
-            Throws an exception if the specified player name doesn't exist.
 
             Input:
                Name of player (std::string)
@@ -525,30 +517,27 @@ namespace trogdor {
          */
          inline Player *getPlayer(const std::string name) {
 
-            if (!players.isEntitySet(name)) {
+            if (players.find(name) == players.end()) {
                return nullptr;
             }
 
-            return players.get(name);
+            return players[name].get();
          }
 
          /*
-            Returns a read-only reference to all players in the game that can be
-            iterated over. The underline pointers are of type shared_ptr<Entity>
-            and must be cast to shared_ptr<Player> when accessing Player-specific
-            methods.
+            Returns a read-only unordered_map of all players (shared_ptr<Player>)
+            in the game.
 
             Input:
                (none)
 
             Output:
-               const entity::PlayerMap &
+               const unordered_map<string, shared_ptr<Player>> &
          */
-         inline const entity::PlayerMap &getPlayers() const {return players;}
+         inline const auto &getPlayers() const {return players;}
 
          /*
             Returns the Creature object associated with the specified name.
-            Throws an exception if the creature doesn't exist.
 
             Input:
                Name of creature (std::string)
@@ -558,30 +547,27 @@ namespace trogdor {
          */
          inline Creature *getCreature(const std::string name) {
 
-            if (!creatures.isEntitySet(name)) {
+            if (creatures.find(name) == creatures.end()) {
                return nullptr;
             }
 
-            return creatures.get(name);
+            return creatures[name].get();
          }
 
          /*
-            Returns a read-only reference to all creatures in the game that can
-            be iterated over. The underline pointers are of type shared_ptr<Entity>
-            and must be cast to shared_ptr<Creature> when accessing
-            Creature-specific methods.
+            Returns a read-only unordered_map of all creatures
+            (shared_ptr<Creature>) in the game.
 
             Input:
                (none)
 
             Output:
-               const entity::CreatureMap &
+               const unordered_map<string, shared_ptr<Creature>> &
          */
-         inline const entity::CreatureMap &getCreatures() const {return creatures;}
+         inline const auto &getCreatures() const {return creatures;}
 
          /*
-            Returns the Object associated with the specified name. Throws an
-            exception if the Object doesn't exist.
+            Returns the Object associated with the specified name.
 
             Input:
                Name of Object (std::string)
@@ -591,30 +577,27 @@ namespace trogdor {
          */
          inline Object *getObject(const std::string name) {
 
-            if (!objects.isEntitySet(name)) {
+            if (objects.find(name) == objects.end()) {
                return nullptr;
             }
 
-            return objects.get(name);
+            return objects[name].get();
          }
 
          /*
-            Returns a read-only reference to all objects in the game that can be
-            iterated over. The underline pointers are of type shared_ptr<Entity>
-            and must be cast to shared_ptr<Object> when accessing Object-specific
-            methods.
+            Returns a read-only unordered_map of all objects (shared_ptr<Object>)
+            in the game.
 
             Input:
                (none)
 
             Output:
-               const entity::ObjectMap &
+               const unordered_map<string, shared_ptr<Object>> &
          */
-         inline const entity::ObjectMap &getObjects() const {return objects;}
+         inline const auto &getObjects() const {return objects;}
 
          /*
-            Returns the Room associated with the specified name. Throws an
-            exception if the Room doesn't exist.
+            Returns the Room associated with the specified name.
 
             Input:
                Name of Room (std::string)
@@ -624,26 +607,24 @@ namespace trogdor {
          */
          inline Room *getRoom(const std::string name) {
 
-            if (!rooms.isEntitySet(name)) {
+            if (rooms.find(name) == rooms.end()) {
                return nullptr;
             }
 
-            return rooms.get(name);
+            return rooms[name].get();
          }
 
          /*
-            Returns a read-only reference to all rooms in the game that can be
-            iterated over. The underline pointers are of type shared_ptr<Entity>
-            and must be cast to shared_ptr<Room> when accessing Room-specific
-            methods.
+            Returns a read-only unordered_map of all rooms (shared_ptr<Room>) in
+            the game.
 
             Input:
                (none)
 
             Output:
-               const entity::RoomMap &
+               const unordered_map<string, shared_ptr<Room>> &
          */
-         inline const entity::RoomMap &getRooms() const {return rooms;}
+         inline const auto &getRooms() const {return rooms;}
 
          /*
             Wraps around the other insertEntity methods in cases where I have a
@@ -657,87 +638,43 @@ namespace trogdor {
          */
          inline void insertEntity(std::string name, std::shared_ptr<entity::Entity> entity) {
 
+            if (entities.find(name) != entities.end()) {
+               throw entity::EntityException(std::string("Entity '") + name + "' already exists");
+            }
+
             switch (entity->getType()) {
 
                case entity::ENTITY_ROOM:
-                  insertEntity(name, std::dynamic_pointer_cast<entity::Room>(entity));
+
+                  places[name] = std::dynamic_pointer_cast<Place>(entity);
+                  rooms[name] = std::dynamic_pointer_cast<Room>(entity);
+
                   break;
 
                case entity::ENTITY_OBJECT:
-                  insertEntity(name, std::dynamic_pointer_cast<entity::Object>(entity));
+
+                  things[name] = std::dynamic_pointer_cast<Thing>(entity);
+                  objects[name] = std::dynamic_pointer_cast<Object>(entity);
+
                   break;
 
                case entity::ENTITY_CREATURE:
-                  insertEntity(name, std::dynamic_pointer_cast<entity::Creature>(entity));
+
+                  things[name] = std::dynamic_pointer_cast<Thing>(entity);
+                  beings[name] = std::dynamic_pointer_cast<Being>(entity);
+                  creatures[name] = std::dynamic_pointer_cast<Creature>(entity);
+
                   break;
 
-               // Note: Player is a special case that's handled by insertPlayer()
+               case entity::ENTITY_PLAYER:
+                  throw UndefinedException("Game::insertEntity: Use Game::insertPlayer instead");
+
                default:
                   throw UndefinedException("Game::insertEntity: unsupported entity type");
             }
 
+            entities[name] = entity;
             entity->setGame(this);
-         }
-
-         /*
-            Inserts a creature into the game.
-
-            Input:
-               shared_ptr<entity::Creature>
-
-            Output:
-               (none)
-         */
-         inline void insertEntity(std::string name, std::shared_ptr<entity::Creature> creature) {
-
-            if (entities.isEntitySet(name)) {
-               throw entity::EntityException(std::string("Entity '") + name + "' already exists");
-            }
-
-            entities.set(name, creature);
-            things.set(name, creature);
-            beings.set(name, creature);
-            creatures.set(name, creature);
-         }
-
-         /*
-            Inserts an object into the game.
-
-            Input:
-               shared_ptr<entity::Object>
-
-            Output:
-               (none)
-         */
-         inline void insertEntity(std::string name, std::shared_ptr<entity::Object> object) {
-
-            if (entities.isEntitySet(name)) {
-               throw entity::EntityException(std::string("Entity '") + name + "' already exists");
-            }
-
-            entities.set(name, object);
-            things.set(name, object);
-            objects.set(name, object);
-         }
-
-         /*
-            Inserts a room into the game.
-
-            Input:
-               shared_ptr<entity::Room>
-
-            Output:
-               (none)
-         */
-         inline void insertEntity(std::string name, std::shared_ptr<entity::Room> room) {
-
-            if (entities.isEntitySet(name)) {
-               throw entity::EntityException(std::string("Entity '") + name + "' already exists");
-            }
-
-            entities.set(name, room);
-            places.set(name, room);
-            rooms.set(name, room);
          }
 
          /*

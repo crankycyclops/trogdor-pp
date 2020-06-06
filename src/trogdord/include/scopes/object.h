@@ -26,7 +26,7 @@ class ObjectController: public ThingController {
 		);
 
 		// Returns an iterable list of all object pointers in the game.
-		virtual const trogdor::entity::EntityMap getEntityPtrList(
+		virtual std::vector<trogdor::entity::Entity *> getEntityPtrList(
 			std::unique_ptr<trogdor::Game> &game
 		);
 

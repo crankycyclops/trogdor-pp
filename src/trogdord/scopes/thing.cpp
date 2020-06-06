@@ -38,11 +38,17 @@ trogdor::entity::Entity *ThingController::getEntityPtr(
 
 /*****************************************************************************/
 
-const trogdor::entity::EntityMap ThingController::getEntityPtrList(
+std::vector<trogdor::entity::Entity *> ThingController::getEntityPtrList(
 	std::unique_ptr<trogdor::Game> &game
 ) {
 
-	return game->getThings();
+	std::vector<trogdor::entity::Entity *> things;
+
+	for (const auto &thing: game->getThings()) {
+		things.push_back(thing.second.get());
+	}
+
+	return things;
 }
 
 /*****************************************************************************/
