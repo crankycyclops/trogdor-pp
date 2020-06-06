@@ -100,7 +100,6 @@ namespace trogdor::entity {
             break;
 
          default:
-
             throw UndefinedException(
                std::string("Place::insertThing(): attempting to insert unsupported type '")
                + thing->getTypeName() + "'");
@@ -109,56 +108,75 @@ namespace trogdor::entity {
 
    /****************************************************************************/
 
-   void Place::removeThingByName(Thing *thing) {
+   void Place::removePlayer(Player *player) {
 
-      std::vector<std::string> aliases = thing->getAliases();
+      for (const auto &alias: player->getAliases()) {
 
-      for (unsigned i = 0; i < aliases.size(); i++) {
-
-         switch (thing->getType()) {
-
-            case ENTITY_PLAYER:
-
-               if (beingsByName.find(aliases[i]) != beingsByName.end()) {
-                  beingsByName.find(aliases[i])->second.remove(static_cast<Being *>(thing));
-               }
-
-               if (playersByName.find(aliases[i]) != playersByName.end()) {
-                  playersByName.find(aliases[i])->second.remove(static_cast<Player *>(thing));
-               }
-
-               break;
-
-            case ENTITY_CREATURE:
-
-               if (beingsByName.find(aliases[i]) != beingsByName.end()) {
-                  beingsByName.find(aliases[i])->second.remove(static_cast<Being *>(thing));
-               }
-
-               if (creaturesByName.find(aliases[i]) != creaturesByName.end()) {
-                  creaturesByName.find(aliases[i])->second.remove(static_cast<Creature *>(thing));
-               }
-
-               break;
-
-            case ENTITY_OBJECT:
-
-               if (objectsByName.find(aliases[i]) != objectsByName.end()) {
-                  objectsByName.find(aliases[i])->second.remove(static_cast<Object *>(thing));
-               }
-
-               break;
-
-            default:
-               throw UndefinedException(
-                  std::string("RemoveThingByName called on unsupported Entity type '")
-                  + thing->getTypeName() + "'. This is a bug.");
+         if (playersByName.find(alias) != playersByName.end()) {
+            playersByName.find(alias)->second.remove(player);
          }
 
-         if (thingsByName.find(aliases[i]) != thingsByName.end()) {
-            thingsByName.find(aliases[i])->second.remove(thing);
+         if (beingsByName.find(alias) != beingsByName.end()) {
+            beingsByName.find(alias)->second.remove(player);
+         }
+
+         if (thingsByName.find(alias) != thingsByName.end()) {
+            thingsByName.find(alias)->second.remove(player);
          }
       }
+
+      players.remove(player);
+      beings.remove(player);
+      things.remove(player);
+
+      player->setLocation(nullptr);
+   }
+
+   /****************************************************************************/
+
+   void Place::removeCreature(Creature *creature) {
+
+      for (const auto &alias: creature->getAliases()) {
+
+         if (creaturesByName.find(alias) != creaturesByName.end()) {
+            creaturesByName.find(alias)->second.remove(creature);
+         }
+
+         if (beingsByName.find(alias) != beingsByName.end()) {
+            beingsByName.find(alias)->second.remove(creature);
+         }
+
+         if (thingsByName.find(alias) != thingsByName.end()) {
+            thingsByName.find(alias)->second.remove(creature);
+         }
+      }
+
+      creatures.remove(creature);
+      beings.remove(creature);
+      things.remove(creature);
+
+      creature->setLocation(nullptr);
+   }
+
+   /****************************************************************************/
+
+   void Place::removeObject(Object *object) {
+
+      for (const auto &alias: object->getAliases()) {
+
+         if (objectsByName.find(alias) != objectsByName.end()) {
+            objectsByName.find(alias)->second.remove(object);
+         }
+
+         if (thingsByName.find(alias) != thingsByName.end()) {
+            thingsByName.find(alias)->second.remove(object);
+         }
+      }
+
+      objects.remove(object);
+      things.remove(object);
+
+      object->setLocation(nullptr);
    }
 
    /****************************************************************************/
@@ -168,33 +186,22 @@ namespace trogdor::entity {
       switch (thing->getType()) {
 
          case ENTITY_PLAYER:
-
-            beings.remove(static_cast<Being *>(thing));
-            players.remove(static_cast<Player *>(thing));
+            removePlayer(static_cast<Player *>(thing));
             break;
 
          case ENTITY_CREATURE:
-
-            beings.remove(static_cast<Being *>(thing));
-            creatures.remove(static_cast<Creature *>(thing));
+            removeCreature(static_cast<Creature *>(thing));
             break;
 
          case ENTITY_OBJECT:
-
-            objects.remove(static_cast<Object *>(thing));
+            removeObject(static_cast<Object *>(thing));
             break;
 
          default:
-
             throw UndefinedException(
             std::string("Place::removeThing(): attempting to remove unsupported type '")
                + thing->getTypeName() + "'");
       }
-
-      things.remove(thing);
-      removeThingByName(thing);
-
-      thing->setLocation(0);
    }
 
    /****************************************************************************/

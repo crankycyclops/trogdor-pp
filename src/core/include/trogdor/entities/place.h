@@ -24,10 +24,6 @@ namespace trogdor::entity {
 
    class Place: public Entity {
 
-      private:
-
-         void removeThingByName(Thing *thing);
-
       protected:
 
          // sequential list of all entities in a place
@@ -136,6 +132,39 @@ namespace trogdor::entity {
          */
          void insertThing(Thing *thing);
          inline void insertThing(std::shared_ptr<Thing> thing) {insertThing(thing.get());}
+
+         /*
+            Removes a Player from the Place.
+
+            Input:
+               Pointer to Player
+
+            Output:
+               (none)
+         */
+         void removePlayer(Player *player);
+
+         /*
+            Removes a Creature from the Place.
+
+            Input:
+               Pointer to Creature
+
+            Output:
+               (none)
+         */
+         void removeCreature(Creature *creature);
+
+         /*
+            Removes an Object from the Place.
+
+            Input:
+               Pointer to Object
+
+            Output:
+               (none)
+         */
+         void removeObject(Object *object);
 
          /*
             Removes a Thing from the Place.
