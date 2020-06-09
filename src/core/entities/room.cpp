@@ -23,7 +23,7 @@ namespace trogdor::entity {
 
    /**************************************************************************/
 
-   void Room::setConnection(std::string direction, Room *connectTo) {
+   void Room::setConnection(std::string direction, const std::shared_ptr<Room> &connectTo) {
 
       if (game->getVocabulary().isDirection(direction)) {
          connections[direction] = connectTo;

@@ -504,7 +504,7 @@ namespace trogdor {
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
          Room *room;
-         Room *connectToRoom = game->getRoom(operation->getChildren()[2]->getValue()).get();
+         auto connectToRoom = game->getRoom(operation->getChildren()[2]->getValue());
 
          std::string targetType = operation->getChildren()[0]->getValue();
          std::string sourceRoomOrClass = operation->getChildren()[1]->getValue();
