@@ -85,6 +85,48 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   void Entity::addCallback(
+      std::string operation,
+      std::shared_ptr<std::function<void(std::any)>> callback
+   ) {
+
+      callbacks[operation].push_back(callback);
+   }
+
+   /***************************************************************************/
+
+   size_t Entity::removeCallbacks(std::string operation) {
+
+      if (callbacks.end() != callbacks.find(operation)) {
+
+         size_t size = callbacks[operation].size();
+
+         callbacks.erase(operation);
+         return size;
+      }
+
+      return 0;
+   }
+
+   /***************************************************************************/
+
+   void Entity::removeCallback(
+      std::string operation,
+      const std::shared_ptr<std::function<void(std::any)>> &callback
+   ) {
+
+      if (callbacks.end() != callbacks.find(operation)) {
+
+         auto it = std::find(callbacks[operation].begin(), callbacks[operation].end(), callback);
+
+         if (it != callbacks[operation].end()) {
+            callbacks[operation].erase(it);
+         }
+      }
+   }
+
+   /***************************************************************************/
+
    void Entity::setTag(std::string tag) {
 
       // Make sure the tag only gets inserted once

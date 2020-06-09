@@ -355,10 +355,6 @@ namespace trogdor {
 
    void Game::addCallback(std::string operation, std::shared_ptr<std::function<void(std::any)>> callback) {
 
-      if (callbacks.end() == callbacks.find(operation)) {
-         callbacks[operation] = {};
-      }
-   
       callbacks[operation].push_back(callback);
    }
 

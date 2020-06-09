@@ -2,6 +2,7 @@
 #define ENTITY_H
 
 
+#include <any>
 #include <list>
 #include <set>
 #include <memory>
@@ -76,6 +77,13 @@ namespace trogdor::entity {
 
          // meta data associated with the entity
          std::unordered_map<std::string, std::string> meta;
+
+         // One or more callbacks that will be executed when various operations
+         // occur within the game.
+         std::unordered_map<
+            std::string,
+            std::vector<std::shared_ptr<std::function<void(std::any)>>>
+         > callbacks;
 
       protected:
 
@@ -252,6 +260,51 @@ namespace trogdor::entity {
                (none)
          */
          virtual ~Entity() = 0;
+
+         /*
+            Adds a callback that should be called when a certain operation
+            occurs on the Entity.
+
+            Input:
+               Operation the callback should be attached to (std::string)
+               Callback (std::shared_ptr<std::function<void(std::any)>>)
+
+            Output:
+               (none)
+         */
+         void addCallback(
+            std::string operation,
+            std::shared_ptr<std::function<void(std::any)>> callback
+         );
+
+         /*
+            Removes all callbacks associated with the specified operations and
+            returns the number of callbacks removed.
+
+            Input:
+               Operation whose callbacks should be removed (std::string)
+
+            Output:
+               Number of callbacks removed (size_t)
+         */
+         size_t removeCallbacks(std::string operation);
+
+         /*
+            Removes the specific callback associated with the specified
+            operation. This method is why I chose to store shared_ptrs instead
+            of the function itself (std::functions can't be compared.)
+
+            Input:
+               Operation whose callbacks should be removed (std::string)
+               The specific callback to remove (const std::shared_ptr<std::function<void(std::any)>> &)
+
+            Output:
+               (none)
+         */
+         void removeCallback(
+            std::string operation,
+            const std::shared_ptr<std::function<void(std::any)>> &callback
+         );
 
          /*
             Returns a reference to the Entity's input stream.  A typical use

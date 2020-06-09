@@ -718,7 +718,7 @@ namespace trogdor {
             To pause and resume a game, simply stop and start it.
 
             If one or more callbacks have been added with the key 'start', they
-            will be called after the game is started.
+            will be called after the game is started with no arguments.
 
             Input: (none)
             Output: (none)
@@ -733,7 +733,7 @@ namespace trogdor {
             To pause and resume a game, simply stop and start it.
 
             If one or more callbacks have been added with the key 'stop', they
-            will be called after the game is started.
+            will be called after the game is started with no arguments.
 
             Input: (none)
             Output: (none)
@@ -816,6 +816,10 @@ namespace trogdor {
             primary purpose is to give the client the option of confirming that
             the user has read the introduction before they can start playing.
 
+            If one or more callbacks have been set on the Game object with the
+            key 'insertPlayer', it will be called after the player has been
+            inserted with the player as the only argument.
+
             Input:
                Player name (std::string)
                Pointer to an output stream (Trogout *)
@@ -831,6 +835,10 @@ namespace trogdor {
          /*
             Removes a player from the game.  Does nothing if the player with the
             specified name doesn't exist.
+
+            If one or more callbacks have been set on the Game object with the
+            key 'removePlayer', it will be called before the player has been
+            removed with the player as the only argument.
 
             Input:
                Name of player (std::string)
@@ -908,7 +916,10 @@ namespace trogdor {
             Output:
                (none)
          */
-         void addCallback(std::string operation, std::shared_ptr<std::function<void(std::any)>> callback);
+         void addCallback(
+            std::string operation,
+            std::shared_ptr<std::function<void(std::any)>> callback
+         );
 
          /*
             Removes all callbacks associated with the specified operations and
@@ -934,7 +945,10 @@ namespace trogdor {
             Output:
                (none)
          */
-         void removeCallback(std::string operation, const std::shared_ptr<std::function<void(std::any)>> &callback);
+         void removeCallback(
+            std::string operation,
+            const std::shared_ptr<std::function<void(std::any)>> &callback
+         );
    };
 }
 

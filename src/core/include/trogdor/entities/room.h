@@ -114,40 +114,7 @@ namespace trogdor::entity {
             Output:
                std::shared_ptr<Room>
          */
-         inline std::shared_ptr<Room> getConnectionByIndex(size_t i) {
-
-            std::string direction;
-            std::weak_ptr<Room> connection;
-
-            if (0 == getNumConnections()) {
-               return std::shared_ptr<Room>();
-            }
-
-            else if (i > getNumConnections() - 1) {
-               direction = connections.begin()->first;
-               connection = connections.begin()->second;
-            }
-
-            else {
-
-               auto c = connections.begin();
-
-               for (; i > 0; i--) {
-                  c++;
-               }
-
-               direction = c->first;
-               connection = c->second;
-            }
-
-            std::shared_ptr<Room> retVal = connection.lock();
-
-            if (!retVal) {
-               connections.erase(direction);
-            }
-
-            return retVal;
-         }
+         std::shared_ptr<Room> getConnectionByIndex(size_t i);
 
          /*
             Connects Room to another Room at the specified direction.
