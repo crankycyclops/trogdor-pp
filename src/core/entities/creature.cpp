@@ -32,37 +32,75 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   // TODO: I can reimplement this as a BST so I don't have to rebuilt the
-   // whole list each time a weapon is added or removed from an inventory
-   void Creature::buildWeaponCache() {
+   bool Creature::insertIntoInventory(
+      const std::shared_ptr<Object> &object,
+      bool considerWeight
+   ) {
 
-      for (auto const &object: getInventoryObjects()) {
+      if (Being::insertIntoInventory(object, considerWeight)) {
+
+         // Make sure we initialize the callback that will be used to update the
+         // Creature's weapon cache every time the weapon tag is added or removed
+         // from an Object in the Creature's inventory.
+         if (!updateObjectTag) {
+            updateObjectTag = std::make_shared<std::function<void(std::any)>>([&](std::any data) {
+
+               auto args = std::any_cast<std::tuple<std::string, Object *>>(data);
+
+               std::string tag = std::get<0>(args);
+               Object *object = static_cast<Object *>(std::get<1>(args));
+
+               if (0 == tag.compare(Object::WeaponTag)) {
+
+                  // The weapon tag was added
+                  if (object->isTagSet(Object::WeaponTag)) {
+                     weaponCache.insert(object);
+                  }
+
+                  // The weapon tag was removed
+                  else {
+                     weaponCache.erase(object);
+                  }
+               }
+            });
+         }
 
          if (object->isTagSet(Object::WeaponTag)) {
-
-            bool inserted = false;
-
-            // insert weapon into the cache in sorted order (can't use for_each
-            // here because I need the iterator to insert at the correct position)
-            for (auto i = weaponCache.begin(); i != weaponCache.end(); i++) {
-               if (object->getDamage() >= (*i)->getDamage()) {
-                  weaponCache.insert(i, object.get());
-                  inserted = true;
-                  break;
-               }
-            }
-
-            // object belongs at the very back
-            if (!inserted) {
-               weaponCache.push_back(object.get());
-            }
+            weaponCache.insert(object.get());
+            object->addCallback("setTag", updateObjectTag);
+            object->addCallback("removeTag", updateObjectTag);
          }
-      };
+
+         return true;
+      }
+
+      return false;
+   }
+
+   /***************************************************************************/
+
+   void Creature::removeFromInventory(const std::shared_ptr<Object> &object) {
+
+      if (updateObjectTag) {
+         object->removeCallback("setTag", updateObjectTag);
+         object->removeCallback("removeTag", updateObjectTag);
+      }
+
+      if (object->isTagSet(Object::WeaponTag)) {
+         weaponCache.erase(object.get());
+      }
+
+      Being::removeFromInventory(object);
    }
 
    /***************************************************************************/
 
    Object *Creature::selectWeapon() {
+
+      // Creature doesn't have any weapons
+      if (!weaponCache.size()) {
+         return nullptr;
+      }
 
       static std::random_device rd;
       static std::mt19937 generator(rd());
@@ -74,10 +112,6 @@ namespace trogdor::entity {
 
       // creature was able to use a weapon
       if (distribution(generator) < p) {
-
-         if (0 == weaponCache.size()) {
-            buildWeaponCache();
-         }
 
          double pSelectWeapon = getAttributeFactor("intelligence") * 0.8;
          pSelectWeapon = pSelectWeapon > 0.0 ? pSelectWeapon + 0.2 : 0.0;
@@ -91,10 +125,10 @@ namespace trogdor::entity {
          }
 
          // we got all the way to the end, so return the weakest weapon
-         return weaponCache.back();
+         return *weaponCache.rbegin();
       }
 
       // creature either didn't have a weapon or couldn't use one
-      return 0;
+      return nullptr;
    }
 }

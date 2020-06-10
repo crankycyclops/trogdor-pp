@@ -33,10 +33,30 @@ namespace trogdor::entity {
 
       private:
 
-         // Cached list of weapons in the Creature's inventory, sorted from
-         // greatest to least amount of damage done. Used to speed up
-         // intelligent weapon selection during combat.
-         ObjectList weaponCache;
+         // Compares two Objects according to how much damage they inflict as
+         // weapons. Used to keep the Creature's weapon cache sorted.
+         struct DamageComparator {
+
+            inline bool operator() (const Object * const &lhs, const Object * const &rhs) const {
+               return lhs->getDamage() < lhs->getDamage();
+            }
+         };
+
+         // Cached set of weapons in the Creature's inventory, sorted from
+         // greatest to least amount of damage done. Used to speed up automatic
+         // weapon selection during combat. I'm going to leave this as a set of
+         // raw pointers instead of instances of std::weak_ptr because I know
+         // that any Object that's in this set is still owned by the Creature's
+         // inventory and therefore is still good.
+         std::set<Object *, DamageComparator> weaponCache;
+
+         // This callback, which fires whenever a tag is added to or removed
+         // from an inventory object, will add the object to the Creature's
+         // weapon cache if it's a weapon and remove it if it's not. This
+         // callback is added by insertIntoInventory() and removed by
+         // removeFromInventory(). This doesn't actually get initialized until
+         // the first time an object is added to a creature's inventory.
+         std::shared_ptr<std::function<void(std::any)>> updateObjectTag;
 
       protected:
 
@@ -75,6 +95,33 @@ namespace trogdor::entity {
          Creature(const Creature &c, std::string n);
 
          /*
+            Calls Being::insertIntoInventory and then, if necessary, updates the
+            Creature's weapon cache.
+
+            Input:
+               See Being::insertIntoInventory for documentation
+
+            Output:
+               bool (true on success and false on failure)
+         */
+         virtual bool insertIntoInventory(
+            const std::shared_ptr<Object> &object,
+            bool considerWeight = true
+         );
+
+         /*
+            Calls Being::removeFromInventory and then, if necessary, updates the
+            Creature's weapon cache.
+
+            Input:
+               See Being::removeFromInventory for documentation
+
+            Output:
+               (none)
+         */
+         virtual void removeFromInventory(const std::shared_ptr<Object> &object);
+
+         /*
             Returns a smart pointer representing a raw Creature pointer. Be careful
             with this and only call it on Entities you know are managed by smart
             pointers. If, for example, you call this method on entities that are
@@ -90,34 +137,6 @@ namespace trogdor::entity {
 
             return std::dynamic_pointer_cast<Creature>(Entity::getShared());
          }
-
-         /*
-            Clears the cached sorted list of weapons in the Creature's inventory.
-            The interface needs to be public so that if an Object in the
-            Creature's inventory has its weapon attribute turned off, perhaps by
-            a script, then setting the "weapon" tag on the Object can signal the
-            Creature that its cache needs to be rebuilt.
-
-            Input:
-               (none)
-
-            Output:
-               (none)
-         */
-         inline void clearWeaponCache() {weaponCache.clear();}
-
-         /*
-            Builds cached sorted list of weapons in the Creature's inventory.
-            This is used to speed up weapon selection during combat, so we don't
-            have to constantly build this list on the fly.
-
-            Input:
-               (none)
-
-            Output:
-               (none)
-         */
-         void buildWeaponCache();
 
          /*
             Returns the Creature's allegiance.

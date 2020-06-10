@@ -30,23 +30,6 @@ namespace trogdor::entity {
          static const int  DEFAULT_DAMAGE = 1;
          static const int DEFAULT_WEIGHT = 0;
 
-      private:
-
-         /*
-            Call this whenever the "weapon" tag is set or removed for an Object.
-            That way, if some runtime behavior changes an Object to or from a
-            weapon, and it's owned by a Creature, we can tell that Creature it
-            has to rebuild its weapons cache so it can properly choose a weapon
-            during combat.
-
-            Input:
-               (none)
-
-            Output:
-               (none)
-         */
-         void updateOwnerWeaponCache();
-
       protected:
 
          int weight;  // how much weight Object uses in a Being's inventory
@@ -106,7 +89,7 @@ namespace trogdor::entity {
             Output:
                The weight (int)
          */
-         inline int getWeight() {return weight;}
+         inline int getWeight() const {return weight;}
 
          /*
             Returns damage Object does if it's a weapon, measured in hit points.
@@ -117,7 +100,7 @@ namespace trogdor::entity {
             Output:
                Damage in hit points (int)
          */
-         inline int getDamage() {return damage;}
+         inline int getDamage() const {return damage;}
 
          /*
             Sets the owner.
@@ -141,30 +124,6 @@ namespace trogdor::entity {
                (none)
          */
          inline void setWeight(int w) {weight = w;}
-
-         /*
-            Wraps around Entity::setTag to see if any object-specific behavior
-            needs to be invoked afterward.
-
-            Input:
-               Tag (std::tring)
-
-            Output:
-               (none)
-         */
-         virtual void setTag(std::string tag);
-
-         /*
-            Wraps around Entity::removeTag to see if any object-specific behavior
-            needs to be invoked afterward.
-
-            Input:
-               Tag (std::string)
-
-            Output:
-               (none)
-         */
-         virtual void removeTag(std::string tag);
 
          /*
             Sets amount of damage Object does if it's a weapon (measured in hit

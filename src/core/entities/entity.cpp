@@ -133,6 +133,15 @@ namespace trogdor::entity {
       if (tags.end() == tags.find(tag)) {
          tags.insert(tag);
       }
+
+      if (callbacks.end() != callbacks.find("setTag")) {
+
+         std::tuple<std::string, Entity *> args = {tag, this};
+
+         for (const auto &callback: callbacks["setTag"]) {
+            (*callback)(args);
+         }
+      }
    }
 
    /***************************************************************************/
@@ -141,6 +150,15 @@ namespace trogdor::entity {
 
       if (tags.end() != tags.find(tag)) {
          tags.erase(tag);
+      }
+
+      if (callbacks.end() != callbacks.find("removeTag")) {
+
+         std::tuple<std::string, Entity *> args = {tag, this};
+
+         for (const auto &callback: callbacks["removeTag"]) {
+            (*callback)(args);
+         }
       }
    }
 

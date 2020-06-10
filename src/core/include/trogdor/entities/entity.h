@@ -78,13 +78,6 @@ namespace trogdor::entity {
          // meta data associated with the entity
          std::unordered_map<std::string, std::string> meta;
 
-         // One or more callbacks that will be executed when various operations
-         // occur within the game.
-         std::unordered_map<
-            std::string,
-            std::vector<std::shared_ptr<std::function<void(std::any)>>>
-         > callbacks;
-
       protected:
 
          // every kind of Entity that we are by virtue of inheritance
@@ -107,6 +100,13 @@ namespace trogdor::entity {
          std::unique_ptr<Trogout> outStream;
          std::unique_ptr<Trogerr> errStream;
          std::unique_ptr<Trogin> inStream;
+
+         // One or more callbacks that will be executed when various operations
+         // occur within the game.
+         std::unordered_map<
+            std::string,
+            std::vector<std::shared_ptr<std::function<void(std::any)>>>
+         > callbacks;
 
          /*
             Displays an Entity.  This may be overridden by Entity types that
