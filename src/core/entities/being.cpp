@@ -190,7 +190,7 @@ namespace trogdor::entity {
 
       l->insertThing(getShared());
       setLocation(l);
-      l->observe(this);
+      l->observe(getShared());
 
       oldLoc->out("notifications") << getTitle() << " leaves." << std::endl;
 

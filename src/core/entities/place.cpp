@@ -217,7 +217,7 @@ namespace trogdor::entity {
       for_each(things.begin(), things.end(), [&](const std::shared_ptr<Thing> &thing) {
          if (observer != static_cast<Being *>(thing.get())) { // dirty, but it works
             observer->out("display") << std::endl;
-            thing->glance(observer);
+            thing->glance(observer->getShared());
          }
       });
    }

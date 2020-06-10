@@ -131,7 +131,7 @@ namespace trogdor {
       if (auto location = player->getLocation().lock()) {
 
          if (object.length() == 0) {
-            location->observe(player, true, true);
+            location->observe(player->getShared(), true, true);
          }
 
          else {
@@ -155,7 +155,7 @@ namespace trogdor {
 
             try {
                Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(items, player);
-               thing->observe(player, true, true);
+               thing->observe(player->getShared(), true, true);
             }
 
             catch (const std::string &name) {
@@ -188,7 +188,7 @@ namespace trogdor {
       if (auto location = player->getLocation().lock()) {
 
          if (thingName.length() == 0) {
-            location->observe(player, true, true);
+            location->observe(player->getShared(), true, true);
          }
 
          else {
