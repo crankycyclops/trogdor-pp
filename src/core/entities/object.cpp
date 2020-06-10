@@ -36,17 +36,6 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   void Object::updateOwnerWeaponCache() {
-
-      std::shared_ptr<Being> ownerShared = owner.lock();
-
-      if (ownerShared && ownerShared->isType(ENTITY_CREATURE)) {
-         std::dynamic_pointer_cast<Creature>(ownerShared)->clearWeaponCache();
-      }
-   }
-
-   /***************************************************************************/
-
    void Object::addAlias(std::string alias) {
 
       Thing::addAlias(alias);
@@ -54,26 +43,6 @@ namespace trogdor::entity {
 
       if (ownerShared) {
          ownerShared->indexInventoryItemName(alias, this);
-      }
-   }
-
-   /***************************************************************************/
-
-   void Object::setTag(std::string tag) {
-
-      Entity::setTag(tag);
-
-      if (WeaponTag == tag) {
-         updateOwnerWeaponCache();
-      }
-   }
-
-   /***************************************************************************/
-
-   void Object::removeTag(std::string tag) {
-
-      if (WeaponTag == tag) {
-         updateOwnerWeaponCache();
       }
    }
 }

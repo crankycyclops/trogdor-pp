@@ -19,9 +19,8 @@ namespace trogdor::entity {
 
       protected:
 
-         // connections to other rooms (implemented as a hash table so that we
-         // can later trivially add additional directions)
-         std::unordered_map<std::string, Room *> connections;
+         // maps directions to connected rooms
+         std::unordered_map<std::string, std::weak_ptr<Room>> connections;
 
       public:
 
@@ -55,22 +54,31 @@ namespace trogdor::entity {
          }
 
          /*
-            Returns room connected by the specified direction.  Returns 0 if
-            the connection does not exist.
+            Returns room connected by the specified direction.  Returns an empty
+            shared pointer if the connection doesn't exist or if the connection
+            is to a room that no longer exists. If the connection is for a room
+            that doesn't exist, it will be removed before an empty shared_ptr is
+            returned.
 
             Input:
                Direction (std::tring)
 
             Output:
-               Room *
+               std::shared_ptr<Room>
          */
-         inline Room *getConnection(std::string direction) const {
+         inline std::shared_ptr<Room> getConnection(std::string direction) {
 
             if (connections.find(direction) == connections.end()) {
-               return 0;
+               return std::shared_ptr<Room>();
             }
 
-            return connections.find(direction)->second;
+            std::shared_ptr<Room> connection = connections[direction].lock();
+
+            if (!connection) {
+               connections.erase(direction);
+            }
+
+            return connection;
          }
 
          /*
@@ -80,9 +88,9 @@ namespace trogdor::entity {
                (none)
 
             Output:
-               Number of connections (unsigned int)
+               Number of connections (size_t)
          */
-         inline unsigned int getNumConnections() const {return connections.size();}
+         inline size_t getNumConnections() const {return connections.size();}
 
          /*
             Returns a connected room by numeric index (in so far as we iterate
@@ -93,50 +101,32 @@ namespace trogdor::entity {
             If index > getNumConnections() - 1, then the first connection will
             be returned (arbitrary decision.)
 
-            Returns a null pointer if there are no connections.
+            Returns an empty shared_ptr if there are no connections. If the
+            connection refers to a pointer that's no longer valid, it will be
+            removed.
 
             This is very hokey, but ultimately allows us to get a random
             connection, which is useful specifically for Creatures that wander.
 
             Input:
-               index (unsigned int)
+               index (size_t)
 
             Output:
-               connected Room (Room *)
+               std::shared_ptr<Room>
          */
-         inline Room *getConnectionByIndex(unsigned int i) const {
-
-            if (0 == getNumConnections()) {
-               return 0;
-            }
-
-            else if (i > getNumConnections() - 1) {
-               return connections.begin()->second;
-            }
-
-            else {
-
-               std::unordered_map<std::string, Room *>::const_iterator c = connections.begin();
-
-               for (; i > 0; i--) {
-                  c++;
-               }
-
-               return c->second;
-            }
-         }
+         std::shared_ptr<Room> getConnectionByIndex(size_t i);
 
          /*
             Connects Room to another Room at the specified direction.
 
             Input:
                Direction where the connection is made (string)
-               Room direction connects to (Room *)
+               Room direction connects to (const std::shared_ptr<Room> &)
 
             Output:
                (none)
          */
-         void setConnection(std::string direction, Room *connectTo);
+         void setConnection(std::string direction, const std::shared_ptr<Room> &connectTo);
    };
 }
 

@@ -33,17 +33,26 @@ namespace trogdor {
          }
 
          auto curLoc = std::static_pointer_cast<Room>(location);
-         unsigned int nConnections = curLoc->getNumConnections();
+         size_t nConnections = curLoc->getNumConnections();
 
          // don't do anything if Creature is stuck in a room with no exits
-         if (0 == nConnections) {
+         if (!nConnections) {
             return;
          }
 
          // TODO: use AI to select destination more intelligently; currently random
          // The whole rest of this function will change when we do...
          std::uniform_int_distribution<int> connectionsDist(0, nConnections - 1);
-         wanderer->gotoLocation(curLoc->getConnectionByIndex(connectionsDist(generator))->getShared());
+
+         std::shared_ptr<Room> connection = curLoc->getConnectionByIndex(
+            connectionsDist(generator)
+         )->getShared();
+
+         // Only proceed if the connection is to a Room that still exists (valid
+         // pointer)
+         if (connection) {
+            wanderer->gotoLocation(connection);
+         }
       }
 
       // if wander interval ever changes, we should make sure it's updated

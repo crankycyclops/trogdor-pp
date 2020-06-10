@@ -116,7 +116,10 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   bool Being::insertIntoInventory(const std::shared_ptr<Object> &object, bool considerWeight) {
+   bool Being::insertIntoInventory(
+      const std::shared_ptr<Object> &object,
+      bool considerWeight
+   ) {
 
       // make sure the Object will fit
       if (considerWeight && inventory.weight > 0 &&
@@ -137,10 +140,6 @@ namespace trogdor::entity {
       inventory.count++;
       object->setOwner(getShared());
 
-      if (isType(ENTITY_CREATURE) && object->isTagSet(Object::WeaponTag)) {
-         static_cast<Creature *>(this)->clearWeaponCache();
-      }
-
       return true;
    }
 
@@ -158,10 +157,6 @@ namespace trogdor::entity {
       inventory.count--;
       inventory.currentWeight -= object->getWeight();
       object->setOwner(std::weak_ptr<Being>());
-
-      if (isType(ENTITY_CREATURE) && object->isTagSet(Object::WeaponTag)) {
-         static_cast<Creature *>(this)->clearWeaponCache();
-      }
    }
 
    /***************************************************************************/
@@ -282,7 +277,7 @@ namespace trogdor::entity {
       bool doEvents
    ) {
 
-      if (auto location = object->getLocation().lock()) {
+      if (auto location = getLocation().lock()) {
 
          if (doEvents && !game->event({
             "beforeDrop",
@@ -314,8 +309,8 @@ namespace trogdor::entity {
             }
          };
 
-         location->insertThing(object);
          removeFromInventory(object);
+         location->insertThing(object);
 
          if (doEvents) {
             game->event({

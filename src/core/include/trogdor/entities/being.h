@@ -550,7 +550,10 @@ namespace trogdor::entity {
             Output:
                bool (true on success and false on failure)
          */
-         bool insertIntoInventory(const std::shared_ptr<Object> &object, bool considerWeight = true);
+         virtual bool insertIntoInventory(
+            const std::shared_ptr<Object> &object,
+            bool considerWeight = true
+         );
 
          /*
             Removes an object from a Being's inventory.  If the Object isn't in
@@ -562,7 +565,7 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         void removeFromInventory(const std::shared_ptr<Object> &object);
+         virtual void removeFromInventory(const std::shared_ptr<Object> &object);
 
          /*
             Make the Being move to the specified Place.  This both sets the
