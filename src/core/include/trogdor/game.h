@@ -77,27 +77,41 @@ namespace trogdor {
          static const bool DEFAULT_INTRODUCTION_ENABLED = false;
          static const bool DEFAULT_INTRODUCTION_PAUSE   = false;
 
-         /* lock on this to keep data consistent between threads */
-         std::mutex resourceMutex;
-
       private:
 
-         // whether or not a game is in progress
+         // Whether or not a game is in progress
          bool inGame;
+
+         // Lock on this to keep data consistent between threads
+         // I know people aren't a fan of recursive_mutexes, and they have a
+         // point. But I choose to use it here (so far, Game is the only class
+         // to use it) because of code paths like the following:
+         //
+         // Game::processCommand calls Game::removePlayer.
+         //
+         // The above example is necessary to implement a "quit" action in the
+         // standalone client that ships along with the library. In this case,
+         // I can't factor out the locking bit into a separate private method
+         // because I need to be able to access it publicly in two different
+         // contexts: one in which a lock is required and one in which it's not.
+         // The simplest solution I can see is the use the recursive lock. If
+         // anyone knows a better way, please submit an issue or pull request,
+         // as I'd love to learn something new.
+         std::recursive_mutex mutex;
 
          // Keeps time in the game and executes scheduled jobs
          std::unique_ptr<Timer> timer;
 
-         // the last executed command
+         // The last executed command
          std::shared_ptr<Command> lastCommand;
 
-         // game meta data (like title, description, etc.)
+         // Game meta data (like title, description, etc.)
          std::unordered_map<std::string, std::string> meta;
 
          // Maintains the game's vocabulary
          Vocabulary vocabulary;
 
-         // used to call subscribed event listeners
+         // Used to call subscribed event listeners
          event::EventHandler events;
 
          // Global EventListener for the entire game
@@ -106,14 +120,14 @@ namespace trogdor {
          // Global Lua state for the entire game
          std::shared_ptr<LuaState> L;
 
-         // defines if and how a player is presented with an introduction when
+         // Defines if and how a player is presented with an introduction when
          // they're first added to the game
          struct {
             bool enabled;            // whether to show new players an intro
             std::string text;        // introduction's content
          } introduction;
 
-         /* global error stream */
+         // Global error stream
          std::unique_ptr<Trogerr> errStream;
 
          // One or more callbacks that will be executed when various operations
@@ -866,18 +880,13 @@ namespace trogdor {
             Input:
                Name of player (std::string)
                Message to output to player before removing (std::string: default is none)
-               Whether or not to lock on resourceMutex (default is true)
-                  . This avoids deadlock in the situation where processCommand,
-                    which locks on the same mutex, then results in the player
-                    being removed.
 
             Output:
                (none)
          */
          void removePlayer(
             const std::string name,
-            const std::string message = "",
-            const bool lockOnResourceMutex = true
+            const std::string message = ""
          );
 
          /*

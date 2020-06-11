@@ -24,5 +24,5 @@ void QuitAction::execute(
    trogdor::Game *game
 ) {
 
-   game->removePlayer(player->getName(), "", false);
+   game->removePlayer(player->getName());
 }
