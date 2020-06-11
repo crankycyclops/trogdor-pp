@@ -234,6 +234,81 @@ namespace trogdor {
 
    /***************************************************************************/
 
+   bool Game::removeEntity(std::string name) {
+
+      if (entities.end() == entities.find(name)) {
+         throw entity::EntityException("Entity not found");
+      }
+
+      // Removing the room named "start" would lead to undefined behavior.
+      else if (0 == name.compare("start")) {
+         throw UndefinedException("Cannot remove \"start\" as this would lead to undefined behavior.");
+      }
+
+      // If the Entity is contained in a location, it will have to be removed
+      // first.
+      else if (
+         entities[name]->isType(entity::EntityType::ENTITY_THING) &&
+         std::static_pointer_cast<entity::Thing>(entities[name])->getLocation().lock()
+      ) {
+         return false;
+      }
+
+      // If the Entity is contained in a Being's inventory, it will have to be
+      // removed first.
+      else if (
+         entities[name]->isType(entity::EntityType::ENTITY_OBJECT) &&
+         std::static_pointer_cast<entity::Object>(entities[name])->getOwner().lock()
+      ) {
+         return false;
+      }
+
+      resourceMutex.lock();
+
+      switch (entities[name]->getType()) {
+
+         case entity::ENTITY_ROOM:
+
+            places.erase(name);
+            rooms.erase(name);
+
+            break;
+
+         case entity::ENTITY_OBJECT:
+
+            things.erase(name);
+            objects.erase(name);
+
+            break;
+
+         case entity::ENTITY_CREATURE:
+
+            things.erase(name);
+            beings.erase(name);
+            creatures.erase(name);
+
+            break;
+
+         case entity::ENTITY_PLAYER:
+
+            removePlayer(name, "", false);
+            resourceMutex.unlock();
+
+            return true;
+
+         default:
+            throw UndefinedException("Game::removeEntity: unsupported entity type");
+      }
+
+      entities[name]->setGame(nullptr);
+      entities.erase(name);
+
+      resourceMutex.unlock();
+      return true;
+   }
+
+   /***************************************************************************/
+
    void Game::insertPlayer(std::shared_ptr<entity::Player> player,
    std::function<void()> confirmationCallback) {
 
@@ -317,6 +392,8 @@ namespace trogdor {
          if (lockOnResourceMutex) {
             resourceMutex.lock();
          }
+
+         entities[name]->setGame(nullptr);
 
          entities.erase(name);
          things.erase(name);

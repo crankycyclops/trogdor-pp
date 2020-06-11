@@ -668,6 +668,62 @@ namespace trogdor {
          void insertEntity(std::string name, std::shared_ptr<entity::Entity> entity);
 
          /*
+            Removes the entity referenced by name from the game. Returns true if
+            removal was successful and false if not and throws an instance of
+            EntityException if the specified entity doesn't exist and an
+            instance of UndefinedException if attempting to remove the room
+            named "start," which would lead to undefined behavior.
+
+            Removal of an entity will only be successful under the following
+            conditions:
+
+               1) The entity is not part of a Being's inventory; AND
+               2) The entity is not contained inside a Place
+
+            My logic for requiring these conditions to be met before an Entity
+            can be removed is that it forces the developer to decide what to do
+            before Entities that are owned by other Entities are removed. For
+            example, if an Object that's a part of a Player's inventory is
+            removed, the developer might want to send them a message about it.
+            To prepare the Entity for removal, you'll want to do something like
+            the following:
+
+            // In the case of a Thing, you'll have to make sure it's not inside
+            // a Place:
+            if (auto place = thing->getLocation().lock()) {
+               // Do something before removing it from its current location
+               thing->setLocation(std::weak_ptr<Place>());
+            }
+
+            // In the case of an Object, you'll also want an additional check
+            // for ownership by a Being
+            else if (auto owner = object->getOwner().lock()) {
+               // Do whatever you want before removing the object from the inventory
+               owner->removeItemFromInventory(object);
+            }
+
+            When an entity is removed from the game, it will continue to live on
+            until the last shared_ptr referencing it falls out of scope. In
+            order to signify that such an Entity has been removed and is no
+            longer to be considered a part of the game, its Game pointer will be
+            set to nullptr. In order to check that an Entity is still valid
+            before working with it, do something like the following:
+
+            // Instance of Entity will be considered removed and thus invalid if
+            // entity->getGame() returns nullptr
+            if (entity->getGame()) {
+               // Do whatever you were going to do because the Entity is valid
+            }
+
+            Input:
+               shared_ptr<entity::Entity>
+
+            Output:
+               (none)
+         */
+         bool removeEntity(std::string name);
+
+         /*
             Initializes the game, including the event handler, timer and all game
             entities.
 
