@@ -9,6 +9,8 @@
 #include <regex>
 #include <unordered_set>
 
+#include <trogdor/game.h>
+
 #include <trogdor/entities/type.h>
 #include <trogdor/messages.h>
 
@@ -20,11 +22,6 @@
 #include <trogdor/iostream/trogout.h>
 #include <trogdor/iostream/trogerr.h>
 
-
-namespace trogdor {
-
-   class Game;
-};
 
 namespace trogdor::entity {
 
@@ -45,7 +42,11 @@ namespace trogdor::entity {
 
    class Entity: public std::enable_shared_from_this<Entity> {
 
-      // friend void Game::removeEntity(std::string name);
+      // This is the only function that should ever set the game pointer after
+      // the Entity has been instantiated, and the only reason it must be able
+      // to do so is that setting game = nullptr signals that the Entity has
+      // been removed and is no longer valid.
+      friend bool Game::removeEntity(std::string name);
 
       private:
 

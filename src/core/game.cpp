@@ -229,6 +229,20 @@ namespace trogdor {
 
    /***************************************************************************/
 
+   bool Game::removeEntity(std::string name) {
+
+      // TODO
+      // Throw instance of EntityException if entity doesn't exist
+
+      // If Thing and it's in a place, fail
+      // Else if Object and its in a Being's inventory, fail
+      // Else remove entity
+
+      return true;
+   }
+
+   /***************************************************************************/
+
    void Game::insertPlayer(std::shared_ptr<entity::Player> player,
    std::function<void()> confirmationCallback) {
 
