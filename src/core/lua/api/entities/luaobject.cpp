@@ -95,6 +95,7 @@ namespace trogdor::entity {
 
       // Object will not exist in the game unless it's manually inserted
       Object *o = new Object(nullptr, name, std::make_unique<NullOut>(), g->err().copy());
+      o->setManagedByLua(true);
 
       // TODO: replace with class name once I support that
       o->setClass(Entity::typeToStr(entity::ENTITY_OBJECT));
@@ -118,6 +119,7 @@ namespace trogdor::entity {
 
       // Object will not exist in the game unless it's manually inserted
       Object *o = new Object(*prototype, name);
+      o->setManagedByLua(true);
 
       LuaState::pushEntity(L, o);
       return 1;

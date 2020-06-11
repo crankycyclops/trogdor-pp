@@ -42,12 +42,6 @@ namespace trogdor::entity {
 
    class Entity: public std::enable_shared_from_this<Entity> {
 
-      // This is the only function that should ever set the game pointer after
-      // the Entity has been instantiated, and the only reason it must be able
-      // to do so is that setting game = nullptr signals that the Entity has
-      // been removed and is no longer valid.
-      friend bool Game::removeEntity(std::string name);
-
       private:
 
          // Custom messages that should be displayed for certain events that act
@@ -106,6 +100,13 @@ namespace trogdor::entity {
             std::string,
             std::vector<std::shared_ptr<std::function<void(std::any)>>>
          > callbacks;
+
+         // Ordinarily, the lifetime of an Entity is managed by an instance of
+         // Game via std::shared_ptrs. However, if an Entity is created in a Lua
+         // state and is never assigned to a Game, Lua will manage it instead.
+         // This boolean flag lets me know whether or not to hold Lua's garbage
+         // collector responsible for a particular instance.
+         bool managedByLua = false;
 
          /*
             Displays an Entity.  This may be overridden by Entity types that
@@ -261,6 +262,29 @@ namespace trogdor::entity {
          virtual ~Entity() = 0;
 
          /*
+            Returns true if the Entity's lifetime is managed by Lua's garbage
+            collector and false if it's not.
+
+            Input:
+               (none)
+
+            Output:
+               Whether or not Entity's lifetime is managed by Lua (bool)
+         */
+         inline bool isManagedByLua() {return managedByLua;}
+
+         /*
+            Sets whether or not the Entity's lifetime should be managed by Lua.
+
+            Input:
+               bool
+
+            Output:
+               (none)
+         */
+         inline void setManagedByLua(bool flag) {managedByLua = flag;}
+
+         /*
             Adds a callback that should be called when a certain operation
             occurs on the Entity.
 
@@ -367,8 +391,8 @@ namespace trogdor::entity {
          inline Game *getGame() {return game;}
 
          /*
-            Should only be called when an Entity created by Lua is later
-            inserted into a running game.
+            Should only be called when an Entity is inserted into a Game or when
+            an Entity is removed from a Game.
 
             Input:
                Game *

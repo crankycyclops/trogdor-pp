@@ -670,7 +670,9 @@ namespace trogdor {
          /*
             Removes the entity referenced by name from the game. Returns true if
             removal was successful and false if not and throws an instance of
-            EntityException if the specified entity doesn't exist.
+            EntityException if the specified entity doesn't exist and an
+            instance of UndefinedException if attempting to remove the room
+            named "start," which would lead to undefined behavior.
 
             Removal of an entity will only be successful under the following
             conditions:

@@ -111,9 +111,9 @@ namespace trogdor::entity {
 
       Entity *e = checkEntity(L, -1);
 
-      // Entity is not owned by a game, so its allocation is managed solely by
-      // Lua and should therefore be subject to garbage collection
-      if (!e->getGame()) {
+      // Entity has not been assigned to a Game, so its allocation is managed
+      // solely by Lua and should be garbage collected.
+      if (e->isManagedByLua()) {
 
          // Make sure to call the appropriate destructor
          switch (e->getType()) {
