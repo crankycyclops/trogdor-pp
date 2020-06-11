@@ -1,5 +1,8 @@
 #include <memory>
 
+#include <trogdor/entities/place.h>
+#include <trogdor/entities/creature.h>
+
 #include <trogdor/event/triggers/autoattack.h>
 #include <trogdor/timer/jobs/autoattack.h>
 
@@ -9,8 +12,8 @@ namespace trogdor::event {
    EventReturn AutoAttackEventTrigger::operator()(Event e) {
 
       Game  *game  = std::get<Game *>(e.getArguments()[0]);
-      Being *being = static_cast<Being *>(std::get<Entity *>(e.getArguments()[1]));
-      Place *place = static_cast<Place *>(std::get<Entity *>(e.getArguments()[3]));
+      entity::Being *being = static_cast<entity::Being *>(std::get<entity::Entity *>(e.getArguments()[1]));
+      entity::Place *place = static_cast<entity::Place *>(std::get<entity::Entity *>(e.getArguments()[3]));
 
       // each Creature that has auto-attack enabled should be setup to attack
       for (auto const &creature: place->getCreatures()) {

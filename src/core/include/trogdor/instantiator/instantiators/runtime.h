@@ -7,8 +7,8 @@
 
 #include <trogdor/instantiator/instantiator.h>
 
-
 namespace trogdor {
+
 
    // Forward declaration of Game, later defined in game.h
    class Game;

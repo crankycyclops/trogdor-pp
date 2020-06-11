@@ -1,7 +1,9 @@
 #include <trogdor/game.h>
 
-#include <trogdor/entities/entity.h>
-#include <trogdor/entities/being.h>
+#include <trogdor/entities/room.h>
+#include <trogdor/entities/object.h>
+#include <trogdor/entities/player.h>
+#include <trogdor/entities/creature.h>
 
 #include <trogdor/lua/api/entities/luaentity.h>
 #include <trogdor/lua/api/entities/luabeing.h>
@@ -580,7 +582,7 @@ namespace trogdor::entity {
          displayFull = lua_toboolean(L, 3 - n);
       }
 
-      observed->observe(observer, triggerEvents, displayFull);
+      observed->observe(observer->getShared(), triggerEvents, displayFull);
       return 0;
    }
 
@@ -608,7 +610,7 @@ namespace trogdor::entity {
          triggerEvents = lua_toboolean(L, 2 - n);
       }
 
-      observed->glance(observer, triggerEvents);
+      observed->glance(observer->getShared(), triggerEvents);
       return 0;
    }
 
@@ -629,7 +631,7 @@ namespace trogdor::entity {
       Entity *observed = LuaEntity::checkEntity(L, -2);
       Being  *observer = LuaBeing::checkBeing(L, -1);
 
-      lua_pushboolean(L, observed->observedBy(observer));
+      lua_pushboolean(L, observed->observedBy(observer->getShared()));
       return 1;
    }
 
@@ -650,7 +652,7 @@ namespace trogdor::entity {
       Entity *glanced = LuaEntity::checkEntity(L, -2);
       Being  *glancer = LuaBeing::checkBeing(L, -1);
 
-      lua_pushboolean(L, glanced->glancedBy(glancer));
+      lua_pushboolean(L, glanced->glancedBy(glancer->getShared()));
       return 1;
    }
 }

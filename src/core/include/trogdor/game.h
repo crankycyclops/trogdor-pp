@@ -17,8 +17,11 @@
 #include <trogdor/command.h>
 #include <trogdor/event/eventhandler.h>
 #include <trogdor/event/eventlistener.h>
-#include <trogdor/iostream/trogerr.h>
 #include <trogdor/instantiator/instantiators/runtime.h>
+
+#include <trogdor/iostream/trogin.h>
+#include <trogdor/iostream/trogout.h>
+#include <trogdor/iostream/trogerr.h>
 
 #include <trogdor/exception/entityexception.h>
 #include <trogdor/exception/undefinedexception.h>
@@ -32,6 +35,20 @@ namespace trogdor {
    class Parser;
    class Timer;
    class TimerJob;
+   class LuaState;
+
+   namespace entity {
+
+      // Resolve circular dependencies
+      class Entity;
+      class Place;
+      class Thing;
+      class Being;
+      class Room;
+      class Object;
+      class Player;
+      class Creature;
+   };
 
 
    /*
@@ -92,9 +109,6 @@ namespace trogdor {
          // Global Lua state for the entire game
          std::shared_ptr<LuaState> L;
 
-         // Player object representing default settings for all new players
-         std::unique_ptr<entity::Player> defaultPlayer;
-
          // defines if and how a player is presented with an introduction when
          // they're first added to the game
          struct {
@@ -112,18 +126,21 @@ namespace trogdor {
             std::vector<std::shared_ptr<std::function<void(std::any)>>>
          > callbacks;
 
+         // Player object representing default settings for all new players
+         std::unique_ptr<entity::Player> defaultPlayer;
+
          // Hash table of all entities in the game
          // Note: the logical conclusion of having a hierarchical mapping of
          // object types is that no object of any type can share the same name!
          // This can be worked around via aliases :)
-         std::unordered_map<std::string, std::shared_ptr<Entity>> entities;
-         std::unordered_map<std::string, std::shared_ptr<Place>> places;
-         std::unordered_map<std::string, std::shared_ptr<Thing>> things;
-         std::unordered_map<std::string, std::shared_ptr<Room>> rooms;
-         std::unordered_map<std::string, std::shared_ptr<Being>> beings;
-         std::unordered_map<std::string, std::shared_ptr<Player>> players;
-         std::unordered_map<std::string, std::shared_ptr<Creature>> creatures;
-         std::unordered_map<std::string, std::shared_ptr<Object>> objects;
+         std::unordered_map<std::string, std::shared_ptr<entity::Entity>> entities;
+         std::unordered_map<std::string, std::shared_ptr<entity::Place>> places;
+         std::unordered_map<std::string, std::shared_ptr<entity::Thing>> things;
+         std::unordered_map<std::string, std::shared_ptr<entity::Room>> rooms;
+         std::unordered_map<std::string, std::shared_ptr<entity::Being>> beings;
+         std::unordered_map<std::string, std::shared_ptr<entity::Player>> players;
+         std::unordered_map<std::string, std::shared_ptr<entity::Creature>> creatures;
+         std::unordered_map<std::string, std::shared_ptr<entity::Object>> objects;
 
          /*
             Called by initialize().  This initializes event handling in the game.
@@ -167,10 +184,7 @@ namespace trogdor {
             Output:
                New instance of Runtime instantiator (std::unique_ptr<Runtime>)
          */
-         inline std::unique_ptr<Runtime> makeInstantiator() {
-
-            return std::make_unique<Runtime>(getVocabulary(), this);
-         }
+         std::unique_ptr<Runtime> makeInstantiator();
 
          /*
             Returns a reference to Game instance's LuaState object. This should
@@ -395,9 +409,9 @@ namespace trogdor {
             Output:
                const shared_ptr<Entity> &
          */
-         inline const std::shared_ptr<Entity> &getEntity(const std::string name) {
+         inline const std::shared_ptr<entity::Entity> &getEntity(const std::string name) {
 
-            static std::shared_ptr<Entity> nullEntity(nullptr);
+            static std::shared_ptr<entity::Entity> nullEntity(nullptr);
 
             if (entities.find(name) == entities.end()) {
                return nullEntity;
@@ -427,9 +441,9 @@ namespace trogdor {
             Output:
                Place *
          */
-         inline const std::shared_ptr<Place> &getPlace(const std::string name) {
+         inline const std::shared_ptr<entity::Place> &getPlace(const std::string name) {
 
-            static std::shared_ptr<Place> nullPlace(nullptr);
+            static std::shared_ptr<entity::Place> nullPlace(nullptr);
 
             if (places.find(name) == places.end()) {
                return nullPlace;
@@ -459,9 +473,9 @@ namespace trogdor {
             Output:
                Thing *
          */
-         inline const std::shared_ptr<Thing> &getThing(const std::string name) {
+         inline const std::shared_ptr<entity::Thing> &getThing(const std::string name) {
 
-            static std::shared_ptr<Thing> nullThing(nullptr);
+            static std::shared_ptr<entity::Thing> nullThing(nullptr);
 
             if (things.find(name) == things.end()) {
                return nullThing;
@@ -491,9 +505,9 @@ namespace trogdor {
             Output:
                Being *
          */
-         inline const std::shared_ptr<Being> &getBeing(const std::string name) {
+         inline const std::shared_ptr<entity::Being> &getBeing(const std::string name) {
 
-            static std::shared_ptr<Being> nullBeing(nullptr);
+            static std::shared_ptr<entity::Being> nullBeing(nullptr);
 
             if (beings.find(name) == beings.end()) {
                return nullBeing;
@@ -523,9 +537,9 @@ namespace trogdor {
             Output:
                Player *
          */
-         inline const std::shared_ptr<Player> &getPlayer(const std::string name) {
+         inline const std::shared_ptr<entity::Player> &getPlayer(const std::string name) {
 
-            static std::shared_ptr<Player> nullPlayer(nullptr);
+            static std::shared_ptr<entity::Player> nullPlayer(nullptr);
 
             if (players.find(name) == players.end()) {
                return nullPlayer;
@@ -555,9 +569,9 @@ namespace trogdor {
             Output:
                Creature *
          */
-         inline const std::shared_ptr<Creature> &getCreature(const std::string name) {
+         inline const std::shared_ptr<entity::Creature> &getCreature(const std::string name) {
 
-            static std::shared_ptr<Creature> nullCreature(nullptr);
+            static std::shared_ptr<entity::Creature> nullCreature(nullptr);
 
             if (creatures.find(name) == creatures.end()) {
                return nullCreature;
@@ -587,9 +601,9 @@ namespace trogdor {
             Output:
                Object *
          */
-         inline const std::shared_ptr<Object> &getObject(const std::string name) {
+         inline const std::shared_ptr<entity::Object> &getObject(const std::string name) {
 
-            static std::shared_ptr<Object> nullObject(nullptr);
+            static std::shared_ptr<entity::Object> nullObject(nullptr);
 
             if (objects.find(name) == objects.end()) {
                return nullObject;
@@ -619,9 +633,9 @@ namespace trogdor {
             Output:
                Room *
          */
-         inline const std::shared_ptr<Room> &getRoom(const std::string name) {
+         inline const std::shared_ptr<entity::Room> &getRoom(const std::string name) {
 
-            static std::shared_ptr<Room> nullRoom(nullptr);
+            static std::shared_ptr<entity::Room> nullRoom(nullptr);
 
             if (rooms.find(name) == rooms.end()) {
                return nullRoom;
@@ -643,8 +657,7 @@ namespace trogdor {
          inline const auto &getRooms() const {return rooms;}
 
          /*
-            Wraps around the other insertEntity methods in cases where I have a
-            base class shared_ptr.
+            Inserts an entity into the game.
 
             Input:
                shared_ptr<entity::Entity>
@@ -652,50 +665,7 @@ namespace trogdor {
             Output:
                (none)
          */
-         inline void insertEntity(std::string name, std::shared_ptr<entity::Entity> entity) {
-
-            if (entities.find(name) != entities.end()) {
-               throw entity::EntityException(std::string("Entity '") + name + "' already exists");
-            }
-
-            resourceMutex.lock();
-
-            switch (entity->getType()) {
-
-               case entity::ENTITY_ROOM:
-
-                  places[name] = std::dynamic_pointer_cast<Place>(entity);
-                  rooms[name] = std::dynamic_pointer_cast<Room>(entity);
-
-                  break;
-
-               case entity::ENTITY_OBJECT:
-
-                  things[name] = std::dynamic_pointer_cast<Thing>(entity);
-                  objects[name] = std::dynamic_pointer_cast<Object>(entity);
-
-                  break;
-
-               case entity::ENTITY_CREATURE:
-
-                  things[name] = std::dynamic_pointer_cast<Thing>(entity);
-                  beings[name] = std::dynamic_pointer_cast<Being>(entity);
-                  creatures[name] = std::dynamic_pointer_cast<Creature>(entity);
-
-                  break;
-
-               case entity::ENTITY_PLAYER:
-                  throw UndefinedException("Game::insertEntity: Use Game::insertPlayer instead");
-
-               default:
-                  throw UndefinedException("Game::insertEntity: unsupported entity type");
-            }
-
-            entities[name] = entity;
-            entity->setGame(this);
-
-            resourceMutex.unlock();
-         }
+         void insertEntity(std::string name, std::shared_ptr<entity::Entity> entity);
 
          /*
             Initializes the game, including the event handler, timer and all game
@@ -802,7 +772,7 @@ namespace trogdor {
             Output:
                std::shared_ptr<Player>
          */
-         std::shared_ptr<Player> createPlayer(std::string name,
+         std::shared_ptr<entity::Player> createPlayer(std::string name,
          std::unique_ptr<Trogout> outStream, std::unique_ptr<Trogin> inStream,
          std::unique_ptr<Trogerr> errStream);
 
@@ -829,7 +799,7 @@ namespace trogdor {
             Output:
                Player *
          */
-         void insertPlayer(std::shared_ptr<Player> player,
+         void insertPlayer(std::shared_ptr<entity::Player> player,
          std::function<void()> confirmationCallback = nullptr);
 
          /*
@@ -878,7 +848,7 @@ namespace trogdor {
             Input: Player executing command
             Output: (none)
          */
-         void processCommand(Player *player);
+         void processCommand(entity::Player *player);
 
          /*
             Wraps around Vocabulary::insertVerbAction, allowing the client to

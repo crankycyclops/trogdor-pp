@@ -8,10 +8,7 @@
 #include <unordered_map>
 #include <functional>
 
-#include <trogdor/entities/room.h>
-#include <trogdor/entities/object.h>
-#include <trogdor/entities/creature.h>
-#include <trogdor/entities/player.h>
+#include <trogdor/entities/type.h>
 
 #include <trogdor/vocabulary.h>
 #include <trogdor/parser/ast.h>

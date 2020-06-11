@@ -3,6 +3,7 @@
 
 #include <trogdor/utility.h>
 #include <trogdor/vocabulary.h>
+#include <trogdor/entities/entity.h>
 
 #include <trogdor/exception/validationexception.h>
 #include <trogdor/exception/undefinedexception.h>

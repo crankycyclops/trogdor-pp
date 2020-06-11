@@ -9,6 +9,7 @@
 #include <regex>
 #include <unordered_set>
 
+#include <trogdor/entities/type.h>
 #include <trogdor/messages.h>
 
 #include <trogdor/lua/luatable.h>
@@ -23,7 +24,6 @@
 namespace trogdor {
 
    class Game;
-   class Parser;
 };
 
 namespace trogdor::entity {
@@ -38,25 +38,14 @@ namespace trogdor::entity {
    class Creature;   
 
 
-   // used for run-time check of an Entity's type
-   enum EntityType {
-      ENTITY_UNDEFINED = 0,
-      ENTITY_ENTITY = 1,
-      ENTITY_PLACE = 2,
-      ENTITY_ROOM = 3,
-      ENTITY_THING = 4,
-      ENTITY_OBJECT = 5,
-      ENTITY_BEING = 6,
-      ENTITY_PLAYER = 7,
-      ENTITY_CREATURE = 8,
-   };
-
    // Defines a valid entity or entity class name
    static const char *validEntityNameRegex = "^[A-Za-z0-9_-]+$";
 
    /***************************************************************************/
 
    class Entity: public std::enable_shared_from_this<Entity> {
+
+      // friend void Game::removeEntity(std::string name);
 
       private:
 
@@ -65,11 +54,19 @@ namespace trogdor::entity {
          Messages msgs;
 
          // maintains a list of all Beings that have glanced at but not fully
-         // observed the Entity
-         std::unordered_set<Being *> glancedByMap;
+         // observed the Entity (cannot use unordered_set here because you can't
+         // hash a weak_ptr.)
+         std::set<
+            std::weak_ptr<Being>,
+            std::owner_less<std::weak_ptr<Being>>
+         > glancedByMap;
 
-         // maintains a list of all Beings that have observed the Entity
-         std::unordered_set<Being *> observedByMap;
+         // maintains a list of all Beings that have observed the Entity (cannot
+         // use unordered_set here because you can't hash a weak_ptr.)
+         std::set<
+            std::weak_ptr<Being>,
+            std::owner_less<std::weak_ptr<Being>>
+         > observedByMap;
 
          // Entity tags are labels that are either set or not set and are an
          // easy method of categorization
@@ -83,7 +80,8 @@ namespace trogdor::entity {
          // every kind of Entity that we are by virtue of inheritance
          std::list<enum EntityType> types;
 
-         // Pointer to the Game that contains the Entity
+         // Pointer to the Game that contains the Entity (set to nullptr when
+         // the Entity is removed)
          Game *game;
 
          std::string name;
@@ -102,7 +100,7 @@ namespace trogdor::entity {
          std::unique_ptr<Trogin> inStream;
 
          // One or more callbacks that will be executed when various operations
-         // occur within the game.
+         // occur on the Entity.
          std::unordered_map<
             std::string,
             std::vector<std::shared_ptr<std::function<void(std::any)>>>
@@ -120,7 +118,7 @@ namespace trogdor::entity {
                (none)
          */
          virtual void display(Being *observer, bool displayFull = false);
-         inline void display(std::shared_ptr<Being> being, bool displayFull = false) {display(being.get(), displayFull);}
+         inline void display(const std::shared_ptr<Being> &being, bool displayFull = false) {display(being.get(), displayFull);}
 
          /*
             Displays the short description of an Entity.  This may be
@@ -133,7 +131,7 @@ namespace trogdor::entity {
                (none)
          */
          virtual void displayShort(Being *observer);
-         inline void displayShort(std::shared_ptr<Being> being) {displayShort(being.get());}
+         inline void displayShort(const std::shared_ptr<Being> &being) {displayShort(being.get());}
 
       public:
 
@@ -520,7 +518,7 @@ namespace trogdor::entity {
                (none)
 
             Output:
-               Game's Lua State (const &LuaState)
+               Game's Lua State (std::shared_ptr<LuaState> &)
          */
          inline std::shared_ptr<LuaState> &getLuaState() {return L;}
 
@@ -544,7 +542,7 @@ namespace trogdor::entity {
             Output:
                bool
          */
-         inline bool observedBy(Being *b) {
+         inline bool observedBy(const std::shared_ptr<Being> &b) {
 
             if (observedByMap.find(b) == observedByMap.end()) {
                return false;
@@ -552,8 +550,6 @@ namespace trogdor::entity {
 
             return true;
          }
-
-         inline bool observedBy(std::shared_ptr<Being> being) {return observedBy(being.get());}
 
          /*
             Returns whether or not a given Being has glanced at the Entity.  If
@@ -566,7 +562,7 @@ namespace trogdor::entity {
             Output:
                bool
          */
-         inline bool glancedBy(Being *b) {
+         inline bool glancedBy(const std::shared_ptr<Being> &b) {
 
             if (observedByMap.find(b) == observedByMap.end() &&
             glancedByMap.find(b) == glancedByMap.end()) {
@@ -575,8 +571,6 @@ namespace trogdor::entity {
 
             return true;
          }
-
-         inline bool glancedBy(std::shared_ptr<Being> being) {return glancedBy(being.get());}
 
          /*
             Returns the specified message.  If it doesn't exist, an empty string
@@ -701,14 +695,8 @@ namespace trogdor::entity {
                beforeObserve
                afterObserve
          */
-         virtual void observe(Being *observer, bool triggerEvents = true,
+         virtual void observe(const std::shared_ptr<Being> &observer, bool triggerEvents = true,
          bool displayFull = false);
-
-         inline void observe(std::shared_ptr<Being> observer,
-         bool triggerEvents = true, bool displayFull = false) {
-
-            observe(observer.get(), triggerEvents, displayFull);
-         }
 
          /*
             Gives a Being the ability to partially observe an Entity without
@@ -727,13 +715,7 @@ namespace trogdor::entity {
                beforeGlance
                afterGlance
          */
-         virtual void glance(Being *observer, bool triggerEvents = true);
-
-         inline void glance(std::shared_ptr<Being> observer,
-         bool triggerEvents = true) {
-
-            glance(observer.get(), triggerEvents);
-         }
+         virtual void glance(const std::shared_ptr<Being> &observer, bool triggerEvents = true);
 
          /*
             Static method that takes as input iterators over a list of Entities

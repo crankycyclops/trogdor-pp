@@ -12,14 +12,14 @@ namespace trogdor {
 
       private:
 
-         Creature *wanderer;
+         entity::Creature *wanderer;
 
       public:
 
          /*
             Constructor for the WanderTimerJob class.
          */
-         inline WanderTimerJob(Game *g, int i, int e, int s, Creature *c):
+         inline WanderTimerJob(Game *g, int i, int e, int s, entity::Creature *c):
          TimerJob(g, i, e, s) {
 
             wanderer = c;

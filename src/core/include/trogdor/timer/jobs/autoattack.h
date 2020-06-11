@@ -12,16 +12,16 @@ namespace trogdor {
 
       private:
 
-         Creature *aggressor;
-         Being    *defender;
+         entity::Creature *aggressor;
+         entity::Being    *defender;
 
       public:
 
          /*
             Constructor for the AutoAttackTimerJob class.
          */
-         inline AutoAttackTimerJob(Game *g, int i, int e, int s, Creature *a,
-         Being *d): TimerJob(g, i, e, s) {
+         inline AutoAttackTimerJob(Game *g, int i, int e, int s,
+         entity::Creature *a, entity::Being *d): TimerJob(g, i, e, s) {
 
             aggressor = a;
             defender = d;
@@ -36,7 +36,7 @@ namespace trogdor {
             Output:
                (none)
          */
-         inline void setAttacker(Creature *a) {aggressor = a;}
+         inline void setAttacker(entity::Creature *a) {aggressor = a;}
 
          /*
             Specifies who's being attacked.
@@ -47,7 +47,7 @@ namespace trogdor {
             Output:
                (none)
          */
-         inline void setDefender(Being *d) {defender = d;}
+         inline void setDefender(entity::Being *d) {defender = d;}
 
          /*
             Automatically executes an attack against a Being

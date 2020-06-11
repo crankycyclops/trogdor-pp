@@ -1,3 +1,4 @@
+#include <trogdor/entities/player.h>
 #include <trogdor/action.h>
 
 namespace trogdor {

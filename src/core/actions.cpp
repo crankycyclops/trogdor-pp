@@ -24,7 +24,11 @@ namespace trogdor {
    }
 
 
-   void CussAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
+   void CussAction::execute(
+      entity::Player *player,
+      const std::shared_ptr<Command> &command,
+      Game *game
+   ) {
 
       static const char *responses[] = {
          "Such language!",
@@ -62,7 +66,11 @@ namespace trogdor {
    }
 
 
-   void InventoryAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
+   void InventoryAction::execute(
+      entity::Player *player,
+      const std::shared_ptr<Command> &command,
+      Game *game
+   ) {
 
       // percentage of available space used
       double totalPercent = 0.0;
@@ -120,7 +128,11 @@ namespace trogdor {
       return true;
    }
 
-   void LookAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
+   void LookAction::execute(
+      entity::Player *player,
+      const std::shared_ptr<Command> &command,
+      Game *game
+   ) {
 
       std::string object = command->getDirectObject();
 
@@ -131,7 +143,7 @@ namespace trogdor {
       if (auto location = player->getLocation().lock()) {
 
          if (object.length() == 0) {
-            location->observe(player, true, true);
+            location->observe(player->getShared(), true, true);
          }
 
          else {
@@ -155,7 +167,7 @@ namespace trogdor {
 
             try {
                Thing *thing = Entity::clarifyEntity<ThingList, Thing *>(items, player);
-               thing->observe(player, true, true);
+               thing->observe(player->getShared(), true, true);
             }
 
             catch (const std::string &name) {
@@ -181,14 +193,18 @@ namespace trogdor {
       return true;
    }
 
-   void ReadAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
+   void ReadAction::execute(
+      entity::Player *player,
+      const std::shared_ptr<Command> &command,
+      Game *game
+   ) {
 
       std::string thingName = command->getDirectObject();
 
       if (auto location = player->getLocation().lock()) {
 
          if (thingName.length() == 0) {
-            location->observe(player, true, true);
+            location->observe(player->getShared(), true, true);
          }
 
          else {
@@ -261,7 +277,11 @@ namespace trogdor {
       return true;
    }
 
-   void TakeAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
+   void TakeAction::execute(
+      entity::Player *player,
+      const std::shared_ptr<Command> &command,
+      Game *game
+   ) {
 
       if (auto location = player->getLocation().lock()) {
 
@@ -345,7 +365,11 @@ namespace trogdor {
    }
 
    // TODO: consider custom messages
-   void DropAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
+   void DropAction::execute(
+      entity::Player *player,
+      const std::shared_ptr<Command> &command,
+      Game *game
+   ) {
 
       auto invItems = player->getInventoryObjectsByName(command->getDirectObject());
 
@@ -423,7 +447,11 @@ namespace trogdor {
    }
 
 
-   void MoveAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
+   void MoveAction::execute(
+      entity::Player *player,
+      const std::shared_ptr<Command> &command,
+      Game *game
+   ) {
 
       auto &vocab = command->getVocabulary();
       std::string direction = "";
@@ -492,7 +520,11 @@ namespace trogdor {
    }
 
 
-   void AttackAction::execute(Player *player, const std::shared_ptr<Command> &command, Game *game) {
+   void AttackAction::execute(
+      entity::Player *player,
+      const std::shared_ptr<Command> &command,
+      Game *game
+   ) {
 
       // The player is self-terminating
       // TODO: you can say "attack myself with fish" even if you don't have a

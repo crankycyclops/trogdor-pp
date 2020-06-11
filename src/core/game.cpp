@@ -2,6 +2,7 @@
 #include <trogdor/action.h>
 #include <trogdor/timer/timer.h>
 #include <trogdor/parser/parser.h>
+#include <trogdor/lua/luastate.h>
 #include <trogdor/instantiator/instantiators/runtime.h>
 
 #include <trogdor/entities/entity.h>
@@ -65,6 +66,13 @@ namespace trogdor {
    // Empty destructor required here (if I don't include this, the compiler will
    // choke.)
    Game::~Game() {}
+
+   /***************************************************************************/
+
+   std::unique_ptr<Runtime> Game::makeInstantiator() {
+
+      return std::make_unique<Runtime>(getVocabulary(), this);
+   }
 
    /***************************************************************************/
 
@@ -158,8 +166,9 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   std::shared_ptr<Player> Game::createPlayer(std::string name, std::unique_ptr<Trogout> outStream,
-   std::unique_ptr<Trogin> inStream, std::unique_ptr<Trogerr> errStream) {
+   std::shared_ptr<entity::Player> Game::createPlayer(std::string name,
+   std::unique_ptr<Trogout> outStream, std::unique_ptr<Trogin> inStream,
+   std::unique_ptr<Trogerr> errStream) {
 
       // Make sure there are no name conflicts before creating the new player
       if (entities.find(name) != entities.end()) {
@@ -169,7 +178,7 @@ namespace trogdor {
       }
 
       // clone the default player, giving it the specified name
-      std::shared_ptr<Player> player = std::make_shared<Player>(
+      std::shared_ptr<entity::Player> player = std::make_shared<entity::Player>(
          *defaultPlayer, name, std::move(outStream), std::move(inStream), std::move(errStream)
       );
 
@@ -178,7 +187,54 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Game::insertPlayer(std::shared_ptr<Player> player,
+   void Game::insertEntity(std::string name, std::shared_ptr<entity::Entity> entity) {
+
+      if (entities.find(name) != entities.end()) {
+         throw entity::EntityException(std::string("Entity '") + name + "' already exists");
+      }
+
+      resourceMutex.lock();
+
+      switch (entity->getType()) {
+
+         case entity::ENTITY_ROOM:
+
+            places[name] = std::dynamic_pointer_cast<entity::Place>(entity);
+            rooms[name] = std::dynamic_pointer_cast<entity::Room>(entity);
+
+            break;
+
+         case entity::ENTITY_OBJECT:
+
+            things[name] = std::dynamic_pointer_cast<entity::Thing>(entity);
+            objects[name] = std::dynamic_pointer_cast<entity::Object>(entity);
+
+            break;
+
+         case entity::ENTITY_CREATURE:
+
+            things[name] = std::dynamic_pointer_cast<entity::Thing>(entity);
+            beings[name] = std::dynamic_pointer_cast<entity::Being>(entity);
+            creatures[name] = std::dynamic_pointer_cast<entity::Creature>(entity);
+
+            break;
+
+         case entity::ENTITY_PLAYER:
+            throw UndefinedException("Game::insertEntity: Use Game::insertPlayer instead");
+
+         default:
+            throw UndefinedException("Game::insertEntity: unsupported entity type");
+      }
+
+      entities[name] = entity;
+      entity->setGame(this);
+
+      resourceMutex.unlock();
+   }
+
+   /***************************************************************************/
+
+   void Game::insertPlayer(std::shared_ptr<entity::Player> player,
    std::function<void()> confirmationCallback) {
 
       // Make sure there are no name conflicts before inserting the new player
@@ -296,7 +352,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Game::processCommand(Player *player) {
+   void Game::processCommand(entity::Player *player) {
 
       std::shared_ptr<Command> command = std::make_shared<Command>(vocabulary);
       command->read(player);

@@ -9,14 +9,15 @@
 #include <trogdor/tokenizer.h>
 #include <trogdor/vocabulary.h>
 
-#include <trogdor/entities/entity.h>
-
-using namespace trogdor::entity;
-
 namespace trogdor {
 
 
    class Game; // resolves circular dependency Game <-> Command
+
+   namespace entity {
+
+      class Entity; // resolves circular dependency Game <-> Entity
+   }
 
    class Command {
 
@@ -84,7 +85,7 @@ namespace trogdor {
             Input: Entity to read input from
             Output: (none)
          */
-         void read(Entity *user);
+         void read(entity::Entity *user);
 
          /*
             Makes Command object printable via trogout.

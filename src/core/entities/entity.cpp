@@ -1,8 +1,9 @@
 #include <trogdor/entities/entity.h>
-#include <trogdor/event/triggers/luaeventtrigger.h>
+#include <trogdor/entities/being.h>
 
 #include <trogdor/game.h>
 #include <trogdor/event/eventlistener.h>
+#include <trogdor/event/triggers/luaeventtrigger.h>
 #include <trogdor/exception/validationexception.h>
 
 
@@ -173,7 +174,9 @@ namespace trogdor::entity {
 
    void Entity::display(Being *observer, bool displayFull) {
 
-      if (!observedBy(observer) || displayFull) {
+      std::shared_ptr<Being> observerShared = observer->getShared();
+
+      if (!observedBy(observerShared) || displayFull) {
          if (ENTITY_PLAYER == observer->getType()) {
             observer->out("display") << getLongDescription() << std::endl;
          }
@@ -183,7 +186,7 @@ namespace trogdor::entity {
          displayShort(observer);
       }
 
-      observedByMap.insert(observer);
+      observedByMap.insert(observerShared);
    }
 
    /***************************************************************************/
@@ -198,12 +201,12 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   void Entity::observe(Being *observer, bool triggerEvents, bool displayFull) {
+   void Entity::observe(const std::shared_ptr<Being> &observer, bool triggerEvents, bool displayFull) {
 
       if (triggerEvents && !game->event({
          "beforeObserve",
          {triggers.get(), observer->getEventListener()},
-         {this, observer}
+         {this, observer.get()}
       })) {
          return;
       }
@@ -215,19 +218,19 @@ namespace trogdor::entity {
          game->event({
             "afterObserve",
             {triggers.get(), observer->getEventListener()},
-            {this, observer}
+            {this, observer.get()}
          });
       }
    }
 
    /***************************************************************************/
 
-   void Entity::glance(Being *observer, bool triggerEvents) {
+   void Entity::glance(const std::shared_ptr<Being> &observer, bool triggerEvents) {
 
       if (triggerEvents && !game->event({
          "beforeGlance",
          {triggers.get(), observer->getEventListener()},
-         {this, observer}
+         {this, observer.get()}
       })) {
          return;
       }
@@ -239,7 +242,7 @@ namespace trogdor::entity {
          game->event({
             "afterGlance",
             {triggers.get(), observer->getEventListener()},
-            {this, observer}
+            {this, observer.get()}
          });
       }
    }
