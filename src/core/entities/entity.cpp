@@ -1,8 +1,9 @@
 #include <trogdor/entities/entity.h>
-#include <trogdor/event/triggers/luaeventtrigger.h>
+#include <trogdor/entities/being.h>
 
 #include <trogdor/game.h>
 #include <trogdor/event/eventlistener.h>
+#include <trogdor/event/triggers/luaeventtrigger.h>
 #include <trogdor/exception/validationexception.h>
 
 

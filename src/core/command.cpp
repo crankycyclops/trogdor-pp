@@ -3,7 +3,7 @@
 #include <trogdor/action.h>
 #include <trogdor/utility.h>
 
-using namespace trogdor::entity;
+#include <trogdor/entities/entity.h>
 
 namespace trogdor {
 
@@ -24,7 +24,7 @@ namespace trogdor {
    }
 
 
-   void Command::read(Entity *user) {
+   void Command::read(entity::Entity *user) {
 
       std::string commandStr;
 

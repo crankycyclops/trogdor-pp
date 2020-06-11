@@ -1,5 +1,7 @@
 #include <trogdor/game.h>
+
 #include <trogdor/entities/object.h>
+#include <trogdor/entities/being.h>
 
 
 namespace trogdor::entity {

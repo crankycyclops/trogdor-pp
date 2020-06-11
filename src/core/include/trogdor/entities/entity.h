@@ -9,6 +9,7 @@
 #include <regex>
 #include <unordered_set>
 
+#include <trogdor/entities/type.h>
 #include <trogdor/messages.h>
 
 #include <trogdor/lua/luatable.h>
@@ -37,25 +38,14 @@ namespace trogdor::entity {
    class Creature;   
 
 
-   // used for run-time check of an Entity's type
-   enum EntityType {
-      ENTITY_UNDEFINED = 0,
-      ENTITY_ENTITY = 1,
-      ENTITY_PLACE = 2,
-      ENTITY_ROOM = 3,
-      ENTITY_THING = 4,
-      ENTITY_OBJECT = 5,
-      ENTITY_BEING = 6,
-      ENTITY_PLAYER = 7,
-      ENTITY_CREATURE = 8,
-   };
-
    // Defines a valid entity or entity class name
    static const char *validEntityNameRegex = "^[A-Za-z0-9_-]+$";
 
    /***************************************************************************/
 
    class Entity: public std::enable_shared_from_this<Entity> {
+
+      // friend void Game::removeEntity(std::string name);
 
       private:
 
@@ -90,7 +80,8 @@ namespace trogdor::entity {
          // every kind of Entity that we are by virtue of inheritance
          std::list<enum EntityType> types;
 
-         // Pointer to the Game that contains the Entity
+         // Pointer to the Game that contains the Entity (set to nullptr when
+         // the Entity is removed)
          Game *game;
 
          std::string name;

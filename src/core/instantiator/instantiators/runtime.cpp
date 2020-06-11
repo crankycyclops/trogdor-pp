@@ -16,6 +16,11 @@
 #include <trogdor/exception/undefinedexception.h>
 #include <trogdor/exception/validationexception.h>
 
+#include <trogdor/entities/room.h>
+#include <trogdor/entities/object.h>
+#include <trogdor/entities/creature.h>
+#include <trogdor/entities/player.h>
+
 #include <trogdor/instantiator/instantiators/runtime.h>
 
 

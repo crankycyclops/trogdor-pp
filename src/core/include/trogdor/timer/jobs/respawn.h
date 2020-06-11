@@ -13,14 +13,14 @@ namespace trogdor {
       private:
 
          // "He's dead, Jim!" --Dr. McCoy
-         Being *deadGuy;
+         entity::Being *deadGuy;
 
       public:
 
          /*
             Constructor for the RespawnTimerJob class.
          */
-         inline RespawnTimerJob(Game *g, int i, int e, int s, Being *b):
+         inline RespawnTimerJob(Game *g, int i, int e, int s, entity::Being *b):
          TimerJob(g, i, e, s) {
 
             deadGuy = b;
@@ -35,7 +35,7 @@ namespace trogdor {
             Output:
                (none)
          */
-         inline void setDeadGuy(Being *b) {deadGuy = b;}
+         inline void setDeadGuy(entity::Being *b) {deadGuy = b;}
 
          /*
             Executes Being's respawning.

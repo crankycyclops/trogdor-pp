@@ -1,5 +1,7 @@
 #include <memory>
 
+#include <trogdor/entities/being.h>
+
 #include <trogdor/event/triggers/respawn.h>
 #include <trogdor/timer/jobs/respawn.h>
 
@@ -9,7 +11,7 @@ namespace trogdor::event {
    EventReturn RespawnEventTrigger::operator()(Event e) {
 
       Game  *game  = std::get<Game *>(e.getArguments()[0]);
-      Being *being = static_cast<Being *>(std::get<Entity *>(e.getArguments()[1]));
+      entity::Being *being = static_cast<entity::Being *>(std::get<entity::Entity *>(e.getArguments()[1]));
 
       if (being->getRespawnEnabled()) {
 

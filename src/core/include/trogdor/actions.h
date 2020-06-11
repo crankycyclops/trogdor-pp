@@ -3,6 +3,12 @@
 
 
 #include <memory>
+
+#include <trogdor/entities/room.h>
+#include <trogdor/entities/object.h>
+#include <trogdor/entities/player.h>
+#include <trogdor/entities/creature.h>
+
 #include <trogdor/action.h>
 
 namespace trogdor {
@@ -17,7 +23,11 @@ namespace trogdor {
 
          virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game);
+         virtual void execute(
+            entity::Player *player,
+            const std::shared_ptr<Command> &command,
+            Game *game
+         );
    };
 
 /******************************************************************************/
@@ -36,7 +46,11 @@ namespace trogdor {
          */
          virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game);
+         virtual void execute(
+            entity::Player *player,
+            const std::shared_ptr<Command> &command,
+            Game *game
+         );
    };
 
 /******************************************************************************/
@@ -53,7 +67,11 @@ namespace trogdor {
          */
          virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game); 
+         virtual void execute(
+            entity::Player *player,
+            const std::shared_ptr<Command> &command,
+            Game *game
+         ); 
    };
 
 /******************************************************************************/
@@ -69,7 +87,11 @@ namespace trogdor {
          */
          virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game); 
+         virtual void execute(
+            entity::Player *player,
+            const std::shared_ptr<Command> &command,
+            Game *game
+         ); 
    };
 
 /******************************************************************************/
@@ -83,7 +105,11 @@ namespace trogdor {
          */
          virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game); 
+         virtual void execute(
+            entity::Player *player,
+            const std::shared_ptr<Command> &command,
+            Game *game
+         ); 
    };
 
 /******************************************************************************/
@@ -98,7 +124,11 @@ namespace trogdor {
          */
          virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game); 
+         virtual void execute(
+            entity::Player *player,
+            const std::shared_ptr<Command> &command,
+            Game *game
+         ); 
    };
 
 /******************************************************************************/
@@ -118,7 +148,11 @@ namespace trogdor {
          */
          virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game);
+         virtual void execute(
+            entity::Player *player,
+            const std::shared_ptr<Command> &command,
+            Game *game
+         );
    };
 
 /******************************************************************************/
@@ -137,7 +171,11 @@ namespace trogdor {
          */
          virtual bool checkSyntax(const std::shared_ptr<Command> &command);
 
-         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game);
+         virtual void execute(
+            entity::Player *player,
+            const std::shared_ptr<Command> &command,
+            Game *game
+         );
    };
 }
 

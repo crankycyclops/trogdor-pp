@@ -1,3 +1,4 @@
+#include <trogdor/entities/being.h>
 #include <trogdor/timer/jobs/respawn.h>
 
 
@@ -9,4 +10,3 @@ namespace trogdor {
       deadGuy->doRespawn();
    }
 }
-

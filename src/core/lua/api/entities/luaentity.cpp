@@ -1,7 +1,9 @@
 #include <trogdor/game.h>
 
-#include <trogdor/entities/entity.h>
-#include <trogdor/entities/being.h>
+#include <trogdor/entities/room.h>
+#include <trogdor/entities/object.h>
+#include <trogdor/entities/player.h>
+#include <trogdor/entities/creature.h>
 
 #include <trogdor/lua/api/entities/luaentity.h>
 #include <trogdor/lua/api/entities/luabeing.h>

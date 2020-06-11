@@ -1,6 +1,7 @@
 #include <memory>
 
 #include <trogdor/game.h>
+#include <trogdor/entities/entity.h>
 #include <trogdor/lua/api/luagame.h>
 
 #include <trogdor/exception/entityexception.h>
@@ -80,10 +81,10 @@ namespace trogdor {
       }
 
       Game *g = checkGame(L, -2);
-      Entity *e = LuaEntity::checkEntity(L, -1);
+      entity::Entity *e = entity::LuaEntity::checkEntity(L, -1);
 
       try {
-         g->insertEntity(e->getName(), std::shared_ptr<Entity>(e));
+         g->insertEntity(e->getName(), std::shared_ptr<entity::Entity>(e));
          lua_pushboolean(L, 1);
       }
 

@@ -1,4 +1,7 @@
 #include <random>
+
+#include <trogdor/entities/room.h>
+#include <trogdor/entities/creature.h>
 #include <trogdor/timer/jobs/wander.h>
 
 

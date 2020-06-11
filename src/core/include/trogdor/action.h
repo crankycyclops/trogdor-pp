@@ -7,6 +7,12 @@
 
 namespace trogdor {
 
+   namespace entity {
+
+      // Forward declaration to prevent circular dependencies
+      class Player;
+   }
+
 
    /*
       This abstract class models a specific action in the game.  The verb in
@@ -47,7 +53,11 @@ namespace trogdor {
             Output:
                (none)
          */
-         virtual void execute(Player *player, const std::shared_ptr<Command> &command, Game *game) = 0;
+         virtual void execute(
+            entity::Player *player,
+            const std::shared_ptr<Command> &command,
+            Game *game
+         ) = 0;
    };
 }
 
