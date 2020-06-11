@@ -48,9 +48,9 @@ namespace trogdor {
    void Timer::tick() {
 
       // increment the current game time
-      game->timerMutex.lock();
+      mutex.lock();
       time++;
-      game->timerMutex.unlock();
+      mutex.unlock();
 
       // I can't use for_each or a range-based for loop because I have to remove
       // expired jobs from queue and must be able to manipulate the iterator.
@@ -63,9 +63,9 @@ namespace trogdor {
             (time - (*i)->getInitTime() - (*i)->getStartTime()) % (*i)->getInterval() == 0) {
 
                // run the job
-               game->timerMutex.lock();
+               mutex.lock();
                (*i)->execute();
-               game->timerMutex.unlock();
+               mutex.unlock();
 
                // decrement executions (unless it's -1, which means the job
                // should execute indefinitely)
@@ -77,10 +77,10 @@ namespace trogdor {
 
          // job is expired, so remove it
          else {
-            game->timerMutex.lock();
+            mutex.lock();
             std::list<std::shared_ptr<TimerJob>>::iterator iprev = i++;
             queue.remove(*iprev);
-            game->timerMutex.unlock();
+            mutex.unlock();
          }
       }
    }
@@ -91,7 +91,7 @@ namespace trogdor {
 
       if (!active) {
 
-         game->timerMutex.lock();
+         mutex.lock();
          active = true;
 
          jobThread = std::make_unique<std::thread>([](Timer *timerObj) {
@@ -123,7 +123,7 @@ namespace trogdor {
             }
          }, this);
 
-         game->timerMutex.unlock();
+         mutex.unlock();
       }
    }
 
@@ -131,9 +131,9 @@ namespace trogdor {
 
 void Timer::deactivate() {
 
-   game->timerMutex.lock();
+   mutex.lock();
    active = false;
-   game->timerMutex.unlock();
+   mutex.unlock();
 }
 
 /******************************************************************************/
@@ -160,10 +160,10 @@ void Timer::shutdown() {
 
    void Timer::reset() {
 
-      game->timerMutex.lock();
+      mutex.lock();
       time = 0;
       clearJobs();
-      game->timerMutex.unlock();
+      mutex.unlock();
    }
 
 /******************************************************************************/
@@ -172,12 +172,15 @@ void Timer::shutdown() {
 
       // insert job asynchronously to avoid deadlock when a function called by
       // one job inserts another job
-      insertJobThreads.push_back(std::make_unique<std::thread>([](Game *g, Timer *t, std::shared_ptr<TimerJob> j) {
+      insertJobThreads.push_back(
 
-         g->timerMutex.lock();
-         j->initTime = t->time;
-         t->queue.insert(t->queue.end(), j);
-         g->timerMutex.unlock();
-      }, game, this, job));
+         std::make_unique<std::thread>([&](Game *g, Timer *t, std::shared_ptr<TimerJob> j) {
+
+            mutex.lock();
+            j->initTime = t->time;
+            t->queue.insert(t->queue.end(), j);
+            mutex.unlock();
+         }, game, this, job)
+      );
    }
 }

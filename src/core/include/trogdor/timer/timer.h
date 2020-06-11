@@ -40,6 +40,8 @@ namespace trogdor {
          bool active;                   // whether or not the timer is active
          unsigned long time;            // current time
 
+         std::mutex mutex;              // synchronize access to Timer
+
          // queue of jobs to execute every n ticks
          std::list<std::shared_ptr<TimerJob>> queue;
 
@@ -172,7 +174,7 @@ namespace trogdor {
 
          /*
             Removes the job from the timer's work queue.  DO NOT call this from
-            inside a TimerJob, as it will deadlock on timerMutex.  Instead, just
+            inside a TimerJob, as it will deadlock on the mutex.  Instead, just
             set the TimerJob's number of executions to 0.  It will be reaped by
             the timer the next time it's encountered in the queue and will not
             be executed.
@@ -182,9 +184,9 @@ namespace trogdor {
          */
          inline void removeJob(std::shared_ptr<TimerJob> job) {
 
-            game->timerMutex.lock();
+            mutex.lock();
             queue.remove(job);
-            game->timerMutex.unlock();
+            mutex.unlock();
          }
    };
 }

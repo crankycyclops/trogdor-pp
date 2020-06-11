@@ -80,9 +80,6 @@ namespace trogdor {
          /* lock on this to keep data consistent between threads */
          std::mutex resourceMutex;
 
-         /* lock on this to synchronize timer actions */
-         std::mutex timerMutex;
-
       private:
 
          // whether or not a game is in progress
