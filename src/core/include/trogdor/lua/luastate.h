@@ -2,6 +2,7 @@
 #define LUASTATE_H
 
 
+#include <mutex>
 #include <string>
 
 extern "C" {
@@ -62,6 +63,9 @@ namespace trogdor {
    class LuaState {
 
       private:
+
+         // Lock on this for thread-safety
+         std::mutex mutex;
 
          // Pointer to the Game object this Lua state is a part of
          Game *game;
@@ -157,6 +161,29 @@ namespace trogdor {
          static void pushLuaValue(LuaValue v, lua_State *L);
 
       public:
+
+         /*
+            WARNING: You MUST call LuaState::lock() BEFORE you do ANYTHING with
+            a LuaState, because Lua itself is not thread-safe. You MUST remain
+            locked on the LuaState's mutex until you've finished using it, and
+            then you MUST call LuaState::unlock() to release it.
+
+            Example:
+
+            L.lock();
+            L.call(function);
+            L.execute(2);
+            bool returnVal = L.getBoolean(0);
+            L.unlock();
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline void lock() {mutex.lock();}
+         inline void unlock() {mutex.unlock();}
 
          /*
             Wraps around luaL_register and provides equivalent functionality

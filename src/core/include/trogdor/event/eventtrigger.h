@@ -2,6 +2,7 @@
 #define EVENTTRIGGER_H
 
 
+#include <mutex>
 #include <trogdor/event/event.h>
 
 

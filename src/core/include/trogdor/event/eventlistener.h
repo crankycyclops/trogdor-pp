@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include <mutex>
 
 #include <trogdor/event/eventtrigger.h>
 
@@ -14,6 +15,10 @@ namespace trogdor::event {
 
       private:
 
+         // Lock on this for thread-safety
+         std::mutex mutex;
+
+         // Vector of event triggers, indexed by event name
          std::unordered_map<std::string, std::vector<std::unique_ptr<EventTrigger>>> triggers;
 
       public:
