@@ -75,7 +75,9 @@ namespace trogdor::entity {
             std::shared_ptr<Room> connection = connections[direction].lock();
 
             if (!connection) {
+               mutex.lock();
                connections.erase(direction);
+               mutex.unlock();
             }
 
             return connection;

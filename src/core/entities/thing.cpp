@@ -62,6 +62,7 @@ namespace trogdor::entity {
       // vector more than once (otherwise, subtle but nasty things happen.)
       if (std::find(aliases.begin(), aliases.end(), alias) == aliases.end()) {
 
+         mutex.lock();
          aliases.insert(aliases.end(), alias);
 
          // If we're adding the alias after the Thing is already at a location, we
@@ -71,6 +72,8 @@ namespace trogdor::entity {
             place->removeThing(getShared());
             place->insertThing(getShared());
          }
+
+         mutex.unlock();
       }
    }
 }

@@ -122,11 +122,14 @@ namespace trogdor::entity {
          */
          inline void indexInventoryItemName(std::string alias, Object *object) {
 
+            mutex.lock();
+
             if (inventory.objectsByName.find(alias) == inventory.objectsByName.end()) {
                inventory.objectsByName[alias] = {};
             }
 
             inventory.objectsByName.find(alias)->second.push_back(object);
+            mutex.unlock();
          }
 
          /*
@@ -410,8 +413,10 @@ namespace trogdor::entity {
 
             // TODO: should I intelligently handle player dying here instead of
             // in the separate method die()? I think that makes more sense
+            mutex.lock();
             healthInitialized = true;
             health = h;
+            mutex.unlock();
 
             notifyHealth();
          }
@@ -433,7 +438,9 @@ namespace trogdor::entity {
                setHealth(h);
             }
 
+            mutex.lock();
             maxHealth = h;
+            mutex.unlock();
          }
 
          /*
@@ -446,7 +453,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setWoundRate(double rate) {woundRate = rate;}
+         inline void setWoundRate(double rate) {
+
+            mutex.lock();
+            woundRate = rate;
+            mutex.unlock();
+         }
 
          /*
             Sets the amount of damage done by the Being's bare hands.
@@ -457,7 +469,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setDamageBareHands(int d) {damageBareHands = d;}
+         inline void setDamageBareHands(int d) {
+
+            mutex.lock();
+            damageBareHands = d;
+            mutex.unlock();
+         }
 
          /*
             Setters for respawn settings.
@@ -468,9 +485,26 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setRespawnEnabled(bool b) {respawnSettings.enabled = b;}
-         inline void setRespawnInterval(int i) {respawnSettings.interval = i;}
-         inline void setRespawnLives(int i) {respawnSettings.lives = i;}
+         inline void setRespawnEnabled(bool b) {
+
+            mutex.lock();
+            respawnSettings.enabled = b;
+            mutex.unlock();
+         }
+
+         inline void setRespawnInterval(int i) {
+
+            mutex.lock();
+            respawnSettings.interval = i;
+            mutex.unlock();
+         }
+
+         inline void setRespawnLives(int i) {
+
+            mutex.lock();
+            respawnSettings.lives = i;
+            mutex.unlock();
+         }
 
          /*
             Increments the Being's number of lives.
@@ -485,7 +519,9 @@ namespace trogdor::entity {
 
             // only increment number of lives if not unlimited
             if (respawnSettings.lives > -1) {
+               mutex.lock();
                respawnSettings.lives++;
+               mutex.unlock();
             }
          }
 
@@ -499,7 +535,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setAttribute(std::string key, int s) {attributes.values[key] = s;}
+         inline void setAttribute(std::string key, int s) {
+
+            mutex.lock();
+            attributes.values[key] = s;
+            mutex.unlock();
+         }
 
          /*
             This should only be called when the Being is first initialized, and
@@ -516,11 +557,15 @@ namespace trogdor::entity {
          */
          inline void setAttributesInitialTotal() {
 
+            mutex.lock();
+
             attributes.initialTotal = 0;
 
             for (const auto &attribute: attributes.values) {
                attributes.initialTotal += attribute.second;
             }
+
+            mutex.unlock();
          }
 
          /*
@@ -533,7 +578,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setInventoryWeight(int w) {inventory.weight = w;}
+         inline void setInventoryWeight(int w) {
+
+            mutex.lock();
+            inventory.weight = w;
+            mutex.unlock();
+         }
 
          /*
             Inserts the given object into the Being's inventory.  Returns true

@@ -25,13 +25,13 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Place::Place(const Place &p, std::string n): Entity(p, n) {
-
-   }
+   Place::Place(const Place &p, std::string n): Entity(p, n) {}
 
    /****************************************************************************/
 
    void Place::insertPlayer(const std::shared_ptr<Player> &player) {
+
+      mutex.lock();
 
       things.insert(things.end(), player);
       beings.insert(beings.end(), player);
@@ -44,12 +44,15 @@ namespace trogdor::entity {
          playersByName[alias].push_back(player.get());
       }
 
+      mutex.unlock();
       player->setLocation(getShared());
    }
 
    /****************************************************************************/
 
    void Place::insertCreature(const std::shared_ptr<Creature> &creature) {
+
+      mutex.lock();
 
       things.insert(things.end(), creature);
       beings.insert(beings.end(), creature);
@@ -62,12 +65,15 @@ namespace trogdor::entity {
          creaturesByName[alias].push_back(creature.get());
       }
 
+      mutex.unlock();
       creature->setLocation(getShared());
    }
 
    /****************************************************************************/
 
    void Place::insertObject(const std::shared_ptr<Object> &object) {
+
+      mutex.lock();
 
       things.insert(things.end(), object);
       objects.insert(objects.end(), object);
@@ -78,6 +84,7 @@ namespace trogdor::entity {
          objectsByName[alias].push_back(object.get());
       }
 
+      mutex.unlock();
       object->setLocation(getShared());
    }
 
@@ -112,6 +119,8 @@ namespace trogdor::entity {
 
       for (const auto &alias: player->getAliases()) {
 
+         mutex.lock();
+
          if (playersByName.find(alias) != playersByName.end()) {
             playersByName.find(alias)->second.remove(player.get());
          }
@@ -123,11 +132,15 @@ namespace trogdor::entity {
          if (thingsByName.find(alias) != thingsByName.end()) {
             thingsByName.find(alias)->second.remove(player.get());
          }
+
+         mutex.unlock();
       }
 
+      mutex.lock();
       players.remove(player);
       beings.remove(player);
       things.remove(player);
+      mutex.unlock();
 
       player->setLocation(std::weak_ptr<Place>());
    }
@@ -137,6 +150,8 @@ namespace trogdor::entity {
    void Place::removeCreature(const std::shared_ptr<Creature> &creature) {
 
       for (const auto &alias: creature->getAliases()) {
+
+         mutex.lock();
 
          if (creaturesByName.find(alias) != creaturesByName.end()) {
             creaturesByName.find(alias)->second.remove(creature.get());
@@ -149,11 +164,15 @@ namespace trogdor::entity {
          if (thingsByName.find(alias) != thingsByName.end()) {
             thingsByName.find(alias)->second.remove(creature.get());
          }
+
+         mutex.unlock();
       }
 
+      mutex.lock();
       creatures.remove(creature);
       beings.remove(creature);
       things.remove(creature);
+      mutex.unlock();
 
       creature->setLocation(std::weak_ptr<Place>());
    }
@@ -164,6 +183,8 @@ namespace trogdor::entity {
 
       for (const auto &alias: object->getAliases()) {
 
+         mutex.lock();
+
          if (objectsByName.find(alias) != objectsByName.end()) {
             objectsByName.find(alias)->second.remove(object.get());
          }
@@ -171,10 +192,14 @@ namespace trogdor::entity {
          if (thingsByName.find(alias) != thingsByName.end()) {
             thingsByName.find(alias)->second.remove(object.get());
          }
+
+         mutex.unlock();
       }
 
+      mutex.lock();
       objects.remove(object);
       things.remove(object);
+      mutex.unlock();
 
       object->setLocation(std::weak_ptr<Place>());
    }

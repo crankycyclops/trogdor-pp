@@ -128,8 +128,10 @@ namespace trogdor::entity {
       }
 
       // insert the object into the Being's inventory
+      mutex.lock();
       inventory.objects.insert(object);
       inventory.currentWeight += object->getWeight();
+      mutex.unlock();
 
       // allow referencing of inventory Objects by name and aliases
       std::vector<std::string> objAliases = object->getAliases();
@@ -137,8 +139,10 @@ namespace trogdor::entity {
          indexInventoryItemName(objAliases[i], object.get());
       }
 
+      mutex.lock();
       inventory.count++;
       object->setOwner(getShared());
+      mutex.unlock();
 
       return true;
    }
@@ -146,6 +150,8 @@ namespace trogdor::entity {
    /***************************************************************************/
 
    void Being::removeFromInventory(const std::shared_ptr<Object> &object) {
+
+      mutex.lock();
 
       std::vector<std::string> objAliases = object->getAliases();
       for (int i = objAliases.size() - 1; i >= 0; i--) {
@@ -157,6 +163,8 @@ namespace trogdor::entity {
       inventory.count--;
       inventory.currentWeight -= object->getWeight();
       object->setOwner(std::weak_ptr<Being>());
+
+      mutex.unlock();
    }
 
    /***************************************************************************/

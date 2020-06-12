@@ -119,10 +119,10 @@ namespace trogdor {
 
    void Game::start() {
 
-      resourceMutex.lock();
+      mutex.lock();
       inGame = true;
       timer->start();
-      resourceMutex.unlock();
+      mutex.unlock();
 
       if (callbacks.end() != callbacks.find("start")) {
          for (const auto &callback: callbacks["start"]) {
@@ -135,10 +135,10 @@ namespace trogdor {
 
    void Game::stop() {
 
-      resourceMutex.lock();
+      mutex.lock();
       timer->stop();
       inGame = false;
-      resourceMutex.unlock();
+      mutex.unlock();
 
       if (callbacks.end() != callbacks.find("stop")) {
          for (const auto &callback: callbacks["stop"]) {
@@ -151,10 +151,10 @@ namespace trogdor {
 
    void Game::deactivate() {
 
-      resourceMutex.lock();
+      mutex.lock();
       inGame = false;
       timer->deactivate();
-      resourceMutex.unlock();
+      mutex.unlock();
    }
 
    /***************************************************************************/
@@ -193,30 +193,24 @@ namespace trogdor {
          throw entity::EntityException(std::string("Entity '") + name + "' already exists");
       }
 
-      resourceMutex.lock();
+      mutex.lock();
 
       switch (entity->getType()) {
 
          case entity::ENTITY_ROOM:
-
             places[name] = std::dynamic_pointer_cast<entity::Place>(entity);
             rooms[name] = std::dynamic_pointer_cast<entity::Room>(entity);
-
             break;
 
          case entity::ENTITY_OBJECT:
-
             things[name] = std::dynamic_pointer_cast<entity::Thing>(entity);
             objects[name] = std::dynamic_pointer_cast<entity::Object>(entity);
-
             break;
 
          case entity::ENTITY_CREATURE:
-
             things[name] = std::dynamic_pointer_cast<entity::Thing>(entity);
             beings[name] = std::dynamic_pointer_cast<entity::Being>(entity);
             creatures[name] = std::dynamic_pointer_cast<entity::Creature>(entity);
-
             break;
 
          case entity::ENTITY_PLAYER:
@@ -229,7 +223,7 @@ namespace trogdor {
       entities[name] = entity;
       entity->setGame(this);
 
-      resourceMutex.unlock();
+      mutex.unlock();
    }
 
    /***************************************************************************/
@@ -263,37 +257,29 @@ namespace trogdor {
          return false;
       }
 
-      resourceMutex.lock();
+      mutex.lock();
 
       switch (entities[name]->getType()) {
 
          case entity::ENTITY_ROOM:
-
             places.erase(name);
             rooms.erase(name);
-
             break;
 
          case entity::ENTITY_OBJECT:
-
             things.erase(name);
             objects.erase(name);
-
             break;
 
          case entity::ENTITY_CREATURE:
-
             things.erase(name);
             beings.erase(name);
             creatures.erase(name);
-
             break;
 
          case entity::ENTITY_PLAYER:
-
-            removePlayer(name, "", false);
-            resourceMutex.unlock();
-
+            removePlayer(name, "");
+            mutex.unlock();
             return true;
 
          default:
@@ -303,7 +289,7 @@ namespace trogdor {
       entities[name]->setGame(nullptr);
       entities.erase(name);
 
-      resourceMutex.unlock();
+      mutex.unlock();
       return true;
    }
 
@@ -330,7 +316,7 @@ namespace trogdor {
          }
       }
 
-      resourceMutex.lock();
+      mutex.lock();
 
       entities[player->getName()] = player;
       things[player->getName()] = player;
@@ -343,7 +329,7 @@ namespace trogdor {
       player->setLocation(places["start"]);
       places["start"]->insertThing(player);
 
-      resourceMutex.unlock();
+      mutex.unlock();
 
       // Player must see an initial description of where they are
       player->getLocation().lock()->observe(player, false);
@@ -364,8 +350,7 @@ namespace trogdor {
 
    void Game::removePlayer(
       const std::string name,
-      const std::string message,
-      const bool lockOnResourceMutex
+      const std::string message
    ) {
 
       if (players.find(name) != players.end()) {
@@ -389,9 +374,7 @@ namespace trogdor {
             location->removeThing(players[name]);
          }
 
-         if (lockOnResourceMutex) {
-            resourceMutex.lock();
-         }
+         mutex.lock();
 
          entities[name]->setGame(nullptr);
 
@@ -400,9 +383,7 @@ namespace trogdor {
          beings.erase(name);
          players.erase(name);
 
-         if (lockOnResourceMutex) {
-            resourceMutex.unlock();
-         }
+         mutex.unlock();
       }
    }
 
@@ -469,9 +450,9 @@ namespace trogdor {
          }
 
          else {
-            resourceMutex.lock();
+            mutex.lock();
             action->execute(player, command, this);
-            resourceMutex.unlock();
+            mutex.unlock();
          }
       }
 

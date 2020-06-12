@@ -91,12 +91,16 @@ namespace trogdor::entity {
       std::shared_ptr<std::function<void(std::any)>> callback
    ) {
 
+      mutex.lock();
       callbacks[operation].push_back(callback);
+      mutex.unlock();
    }
 
    /***************************************************************************/
 
    size_t Entity::removeCallbacks(std::string operation) {
+
+      mutex.lock();
 
       if (callbacks.end() != callbacks.find(operation)) {
 
@@ -106,6 +110,7 @@ namespace trogdor::entity {
          return size;
       }
 
+      mutex.unlock();
       return 0;
    }
 
@@ -116,6 +121,8 @@ namespace trogdor::entity {
       const std::shared_ptr<std::function<void(std::any)>> &callback
    ) {
 
+      mutex.lock();
+
       if (callbacks.end() != callbacks.find(operation)) {
 
          auto it = std::find(callbacks[operation].begin(), callbacks[operation].end(), callback);
@@ -124,11 +131,15 @@ namespace trogdor::entity {
             callbacks[operation].erase(it);
          }
       }
+
+      mutex.unlock();
    }
 
    /***************************************************************************/
 
    void Entity::setTag(std::string tag) {
+
+      mutex.lock();
 
       // Make sure the tag only gets inserted once
       if (tags.end() == tags.find(tag)) {
@@ -143,11 +154,15 @@ namespace trogdor::entity {
             (*callback)(args);
          }
       }
+
+      mutex.unlock();
    }
 
    /***************************************************************************/
 
    void Entity::removeTag(std::string tag) {
+
+      mutex.lock();
 
       if (tags.end() != tags.find(tag)) {
          tags.erase(tag);
@@ -161,13 +176,17 @@ namespace trogdor::entity {
             (*callback)(args);
          }
       }
+
+      mutex.unlock();
    }
 
    /***************************************************************************/
 
    void Entity::setGame(Game *g) {
 
+      mutex.lock();
       game = g;
+      mutex.unlock();
    }
 
    /***************************************************************************/
@@ -185,8 +204,6 @@ namespace trogdor::entity {
       else {
          displayShort(observer);
       }
-
-      observedByMap.insert(observerShared);
    }
 
    /***************************************************************************/
@@ -212,7 +229,10 @@ namespace trogdor::entity {
       }
 
       display(observer, displayFull);
+
+      mutex.lock();
       observedByMap.insert(observer);
+      mutex.unlock();
 
       if (triggerEvents) {
          game->event({
@@ -236,7 +256,10 @@ namespace trogdor::entity {
       }
 
       displayShort(observer);
+
+      mutex.lock();
       glancedByMap.insert(observer);
+      mutex.unlock();
 
       if (triggerEvents) {
          game->event({

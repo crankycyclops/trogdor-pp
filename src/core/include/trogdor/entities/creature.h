@@ -225,7 +225,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setAllegiance(enum AllegianceType a) {allegiance = a;}
+         inline void setAllegiance(enum AllegianceType a) {
+
+            mutex.lock();
+            allegiance = a;
+            mutex.unlock();
+         }
 
          /*
             Sets whether or not Creature should automatically fight back when
@@ -237,7 +242,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setCounterAttack(bool b) {counterAttack = b;}
+         inline void setCounterAttack(bool b) {
+
+            mutex.lock();
+            counterAttack = b;
+            mutex.unlock();
+         }
 
          /*
             Sets whether or not auto-attack is enabled.
@@ -248,7 +258,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setAutoAttackEnabled(bool b) {autoAttack.enabled = b;}
+         inline void setAutoAttackEnabled(bool b) {
+
+            mutex.lock();
+            autoAttack.enabled = b;
+            mutex.unlock();
+         }
 
          /*
             Sets auto-attack interval.
@@ -259,7 +274,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setAutoAttackInterval(int i) {autoAttack.interval = i;}
+         inline void setAutoAttackInterval(int i) {
+
+            mutex.lock();
+            autoAttack.interval = i;
+            mutex.unlock();
+         }
 
          /*
             Sets whether or not auto-attack should continue indefinitely (until
@@ -271,7 +291,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setAutoAttackRepeat(bool b) {autoAttack.repeat = b;}
+         inline void setAutoAttackRepeat(bool b) {
+
+            mutex.lock();
+            autoAttack.repeat = b;
+            mutex.unlock();
+         }
 
          /*
             Sets whether or not automatic wandering is enabled.
@@ -282,7 +307,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setWanderEnabled(bool b) {wanderSettings.enabled = b;}
+         inline void setWanderEnabled(bool b) {
+
+            mutex.lock();
+            wanderSettings.enabled = b;
+            mutex.unlock();
+         }
 
          /*
             Sets how often (in clock ticks) the Creature considers wandering to
@@ -304,7 +334,9 @@ namespace trogdor::entity {
                );
             }
 
+            mutex.lock();
             wanderSettings.interval = i;
+            mutex.unlock();
          }
 
          /*
@@ -324,7 +356,9 @@ namespace trogdor::entity {
                throw ValidationException("Probability must be between 0 and 1");
             }
 
+            mutex.lock();
             wanderSettings.wanderlust = d;
+            mutex.unlock();
          }
 
          /*

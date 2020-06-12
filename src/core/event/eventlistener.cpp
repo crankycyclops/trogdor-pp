@@ -70,12 +70,15 @@ namespace trogdor::event {
 
    void EventListener::addTrigger(std::string eventName, std::unique_ptr<EventTrigger> trigger) {
 
+      mutex.lock();
+
       // Not sure why I can't just write triggers[eventName] = {};
       if (triggers.end() == triggers.find(eventName)) {
          triggers[eventName] = std::vector<std::unique_ptr<EventTrigger>>();
       }
 
       triggers[eventName].push_back(std::move(trigger));
+      mutex.unlock();
    }
 
    /***************************************************************************/

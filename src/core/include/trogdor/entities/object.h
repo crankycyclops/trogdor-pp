@@ -32,10 +32,11 @@ namespace trogdor::entity {
 
       protected:
 
-         int weight;  // how much weight Object uses in a Being's inventory
-         int damage;  // how much damage Object does if it's a weapon
+         int weight;  // How much weight Object uses in a Being's inventory
+         int damage;  // How much damage Object does if it's a weapon
 
-         std::weak_ptr<Being> owner;  // a Being might own the object
+         // A Being might own the object
+         std::weak_ptr<Being> owner;
 
       public:
 
@@ -111,7 +112,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setOwner(std::weak_ptr<Being> being) {owner = being;}
+         inline void setOwner(std::weak_ptr<Being> being) {
+
+            mutex.lock();
+            owner = being;
+            mutex.unlock();
+         }
 
          /*
             Sets the Object's weight (how much space it uses in a Being's
@@ -123,7 +129,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setWeight(int w) {weight = w;}
+         inline void setWeight(int w) {
+
+            mutex.lock();
+            weight = w;
+            mutex.unlock();
+         }
 
          /*
             Sets amount of damage Object does if it's a weapon (measured in hit
@@ -135,7 +146,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setDamage(int d) {damage = d;}
+         inline void setDamage(int d) {
+
+            mutex.lock();
+            damage = d;
+            mutex.unlock();
+         }
 
          /*
             Extends Thing::addAlias(), and ensures that if the Object is owned,

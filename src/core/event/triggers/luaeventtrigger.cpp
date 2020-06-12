@@ -7,6 +7,7 @@ namespace trogdor::event {
 
       try {
 
+         L->lock();
          L->call(function);
 
          for (auto const &argument: e.getArguments()) {
@@ -50,12 +51,15 @@ namespace trogdor::event {
          }
 
          L->execute(2);
+         EventReturn retVals = {L->getBoolean(1), L->getBoolean(0)};
 
-         return {L->getBoolean(1), L->getBoolean(0)};
+         L->unlock();
+         return retVals;
       }
 
       catch (const LuaException &e) {
 
+         L->unlock();
          errStream << e.what() << std::endl;
          return {true, true};
       }
