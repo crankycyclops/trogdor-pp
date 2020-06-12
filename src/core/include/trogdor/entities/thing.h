@@ -107,7 +107,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setLocation(std::weak_ptr<Place> l) {location = l;}
+         inline void setLocation(std::weak_ptr<Place> l) {
+
+            mutex.lock();
+            location = l;
+            mutex.unlock();
+         }
 
          /*
             Adds an alias to the Thing, which is another name that the Thing can

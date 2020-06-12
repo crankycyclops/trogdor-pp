@@ -72,6 +72,8 @@ namespace trogdor::entity {
 
       protected:
 
+         std::mutex mutex;
+
          // every kind of Entity that we are by virtue of inheritance
          std::list<enum EntityType> types;
 
@@ -282,7 +284,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setManagedByLua(bool flag) {managedByLua = flag;}
+         inline void setManagedByLua(bool flag) {
+
+            mutex.lock();
+            managedByLua = flag;
+            mutex.unlock();
+         }
 
          /*
             Adds a callback that should be called when a certain operation
@@ -357,7 +364,10 @@ namespace trogdor::entity {
          */
          Trogout &out(std::string channel = DEFAULT_OUTPUT_CHANNEL) {
 
+            mutex.lock();
             outStream->setChannel(channel);
+            mutex.unlock();
+
             return *outStream;
          }
 
@@ -375,7 +385,10 @@ namespace trogdor::entity {
          */
          Trogerr &err(Trogerr::ErrorLevel severity = Trogerr::ERROR) {
 
+            mutex.lock();
             errStream->setErrorLevel(severity);
+            mutex.unlock();
+
             return *errStream;
          }
 
@@ -619,7 +632,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setMessage(std::string name, std::string message) {msgs.set(name, message);}
+         inline void setMessage(std::string name, std::string message) {
+
+            mutex.lock();
+            msgs.set(name, message);
+            mutex.unlock();
+         }
 
          /*
             Sets a meta data value.
@@ -631,7 +649,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setMeta(std::string key, std::string value) {meta[key] = value;}
+         inline void setMeta(std::string key, std::string value) {
+
+            mutex.lock();
+            meta[key] = value;
+            mutex.unlock();
+         }
 
          /*
             Sets the Entity's class.
@@ -643,7 +666,12 @@ namespace trogdor::entity {
                (none)
          */
          // TODO: virtual in Thing that will remove/add alias for old and new class name
-         inline void setClass(std::string c) {className = c;}
+         inline void setClass(std::string c) {
+
+            mutex.lock();
+            className = c;
+            mutex.unlock();
+         }
 
          /*
             Sets the Entity's title.
@@ -654,7 +682,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setTitle(std::string t) {title = t;}
+         inline void setTitle(std::string t) {
+
+            mutex.lock();
+            title = t;
+            mutex.unlock();
+         }
 
          /*
             Sets the Entity's long description.
@@ -665,7 +698,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setLongDescription(std::string d) {longDesc = d;}
+         inline void setLongDescription(std::string d) {
+
+            mutex.lock();
+            longDesc = d;
+            mutex.unlock();
+         }
 
          /*
             Sets the Entity's short description.
@@ -676,7 +714,12 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setShortDescription(std::string d) {shortDesc = d;}
+         inline void setShortDescription(std::string d) {
+
+            mutex.lock();
+            shortDesc = d;
+            mutex.unlock();
+         }
 
          /*
             Sets a tag. This is virtual so that other Entity's can wrap around

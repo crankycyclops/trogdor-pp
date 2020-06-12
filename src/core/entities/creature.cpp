@@ -43,6 +43,7 @@ namespace trogdor::entity {
          // Creature's weapon cache every time the weapon tag is added or removed
          // from an Object in the Creature's inventory.
          if (!updateObjectTag) {
+
             updateObjectTag = std::make_shared<std::function<void(std::any)>>([&](std::any data) {
 
                auto args = std::any_cast<std::tuple<std::string, Object *>>(data);
@@ -54,19 +55,27 @@ namespace trogdor::entity {
 
                   // The weapon tag was added
                   if (object->isTagSet(Object::WeaponTag)) {
+                     mutex.lock();
                      weaponCache.insert(object);
+                     mutex.unlock();
                   }
 
                   // The weapon tag was removed
                   else {
+                     mutex.lock();
                      weaponCache.erase(object);
+                     mutex.unlock();
                   }
                }
             });
          }
 
          if (object->isTagSet(Object::WeaponTag)) {
+
+            mutex.lock();
             weaponCache.insert(object.get());
+            mutex.unlock();
+
             object->addCallback("setTag", updateObjectTag);
             object->addCallback("removeTag", updateObjectTag);
          }
@@ -87,7 +96,9 @@ namespace trogdor::entity {
       }
 
       if (object->isTagSet(Object::WeaponTag)) {
+         mutex.lock();
          weaponCache.erase(object.get());
+         mutex.unlock();
       }
 
       Being::removeFromInventory(object);

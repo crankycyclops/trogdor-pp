@@ -95,8 +95,9 @@ namespace trogdor {
          // because I need to be able to access it publicly in two different
          // contexts: one in which a lock is required and one in which it's not.
          // The simplest solution I can see is the use the recursive lock. If
-         // anyone knows a better way, please submit an issue or pull request,
-         // as I'd love to learn something new.
+         // you know a better way, please submit an issue or pull request and
+         // I'll consider merging your changes. I'm still learning and threading
+         // isn't my forte.
          std::recursive_mutex mutex;
 
          // Keeps time in the game and executes scheduled jobs
