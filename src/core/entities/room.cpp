@@ -52,7 +52,9 @@ namespace trogdor::entity {
       std::shared_ptr<Room> retVal = connection.lock();
 
       if (!retVal) {
+         mutex.lock();
          connections.erase(direction);
+         mutex.unlock();
       }
 
       return retVal;
@@ -63,7 +65,9 @@ namespace trogdor::entity {
    void Room::setConnection(std::string direction, const std::shared_ptr<Room> &connectTo) {
 
       if (game->getVocabulary().isDirection(direction)) {
+         mutex.lock();
          connections[direction] = connectTo;
+         mutex.unlock();
       }
 
       else {

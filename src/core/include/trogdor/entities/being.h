@@ -122,11 +122,14 @@ namespace trogdor::entity {
          */
          inline void indexInventoryItemName(std::string alias, Object *object) {
 
+            mutex.lock();
+
             if (inventory.objectsByName.find(alias) == inventory.objectsByName.end()) {
                inventory.objectsByName[alias] = {};
             }
 
             inventory.objectsByName.find(alias)->second.push_back(object);
+            mutex.unlock();
          }
 
          /*
