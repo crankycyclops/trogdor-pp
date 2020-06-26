@@ -45,7 +45,7 @@ class TCPConnection {
 	public:
 
 		// Default Constructor
-		TCPConnection(std::string hostname, unsigned short port);
+		TCPConnection(std::string &hostname, unsigned short port);
 		TCPConnection() = delete;
 
 		// Copy constructor and assignment operator
@@ -61,7 +61,7 @@ class TCPConnection {
 
 		// Write a string to a trogdord instance. Throws an instance of
 		// \Trogdord\NetworkException if an error occurs.
-		void write(std::string message);
+		void write(std::string &message);
 
 		// Returns the hostname or ip address we're connecting to
 		inline std::string getHostname() {return hostname;}

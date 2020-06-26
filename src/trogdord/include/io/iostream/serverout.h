@@ -36,13 +36,13 @@ class ServerOut: public trogdor::Trogout {
 		size_t gameId;
 
 		// The Entity whose output we're processing
-		trogdor::entity::Entity *entityPtr;
+		trogdor::entity::Entity *entityPtr = nullptr;
 
 	public:
 
 		// Constructor
 		ServerOut() = delete;
-		inline ServerOut(size_t gId): gameId(gId) {}
+		explicit inline ServerOut(size_t gId): gameId(gId) {}
 
 		// Sets the entity the output stream belongs to. This must be
 		// called BEFORE the stream can be used.

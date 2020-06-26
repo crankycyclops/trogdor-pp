@@ -106,6 +106,9 @@ class TCPConnection: public std::enable_shared_from_this<TCPConnection> {
 		void write(std::string message, TCPConnection::callback_t callback, void *callbackArg);
 
 		// Logs a message associated with the connection.
+		// Note: cppcheck will warn that you should pass message by reference,
+		// but doing so will result in a failed build, so please ignore its
+		// advice.
 		inline void log(trogdor::Trogerr::ErrorLevel severity, std::string message) {
 
 			// Get and cache the client's hostname/IP only once

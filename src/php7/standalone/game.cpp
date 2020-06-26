@@ -120,7 +120,9 @@ static bool getGame(zval *game, size_t id) {
 
 static zend_object *createGameObject(zend_class_entry *classEntry TSRMLS_DC) {
 
-	gameObject *gObj = (gameObject *)ecalloc(1, sizeof(*gObj) + zend_object_properties_size(classEntry));
+	gameObject *gObj = static_cast<gameObject *>(
+		ecalloc(1, sizeof(*gObj) + zend_object_properties_size(classEntry))
+	);
 
 	// We'll either initialize this with a new instance of trogdor::Game in
 	// Trogdor\Game::__construct() or assign it an existing instance in
@@ -365,7 +367,6 @@ PHP_METHOD(Game, depersist) {
 	zId = zend_read_property(GAME_GLOBALS(classEntry), thisPtr, "persistentId", sizeof("persistentId") - 1, 1, &rv TSRMLS_CC);
 
 	if (Z_TYPE_P(zId) == IS_LONG) {
-		size_t id = Z_LVAL_P(zId);
 		depersistGame(Z_LVAL_P(zId));
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.id = 0;
 		ZOBJ_TO_GAMEOBJ(Z_OBJ_P(thisPtr))->realGameObject.persistent = false;

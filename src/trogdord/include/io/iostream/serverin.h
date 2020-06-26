@@ -46,13 +46,13 @@ class ServerIn: public trogdor::Trogin {
 		size_t gameId;
 
 		// The Entity who's input we're reading
-		trogdor::entity::Entity *entityPtr;
+		trogdor::entity::Entity *entityPtr = nullptr;
 
 	public:
 
 		// Constructor
 		ServerIn() = delete;
-		inline ServerIn(size_t gId): gameId(gId) {}
+		explicit inline ServerIn(size_t gId): gameId(gId) {}
 
 		// Returns true if a blocking read operation is in progress and false
 		// if not.

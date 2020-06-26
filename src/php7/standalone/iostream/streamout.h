@@ -56,7 +56,7 @@ class PHPStreamOut: public trogdor::Trogout {
 	public:
 
 		// Constructor
-		inline PHPStreamOut(customData *d): gameData(d), entity(nullptr) {}
+		explicit inline PHPStreamOut(customData *d): gameData(d), entity(nullptr) {}
 
 		// Sets the entity the output stream belongs to. This must be
 		// called BEFORE the output stream can be used.

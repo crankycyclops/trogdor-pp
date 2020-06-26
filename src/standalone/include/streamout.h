@@ -24,7 +24,7 @@ class StreamOut: public trogdor::Trogout {
 
    public:
 
-      StreamOut(std::ostream *s);
+      explicit StreamOut(std::ostream *s);
 
       /*
          See include/iostream/trogout.h for details.

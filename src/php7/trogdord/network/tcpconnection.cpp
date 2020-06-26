@@ -11,17 +11,15 @@ static const char *READY_RESPONSE = "{\"status\":\"ready\"}";
 
 /*****************************************************************************/
 
-TCPConnection::TCPConnection(std::string h, unsigned short p): hostname(h), port(p) {
+TCPConnection::TCPConnection(std::string &h, unsigned short p): hostname(h), port(p) {
 
 	open();
 }
 
 /*****************************************************************************/
 
-TCPConnection::TCPConnection(const TCPConnection &original) {
-
-	hostname = original.hostname;
-	port = original.port;
+TCPConnection::TCPConnection(const TCPConnection &original):
+hostname(original.hostname), port(original.port) {
 
 	open();
 }
@@ -161,7 +159,7 @@ std::string TCPConnection::read() {
 
 /*****************************************************************************/
 
-void TCPConnection::write(std::string message) {
+void TCPConnection::write(std::string &message) {
 
 	boost::system::error_code error;
 

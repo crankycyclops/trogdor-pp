@@ -75,7 +75,7 @@ std::optional<JSONObject> EntityController::getEntityHelper(
 		);
 	}
 
-	catch (JSONObject error) {
+	catch (const JSONObject &error) {
 		return error;
 	}
 
@@ -96,7 +96,7 @@ std::optional<JSONObject> EntityController::getEntityHelper(
 		return std::nullopt;
 	}
 
-	catch (EntityNotFound &e) {
+	catch (const EntityNotFound &e) {
 
 		JSONObject response;
 
@@ -200,7 +200,7 @@ JSONObject EntityController::getEntityList(JSONObject request) {
 		gameId = Request::parseGameId(request, "args.game_id");
 	}
 
-	catch (JSONObject error) {
+	catch (const JSONObject &error) {
 		return error;
 	}
 
@@ -259,7 +259,7 @@ JSONObject EntityController::getOutput(JSONObject request) {
 		);
 	}
 
-	catch (JSONObject error) {
+	catch (const JSONObject &error) {
 		return error;
 	}
 
@@ -296,7 +296,7 @@ JSONObject EntityController::getOutput(JSONObject request) {
 		response.add_child("messages", messages);
 	}
 
-	catch (UnsupportedOperation &e) {
+	catch (const UnsupportedOperation &e) {
 		response.put("status", 501);
 		response.put("message", e.what());
 	}

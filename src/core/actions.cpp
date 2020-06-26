@@ -72,14 +72,14 @@ namespace trogdor {
       Game *game
    ) {
 
-      // percentage of available space used
-      double totalPercent = 0.0;
-
       if (0 == player->getInventoryCount()) {
          player->out("display") << "You don't have anything!" << std::endl;
       }
 
       else {
+
+         // percentage of available space used
+         double totalPercent = 0.0;
 
          player->out("display") << "Items in your inventory:" << std::endl << std::endl;
 
@@ -508,11 +508,7 @@ namespace trogdor {
 
    bool AttackAction::checkSyntax(const std::shared_ptr<Command> &command) {
 
-      std::string verb = command->getVerb();
-      std::string dobj = command->getDirectObject();
-      std::string iobj = command->getIndirectObject();
-
-      if (dobj.length() == 0) {
+      if (command->getDirectObject().length() == 0) {
          return false;
       }
 

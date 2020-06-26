@@ -468,7 +468,9 @@ static const zend_function_entry classMethods[] =  {
 
 static zend_object *createObject(zend_class_entry *classEntry TSRMLS_DC) {
 
-	trogdordObject *obj = (trogdordObject *)ecalloc(1, sizeof(*obj) + zend_object_properties_size(classEntry));
+	trogdordObject *obj = static_cast<trogdordObject *>(
+		ecalloc(1, sizeof(*obj) + zend_object_properties_size(classEntry))
+	);
 
 	zend_object_std_init(&obj->std, classEntry);
 	object_properties_init(&obj->std, classEntry);

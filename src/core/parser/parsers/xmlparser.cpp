@@ -1045,8 +1045,6 @@ namespace trogdor {
 
    void XMLParser::parseCreatureProperties(std::string name, std::string targetType, int depth) {
 
-      bool counterAttackParsed = false;
-
       static std::unordered_map<std::string, std::string> tagToProperty({
          {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"},
          {"health", "health"}, {"maxhealth", "maxhealth"},
@@ -1120,21 +1118,13 @@ namespace trogdor {
       }
 
       // Set default counter-attack rules
-      // TODO: I really don't like this property. It'll stay for now, but I should
-      // eventually change this with some sort of observer thing where, when
-      // the allegiance property is changed, it triggers a re-evaluation of the
-      // counterattack (only if counterattack was never set explicitly. Will need
-      // to think about the architecture of this...)
-      if (!counterAttackParsed) {
-
-         ast->appendChild(ASTSetProperty(
-            targetType,
-            "counterattack.default",
-            "",
-            xmlTextReaderGetParserLineNumber(reader),
-            name
-         ));
-      }
+      ast->appendChild(ASTSetProperty(
+         targetType,
+         "counterattack.default",
+         "",
+         xmlTextReaderGetParserLineNumber(reader),
+         name
+      ));
    }
 
    /***************************************************************************/

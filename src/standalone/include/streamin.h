@@ -18,7 +18,7 @@ class StreamIn: public trogdor::Trogin {
 
    public:
 
-      inline StreamIn(std::istream *s) {stream = s;}
+      explicit inline StreamIn(std::istream *s) {stream = s;}
 
    /*
       See include/iostream/trogin.h for details.

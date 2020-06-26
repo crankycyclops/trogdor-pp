@@ -109,7 +109,7 @@ JSONObject GameController::getGame(JSONObject request) {
 		gameId = Request::parseGameId(request);
 	}
 
-	catch (JSONObject error) {
+	catch (const JSONObject &error) {
 		return error;
 	}
 
@@ -250,7 +250,7 @@ JSONObject GameController::getStatistics(JSONObject request) {
 		gameId = Request::parseGameId(request);
 	}
 
-	catch (JSONObject error) {
+	catch (const JSONObject &error) {
 		return error;
 	}
 
@@ -353,7 +353,7 @@ JSONObject GameController::destroyGame(JSONObject request) {
 		gameId = Request::parseGameId(request);
 	}
 
-	catch (JSONObject error) {
+	catch (const JSONObject &error) {
 		return error;
 	}
 
@@ -381,7 +381,7 @@ JSONObject GameController::startGame(JSONObject request) {
 		gameId = Request::parseGameId(request);
 	}
 
-	catch (JSONObject error) {
+	catch (const JSONObject &error) {
 		return error;
 	}
 
@@ -409,7 +409,7 @@ JSONObject GameController::stopGame(JSONObject request) {
 		gameId = Request::parseGameId(request);
 	}
 
-	catch (JSONObject error) {
+	catch (const JSONObject &error) {
 		return error;
 	}
 
@@ -437,7 +437,7 @@ JSONObject GameController::getMeta(JSONObject request) {
 		gameId = Request::parseGameId(request);
 	}
 
-	catch (JSONObject error) {
+	catch (const JSONObject &error) {
 		return error;
 	}
 
@@ -500,7 +500,7 @@ JSONObject GameController::setMeta(JSONObject request) {
 		gameId = Request::parseGameId(request);
 	}
 
-	catch (JSONObject error) {
+	catch (const JSONObject &error) {
 		return error;
 	}
 
@@ -553,7 +553,7 @@ JSONObject GameController::getTime(JSONObject request) {
 		gameId = Request::parseGameId(request);
 	}
 
-	catch (JSONObject error) {
+	catch (const JSONObject &error) {
 		return error;
 	}
 
@@ -583,7 +583,7 @@ JSONObject GameController::getIsRunning(JSONObject request) {
 		gameId = Request::parseGameId(request);
 	}
 
-	catch (JSONObject error) {
+	catch (const JSONObject &error) {
 		return error;
 	}
 

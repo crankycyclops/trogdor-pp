@@ -13,9 +13,9 @@ zend_object_handlers inputObjectHandlers;
 
 static zend_object *createInputObject(zend_class_entry *classEntry TSRMLS_DC) {
 
-	inputDataWrapper *wrapper = (inputDataWrapper *)ecalloc(
+	inputDataWrapper *wrapper = static_cast<inputDataWrapper *>(ecalloc(
 		1, sizeof(*wrapper) + zend_object_properties_size(classEntry)
-	);
+	));
 
 	wrapper->data.ePtr = nullptr;
 

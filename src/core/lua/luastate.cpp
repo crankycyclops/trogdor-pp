@@ -124,7 +124,7 @@ namespace trogdor {
       lua_newtable(L);
 
       for (LuaTable::TableValues::iterator i = values.begin();
-      i != values.end(); i++) {
+      i != values.end(); ++i) {
 
          std::string key = i->first;
          LuaValue v = i->second;

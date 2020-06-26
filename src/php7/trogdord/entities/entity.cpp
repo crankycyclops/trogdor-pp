@@ -321,6 +321,7 @@ bool createEntityObj(zval *entityObj, Value &properties, zval *gameObj) {
 
 	// My first *ever* use of this C++17 feature (I feel so grown up):
 	// https://en.cppreference.com/w/cpp/language/if#If_Statements_with_Initializer
+	// Ignore cppcheck's flagging of this as a syntax error
 	if (
 		std::string eType = properties["type"].GetString();
 		0 == eType.compare(ROOM_TYPE_STR)

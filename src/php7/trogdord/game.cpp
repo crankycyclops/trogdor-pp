@@ -1622,6 +1622,8 @@ static const zend_function_entry classMethods[] =  {
 
 /*****************************************************************************/
 
+// Note: cppcheck will suggest you pass type by reference, but doing so will
+// break the build, so please ignore its advice.
 static zval getEntityList(size_t gameId, std::string type, zval *trogdord) {
 
 	std::string request = ENTITY_LIST_REQUEST;
@@ -1642,6 +1644,8 @@ static zval getEntityList(size_t gameId, std::string type, zval *trogdord) {
 
 /*****************************************************************************/
 
+// Note: cppcheck will suggest you pass name and type by reference, but doing so
+// will break the build, so please ignore its advice.
 static zval getEntity(std::string name, std::string type, zval *game) {
 
 	std::string request = ENTITY_GET_REQUEST;
