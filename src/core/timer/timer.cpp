@@ -54,6 +54,9 @@ namespace trogdor {
 
       // I can't use for_each or a range-based for loop because I have to remove
       // expired jobs from queue and must be able to manipulate the iterator.
+      // Note: the cppcheck warning about the extra iterator increment can be
+      // ignored, as we'll never have a situation where i gets incremented
+      // beyond queue.end().
       for (std::list<std::shared_ptr<TimerJob>>::iterator i = queue.begin();
       i != queue.end(); ++i) {
 

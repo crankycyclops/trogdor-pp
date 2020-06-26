@@ -44,7 +44,7 @@ class Config {
 
 		// Protected constructor, making get() the only way to return an
 		// instance.
-		Config(std::string iniPath) noexcept;
+		explicit Config(std::string iniPath) noexcept;
 		Config() = delete;
 		Config(const Config &) = delete;
 

@@ -129,7 +129,7 @@ namespace trogdor {
    }
 
 
-   std::string vectorToStr(std::vector<std::string> list, std::string conjunction) {
+   std::string vectorToStr(std::vector<std::string> list, const std::string &conjunction) {
 
       std::string str;
 

@@ -44,6 +44,8 @@ class Filter {
 	public:
 
 		// Constructor
+		// Note: cppcheck will suggest you pass these arguments by reference,
+		// but doing that will result in a failed build.
 		inline Filter(std::string type, FilterValue value):
 			type(type), value(value) {};
 

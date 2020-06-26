@@ -120,7 +120,7 @@ void TCPServer::serveConnections() {
 
 	// listen for new requests on already accepted connections
 	for (std::list<std::shared_ptr<TCPConnection>>::iterator i = activeConnections.begin();
-	i != activeConnections.end(); i++) {
+	i != activeConnections.end(); ++i) {
 
 		std::shared_ptr<TCPConnection> connection = *i;
 

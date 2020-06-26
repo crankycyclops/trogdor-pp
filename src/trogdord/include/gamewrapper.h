@@ -30,8 +30,8 @@ class GameWrapper {
 		// meta data that the game should be initialized with and creates an
 		// internal instance of trogdor::Game.
 		GameWrapper(
-			std::string definitionPath,
-			std::string name,
+			std::string &definitionPath,
+			std::string &name,
 			std::unordered_map<std::string, std::string> meta = {}
 		);
 

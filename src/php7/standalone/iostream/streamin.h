@@ -52,7 +52,7 @@ class PHPStreamIn: public trogdor::Trogin {
 	public:
 
 		// Constructor
-		inline PHPStreamIn(customData *d): gameData(d), entity(nullptr) {}
+		explicit inline PHPStreamIn(customData *d): gameData(d), entity(nullptr) {}
 
 		// Sets the entity the output stream belongs to. This must be
 		// called BEFORE the output stream can be used.

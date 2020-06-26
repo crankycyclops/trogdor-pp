@@ -13,9 +13,9 @@ zend_object_handlers outputObjectHandlers;
 
 static zend_object *createOutputObject(zend_class_entry *classEntry TSRMLS_DC) {
 
-	outputDataWrapper *wrapper = (outputDataWrapper *)ecalloc(
+	outputDataWrapper *wrapper = static_cast<outputDataWrapper *>(ecalloc(
 		1, sizeof(*wrapper) + zend_object_properties_size(classEntry)
-	);
+	));
 
 	wrapper->data.ePtr = nullptr;
 

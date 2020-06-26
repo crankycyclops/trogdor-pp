@@ -257,21 +257,42 @@ if (Boost_FOUND)
 
 	install(TARGETS trogdord DESTINATION bin COMPONENT trogdord OPTIONAL)
 
-else(Boost_FOUND)
+else (Boost_FOUND)
 
 	add_custom_target(trogdord echo "Skipping trogdord because the Boost C++ libraries are not installed in a place where CMake can find them.")
 
-endif(Boost_FOUND)
+endif (Boost_FOUND)
 
 ###############################################################################
 
 add_custom_target(lcount
-	wc -l */*/*.cpp */*/*/*.cpp */*/*/*/*.cpp */*/*/*/*/*.cpp */*/*/*.h */*/*/*/*.h */*/*/*/*/*.h */*/*/*/*/*/*.h
+	wc -l ${PROJECT_SOURCE_DIR}/*/*/*.cpp ${PROJECT_SOURCE_DIR}/*/*/*/*.cpp ${PROJECT_SOURCE_DIR}/*/*/*/*/*.cpp ${PROJECT_SOURCE_DIR}/*/*/*/*/*/*.cpp ${PROJECT_SOURCE_DIR}/*/*/*/*.h ${PROJECT_SOURCE_DIR}/*/*/*/*/*.h ${PROJECT_SOURCE_DIR}/*/*/*/*/*/*.h ${PROJECT_SOURCE_DIR}/*/*/*/*/*/*/*.h
 )
 
 ###############################################################################
 
-# uninstall target
+# Run cppcheck (if available)
+find_program(CPPCHECK cppcheck)
+
+if (CPPCHECK)
+
+	add_custom_target(cppcheck
+		cppcheck -D GAME_XML_DEFAULT_PATH --enable=all ${PROJECT_SOURCE_DIR}/src/* > /dev/null
+	)
+
+else (CPPCHECK)
+
+	add_custom_target(cppcheck echo "cppcheck not installed or not found. Skipping.")
+
+endif (CPPCHECK)
+
+# Perform static analysis
+add_custom_target(analyze)
+add_dependencies(analyze cppcheck)
+
+###############################################################################
+
+# Uninstall target
 if(NOT TARGET uninstall)
     configure_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"

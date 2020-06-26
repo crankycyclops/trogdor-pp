@@ -72,7 +72,7 @@ namespace trogdor {
       Output:
          Comma-delimited list (std::string)
    */
-   extern std::string vectorToStr(std::vector<std::string> list, std::string conjunction = "and");
+   extern std::string vectorToStr(std::vector<std::string> list, const std::string &conjunction = "and");
 
    /*
       Checks if a string represents a valid integer.

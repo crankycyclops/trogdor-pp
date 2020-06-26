@@ -39,6 +39,8 @@ class ScopeController {
 		// Maps method, action pairs to callback functions that invoke and
 		// return the values of methods in classes that inherit from
 		// ScopeController.
+		// Note: cppcheck warns that I should pass callback by reference, but
+		// this will result in a failed build, so please ignore the advice.
 		void registerAction(
 			std::string method,
 			std::string action,

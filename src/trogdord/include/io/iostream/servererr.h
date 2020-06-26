@@ -18,7 +18,7 @@ class ServerErr: public trogdor::Trogerr {
 
    public:
 
-      inline ServerErr(std::ostream *s) {stream = s;}
+      explicit inline ServerErr(std::ostream *s) {stream = s;}
 
       /*
          If I don't have this, I get undefined vtable errors when linking to

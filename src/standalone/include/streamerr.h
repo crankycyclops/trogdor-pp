@@ -18,7 +18,7 @@ class StreamErr: public trogdor::Trogerr {
 
    public:
 
-      inline StreamErr(std::ostream *s) {stream = s;}
+      explicit inline StreamErr(std::ostream *s) {stream = s;}
 
       /*
          If I don't have this, I get undefined vtable errors when linking to
