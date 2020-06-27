@@ -90,31 +90,6 @@ TEST_SUITE("Command (command.cpp)") {
 		CHECK(0 == command.getPreposition().compare(""));
 	}
 
-	TEST_CASE("Command (command.cpp): Test parsing of verb + do + prep + ido with invalid verb") {
-
-		trogdor::Vocabulary mockVocab;
-		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
-		trogdor::Command command(mockVocab);
-
-		// The verb "give" isn't curr
-		trogdor::entity::Player mockPlayer(
-			&mockGame,
-			"player",
-			std::make_unique<trogdor::NullOut>(),
-			std::make_unique<StringIn>("notaverb candle to wizard"),
-			std::make_unique<trogdor::NullErr>()
-		);
-
-		command.read(&mockPlayer);
-
-		CHECK(command.isInvalid());
-		CHECK(!command.isNull());
-		CHECK(0 == command.getVerb().compare(""));
-		CHECK(0 == command.getDirectObject().compare(""));
-		CHECK(0 == command.getIndirectObject().compare(""));
-		CHECK(0 == command.getPreposition().compare(""));
-	}
-
 	TEST_CASE("Command (command.cpp): Test parsing of verb + single word direct object") {
 
 		trogdor::Vocabulary mockVocab;
@@ -286,7 +261,7 @@ TEST_SUITE("Command (command.cpp)") {
 		CHECK(0 == command.getPreposition().compare("from"));
 	}
 
-	TEST_CASE("Command (command.cpp): Invalid case #1: unrecognized verb") {
+	TEST_CASE("Command (command.cpp): Invalid case #1: single word sentence with unrecognized verb") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
@@ -310,7 +285,32 @@ TEST_SUITE("Command (command.cpp)") {
 		CHECK(0 == command.getPreposition().compare(""));
 	}
 
-	TEST_CASE("Command (command.cpp): Invalid case #2: dangling preposition") {
+	TEST_CASE("Command (command.cpp): Invalid case #2: verb + do + prep + ido with unrecognized verb") {
+
+		trogdor::Vocabulary mockVocab;
+		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+		trogdor::Command command(mockVocab);
+
+		// The verb "give" isn't curr
+		trogdor::entity::Player mockPlayer(
+			&mockGame,
+			"player",
+			std::make_unique<trogdor::NullOut>(),
+			std::make_unique<StringIn>("notaverb candle to wizard"),
+			std::make_unique<trogdor::NullErr>()
+		);
+
+		command.read(&mockPlayer);
+
+		CHECK(command.isInvalid());
+		CHECK(!command.isNull());
+		CHECK(0 == command.getVerb().compare(""));
+		CHECK(0 == command.getDirectObject().compare(""));
+		CHECK(0 == command.getIndirectObject().compare(""));
+		CHECK(0 == command.getPreposition().compare(""));
+	}
+
+	TEST_CASE("Command (command.cpp): Invalid case #3: dangling preposition") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
@@ -335,7 +335,7 @@ TEST_SUITE("Command (command.cpp)") {
 		CHECK(0 == command.getPreposition().compare("from"));
 	}
 
-	TEST_CASE("Command (command.cpp): Invalid case #3: verb + dangling filler") {
+	TEST_CASE("Command (command.cpp): Invalid case #4: verb + dangling filler") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
