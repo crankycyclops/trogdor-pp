@@ -1,7 +1,6 @@
 #ifndef TOKENIZER_H
 #define TOKENIZER_H
 
-
 #include <string>
 #include <regex>
 #include <vector>
@@ -12,12 +11,23 @@ namespace trogdor {
 
       private:
 
-         std::vector<std::string> tokens;        // tokens parsed from the string
-         unsigned int curTokenIndex;             // current position in the tokens vector
+         // Tokens parsed from the string
+         std::vector<std::string> tokens;
+
+         // Current position in the tokens vector
+         size_t curTokenIndex;
 
       public:
 
          Tokenizer(std::string s);
+
+         /*
+            Returns the number of tokens in the string.
+
+            Input: (none)
+            Output: size_t
+         */
+         inline size_t size() {return tokens.size();}
 
          /*
             Returns true if we've reached the end of the string.
@@ -53,7 +63,12 @@ namespace trogdor {
             Input: (none)
             Output: (none)
          */
-         inline void next() {curTokenIndex++;}
+         inline void next() {
+
+            if (curTokenIndex < tokens.size()) {
+               curTokenIndex++;
+            }
+         }
 
          /*
             Backtracks the current token.

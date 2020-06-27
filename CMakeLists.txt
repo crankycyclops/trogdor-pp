@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 include(FindPkgConfig)
+include(CheckIncludeFile)
 
 project(Trogdor-pp)
 
@@ -286,6 +287,27 @@ endif (CPPCHECK)
 # Perform static analysis
 add_custom_target(analyze)
 add_dependencies(analyze cppcheck)
+
+###############################################################################
+
+# C++ unit tests for core and trogdord (requires doctest to be installed --
+# see: https://github.com/onqtam/doctest)
+
+add_executable(test_core
+	src/core/test/main.cpp
+	src/core/test/tokenizer.cpp
+)
+
+target_include_directories(test_core
+	PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
+)
+
+target_link_libraries(test_core
+	PUBLIC trogdor
+)
+
+add_custom_target(unit_test)
+add_dependencies(unit_test trogdor test_core)
 
 ###############################################################################
 
