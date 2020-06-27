@@ -1,10 +1,8 @@
 # Unit Tests for the Core Library
 
-The official Node.js client for trogdord.
-
 ## Dependencies
 
-Requires [Doctest](https://github.com/onqtam/doctest "Doctest GitHub Page) to build.
+Requires [Doctest](https://github.com/onqtam/doctest "Doctest GitHub Page").
 
 ## How to build and run
 
