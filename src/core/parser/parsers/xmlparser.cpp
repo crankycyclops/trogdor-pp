@@ -431,9 +431,10 @@ namespace trogdor {
          if (0 == getTagName().compare("verb")) {
 
             std::string action = getAttribute("verb");
-            action = trim(action);
+            trim(action);
+
             std::string synonym = parseString();
-            synonym = trim(synonym);
+            trim(synonym);
 
             ast->appendChild(ASTDefineVerbSynonym(
                action,
@@ -447,9 +448,10 @@ namespace trogdor {
          else if (0 == getTagName().compare("direction")) {
 
             std::string direction = getAttribute("direction");
-            direction = trim(direction);
+            trim(direction);
+
             std::string synonym = parseString();
-            synonym = trim(synonym);
+            trim(synonym);
 
             ast->appendChild(ASTDefineDirectionSynonym(
                direction,
@@ -641,8 +643,9 @@ namespace trogdor {
          if (0 == getTagName().compare("message")) {
 
             std::string messageName = getAttribute("name");
-            messageName = trim(messageName);
             std::string message = parseString();
+
+            trim(messageName);
 
             ast->appendChild(ASTSetMessage(
                targetType,
@@ -1560,7 +1563,7 @@ namespace trogdor {
    std::string XMLParser::parseString() {
 
       std::string value = getNodeValue();
-      value = trim(value);
+      trim(value);
 
       if (value.length() > 0) {
          return value;
