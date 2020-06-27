@@ -34,11 +34,6 @@ namespace trogdor {
       user->in() >> commandStr;
 
       trim(commandStr);
-
-      if (!commandStr.length()) {
-         nullCommand = true;
-      }
-
       parse(commandStr);
    }
 
@@ -49,7 +44,11 @@ namespace trogdor {
 
       // the user pressed enter without issuing a command, so ignore it
       if (tokenizer.isEnd()) {
-        return;
+
+         nullCommand = true;
+         invalid = false;
+
+         return;
       }
 
       // Start by attempting to match the entire sentence to a verb. Then,

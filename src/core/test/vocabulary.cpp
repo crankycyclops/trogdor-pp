@@ -7,6 +7,40 @@
 
 TEST_SUITE("Vocabulary (vocabulary.cpp)") {
 
+	TEST_CASE("Vocabulary (vocabulary.cpp): Test for sane initialization and defaults") {
+
+		trogdor::Vocabulary vocabulary;
+
+		// These built-in directions should always be initialized during
+		// construction.
+		CHECK(vocabulary.isDirection("north"));
+		CHECK(vocabulary.isDirection("south"));
+		CHECK(vocabulary.isDirection("east"));
+		CHECK(vocabulary.isDirection("west"));
+		CHECK(vocabulary.isDirection("northeast"));
+		CHECK(vocabulary.isDirection("northwest"));
+		CHECK(vocabulary.isDirection("southeast"));
+		CHECK(vocabulary.isDirection("southwest"));
+		CHECK(vocabulary.isDirection("up"));
+		CHECK(vocabulary.isDirection("down"));
+		CHECK(vocabulary.isDirection("inside"));
+		CHECK(vocabulary.isDirection("outside"));
+
+		CHECK(vocabulary.isDirectionSynonym("n"));
+		CHECK(vocabulary.isDirectionSynonym("s"));
+		CHECK(vocabulary.isDirectionSynonym("e"));
+		CHECK(vocabulary.isDirectionSynonym("w"));
+		CHECK(vocabulary.isDirectionSynonym("ne"));
+		CHECK(vocabulary.isDirectionSynonym("nw"));
+		CHECK(vocabulary.isDirectionSynonym("se"));
+		CHECK(vocabulary.isDirectionSynonym("sw"));
+		CHECK(vocabulary.isDirectionSynonym("in"));
+		CHECK(vocabulary.isDirectionSynonym("out"));
+
+		// The following filler word should always be initialized.
+		CHECK(vocabulary.isFillerWord("the"));
+	}
+
 	TEST_CASE("Vocabulary (vocabulary.cpp): insertDirection(), isDirection(), insertDirectionSynonym() and isDirectionSynonym()") {
 
 		trogdor::Vocabulary vocabulary;

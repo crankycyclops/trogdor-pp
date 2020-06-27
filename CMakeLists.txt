@@ -298,7 +298,9 @@ add_executable(test_core
 	src/core/test/tokenizer.cpp
 	src/core/test/messages.cpp
 	src/core/test/vocabulary.cpp
+	src/core/test/command.cpp
 	src/core/test/mock/mockaction.cpp
+	src/core/test/mock/stringin.cpp
 )
 
 target_include_directories(test_core
