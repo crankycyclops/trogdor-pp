@@ -384,7 +384,8 @@ namespace trogdor {
          */
          inline bool isVerbSynonym(std::string str) const {
 
-            return verbSynonyms.end() != verbSynonyms.find(str) ? true : false;
+            return verbSynonyms.end() != verbSynonyms.find(str) &&
+               verbActions.end() != verbActions.find(verbSynonyms.find(str)->second) ? true : false;
          }
 
          /*
