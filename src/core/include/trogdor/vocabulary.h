@@ -135,33 +135,18 @@ namespace trogdor {
          }
 
          /*
-            Returns a const_iterator that can be used to iterate through all
-            currently defined directions.
+            Returns a read-only iterable list of all currently defined
+            directions.
 
             Input:
                (none)
 
             Output:
-               const_iterator
+               const std::unordered_set<std::string> &
          */
-         inline std::unordered_set<std::string>::const_iterator directionsBegin() const {
+         inline const std::unordered_set<std::string> &getDirections() const {
 
-            return directions.begin();
-         }
-
-         /*
-            Returns a const_iterator representing the end of all currently
-            defined directions.
-
-            Input:
-               (none)
-
-            Output:
-               const_iterator
-         */
-         inline std::unordered_set<std::string>::const_iterator directionsEnd() const {
-
-            return directions.end();
+            return directions;
          }
 
          /*
@@ -242,33 +227,18 @@ namespace trogdor {
          }
 
          /*
-            Returns a const_iterator that can be used to iterate through all
-            currently defined filler words.
+            Returns read-only iterable list of all currently defined filler
+            words.
 
             Input:
                (none)
 
             Output:
-               const_iterator
+               const std::unordered_set<std::string> &
          */
-         inline std::unordered_set<std::string>::const_iterator fillerWordsBegin() const {
+         inline const std::unordered_set<std::string> &getFillerWords() const {
 
-            return fillerWords.begin();
-         }
-
-         /*
-            Returns a const_iterator representing the end of all currently
-            defined filler words.
-
-            Input:
-               (none)
-
-            Output:
-               const_iterator
-         */
-         inline std::unordered_set<std::string>::const_iterator fillerWordsEnd() const {
-
-            return fillerWords.end();
+            return fillerWords;
          }
 
          /*
@@ -301,33 +271,18 @@ namespace trogdor {
          }
 
          /*
-            Returns a const_iterator that can be used to iterate through all
-            currently defined prepositions.
+            Returns a read-only iterable list of all currently defined
+            prepositions.
 
             Input:
                (none)
 
             Output:
-               const_iterator
+               const std::unordered_set<std::string> &
          */
-         inline std::unordered_set<std::string>::const_iterator prepositionsBegin() const {
+         inline const std::unordered_set<std::string> &getPrepositions() const {
 
-            return prepositions.begin();
-         }
-
-         /*
-            Returns a const_iterator representing the end of all currently
-            defined prepositions.
-
-            Input:
-               (none)
-
-            Output:
-               const_iterator
-         */
-         inline std::unordered_set<std::string>::const_iterator prepositionsEnd() const {
-
-            return prepositions.end();
+            return prepositions;
          }
 
          /*
