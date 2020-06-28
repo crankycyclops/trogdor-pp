@@ -21,11 +21,8 @@ namespace trogdor {
             Constructor for the AutoAttackTimerJob class.
          */
          inline AutoAttackTimerJob(Game *g, int i, int e, int s,
-         entity::Creature *a, entity::Being *d): TimerJob(g, i, e, s) {
-
-            aggressor = a;
-            defender = d;
-         }
+         entity::Creature *a, entity::Being *d): TimerJob(g, i, e, s),
+         aggressor(a), defender(d) {}
 
          /*
             Specifies who's doing the attacking (always a Creature.)

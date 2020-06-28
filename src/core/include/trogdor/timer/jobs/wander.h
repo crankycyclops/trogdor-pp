@@ -20,10 +20,7 @@ namespace trogdor {
             Constructor for the WanderTimerJob class.
          */
          inline WanderTimerJob(Game *g, int i, int e, int s, entity::Creature *c):
-         TimerJob(g, i, e, s) {
-
-            wanderer = c;
-         }
+         TimerJob(g, i, e, s), wanderer(c) {}
 
          /*
             Executes Creature's wandering.

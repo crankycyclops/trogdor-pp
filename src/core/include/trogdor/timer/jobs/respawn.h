@@ -21,10 +21,7 @@ namespace trogdor {
             Constructor for the RespawnTimerJob class.
          */
          inline RespawnTimerJob(Game *g, int i, int e, int s, entity::Being *b):
-         TimerJob(g, i, e, s) {
-
-            deadGuy = b;
-         }
+         TimerJob(g, i, e, s), deadGuy(b) {}
 
          /*
             Specifies who's doing the attacking (always a Creature.)
