@@ -1,22 +1,21 @@
-#ifndef STREAMIN_H
-#define STREAMIN_H
+#ifndef STRING_IN_H
+#define STRING_IN_H
 
 
 #include <trogdor/iostream/trogin.h>
 
 
-/*
-   Input "stream" that reads from the specified istream.
-*/
-class StreamIn: public trogdor::Trogin {
+// Mock class that will always return the same string (set during construction)
+// as input.
+class StringIn: public trogdor::Trogin {
 
    private:
 
-      std::istream *stream;
+      std::string input;
 
    public:
 
-      explicit inline StreamIn(std::istream *s) {stream = s;}
+      explicit inline StringIn(std::string s) {input = s;}
 
    /*
       See include/iostream/trogin.h for details.

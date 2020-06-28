@@ -6,7 +6,7 @@ namespace trogdor {
 
    Tokenizer::Tokenizer(std::string s) {
 
-      s = trim(s);
+      trim(s);
 
       if (s.length()) {
 

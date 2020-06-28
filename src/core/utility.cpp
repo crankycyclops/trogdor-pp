@@ -152,11 +152,27 @@ namespace trogdor {
 
    bool isValidInteger(const std::string &s) {
 
-      return std::regex_match(s, std::regex("^\\-?\\d+$")) ? true : false;
+      // Doesn't match leading 0's because those represent octal numbers and this
+      // method is used to validate ordinary 10-based numbers.
+      return std::regex_match(s, std::regex("^\\-?([0-9]|[1-9][0-9])$")) ? true : false;
    }
 
 
    bool isValidDouble(const std::string &s) {
+
+      // Don't allow numbers with leading 0's because we're validating normal
+      // base 10 numbers and numbers with leading 0's are treated by conversion
+      // functions as octal. This solution feels lame, and I don't like that
+      // it requires me to make a copy of the string. I might revisit this later.
+      std::string strCopy = s;
+      trim(strCopy);
+
+      if (
+         (strCopy.length() > 2 && '-' == strCopy[0] && '0' == strCopy[1] && '.' != strCopy[2]) ||
+         (strCopy.length() > 1 && '0' == strCopy[0] && '.' != strCopy[1])
+      ) {
+         return false;
+      }
 
       char *end = 0;
       double val = strtod(s.c_str(), &end);
