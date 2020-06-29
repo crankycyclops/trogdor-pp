@@ -4,7 +4,7 @@
 
 // Current version of the core library
 #define TROGDOR_VERSION_MAJOR 0
-#define TROGDOR_VERSION_MINOR 20
+#define TROGDOR_VERSION_MINOR 21
 #define TROGDOR_VERSION_PATCH 0
 
 

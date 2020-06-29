@@ -20,12 +20,8 @@ namespace trogdor {
 
 /******************************************************************************/
 
-   Timer::Timer(Game *gameRef): jobThread(nullptr) {
-
-      game = gameRef;
-      active = false;
-      time = 0;
-   }
+   Timer::Timer(Game *gameRef, size_t interval):
+   game(gameRef), active(false), time(0), tickInterval(interval), jobThread(nullptr) {}
 
 /******************************************************************************/
 
@@ -97,34 +93,36 @@ namespace trogdor {
          mutex.lock();
          active = true;
 
-         jobThread = std::make_unique<std::thread>([](Timer *timerObj) {
+         jobThread = std::make_unique<std::thread>([&]() {
 
             // How long the thread should sleep before checking if it should
             // advance the clock
-            static std::chrono::milliseconds threadSleepTime(TIMER_THREAD_SLEEP_MILLISECONDS);
+            static std::chrono::milliseconds threadSleepTime(
+               THREAD_SLEEP_MILLISECONDS > tickInterval ? tickInterval : THREAD_SLEEP_MILLISECONDS
+            );
 
             // The interval of time between clock ticks
-            static std::chrono::milliseconds tickInterval(TIMER_TICK_MILLISECONDS);
+            static std::chrono::milliseconds intervalMs(tickInterval);
 
             // The last time the clock ticked
             static std::chrono::milliseconds lastTime = std::chrono::duration_cast<std::chrono::milliseconds>(
                std::chrono::system_clock::now().time_since_epoch()
             );
 
-            while ((timerObj)->active) {
+            while (active) {
 
                std::chrono::milliseconds curTime = std::chrono::duration_cast<std::chrono::milliseconds>(
                   std::chrono::system_clock::now().time_since_epoch()
                );
 
-               if (curTime - lastTime >= tickInterval) {
-                  timerObj->tick();
+               if (curTime - lastTime >= intervalMs) {
+                  tick();
                   lastTime = curTime;
                }
 
                std::this_thread::sleep_for(threadSleepTime);
             }
-         }, this);
+         });
 
          mutex.unlock();
       }
