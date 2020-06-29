@@ -13,13 +13,8 @@
 
 #include <trogdor/game.h>
 
-// Number of milliseconds in each clock tick
-constexpr int TICK_MILLISECONDS = 1000;
-
-// How long the timer thread should sleep before checking to see if it needs to
-// advance the clock
-constexpr int THREAD_SLEEP_MILLISECONDS = 100;
-
+// Default number of milliseconds between each clock tick
+constexpr int TIMER_DEFAULT_TICK_MILLISECONDS = 1000;
 
 namespace trogdor {
 
@@ -36,13 +31,22 @@ namespace trogdor {
 
       private:
 
-         Game *game;                    // the game in which the timer is running
-         bool active;                   // whether or not the timer is active
-         unsigned long time;            // current time
+         // How long the timer thread should sleep before checking to see if it
+         // needs to advance the clock. If tickInterval is less than this value,
+         // then we use that instead.
+         const size_t THREAD_SLEEP_MILLISECONDS = 100;
 
-         std::mutex mutex;              // synchronize access to Timer
+         Game *game;                    // The game in which the timer is running
+         bool active;                   // Whether or not the timer is active
+         unsigned long time;            // Current time
 
-         // queue of jobs to execute every n ticks
+         // Synchronize access to Timer
+         std::mutex mutex;
+
+         // Number of milliseconds that should pass between each tick
+         size_t tickInterval;
+
+         // Queue of jobs to execute every n ticks
          std::list<std::shared_ptr<TimerJob>> queue;
 
          // jobThread executes tick() and threads inside insertJobThreads allow
@@ -55,7 +59,7 @@ namespace trogdor {
             called by the thread created in Timer::start() and shouldn't be
             called directly.
 
-            Input: (none -- we don't really use it...)
+            Input: (none)
             Output: (none)
          */
          void tick();
@@ -74,7 +78,10 @@ namespace trogdor {
          /*
             Constructor for the Timer class.
          */
-         Timer(Game *game);
+         Timer() = delete;
+         Timer(const Timer &) = delete;
+         Timer &operator=(const Timer &) = delete;
+         Timer(Game *game, size_t interval = TIMER_DEFAULT_TICK_MILLISECONDS);
 
          /*
             Destructor

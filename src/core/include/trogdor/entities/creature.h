@@ -376,6 +376,20 @@ namespace trogdor::entity {
                Object* (weapon, or 0 if none)
          */
          Object *selectWeapon();
+
+         /*
+            Triggers the Creature to possibly wander into another room subject
+            to the values set in wanderSettings. If the Creature is dead, they
+            will not move, since wandering dead creatures doesn't make sense.
+
+            Input:
+               Whether or not to allow wandering even if it's ordinarily
+               disabled (default: false)
+
+            Output:
+               (none)
+         */
+         void wander(bool overrideEnable = false);
    };
 }
 
