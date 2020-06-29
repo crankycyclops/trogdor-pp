@@ -14,11 +14,11 @@
 #include <trogdor/game.h>
 
 // Number of milliseconds in each clock tick
-constexpr int TICK_MILLISECONDS = 1000;
+constexpr int TIMER_TICK_MILLISECONDS = 1000;
 
 // How long the timer thread should sleep before checking to see if it needs to
 // advance the clock
-constexpr int THREAD_SLEEP_MILLISECONDS = 100;
+constexpr int TIMER_THREAD_SLEEP_MILLISECONDS = 100;
 
 
 namespace trogdor {
@@ -55,7 +55,7 @@ namespace trogdor {
             called by the thread created in Timer::start() and shouldn't be
             called directly.
 
-            Input: (none -- we don't really use it...)
+            Input: (none)
             Output: (none)
          */
          void tick();
@@ -75,6 +75,9 @@ namespace trogdor {
             Constructor for the Timer class.
          */
          Timer(Game *game);
+         Timer() = delete;
+         Timer(const Timer &) = delete;
+         Timer &operator=(const Timer &) = delete;
 
          /*
             Destructor

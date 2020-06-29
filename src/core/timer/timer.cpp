@@ -101,10 +101,10 @@ namespace trogdor {
 
             // How long the thread should sleep before checking if it should
             // advance the clock
-            static std::chrono::milliseconds threadSleepTime(THREAD_SLEEP_MILLISECONDS);
+            static std::chrono::milliseconds threadSleepTime(TIMER_THREAD_SLEEP_MILLISECONDS);
 
             // The interval of time between clock ticks
-            static std::chrono::milliseconds tickInterval(TICK_MILLISECONDS);
+            static std::chrono::milliseconds tickInterval(TIMER_TICK_MILLISECONDS);
 
             // The last time the clock ticked
             static std::chrono::milliseconds lastTime = std::chrono::duration_cast<std::chrono::milliseconds>(

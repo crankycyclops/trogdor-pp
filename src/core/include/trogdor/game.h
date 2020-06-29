@@ -176,7 +176,7 @@ namespace trogdor {
             clone a Game object and won't take the time to write that
             functionality.
          */
-         Game& operator=(const Game &) = delete;
+         Game &operator=(const Game &) = delete;
          Game(const Game &) = delete;
 
          /*
