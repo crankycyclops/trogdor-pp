@@ -18,7 +18,7 @@ namespace trogdor::event {
          // Once one event trigger has signaled that the action triggering
          // the event should be suppressed, this value should no longer be
          // changed.
-         if (rv.allowAction) {
+         if (allowAction) {
             allowAction = rv.allowAction;
          }
 
