@@ -171,11 +171,116 @@ TEST_SUITE("Timer (timer/timer.cpp)") {
 
 	TEST_CASE("Timer (timer/timer.cpp): Test for proper execution of jobs") {
 
-		// TODO
+		SUBCASE("Test interval") {
+
+			// Number of clock ticks to wait between job executions
+			int jobInterval = 5;
+
+			static std::chrono::milliseconds threadSleepTime(tickInterval * (jobInterval + 1));
+
+			trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+			trogdor::Timer mockTimer(&mockGame, tickInterval);
+
+			// Each time the job runs, it will increment this value
+			int numExecutions = 0;
+
+			mockTimer.insertJob(std::make_shared<MockTimerJob>(
+				&mockGame, jobInterval, -1, 0, [&]() {
+					numExecutions++;
+				}
+			));
+
+			mockTimer.start();
+			std::this_thread::sleep_for(threadSleepTime);
+			mockTimer.stop();
+
+			// Make sure the job only executed once during the defined interval
+			CHECK(1 == numExecutions);
+		}
+
+		SUBCASE("Test # of executions") {
+
+			int expectedExecutions = 3;
+			static std::chrono::milliseconds threadSleepTime(tickInterval * expectedExecutions * 2);
+
+			trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+			trogdor::Timer mockTimer(&mockGame, tickInterval);
+
+			// Each time the job runs, it will increment this value
+			int numExecutions = 0;
+
+			mockTimer.insertJob(std::make_shared<MockTimerJob>(
+				&mockGame, 1, expectedExecutions, 0, [&]() {
+					numExecutions++;
+				}
+			));
+
+			mockTimer.start();
+			std::this_thread::sleep_for(threadSleepTime);
+			mockTimer.stop();
+
+			CHECK(expectedExecutions == numExecutions);
+		}
+
+		SUBCASE("Test start time") {
+
+			// Job should start after 3 clock ticks have passed after
+			// insertion
+			int startTime = 3;
+			static std::chrono::milliseconds threadSleepTime(tickInterval * (startTime + 1));
+
+			trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+			trogdor::Timer mockTimer(&mockGame, tickInterval);
+
+			// When the job runs, it will record the start time here
+			int actualStartTime = 0;
+
+			mockTimer.insertJob(std::make_shared<MockTimerJob>(
+				&mockGame, 1, 1, startTime, [&]() {
+					actualStartTime = mockTimer.getTime();
+				}
+			));
+
+			mockTimer.start();
+			std::this_thread::sleep_for(threadSleepTime);
+			mockTimer.stop();
+
+			CHECK(actualStartTime == startTime);
+		}
 	}
 
 	TEST_CASE("Timer (timer/timer.cpp): removeJob()") {
 
-		// TODO
+		static std::chrono::milliseconds firstSleepTime(tickInterval);
+		static std::chrono::milliseconds secondSleepTime(tickInterval * 2);
+
+		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+		trogdor::Timer mockTimer(&mockGame, tickInterval);
+
+		// Each time the job runs, it will increment this value
+		int numExecutions = 0;
+
+		// Create a timer job with an unlimited number of executions
+		std::shared_ptr<MockTimerJob> job = std::make_shared<MockTimerJob>(
+			&mockGame, 1, -1, 0, [&]() {
+				numExecutions++;
+			}
+		);
+
+		mockTimer.insertJob(job);
+
+		// Start and wait for the timer to run long enough to execute the job
+		// once
+		mockTimer.start();
+		std::this_thread::sleep_for(firstSleepTime);
+
+		// Remove the job and then wait some more time to ensure it no longer
+		// executes
+		mockTimer.removeJob(job);
+
+		std::this_thread::sleep_for(secondSleepTime);
+		mockTimer.stop();
+
+		CHECK(1 == numExecutions);
 	}
 }
