@@ -38,7 +38,7 @@ class MockTrigger: public trogdor::event::EventTrigger {
 		      whether or not the action that triggered the event should be
 		      allowed to continue or be suppressed (EventReturn)
 		*/
-		virtual trogdor::event::EventReturn operator()(trogdor::event::Event e) = 0;
+		virtual trogdor::event::EventReturn operator()(trogdor::event::Event e);
 };
 
 
