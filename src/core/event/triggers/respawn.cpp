@@ -19,8 +19,9 @@ namespace trogdor::event {
 
          // we have to wait a certain number of clock ticks
          if (in > 0) {
-            std::shared_ptr<RespawnTimerJob> j = std::make_shared<RespawnTimerJob>(game, in, 1, in, being);
-            game->insertTimerJob(j);
+            game->insertTimerJob(
+               std::make_shared<RespawnTimerJob>(game, in, 1, in, being)
+            );
          }
 
          // respawn right away

@@ -11,13 +11,16 @@ namespace trogdor::event {
 
       // TODO: should we only drop with some probability?
       // TODO: right now, we drop undroppable objects; should we?
-      for (auto const &object: being->getInventoryObjects()) {
-         drops.push_back(object.get());
-      };
+      if (!being->isAlive()) {
 
-      for_each(drops.begin(), drops.end(), [&](entity::Object * const &object) {
-         being->drop(object->getShared(), false);
-      });
+         for (auto const &object: being->getInventoryObjects()) {
+            drops.push_back(object.get());
+         };
+
+         for_each(drops.begin(), drops.end(), [&](entity::Object * const &object) {
+            being->drop(object->getShared(), false);
+         });
+      }
 
       return {true, true};
    }
