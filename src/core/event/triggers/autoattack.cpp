@@ -19,17 +19,14 @@ namespace trogdor::event {
       for (auto const &creature: place->getCreatures()) {
 
          if (creature->getAutoAttackEnabled()) {
-
-            std::shared_ptr<AutoAttackTimerJob> j = std::make_shared<AutoAttackTimerJob>(
+            game->insertTimerJob(std::make_shared<AutoAttackTimerJob>(
                game,
                creature->getAutoAttackInterval(),
                creature->getAutoAttackRepeat() ? -1 : 1,
                creature->getAutoAttackInterval(),
                creature.get(),
                being
-            );
-
-            game->insertTimerJob(j);
+            ));
          }
       };
 

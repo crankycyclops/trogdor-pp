@@ -123,19 +123,115 @@ TEST_SUITE("EventListener (event/eventlistener.cpp)") {
 		}
 
 		SUBCASE("First event allows the action and continues execution of remaining triggers") {
-			// TODO
+
+			bool trigger1Executed = false;
+			bool trigger2Executed = false;
+
+			trogdor::event::EventListener listener;
+
+			listener.addTrigger("test", std::make_unique<MockTrigger>(
+				true, true, [&]{
+					trigger1Executed = true;
+				}
+			));
+
+			listener.addTrigger("test", std::make_unique<MockTrigger>(
+				true, true, [&]{
+					trigger2Executed = true;
+				}
+			));
+
+			auto result = listener.dispatch({"test", {&listener}, {}});
+
+			CHECK(trigger1Executed);
+			CHECK(trigger2Executed);
+
+			CHECK(result.allowAction);
+			CHECK(result.continueExecution);
 		}
 
 		SUBCASE("First event allows the action but discontinues execution of remaining triggers") {
-			// TODO
+
+			bool trigger1Executed = false;
+			bool trigger2Executed = false;
+
+			trogdor::event::EventListener listener;
+
+			listener.addTrigger("test", std::make_unique<MockTrigger>(
+				true, false, [&]{
+					trigger1Executed = true;
+				}
+			));
+
+			listener.addTrigger("test", std::make_unique<MockTrigger>(
+				true, true, [&]{
+					trigger2Executed = true;
+				}
+			));
+
+			auto result = listener.dispatch({"test", {&listener}, {}});
+
+			CHECK(trigger1Executed);
+			CHECK(!trigger2Executed);
+
+			CHECK(result.allowAction);
+			CHECK(!result.continueExecution);
 		}
 
 		SUBCASE("First event disallows the action but continues execution of remaining triggers") {
-			// TODO
+
+			bool trigger1Executed = false;
+			bool trigger2Executed = false;
+
+			trogdor::event::EventListener listener;
+
+			listener.addTrigger("test", std::make_unique<MockTrigger>(
+				false, true, [&]{
+					trigger1Executed = true;
+				}
+			));
+
+			listener.addTrigger("test", std::make_unique<MockTrigger>(
+				true, true, [&]{
+					trigger2Executed = true;
+				}
+			));
+
+			auto result = listener.dispatch({"test", {&listener}, {}});
+
+			CHECK(trigger1Executed);
+			CHECK(trigger2Executed);
+
+			CHECK(!result.allowAction);
+			CHECK(result.continueExecution);
 		}
 
 		SUBCASE("First event disallows the action and discontinues execution of remaining triggers") {
-			// TODO
+
+			bool trigger1Executed = false;
+			bool trigger2Executed = false;
+
+			trogdor::event::EventListener listener;
+
+			listener.addTrigger("test", std::make_unique<MockTrigger>(
+				false, false, [&]{
+					trigger1Executed = true;
+				}
+			));
+
+			listener.addTrigger("test", std::make_unique<MockTrigger>(
+				true, true, [&]{
+					trigger2Executed = true;
+				}
+			));
+
+			auto result = listener.dispatch({"test", {&listener}, {}});
+
+			CHECK(trigger1Executed);
+			CHECK(!trigger2Executed);
+
+			CHECK(!result.allowAction);
+			CHECK(!result.continueExecution);
 		}
 	}
 
