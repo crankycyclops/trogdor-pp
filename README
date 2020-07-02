@@ -10,7 +10,7 @@ For this project, you'll require the following tools:
 
 If you're building the game server, trogodrd, you'll also need the Boost libraries installed to a place where CMake can find it, and if you're building trogdord with redis support (required if you want to do anything with web sockets), you'll have to install hiredis 0.13 or later.
 
-By default, trogdor-pp compiles against Lua 5.1, but I've written glue code that enables it to also compile against Lua 5.2+. To set the lua version to something higher than 5.1, just prefix your make command with "LUA_VERSION=5.x".
+By default, trogdor-pp compiles against Lua 5.3, but will also build against 5.1 and 5.2. To set the lua version to any other version, just prefix your make command with "LUA_VERSION=5.x".
 
 Build has been tested against Lua 5.1, 5.2, and 5.3.
 

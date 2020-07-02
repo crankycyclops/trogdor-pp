@@ -10,10 +10,10 @@ if(build_type_lower STREQUAL "debug")
 	add_definitions(-DDEBUG)
 endif(build_type_lower STREQUAL "debug")
 
-# By default, we compile against Lua 5.1, but 5.2 and 5.3 have also been tested
+# By default, we compile against Lua 5.3, but 5.1 and 5.2 have also been tested
 # and are known to work.
 if(NOT DEFINED ENV{LUA_VERSION})
-	set(ENV{LUA_VERSION} 5.1)
+	set(ENV{LUA_VERSION} 5.3)
 endif()
 
 set(CMAKE_CXX_FLAGS "-Wall -pthread")
