@@ -304,6 +304,7 @@ add_executable(test_core
 	src/core/test/command.cpp
 	src/core/test/utility.cpp
 	src/core/test/event/eventlistener.cpp
+	src/core/test/event/triggers/deathdrop.cpp
 	src/core/test/timer/timer.cpp
 	src/core/test/timer/timerjob.cpp
 	src/core/test/timer/jobs/autoattack.cpp
