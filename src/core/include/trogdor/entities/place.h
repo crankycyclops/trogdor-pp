@@ -218,6 +218,28 @@ namespace trogdor::entity {
          inline const auto &getThings() const {return things;}
 
          /*
+            Returns iterable list of all Beings in a Place.
+
+            Input:
+               (None)
+
+            Output:
+               const std::list<std::shared_ptr<Being>> &
+         */
+         inline const auto &getBeings() const {return beings;}
+
+         /*
+            Returns iterable list of all Players in a Place.
+
+            Input:
+               (None)
+
+            Output:
+               const std::list<std::shared_ptr<Player>> &
+         */
+         inline const auto &getPlayers() const {return players;}
+
+         /*
             Returns iterable list of all Creatures in a Place.
 
             Input:
@@ -227,6 +249,17 @@ namespace trogdor::entity {
                const std::list<std::shared_ptr<Creature>> &
          */
          inline const auto &getCreatures() const {return creatures;}
+   
+            /*
+            Returns iterable list of all Objects in a Place.
+
+            Input:
+               (None)
+
+            Output:
+               const std::list<std::shared_ptr<Object>> &
+         */
+         inline const auto &getObjects() const {return objects;}
    };
 }
 
