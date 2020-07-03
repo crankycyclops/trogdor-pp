@@ -1,3 +1,5 @@
+![Unit Tests](https://github.com/crankycyclops/trogdor-pp/workflows/Unit%20Tests/badge.svg)
+
 # Trogdor++
 
 Trogdor++ is the C++ version of the [Trogdor Text Adventure Engine](https://github.com/crankycyclops/trogdor "Trogdor Text Adventure Engine"), which was originally written in C.  That project is no longer maintained but still exists on GitHub (in an archived state) for historical purposes.
