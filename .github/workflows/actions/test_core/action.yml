@@ -1,0 +1,5 @@
+name: 'Build and run unit tests for core'
+description: 'Builds and runs all unit tests for the core library.'
+runs:
+   using: 'docker'
+   image: 'Dockerfile'
