@@ -1,6 +1,9 @@
 #include <memory>
 #include <vector>
 
+// TODO: remove this after testing
+#include <iostream>
+
 #include <trogdor/utility.h>
 #include <trogdor/vocabulary.h>
 #include <trogdor/exception/parseexception.h>
@@ -143,7 +146,7 @@ namespace trogdor {
       }
 
       // TODO
-      cout << "Stub: Title is \"" + title + "\" and author is \"" + (author.length() ? author : "(undefined)") << '\"' << endl;
+      std::cout << "Stub: Title is \"" + title + "\" and author is \"" + (author.length() ? author : "(undefined)") << '\"' << std::endl;
    }
 
    /**************************************************************************/
@@ -268,10 +271,10 @@ namespace trogdor {
 
       else {
          // TODO
-         cout << "parseInClause stub!" << endl << endl;
-         cout << vectorToStr(subjects) << " " <<
+         std::cout << "parseInClause stub!" << std::endl << std::endl;
+         std::cout << vectorToStr(subjects) << " " <<
             (subjects.size() > 1 ? "are" : "is") << " in " <<
-            containersOrPlaces[0] << "." << endl << endl;
+            containersOrPlaces[0] << "." << std::endl << std::endl;
       }
    }
 
@@ -303,10 +306,10 @@ namespace trogdor {
 
       else {
          // TODO
-         cout << "parseOnClause stub!" << endl << endl;
-         cout << vectorToStr(subjects) << " " <<
+         std::cout << "parseOnClause stub!" << std::endl << std::endl;
+         std::cout << vectorToStr(subjects) << " " <<
             (subjects.size() > 1 ? "are" : "is") << " on " <<
-            supporters[0] << "." << endl << endl;
+            supporters[0] << "." << std::endl << std::endl;
       }
    }
 
@@ -317,7 +320,7 @@ namespace trogdor {
       Token t;
 
       // TODO skip to end of phrase until we implement this
-      cout << endl << "parseLocationClause stub!" << endl;
+      std::cout << std::endl << "parseLocationClause stub!" << std::endl;
       for (t = lexer.peek(); PHRASE_TERMINATOR != t.type; t = lexer.next());
       lexer.push(t);
    }
@@ -330,22 +333,22 @@ namespace trogdor {
       Token t = lexer.peek();
 
       // TODO
-      cout << endl << "parseDefinition stub!" << endl << endl;
+      std::cout << std::endl << "parseDefinition stub!" << std::endl << std::endl;
 
-      cout << "Identifiers: " << endl;
+      std::cout << "Identifiers: " << std::endl;
       for (auto i = identifiers.begin(); i != identifiers.end(); i++) {
-         cout << *i << endl;
+         std::cout << *i << std::endl;
       }
 
-      cout << endl;
+      std::cout << std::endl;
 
       if (propertyList.size()) {
-         cout << "Properties: " << endl;
+         std::cout << "Properties: " << std::endl;
          for (auto i = propertyList.begin(); i != propertyList.end(); i++) {
-            cout << i->value + (i->negated ? " (negated)" : "") << endl;
+            std::cout << i->value + (i->negated ? " (negated)" : "") << std::endl;
          }
       } else {
-         cout << "(No properties.)" << endl;
+         std::cout << "(No properties.)" << std::endl;
       }
 
       if (
@@ -357,7 +360,7 @@ namespace trogdor {
             classPlurals[strToLower(t.value)] : strToLower(t.value);
 
          // TODO
-         cout << endl << "Identifiers are of type '" << className << "'" << endl;
+         std::cout << std::endl << "Identifiers are of type '" << className << "'" << std::endl;
 
          t = lexer.next();
 
@@ -426,8 +429,8 @@ namespace trogdor {
 
             else {
                // TODO
-               cout << "Description of " + identifiers[0] + ": " << description
-                  << endl << endl;
+               std::cout << "Description of " + identifiers[0] + ": " << description
+                  << std::endl << std::endl;
             }
          } else {
             lexer.push(t);
@@ -441,16 +444,16 @@ namespace trogdor {
    std::vector<Inform7Parser::ParsedProperty> propertyList) {
 
       // TODO
-      cout << endl << "parsePropertyAssignment stub!" << endl << endl;
+      std::cout << std::endl << "parsePropertyAssignment stub!" << std::endl << std::endl;
 
-      cout << "Identifiers: " << endl;
+      std::cout << "Identifiers: " << std::endl;
       for (auto i = identifiers.begin(); i != identifiers.end(); i++) {
-         cout << *i << endl;
+         std::cout << *i << std::endl;
       }
 
-      cout << endl << "Properties: " << endl;
+      std::cout << std::endl << "Properties: " << std::endl;
       for (auto i = propertyList.begin(); i != propertyList.end(); i++) {
-         cout << i->value + (i->negated ? " (negated)" : "") << endl;
+         std::cout << i->value + (i->negated ? " (negated)" : "") << std::endl;
       }
    }
 
