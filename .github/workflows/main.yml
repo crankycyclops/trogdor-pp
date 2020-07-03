@@ -1,4 +1,4 @@
-name: Core Unit Tests
+name: Unit Tests
 on: [push, pull_request]
 
 jobs:
@@ -6,7 +6,7 @@ jobs:
    test_core:
 
       runs-on: ubuntu-latest
-      name: Build and run unit tests for core
+      name: Core
 
       steps:
          - name: Checkout
