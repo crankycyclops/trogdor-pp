@@ -21,7 +21,13 @@ namespace trogdor {
 /******************************************************************************/
 
    Timer::Timer(Game *gameRef, size_t interval):
-   game(gameRef), active(false), time(0), tickInterval(interval), jobThread(nullptr) {}
+   game(gameRef), active(false), time(0), jobThread(nullptr),
+   tickInterval(interval), lastTickTime(0) {
+
+      jobThreadSleepTime =
+         std::chrono::milliseconds(THREAD_SLEEP_MILLISECONDS) > tickInterval ?
+         tickInterval : std::chrono::milliseconds(THREAD_SLEEP_MILLISECONDS);
+   }
 
 /******************************************************************************/
 
@@ -93,21 +99,11 @@ namespace trogdor {
          mutex.lock();
          active = true;
 
+         lastTickTime = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch()
+         );
+
          jobThread = std::make_unique<std::thread>([&]() {
-
-            // How long the thread should sleep before checking if it should
-            // advance the clock
-            static std::chrono::milliseconds threadSleepTime(
-               THREAD_SLEEP_MILLISECONDS > tickInterval ? tickInterval : THREAD_SLEEP_MILLISECONDS
-            );
-
-            // The interval of time between clock ticks
-            static std::chrono::milliseconds intervalMs(tickInterval);
-
-            // The last time the clock ticked
-            static std::chrono::milliseconds lastTime = std::chrono::duration_cast<std::chrono::milliseconds>(
-               std::chrono::system_clock::now().time_since_epoch()
-            );
 
             while (active) {
 
@@ -115,12 +111,12 @@ namespace trogdor {
                   std::chrono::system_clock::now().time_since_epoch()
                );
 
-               if (curTime - lastTime >= intervalMs) {
+               if (curTime - lastTickTime >= tickInterval) {
                   tick();
-                  lastTime = curTime;
+                  lastTickTime = curTime;
                }
 
-               std::this_thread::sleep_for(threadSleepTime);
+               std::this_thread::sleep_for(jobThreadSleepTime);
             }
          });
 
