@@ -385,6 +385,28 @@ namespace trogdor::entity {
          }
 
          /*
+            Return the Being's current health.
+
+            Input:
+               (none)
+
+            Ouput:
+               Health (int)
+         */
+         inline int getHealth() {return health;}
+
+         /*
+            Return the Being's maximum health.
+
+            Input:
+               (none)
+
+            Ouput:
+               Maximum Health (int)
+         */
+         inline int getMaxHealth() {return maxHealth;}
+
+         /*
             Send out a JSON update every time the player's health is changed.
 
             Input:
