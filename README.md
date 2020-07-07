@@ -44,13 +44,13 @@ This repository includes the following modules:
 * [RapidJSON](https://rapidjson.org/) >= 1.1.0
 * [PHP](https://www.php.net/) 7.2, 7.3, or 7.4, along with the include files and access to phpize
 
-More details [here](src/core/php7/trogdord/README.md).
+More details [here](src/php7/trogdord/README.md).
 
 ### For the Node.js Module
 
 * [Node.js](https://nodejs.org/) 12+
 
-More details [here](src/core/nodejs/trogdord/README.md).
+More details [here](src/nodejs/trogdord/README.md).
 
 ## Installation
 
