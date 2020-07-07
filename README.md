@@ -6,11 +6,15 @@ A single unified engine for building text adventures and MUDs (batteries include
 
 ## Overview
 
-Trogdor++ provides all the tools you need to build a solid interactive fiction experience, from offline single-player text adventures to massive online MUDs and everything in-between.
+Trogdor++ provides you all the tools you need to build a solid interactive fiction experience, from offline single-player text adventures to massive online MUDs and everything in-between.
 
-This repository consists of:
+At the heart of Trogdor++ is a library written in C++. This library supports all the basic features necessary to build a basic game out of the box with no programming experience required, and for more advanced features that aren't baked into the library itself, you can easily extend it using either Lua or C++.
 
-* [src/core](https://github.com/crankycyclops/trogdor-pp/tree/master/src/core): The core library
+Trogdor++ is a work in progress and more features are being added every day.
+
+The project includes:
+
+* [src/core](https://github.com/crankycyclops/trogdor-pp/tree/master/src/core): The core library, written in C++
 * [src/standalone](https://github.com/crankycyclops/trogdor-pp/tree/master/src/standalone): A barebones CLI single-player client (written primarily as a demonstration for how to use the library)
 * [src/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/trogdord): A fully featured TCP server capable of hosting multi-player games
 * [src/php7/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/php7/trogdord): A PHP 7 client for trogdord
