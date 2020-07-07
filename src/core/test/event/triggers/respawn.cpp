@@ -1,5 +1,9 @@
 #include <doctest.h>
 
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+
 #include <trogdor/event/triggers/respawn.h>
 
 #include <trogdor/entities/creature.h>
@@ -7,6 +11,10 @@
 #include <trogdor/iostream/nullin.h>
 #include <trogdor/iostream/nullout.h>
 #include <trogdor/iostream/nullerr.h>
+
+#include "../../mock/mocktimerjob.h"
+
+using namespace std::chrono_literals;
 
 
 TEST_SUITE("RespawnEventTrigger (event/triggers/respawn.cpp)") {
@@ -166,8 +174,72 @@ TEST_SUITE("RespawnEventTrigger (event/triggers/respawn.cpp)") {
 
 		SUBCASE("Respawn interval > 0") {
 
-			// TODO
-			// Make sure to call deadGuy->setRespawnInterval(1);
+			trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+
+			std::shared_ptr<trogdor::entity::Creature> deadGuy =
+			std::make_shared<trogdor::entity::Creature>(
+				&mockGame,
+				"dead_guy",
+				std::make_unique<trogdor::NullOut>(),
+				std::make_unique<trogdor::NullErr>()
+			);
+
+			// Enable respawn and set interval to 0
+			deadGuy->setRespawnEnabled(true);
+			deadGuy->setRespawnInterval(1);
+
+			// Until we set a max health, a Being is considered immortal
+			deadGuy->setHealth(10), deadGuy->setMaxHealth(10);
+			deadGuy->die();
+
+			CHECK(!deadGuy->isAlive());
+
+			auto now = std::chrono::system_clock::now();
+
+			// The respawn event trigger should insert a timer job that will
+			// respawn the Creature after the defined interval of 1 tick
+			trogdor::event::RespawnEventTrigger respawnTrigger;
+			auto result = respawnTrigger({"test", {}, {&mockGame, deadGuy.get()}});
+
+			CHECK(result.allowAction);
+			CHECK(result.continueExecution);
+
+			// We'll wait until we're sure the Timer has had time to execute
+			// the respawn job inserted by the event trigger
+			std::atomic<int> wakeup{0};
+			std::condition_variable timerDone;
+			std::mutex mutex;
+			std::unique_lock<std::mutex> lock(mutex);
+
+			mockGame.insertTimerJob(std::make_shared<MockTimerJob>(
+				&mockGame, 1, 2, 0, [&]() {
+
+					static int numExecutions = 1;
+
+					if (numExecutions) {
+						numExecutions--;
+					}
+
+					// The respawn timer job should have executed by now
+					else {
+						wakeup = 1;
+						timerDone.notify_all();
+					}
+				}
+			));
+
+			mockGame.start();
+
+			if (!timerDone.wait_until(lock, now + 30ms, [&](){return wakeup == 1;})) {
+				// If we get here, it means our mock timer job didn't
+				// execute like it was supposed to
+				CHECK(false);
+			}
+
+			mockGame.stop();
+
+			// Make sure the Creature respawned after the set interval
+			CHECK(deadGuy->isAlive());
 		}
 	}
 }
