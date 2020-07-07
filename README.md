@@ -2,7 +2,11 @@
 
 # Trogdor++
 
-Trogdor++ is the C++ version of the [Trogdor Text Adventure Engine](https://github.com/crankycyclops/trogdor "Trogdor Text Adventure Engine"), which was originally written in C.  That project is no longer maintained but still exists on GitHub (in an archived state) for historical purposes.
+A unified engine for text adventures and MUDs (Multi-User Dungeons.)
+
+## Overview
+
+Trogdor++ is the C++ version of the [Trogdor Text Adventure Engine](https://github.com/crankycyclops/trogdor "Trogdor Text Adventure Engine"), originally written in C.  That project is no longer maintained but still exists on GitHub (in an archived state) for historical purposes.
 
 This repository contains five basic modules:
 
