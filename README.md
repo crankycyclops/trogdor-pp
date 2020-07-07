@@ -18,7 +18,7 @@ This repository includes the following modules:
 
 * [src/core](https://github.com/crankycyclops/trogdor-pp/tree/master/src/core): The core library, written in C++
 * [src/standalone](https://github.com/crankycyclops/trogdor-pp/tree/master/src/standalone): A barebones single-player CLI client, written primarily as a demonstration for how to use the library
-* [src/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/trogdord): A queryable TCP server capable of hosting multi-player games with optional support for Redis Pub/Sub
+* [src/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/trogdord): A queryable TCP server capable of hosting multi-player games with optional support for [Redis](https://redis.io/) Pub/Sub
 * [src/php7/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/php7/trogdord): A PHP 7 client for trogdord, implemented as an extension in C++
 * [src/nodejs/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/nodejs/trogdord): A Node.js client for trogdord, written in Javascript
 
@@ -44,9 +44,13 @@ This repository includes the following modules:
 * [RapidJSON](https://rapidjson.org/) >= 1.1.0
 * [PHP](https://www.php.net/) 7.2, 7.3, or 7.4, along with the include files and access to phpize
 
+More details [here](src/core/php7/trogdord/README.md).
+
 ### For the Node.js Module
 
 * [Node.js](https://nodejs.org/) 12+
+
+More details [here](src/core/nodejs/trogdord/README.md).
 
 ## Installation
 
