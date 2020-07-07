@@ -55,7 +55,10 @@ install(DIRECTORY DESTINATION var/log COMPONENT trogdord_data)
 
 ###############################################################################
 
-add_library(trogdor SHARED
+pkg_search_module(LIBXML REQUIRED libxml-2.0 libxml2 libxml>=2)
+pkg_search_module(LUA REQUIRED lua-$ENV{LUA_VERSION})
+
+set(CORE_SOURCES
 	src/core/action.cpp
 	src/core/actions.cpp
 	src/core/command.cpp
@@ -115,23 +118,24 @@ add_library(trogdor SHARED
 	src/core/entities/thing.cpp
 )
 
-# Installing the library should also install the headers and sample data
-add_dependencies(trogdor dev data)
-
-pkg_search_module(LIBXML REQUIRED libxml-2.0 libxml2 libxml>=2)
-pkg_search_module(LUA REQUIRED lua-$ENV{LUA_VERSION})
-
-target_include_directories(trogdor
+set(CORE_INCLUDES
 	PUBLIC ${LIBXML_INCLUDE_DIRS}
 	PUBLIC ${LUA_INCLUDE_DIRS}
 	PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
 )
 
-target_link_libraries(trogdor
+set(CORE_LIBRARIES
 	PUBLIC stdc++fs
 	PUBLIC xml2
 	PUBLIC lua$ENV{LUA_VERSION}
 )
+
+add_library(trogdor SHARED ${CORE_SOURCES})
+target_include_directories(trogdor ${CORE_INCLUDES})
+target_link_libraries(trogdor ${CORE_LIBRARIES})
+
+# Installing the library should also install the headers and sample data
+add_dependencies(trogdor dev data)
 
 install(TARGETS trogdor DESTINATION lib COMPONENT trogdor OPTIONAL)
 
@@ -296,6 +300,15 @@ add_dependencies(analyze cppcheck)
 # C++ unit tests for core and trogdord (requires doctest to be installed --
 # see: https://github.com/onqtam/doctest)
 
+# A special statically-linked build of the core library just for unit tests
+add_library(_trogdor_test STATIC ${CORE_SOURCES})
+target_include_directories(_trogdor_test ${CORE_INCLUDES})
+target_link_libraries(_trogdor_test ${CORE_LIBRARIES})
+
+# The default interval between timer ticks should be much shorter for unit tests
+target_compile_definitions(_trogdor_test PRIVATE TIMER_CUSTOM_INTERVAL=5)
+
+# Core unit tests
 add_executable(test_core
 	src/core/test/main.cpp
 	src/core/test/tokenizer.cpp
@@ -322,11 +335,11 @@ target_include_directories(test_core
 )
 
 target_link_libraries(test_core
-	PUBLIC trogdor
+	PUBLIC _trogdor_test
 )
 
 add_custom_target(unit_test)
-add_dependencies(unit_test trogdor test_core)
+add_dependencies(unit_test _trogdor_test test_core)
 
 ###############################################################################
 

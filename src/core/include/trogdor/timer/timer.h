@@ -13,8 +13,13 @@
 
 #include <trogdor/game.h>
 
-// Default number of milliseconds between each clock tick
-constexpr int TIMER_DEFAULT_TICK_MILLISECONDS = 1000;
+#ifdef TIMER_CUSTOM_INTERVAL
+   // Used for debugging
+   constexpr int TIMER_DEFAULT_TICK_MILLISECONDS = (TIMER_CUSTOM_INTERVAL);
+#else
+   // Default number of milliseconds between each clock tick
+   constexpr int TIMER_DEFAULT_TICK_MILLISECONDS = 1000;
+#endif
 
 namespace trogdor {
 
@@ -43,9 +48,6 @@ namespace trogdor {
          // Synchronize access to Timer
          std::mutex mutex;
 
-         // Number of milliseconds that should pass between each tick
-         size_t tickInterval;
-
          // Queue of jobs to execute every n ticks
          std::list<std::shared_ptr<TimerJob>> queue;
 
@@ -53,6 +55,17 @@ namespace trogdor {
          // jobs to be inserted asynchronously
          std::unique_ptr<std::thread> jobThread;
          std::vector<std::unique_ptr<std::thread>> insertJobThreads;
+
+         // Number of milliseconds that should pass between each tick
+         std::chrono::milliseconds tickInterval;
+
+         // The last time (actual system time in ms) that the clock ticked. This
+         // is used by jobThread to determine when it's time to advance the timer.
+         std::chrono::milliseconds lastTickTime;
+
+         // How long the job thread should sleep before polling to see if it
+         // can advance the timer.
+         std::chrono::milliseconds jobThreadSleepTime;
 
          /*
             Executes all jobs in the queue and increments the time.  This is
