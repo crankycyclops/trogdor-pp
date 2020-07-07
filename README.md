@@ -2,17 +2,17 @@
 
 # Trogdor++
 
-A unified engine for text adventures and MUDs (Multi-User Dungeons.)
+A single unified engine for building text adventures and MUDs (batteries included.)
 
 ## Overview
 
-Trogdor++ is the C++ version of the [Trogdor Text Adventure Engine](https://github.com/crankycyclops/trogdor "Trogdor Text Adventure Engine"), originally written in C.  That project is no longer maintained but still exists on GitHub (in an archived state) for historical purposes.
+Trogdor++ provides all the tools you need to build a solid interactive fiction experience, from offline single-player text adventures to massive online MUDs and everything in-between.
 
-This repository contains five basic modules:
+This repository consists of:
 
 * [src/core](https://github.com/crankycyclops/trogdor-pp/tree/master/src/core): The core library
 * [src/standalone](https://github.com/crankycyclops/trogdor-pp/tree/master/src/standalone): A barebones CLI single-player client (written primarily as a demonstration for how to use the library)
-* [src/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/trogdord): A TCP server capable of hosting multi-player games
+* [src/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/trogdord): A fully featured TCP server capable of hosting multi-player games
 * [src/php7/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/php7/trogdord): A PHP 7 client for trogdord
 * [src/nodejs/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/nodejs/trogdord): A Node.js client for trogdord
 
@@ -78,5 +78,9 @@ To build any of the above targets with GDB debug symbols, add the following opti
 And if you've already built it using debug symbols and want to switch back to a release build without them, use this cmake option: `-DCMAKE_BUILD_TYPE=Release`
 
 If you want to install to somewhere other than the default system path, specify the following option to your cmake command: `-DCMAKE_INSTALL_PREFIX:PATH=/custom/install/path`
+
+## History
+
+Trogdor++ is the C++ version of the [Trogdor Text Adventure Engine](https://github.com/crankycyclops/trogdor "Trogdor Text Adventure Engine"), originally written in C.  That project is no longer maintained but still exists on GitHub (in an archived state) for historical purposes.
 
 Have fun! :)
