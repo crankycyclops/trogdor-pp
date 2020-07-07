@@ -2,30 +2,51 @@
 
 # Trogdor++
 
-A single unified engine for building text adventures and MUDs (batteries included.)
+A single unified engine for building text adventures and MUDs (with batteries included.)
 
-## Overview
+## Introduction
 
-Trogdor++ provides you all the tools you need to build a solid interactive fiction experience, from offline single-player text adventures to massive online MUDs and everything in-between.
+Trogdor++ provides you with all the tools you need to build a solid interactive fiction experience, from offline single-player text adventures to massive online MUDs and everything in-between.
 
-At the heart of Trogdor++ is a library written in C++. This library supports all the basic features necessary to build a basic game out of the box with no programming experience required, and for more advanced features that aren't baked into the library itself, you can easily extend it using either Lua or C++.
+At the heart of Trogdor++ is the core library, written in C++. This library supports all the basic features necessary to build a basic game out of the box with no programming required. For features that aren't baked into the library itself, Trogdor++ also includes bindings that make it straightforward to extend using both Lua and C++.
 
 Trogdor++ is a work in progress and more features are being added every day.
 
-The project includes:
+## Overview
+
+This repository includes the following modules:
 
 * [src/core](https://github.com/crankycyclops/trogdor-pp/tree/master/src/core): The core library, written in C++
-* [src/standalone](https://github.com/crankycyclops/trogdor-pp/tree/master/src/standalone): A barebones CLI single-player client (written primarily as a demonstration for how to use the library)
-* [src/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/trogdord): A fully featured TCP server capable of hosting multi-player games
-* [src/php7/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/php7/trogdord): A PHP 7 client for trogdord
-* [src/nodejs/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/nodejs/trogdord): A Node.js client for trogdord
+* [src/standalone](https://github.com/crankycyclops/trogdor-pp/tree/master/src/standalone): A barebones single-player CLI client, written primarily as a demonstration for how to use the library
+* [src/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/trogdord): A queryable TCP server capable of hosting multi-player games with optional support for Redis Pub/Sub
+* [src/php7/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/php7/trogdord): A PHP 7 client for trogdord, implemented as an extension in C++
+* [src/nodejs/trogdord](https://github.com/crankycyclops/trogdor-pp/tree/master/src/nodejs/trogdord): A Node.js client for trogdord, written in Javascript
 
 ## Dependencies
 
-* [G++](https://gcc.gnu.org/projects/cxx-status.html) 7 or above or [Clang++](https://clang.llvm.org/cxx_status.html) 8 or above. A different compiler might work, but it hasn't been tested, so you're on your own.
+### For the Core Library
+
+* [G++](https://gcc.gnu.org/projects/cxx-status.html) 7+ or [Clang++](https://clang.llvm.org/cxx_status.html) 8+. A different compiler might work, but it hasn't been tested, so you're on your own.
 * [CMake](https://cmake.org/) 3.10 or above
 * [LibXML2](http://xmlsoft.org/) (libxml2-dev package on Ubuntu)
 * [Lua](https://www.lua.org/) 5.1, 5.2, or 5.3 (lua5.x-dev package on Ubuntu, where 5.x is the version you're compiling against)
+
+### For the Standalone Client and Trogdord
+
+* [G++](https://gcc.gnu.org/projects/cxx-status.html) 7+ or [Clang++](https://clang.llvm.org/cxx_status.html) 8+. A different compiler might work, but it hasn't been tested, so you're on your own.
+* [CMake](https://cmake.org/) 3.10 or above
+* The core library, installed as a shared object or DLL in a place where CMake can find it
+
+### For the PHP 7 Extension
+
+* [G++](https://gcc.gnu.org/projects/cxx-status.html) 7+ or [Clang++](https://clang.llvm.org/cxx_status.html) 8+. A different compiler might work, but it hasn't been tested, so you're on your own.
+* [Boost ASIO](https://www.boost.org/doc/libs/1_73_0/doc/html/boost_asio.html) >=1.60
+* [RapidJSON](https://rapidjson.org/) >= 1.1.0
+* [PHP](https://www.php.net/) 7.2, 7.3, or 7.4, along with the include files and access to phpize
+
+### For the Node.js Module
+
+* [Node.js](https://nodejs.org/) 12+
 
 ## Installation
 
