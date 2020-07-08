@@ -2,15 +2,15 @@
 
 The official Node.js client for trogdord.
 
+## Dependencies
+
+* [Node.js](https://nodejs.org/) 12+
+
 ## Installaton
 
 ```
 npm install trogdord
 ```
-
-## Dependencies
-
-Requires Node.js 12.0 or above.
 
 ## How to use
 
