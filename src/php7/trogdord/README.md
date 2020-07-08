@@ -2,6 +2,20 @@
 
 The official PHP 7 client for trogdord.
 
+## Dependencies
+
+* [PHP](https://www.php.net/) 7.2, 7.3, or 7.4, along with the include files and access to phpize
+* [Boost ASIO](https://www.boost.org/doc/libs/1_73_0/doc/html/boost_asio.html) >=1.60
+* [RapidJSON](https://rapidjson.org/) >= 1.1.0
+
+If you happen to be on an Ubuntu box (and possibly also on Debian), you can install these dependencies with the following command:
+
+```
+sudo apt-get install php7.x-dev libboost-system-dev rapidjson-dev (where 7.x is your desired php version)
+```
+
+The configure script doesn't currently check for the existence of Boost ASIO or RapidJSON, but if either of these libraries are missing or are not in a place where the configure script can find them, the build will fail.
+
 ## Installaton
 
 To compile and install, issue the following commands:
@@ -11,19 +25,6 @@ phpize
 ./configure
 make && make install
 ```
-
-## Dependencies
-
-* [Boost ASIO](https://www.boost.org/doc/libs/1_73_0/doc/html/boost_asio.html) >=1.60
-* [RapidJSON](https://rapidjson.org/) >= 1.1.0
-
-If you happen to be on an Ubuntu box (and possibly also on Debian), you can install these dependencies with the following command:
-
-```
-sudo apt-get install libboost-all-dev rapidjson-dev
-```
-
-The configure script doesn't currently check for these dependencies, but if either of these libraries are missing or are not in a place where the configure script can find them, the build will fail.
 
 ## How to use
 
