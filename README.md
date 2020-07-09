@@ -38,19 +38,19 @@ At the moment, this isn't intended for actual use but to serve as an example for
 
 ### Hosted Multi-Player Games
 
-Trogdor++ includes an optional TCP server component ([src/trogdord](src/trogdord/README.md)) capable of hosting many multi-player games in parallel. There are a few different ways this can be configured, each of which is outlined below.
+Trogdor++ includes an optional TCP server ([src/trogdord](src/trogdord/README.md)) capable of hosting many multi-player games in parallel. There are a few different ways this can be configured, each of which is outlined below.
 
 #### Trogdord Without Redis
 
 ![Multi-Player Configuration Without Redis](./docs/img/how-it-works/multi-player-no-redis.png)
 
-Here, input and output pass directly through trogdord. To actually host games would require polling and wouldn't be very efficient, but it's easy to setup and is useful for testing and other one-off tasks. Note that querying trogdord directly is still possible even when using one of the other configurations described below.
+Here, input and output pass directly through trogdord. To actually host games would require polling for output and wouldn't be very efficient, but it's easy to setup and is useful for testing and other one-off tasks. Note that querying trogdord directly is still possible even when using one of the other configurations described below.
 
 #### Trogdord With Redis (Input + Output)
 
 ![Multi-Player Configuration With Redis (Input + Output)](./docs/img/how-it-works/redis-1.png)
 
-With this setup, trogdord will send output to and receive input from Redis PUB/SUB channels, which will then be read from and published to by one or more clients. Here, the client never has to communicate directly with trogdord (although it could, assuming trogord is accessible.)
+With this setup, trogdord will send output to and receive input from [Redis Pub/Sub](https://redis.io/topics/pubsub) channels, which will then be read from and published to by one or more clients. Here, the client never has to communicate directly with trogdord (although it could, assuming trogord is accessible.)
 
 #### Trogdord With Redis (Output Only)
 
@@ -62,10 +62,14 @@ This configuration is similar to the last except that input doesn't flow through
 
 Other configurations are, of course, possible. You could host single player games online via trogdord, or support multi-player games locally through a custom executable with multiple input devices. You can link any application to core for any purpose; what you choose to do with it is limited only by your imagination :)
 
+## Copyright and License
+
+Trogdor++ is licensed under the [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.en.html) and is Copyright © 2013 - Present by James Colannino.
+
 ## History
 
 Trogdor++ is the C++ version of the [Trogdor Text Adventure Engine](https://github.com/crankycyclops/trogdor "Trogdor Text Adventure Engine"), originally written in C.  That project is no longer maintained but still exists on GitHub (in an archived state) for historical purposes.
 
-Fun fact: the name Trogdor comes from [this video](https://www.youtube.com/watch?v=90X5NJleYJQ) :)
+**Fun fact:** the name Trogdor comes from [this video](https://www.youtube.com/watch?v=90X5NJleYJQ) :)
 
 Have fun!
