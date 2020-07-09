@@ -1,0 +1,6 @@
+digraph G {
+  rankdir=TB
+  "Single-Player Executable" [shape=Box]
+  "Core Library" [shape=Box]
+  "Single-Player Executable" -> "Core Library" [dir="both"]
+}
