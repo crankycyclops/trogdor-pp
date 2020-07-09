@@ -18,7 +18,7 @@ This repository includes the following modules:
 
 * [src/core](src/core/README.md): The core library, written in C++
 * [src/standalone](src/standalone/README.md): A barebones single-player CLI client, written primarily as a demonstration for how to use the library
-* [src/trogdord](src/trogdord/README.md): A queryable TCP server capable of hosting multi-player games with optional support for [Redis](https://redis.io/) Pub/Sub
+* [src/trogdord](src/trogdord/README.md): A queryable TCP server capable of hosting multi-player games with optional support for [Redis Pub/Sub](https://redis.io/topics/pubsub)
 * [src/php7/trogdord](src/php7/trogdord/README.md): A PHP 7 client for trogdord, implemented as an extension in C++
 * [src/nodejs/trogdord](src/nodejs/trogdord/README.md): A Node.js client for trogdord, written in Javascript
 
@@ -32,7 +32,7 @@ At a high level, the modules in this project are built to work together in the f
 
 ![Single-Player Configuration](./docs/img/how-it-works/single-player.png)
 
-In this configuration, a client application links against the core library in order to drive games with a single player. In [src/core](src/core/README.md), you'll find a C++ application demonstrating this use case. This is what you would prefer if you wanted to write a simple console-based text adventure.
+In this configuration, a client application links against the core library in order to drive games with a single player. In [src/standalone](src/standalone/README.md), you'll find a C++ application demonstrating this use case. This is what you would prefer if you wanted to write a simple console-based text adventure.
 
 At the moment, this isn't intended for actual use but to serve as an example for how you might go about building your own single player application. I intend to build this out more fully in the future, but for now, most of my attention is directed toward improving the multi-player aspects of the engine.
 
