@@ -1,0 +1,53 @@
+digraph G {
+
+  rankdir=BT
+
+  rank0 [style=invis];
+  rank1 [style=invis];
+  rank2 [style=invis];
+
+  {
+    rankdir = TB;
+    rank0 -> rank1 -> rank2 [color=white];
+  }
+
+  "Core Library" [shape=Box]
+
+  {
+    rank=same
+    "Trogdord" [shape=Box]
+    rank0 -> "Trogdord" [style="invis"]
+  }
+
+  {
+    rank=same
+    "Redis" [shape=Box]
+    rank1 -> "Redis" [style="invis"]
+  }
+
+  {
+    rank = same;
+    rank2 -> "Client 1" -> "..." -> "Client x" [style=invis];
+    rankdir = LR;
+  }
+
+  {
+    rank=same
+    "Client 1" [shape=Box label="Client"]
+    "..." [shape=plaintext]
+    "Client x" [shape=Box label="Client"]
+  }
+
+  "Trogdord" -> "Redis"
+  "Core Library" -> "Trogdord" [dir="both"]
+
+  "Redis" -> "Client 1"
+  "Client 1" -> "Trogdord"
+
+  "..." -> "Trogdord" [style=invis]
+  "Redis" -> "..." [style=invis]
+
+
+  "Redis" -> "Client x"
+  "Client x" -> "Trogdord"
+}

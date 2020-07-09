@@ -2,6 +2,8 @@
 
 A TCP server built on top of the Trogdor++ library for hosting multi-player games.
 
+<!-- TODO: make sure to mention that something will typically sit in front of trogdord, since trogdord itself has no built-in security features. -->
+
 ## Dependencies
 
 * [G++](https://gcc.gnu.org/projects/cxx-status.html) 7+ or [Clang++](https://clang.llvm.org/cxx_status.html) 8+. A different compiler might work, but it hasn't been tested, so you're on your own.

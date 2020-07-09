@@ -1,0 +1,14 @@
+digraph G {
+  rankdir=TB
+  "Trogdord" [shape=Box]
+  "Core Library" [shape=Box]
+  "Client 1" [shape=Box label="Client"]
+  "Client 2" [shape=Box label="Client"]
+  "..." [shape=plaintext]
+  "Client x" [shape=Box label="Client"]
+  "Trogdord" -> "Core Library" [dir="both"]
+  "Client 1" -> "Trogdord" [dir="both"]
+  "Client 2" -> "Trogdord" [dir="both"]
+  "..." -> "Trogdord" [style=invis]
+  "Client x" -> "Trogdord" [dir="both"]
+}
