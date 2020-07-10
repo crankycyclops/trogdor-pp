@@ -47,7 +47,7 @@ Below, you'll find a complete reference of all currently defined actions as well
 
 Retrieves statistical information about the server, including the version of trogdord, the version of the core library, and the total number of existing players and games.
 
-Request Format:
+JSON Request Format:
 
 ```json
 {
@@ -63,25 +63,37 @@ Request Format:
 
 Returns a specific game (if it exists), referenced by its integer ID.
 
-Request Format:
+JSON Request Format:
 
 ```json
 {
 	"method": "get",
 	"scope": "game",
 	"args": {
-		"id": <unsigned int>
+		"id": 0
 	}
 }
 ```
+
+In the above format, 0 stands in for any unsigned integer.
 
 #### get:game:list
 
 Returns a list of all games that currently exist on the server.
 
+JSON Request Format:
+
+```json
+{
+	"method": "get",
+	"scope": "game",
+	"action": "list"
+}
+```
+
 #### get:game:meta
 
-Returns metadata for a specific game.
+Returns metadata for a specific game. Can either return specific values or all values depending on the arguments passed along with the request.
 
 #### get:game:statistics
 
