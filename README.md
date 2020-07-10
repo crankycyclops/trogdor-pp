@@ -46,17 +46,13 @@ Trogdor++ includes an optional TCP server ([src/trogdord](src/trogdord/README.md
 
 Here, input and output pass directly through trogdord. To actually host games would require polling for output and wouldn't be very efficient, but it's easy to setup and is useful for testing and other one-off tasks. Note that querying trogdord directly is still possible even when using one of the other configurations described below.
 
-#### Trogdord With Redis (Input + Output)
+#### Trogdord With Redis
 
-![Multi-Player Configuration With Redis (Input + Output)](./docs/img/how-it-works/redis-1.png)
+![Multi-Player Configuration With Redis](./docs/img/how-it-works/multi-player-redis.png)
 
-With this setup, trogdord will send output to and receive input from [Redis Pub/Sub](https://redis.io/topics/pubsub) channels, which will then be read from and published to by one or more clients. Here, the client never has to communicate directly with trogdord (although it could, assuming trogord is accessible.)
+With this setup, trogdord will send output to a [Redis Pub/Sub](https://redis.io/topics/pubsub) channel, which will then be consumed by one or more clients. Input and other requests to the game server will, meanwhile, flow directly from one or more clients back to trogdord.
 
-#### Trogdord With Redis (Output Only)
-
-![Multi-Player Configuration With Redis (Output Only)](./docs/img/how-it-works/redis-2.png)
-
-This configuration is similar to the last except that input doesn't flow through Redis but is instead sent directly to trogdord by the client. This is what my sister project, [Trogserve](https://github.com/crankycyclops/trogserve), does. In that case, there's a [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) server on the backend that subscribes to the configured Redis channel for output, forwarding it to the browser, and receives input from the browser, sending it straight to trogdord.
+An example of this pattern in action is my sister project, [Trogserve](https://github.com/crankycyclops/trogserve). In that case, there's a [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) server on the backend that subscribes to the configured Redis channel for output, forwarding it to the browser, and receives input from the browser, sending it to trogdord via a request.
 
 ### Other Configurations
 
