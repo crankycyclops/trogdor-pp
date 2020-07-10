@@ -1,5 +1,5 @@
-# You must have the Boost Asio library installed in a place where the compiler
-# can find them. Otherwise, the build will fail.
+# You must have the Boost Asio library and RapidJSON installed in a place where
+# the compiler can find them. Otherwise, the build will fail.
 
 PHP_ARG_ENABLE(trogdord,
 	[Whether to enable trogdord support],

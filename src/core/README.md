@@ -2,7 +2,7 @@
 
 # Trogdor++ Core Library
 
-A C++ library capable of hosting multi-player text adventures and MUDs.
+A C++ library capable of hosting text adventures and MUDs with one or more players.
 
 ## Dependencies
 

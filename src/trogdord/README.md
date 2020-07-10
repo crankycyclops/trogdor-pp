@@ -26,12 +26,14 @@ The following links detail how to build, install, configure, and use trogdord.
 
 If you're interested in writing your own client-side connector, or just want to learn more about how trogdord works, you'll find the below links beneficial.
 
-1. [Connections and Requests](./docs/developer/connections-and-requests.md)
+1. [Methods, Scopes, and Actions](./docs/developer/scopes-and-actions.md)
+	- [Methods](./docs/developer/scopes-and-actions.md#methods)
+	- [Scopes](./docs/developer/scopes-and-actions.md#scopes)
+	- [Actions](./docs/developer/scopes-and-actions.md#actions)
+	- [A Complete Reference](./docs/developer/scopes-and-actions.md#a-complete-reference)
+2. [Connections and Requests](./docs/developer/connections-and-requests.md)
 	- [Establishing a Connection](./docs/developer/connections-and-requests.md#establishing-a-connection)
 	- [Making a Request](./docs/developer/connections-and-requests.md#making-a-request)
-2. [Scopes and Actions](./docs/developer/scopes-and-actions.md)
-	- [Definitions](./docs/developer/scopes-and-actions.md#definitions)
-	- [A Complete Reference](./docs/developer/scopes-and-actions.md#a-complete-reference)
 3. [Filters](./docs/developer/filters.md)
 4. [Optional Integration with Redis](./docs/developer/integration-with-redis.md)
 
