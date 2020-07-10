@@ -6,7 +6,7 @@ Every request that trogdord receives can be broken down into a method, a scope, 
 
 The method component of a request is analagous to the HTTP methods GET, PUT, POST, DELETE, etc. and determines what sort of operation you wish to perform. The following methods have been defined and are understood by trogdord:
 
-| Method | Definition |
+| Method | Meaning |
 |-|-|
 | **get** | These requests retrieve resources and data from the server and are analagous to the HTTP verb GET. |
 | **post** | These requests create new resources and data and are analagous to the HTTP verb POST. |
@@ -16,11 +16,26 @@ The method component of a request is analagous to the HTTP methods GET, PUT, POS
 
 ## Scopes
 
-TODO
+If trogdord were an MVC application, then the scope would be your controller. Scopes are organized according to how general or specific the resource is that you're querying, as well as the type. The following scopes have been defined by trogdord:
+
+| Scope | Meaning |
+|-|-|
+| **global** | Requests that have an effect on the server as a whole. |
+| **game** | Requests related to games. |
+| **entity** | Requests related to entities of any type. |
+| **place** | Requests related to entities of type Place. |
+| **room** | Requests related to entities of type Room. |
+| **thing** | Requests related to entities of type Thing. |
+| **object** | Requests related to entities of type Object. |
+| **being** | Requests related to entities of type Being. |
+| **creature** | Requests related to entities of type Creature. |
+| **player** | Requests related to players. |
 
 ## Actions
 
-TODO
+It is the action component of a request that, combined with the method and scope, identifies the specific operation you wish to perform. For example, a request with the method "get", the scope "game" and the action "list" will return a list of all games that currently exist on the server.
+
+Sometimes, a scope will define a default action. In that case, the action may be left out and trogdord will still know how to route your request. For example, specifying the method "get" with the scope "game" with no action will retrieve the details of a specific game from the server.
 
 ## A Complete Reference
 
