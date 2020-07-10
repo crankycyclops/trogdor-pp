@@ -39,6 +39,64 @@ Sometimes, a scope will define a default action. In that case, the action may be
 
 ## A Complete Reference
 
-Below, you'll find a complete reference of all scopes and actions in the current version of trogdord as well as how to format your requests.
+Below, you'll find a complete reference of all currently defined actions as well as how to format your requests.
 
-TODO
+### Global Scope
+
+#### get:global:statistics
+
+Retrieves statistical information about the server, including the version of trogdord, the version of the core library, and the total number of existing players and games.
+
+Request Format:
+
+```json
+{
+	"method": "get",
+	"scope": "global",
+	"action": "statistics"
+}
+```
+
+### Game Scope
+
+#### get:game
+
+Returns a specific game (if it exists), referenced by its integer ID.
+
+Request Format:
+
+```json
+{
+	"method": "get",
+	"scope": "game",
+	"args": {
+		"id": <unsigned int>
+	}
+}
+```
+
+#### get:game:list
+
+Returns a list of all games that currently exist on the server.
+
+#### get:game:meta
+
+Returns metadata for a specific game.
+
+#### get:game:statistics
+
+Returns game-specific statistics.
+
+#### get:game:time
+
+Returns the current time in a game.
+
+#### get:game:is_running
+
+Returns true if the specified game is running and false if it's not.
+
+#### get:game:definitions
+
+Returns a list of all game definition files seen by the server. These are the files that can be used to make new games.
+
+TODO: finish filling in the reference
