@@ -6,7 +6,7 @@ Every request that trogdord receives can be broken down into a method, a scope, 
 
 The method component of a request is analagous to the HTTP methods GET, PUT, POST, DELETE, etc. and determines what sort of operation you wish to perform. The following methods have been defined and are understood by trogdord:
 
-| | |
+| Method | Definition |
 |-|-|
 | **get** | These requests retrieve resources and data from the server and are analagous to the HTTP verb GET. |
 | **post** | These requests create new resources and data and are analagous to the HTTP verb POST. |
