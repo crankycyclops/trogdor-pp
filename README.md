@@ -44,7 +44,7 @@ Trogdor++ includes an optional TCP server ([src/trogdord](src/trogdord/README.md
 
 ![Multi-Player Configuration Without Redis](./docs/img/how-it-works/multi-player-no-redis.png)
 
-Here, input and output pass directly through trogdord. To actually host games would require polling for output and wouldn't be very efficient, but it's easy to setup and is useful for testing and other one-off tasks. Note that querying trogdord directly is still possible even when using one of the other configurations described below.
+Here, input and output pass directly through trogdord. To actually host games would require polling for output and wouldn't be very efficient, but it's easy to setup and is useful for testing and other one-off tasks. Note that querying trogdord directly is still possible even when using the Redis configuration described below.
 
 #### Trogdord With Redis
 

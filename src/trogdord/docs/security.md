@@ -26,4 +26,4 @@ Most likely, you'll also want to secure your cient's code to prevent one player 
 
 ## Other Considerations
 
-As mentioned above, this is not meant to be an exhaustive list. If I have any additional ideas, I'll add them, and, of course, if you'd like to make your own contribution, I welcome and encourage you to submit an issue or a PR :)
+As mentioned above, this is not meant to be an exhaustive list. If I have any additional ideas, I'll add them, and, of course, if you'd like to make your own contribution, I welcome and encourage you to submit an issue or PR :)
