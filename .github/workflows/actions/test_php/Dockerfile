@@ -6,9 +6,9 @@ RUN LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php && apt-get update
 
 # Prevents the script from stalling due to requiring the user to pick a timezone
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
-RUN apt-get install --frontend noninteractive tzdata
+RUN apt-get install -y tzdata
 RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
-RUN dpkg-reconfigure --frontend noninteractive tzdata
+RUN dpkg-reconfigure -y --frontend noninteractive tzdata
 
 # Install build dependencies for each supported PHP version
 RUN apt-get update && apt-get -y install git g++ php7.2-cli php7.2-dev php7.3-cli php7.3-dev php7.4-cli php7.4-dev

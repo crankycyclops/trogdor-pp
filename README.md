@@ -1,4 +1,4 @@
-![Unit Tests](https://github.com/crankycyclops/trogdor-pp/workflows/Unit%20Tests/badge.svg)
+![Core Unit Tests](https://github.com/crankycyclops/trogdor-pp/workflows/Core%20Unit%20Tests/badge.svg) ![PHP Unit Tests](https://github.com/crankycyclops/trogdor-pp/workflows/PHP%20Unit%20Tests/badge.svg)
 
 # Trogdor++
 
