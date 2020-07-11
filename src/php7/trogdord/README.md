@@ -1,3 +1,5 @@
+![PHP Tests](https://github.com/crankycyclops/trogdor-pp/workflows/PHP%20Tests/badge.svg)
+
 # Trogdord Extension for PHP 7
 
 The official PHP 7 client for trogdord.

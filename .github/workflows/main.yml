@@ -1,4 +1,4 @@
-name: Core Unit Tests
+name: Core Library Tests
 on: [push, pull_request]
 
 jobs:
