@@ -43,7 +43,7 @@ Below, you'll find a complete reference of all currently defined actions as well
 
 ### Global Scope
 
-#### get:global:statistics
+#### 1. get:global:statistics
 
 Retrieves statistical information about the server.
 
@@ -88,9 +88,11 @@ Returns a status code, the number of players, and the version of both the core l
 |-|-|
 | 200 | Success |
 
+---
+
 ### Game Scope
 
-#### get:game
+#### 1. get:game
 
 Returns the details of an existing game, referenced by id.
 
@@ -137,7 +139,7 @@ Returns a status code, the game's id, the game's name, the definition filename t
 
 ---
 
-#### get:game:list
+#### 2. get:game:list
 
 Returns a list of all games that currently exist on the server.
 
@@ -192,7 +194,7 @@ Returns a status code and an array of key/value pairs containing the id and name
 
 ---
 
-#### get:game:meta
+#### 3. get:game:meta
 
 Returns metadata for a specific game. Can either return specific values or all values depending on the arguments passed along with the request.
 
@@ -240,7 +242,7 @@ Returns a status code and an object of key/value pairs representing the requeste
 
 ---
 
-#### get:game:statistics
+#### 4. get:game:statistics
 
 Returns game-specific statistics.
 
@@ -287,7 +289,7 @@ Returns a status code, the time the game was created, how many players are curre
 
 ---
 
-#### get:game:time
+#### 5. get:game:time
 
 Returns the current time in a game.
 
@@ -295,7 +297,7 @@ TODO
 
 ---
 
-#### get:game:is_running
+#### 6. get:game:is_running
 
 Returns true if the specified game is running and false if it's not.
 
@@ -303,7 +305,7 @@ TODO
 
 ---
 
-#### get:game:definitions
+#### 7. get:game:definitions
 
 Returns a list of all game definition files seen by the server. These are the files that can be used to make new games.
 
