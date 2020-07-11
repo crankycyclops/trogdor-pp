@@ -1,15 +1,5 @@
-name: Trogdord Tests
-on: [push, pull_request]
-
-jobs:
-
-   test_trogdord:
-
-      runs-on: ubuntu-latest
-      name: Trogdord
-
-      steps:
-         - name: Checkout
-           uses: actions/checkout@v2
-         - name: Build and run
-           uses: ./.github/workflows/actions/test_trogdord
+name: 'Build and run unit tests for trogdord'
+description: 'Builds and runs all unit tests for trogdord.'
+runs:
+   using: 'docker'
+   image: 'Dockerfile'
