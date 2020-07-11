@@ -114,7 +114,7 @@ This example requests a game that does exist.
 	"method": "get",
 	"scope": "game",
 	"args": {
-		"id": 3
+		"id": 0
 	}
 }
 ```
