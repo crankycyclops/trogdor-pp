@@ -13,3 +13,14 @@ jobs:
            uses: actions/checkout@v2
          - name: Build and run
            uses: ./.github/workflows/actions/test_core
+
+   test_php:
+
+      runs-on: ubuntu-latest
+      name: PHP
+
+      steps:
+         - name: Checkout
+           uses: actions/checkout@v2
+         - name: Build and run
+           uses: ./.github/workflows/actions/test_php
