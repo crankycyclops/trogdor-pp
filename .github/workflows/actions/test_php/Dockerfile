@@ -6,6 +6,7 @@ RUN LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php && apt-get update
 
 # Prevents the script from stalling due to requiring the user to pick a timezone
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
+RUN apt-get install --frontend noninteractive tzdata
 RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
 RUN dpkg-reconfigure --frontend noninteractive tzdata
 
