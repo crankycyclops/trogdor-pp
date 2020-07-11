@@ -1,4 +1,4 @@
-name: Core Library Tests
+name: Trogdord Tests
 on: [push, pull_request]
 
 jobs:
@@ -6,10 +6,10 @@ jobs:
    test_core:
 
       runs-on: ubuntu-latest
-      name: Core
+      name: Trogdord Tests
 
       steps:
          - name: Checkout
            uses: actions/checkout@v2
          - name: Build and run
-           uses: ./.github/workflows/actions/test_core
+           uses: ./.github/workflows/actions/test_trogdord

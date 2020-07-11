@@ -1,3 +1,5 @@
+![Trogdord Tests](https://github.com/crankycyclops/trogdor-pp/workflows/Trogdord%20Tests/badge.svg)
+
 # Trogdord
 
 A TCP server built on top of the Trogdor++ library for the purpose of hosting one or more multi-player games.

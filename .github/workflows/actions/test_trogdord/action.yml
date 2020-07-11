@@ -1,0 +1,5 @@
+name: 'Build and run unit tests for trogdord'
+description: 'Builds and runs all unit tests for trogdord.'
+runs:
+   using: 'docker'
+   image: 'Dockerfile'
