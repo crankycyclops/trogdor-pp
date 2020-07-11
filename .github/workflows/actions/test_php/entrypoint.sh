@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd $GITHUB_WORKSPACE/trogdor-pp/trogdor-pp/src/php7/trogdord
+cd src/php7/trogdord
 
 # TODO: I haven't implemented unit tests yet, so for now, this is just a test to
 # make sure the build isn't broken on any supported PHP version.
