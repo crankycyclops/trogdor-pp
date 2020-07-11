@@ -116,7 +116,7 @@ JSONObject GameController::getGame(JSONObject request) {
 	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (game) {
-		response.put("status", 200);
+		response.put("status", Response::STATUS_SUCCESS);
 		response.put("id", gameId);
 		response.put("name", game->getName());
 		response.put("definition", game->getDefinition());
@@ -125,7 +125,7 @@ JSONObject GameController::getGame(JSONObject request) {
 	}
 
 	else {
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", GAME_NOT_FOUND);
 	}
 
@@ -155,7 +155,7 @@ JSONObject GameController::getGameList(JSONObject request) {
 
 			else {
 
-				response.put("status", 400);
+				response.put("status", Response::STATUS_INVALID);
 				response.put("message", INVALID_META_KEYS);
 
 				return response;
@@ -191,7 +191,7 @@ JSONObject GameController::getGameList(JSONObject request) {
 		gameList.push_back(std::make_pair("", JSONObject()));
 	}
 
-	response.put("status", 200);
+	response.put("status", Response::STATUS_SUCCESS);
 	response.add_child("games", gameList);
 
 	return response;
@@ -227,7 +227,7 @@ JSONObject GameController::getDefinitionList(JSONObject request) {
 			definitions.push_back(std::make_pair("", JSONObject()));
 		}
 
-		response.put("status", 200);
+		response.put("status", Response::STATUS_SUCCESS);
 		response.add_child("definitions", definitions);
 	}
 
@@ -257,7 +257,7 @@ JSONObject GameController::getStatistics(JSONObject request) {
 	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (game) {
-		response.put("status", 200);
+		response.put("status", Response::STATUS_SUCCESS);
 		response.put("created", std::put_time(std::gmtime(&game->getCreated()), "%Y-%m-%d %H:%M:%S UTC"));
 		response.put("players", game->getNumPlayers());
 		response.put("current_time", game->get()->getTime());
@@ -265,7 +265,7 @@ JSONObject GameController::getStatistics(JSONObject request) {
 	}
 
 	else {
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", GAME_NOT_FOUND);
 	}
 
@@ -282,17 +282,17 @@ JSONObject GameController::createGame(JSONObject request) {
 	boost::optional definition = request.get_optional<std::string>("args.definition");
 
 	if (!name) {
-		response.put("status", 400);
+		response.put("status", Response::STATUS_INVALID);
 		response.put("message", MISSING_REQUIRED_NAME);
 	}
 
 	else if (!definition) {
-		response.put("status", 400);
+		response.put("status", Response::STATUS_INVALID);
 		response.put("message", MISSING_REQUIRED_DEFINITION);
 	}
 
 	else if (STD_FILESYSTEM::path(*definition).is_absolute()) {
-		response.put("status", 400);
+		response.put("status", Response::STATUS_INVALID);
 		response.put("message", DEFINITION_NOT_RELATIVE);
 	}
 
@@ -315,7 +315,7 @@ JSONObject GameController::createGame(JSONObject request) {
 
 				else {
 
-					response.put("status", 400);
+					response.put("status", Response::STATUS_INVALID);
 					response.put("message", INVALID_META);
 
 					return response;
@@ -324,17 +324,17 @@ JSONObject GameController::createGame(JSONObject request) {
 		}
 
 		try {
-			response.put("status", 200);
+			response.put("status", Response::STATUS_SUCCESS);
 			response.put("id", GameContainer::get()->createGame(*definition, *name, meta));
 		}
 
 		catch (const trogdor::Exception &e) {
-			response.put("status", 500);
+			response.put("status", Response::STATUS_INTERNAL_ERROR);
 			response.put("message", e.what());
 		}
 
 		catch (const ServerException &e) {
-			response.put("status", 500);
+			response.put("status", Response::STATUS_INTERNAL_ERROR);
 			response.put("message", e.what());
 		}
 	}
@@ -359,11 +359,11 @@ JSONObject GameController::destroyGame(JSONObject request) {
 
 	if (GameContainer::get()->getGame(gameId)) {
 		GameContainer::get()->destroyGame(gameId);
-		response.put("status", 200);
+		response.put("status", Response::STATUS_SUCCESS);
 	}
 
 	else {
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", GAME_NOT_FOUND);
 	}
 
@@ -387,11 +387,11 @@ JSONObject GameController::startGame(JSONObject request) {
 
 	if (GameContainer::get()->getGame(gameId)) {
 		GameContainer::get()->startGame(gameId);
-		response.put("status", 200);
+		response.put("status", Response::STATUS_SUCCESS);
 	}
 
 	else {
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", GAME_NOT_FOUND);
 	}
 
@@ -415,11 +415,11 @@ JSONObject GameController::stopGame(JSONObject request) {
 
 	if (GameContainer::get()->getGame(gameId)) {
 		GameContainer::get()->stopGame(gameId);
-		response.put("status", 200);
+		response.put("status", Response::STATUS_SUCCESS);
 	}
 
 	else {
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", GAME_NOT_FOUND);
 	}
 
@@ -442,7 +442,7 @@ JSONObject GameController::getMeta(JSONObject request) {
 	}
 
 	if (!GameContainer::get()->getGame(gameId)) {
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", GAME_NOT_FOUND);
 	}
 
@@ -466,7 +466,7 @@ JSONObject GameController::getMeta(JSONObject request) {
 
 				else {
 
-					response.put("status", 400);
+					response.put("status", Response::STATUS_INVALID);
 					response.put("message", INVALID_META_KEYS);
 
 					return response;
@@ -482,7 +482,7 @@ JSONObject GameController::getMeta(JSONObject request) {
 			}
 		}
 
-		response.put("status", 200);
+		response.put("status", Response::STATUS_SUCCESS);
 		response.put_child("meta", meta);
 	}
 
@@ -505,7 +505,7 @@ JSONObject GameController::setMeta(JSONObject request) {
 	}
 
 	if (!GameContainer::get()->getGame(gameId)) {
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", GAME_NOT_FOUND);
 	}
 
@@ -523,18 +523,18 @@ JSONObject GameController::setMeta(JSONObject request) {
 
 				else {
 
-					response.put("status", 400);
+					response.put("status", Response::STATUS_INVALID);
 					response.put("message", INVALID_META_KEYS);
 
 					return response;
 				}
 			}
 
-			response.put("status", 200);
+			response.put("status", Response::STATUS_SUCCESS);
 		}
 
 		else {
-			response.put("status", 400);
+			response.put("status", Response::STATUS_INVALID);
 			response.put("message", MISSING_META);
 		}
 	}
@@ -560,12 +560,12 @@ JSONObject GameController::getTime(JSONObject request) {
 	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (game) {
-		response.put("status", 200);
+		response.put("status", Response::STATUS_SUCCESS);
 		response.put("current_time", game->get()->getTime());
 	}
 
 	else {
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", GAME_NOT_FOUND);
 	}
 
@@ -590,12 +590,12 @@ JSONObject GameController::getIsRunning(JSONObject request) {
 	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (game) {
-		response.put("status", 200);
+		response.put("status", Response::STATUS_SUCCESS);
 		response.put("is_running", game->get()->inProgress() ? "\\true\\" : "\\false\\");
 	}
 
 	else {
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", GAME_NOT_FOUND);
 	}
 

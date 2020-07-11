@@ -2,7 +2,9 @@
 #define REQUEST_H
 
 #include <string>
+
 #include "json.h"
+#include "response.h"
 
 
 class Request {
@@ -41,7 +43,7 @@ class Request {
 
 				JSONObject response;
 
-				response.put("status", 400);
+				response.put("status", Response::STATUS_INVALID);
 				response.put("message", missingErrMsg);
 
 				throw response;
@@ -51,7 +53,7 @@ class Request {
 
 				JSONObject response;
 
-				response.put("status", 400);
+				response.put("status", Response::STATUS_INVALID);
 				response.put("message", invalidErrMsg);
 
 				throw response;
@@ -77,7 +79,7 @@ class Request {
 
 				JSONObject response;
 
-				response.put("status", 400);
+				response.put("status", Response::STATUS_INVALID);
 				response.put("message", invalidErrMsg);
 
 				throw response;

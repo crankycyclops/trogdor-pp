@@ -85,7 +85,7 @@ std::optional<JSONObject> EntityController::getEntityHelper(
 
 		JSONObject response;
 
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", GAME_NOT_FOUND);
 
 		return response;
@@ -100,7 +100,7 @@ std::optional<JSONObject> EntityController::getEntityHelper(
 
 		JSONObject response;
 
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", ENTITY_NOT_FOUND);
 
 		return response;
@@ -181,7 +181,7 @@ JSONObject EntityController::getEntity(JSONObject request) {
 
 		JSONObject response;
 
-		response.put("status", 200);
+		response.put("status", Response::STATUS_SUCCESS);
 		response.add_child("entity", entityToJSONObject(ePtr));
 
 		return response;
@@ -222,12 +222,12 @@ JSONObject EntityController::getEntityList(JSONObject request) {
 			entities.push_back(std::make_pair("", JSONObject()));
 		}
 
-		response.put("status", 200);
+		response.put("status", Response::STATUS_SUCCESS);
 		response.add_child("entities", entities);
 	}
 
 	else {
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", GAME_NOT_FOUND);
 	}
 
@@ -292,12 +292,12 @@ JSONObject EntityController::getOutput(JSONObject request) {
 			messages.push_back(std::make_pair("", JSONObject()));
 		}
 
-		response.put("status", 200);
+		response.put("status", Response::STATUS_SUCCESS);
 		response.add_child("messages", messages);
 	}
 
 	catch (const UnsupportedOperation &e) {
-		response.put("status", 501);
+		response.put("status", Response::STATUS_UNSUPPORTED);
 		response.put("message", e.what());
 	}
 
@@ -325,7 +325,7 @@ JSONObject EntityController::appendOutput(JSONObject request) {
 
 	if (!messageArg) {
 
-		response.put("status", 400);
+		response.put("status", Response::STATUS_INVALID);
 		response.put("message", MISSING_OUTPUT_MESSAGE);
 
 		return response;
@@ -344,7 +344,7 @@ JSONObject EntityController::appendOutput(JSONObject request) {
 
 	ePtr->out(channel) << *messageArg << std::endl;
 
-	response.put("status", 200);
+	response.put("status", Response::STATUS_SUCCESS);
 	return response;
 }
 
@@ -372,7 +372,7 @@ JSONObject EntityController::postInput(JSONObject request) {
 	boost::optional command = request.get_optional<std::string>("args.command");
 
 	if (!command) {
-		response.put("status", 400);
+		response.put("status", Response::STATUS_INVALID);
 		response.put("message", MISSING_COMMAND);
 	}
 
@@ -381,7 +381,7 @@ JSONObject EntityController::postInput(JSONObject request) {
 		std::unique_ptr<input::Driver> &inBuffer = input::Driver::get();
 
 		inBuffer->set(gameId, entityName, *command);
-		response.put("status", 200);
+		response.put("status", Response::STATUS_SUCCESS);
 	}
 
 	return response;
