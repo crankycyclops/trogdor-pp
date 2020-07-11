@@ -53,17 +53,19 @@ int main(int argc, char **argv) {
    // user wants to parse Inform 7 instead of XML, the default
    if (argc > 2 && 0 == strcmp("inform7", argv[2])) {
       parser = std::make_unique<trogdor::Inform7Parser>(
-         currentGame->makeInstantiator(), currentGame->getVocabulary()
+         currentGame->makeInstantiator(),
+         currentGame->getVocabulary()
       );
    }
 
    else {
       parser = std::make_unique<trogdor::XMLParser>(
-         currentGame->makeInstantiator(), currentGame->getVocabulary()
+         currentGame->makeInstantiator(),
+         currentGame->getVocabulary()
       );
    }
 
-   // The client can also write and set its own custom game actions
+   // The client can also implement its own custom game actions
    currentGame->insertVerbAction("time", std::make_unique<TimeAction>());
    currentGame->insertVerbAction("quit", std::make_unique<QuitAction>());
 

@@ -85,7 +85,7 @@ std::string Dispatcher::parseRequestComponent(JSONObject requestObj, std::string
 
 	if (requestObj.not_found() == requestObj.find(component)) {
 		if (required[component]) {
-			throw RequestException(missingMsgs[component], 400);
+			throw RequestException(missingMsgs[component], Response::STATUS_INVALID);
 		} else {
 			return "";
 		}
@@ -96,7 +96,7 @@ std::string Dispatcher::parseRequestComponent(JSONObject requestObj, std::string
 	if (value) {
 		return trogdor::strToLower(*value);
 	} else {
-		throw RequestException(invalidMsgs[component], 400);
+		throw RequestException(invalidMsgs[component], Response::STATUS_INVALID);
 	}
 }
 
@@ -116,7 +116,7 @@ JSONObject Dispatcher::parseRequest(
 	}
 
 	catch (boost::property_tree::json_parser::json_parser_error &e) {
-		throw RequestException(INVALID_JSON, 400);
+		throw RequestException(INVALID_JSON, Response::STATUS_INVALID);
 	}
 
 	method = parseRequestComponent(requestObj, METHOD);
@@ -144,7 +144,7 @@ std::string Dispatcher::dispatch(std::shared_ptr<TCPConnection> &connection, std
 		// Make sure the specified scope can be resolved
 		if (scopes.end() == scopes.find(scope)) {
 			connection->log(trogdor::Trogerr::INFO, std::string("404: ") + SCOPE_NOT_FOUND);
-			return Response::makeErrorJson(SCOPE_NOT_FOUND, 404);
+			return Response::makeErrorJson(SCOPE_NOT_FOUND, Response::STATUS_NOT_FOUND);
 		}
 
 		return JSON::serialize(scopes[scope]->resolve(connection, method, action, requestObj));

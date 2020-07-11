@@ -195,6 +195,7 @@ if (Boost_FOUND)
 		src/trogdord/json.cpp
 		src/trogdord/filesystem.cpp
 		src/trogdord/request.cpp
+		src/trogdord/response.cpp
 		src/trogdord/dispatcher.cpp
 		src/trogdord/gamewrapper.cpp
 		src/trogdord/gamecontainer.cpp

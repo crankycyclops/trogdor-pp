@@ -9,6 +9,14 @@ class Response {
 
 	public:
 
+		// These are all the possible status codes that can be returned.
+		const static int STATUS_SUCCESS = 200;
+		const static int STATUS_INVALID = 400;
+		const static int STATUS_NOT_FOUND = 404;
+		const static int STATUS_CONFLICT = 409;
+		const static int STATUS_INTERNAL_ERROR = 500;
+		const static int STATUS_UNSUPPORTED = 501;
+
 		// Crafts a simple JSON response that looks like this:
 		// {"status":<statusCode>,"message":<message>}. This method is
 		// provided as a shortcut that sidesteps the

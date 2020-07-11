@@ -1,4 +1,6 @@
 #include <optional>
+
+#include "../include/response.h"
 #include "../include/scopes/controller.h"
 
 
@@ -39,7 +41,7 @@ JSONObject ScopeController::resolve(
 
 	if (actionMap.end() == actionMap.find(method)) {
 
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", METHOD_NOT_FOUND);
 
 		connection->log(trogdor::Trogerr::INFO, std::string("404: ") + METHOD_NOT_FOUND);
@@ -50,7 +52,7 @@ JSONObject ScopeController::resolve(
 	else if (actionMap[method].end() == actionMap[method].find(action)) {
 
 		std::string message;
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 
 		if (0 == action.compare(DEFAULT_ACTION)) {
 			message = std::string("no default action for method ") + method;

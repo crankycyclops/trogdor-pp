@@ -1,6 +1,6 @@
 # Standalone Client
 
-A demo single-player CLI client written to demonstrate how one can use the Trogdor++ library.
+A demo CLI client written to demonstrate how one can use the Trogdor++ library to build a single-player game.
 
 ## Dependencies
 

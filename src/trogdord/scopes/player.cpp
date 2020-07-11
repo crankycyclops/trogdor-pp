@@ -108,7 +108,7 @@ JSONObject PlayerController::createPlayer(JSONObject request) {
 
 	try {
 
-		response.put("status", 200);
+		response.put("status", Response::STATUS_SUCCESS);
 		response.add_child("player", entityToJSONObject(
 			GameContainer::get()->createPlayer(gameId, playerName))
 		);
@@ -118,7 +118,7 @@ JSONObject PlayerController::createPlayer(JSONObject request) {
 
 	catch (const GameNotFound &e) {
 
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", GAME_NOT_FOUND);
 
 		return response;
@@ -126,7 +126,7 @@ JSONObject PlayerController::createPlayer(JSONObject request) {
 
 	catch (const trogdor::entity::DuplicateEntity &e) {
 
-		response.put("status", 409);
+		response.put("status", Response::STATUS_CONFLICT);
 		response.put("message", e.what());
 
 		return response;
@@ -134,7 +134,7 @@ JSONObject PlayerController::createPlayer(JSONObject request) {
 
 	catch (const trogdor::Exception &e) {
 
-		response.put("status", 500);
+		response.put("status", Response::STATUS_INTERNAL_ERROR);
 		response.put("message", e.what());
 
 		return response;
@@ -177,14 +177,14 @@ JSONObject PlayerController::destroyPlayer(JSONObject request) {
 	try {
 
 		GameContainer::get()->removePlayer(gameId, playerName, removalMessage);
-		response.put("status", 200);
+		response.put("status", Response::STATUS_SUCCESS);
 
 		return response;
 	}
 
 	catch (const GameNotFound &e) {
 
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", GAME_NOT_FOUND);
 
 		return response;
@@ -192,7 +192,7 @@ JSONObject PlayerController::destroyPlayer(JSONObject request) {
 
 	catch (const PlayerNotFound &e) {
 
-		response.put("status", 404);
+		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", PLAYER_NOT_FOUND);
 
 		return response;
@@ -200,7 +200,7 @@ JSONObject PlayerController::destroyPlayer(JSONObject request) {
 
 	catch (trogdor::Exception &e) {
 
-		response.put("status", 500);
+		response.put("status", Response::STATUS_INTERNAL_ERROR);
 		response.put("message", e.what());
 
 		return response;
