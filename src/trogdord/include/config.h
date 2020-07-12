@@ -26,11 +26,11 @@ class Config {
 
 	protected:
 
-		// Default values
-		static const std::unordered_map<std::string, std::string> DEFAULTS;
-
 		// Singleton instance of Config.
 		static std::unique_ptr<Config> instance;
+
+		// The file where we read our ini values from
+		std::string iniPath;
 
 		// Parsed ini file
 		boost::property_tree::iptree ini;
@@ -44,7 +44,7 @@ class Config {
 
 		// Protected constructor, making get() the only way to return an
 		// instance.
-		explicit Config(std::string iniPath) noexcept;
+		explicit Config(std::string newIniPath) noexcept;
 		Config() = delete;
 		Config(const Config &) = delete;
 
@@ -52,6 +52,9 @@ class Config {
 		void initErrorLogger() noexcept;
 
 	public:
+
+		// Default values
+		static const std::unordered_map<std::string, std::string> DEFAULTS;
 
 		// Setting keys
 		static const char *CONFIG_KEY_PORT;
@@ -70,6 +73,12 @@ class Config {
 
 		// Returns singleton instance of Config.
 		static std::unique_ptr<Config> &get() noexcept;
+
+		// Loads the specified ini file if it exists. If it doesn't, or if
+		// no file path is passed into the first argument, all config values
+		// will be set to their defaults. Calling this method with no argument
+		// can be used to reset the Config object.
+		void load(std::string newIniPath = "") noexcept;
 
 		// Returns the specified config value. Throws ConfigUndefinedValue
 		// if the config value isn't set and ConfigInvalidValue if it

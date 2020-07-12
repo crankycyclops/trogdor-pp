@@ -48,34 +48,10 @@ std::unique_ptr<Config> Config::instance = nullptr;
 
 /*****************************************************************************/
 
-Config::Config(std::string iniPath) noexcept {
+Config::Config(std::string newIniPath) noexcept {
 
-	if (
-		0 != iniPath.compare("") &&
-		STD_FILESYSTEM::exists(iniPath) &&
-		!STD_FILESYSTEM::is_directory(iniPath)
-	) {
-		try {
-			boost::property_tree::ini_parser::read_ini(iniPath, ini);
-		}
-
-		// Error logging hasn't been setup yet, so I have to write to stderr.
-		catch (const boost::property_tree::ini_parser::ini_parser_error &e) {
-			std::cerr << "Error: " << e.what() << std::endl;
-			exit(EXIT_INI_ERROR);
-		}
-	}
-
-	// Populate the ini object with defaults for any values not set in the ini
-	// file.
-	for (auto &defaultVal: DEFAULTS) {
-
-		boost::optional iniValue = ini.get_optional<std::string>(defaultVal.first);
-
-		if (!iniValue) {
-			ini.put(defaultVal.first, defaultVal.second);
-		}
-	}
+	// Load the ini file's values
+	load(newIniPath);
 
 	// Setup the global error logger
 	initErrorLogger();
@@ -140,4 +116,39 @@ std::unique_ptr<Config> &Config::get() noexcept {
 	}
 
 	return instance;
+}
+
+/*****************************************************************************/
+
+void Config::load(std::string newIniPath) noexcept {
+
+	iniPath = newIniPath;
+	ini.clear();
+
+	if (
+		0 != iniPath.compare("") &&
+		STD_FILESYSTEM::exists(iniPath) &&
+		!STD_FILESYSTEM::is_directory(iniPath)
+	) {
+		try {
+			boost::property_tree::ini_parser::read_ini(iniPath, ini);
+		}
+
+		// Error logging hasn't been setup yet, so I have to write to stderr.
+		catch (const boost::property_tree::ini_parser::ini_parser_error &e) {
+			std::cerr << "Error: " << e.what() << std::endl;
+			exit(EXIT_INI_ERROR);
+		}
+	}
+
+	// Populate the ini object with defaults for any values not set in the ini
+	// file.
+	for (auto &defaultVal: DEFAULTS) {
+
+		boost::optional iniValue = ini.get_optional<std::string>(defaultVal.first);
+
+		if (!iniValue) {
+			ini.put(defaultVal.first, defaultVal.second);
+		}
+	}
 }

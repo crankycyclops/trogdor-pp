@@ -364,6 +364,7 @@ if (Boost_FOUND)
 	# Trogdord unit tests
 	add_executable(test_trogdord
 		src/trogdord/test/main.cpp
+		src/trogdord/test/config.cpp
 	)
 
 	target_include_directories(test_trogdord
