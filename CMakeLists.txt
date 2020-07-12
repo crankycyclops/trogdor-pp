@@ -174,23 +174,7 @@ find_package(Boost COMPONENTS system)
 
 if (Boost_FOUND)
 
-	if (ENABLE_REDIS)
-
-		pkg_check_modules (HIREDIS REQUIRED hiredis>=0.13)
-
-		add_library(trogdord_redis STATIC
-			src/trogdord/io/output/redis.cpp
-			src/trogdord/io/input/listeners/redis.cpp
-		)
-
-		target_include_directories(trogdord_redis
-			PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
-		)
-
-	endif (ENABLE_REDIS)
-
-	add_executable(trogdord
-		src/trogdord/main.cpp
+	set(TROGDORD_SOURCES
 		src/trogdord/config.cpp
 		src/trogdord/json.cpp
 		src/trogdord/filesystem.cpp
@@ -225,9 +209,35 @@ if (Boost_FOUND)
 		src/trogdord/io/iostream/servererr.cpp
 	)
 
-	target_include_directories(trogdord
+	set(TROGDORD_INCLUDES
 		PUBLIC ${Boost_INCLUDE_DIRS}
 		PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
+	)
+
+	set(TROGDORD_LIBRARIES
+		PUBLIC trogdor
+		PUBLIC stdc++fs
+		PUBLIC ${Boost_LIBRARIES}
+	)
+
+	if (ENABLE_REDIS)
+
+		pkg_check_modules (HIREDIS REQUIRED hiredis>=0.13)
+
+		add_library(trogdord_redis STATIC
+			src/trogdord/io/output/redis.cpp
+			src/trogdord/io/input/listeners/redis.cpp
+		)
+
+		target_include_directories(trogdord_redis
+			PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
+		)
+
+	endif (ENABLE_REDIS)
+
+	add_executable(trogdord
+		src/trogdord/main.cpp
+		${TROGDORD_SOURCES}
 	)
 
 	# Link in the redis input and output drivers
@@ -247,11 +257,8 @@ if (Boost_FOUND)
 
 	endif (ENABLE_REDIS)
 
-	target_link_libraries(trogdord
-		PUBLIC trogdor
-		PUBLIC stdc++fs
-		PUBLIC ${Boost_LIBRARIES}
-	)
+	target_include_directories(trogdord ${TROGDORD_INCLUDES})
+	target_link_libraries(trogdord ${TROGDORD_LIBRARIES})
 
 	add_dependencies(trogdord trogdor trogdord_data)
 
@@ -339,8 +346,53 @@ target_link_libraries(test_core
 	PUBLIC _trogdor_test
 )
 
+add_dependencies(test_core _trogdor_test)
+
+if (Boost_FOUND)
+
+	# A special statically-linked library consisting of the trogdord classes (minus
+	# main.cpp.)
+	add_library(_trogdord_test STATIC ${TROGDORD_SOURCES})
+	target_link_libraries(_trogdord_test ${TROGDORD_LIBRARIES})
+
+	if (ENABLE_REDIS)
+		target_include_directories(_trogdord_test ${CORE_INCLUDES} ${HIREDIS_INCLUDE_DIRS} ${TROGDORD_INCLUDES})
+	else (ENABLE_REDIS)
+		target_include_directories(_trogdord_test ${CORE_INCLUDES} ${TROGDORD_INCLUDES})
+	endif (ENABLE_REDIS)
+
+	# Trogdord unit tests
+	add_executable(test_trogdord
+		src/trogdord/test/main.cpp
+	)
+
+	target_include_directories(test_trogdord
+		PUBLIC ${PROJECT_SOURCE_DIR}/src/trogdord/include
+	)
+
+	if (ENABLE_REDIS)
+
+		target_link_libraries(test_trogdord
+			PRIVATE trogdord_redis
+			PUBLIC _trogdord_test
+		)
+
+	else (ENABLE_REDIS)
+
+		target_link_libraries(test_trogdord
+			PUBLIC _trogdord_test
+		)
+
+	endif (ENABLE_REDIS)
+
+else (Boost_FOUND)
+
+	add_custom_target(test_trogdord echo "Skipping trogdord unit tests because the Boost C++ libraries are not installed in a place where CMake can find them.")
+
+endif (Boost_FOUND)
+
 add_custom_target(unit_test)
-add_dependencies(unit_test _trogdor_test test_core)
+add_dependencies(unit_test test_core test_trogdord)
 
 ###############################################################################
 
