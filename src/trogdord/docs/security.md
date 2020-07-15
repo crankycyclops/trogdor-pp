@@ -10,6 +10,14 @@ If you're looking for an existing project that already builds on what trogdord p
 
 Trogdord should **never** run on an open port on a public facing network. Since it will accept all connections and execute all valid requests, anyone in the world could maliciously delete or alter games and players at any time. Instead, you should place it behind a firewall and setup your environment such that only trusted tools can communicate with it.
 
+## Connections and Rate Limiting
+
+Even if trogdord is hidden behind a firewall and can only be accessed by an approved client, it's still possible that the client itself could be used by someone on the outside as a vector for denial-of-service attacks. An effective way to combat this is to limit both the number of connections that can be made from a single endpoint and the number of requests that can be accepted in a given amount of time.
+
+Trogdord does not currently do either of these things, so it's a good idea to configure your firewall and your front end code to ensure that neither of these become a problem.
+
+I do plan on implementing some rudimentary support for these protections in a configurable way, but even so, it would be better to take care of this at a higher level before trogdord is ever reached.
+
 ## Administrative Privileges
 
 Once you've taken the very important first step of blocking connections from the outside world, you should then make sure, when designing a system around trogdord, that only trusted clients and users can make privileged requests.
