@@ -139,7 +139,96 @@ Returns a status code, the game's id, the game's name, the definition filename t
 
 ---
 
-#### 2. get:game:list
+#### 2. post:game
+
+Creates a new game and returns its id as part of a successful response.
+
+**JSON Request Format:**
+
+```
+{
+	"method": "post",
+	"scope": "game",
+	"args": {
+		"name": <string>,
+		"definition": <string>,
+		<string>: <string>,
+		...
+	}
+}
+```
+
+**Arguments:**
+
+| Argument | Required? | Value |
+|-|-|-|
+| `name` | Yes | The game's name |
+| `definition` | Yes | The definition file that should be used to create the game (must be one of the files returned by get:game:definitions) |
+| One or more key/value pairs | No | Meta data that should be set for the game when it's created |
+
+**Successful JSON Response:**
+
+Returns a status code and the new game's id.
+
+```
+{
+	"status": 200,
+	"id": <unsigned int>
+}
+```
+
+**Possible Status Codes:**
+
+| Status | Meaning |
+|-|-|
+| 200 | Success |
+| 400 | Missing one or more required arguments, or the definition path or one or more meta value arguments are invalid |
+| 500 | An internal error occurred |
+
+---
+
+#### 3. delete:game
+
+Destroys an existing game.
+
+**JSON Request Format:**
+
+```
+{
+	"method": "delete",
+	"scope": "game",
+	"args": {
+		"id": <unsigned int>
+	}
+}
+```
+
+**Arguments:**
+
+| Argument | Required? | Value |
+|-|-|-|
+| `id` | Yes | The game's id |
+
+**Successful JSON Response:**
+
+Returns a status code indicating success.
+
+```
+{
+	"status": 200
+}
+```
+
+**Possible Status Codes:**
+
+| Status | Meaning |
+|-|-|
+| 200 | Success |
+| 404 | Game not found |
+
+---
+
+#### 4. get:game:list
 
 Returns a list of all games that currently exist on the server.
 
@@ -194,7 +283,7 @@ Returns a status code and an array of key/value pairs containing the id and name
 
 ---
 
-#### 3. get:game:meta
+#### 5. get:game:meta
 
 Returns metadata for a specific game. Can either return specific values or all values depending on the arguments passed along with the request.
 
@@ -242,7 +331,7 @@ Returns a status code and an object of key/value pairs representing the requeste
 
 ---
 
-#### 4. get:game:statistics
+#### 6. get:game:statistics
 
 Returns game-specific statistics.
 
@@ -289,28 +378,215 @@ Returns a status code, the time the game was created, how many players are curre
 
 ---
 
-#### 5. get:game:time
+#### 7. get:game:time
 
 Returns the current time in a game.
 
-TODO
+**JSON Request Format:**
+
+```
+{
+	"method": "get",
+	"scope": "game",
+	"action": "time",
+	"args": {
+		"id": <unsigned int>
+	}
+}
+```
+
+**Arguments:**
+
+| Argument | Required? | Value |
+|-|-|-|
+| `id` | Yes | Id of an existing game |
+
+**Successful JSON Response:**
+
+Returns a status code and the current in-game time.
+
+```
+{
+	"status": 200,
+	"current_time": <unsigned int>
+}
+```
+
+**Possible Status Codes:**
+
+| Status | Meaning |
+|-|-|
+| 200 | Success |
+| 404 | Game not found |
 
 ---
 
-#### 6. get:game:is_running
+#### 8. get:game:is_running
 
 Returns true if the specified game is running and false if it's not.
 
-TODO
+**JSON Request Format:**
+
+```
+{
+	"method": "get",
+	"scope": "game",
+	"action": "is_running",
+	"args": {
+		"id": <unsigned int>
+	}
+}
+```
+
+**Arguments:**
+
+| Argument | Required? | Value |
+|-|-|-|
+| `id` | Yes | Id of an existing game |
+
+**Successful JSON Response:**
+
+Returns a status code and whether or not the game is running.
+
+```
+{
+	"status": 200,
+	"is_running": <boolean>
+}
+```
+
+**Possible Status Codes:**
+
+| Status | Meaning |
+|-|-|
+| 200 | Success |
+| 404 | Game not found |
 
 ---
 
-#### 7. get:game:definitions
+#### 9. get:game:definitions
 
 Returns a list of all game definition files seen by the server. These are the files that can be used to make new games.
 
-TODO
+**JSON Request Format:**
+
+```
+{
+	"method": "get",
+	"scope": "game",
+	"action": "definitions"
+}
+```
+
+**Arguments:**
+
+(none)
+
+**Successful JSON Response:**
+
+Returns a status code and a JSON array of all available definition files.
+
+```
+{
+	"status": 200,
+	"definitions": [
+		<string>,
+		...
+	]
+}
+```
+
+**Possible Status Codes:**
+
+| Status | Meaning |
+|-|-|
+| 200 | Success |
+| 500 | An internal error occurred |
 
 ---
 
-TODO: finish
+#### 10. set:game:start
+
+Starts the specified game.
+
+**JSON Request Format:**
+
+```
+{
+	"method": "set",
+	"scope": "game",
+	"action": "start",
+	"args": {
+		"id": <unsigned int>
+	}
+}
+```
+
+**Arguments:**
+
+| Argument | Required? | Value |
+|-|-|-|
+| `id` | Yes | Id of an existing game |
+
+**Successful JSON Response:**
+
+Returns a status code indicating success.
+
+```
+{
+	"status": 200
+}
+```
+
+**Possible Status Codes:**
+
+| Status | Meaning |
+|-|-|
+| 200 | Success |
+| 404 | Game not found |
+
+---
+
+#### 11. set:game:stop
+
+Stops the specified game.
+
+**JSON Request Format:**
+
+```
+{
+	"method": "set",
+	"scope": "game",
+	"action": "stop",
+	"args": {
+		"id": <unsigned int>
+	}
+}
+```
+
+**Arguments:**
+
+| Argument | Required? | Value |
+|-|-|-|
+| `id` | Yes | Id of an existing game |
+
+**Successful JSON Response:**
+
+Returns a status code indicating success.
+
+```
+{
+	"status": 200
+}
+```
+
+**Possible Status Codes:**
+
+| Status | Meaning |
+|-|-|
+| 200 | Success |
+| 404 | Game not found |
+
+---
+
+TODO: finish documenting the remaining entity scopes

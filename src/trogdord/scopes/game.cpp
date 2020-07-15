@@ -212,6 +212,8 @@ JSONObject GameController::getDefinitionList(JSONObject request) {
 
 			std::string filename = dirEntry.path().string();
 
+			// For now, trogdord only recognizes xml files. This will change
+			// when (if) I finish implementing at least partial support for Inform 7.
 			if (0 == filename.compare(filename.length() - 4, filename.length(), ".xml")) {
 
 				JSONObject definition;
