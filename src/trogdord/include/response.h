@@ -17,6 +17,10 @@ class Response {
 		const static int STATUS_INTERNAL_ERROR = 500;
 		const static int STATUS_UNSUPPORTED = 501;
 
+		// Default generic message that should be returned when an internal
+		// error occurs
+		const static char *INTERNAL_ERROR_MSG;
+
 		// Crafts a simple JSON response that looks like this:
 		// {"status":<statusCode>,"message":<message>}. This method is
 		// provided as a shortcut that sidesteps the

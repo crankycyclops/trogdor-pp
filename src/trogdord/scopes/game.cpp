@@ -234,8 +234,9 @@ JSONObject GameController::getDefinitionList(JSONObject request) {
 	}
 
 	catch (const STD_FILESYSTEM::filesystem_error &e) {
+		Config::get()->err() << e.what() << std::endl;
 		response.put("status", 500);
-		response.put("message", e.what());
+		response.put("message", Response::INTERNAL_ERROR_MSG);
 	}
 
 	return response;
