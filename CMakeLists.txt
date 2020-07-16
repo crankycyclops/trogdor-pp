@@ -214,8 +214,7 @@ if (Boost_FOUND)
 		PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
 	)
 
-	set(TROGDORD_LIBRARIES
-		PUBLIC trogdor
+	set(TROGDORD_LIBRARIES_MINUS_CORE
 		PUBLIC stdc++fs
 		PUBLIC ${Boost_LIBRARIES}
 	)
@@ -258,7 +257,8 @@ if (Boost_FOUND)
 	endif (ENABLE_REDIS)
 
 	target_include_directories(trogdord ${TROGDORD_INCLUDES})
-	target_link_libraries(trogdord ${TROGDORD_LIBRARIES})
+	target_link_libraries(trogdord ${TROGDORD_LIBRARIES_MINUS_CORE})
+	target_link_libraries(trogdord PUBLIC trogdor)
 
 	add_dependencies(trogdord trogdor trogdord_data)
 
@@ -355,31 +355,9 @@ add_dependencies(test_core _trogdor_test)
 
 if (Boost_FOUND)
 
-	# A special statically-linked library consisting of the trogdord classes (minus
-	# main.cpp.)
-	add_library(_trogdord_test STATIC ${TROGDORD_SOURCES})
-	target_link_libraries(_trogdord_test PUBLIC ${TROGDORD_LIBRARIES})
-
-	target_include_directories(_trogdord_test PUBLIC ${CORE_INCLUDES} ${TROGDORD_INCLUDES})
-
-	if (ENABLE_REDIS)
-
-		target_include_directories(_trogdord_test PUBLIC ${HIREDIS_INCLUDE_DIRS})
-
-		target_link_libraries(_trogdord_test
-			PUBLIC trogdord_redis
-			PUBLIC ${HIREDIS_LIBRARIES}
-		)
-
-	endif (ENABLE_REDIS)
-
 	# Trogdord unit tests
-	# Due to a weird linking issue I can't figure out, I have to include
-	# json.cpp here even though it's already in _trogord_test. Don't ask me
-	# why. I just know I stayed up late figuring this out and finally got it to
-	# build after much head scratching. Goodnight! Zzz...
 	add_executable(test_trogdord
-		src/trogdord/json.cpp
+		${TROGDORD_SOURCES}
 		src/trogdord/test/main.cpp
 		src/trogdord/test/config.cpp
 		src/trogdord/test/gamewrapper.cpp
@@ -387,12 +365,25 @@ if (Boost_FOUND)
 	)
 
 	target_include_directories(test_trogdord
+		PUBLIC ${CORE_INCLUDES} ${TROGDORD_INCLUDES}
 		PUBLIC ${PROJECT_SOURCE_DIR}/src/trogdord/include
 	)
 
 	target_link_libraries(test_trogdord
-		PUBLIC _trogdord_test
+		PUBLIC _trogdor_test
+		PUBLIC ${TROGDORD_LIBRARIES_MINUS_CORE}
 	)
+
+	if (ENABLE_REDIS)
+
+		target_include_directories(test_trogdord PUBLIC ${HIREDIS_INCLUDE_DIRS})
+
+		target_link_libraries(test_trogdord
+			PUBLIC trogdord_redis
+			PUBLIC ${HIREDIS_LIBRARIES}
+		)
+
+	endif (ENABLE_REDIS)
 
 else (Boost_FOUND)
 
