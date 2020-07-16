@@ -93,6 +93,16 @@ GameContainer::~GameContainer() {
 
 /*****************************************************************************/
 
+void GameContainer::reset() {
+
+	// Replaces the singleton with a fresh instance
+	if (instance) {
+		instance = nullptr;
+	}
+}
+
+/*****************************************************************************/
+
 std::unique_ptr<GameContainer> &GameContainer::get() {
 
 	if (!instance) {
