@@ -331,11 +331,6 @@ JSONObject GameController::createGame(JSONObject request) {
 			response.put("id", GameContainer::get()->createGame(*definition, *name, meta));
 		}
 
-		catch (const trogdor::Exception &e) {
-			response.put("status", Response::STATUS_INTERNAL_ERROR);
-			response.put("message", e.what());
-		}
-
 		catch (const ServerException &e) {
 			response.put("status", Response::STATUS_INTERNAL_ERROR);
 			response.put("message", e.what());

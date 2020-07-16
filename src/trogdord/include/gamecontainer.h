@@ -24,14 +24,14 @@ class GameContainer {
 
 	protected:
 
+		// Singleton instance of GameContainer.
+		static std::unique_ptr<GameContainer> instance;
+
 		// Used to filter a set of game ids according to various criteria.
 		FilterResolver<size_t> gamesResolver;
 
 		// A combined tally of all players in all games
 		size_t numPlayers = 0;
-
-		// Singleton instance of GameContainer.
-		static std::unique_ptr<GameContainer> instance;
 
 		// All currently existing games reside here.
 		std::vector<std::unique_ptr<GameWrapper>> games;
@@ -68,6 +68,11 @@ class GameContainer {
 
 		// Ensures all games are properly shutdown before the server goes down
 		~GameContainer();
+
+		// Resets the singleton instance of GameContainer to a nullptr,
+		// ensuring that the destructor is called and that a fresh instance
+		// will be returned on the next call to get().
+		static void reset();
 
 		// Returns singleton instance of GameContainer.
 		static std::unique_ptr<GameContainer> &get();

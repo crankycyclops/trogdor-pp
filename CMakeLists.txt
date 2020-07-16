@@ -308,6 +308,11 @@ add_dependencies(analyze cppcheck)
 # C++ unit tests for core and trogdord (requires doctest to be installed --
 # see: https://github.com/onqtam/doctest)
 
+# This is the game definition file we're going to use for unit tests
+add_definitions(
+	-DCORE_UNIT_TEST_DEFINITION_FILE=\(\"${PROJECT_SOURCE_DIR}/game.xml\"\)
+)
+
 # A special statically-linked build of the core library just for unit tests
 add_library(_trogdor_test STATIC ${CORE_SOURCES})
 target_include_directories(_trogdor_test ${CORE_INCLUDES})
@@ -353,38 +358,41 @@ if (Boost_FOUND)
 	# A special statically-linked library consisting of the trogdord classes (minus
 	# main.cpp.)
 	add_library(_trogdord_test STATIC ${TROGDORD_SOURCES})
-	target_link_libraries(_trogdord_test ${TROGDORD_LIBRARIES})
+	target_link_libraries(_trogdord_test PUBLIC ${TROGDORD_LIBRARIES})
+
+	target_include_directories(_trogdord_test PUBLIC ${CORE_INCLUDES} ${TROGDORD_INCLUDES})
 
 	if (ENABLE_REDIS)
-		target_include_directories(_trogdord_test ${CORE_INCLUDES} ${HIREDIS_INCLUDE_DIRS} ${TROGDORD_INCLUDES})
-	else (ENABLE_REDIS)
-		target_include_directories(_trogdord_test ${CORE_INCLUDES} ${TROGDORD_INCLUDES})
+
+		target_include_directories(_trogdord_test PUBLIC ${HIREDIS_INCLUDE_DIRS})
+
+		target_link_libraries(_trogdord_test
+			PUBLIC trogdord_redis
+			PUBLIC ${HIREDIS_LIBRARIES}
+		)
+
 	endif (ENABLE_REDIS)
 
 	# Trogdord unit tests
+	# Due to a weird linking issue I can't figure out, I have to include
+	# json.cpp here even though it's already in _trogord_test. Don't ask me
+	# why. I just know I stayed up late figuring this out and finally got it to
+	# build after much head scratching. Goodnight! Zzz...
 	add_executable(test_trogdord
+		src/trogdord/json.cpp
 		src/trogdord/test/main.cpp
 		src/trogdord/test/config.cpp
+		src/trogdord/test/gamewrapper.cpp
+		src/trogdord/test/gamecontainer.cpp
 	)
 
 	target_include_directories(test_trogdord
 		PUBLIC ${PROJECT_SOURCE_DIR}/src/trogdord/include
 	)
 
-	if (ENABLE_REDIS)
-
-		target_link_libraries(test_trogdord
-			PRIVATE trogdord_redis
-			PUBLIC _trogdord_test
-		)
-
-	else (ENABLE_REDIS)
-
-		target_link_libraries(test_trogdord
-			PUBLIC _trogdord_test
-		)
-
-	endif (ENABLE_REDIS)
+	target_link_libraries(test_trogdord
+		PUBLIC _trogdord_test
+	)
 
 else (Boost_FOUND)
 

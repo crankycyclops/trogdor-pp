@@ -11,7 +11,7 @@ GameWrapper::GameWrapper(
 	std::string &definitionPath,
 	std::string &name,
 	std::unordered_map<std::string, std::string> meta
-): name(name), definition(definitionPath) {
+): name(name), definition(STD_FILESYSTEM::path(definitionPath).filename()) {
 
 	definitionPath = Filesystem::getFullDefinitionsPath(definitionPath);
 
@@ -25,7 +25,7 @@ GameWrapper::GameWrapper(
 		gamePtr->makeInstantiator(), gamePtr->getVocabulary()
 	);
 
-	if (!gamePtr->initialize(parser.get(), definitionPath)) {
+	if (!gamePtr->initialize(parser.get(), definitionPath, true)) {
 		throw ServerException("failed to initialize game");
 	}
 
