@@ -15,7 +15,7 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		CHECK(0 == container->getNumPlayers());
 	}
 
-	TEST_CASE("GameContainer (gamecontainer.cpp): createGame(), getGame(), destroyGame(), and size()") {
+	TEST_CASE("GameContainer (gamecontainer.cpp): createGame(), getGame(), destroyGame(), getMetaAll(), and size()") {
 
 		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
 
@@ -92,11 +92,132 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			// and not throw an error
 			container->destroyGame(gameId2 + 1);
 
+			// Remove the remaining game and verify that the size is now 0 again
 			container->destroyGame(gameId2);
 
-			// Remove the remaining game and verify that the size is now 0 again
 			CHECK(0 == container->size());
 			CHECK(nullptr == container->getGame(gameId2));
+
+		#endif
+	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): startGame() and stopGame()") {
+
+		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+		#else
+
+			std::string gameName = "I'm a game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+
+			GameContainer::reset();
+			auto &container = GameContainer::get();
+
+			size_t gameId;
+
+			try {
+				gameId = container->createGame(definition, gameName);
+			}
+
+			catch (const ServerException &e) {
+				FAIL(std::string("Failed to initialize game: ") + e.what());
+			}
+
+			container->startGame(gameId);
+			CHECK(container->getGame(gameId)->get()->inProgress());
+
+			container->stopGame(gameId);
+			CHECK(!container->getGame(gameId)->get()->inProgress());
+
+		#endif
+	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): getMeta() and setMeta()") {
+
+		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+		#else
+
+			std::string gameName = "I'm a game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+
+			GameContainer::reset();
+			auto &container = GameContainer::get();
+
+			size_t gameId;
+
+			try {
+				gameId = container->createGame(definition, gameName);
+			}
+
+			catch (const ServerException &e) {
+				FAIL(std::string("Failed to initialize game: ") + e.what());
+			}
+
+			// getMeta() for unset value should return an empty string
+			CHECK(0 == container->getMeta(gameId, "a_meta_key").compare(""));
+
+			// Make sure values set by setMeta() can be retrieved
+			container->setMeta(gameId, "a_meta_key", "a value");
+			CHECK(0 == container->getMeta(gameId, "a_meta_key").compare("a value"));
+
+		#endif
+	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): getNumPlayers()") {
+
+		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+		#else
+
+			std::string gameName = "I'm a game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+
+
+			GameContainer::reset();
+			auto &container = GameContainer::get();
+
+			size_t gameId1;
+			size_t gameId2;
+
+			try {
+				gameId1 = container->createGame(definition, gameName);
+				gameId2 = container->createGame(definition, gameName);
+			}
+
+			catch (const ServerException &e) {
+				FAIL(std::string("Failed to initialize game: ") + e.what());
+			}
+
+			try {
+
+				// Make sure we start off with 0 players
+				CHECK(0 == container->getNumPlayers());
+
+				// Verify that getNumPlayers always returns the combined total of
+				// players in all games
+				container->createPlayer(gameId1, "player1");
+				CHECK(1 == container->getNumPlayers());
+
+				container->createPlayer(gameId2, "player2");
+				CHECK(2 == container->getNumPlayers());
+
+				container->removePlayer(gameId1, "player1");
+				CHECK(1 == container->getNumPlayers());
+
+				container->removePlayer(gameId2, "player2");
+				CHECK(0 == container->getNumPlayers());
+			}
+
+			catch (const std::exception &e) {
+				FAIL(e.what());
+			}
 
 		#endif
 	}
