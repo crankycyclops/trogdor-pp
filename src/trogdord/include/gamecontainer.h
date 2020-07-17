@@ -78,7 +78,7 @@ class GameContainer {
 		static std::unique_ptr<GameContainer> &get();
 
 		// Returns the current number of existing games.
-		inline size_t size() {return games.size();}
+		inline size_t size() {return indices.all.size();}
 
 		// Returns an iterable set of game ids matching certain criteria (or
 		// all game ids if no filters are specified.)
