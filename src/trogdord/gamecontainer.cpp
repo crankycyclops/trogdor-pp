@@ -190,10 +190,14 @@ size_t GameContainer::createGame(
 	games[gameId]->get()->addCallback("removePlayer",
 	std::make_shared<std::function<void(std::any)>>([&](std::any player) {
 
-		auto invObjects = std::any_cast<trogdor::entity::Player *>(player)->getInventoryObjects();
+		auto invObjects = std::any_cast<
+			std::shared_ptr<trogdor::entity::Player>
+		>(player)->getInventoryObjects();
 
 		for (auto &object: invObjects) {
-			std::any_cast<trogdor::entity::Player *>(player)->drop(object, false, false);
+			std::any_cast<
+				std::shared_ptr<trogdor::entity::Player>
+			>(player)->drop(object, false, false);
 		}
 	}));
 
