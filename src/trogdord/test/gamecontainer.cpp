@@ -222,6 +222,109 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		#endif
 	}
 
+	TEST_CASE("GameContainer (gamecontainer.cpp): createPlayer() and removePlayer()") {
+
+		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+		#else
+
+			std::string gameName = "I'm a game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+
+			SUBCASE("Inserting into and removing from a stopped game") {
+
+				GameContainer::reset();
+				auto &container = GameContainer::get();
+
+				// Step 1: create a game
+				size_t gameId;
+
+				try {
+					gameId = container->createGame(definition, gameName);
+				}
+
+				catch (const ServerException &e) {
+					FAIL(std::string("Failed to initialize game: ") + e.what());
+				}
+
+				// Make sure game is stopped (that should be the default,
+				// but let's explicitly stop it anyway.)
+				container->stopGame(gameId);
+
+				// Step 2: Create a player in the game an verify it exists
+				container->createPlayer(gameId, "player");
+				CHECK(container->getGame(gameId)->get()->getPlayer("player"));
+
+				// Step 3: remove the player and verify it was removed
+				container->removePlayer(gameId, "player");
+				CHECK(!container->getGame(gameId)->get()->getPlayer("player"));
+
+			}
+
+			SUBCASE("Inserting into and removing from a started game") {
+
+				GameContainer::reset();
+				auto &container = GameContainer::get();
+
+				// Step 1: create a game an start it
+				size_t gameId;
+
+				try {
+					gameId = container->createGame(definition, gameName);
+				}
+
+				catch (const ServerException &e) {
+					FAIL(std::string("Failed to initialize game: ") + e.what());
+				}
+
+				container->startGame(gameId);
+
+				// Step 2: Create a player in the game an verify it exists
+				container->createPlayer(gameId, "player");
+				CHECK(container->getGame(gameId)->get()->getPlayer("player"));
+
+				// Step 3: remove the player and verify it was removed
+				container->removePlayer(gameId, "player");
+				CHECK(!container->getGame(gameId)->get()->getPlayer("player"));
+			}
+
+			SUBCASE("Inserting into a stopped game, then removing after the game is started") {
+
+				GameContainer::reset();
+				auto &container = GameContainer::get();
+
+				// Step 1: create a game
+				size_t gameId;
+
+				try {
+					gameId = container->createGame(definition, gameName);
+				}
+
+				catch (const ServerException &e) {
+					FAIL(std::string("Failed to initialize game: ") + e.what());
+				}
+
+				// Make sure game is stopped (that should be the default,
+				// but let's explicitly stop it anyway.)
+				container->stopGame(gameId);
+
+				// Step 2: Create a player in the game an verify it exists
+				container->createPlayer(gameId, "player");
+				CHECK(container->getGame(gameId)->get()->getPlayer("player"));
+
+				// Step 3: start the game after the player was created
+				container->startGame(gameId);
+
+				// Step 4: remove the player and verify it was removed
+				container->removePlayer(gameId, "player");
+				CHECK(!container->getGame(gameId)->get()->getPlayer("player"));
+			}
+
+		#endif
+	}
+
 	// I have issues with this scenario causing segmentation faults, so this is
 	// my attempt to reliably reproduce and automate this issue so I can debug
 	// it and figure out what's wrong.
