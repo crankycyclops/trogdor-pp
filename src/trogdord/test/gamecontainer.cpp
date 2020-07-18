@@ -221,4 +221,52 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		#endif
 	}
+
+	// I have issues with this scenario causing segmentation faults, so this is
+	// my attempt to reliably reproduce and automate this issue so I can debug
+	// it and figure out what's wrong.
+	// WARNING: if running these tests as part of an automation process, invoke
+	// the test_trogdord executable indirectly with timeout (e.g.
+	// timeout 1 ./test_trogdord). This is because the issue I'm running into
+	// is a deadlock in a thread, causing a segfault when I do CTRL-C.
+	TEST_CASE("GameContainer (gamecontainer.cpp): Quitting application while games with players are running") {
+
+		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+		#else
+
+			std::string gameName = "I'm a game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+
+
+			GameContainer::reset();
+			auto &container = GameContainer::get();
+
+			// Step 1: create and start a game
+			size_t gameId;
+
+			try {
+				gameId = container->createGame(definition, gameName);
+			}
+
+			catch (const ServerException &e) {
+				FAIL(std::string("Failed to initialize game: ") + e.what());
+			}
+
+			container->startGame(gameId);
+
+			// Step 2: Create a player in the game
+			container->createPlayer(gameId, "player");
+
+			// Step 3: Simulate the closing of the application by resetting
+			// the singleton instance. Because the issue I'm reproducing is
+			// a deadlock in a thread that causes a crash on CTRL-C, if
+			// automating these tests, be sure to invoke the test_trogdord
+			// target indirectly using timeout (e.g. timeout 1 ./test_trogdord)
+			GameContainer::reset();
+
+		#endif
+	}
 }

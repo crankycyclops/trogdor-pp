@@ -88,6 +88,12 @@ class InputListener {
 		// locking to be turned on and off.
 		void _subscribe(trogdor::entity::Player *pPtr, bool lock = true);
 
+		// Does the actual work invoked by the public method unsubscribed().
+		void _unsubscribe(
+			std::string playerName,
+			std::function<void()> afterProcessCommand = {}
+		);
+
 	public:
 
 		// Constructor
@@ -106,11 +112,16 @@ class InputListener {
 		}
 
 		// Stop listening for input from the given player. This public access
-		// to _unsubscribe forces mutex locking.
-		void unsubscribe(
+		// to _unsubscribe() forces mutex locking.
+		inline void unsubscribe(
 			std::string playerName,
 			std::function<void()> afterProcessCommand = {}
-		);
+		) {
+
+			processedMutex.lock();
+			_unsubscribe(playerName, afterProcessCommand);
+			processedMutex.unlock();
+		}
 
 		// Stop listening for input from the given player.
 		inline void unsubscribe(

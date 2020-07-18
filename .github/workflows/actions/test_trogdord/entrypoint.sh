@@ -8,4 +8,4 @@ make -j2 trogdord
 
 # Compile and run the unit tests
 make -j2 test_trogdord
-./test_trogdord
+timeout 1 ./test_trogdord
