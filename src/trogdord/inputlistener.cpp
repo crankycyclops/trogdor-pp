@@ -42,14 +42,17 @@ void InputListener::_unsubscribe(
 
 		trogdor::entity::Player *pPtr = processed[playerName].playerPtr;
 
-		// If specified, this is the callback that should be fired by the
-		// async task after game->processCommand() returns.
-		if (afterProcessCommand) {
-			afterCommandCallbacks[pPtr] = afterProcessCommand;
-		}
+		if (pPtr) {
 
-		processed[playerName].playerPtr = nullptr;
-		static_cast<ServerIn &>(pPtr->in()).kill();
+			// If specified, this is the callback that should be fired by the
+			// async task after game->processCommand() returns.
+			if (afterProcessCommand) {
+				afterCommandCallbacks[pPtr] = afterProcessCommand;
+			}
+
+			processed[playerName].playerPtr = nullptr;
+			static_cast<ServerIn &>(pPtr->in()).kill();
+		}
 	}
 }
 
