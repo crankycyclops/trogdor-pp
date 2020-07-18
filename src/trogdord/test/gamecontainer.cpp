@@ -325,6 +325,106 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		#endif
 	}
 
+	TEST_CASE("GameContainer (gamecontainer.cpp): getGames()") {
+
+		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+		#else
+
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+
+			SUBCASE("No filters") {
+
+				GameContainer::reset();
+				auto &container = GameContainer::get();
+
+				size_t startedId = container->createGame(definition, "started");
+				container->createGame(definition, "stopped");
+
+				container->startGame(startedId);
+				CHECK(2 == container->getGames().size());
+			}
+
+			SUBCASE("Single filter") {
+
+				GameContainer::reset();
+				auto &container = GameContainer::get();
+
+				// Should only return games that are running
+				Filter::Union filter = {{
+					{"is_running", true}
+				}};
+
+				size_t startedId = container->createGame(definition, "started");
+				container->createGame(definition, "stopped");
+
+				container->startGame(startedId);
+
+				auto games = container->getGames(filter);
+
+				CHECK(1 == games.size());
+				CHECK(startedId == *games.begin());
+			}
+
+			SUBCASE("Filter group") {
+
+				GameContainer::reset();
+				auto &container = GameContainer::get();
+
+				// Should only return games that are started AND whose names
+				// start with the substring "a"
+				Filter::Union group = {{
+					{"is_running", true},
+					{"name_starts", std::string("a")}
+				}};
+
+				size_t matchingId1 = container->createGame(definition, "a cool game");
+				size_t nonmatchingId1 = container->createGame(definition, "not a cool game");
+				container->createGame(definition, "not a cool game");
+				container->createGame(definition, "a cool game");
+
+				container->startGame(matchingId1);
+				container->startGame(nonmatchingId1);
+
+				auto games = container->getGames(group);
+
+				CHECK(1 == games.size());
+				CHECK(games.end() != games.find(matchingId1));
+			}
+
+			SUBCASE("Filter union") {
+
+				GameContainer::reset();
+				auto &container = GameContainer::get();
+
+				// Should only return games that are started OR games whose
+				// name starts with the substring "a"
+				Filter::Union funion = {
+					{{"is_running", true}},
+					{{"name_starts", std::string("a")}}
+				};
+
+				size_t matchingId1 = container->createGame(definition, "a cool game");
+				size_t matchingId2 = container->createGame(definition, "not a cool game");
+				container->createGame(definition, "not a cool game");
+				size_t matchingId3 = container->createGame(definition, "a cool game");
+
+				container->startGame(matchingId1);
+				container->startGame(matchingId2);
+
+				auto games = container->getGames(funion);
+
+				CHECK(3 == games.size());
+				CHECK(games.end() != games.find(matchingId1));
+				CHECK(games.end() != games.find(matchingId2));
+				CHECK(games.end() != games.find(matchingId3));
+			}
+
+		#endif
+	}
+
 	// I have issues with this scenario causing segmentation faults, so this is
 	// my attempt to reliably reproduce and automate this issue so I can debug
 	// it and figure out what's wrong.
