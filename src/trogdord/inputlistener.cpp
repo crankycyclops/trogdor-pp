@@ -31,12 +31,10 @@ void InputListener::_subscribe(trogdor::entity::Player *pPtr, bool lock) {
 
 /*****************************************************************************/
 
-void InputListener::unsubscribe(
+void InputListener::_unsubscribe(
 	std::string playerName,
 	std::function<void()> afterProcessCommand
 ) {
-
-	processedMutex.lock();
 
 	// Do the actual removal in the worker thread after we're sure we're not
 	// waiting on anymore commands.
@@ -53,8 +51,6 @@ void InputListener::unsubscribe(
 		processed[playerName].playerPtr = nullptr;
 		static_cast<ServerIn &>(pPtr->in()).kill();
 	}
-
-	processedMutex.unlock();
 }
 
 /*****************************************************************************/
@@ -156,14 +152,16 @@ void InputListener::stop() {
 		// Signal to the worker thread that we shouldn't listen for commands
 		// from the players anymore.
 		for (auto &next: processed) {
-			unsubscribe(next.second.playerName);
+			_unsubscribe(next.second.playerName);
 		}
 
 		// After signaling to the worker that we shouldn't listen for player
 		// commands anymore, wait for the async tasks doing the listening to
 		// fall out of scope.
 		for (auto &next: processed) {
-			next.second.future.wait();
+			if (next.second.future.valid()) {
+				next.second.future.wait();
+			}
 		}
 
 		// Finally, kill the worker thread.
