@@ -66,9 +66,6 @@ class InputListener {
 			std::function<void()>
 		> afterCommandCallbacks;
 
-		// I need the game ID to use the input buffer.
-		size_t gameId;
-
 		// The game the input listener processes player commands for
 		trogdor::Game *gamePtr;
 
@@ -97,7 +94,7 @@ class InputListener {
 	public:
 
 		// Constructor
-		inline InputListener(size_t gId, trogdor::Game *gPtr): gameId(gId), gamePtr(gPtr) {}
+		inline InputListener(trogdor::Game *gPtr): gamePtr(gPtr) {}
 		InputListener() = delete;
 		InputListener(const InputListener &) = delete;
 
