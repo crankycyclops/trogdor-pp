@@ -75,7 +75,7 @@
 */
 class Dispatcher {
 
-	private:
+	protected:
 
 		// Error messages for malformatted requests
 		static const char *INVALID_JSON;

@@ -355,8 +355,11 @@ if (Boost_FOUND)
 	# Trogdord unit tests
 	add_executable(test_trogdord
 		${TROGDORD_SOURCES}
+		src/trogdord/test/mock/mockscope.cpp
+		src/trogdord/test/mock/mockdispatcher.cpp
 		src/trogdord/test/main.cpp
 		src/trogdord/test/config.cpp
+		src/trogdord/test/dispatcher.cpp
 		src/trogdord/test/gamewrapper.cpp
 		src/trogdord/test/gamecontainer.cpp
 	)
