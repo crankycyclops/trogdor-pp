@@ -1,7 +1,10 @@
 #include <doctest.h>
+
+#include "mock/mockscope.h"
 #include "mock/mockdispatcher.h"
 
 #include "../include/json.h"
+#include "../include/request.h"
 #include "../include/response.h"
 
 
@@ -54,12 +57,44 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 
 	TEST_CASE("Dispatcher (dispatcher.cpp): Request is missing action for scope with no default") {
 
-		// TODO
+		auto scope = MockScopeController::factory();
+		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
+
+		scope->registerAction(Request::GET, "test", [&] (JSONObject request) -> JSONObject {
+
+			JSONObject retVal;
+
+			retVal.put("status", Response::STATUS_SUCCESS);
+			return retVal;
+		});
+
+		MockDispatcher dispatcher({
+			{"test", scope.get()}
+		});
+
+		JSONObject response = JSON::deserialize(dispatcher.dispatch(dummyConnection, "{\"method\":\"get\",\"scope\":\"test\"}"));
+		CHECK(Response::STATUS_NOT_FOUND == response.get<size_t>("status"));
 	}
 
 	TEST_CASE("Dispatcher (dispatcher.cpp): Request is missing action for scope with default") {
 
-		// TODO
+		auto scope = MockScopeController::factory();
+		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
+
+		scope->registerAction(Request::GET, ScopeController::DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
+
+			JSONObject retVal;
+
+			retVal.put("status", Response::STATUS_SUCCESS);
+			return retVal;
+		});
+
+		MockDispatcher dispatcher({
+			{"test", scope.get()}
+		});
+
+		JSONObject response = JSON::deserialize(dispatcher.dispatch(dummyConnection, "{\"method\":\"get\",\"scope\":\"test\"}"));
+		CHECK(Response::STATUS_SUCCESS == response.get<size_t>("status"));
 	}
 
 	TEST_CASE("Dispatcher (dispatcher.cpp): Request is valid format but with invalid method") {
