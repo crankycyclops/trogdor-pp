@@ -135,7 +135,9 @@ std::string Dispatcher::dispatch(std::shared_ptr<TCPConnection> &connection, std
 	std::string action;
 
 	// Log all incoming requests
-	connection->log(trogdor::Trogerr::INFO, std::string("request: ") + trogdor::trim(request));
+	if (connection) {
+		connection->log(trogdor::Trogerr::INFO, std::string("request: ") + trogdor::trim(request));
+	}
 
 	try {
 
@@ -143,7 +145,11 @@ std::string Dispatcher::dispatch(std::shared_ptr<TCPConnection> &connection, std
 
 		// Make sure the specified scope can be resolved
 		if (scopes.end() == scopes.find(scope)) {
-			connection->log(trogdor::Trogerr::INFO, std::string("404: ") + SCOPE_NOT_FOUND);
+
+			if (connection) {
+				connection->log(trogdor::Trogerr::INFO, std::string("404: ") + SCOPE_NOT_FOUND);
+			}
+
 			return Response::makeErrorJson(SCOPE_NOT_FOUND, Response::STATUS_NOT_FOUND);
 		}
 
@@ -151,7 +157,11 @@ std::string Dispatcher::dispatch(std::shared_ptr<TCPConnection> &connection, std
 	}
 
 	catch (RequestException &e) {
-		connection->log(trogdor::Trogerr::INFO, std::to_string(e.getStatus()) + ": " + e.what());
+
+		if (connection) {
+			connection->log(trogdor::Trogerr::INFO, std::to_string(e.getStatus()) + ": " + e.what());
+		}
+
 		return Response::makeErrorJson(e.what(), e.getStatus());
 	}
 }

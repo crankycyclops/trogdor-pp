@@ -44,7 +44,9 @@ JSONObject ScopeController::resolve(
 		response.put("status", Response::STATUS_NOT_FOUND);
 		response.put("message", METHOD_NOT_FOUND);
 
-		connection->log(trogdor::Trogerr::INFO, std::string("404: ") + METHOD_NOT_FOUND);
+		if (connection) {
+			connection->log(trogdor::Trogerr::INFO, std::string("404: ") + METHOD_NOT_FOUND);
+		}
 
 		return response;
 	}
@@ -60,7 +62,10 @@ JSONObject ScopeController::resolve(
 			message = ACTION_NOT_FOUND;
 		}
 
-		connection->log(trogdor::Trogerr::INFO, std::string("404: ") + message);
+		if (connection) {
+			connection->log(trogdor::Trogerr::INFO, std::string("404: ") + message);
+		}
+
 		response.put("message", message);
 
 		return response;
@@ -75,6 +80,9 @@ JSONObject ScopeController::resolve(
 		logMessage += std::string(" ") + *responseMessage;
 	}
 
-	connection->log(trogdor::Trogerr::INFO, logMessage);
+	if (connection) {
+		connection->log(trogdor::Trogerr::INFO, logMessage);
+	}
+
 	return response;
 }

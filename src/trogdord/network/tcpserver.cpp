@@ -70,6 +70,11 @@ acceptor(io_service), timer(io_service, boost::posix_time::milliseconds(SERVE_SL
 
 TCPServer::~TCPServer() {
 
+	// Close the acceptor to new connections
+	if (acceptor.is_open()) {
+		acceptor.close();
+	}
+
 	// Makes sure the destructor is called on all remaining connections
 	activeConnections.clear();
 }
