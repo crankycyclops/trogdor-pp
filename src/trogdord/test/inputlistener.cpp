@@ -13,6 +13,11 @@
 
 #include "mock/game/mockaction.h"
 
+// Number of ms between clock ticks (make this value small enough to ensure
+// time-dependent unit tests finish quickly, but not so small that the Timer
+// becomes unstable.)
+constexpr size_t tickInterval = 5;
+
 
 // Creates a test game for the purpose of unit testing.
 static std::unique_ptr<trogdor::Game> makeGame(std::string definition) {
@@ -113,6 +118,7 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 			SUBCASE("Game started") {
 
 				size_t mockGameId = getNextGameId();
+				std::chrono::milliseconds threadSleepTime(tickInterval * 3);
 
 				// Incremented every time MockAction is executed
 				int numExecutions = 0;
@@ -128,11 +134,47 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 
 				game->start();
 
-				// Send the "test" command to the player's input stream
-				//input::Driver::get()->set(mockGameId, "player", "test");
+				// Subscribe the player so they can receive data from the
+				// input driver and start the listener
+				listener.subscribe(player.get());
 
-				// TODO
-				CHECK(true);
+				// Send the "test" command to the player's input stream
+				input::Driver::get()->set(mockGameId, "player", "test");
+
+				// Observe that the input won't be received until the input
+				// listener is started.
+				std::this_thread::sleep_for(threadSleepTime);
+				CHECK(0 == numExecutions);
+
+				listener.start();
+
+				// Now, observe that the player's input stream has received
+				// our test command.
+				std::this_thread::sleep_for(threadSleepTime);
+				CHECK(1 == numExecutions);
+
+				// Now, stop the input listener, send more input, and
+				// note that the player's input stream does NOT receive the
+				// command.
+				listener.stop();
+				std::this_thread::sleep_for(threadSleepTime);
+				input::Driver::get()->set(mockGameId, "player", "test");
+				std::this_thread::sleep_for(threadSleepTime);
+
+				CHECK(1 == numExecutions);
+
+				// After starting again, observe that the input, which was
+				// waiting in a buffer, has finally been consumed.
+				listener.start();
+				std::this_thread::sleep_for(threadSleepTime);
+				CHECK(2 == numExecutions);
+
+				// Now, we'll unsubscribe the player and then attempt to
+				// send input and show that they no longer receive it.
+				listener.unsubscribe(player.get());
+				input::Driver::get()->set(mockGameId, "player", "test");
+				std::this_thread::sleep_for(threadSleepTime);
+				CHECK(2 == numExecutions);
 			}
 
 			SUBCASE("Game stopped") {
