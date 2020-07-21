@@ -817,19 +817,19 @@ namespace trogdor::entity {
       public:
 
          // Compares two Entity objects
-         inline bool operator()(const Entity &lhs, const Entity &rhs) {
+         inline bool operator()(const Entity &lhs, const Entity &rhs) const {
             return lhs.getName() < rhs.getName();
          }
 
          // Compares two raw Entity pointers
-         inline bool operator()(const Entity* const &lhs, const Entity* const &rhs) {
+         inline bool operator()(const Entity* const &lhs, const Entity* const &rhs) const {
             return (*this)(*lhs, *rhs);
          }
 
          // Compares two Entity smart pointers
          inline bool operator()(
             const std::shared_ptr<Entity> &lhs,
-            const std::shared_ptr<Entity> &rhs) {
+            const std::shared_ptr<Entity> &rhs) const {
             return (*this)(*lhs, *rhs);
          }
    };
