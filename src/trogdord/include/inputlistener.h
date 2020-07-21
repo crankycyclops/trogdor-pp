@@ -29,14 +29,14 @@ struct PlayerFuture {
 	std::future<bool> future;
 
 	// Returns true if the future is ready and false if not.
-	inline bool isReady() {
+	inline bool isReady() const {
 
 		return future.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
 	}
 
 	// Comparison operator (required for use of std::remove in case where we
 	// need to stop listening for the player's input.)
-	inline bool operator==(const PlayerFuture &other) {
+	inline bool operator==(const PlayerFuture &other) const {
 
 		return playerPtr == other.playerPtr;
 	}
@@ -66,9 +66,6 @@ class InputListener {
 			std::function<void()>
 		> afterCommandCallbacks;
 
-		// I need the game ID to use the input buffer.
-		size_t gameId;
-
 		// The game the input listener processes player commands for
 		trogdor::Game *gamePtr;
 
@@ -84,9 +81,8 @@ class InputListener {
 		// Synchronizes access to processed (defined above)
 		std::mutex processedMutex;
 
-		// Start listening for input from the given player. Allows mutex
-		// locking to be turned on and off.
-		void _subscribe(trogdor::entity::Player *pPtr, bool lock = true);
+		// Start listening for input from the given player.
+		void _subscribe(trogdor::entity::Player *pPtr);
 
 		// Does the actual work invoked by the public method unsubscribed().
 		void _unsubscribe(
@@ -97,7 +93,7 @@ class InputListener {
 	public:
 
 		// Constructor
-		inline InputListener(size_t gId, trogdor::Game *gPtr): gameId(gId), gamePtr(gPtr) {}
+		inline InputListener(trogdor::Game *gPtr): gamePtr(gPtr) {}
 		InputListener() = delete;
 		InputListener(const InputListener &) = delete;
 
@@ -108,7 +104,9 @@ class InputListener {
 		// to _subscribe forces mutex locking.
 		inline void subscribe(trogdor::entity::Player *pPtr) {
 
+			processedMutex.lock();
 			_subscribe(pPtr);
+			processedMutex.unlock();
 		}
 
 		// Stop listening for input from the given player. This public access

@@ -360,11 +360,14 @@ if (Boost_FOUND)
 		${TROGDORD_SOURCES}
 		src/trogdord/test/mock/mockscope.cpp
 		src/trogdord/test/mock/mockdispatcher.cpp
+		src/trogdord/test/mock/game/mockaction.cpp
 		src/trogdord/test/main.cpp
 		src/trogdord/test/config.cpp
 		src/trogdord/test/dispatcher.cpp
 		src/trogdord/test/gamewrapper.cpp
 		src/trogdord/test/gamecontainer.cpp
+		src/trogdord/test/inputlistener.cpp
+		src/trogdord/test/scopes/controller.cpp
 	)
 
 	target_include_directories(test_trogdord

@@ -157,7 +157,7 @@ size_t GameContainer::createGame(
 		std::make_pair(
 			gameId,
 			// The double get resolves like so: GameWrapper -> unique_ptr<trogdord::Game> -> trogdord::Game *
-			std::make_unique<InputListener>(gameId, games[gameId]->get().get())
+			std::make_unique<InputListener>(games[gameId]->get().get())
 		)
 	);
 
