@@ -11,22 +11,14 @@ InputListener::~InputListener() {
 
 /*****************************************************************************/
 
-void InputListener::_subscribe(trogdor::entity::Player *pPtr, bool lock) {
+void InputListener::_subscribe(trogdor::entity::Player *pPtr) {
 
 	PlayerFuture pf;
-
-	if (lock) {
-		processedMutex.lock();
-	}
 
 	pf.playerPtr = pPtr;
 	pf.playerName = pPtr->getName();
 
 	processed[pPtr->getName()] = std::move(pf);
-
-	if (lock) {
-		processedMutex.unlock();
-	}
 }
 
 /*****************************************************************************/
@@ -69,7 +61,7 @@ void InputListener::start() {
 		processedMutex.lock();
 
 		for (const auto &player: gamePtr->getPlayers()) {
-			_subscribe(static_cast<trogdor::entity::Player *>(player.second.get()), false);
+			_subscribe(static_cast<trogdor::entity::Player *>(player.second.get()));
 		}
 
 		processedMutex.unlock();
