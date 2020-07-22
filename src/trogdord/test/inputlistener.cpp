@@ -88,6 +88,8 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 
 			SUBCASE("Game started") {
 
+				input::Driver::reset();
+
 				std::unique_ptr<trogdor::Game> game = makeGame(CORE_UNIT_TEST_DEFINITION_FILE);
 				game->start();
 				InputListener listener(game.get());
@@ -96,6 +98,8 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 			}
 
 			SUBCASE("Game stopped") {
+
+				input::Driver::reset();
 
 				std::unique_ptr<trogdor::Game> game = makeGame(CORE_UNIT_TEST_DEFINITION_FILE);
 				game->stop();
@@ -107,7 +111,7 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 		#endif
 	}
 
-	TEST_CASE("InputListener (inputlistener.cpp): subscribe(), unsubscribe(), start(), and stop(); listener started") {
+	TEST_CASE("InputListener (inputlistener.cpp): subscribe(), unsubscribe(), start(), and stop()") {
 
 		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
 
@@ -116,6 +120,8 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 		#else
 
 			SUBCASE("Game started") {
+
+				input::Driver::reset();
 
 				size_t mockGameId = getNextGameId();
 				std::chrono::milliseconds threadSleepTime(tickInterval * 3);
@@ -179,80 +185,39 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 
 			SUBCASE("Game stopped") {
 
+				input::Driver::reset();
+
 				size_t mockGameId = getNextGameId();
+				std::chrono::milliseconds threadSleepTime(tickInterval * 3);
+
+				// Incremented every time MockAction is executed
+				int numExecutions = 0;
 
 				std::unique_ptr<trogdor::Game> game = makeGame(CORE_UNIT_TEST_DEFINITION_FILE);
 				std::shared_ptr<trogdor::entity::Player> player = makePlayer(game.get(), mockGameId, "player");
 
 				InputListener listener(game.get());
 
+				game->insertVerbAction("test", std::make_unique<MockAction>([&] {
+					numExecutions++;
+				}));
+
 				game->stop();
 
-				// TODO
-				CHECK(true);
-			}
+				listener.subscribe(player.get());
+				input::Driver::get()->set(mockGameId, "player", "test");
+				listener.start();
 
-		#endif
-	}
+				// In this test, we're observing that if the game is never
+				// started, the command should never be executed
+				std::this_thread::sleep_for(threadSleepTime);
+				CHECK(0 == numExecutions);
 
-	TEST_CASE("InputListener (inputlistener.cpp): subscribe(), unsubscribe(), start(), and stop(); listener stopped") {
+				listener.unsubscribe(player.get());
+				listener.stop();
 
-		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
-
-			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
-
-		#else
-
-			SUBCASE("Game started") {
-
-				// TODO
-			}
-
-			SUBCASE("Game stopped") {
-
-				// TODO
-			}
-
-		#endif
-	}
-
-	TEST_CASE("InputListener (inputlistener.cpp): subscribe(), unsubscribe(), start(), and stop(); listener stopped during subscribe(), then started before unsubscribe()") {
-
-		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
-
-			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
-
-		#else
-
-			SUBCASE("Game started") {
-
-				// TODO
-			}
-
-			SUBCASE("Game stopped") {
-
-				// TODO
-			}
-
-		#endif
-	}
-
-	TEST_CASE("InputListener (inputlistener.cpp): subscribe(), unsubscribe(), start(), and stop(); listener started during subscribe(), then stopped before unsubscribe(), then started again") {
-
-		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
-
-			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
-
-		#else
-
-			SUBCASE("Game started") {
-
-				// TODO
-			}
-
-			SUBCASE("Game stopped") {
-
-				// TODO
+				std::this_thread::sleep_for(threadSleepTime);
+				CHECK(0 == numExecutions);
 			}
 
 		#endif
@@ -268,12 +233,68 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 
 			SUBCASE("Game started") {
 
-				// TODO
+				input::Driver::reset();
+
+				size_t mockGameId = getNextGameId();
+				std::chrono::milliseconds threadSleepTime(tickInterval * 3);
+
+				// Incremented every time MockAction is executed
+				int numExecutions = 0;
+
+				std::unique_ptr<trogdor::Game> game = makeGame(CORE_UNIT_TEST_DEFINITION_FILE);
+				std::shared_ptr<trogdor::entity::Player> player = makePlayer(game.get(), mockGameId, "player");
+
+				std::unique_ptr<InputListener> listener = std::make_unique<InputListener>(game.get());
+
+				game->insertVerbAction("test", std::make_unique<MockAction>([&] {
+					numExecutions++;
+				}));
+
+				game->start();
+
+				listener->start();
+				listener->subscribe(player.get());
+				input::Driver::get()->set(mockGameId, "player", "test");
+
+				std::this_thread::sleep_for(threadSleepTime);
+				CHECK(1 == numExecutions);
+
+				// We'll destroy the input listener and basically just make
+				// sure there are no exceptions or segfaults
+				listener = nullptr;
 			}
 
 			SUBCASE("Game stopped") {
 
-				// TODO
+				input::Driver::reset();
+
+				size_t mockGameId = getNextGameId();
+				std::chrono::milliseconds threadSleepTime(tickInterval * 3);
+
+				// Incremented every time MockAction is executed
+				int numExecutions = 0;
+
+				std::unique_ptr<trogdor::Game> game = makeGame(CORE_UNIT_TEST_DEFINITION_FILE);
+				std::shared_ptr<trogdor::entity::Player> player = makePlayer(game.get(), mockGameId, "player");
+
+				std::unique_ptr<InputListener> listener = std::make_unique<InputListener>(game.get());
+
+				game->insertVerbAction("test", std::make_unique<MockAction>([&] {
+					numExecutions++;
+				}));
+
+				game->stop();
+
+				listener->start();
+				listener->subscribe(player.get());
+				input::Driver::get()->set(mockGameId, "player", "test");
+
+				std::this_thread::sleep_for(threadSleepTime);
+				CHECK(0 == numExecutions);
+
+				// We'll destroy the input listener and basically just make
+				// sure there are no exceptions or segfaults
+				listener = nullptr;
 			}
 
 		#endif
@@ -289,12 +310,68 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 
 			SUBCASE("Game started") {
 
-				// TODO
+				input::Driver::reset();
+
+				size_t mockGameId = getNextGameId();
+				std::chrono::milliseconds threadSleepTime(tickInterval * 3);
+
+				// Incremented every time MockAction is executed
+				int numExecutions = 0;
+
+				std::unique_ptr<trogdor::Game> game = makeGame(CORE_UNIT_TEST_DEFINITION_FILE);
+				std::shared_ptr<trogdor::entity::Player> player = makePlayer(game.get(), mockGameId, "player");
+
+				std::unique_ptr<InputListener> listener = std::make_unique<InputListener>(game.get());
+
+				game->insertVerbAction("test", std::make_unique<MockAction>([&] {
+					numExecutions++;
+				}));
+
+				game->start();
+
+				listener->stop();
+				listener->subscribe(player.get());
+				input::Driver::get()->set(mockGameId, "player", "test");
+
+				std::this_thread::sleep_for(threadSleepTime);
+				CHECK(0 == numExecutions);
+
+				// We'll destroy the input listener and basically just make
+				// sure there are no exceptions or segfaults
+				listener = nullptr;
 			}
 
 			SUBCASE("Game stopped") {
 
-				// TODO
+				input::Driver::reset();
+
+				size_t mockGameId = getNextGameId();
+				std::chrono::milliseconds threadSleepTime(tickInterval * 3);
+
+				// Incremented every time MockAction is executed
+				int numExecutions = 0;
+
+				std::unique_ptr<trogdor::Game> game = makeGame(CORE_UNIT_TEST_DEFINITION_FILE);
+				std::shared_ptr<trogdor::entity::Player> player = makePlayer(game.get(), mockGameId, "player");
+
+				std::unique_ptr<InputListener> listener = std::make_unique<InputListener>(game.get());
+
+				game->insertVerbAction("test", std::make_unique<MockAction>([&] {
+					numExecutions++;
+				}));
+
+				game->stop();
+
+				listener->stop();
+				listener->subscribe(player.get());
+				input::Driver::get()->set(mockGameId, "player", "test");
+
+				std::this_thread::sleep_for(threadSleepTime);
+				CHECK(0 == numExecutions);
+
+				// We'll destroy the input listener and basically just make
+				// sure there are no exceptions or segfaults
+				listener = nullptr;
 			}
 
 		#endif
