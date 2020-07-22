@@ -63,6 +63,12 @@ namespace input {
 			// Returns singleton instance of Driver
 			static std::unique_ptr<Driver> &get();
 
+			// Resets the singleton instance (should only be used for unit tests)
+			static inline void reset() {
+
+				instance = nullptr;
+			}
+
 			// Returns true if an entity's input buffer contains a string and
 			// false if not.
 			bool isSet(
