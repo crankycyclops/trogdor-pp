@@ -17,8 +17,12 @@ struct PlayerFuture {
 
 	// Pointer back to the player who issued the command. Setting this to
 	// nullptr indicates that the player has been removed from the game and
-	// that we should stop listening for their commands.
-	trogdor::entity::Player *playerPtr;
+	// that we should stop listening for their commands. I moved from a raw
+	// pointer to an instance of shared_ptr because there were rare cases where
+	// a player object was totally destroyed, afterwhich an asynchronous
+	// function would attempt to process a command on that same player's
+	// behalf.
+	std::shared_ptr<trogdor::entity::Player> playerPtr;
 
 	// Name of the player who issued the command. Necessary to send null input
 	// to the player's input stream after playerPtr has been set to nullptr by
@@ -82,7 +86,7 @@ class InputListener {
 		std::mutex processedMutex;
 
 		// Start listening for input from the given player.
-		void _subscribe(trogdor::entity::Player *pPtr);
+		void _subscribe(std::shared_ptr<trogdor::entity::Player> &pPtr);
 
 		// Does the actual work invoked by the public method unsubscribed().
 		void _unsubscribe(
@@ -102,7 +106,7 @@ class InputListener {
 
 		// Start listening for input from the given player. This public access
 		// to _subscribe forces mutex locking.
-		inline void subscribe(trogdor::entity::Player *pPtr) {
+		inline void subscribe(std::shared_ptr<trogdor::entity::Player> &pPtr) {
 
 			processedMutex.lock();
 			_subscribe(pPtr);
@@ -123,7 +127,7 @@ class InputListener {
 
 		// Stop listening for input from the given player.
 		inline void unsubscribe(
-			trogdor::entity::Player *pPtr,
+			std::shared_ptr<trogdor::entity::Player> &pPtr,
 			std::function<void()> afterProcessCommand = {}
 		) {
 

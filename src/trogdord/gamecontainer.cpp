@@ -326,7 +326,7 @@ trogdor::entity::Player *GameContainer::createPlayer(size_t gameId, std::string 
 	game->get()->insertPlayer(player);
 
 	if (game->get()->inProgress()) {
-		playerListeners[gameId]->subscribe(player.get());
+		playerListeners[gameId]->subscribe(player);
 	}
 
 	numPlayers++;
@@ -343,7 +343,7 @@ void GameContainer::removePlayer(size_t gameId, std::string playerName, std::str
 		throw GameNotFound();
 	}
 
-	trogdor::entity::Player *pPtr = game->get()->getPlayer(playerName).get();
+	std::shared_ptr<trogdor::entity::Player> pPtr = game->get()->getPlayer(playerName);
 
 	if (!pPtr) {
 		throw PlayerNotFound();

@@ -11,7 +11,7 @@ InputListener::~InputListener() {
 
 /*****************************************************************************/
 
-void InputListener::_subscribe(trogdor::entity::Player *pPtr) {
+void InputListener::_subscribe(std::shared_ptr<trogdor::entity::Player> &pPtr) {
 
 	processed[pPtr->getName()].playerPtr = pPtr;
 	processed[pPtr->getName()].playerName = pPtr->getName();
@@ -28,14 +28,16 @@ void InputListener::_unsubscribe(
 	// waiting on anymore commands.
 	if (processed.end() != processed.find(playerName)) {
 
-		trogdor::entity::Player *pPtr = processed[playerName].playerPtr;
+		// If I don't capture my own copy of the pointer here, I'll get very
+		// reliable segfaults when the game is started.
+		std::shared_ptr<trogdor::entity::Player> pPtr = processed[playerName].playerPtr;
 
 		if (pPtr) {
 
 			// If specified, this is the callback that should be fired by the
 			// async task after game->processCommand() returns.
 			if (afterProcessCommand) {
-				afterCommandCallbacks[pPtr] = afterProcessCommand;
+				afterCommandCallbacks[pPtr.get()] = afterProcessCommand;
 			}
 
 			processed[playerName].playerPtr = nullptr;
@@ -57,7 +59,8 @@ void InputListener::start() {
 		processedMutex.lock();
 
 		for (const auto &player: gamePtr->getPlayers()) {
-			_subscribe(static_cast<trogdor::entity::Player *>(player.second.get()));
+			std::shared_ptr<trogdor::entity::Player> playerShared = player.second;
+			_subscribe(playerShared);
 		}
 
 		processedMutex.unlock();
@@ -88,15 +91,15 @@ void InputListener::start() {
 
 							it->second.future = std::async(
 								std::launch::async,
-								[&](trogdor::entity::Player *pPtr) -> bool {
+								[&](std::shared_ptr<trogdor::entity::Player> pPtr) -> bool {
 
-									gamePtr->processCommand(pPtr);
+									gamePtr->processCommand(pPtr.get());
 
 									// We might have been given a callback to
 									// execute after processCommand() returns.
-									if (afterCommandCallbacks.end() != afterCommandCallbacks.find(pPtr)) {
-										afterCommandCallbacks[pPtr]();
-										afterCommandCallbacks.erase(pPtr);
+									if (afterCommandCallbacks.end() != afterCommandCallbacks.find(pPtr.get())) {
+										afterCommandCallbacks[pPtr.get()]();
+										afterCommandCallbacks.erase(pPtr.get());
 									}
 
 									return true;

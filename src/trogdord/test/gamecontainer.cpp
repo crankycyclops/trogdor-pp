@@ -560,4 +560,55 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		#endif
 	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): Spin up many games, each one with a player, then simulate closing the application by calling GameContainer::reset()") {
+
+		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+		#else
+
+			// The number of games to spin up during this test
+			const int numGames = 10;
+
+			std::string gameName = "I'm a game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::chrono::milliseconds threadSleepTime(tickInterval * 4);
+
+			GameContainer::reset();
+			auto &container = GameContainer::get();
+
+			// Step 1: spin up a crap ton of games, start them, and insert a
+			// player into each
+			std::vector<size_t> gameIds;
+
+			try {
+
+				for (int i = 0; i < numGames; i++) {
+
+					size_t gameId = container->createGame(definition, gameName);
+
+					container->startGame(gameId);
+					gameIds.push_back(gameId);
+
+					container->createPlayer(gameId, "player");
+				}
+			}
+
+			catch (const ServerException &e) {
+				FAIL(std::string("Failed to initialize game: ") + e.what());
+			}
+
+			// Wait for a little while to give threads time to do their thing
+			std::this_thread::sleep_for(threadSleepTime);
+
+			// Simulate closing the application
+			GameContainer::reset();
+
+			// We're just making sure we don't deadlock or segfault
+			CHECK(true);
+
+		#endif
+	}
 }
