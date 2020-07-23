@@ -142,7 +142,7 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 
 				// Subscribe the player so they can receive data from the
 				// input driver and start the listener
-				listener.subscribe(player.get());
+				listener.subscribe(player);
 
 				// Send the "test" command to the player's input stream
 				input::Driver::get()->set(mockGameId, "player", "test");
@@ -177,7 +177,7 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 
 				// Now, we'll unsubscribe the player and then attempt to
 				// send input and show that they no longer receive it.
-				listener.unsubscribe(player.get());
+				listener.unsubscribe(player);
 				input::Driver::get()->set(mockGameId, "player", "test");
 				std::this_thread::sleep_for(threadSleepTime);
 				CHECK(2 == numExecutions);
@@ -204,7 +204,7 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 
 				game->stop();
 
-				listener.subscribe(player.get());
+				listener.subscribe(player);
 				input::Driver::get()->set(mockGameId, "player", "test");
 				listener.start();
 
@@ -213,7 +213,7 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 				std::this_thread::sleep_for(threadSleepTime);
 				CHECK(0 == numExecutions);
 
-				listener.unsubscribe(player.get());
+				listener.unsubscribe(player);
 				listener.stop();
 
 				std::this_thread::sleep_for(threadSleepTime);
@@ -253,7 +253,7 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 				game->start();
 
 				listener->start();
-				listener->subscribe(player.get());
+				listener->subscribe(player);
 				input::Driver::get()->set(mockGameId, "player", "test");
 
 				std::this_thread::sleep_for(threadSleepTime);
@@ -286,7 +286,7 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 				game->stop();
 
 				listener->start();
-				listener->subscribe(player.get());
+				listener->subscribe(player);
 				input::Driver::get()->set(mockGameId, "player", "test");
 
 				std::this_thread::sleep_for(threadSleepTime);
@@ -330,7 +330,7 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 				game->start();
 
 				listener->stop();
-				listener->subscribe(player.get());
+				listener->subscribe(player);
 				input::Driver::get()->set(mockGameId, "player", "test");
 
 				std::this_thread::sleep_for(threadSleepTime);
@@ -363,7 +363,7 @@ TEST_SUITE("InputListener (inputlistener.cpp") {
 				game->stop();
 
 				listener->stop();
-				listener->subscribe(player.get());
+				listener->subscribe(player);
 				input::Driver::get()->set(mockGameId, "player", "test");
 
 				std::this_thread::sleep_for(threadSleepTime);

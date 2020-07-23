@@ -8,8 +8,7 @@ make -j2 trogdord
 
 # Make sure we can generate core dumps
 ulimit -c unlimited
-sysctl -w kernel.core_pattern=core
 
 # Compile and run the unit tests
 make -j2 test_trogdord
-timeout -s SIGQUIT 2 ./test_trogdord
+timeout -s SIGQUIT 5 ./test_trogdord

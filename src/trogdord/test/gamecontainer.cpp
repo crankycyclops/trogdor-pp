@@ -1,6 +1,11 @@
 #include <doctest.h>
 #include "../include/gamecontainer.h"
 
+// Number of ms between clock ticks (make this value small enough to ensure
+// time-dependent unit tests finish quickly, but not so small that the Timer
+// becomes unstable.)
+constexpr size_t tickInterval = 5;
+
 
 TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
@@ -443,7 +448,6 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			std::string gameName = "I'm a game";
 			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
 
-
 			GameContainer::reset();
 			auto &container = GameContainer::get();
 
@@ -469,6 +473,141 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			// automating these tests, be sure to invoke the test_trogdord
 			// target indirectly using timeout (e.g. timeout 1 ./test_trogdord)
 			GameContainer::reset();
+
+		#endif
+	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): Destroying running game with players") {
+
+		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+		#else
+
+			std::string gameName = "I'm a game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::chrono::milliseconds threadSleepTime(tickInterval * 3);
+
+			GameContainer::reset();
+			auto &container = GameContainer::get();
+
+			// Step 1: create and start a game
+			size_t gameId;
+
+			try {
+				gameId = container->createGame(definition, gameName);
+			}
+
+			catch (const ServerException &e) {
+				FAIL(std::string("Failed to initialize game: ") + e.what());
+			}
+
+			container->startGame(gameId);
+
+			// Step 2: Create a player in the game and wait a little while
+			container->createPlayer(gameId, "player");
+			std::this_thread::sleep_for(threadSleepTime);
+
+			// Step 3: Destroy game
+			container->destroyGame(gameId);
+
+			// We're just making sure we don't deadlock or segfault
+			CHECK(true);
+
+		#endif
+	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): Destroying running game that had players but doesn't anymore") {
+
+		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+		#else
+
+			std::string gameName = "I'm a game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::chrono::milliseconds threadSleepTime(tickInterval * 3);
+
+			GameContainer::reset();
+			auto &container = GameContainer::get();
+
+			// Step 1: create and start a game
+			size_t gameId;
+
+			try {
+				gameId = container->createGame(definition, gameName);
+			}
+
+			catch (const ServerException &e) {
+				FAIL(std::string("Failed to initialize game: ") + e.what());
+			}
+
+			container->startGame(gameId);
+
+			// Step 2: Create a player in the game, wait a little while, then
+			// remove it
+			container->createPlayer(gameId, "player");
+			std::this_thread::sleep_for(threadSleepTime);
+			container->removePlayer(gameId, "player");
+
+			// Step 3: Destroy game
+			container->destroyGame(gameId);
+
+			// We're just making sure we don't deadlock or segfault
+			CHECK(true);
+
+		#endif
+	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): Spin up many games, each one with a player, then simulate closing the application by calling GameContainer::reset()") {
+
+		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+		#else
+
+			// The number of games to spin up during this test
+			const int numGames = 10;
+
+			std::string gameName = "I'm a game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::chrono::milliseconds threadSleepTime(tickInterval * 4);
+
+			GameContainer::reset();
+			auto &container = GameContainer::get();
+
+			// Step 1: spin up a crap ton of games, start them, and insert a
+			// player into each
+			std::vector<size_t> gameIds;
+
+			try {
+
+				for (int i = 0; i < numGames; i++) {
+
+					size_t gameId = container->createGame(definition, gameName);
+
+					container->startGame(gameId);
+					gameIds.push_back(gameId);
+
+					container->createPlayer(gameId, "player");
+				}
+			}
+
+			catch (const ServerException &e) {
+				FAIL(std::string("Failed to initialize game: ") + e.what());
+			}
+
+			// Wait for a little while to give threads time to do their thing
+			std::this_thread::sleep_for(threadSleepTime);
+
+			// Simulate closing the application
+			GameContainer::reset();
+
+			// We're just making sure we don't deadlock or segfault
+			CHECK(true);
 
 		#endif
 	}

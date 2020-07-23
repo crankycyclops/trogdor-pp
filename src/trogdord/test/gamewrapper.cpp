@@ -104,7 +104,10 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				CHECK(test.get() != nullptr);
 				CHECK(0 == test.getName().compare(name));
 				CHECK(0 == test.getDefinition().compare(STD_FILESYSTEM::path(definition).filename()));
-				CHECK(abs(std::difftime(std::time(nullptr), test.getCreated())) < 1);
+
+				// Every once in a blue moon, there's a little bit of lag and
+				// the things are off by about 1. I'm okay with that.
+				CHECK(abs(std::difftime(std::time(nullptr), test.getCreated())) <= 1);
 			}
 
 			catch (const ServerException &e) {
