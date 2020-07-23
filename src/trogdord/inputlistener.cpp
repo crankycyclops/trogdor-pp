@@ -13,12 +13,8 @@ InputListener::~InputListener() {
 
 void InputListener::_subscribe(trogdor::entity::Player *pPtr) {
 
-	PlayerFuture pf;
-
-	pf.playerPtr = pPtr;
-	pf.playerName = pPtr->getName();
-
-	processed[pPtr->getName()] = std::move(pf);
+	processed[pPtr->getName()].playerPtr = pPtr;
+	processed[pPtr->getName()].playerName = pPtr->getName();
 }
 
 /*****************************************************************************/
