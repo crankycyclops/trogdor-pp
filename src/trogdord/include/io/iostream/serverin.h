@@ -60,12 +60,14 @@ class ServerIn: public trogdor::Trogin {
 
 		// Call this if you need to cancel a read operation that's currently
 		// in progress. The effect will be that an empty string is read as the
-		// input.
+		// input. Note: in order to prevent a possible race condition where
+		// kill() was called as part of _unsubscribe before the input stream
+		// was accessed by the instance of PlayerFuture to read a command, I
+		// removed the check for isBlocked(). If any bugs are encountered
+		// because of this, I'll have to revisit this method.
 		inline void kill() {
 
-			if (isBlocked()) {
-				killSwitch = true;
-			}
+			killSwitch = true;
 		}
 
 		// Sets the entity the input stream belongs to. This must be
