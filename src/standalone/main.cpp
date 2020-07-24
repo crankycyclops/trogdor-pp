@@ -9,9 +9,9 @@
 #include <cstdlib>
 
 #include <trogdor/game.h>
+#include <trogdor/iostream/nullin.h>
 #include <trogdor/parser/parsers/xmlparser.h>
 
-#include "include/streamin.h"
 #include "include/streamout.h"
 #include "include/streamerr.h"
 #include "include/actions/timeaction.h"
@@ -73,10 +73,11 @@ int main(int argc, char **argv) {
 	     std::cout << "Author: " << author << std::endl << std::endl;
 	  }
 
+      
 	  std::shared_ptr<trogdor::entity::Player> player = currentGame->createPlayer(
          "player",
          std::make_unique<StreamOut>(&std::cout),
-         std::make_unique<StreamIn>(&std::cin),
+         std::make_unique<trogdor::NullIn>(),
          std::make_unique<StreamErr>(&std::cerr)
 	  );
 
@@ -91,14 +92,22 @@ int main(int argc, char **argv) {
          std::string blah;
 
          player->out() << "\nPress enter to start." << std::endl;
-         player->in() >> blah;
+         getline(std::cin, blah);
          player->out() << std::endl;
      });
 
 	  currentGame->start();
 
 	  while (currentGame->inProgress() && currentGame->playerIsInGame("player")) {
-	     currentGame->processCommand(player.get());
+
+	     std::string command;
+
+	     // Prompt the user for input
+	     player->out("prompt") << "\n> ";
+	     player->out("prompt").flush();
+
+	     getline(std::cin, command);
+	     player->input(command);
 	  }
 
 	  currentGame->stop();

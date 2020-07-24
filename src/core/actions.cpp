@@ -18,7 +18,7 @@ namespace trogdor {
       Methods for the Cuss action.
    */
 
-   bool CussAction::checkSyntax(const std::shared_ptr<Command> &command) {
+   bool CussAction::checkSyntax(const Command &command) {
 
       return true;
    }
@@ -26,7 +26,7 @@ namespace trogdor {
 
    void CussAction::execute(
       entity::Player *player,
-      const std::shared_ptr<Command> &command,
+      const Command &command,
       Game *game
    ) {
 
@@ -54,11 +54,11 @@ namespace trogdor {
       Methods for the Inventory action.
    */
 
-   bool InventoryAction::checkSyntax(const std::shared_ptr<Command> &command) {
+   bool InventoryAction::checkSyntax(const Command &command) {
 
       // A valid inventory command should only be one word, a verb
-      if (command->getDirectObject().length() > 0 ||
-      command->getIndirectObject().length() > 0) {
+      if (command.getDirectObject().length() > 0 ||
+      command.getIndirectObject().length() > 0) {
          return false;
       }
 
@@ -68,7 +68,7 @@ namespace trogdor {
 
    void InventoryAction::execute(
       entity::Player *player,
-      const std::shared_ptr<Command> &command,
+      const Command &command,
       Game *game
    ) {
 
@@ -117,11 +117,11 @@ namespace trogdor {
       Methods for the Look action.
    */
 
-   bool LookAction::checkSyntax(const std::shared_ptr<Command> &command) {
+   bool LookAction::checkSyntax(const Command &command) {
 
       // we can only have one of either
-      if (command->getDirectObject().length() > 0 &&
-      command->getIndirectObject().length() > 0) {
+      if (command.getDirectObject().length() > 0 &&
+      command.getIndirectObject().length() > 0) {
          return false;
       }
 
@@ -130,14 +130,14 @@ namespace trogdor {
 
    void LookAction::execute(
       entity::Player *player,
-      const std::shared_ptr<Command> &command,
+      const Command &command,
       Game *game
    ) {
 
-      std::string object = command->getDirectObject();
+      std::string object = command.getDirectObject();
 
       if (object.length() == 0) {
-         object = command->getIndirectObject();
+         object = command.getIndirectObject();
       }
 
       if (auto location = player->getLocation().lock()) {
@@ -183,10 +183,10 @@ namespace trogdor {
       Methods for the Read action.
    */
 
-   bool ReadAction::checkSyntax(const std::shared_ptr<Command> &command) {
+   bool ReadAction::checkSyntax(const Command &command) {
 
       // we must have a direct object and only a direct object
-      if (!command->getDirectObject().length() || command->getIndirectObject().length()) {
+      if (!command.getDirectObject().length() || command.getIndirectObject().length()) {
          return false;
       }
 
@@ -195,11 +195,11 @@ namespace trogdor {
 
    void ReadAction::execute(
       entity::Player *player,
-      const std::shared_ptr<Command> &command,
+      const Command &command,
       Game *game
    ) {
 
-      std::string thingName = command->getDirectObject();
+      std::string thingName = command.getDirectObject();
 
       if (auto location = player->getLocation().lock()) {
 
@@ -267,10 +267,10 @@ namespace trogdor {
       Methods for the Take action.
    */
 
-   bool TakeAction::checkSyntax(const std::shared_ptr<Command> &command) {
+   bool TakeAction::checkSyntax(const Command &command) {
 
-      if (command->getIndirectObject().length() > 0 ||
-      command->getDirectObject().length() == 0) {
+      if (command.getIndirectObject().length() > 0 ||
+      command.getDirectObject().length() == 0) {
          return false;
       }
 
@@ -279,16 +279,16 @@ namespace trogdor {
 
    void TakeAction::execute(
       entity::Player *player,
-      const std::shared_ptr<Command> &command,
+      const Command &command,
       Game *game
    ) {
 
       if (auto location = player->getLocation().lock()) {
 
-         auto roomItems = location->getThingsByName(command->getDirectObject());
+         auto roomItems = location->getThingsByName(command.getDirectObject());
 
          if (roomItems.begin() == roomItems.end()) {
-            player->out("display") << "There is no " << command->getDirectObject()
+            player->out("display") << "There is no " << command.getDirectObject()
                << " here!" << std::endl;
             return;
          }
@@ -324,7 +324,7 @@ namespace trogdor {
                   switch (e.getErrorCode()) {
 
                      case entity::BeingException::TAKE_TOO_HEAVY:
-                        player->out("display") << command->getDirectObject()
+                        player->out("display") << command.getDirectObject()
                            << " is too heavy.  Try dropping something first."
                            << std::endl;
                         break;
@@ -354,10 +354,10 @@ namespace trogdor {
       Methods for the Drop action.
    */
 
-   bool DropAction::checkSyntax(const std::shared_ptr<Command> &command) {
+   bool DropAction::checkSyntax(const Command &command) {
 
-      if (command->getIndirectObject().length() > 0 ||
-      command->getDirectObject().length() == 0) {
+      if (command.getIndirectObject().length() > 0 ||
+      command.getDirectObject().length() == 0) {
          return false;
       }
 
@@ -367,14 +367,14 @@ namespace trogdor {
    // TODO: consider custom messages
    void DropAction::execute(
       entity::Player *player,
-      const std::shared_ptr<Command> &command,
+      const Command &command,
       Game *game
    ) {
 
-      auto invItems = player->getInventoryObjectsByName(command->getDirectObject());
+      auto invItems = player->getInventoryObjectsByName(command.getDirectObject());
 
       if (invItems.begin() == invItems.end()) {
-         player->out("display") << "You don't have a " << command->getDirectObject()
+         player->out("display") << "You don't have a " << command.getDirectObject()
             << "!" << std::endl;
          return;
       }
@@ -426,13 +426,13 @@ namespace trogdor {
       Methods for the Move action.
    */
 
-   bool MoveAction::checkSyntax(const std::shared_ptr<Command> &command) {
+   bool MoveAction::checkSyntax(const Command &command) {
 
-      auto &vocab = command->getVocabulary();
+      auto &vocab = command.getVocabulary();
 
-      std::string verb = command->getVerb();
-      std::string dobj = command->getDirectObject();
-      std::string iobj = command->getIndirectObject();
+      std::string verb = command.getVerb();
+      std::string dobj = command.getDirectObject();
+      std::string iobj = command.getIndirectObject();
 
       // A valid move command should not contain both a direct and indirect object
       if (dobj.length() > 0 && iobj.length() > 0) {
@@ -449,25 +449,25 @@ namespace trogdor {
 
    void MoveAction::execute(
       entity::Player *player,
-      const std::shared_ptr<Command> &command,
+      const Command &command,
       Game *game
    ) {
 
-      auto &vocab = command->getVocabulary();
+      auto &vocab = command.getVocabulary();
       std::string direction = "";
 
       if (auto location = player->getLocation().lock()) {
 
          // direction is implied in the verb
-         if (vocab.isDirection(command->getVerb()) || vocab.isDirectionSynonym(command->getVerb())) {
-            direction = vocab.getDirection(command->getVerb());
+         if (vocab.isDirection(command.getVerb()) || vocab.isDirectionSynonym(command.getVerb())) {
+            direction = vocab.getDirection(command.getVerb());
          }
 
          // direction was supplied as the direct or indirect object of another
          // verb like "move" or "go"
          if (0 == direction.length()) {
-            direction = vocab.getDirection(command->getDirectObject().length() > 0 ?
-               command->getDirectObject() : command->getIndirectObject());
+            direction = vocab.getDirection(command.getDirectObject().length() > 0 ?
+               command.getDirectObject() : command.getIndirectObject());
          }
 
          // only Rooms have connections to eachother
@@ -506,9 +506,9 @@ namespace trogdor {
       Methods for the Attack action.
    */
 
-   bool AttackAction::checkSyntax(const std::shared_ptr<Command> &command) {
+   bool AttackAction::checkSyntax(const Command &command) {
 
-      if (command->getDirectObject().length() == 0) {
+      if (command.getDirectObject().length() == 0) {
          return false;
       }
 
@@ -518,7 +518,7 @@ namespace trogdor {
 
    void AttackAction::execute(
       entity::Player *player,
-      const std::shared_ptr<Command> &command,
+      const Command &command,
       Game *game
    ) {
 
@@ -526,7 +526,7 @@ namespace trogdor {
       // TODO: you can say "attack myself with fish" even if you don't have a
       // fish in your inventory. While technically not a big deal in the case of
       // self-termination, I should probably fix this.
-      if (0 == strToLower(command->getDirectObject()).compare("myself")) {
+      if (0 == strToLower(command.getDirectObject()).compare("myself")) {
 
          static const char *suicideResponses[] = {
             "Done.",
@@ -558,17 +558,17 @@ namespace trogdor {
 
       if (auto location = player->getLocation().lock()) {
 
-         auto beings = location->getBeingsByName(command->getDirectObject());
+         auto beings = location->getBeingsByName(command.getDirectObject());
 
          if (beings.begin() == beings.end()) {
-            player->out("display") << "There is no " << command->getDirectObject()
+            player->out("display") << "There is no " << command.getDirectObject()
                << " here!" << std::endl;
             return;
          }
 
          try {
 
-            std::string weaponName = command->getIndirectObject();
+            std::string weaponName = command.getIndirectObject();
             Object *weapon = 0;
 
             Being *defender = Entity::clarifyEntity<BeingList, Being *>(beings, player);

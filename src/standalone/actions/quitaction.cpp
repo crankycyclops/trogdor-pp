@@ -7,10 +7,10 @@
 /*
    Methods for the Quit action.
 */
-bool QuitAction::checkSyntax(const std::shared_ptr<trogdor::Command> &command) {
+bool QuitAction::checkSyntax(const trogdor::Command &command) {
 
    // A valid quit command should only be one word, a verb
-   if (command->getDirectObject().length() > 0 || command->getIndirectObject().length() > 0) {
+   if (command.getDirectObject().length() > 0 || command.getIndirectObject().length() > 0) {
       return false;
    }
 
@@ -20,7 +20,7 @@ bool QuitAction::checkSyntax(const std::shared_ptr<trogdor::Command> &command) {
 
 void QuitAction::execute(
    trogdor::entity::Player *player,
-   const std::shared_ptr<trogdor::Command> &command,
+   const trogdor::Command &command,
    trogdor::Game *game
 ) {
 

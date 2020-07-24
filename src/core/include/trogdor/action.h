@@ -40,7 +40,7 @@ namespace trogdor {
             Output:
                bool
          */
-         virtual bool checkSyntax(const std::shared_ptr<Command> &command) = 0;
+         virtual bool checkSyntax(const Command &command) = 0;
 
          /*
             Executes the action.  This mehod will be implemented by the specific
@@ -55,7 +55,7 @@ namespace trogdor {
          */
          virtual void execute(
             entity::Player *player,
-            const std::shared_ptr<Command> &command,
+            const Command &command,
             Game *game
          ) = 0;
    };

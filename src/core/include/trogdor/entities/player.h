@@ -11,6 +11,11 @@ namespace trogdor::entity {
 
    class Player: public Being {
 
+      private:
+
+         // The player's last executed command
+         std::unique_ptr<Command> lastCommand;
+
       public:
 
          /*
@@ -42,6 +47,18 @@ namespace trogdor::entity {
 
             return std::dynamic_pointer_cast<Player>(Entity::getShared());
          }
+
+         /*
+            Takes as input a command and executes it on the player's behalf.
+
+            Input:
+               Command to execute (std::string)
+
+            Output:
+               True if the command was executable (the verb action was found and
+               the syntax was valid) and false if not
+         */
+         bool input(std::string commandStr);
    };
 }
 

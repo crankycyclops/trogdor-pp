@@ -142,7 +142,6 @@ install(TARGETS trogdor DESTINATION lib COMPONENT trogdor OPTIONAL)
 # client might look like
 add_executable(standalone
 	src/standalone/main.cpp
-	src/standalone/streamin.cpp
 	src/standalone/streamout.cpp
 	src/standalone/streamerr.cpp
 	src/standalone/actions/timeaction.cpp
