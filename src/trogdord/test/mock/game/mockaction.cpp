@@ -1,7 +1,7 @@
 #include "mockaction.h"
 
 
-bool MockAction::checkSyntax(const std::shared_ptr<trogdor::Command> &command) {
+bool MockAction::checkSyntax(const trogdor::Command &command) {
 
 	// The syntax really doesn't matter, so whateves
 	return true;
@@ -9,7 +9,7 @@ bool MockAction::checkSyntax(const std::shared_ptr<trogdor::Command> &command) {
 
 void MockAction::execute(
 	trogdor::entity::Player *player,
-	const std::shared_ptr<trogdor::Command> &command,
+	const trogdor::Command &command,
 	trogdor::Game *game
 ) {
 

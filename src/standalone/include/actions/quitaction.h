@@ -18,11 +18,11 @@ class QuitAction: public trogdor::Action {
          Time action is to have a command with just a verb and no direct
          object or indirect object.
       */
-      virtual bool checkSyntax(const std::shared_ptr<trogdor::Command> &command);
+      virtual bool checkSyntax(const trogdor::Command &command);
 
       virtual void execute(
          trogdor::entity::Player *player,
-         const std::shared_ptr<trogdor::Command> &command,
+         const trogdor::Command &command,
          trogdor::Game *game
       );
 };

@@ -939,6 +939,20 @@ namespace trogdor {
          }
 
          /*
+            Execute an action on a player's behalf. Returns true if the action
+            was found and the command syntax was valid and false if not.
+
+            Input:
+               Player issuing the command (entity::Player *)
+               The player's command (const Command &)
+
+            Output:
+               True if the action was found and the syntax was valid and false
+               if not.
+         */
+         bool executeAction(entity::Player *player, const Command &command);
+
+         /*
             Adds a callback that should be called when a certain operation
             occurs in the game.
 

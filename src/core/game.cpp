@@ -414,7 +414,7 @@ namespace trogdor {
 
       std::string commandStr;
 
-      // Prompt the user for a response
+      // Prompt the user for input
       player->out("prompt") << "\n> ";
       player->out("prompt").flush();
       player->in() >> commandStr;
@@ -448,17 +448,8 @@ namespace trogdor {
             }
          }
 
-         std::string verb = command->getVerb();
-         Action *action = vocabulary.getVerbAction(verb);
-
-         if (nullptr == action || !action->checkSyntax(command)) {
+         if (!executeAction(player, *command)) {
             player->out() << "Sorry, I don't understand you." << std::endl;
-         }
-
-         else {
-            mutex.lock();
-            action->execute(player, command, this);
-            mutex.unlock();
          }
       }
 
@@ -467,6 +458,23 @@ namespace trogdor {
       }
 
       lastCommand = command;
+   }
+
+   /***************************************************************************/
+
+   bool Game::executeAction(entity::Player *player, const Command &command) {
+
+      Action *action = vocabulary.getVerbAction(command.getVerb());
+
+      if (nullptr == action || !action->checkSyntax(command)) {
+         return false;
+      }
+
+      mutex.lock();
+      action->execute(player, command, this);
+      mutex.unlock();
+
+      return true;
    }
 
    /***************************************************************************/

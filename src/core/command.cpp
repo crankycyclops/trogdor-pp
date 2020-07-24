@@ -8,8 +8,7 @@
 namespace trogdor {
 
 
-   Command::Command(const Vocabulary &v, std::string commandStr):
-   vocabulary(v) {
+   Command::Command(const Vocabulary &v, std::string commandStr): vocabulary(v) {
 
       verb = "";
       directObject = "";

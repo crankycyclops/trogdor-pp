@@ -2,11 +2,11 @@
 
 class MockAction: public trogdor::Action {
 
-	virtual bool checkSyntax(const std::shared_ptr<trogdor::Command> &command);
+	virtual bool checkSyntax(const trogdor::Command &command);
 
 	virtual void execute(
 		trogdor::entity::Player *player,
-		const std::shared_ptr<trogdor::Command> &command,
+		const trogdor::Command &command,
 		trogdor::Game *game
 	);
 };

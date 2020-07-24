@@ -1,14 +1,14 @@
 #include "mockaction.h"
 
 
-bool MockAction::checkSyntax(const std::shared_ptr<trogdor::Command> &command) {
+bool MockAction::checkSyntax(const trogdor::Command &command) {
 
 	return true;
 }
 
 void MockAction::execute(
 	trogdor::entity::Player *player,
-	const std::shared_ptr<trogdor::Command> &command,
+	const trogdor::Command &command,
 	trogdor::Game *game
 ) {
 

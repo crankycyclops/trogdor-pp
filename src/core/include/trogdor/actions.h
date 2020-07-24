@@ -21,11 +21,11 @@ namespace trogdor {
 
       public:
 
-         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
+         virtual bool checkSyntax(const Command &command);
 
          virtual void execute(
             entity::Player *player,
-            const std::shared_ptr<Command> &command,
+            const Command &command,
             Game *game
          );
    };
@@ -44,11 +44,11 @@ namespace trogdor {
             action is to have a command with just a verb and no direct object or
             indirect object.
          */
-         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
+         virtual bool checkSyntax(const Command &command);
 
          virtual void execute(
             entity::Player *player,
-            const std::shared_ptr<Command> &command,
+            const Command &command,
             Game *game
          );
    };
@@ -65,11 +65,11 @@ namespace trogdor {
             in the player observing that object (if it exists in the user's
             current Location OR inventory.)
          */
-         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
+         virtual bool checkSyntax(const Command &command);
 
          virtual void execute(
             entity::Player *player,
-            const std::shared_ptr<Command> &command,
+            const Command &command,
             Game *game
          ); 
    };
@@ -85,11 +85,11 @@ namespace trogdor {
             getMeta("text"), that value will be read back. Otherwise, the player
             will be told that there is nothing to read.
          */
-         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
+         virtual bool checkSyntax(const Command &command);
 
          virtual void execute(
             entity::Player *player,
-            const std::shared_ptr<Command> &command,
+            const Command &command,
             Game *game
          ); 
    };
@@ -103,11 +103,11 @@ namespace trogdor {
             is to have a verb + direct object.  The result is for the Object
             to be taken into the Being's inventory, if possible.
          */
-         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
+         virtual bool checkSyntax(const Command &command);
 
          virtual void execute(
             entity::Player *player,
-            const std::shared_ptr<Command> &command,
+            const Command &command,
             Game *game
          ); 
    };
@@ -122,11 +122,11 @@ namespace trogdor {
             to be removed from the Being's inventory and dropped into the Being's
             current location, if possible.
          */
-         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
+         virtual bool checkSyntax(const Command &command);
 
          virtual void execute(
             entity::Player *player,
-            const std::shared_ptr<Command> &command,
+            const Command &command,
             Game *game
          ); 
    };
@@ -146,11 +146,11 @@ namespace trogdor {
             (but not both) that matches a valid direction name, or a verb that
             matches a valid direction name.
          */
-         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
+         virtual bool checkSyntax(const Command &command);
 
          virtual void execute(
             entity::Player *player,
-            const std::shared_ptr<Command> &command,
+            const Command &command,
             Game *game
          );
    };
@@ -169,11 +169,11 @@ namespace trogdor {
             indirect object is optional, and would specify a weapon to use in
             the attack.
          */
-         virtual bool checkSyntax(const std::shared_ptr<Command> &command);
+         virtual bool checkSyntax(const Command &command);
 
          virtual void execute(
             entity::Player *player,
-            const std::shared_ptr<Command> &command,
+            const Command &command,
             Game *game
          );
    };

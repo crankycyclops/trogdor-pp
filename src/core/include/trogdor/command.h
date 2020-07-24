@@ -46,10 +46,19 @@ namespace trogdor {
       public:
 
          /*
-            Constructor for the Command class.
+            Constructor and assignment operator for the Command class.
          */
          Command() = delete;
          Command(const Vocabulary &v, std::string commandStr);
+
+         inline Command(const Command &c):
+            vocabulary(c.vocabulary),
+            nullCommand(c.nullCommand),
+            invalid(c.invalid),
+            verb(c.verb),
+            directObject(c.directObject),
+            indirectObject(c.indirectObject),
+            preposition(c.preposition) {}
 
          /*
             Returns true if the command is invalid.
@@ -70,7 +79,7 @@ namespace trogdor {
          /*
             Returns const reference to the vocabulary.
          */
-         inline const Vocabulary &getVocabulary() {return vocabulary;}
+         inline const Vocabulary &getVocabulary() const {return vocabulary;}
 
          /*
             Getters for the syntactic components of a command.
