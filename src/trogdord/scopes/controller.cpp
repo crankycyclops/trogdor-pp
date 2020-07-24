@@ -13,9 +13,9 @@ const char *ScopeController::GAME_NOT_FOUND = "game not found";
 /*****************************************************************************/
 
 void ScopeController::registerAction(
-	std::string method,
-	std::string action,
-	std::function<JSONObject(JSONObject)> callback
+	const std::string &method,
+	const std::string &action,
+	const std::function<JSONObject(JSONObject)> &callback
 ) {
 
 	if (actionMap.end() == actionMap.find(method)) {

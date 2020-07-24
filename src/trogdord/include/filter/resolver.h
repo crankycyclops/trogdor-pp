@@ -113,9 +113,7 @@ class FilterResolver {
 		}
 
 		// Registers a new supported filter
-		// Note: cppcheck warns that I should pass callback by reference, but
-		// that won't compile, so ignore that advice.
-		void addRule(std::string filterType, std::function<std::set<T>(Filter)> callback) {
+		void addRule(const std::string &filterType, const std::function<std::set<T>(Filter)> &callback) {
 
 			// If a rule's been defined twice, it's definitely a bug. If
 			// instead, the developer is trying to do something clever, they

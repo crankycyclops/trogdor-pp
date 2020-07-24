@@ -62,15 +62,11 @@ class Request {
 
 		// Utility function that parses a numeric id from a request's
 		// arguments.
-		// Note: cppcheck gives me the following warning: (performance)
-		// Function parameter 'missingErrMsg' should be passed by reference.
-		// However, I can't pass by reference because then parseGameId below
-		// would fail to compile due to the passing of C strings.
 		static inline int parseId(
-			JSONObject request,
-			std::string &idField,
-			std::string missingErrMsg,
-			std::string invalidErrMsg
+			const JSONObject &request,
+			const std::string &idField,
+			const std::string &missingErrMsg,
+			const std::string &invalidErrMsg
 		) {
 
 			int id = parseArgument<int>(request, idField, missingErrMsg, invalidErrMsg);
