@@ -611,4 +611,53 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		#endif
 	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): Add many players to a running game, then simulate closing the application by calling GameContainer::reset()") {
+
+		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+		#else
+
+			// The number of players to add during this test
+			const int numPlayers = 25;
+
+			std::string gameName = "I'm a game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::chrono::milliseconds threadSleepTime(tickInterval * 4);
+
+			GameContainer::reset();
+			auto &container = GameContainer::get();
+
+			// Step 1: create and start a game
+			size_t gameId;
+
+			try {
+				gameId = container->createGame(definition, gameName);
+			}
+
+			catch (const ServerException &e) {
+				FAIL(std::string("Failed to initialize game: ") + e.what());
+			}
+
+			// Step 2: start the game
+			container->startGame(gameId);
+
+			// Step 3: create the players
+			for (int i = 0; i < numPlayers; i++) {
+				container->createPlayer(gameId, std::string("player") + std::to_string(i));
+			}
+
+			// Wait for a little while to give threads time to do their thing
+			std::this_thread::sleep_for(threadSleepTime);
+
+			// Simulate closing the application
+			GameContainer::reset();
+
+			// We're just making sure we don't deadlock or segfault
+			CHECK(true);
+
+		#endif
+	}
 }
