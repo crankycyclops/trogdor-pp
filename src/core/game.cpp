@@ -407,8 +407,14 @@ namespace trogdor {
 
    void Game::processCommand(entity::Player *player) {
 
-      std::shared_ptr<Command> command = std::make_shared<Command>(vocabulary);
-      command->read(player);
+      std::string commandStr;
+
+      // Prompt the user for a response
+      player->out("prompt") << "\n> ";
+      player->out("prompt").flush();
+      player->in() >> commandStr;
+
+      std::shared_ptr<Command> command = std::make_shared<Command>(vocabulary, commandStr);
 
       // don't do anything if the user didn't actually enter a command
       if (command->isNull()) {
