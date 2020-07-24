@@ -48,7 +48,8 @@ namespace trogdor {
          /*
             Constructor for the Command class.
          */
-         Command(const Vocabulary &v);
+         Command() = delete;
+         Command(const Vocabulary &v, std::string commandStr);
 
          /*
             Returns true if the command is invalid.
@@ -78,14 +79,6 @@ namespace trogdor {
          inline std::string getDirectObject() const {return directObject;}
          inline std::string getIndirectObject() const {return indirectObject;}
          inline std::string getPreposition() const {return preposition;}
-
-         /*
-            Reads a command from the user.
-
-            Input: Entity to read input from
-            Output: (none)
-         */
-         void read(entity::Entity *user);
 
          /*
             Makes Command object printable via trogout.

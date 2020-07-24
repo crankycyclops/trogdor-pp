@@ -8,7 +8,7 @@
 namespace trogdor {
 
 
-   Command::Command(const Vocabulary &v):
+   Command::Command(const Vocabulary &v, std::string commandStr):
    vocabulary(v) {
 
       verb = "";
@@ -21,20 +21,8 @@ namespace trogdor {
 
       // command is invalid until we successfully parse a command
       invalid = true;
-   }
 
-
-   void Command::read(entity::Entity *user) {
-
-      std::string commandStr;
-
-      // Prompt the user for a response
-      user->out("prompt") << "\n> ";
-      user->out("prompt").flush();
-      user->in() >> commandStr;
-
-      trim(commandStr);
-      parse(commandStr);
+      parse(trim(commandStr));
    }
 
 

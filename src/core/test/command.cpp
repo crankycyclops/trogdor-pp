@@ -10,18 +10,10 @@
 
 TEST_SUITE("Command (command.cpp)") {
 
-	TEST_CASE("Command (command.cpp): Test for sane initialization") {
-
-		trogdor::Vocabulary vocabulary;
-		trogdor::Command command(vocabulary);
-
-		CHECK(command.isInvalid());
-	}
-
 	TEST_CASE("Command (command.cpp): getVocabulary()") {
 
 		trogdor::Vocabulary vocabulary;
-		trogdor::Command command(vocabulary);
+		trogdor::Command command(vocabulary, "test");
 
 		CHECK(&vocabulary == &command.getVocabulary());
 	}
@@ -30,17 +22,7 @@ TEST_SUITE("Command (command.cpp)") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
-		trogdor::Command command(mockVocab);
-
-		trogdor::entity::Player mockPlayer(
-			&mockGame,
-			"player",
-			std::make_unique<trogdor::NullOut>(),
-			std::make_unique<StringIn>(""),
-			std::make_unique<trogdor::NullErr>()
-		);
-
-		command.read(&mockPlayer);
+		trogdor::Command command(mockVocab, "");
 
 		CHECK(!command.isInvalid());
 		CHECK(command.isNull());
@@ -50,17 +32,7 @@ TEST_SUITE("Command (command.cpp)") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
-		trogdor::Command command(mockVocab);
-
-		trogdor::entity::Player mockPlayer(
-			&mockGame,
-			"player",
-			std::make_unique<trogdor::NullOut>(),
-			std::make_unique<StringIn>(" \t \n   "),
-			std::make_unique<trogdor::NullErr>()
-		);
-
-		command.read(&mockPlayer);
+		trogdor::Command command(mockVocab, " \t \n   ");
 
 		CHECK(!command.isInvalid());
 		CHECK(command.isNull());
@@ -70,17 +42,7 @@ TEST_SUITE("Command (command.cpp)") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
-		trogdor::Command command(mockVocab);
-
-		trogdor::entity::Player mockPlayer(
-			&mockGame,
-			"player",
-			std::make_unique<trogdor::NullOut>(),
-			std::make_unique<StringIn>("north"),
-			std::make_unique<trogdor::NullErr>()
-		);
-
-		command.read(&mockPlayer);
+		trogdor::Command command(mockVocab, "north");
 
 		CHECK(!command.isInvalid());
 		CHECK(!command.isNull());
@@ -94,17 +56,7 @@ TEST_SUITE("Command (command.cpp)") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
-		trogdor::Command command(mockVocab);
-
-		trogdor::entity::Player mockPlayer(
-			&mockGame,
-			"player",
-			std::make_unique<trogdor::NullOut>(),
-			std::make_unique<StringIn>("take candle"),
-			std::make_unique<trogdor::NullErr>()
-		);
-
-		command.read(&mockPlayer);
+		trogdor::Command command(mockVocab, "take candle");
 
 		CHECK(!command.isInvalid());
 		CHECK(!command.isNull());
@@ -118,17 +70,7 @@ TEST_SUITE("Command (command.cpp)") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
-		trogdor::Command command(mockVocab);
-
-		trogdor::entity::Player mockPlayer(
-			&mockGame,
-			"player",
-			std::make_unique<trogdor::NullOut>(),
-			std::make_unique<StringIn>("take the candle"),
-			std::make_unique<trogdor::NullErr>()
-		);
-
-		command.read(&mockPlayer);
+		trogdor::Command command(mockVocab, "take the candle");
 
 		CHECK(!command.isInvalid());
 		CHECK(!command.isNull());
@@ -142,17 +84,7 @@ TEST_SUITE("Command (command.cpp)") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
-		trogdor::Command command(mockVocab);
-
-		trogdor::entity::Player mockPlayer(
-			&mockGame,
-			"player",
-			std::make_unique<trogdor::NullOut>(),
-			std::make_unique<StringIn>("take damp candle holder"),
-			std::make_unique<trogdor::NullErr>()
-		);
-
-		command.read(&mockPlayer);
+		trogdor::Command command(mockVocab, "take damp candle holder");
 
 		CHECK(!command.isInvalid());
 		CHECK(!command.isNull());
@@ -166,17 +98,7 @@ TEST_SUITE("Command (command.cpp)") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
-		trogdor::Command command(mockVocab);
-
-		trogdor::entity::Player mockPlayer(
-			&mockGame,
-			"player",
-			std::make_unique<trogdor::NullOut>(),
-			std::make_unique<StringIn>("take the damp candle holder"),
-			std::make_unique<trogdor::NullErr>()
-		);
-
-		command.read(&mockPlayer);
+		trogdor::Command command(mockVocab, "take the damp candle holder");
 
 		CHECK(!command.isInvalid());
 		CHECK(!command.isNull());
@@ -190,18 +112,7 @@ TEST_SUITE("Command (command.cpp)") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
-		trogdor::Command command(mockVocab);
-
-		// The verb "give" isn't curr
-		trogdor::entity::Player mockPlayer(
-			&mockGame,
-			"player",
-			std::make_unique<trogdor::NullOut>(),
-			std::make_unique<StringIn>("take candle from wizard"),
-			std::make_unique<trogdor::NullErr>()
-		);
-
-		command.read(&mockPlayer);
+		trogdor::Command command(mockVocab, "take candle from wizard");
 
 		CHECK(!command.isInvalid());
 		CHECK(!command.isNull());
@@ -215,18 +126,7 @@ TEST_SUITE("Command (command.cpp)") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
-		trogdor::Command command(mockVocab);
-
-		// The verb "give" isn't curr
-		trogdor::entity::Player mockPlayer(
-			&mockGame,
-			"player",
-			std::make_unique<trogdor::NullOut>(),
-			std::make_unique<StringIn>("take wet candle from stupid wizard"),
-			std::make_unique<trogdor::NullErr>()
-		);
-
-		command.read(&mockPlayer);
+		trogdor::Command command(mockVocab, "take wet candle from stupid wizard");
 
 		CHECK(!command.isInvalid());
 		CHECK(!command.isNull());
@@ -240,18 +140,7 @@ TEST_SUITE("Command (command.cpp)") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
-		trogdor::Command command(mockVocab);
-
-		// The verb "give" isn't curr
-		trogdor::entity::Player mockPlayer(
-			&mockGame,
-			"player",
-			std::make_unique<trogdor::NullOut>(),
-			std::make_unique<StringIn>("take the wet candle from the stupid wizard"),
-			std::make_unique<trogdor::NullErr>()
-		);
-
-		command.read(&mockPlayer);
+		trogdor::Command command(mockVocab, "take the wet candle from the stupid wizard");
 
 		CHECK(!command.isInvalid());
 		CHECK(!command.isNull());
@@ -265,17 +154,7 @@ TEST_SUITE("Command (command.cpp)") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
-		trogdor::Command command(mockVocab);
-
-		trogdor::entity::Player mockPlayer(
-			&mockGame,
-			"player",
-			std::make_unique<trogdor::NullOut>(),
-			std::make_unique<StringIn>("give"),
-			std::make_unique<trogdor::NullErr>()
-		);
-
-		command.read(&mockPlayer);
+		trogdor::Command command(mockVocab, "give");
 
 		CHECK(command.isInvalid());
 		CHECK(!command.isNull());
@@ -289,18 +168,7 @@ TEST_SUITE("Command (command.cpp)") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
-		trogdor::Command command(mockVocab);
-
-		// The verb "give" isn't curr
-		trogdor::entity::Player mockPlayer(
-			&mockGame,
-			"player",
-			std::make_unique<trogdor::NullOut>(),
-			std::make_unique<StringIn>("notaverb candle to wizard"),
-			std::make_unique<trogdor::NullErr>()
-		);
-
-		command.read(&mockPlayer);
+		trogdor::Command command(mockVocab, "notaverb candle to wizard");
 
 		CHECK(command.isInvalid());
 		CHECK(!command.isNull());
@@ -314,18 +182,7 @@ TEST_SUITE("Command (command.cpp)") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
-		trogdor::Command command(mockVocab);
-
-		// The verb "give" isn't curr
-		trogdor::entity::Player mockPlayer(
-			&mockGame,
-			"player",
-			std::make_unique<trogdor::NullOut>(),
-			std::make_unique<StringIn>("take the wet candle from"),
-			std::make_unique<trogdor::NullErr>()
-		);
-
-		command.read(&mockPlayer);
+		trogdor::Command command(mockVocab, "take the wet candle from");
 
 		CHECK(command.isInvalid());
 		CHECK(!command.isNull());
@@ -339,17 +196,7 @@ TEST_SUITE("Command (command.cpp)") {
 
 		trogdor::Vocabulary mockVocab;
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
-		trogdor::Command command(mockVocab);
-
-		trogdor::entity::Player mockPlayer(
-			&mockGame,
-			"player",
-			std::make_unique<trogdor::NullOut>(),
-			std::make_unique<StringIn>("take the"),
-			std::make_unique<trogdor::NullErr>()
-		);
-
-		command.read(&mockPlayer);
+		trogdor::Command command(mockVocab, "take the");
 
 		CHECK(command.isInvalid());
 		CHECK(!command.isNull());
