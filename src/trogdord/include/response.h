@@ -25,9 +25,7 @@ class Response {
 		// {"status":<statusCode>,"message":<message>}. This method is
 		// provided as a shortcut that sidesteps the
 		// serialization/deserialization steps necessary for longer responses.
-		// Note: cppcheck will warn that you should pass message by reference,
-		// but this is bad advice and should be ignored.
-		static inline std::string makeErrorJson(std::string message, int statusCode) {
+		static inline std::string makeErrorJson(const std::string &message, const int &statusCode) {
 
 			return std::string("{\"status\":") + std::to_string(statusCode) +
 				",\"message\":\"" + message + "\"}";
