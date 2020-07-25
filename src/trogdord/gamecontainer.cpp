@@ -5,7 +5,6 @@
 #include "include/filesystem.h"
 #include "include/gamecontainer.h"
 
-#include <trogdor/iostream/nullin.h>
 #include "include/io/iostream/serverout.h"
 
 
@@ -303,7 +302,6 @@ trogdor::entity::Player *GameContainer::createPlayer(size_t gameId, std::string 
 	std::shared_ptr<trogdor::entity::Player> player = game->get()->createPlayer(
 		playerName,
 		std::make_unique<ServerOut>(gameId),
-		std::make_unique<trogdor::NullIn>(),
 		Config::get()->err().copy()
 	);
 

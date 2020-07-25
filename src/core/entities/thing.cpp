@@ -10,8 +10,8 @@ namespace trogdor::entity {
 
 
    Thing::Thing(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e): Entity(g, n,
-   std::move(o), std::move(i), std::move(e)), location(std::weak_ptr<Place>()) {
+   std::unique_ptr<Trogerr> e): Entity(g, n, std::move(o), std::move(e)),
+   location(std::weak_ptr<Place>()) {
 
       types.push_back(ENTITY_THING);
 

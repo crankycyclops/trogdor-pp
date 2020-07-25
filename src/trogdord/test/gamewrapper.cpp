@@ -1,10 +1,9 @@
 #include <doctest.h>
 #include <cstdlib>
 
-#include <trogdor/iostream/nullin.h>
+#include <trogdor/entities/player.h>
 #include <trogdor/iostream/nullout.h>
 #include <trogdor/iostream/nullerr.h>
-#include <trogdor/entities/player.h>
 
 #include "../include/gamewrapper.h"
 #include "../include/filesystem.h"
@@ -139,7 +138,6 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				std::shared_ptr<trogdor::entity::Player> player = test.get()->createPlayer(
 					"player",
 					std::make_unique<trogdor::NullOut>(),
-					std::make_unique<trogdor::NullIn>(),
 					std::make_unique<trogdor::NullErr>()
 				);
 

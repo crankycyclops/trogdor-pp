@@ -1,5 +1,5 @@
 #include <trogdor/game.h>
-#include <trogdor/action.h>
+#include <trogdor/actions/action.h>
 #include <trogdor/timer/timer.h>
 #include <trogdor/parser/parser.h>
 #include <trogdor/lua/luastate.h>
@@ -18,7 +18,6 @@
 #include <trogdor/event/triggers/deathdrop.h>
 #include <trogdor/event/triggers/respawn.h>
 
-#include <trogdor/iostream/nullin.h>
 #include <trogdor/iostream/nullout.h>
 #include <trogdor/iostream/nullerr.h>
 #include <trogdor/iostream/trogout.h>
@@ -46,7 +45,6 @@ namespace trogdor {
             this,
             "default",
             std::make_unique<NullOut>(),
-            std::make_unique<NullIn>(),
             std::make_unique<NullErr>()
          );
 
@@ -167,8 +165,7 @@ namespace trogdor {
    /***************************************************************************/
 
    std::shared_ptr<entity::Player> Game::createPlayer(std::string name,
-   std::unique_ptr<Trogout> outStream, std::unique_ptr<Trogin> inStream,
-   std::unique_ptr<Trogerr> errStream) {
+   std::unique_ptr<Trogout> outStream, std::unique_ptr<Trogerr> errStream) {
 
       // Make sure there are no name conflicts before creating the new player
       if (entities.find(name) != entities.end()) {
@@ -179,7 +176,7 @@ namespace trogdor {
 
       // clone the default player, giving it the specified name
       std::shared_ptr<entity::Player> player = std::make_shared<entity::Player>(
-         *defaultPlayer, name, std::move(outStream), std::move(inStream), std::move(errStream)
+         *defaultPlayer, name, std::move(outStream), std::move(errStream)
       );
 
       return player;

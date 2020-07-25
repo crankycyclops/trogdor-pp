@@ -59,8 +59,15 @@ pkg_search_module(LIBXML REQUIRED libxml-2.0 libxml2 libxml>=2)
 pkg_search_module(LUA REQUIRED lua-$ENV{LUA_VERSION})
 
 set(CORE_SOURCES
-	src/core/action.cpp
-	src/core/actions.cpp
+	src/core/actions/action.cpp
+	src/core/actions/cuss.cpp
+	src/core/actions/inventory.cpp
+	src/core/actions/look.cpp
+	src/core/actions/read.cpp
+	src/core/actions/take.cpp
+	src/core/actions/drop.cpp
+	src/core/actions/move.cpp
+	src/core/actions/attack.cpp
 	src/core/command.cpp
 	src/core/game.cpp
 	src/core/messages.cpp
@@ -88,11 +95,9 @@ set(CORE_SOURCES
 	src/core/lua/api/entities/luaplayer.cpp
 	src/core/lua/api/entities/luaroom.cpp
 	src/core/lua/api/entities/luathing.cpp
-	src/core/iostream/nullin.cpp
 	src/core/iostream/nullout.cpp
 	src/core/iostream/nullerr.cpp
 	src/core/iostream/placeout.cpp
-	src/core/iostream/trogin.cpp
 	src/core/iostream/trogout.cpp
 	src/core/iostream/trogerr.cpp
 	src/core/event/event.cpp
@@ -336,7 +341,6 @@ add_executable(test_core
 	src/core/test/mock/mockaction.cpp
 	src/core/test/mock/mocktrigger.cpp
 	src/core/test/mock/mocktimerjob.cpp
-	src/core/test/mock/stringin.cpp
 )
 
 target_include_directories(test_core

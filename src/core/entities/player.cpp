@@ -5,8 +5,7 @@
 namespace trogdor::entity {
 
    Player::Player(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e): Being(g, n,
-   std::move(o), std::move(i), std::move(e)),
+   std::unique_ptr<Trogerr> e): Being(g, n, std::move(o), std::move(e)),
    lastCommand(std::make_unique<Command>(game->getVocabulary(), "")) {
 
       types.push_back(ENTITY_PLAYER);
@@ -18,13 +17,12 @@ namespace trogdor::entity {
    /**************************************************************************/
 
    Player::Player(const Player &p, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e): Being(p, n),
+   std::unique_ptr<Trogerr> e): Being(p, n),
    lastCommand(std::make_unique<Command>(*(p.lastCommand))) {
 
       title = n;
 
       outStream = std::move(o);
-      inStream = std::move(i);
       errStream = std::move(e);
 
       setLongDescription(name + " is a player.");
@@ -46,6 +44,23 @@ namespace trogdor::entity {
       else if (!game->inProgress()) {
          out() << "Game is stopped and not accepting commands." << std::endl;
          return false;
+      }
+
+      // Some other part of the library is waiting on input from the Player, so
+      // process that instead of an ordinary game command
+      else if (inputInterceptor) {
+
+         auto formerInputInterceptor = inputInterceptor.get();
+         bool retVal = (*inputInterceptor)(commandStr);
+
+         // Input interceptors are only supposed to fire once, but it's possible
+         // that somewhere in the callback, another one was set. If that's the
+         // case, the second interceptor should remain set.
+         if (formerInputInterceptor == inputInterceptor.get()) {
+            inputInterceptor = nullptr;
+         }
+
+         return retVal;
       }
 
       if (!command->isInvalid()) {

@@ -5,8 +5,15 @@
 #include <unordered_set>
 
 #include <trogdor/vocabulary.h>
-#include <trogdor/action.h>
-#include <trogdor/actions.h>
+
+#include <trogdor/actions/cuss.h>
+#include <trogdor/actions/inventory.h>
+#include <trogdor/actions/look.h>
+#include <trogdor/actions/read.h>
+#include <trogdor/actions/take.h>
+#include <trogdor/actions/drop.h>
+#include <trogdor/actions/move.h>
+#include <trogdor/actions/attack.h>
 
 namespace trogdor {
 

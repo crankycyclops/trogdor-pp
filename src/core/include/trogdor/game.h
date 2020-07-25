@@ -19,7 +19,6 @@
 #include <trogdor/event/eventlistener.h>
 #include <trogdor/instantiator/instantiators/runtime.h>
 
-#include <trogdor/iostream/trogin.h>
 #include <trogdor/iostream/trogout.h>
 #include <trogdor/iostream/trogerr.h>
 
@@ -822,15 +821,13 @@ namespace trogdor {
             Input:
                Player name (std::string)
                Pointer to an output stream (Trogout *)
-               Pointer to an input stream (Trogin *)
                Pointer to an error stream (Trogerr *)
 
             Output:
                std::shared_ptr<Player>
          */
          std::shared_ptr<entity::Player> createPlayer(std::string name,
-         std::unique_ptr<Trogout> outStream, std::unique_ptr<Trogin> inStream,
-         std::unique_ptr<Trogerr> errStream);
+         std::unique_ptr<Trogout> outStream, std::unique_ptr<Trogerr> errStream);
 
          /*
             Inserts a player into the game. Throws an exception if an entity
@@ -848,9 +845,7 @@ namespace trogdor {
 
             Input:
                Player name (std::string)
-               Pointer to an output stream (Trogout *)
-               Pointer to an input stream (Trogin *)
-               Pointer to an error stream (Trogerr *)
+               Callback to execute after player has been inserted (std::function, optional)
 
             Output:
                Player *

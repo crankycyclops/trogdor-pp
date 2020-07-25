@@ -10,7 +10,6 @@
 #include <cstring>
 
 #include <trogdor/game.h>
-#include <trogdor/iostream/nullin.h>
 #include <trogdor/parser/parsers/xmlparser.h>
 #include <trogdor/parser/parsers/inform7parser.h>
 
@@ -92,7 +91,6 @@ int main(int argc, char **argv) {
 	  std::shared_ptr<trogdor::entity::Player> player = currentGame->createPlayer(
          "player",
          std::make_unique<StreamOut>(&std::cout),
-         std::make_unique<trogdor::NullIn>(),
          std::make_unique<StreamErr>(&std::cerr)
 	  );
 
