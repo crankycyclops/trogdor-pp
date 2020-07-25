@@ -82,22 +82,10 @@ namespace trogdor {
          // Whether or not a game is in progress
          bool inGame;
 
-         // Lock on this to keep data consistent between threads
-         // I know people aren't a fan of recursive_mutexes, and they have a
-         // point. But I choose to use it here (so far, Game is the only class
-         // to use it) because of code paths like the following:
-         //
-         // Game::processCommand calls Game::removePlayer.
-         //
-         // The above example is necessary to implement a "quit" action in the
-         // standalone client that ships along with the library. In this case,
-         // I can't factor out the locking bit into a separate private method
-         // because I need to be able to access it publicly in two different
-         // contexts: one in which a lock is required and one in which it's not.
-         // The simplest solution I can see is the use the recursive lock. If
-         // you know a better way, please submit an issue or pull request and
-         // I'll consider merging your changes. I'm still learning and threading
-         // isn't my forte.
+         // Lock on this to keep data consistent between threads. I had a good
+         // reason to use the recursive_mutex at one time, but now that the code
+         // has changed significantly I may not need it anymore. I need to
+         // revisit this.
          std::recursive_mutex mutex;
 
          // Keeps time in the game and executes scheduled jobs
@@ -904,14 +892,6 @@ namespace trogdor {
             Output: time in seconds (unsigned long)
          */
          unsigned long getTime() const;
-
-         /*
-            Reads a command from the user and executes it.
-
-            Input: Player executing command
-            Output: (none)
-         */
-         void processCommand(entity::Player *player);
 
          /*
             Wraps around Vocabulary::insertVerbAction, allowing the client to

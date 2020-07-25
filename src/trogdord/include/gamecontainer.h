@@ -14,7 +14,7 @@
 #include "filter/resolver.h"
 
 #include "gamewrapper.h"
-#include "inputlistener.h"
+//#include "inputlistener.h"
 
 #include "exception/gamenotfound.h"
 #include "exception/entity/playernotfound.h"
@@ -35,10 +35,10 @@ class GameContainer {
 
 		// All currently existing games reside here.
 		std::vector<std::unique_ptr<GameWrapper>> games;
-
+/*
 		// Each game gets its own worker thread to process player input
 		std::unordered_map<size_t, std::unique_ptr<InputListener>> playerListeners;
-
+*/
 		// Indices are used by filters to quickly return a set of games based
 		// on various search criteria.
 		struct {

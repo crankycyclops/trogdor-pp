@@ -1,6 +1,7 @@
+#include <trogdor/entities/entity.h>
+
 #include "../include/request.h"
 #include "../include/gamecontainer.h"
-#include "../include/io/input/driver.h"
 #include "../include/io/output/driver.h"
 
 #include "../include/scopes/entity.h"
@@ -14,7 +15,6 @@ const char *EntityController::SCOPE = "entity";
 // Actions served by the "entity" scope
 const char *EntityController::LIST_ACTION = "list";
 const char *EntityController::OUTPUT_ACTION = "output";
-const char *EntityController::INPUT_ACTION = "input";
 
 // Error messages
 const char *EntityController::MISSING_OUTPUT_MESSAGE = "missing required message";
@@ -62,7 +62,10 @@ std::optional<JSONObject> EntityController::getEntityHelper(
 	JSONObject request,
 	size_t &gameId,
 	std::string &entityName,
-	trogdor::entity::Entity *&ePtr
+	trogdor::entity::Entity *&ePtr,
+	std::string missingNameMsg,
+	std::string invalidNameMsg,
+	std::string notFoundMsg
 ) {
 
 	try {
@@ -70,8 +73,8 @@ std::optional<JSONObject> EntityController::getEntityHelper(
 		entityName = Request::parseArgument<std::string>(
 			request,
 			"args.name",
-			MISSING_ENTITY_NAME,
-			INVALID_ENTITY_NAME
+			missingNameMsg,
+			invalidNameMsg
 		);
 	}
 
@@ -101,7 +104,7 @@ std::optional<JSONObject> EntityController::getEntityHelper(
 		JSONObject response;
 
 		response.put("status", Response::STATUS_NOT_FOUND);
-		response.put("message", ENTITY_NOT_FOUND);
+		response.put("message", notFoundMsg);
 
 		return response;
 	}
@@ -140,10 +143,6 @@ EntityController::EntityController() {
 
 	registerAction(Request::POST, OUTPUT_ACTION, [&] (JSONObject request) -> JSONObject {
 		return this->appendOutput(request);
-	});
-
-	registerAction(Request::POST, INPUT_ACTION, [&] (JSONObject request) -> JSONObject {
-		return this->postInput(request);
 	});
 }
 
@@ -345,44 +344,5 @@ JSONObject EntityController::appendOutput(JSONObject request) {
 	ePtr->out(channel) << *messageArg << std::endl;
 
 	response.put("status", Response::STATUS_SUCCESS);
-	return response;
-}
-
-/*****************************************************************************/
-
-JSONObject EntityController::postInput(JSONObject request) {
-
-	JSONObject response;
-
-	size_t gameId;
-	trogdor::entity::Entity *ePtr;
-	std::string entityName;
-
-	std::optional<JSONObject> error = getEntityHelper(
-		request,
-		gameId,
-		entityName,
-		ePtr
-	);
-
-	if (error.has_value()) {
-		return *error;
-	}
-
-	boost::optional command = request.get_optional<std::string>("args.command");
-
-	if (!command) {
-		response.put("status", Response::STATUS_INVALID);
-		response.put("message", MISSING_COMMAND);
-	}
-
-	else {
-
-		std::unique_ptr<input::Driver> &inBuffer = input::Driver::get();
-
-		inBuffer->set(gameId, entityName, *command);
-		response.put("status", Response::STATUS_SUCCESS);
-	}
-
 	return response;
 }

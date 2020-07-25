@@ -526,10 +526,6 @@ TODO
 
 TODO
 
-### Sending a Command to an Entity's Input Stream
-
-TODO
-
 ### Retrieving Entity Output Messages
 
 TODO
@@ -539,6 +535,10 @@ TODO
 TODO
 
 ### Removing (Destroying) a Player
+
+TODO
+
+### Sending a Command to a Player's Input Stream
 
 TODO
 

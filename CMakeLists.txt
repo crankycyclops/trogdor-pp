@@ -179,7 +179,6 @@ if (Boost_FOUND)
 		src/trogdord/dispatcher.cpp
 		src/trogdord/gamewrapper.cpp
 		src/trogdord/gamecontainer.cpp
-		src/trogdord/inputlistener.cpp
 		src/trogdord/exception/requestexception.cpp
 		src/trogdord/filter/filter.cpp
 		src/trogdord/network/tcpconnection.cpp
@@ -195,12 +194,10 @@ if (Boost_FOUND)
 		src/trogdord/scopes/being.cpp
 		src/trogdord/scopes/creature.cpp
 		src/trogdord/scopes/player.cpp
-		src/trogdord/io/input/driver.cpp
 		src/trogdord/io/input/listeners/listener.cpp
 		src/trogdord/io/input/listenercontainer.cpp
 		src/trogdord/io/output/driver.cpp
 		src/trogdord/io/output/local.cpp
-		src/trogdord/io/iostream/serverin.cpp
 		src/trogdord/io/iostream/serverout.cpp
 		src/trogdord/io/iostream/servererr.cpp
 	)
@@ -362,7 +359,6 @@ if (Boost_FOUND)
 		src/trogdord/test/dispatcher.cpp
 		src/trogdord/test/gamewrapper.cpp
 		src/trogdord/test/gamecontainer.cpp
-		src/trogdord/test/inputlistener.cpp
 		src/trogdord/test/scopes/controller.cpp
 	)
 

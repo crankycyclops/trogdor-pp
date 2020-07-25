@@ -15,6 +15,9 @@ class PlayerController: public BeingController {
 
 	protected:
 
+		// Actions served by the "Player" scope
+		static const char *INPUT_ACTION;
+
 		// Error messages
 		static const char *MISSING_PLAYER_NAME;
 		static const char *INVALID_PLAYER_NAME;
@@ -53,6 +56,9 @@ class PlayerController: public BeingController {
 
 		// Removes a player in the specified game
 		JSONObject destroyPlayer(JSONObject request);
+
+		// Sends input on behalf of a player
+		JSONObject postInput(JSONObject request);
 };
 
 

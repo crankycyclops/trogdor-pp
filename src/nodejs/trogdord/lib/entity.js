@@ -37,43 +37,6 @@ class Entity {
 	}
 
 	/**
-	 * Sends a command to an entity's input stream and returns a promise that
-	 * resolves into a success status.
-	 *
-	 * @param {String} command Command to send to the entity's input stream
-	 */
-	input(command) {
-
-		return new Promise((resolve, reject) => {
-
-			this.#game.trogdord.makeRequest({
-				method: "post",
-				scope: "entity",
-				action: "input",
-				args: {
-					game_id: this.#game.id,
-					name: this.#name,
-					command: command
-				}
-			}).then(response => {
-
-				if (200 != response.status) {
-
-					let error = new Error(response.message);
-
-					error.status = response.status;
-					reject(error);
-				}
-
-				resolve(response);
-
-			}).catch(error => {
-				reject(error);
-			});
-		});
-	}
-
-	/**
 	 * Either sends a message to an Entity's output stream on the specified
 	 * channel or retrieves all messages currently in the Entity's output
 	 * stream on the specified channel. If the output driver trogdord is
