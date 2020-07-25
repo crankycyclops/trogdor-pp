@@ -6,7 +6,6 @@
 #include <trogdor/utility.h>
 
 #include <trogdor/iostream/nullout.h>
-#include <trogdor/iostream/nullin.h>
 #include <trogdor/iostream/placeout.h>
 
 #include <trogdor/timer/jobs/wander.h>

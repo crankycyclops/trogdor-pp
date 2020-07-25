@@ -5,7 +5,6 @@
 #include <memory>
 
 #include <trogdor/entities/thing.h>
-#include <trogdor/iostream/nullin.h>
 
 
 namespace trogdor::entity {

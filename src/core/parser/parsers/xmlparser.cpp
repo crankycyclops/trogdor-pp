@@ -3,8 +3,6 @@
 #include <trogdor/utility.h>
 #include <trogdor/filesystem.h>
 
-#include <trogdor/iostream/nullout.h>
-#include <trogdor/iostream/nullin.h>
 #include <trogdor/iostream/placeout.h>
 
 #include <trogdor/parser/parsers/xmlparser.h>

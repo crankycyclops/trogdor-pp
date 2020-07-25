@@ -27,8 +27,8 @@ namespace trogdor::entity {
 
    // The title property will usually be set to something more descriptive later
    Entity::Entity(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e): game(g), name(n),
-   title(n), outStream(std::move(o)), errStream(std::move(e)), inStream(std::move(i)) {
+   std::unique_ptr<Trogerr> e): game(g), name(n), title(n), outStream(std::move(o)),
+   errStream(std::move(e)) {
 
       if (!isNameValid(n)) {
          throw ValidationException(std::string("name '") + n
@@ -59,7 +59,6 @@ namespace trogdor::entity {
 
       outStream = e.outStream->clone();
       errStream = e.errStream->copy();
-      inStream = e.inStream->clone();
 
       L = std::make_shared<LuaState>(*e.L);
       triggers = std::make_unique<event::EventListener>(*e.triggers);

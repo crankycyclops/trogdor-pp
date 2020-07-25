@@ -3,7 +3,7 @@
 
 
 #include <functional>
-#include <trogdor/action.h>
+#include <trogdor/actions/action.h>
 
 
 // Simple mock action used to execute arbitrary callbacks in response to player

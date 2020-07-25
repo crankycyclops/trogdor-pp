@@ -51,7 +51,7 @@ namespace trogdor::entity {
             containing Game object and a name.
          */
          Thing(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e);
+         std::unique_ptr<Trogerr> e);
 
          /*
             Constructor for cloning a Thing.  Requires a unique name.

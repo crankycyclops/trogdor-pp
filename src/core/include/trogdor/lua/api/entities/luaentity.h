@@ -94,18 +94,6 @@ namespace trogdor::entity {
          static int getEntity(lua_State *L);
 
          /*
-            Wraps around an Entity's input stream to read a string, and returns
-            that string.
-
-            Lua input:
-               (none)
-
-            Lua output:
-               string read from the Entity's input stream
-         */
-         static int in(lua_State *L);
-
-         /*
             Pushes a string to the Entity's output stream at the specified
             channel (defaults to "notifications.") If no string is passed, a
             newline is printed to the default channel.

@@ -3,6 +3,8 @@
 
 
 #include <memory>
+#include <functional>
+
 #include <trogdor/entities/being.h>
 
 
@@ -12,6 +14,13 @@ namespace trogdor::entity {
    class Player: public Being {
 
       private:
+
+         // Input always flows one way, from the application to the library.
+         // If a command requires further input from the user, there's no input
+         // stream the library can read from. Instead, we can set a temporary
+         // callback that Player::input() will execute on the next call instead
+         // of Game::executeAction().
+         std::unique_ptr<std::function<bool(std::string)>> inputInterceptor = nullptr;
 
          // The player's last executed command
          std::unique_ptr<Command> lastCommand;
@@ -23,13 +32,13 @@ namespace trogdor::entity {
             containing Game object and a name.
          */
          Player(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e);
+         std::unique_ptr<Trogerr> e);
 
          /*
             Constructor for cloning an existing player.  Requires a unique name.
          */
          Player(const Player &p, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e);
+         std::unique_ptr<Trogerr> e);
 
          /*
             Returns a smart pointer representing a raw Player pointer. Be careful
@@ -46,6 +55,25 @@ namespace trogdor::entity {
          inline std::shared_ptr<Player> getShared() {
 
             return std::dynamic_pointer_cast<Player>(Entity::getShared());
+         }
+
+         /*
+            If some other part of the library requires further input from the
+            user, this callback will allow that part of the library to hijack
+            our usual call to Game::executeAction() via this callback. The
+            callback is executed once, then unset.
+
+            Input:
+               Callback
+
+            Output:
+               (none)
+         */
+         inline void setInputInterceptor(
+            std::unique_ptr<std::function<bool(std::string)>> interceptor
+         ) {
+
+            inputInterceptor = std::move(interceptor);
          }
 
          /*

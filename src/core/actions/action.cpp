@@ -1,5 +1,5 @@
 #include <trogdor/entities/player.h>
-#include <trogdor/action.h>
+#include <trogdor/actions/action.h>
 
 namespace trogdor {
 

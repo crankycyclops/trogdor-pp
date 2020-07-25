@@ -42,7 +42,6 @@ namespace trogdor::entity {
    // with the colon operator or passed an instance of self as the first
    // argument.
    static const luaL_Reg methods[] = {
-      {"input",        LuaEntity::in},
       {"out",          LuaEntity::out},
       {"getMeta",      LuaEntity::getMeta},
       {"setMeta",      LuaEntity::setMeta},
@@ -161,30 +160,6 @@ namespace trogdor::entity {
          lua_pushnil(L);
       }
 
-      return 1;
-   }
-
-   /***************************************************************************/
-
-   int LuaEntity::in(lua_State *L) {
-
-      std::string str;
-
-      int n = lua_gettop(L);
-
-      if (n != 1) {
-         return luaL_error(L, "takes no arguments");
-      }
-
-      Entity *e = checkEntity(L, -n);
-
-      if (nullptr == e) {
-         return luaL_error(L, "not an Entity!");
-      }
-
-      e->in() >> str;
-
-      lua_pushstring(L, str.c_str());
       return 1;
    }
 
