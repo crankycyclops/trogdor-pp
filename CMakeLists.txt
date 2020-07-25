@@ -19,7 +19,7 @@ endif()
 set(CMAKE_CXX_FLAGS "-Wall -pthread")
 set(CMAKE_CXX_FLAGS_RELEASE -O2)
 
-# Build using C++17.
+# Build using C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 

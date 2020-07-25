@@ -10,6 +10,8 @@ namespace trogdor {
    // Allows players to read text written on objects inside the game.
    class ReadAction: public Action {
 
+      public:
+
          /*
             See documentation in action.h.  A valid syntax for the Read action
             is to have a command with just a verb and a direct object. If the

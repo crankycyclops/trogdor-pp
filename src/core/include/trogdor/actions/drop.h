@@ -11,6 +11,8 @@ namespace trogdor {
    // in whatever room they currently occupy.
    class DropAction: public Action {
 
+      public:
+
          /*
             See documentation in action.h.  A valid syntax for the Drop action
             is to have a verb + direct object.  The result is for the Object

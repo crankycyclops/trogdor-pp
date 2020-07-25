@@ -11,6 +11,8 @@ namespace trogdor {
    // inventories.
    class TakeAction: public Action {
 
+      public:
+
          /*
             See documentation in action.h.  A valid syntax for the Take action
             is to have a verb + direct object.  The result is for the Object

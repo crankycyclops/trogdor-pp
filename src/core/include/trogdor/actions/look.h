@@ -2,13 +2,38 @@
 #define LOOK_ACTION_H
 
 
+#include <memory>
+#include <unordered_map>
+
 #include <trogdor/actions/action.h>
+#include <trogdor/entities/player.h>
 
 
 namespace trogdor {
 
    // Allows a player to look at things
    class LookAction: public Action {
+
+      private:
+
+         // If a player is executing this action from an input interceptor that
+         // attempts to pick one Thing to look at from a list of available
+         // options with the same alias, make sure we lookup the item by its
+         // name rather than its alias to avoid infinite calls to clarifyEntity()
+         // in the case where the desired object's name matches an alias with
+         // more than one Thing.
+         std::unordered_map<
+            entity::Player *,
+            std::weak_ptr<entity::Player>
+         > lookupThingByName;
+
+         // Observe the specified object
+         inline void look(entity::Player *player, entity::Thing *thing) {
+
+            thing->observe(player->getShared(), true, true);
+         }
+
+      public:
 
          /*
             See documentation in action.h.  A valid syntax for the Look action
