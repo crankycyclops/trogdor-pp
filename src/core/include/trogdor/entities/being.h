@@ -187,7 +187,7 @@ namespace trogdor::entity {
             containing Game object and a name.
          */
          Being(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e);
+         std::unique_ptr<Trogerr> e);
 
          /*
             Constructor that clones a Being into another separate and unique

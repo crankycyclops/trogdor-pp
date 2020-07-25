@@ -3,7 +3,6 @@
 #include <trogdor/entities/creature.h>
 #include <trogdor/timer/jobs/respawn.h>
 
-#include <trogdor/iostream/nullin.h>
 #include <trogdor/iostream/nullout.h>
 #include <trogdor/iostream/nullerr.h>
 

@@ -5,7 +5,6 @@
 #include <trogdor/entities/room.h>
 #include <trogdor/entities/creature.h>
 
-#include <trogdor/iostream/nullin.h>
 #include <trogdor/iostream/nullout.h>
 #include <trogdor/iostream/nullerr.h>
 

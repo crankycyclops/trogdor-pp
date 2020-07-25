@@ -19,9 +19,8 @@ namespace trogdor::entity {
    /***************************************************************************/
 
    Object::Object(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o),
-   std::make_unique<NullIn>(), std::move(e)), weight(DEFAULT_WEIGHT),
-   damage(DEFAULT_DAMAGE), owner(std::weak_ptr<Being>()) {
+   std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o),  std::move(e)),
+   weight(DEFAULT_WEIGHT), damage(DEFAULT_DAMAGE), owner(std::weak_ptr<Being>()) {
 
       if (DEFAULT_IS_WEAPON) {
          setTag(WeaponTag);

@@ -5,8 +5,6 @@
 #include <trogdor/iostream/nullerr.h>
 #include <trogdor/entities/player.h>
 
-#include "mock/stringin.h"
-
 
 TEST_SUITE("Command (command.cpp)") {
 

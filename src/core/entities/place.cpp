@@ -8,7 +8,6 @@
 #include <trogdor/entities/object.h>
 
 #include <trogdor/game.h>
-#include <trogdor/iostream/nullin.h>
 #include <trogdor/iostream/placeout.h>
 
 #include <trogdor/exception/undefinedexception.h>
@@ -16,8 +15,8 @@
 
 namespace trogdor::entity {
 
-   Place::Place(Game *g, std::string n, std::unique_ptr<Trogout> o, std::unique_ptr<Trogerr> e):
-   Entity(g, n, std::move(o), std::make_unique<NullIn>(), std::move(e)) {
+   Place::Place(Game *g, std::string n, std::unique_ptr<Trogout> o,
+   std::unique_ptr<Trogerr> e): Entity(g, n, std::move(o), std::move(e)) {
 
       types.push_back(ENTITY_PLACE);
       static_cast<PlaceOut *>(outStream.get())->setPlace(this);

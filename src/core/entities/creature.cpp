@@ -9,8 +9,7 @@ namespace trogdor::entity {
 
 
    Creature::Creature(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Being(g, n, std::move(o),
-   std::make_unique<NullIn>(), std::move(e)),
+   std::unique_ptr<Trogerr> e): Being(g, n, std::move(o), std::move(e)),
    counterAttack(DEFAULT_COUNTER_ATTACK), allegiance(DEFAULT_ALLEGIANCE) {
 
       types.push_back(ENTITY_CREATURE);

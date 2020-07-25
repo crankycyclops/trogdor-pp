@@ -1,8 +1,8 @@
 #include <trogdor/command.h>
 #include <trogdor/game.h>
-#include <trogdor/action.h>
 #include <trogdor/utility.h>
 
+#include <trogdor/actions/action.h>
 #include <trogdor/entities/entity.h>
 
 namespace trogdor {

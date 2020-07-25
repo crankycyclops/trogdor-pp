@@ -18,7 +18,6 @@
 #include <trogdor/lua/luastate.h>
 #include <trogdor/event/eventlistener.h>
 
-#include <trogdor/iostream/trogin.h>
 #include <trogdor/iostream/trogout.h>
 #include <trogdor/iostream/trogerr.h>
 
@@ -91,10 +90,9 @@ namespace trogdor::entity {
          std::unique_ptr<event::EventListener> triggers;
          std::shared_ptr<LuaState> L;
 
-         // Input and output streams
+         // Output streams
          std::unique_ptr<Trogout> outStream;
          std::unique_ptr<Trogerr> errStream;
-         std::unique_ptr<Trogin> inStream;
 
          // One or more callbacks that will be executed when various operations
          // occur on the Entity.
@@ -223,11 +221,10 @@ namespace trogdor::entity {
                Reference to containing Game (Game *)
                Name (std::string)
                Pointer to output stream object (Trogout *)
-               Pointer to input stream object (Trogin *)
                Pointer to error stream object (Trogerr *)
          */
          Entity(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogin> i, std::unique_ptr<Trogerr> e);
+         std::unique_ptr<Trogerr> e);
 
          /*
             Constructor for cloning an Entity into another. IMPORTANT: this does
@@ -335,20 +332,6 @@ namespace trogdor::entity {
             std::string operation,
             const std::shared_ptr<std::function<void(std::any)>> &callback
          );
-
-         /*
-            Returns a reference to the Entity's input stream.  A typical use
-            would look something like this:
-
-            entityPtr->in() >> stringVal;
-
-            Input:
-               (none)
-
-            Output:
-               Trogin &
-         */
-         Trogin &in() {return *inStream;}
 
          /*
             Returns a reference to the Entity's output stream.  A typical use
@@ -792,21 +775,16 @@ namespace trogdor::entity {
 
             Template Arguments:
                ContainerType  -- iterable container type that contains entities
-               ResultType     -- one of Entity, Thing, Being, etc.
 
             Input:
                Iterators over entities to choose from
                Pointer to Entity representing the user (probably a Player)
 
             Output:
-               The chosen entity
-
-            Exceptions:
-               If the user types a name that isn't presented as a choice, the
-               name the user provided is thrown as an exception.
+               (none)
          */
-         template <typename ContainerType, typename ResultType>
-         static ResultType clarifyEntity(ContainerType items, Entity *user);
+         template <typename ContainerType>
+         static void clarifyEntity(ContainerType items, Entity *user);
    };
 
    /***************************************************************************/
@@ -863,71 +841,42 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   template <typename ContainerType, typename ResultType>
-   ResultType Entity::clarifyEntity(ContainerType objects, Entity *user) {
+   // For the sake of simplifying my code, I make the assumption that there are
+   // at least two entites in the collection and that this is why clarifyEntity
+   // was called. Unless you enjoy undefined behavior, I suggest you only call
+   // this on such a collection.
+   template <typename ContainerType>
+   void Entity::clarifyEntity(ContainerType objects, Entity *user) {
 
-      auto i = objects.begin();
+      user->out() << "Do you mean the ";
 
-      if (i == objects.end()) {
-         return 0;
-      }
+      // This loop is a little weird.  The logic was nicer when I was using a
+      // list and could get its size, but I had to hack and clobber the existing
+      // loop to make it work with iterators for cases where I don't know the
+      // number of elements.
+      for (auto i = objects.begin(); i != objects.end(); ) {
 
-      // pre-increment for looking ahead by one
-      else if (++i == objects.end()) {
-         return *(--i);
-      }
+         user->out() << (*i)->getName();
+         i++;
 
-      else {
-
-         // undo lookahead from above
-         i--;
-
-         user->out() << "Do you mean the ";
-
-         // This loop is a little nasty.  The logic was A LOT nicer when I was
-         // using a list and could get its size, but I had to hack and clobber
-         // the existing loop to make it work with bi-directional iterators
-         // where i don't know the number of elements.  I apologize in advance
-         // to whoever is forced to read it...
-         for (i = objects.begin(); i != objects.end(); ) {
-
-            user->out() << (*i)->getName();
-            i++;
-
-            // hackety hack
-            if (i == objects.end()) {
-               break;
-            }
-
-            // temporary lookahead on a bi-directional const_iterator
-            else if (++i == objects.end()) {
-               user->out() << " or the ";
-               i--;
-            }
-
-            // pre-decrement to undo temporary lookahead
-            else if (--i != objects.begin()) {
-               user->out() << ", ";
-            }
+         // hackety hack
+         if (i == objects.end()) {
+            break;
          }
 
-         user->out() << "?" << std::endl;
-
-         user->out("prompt") << "\n> ";
-         user->out("prompt").flush();
-
-         std::string answer;
-         user->in() >> answer;
-
-         for (i = objects.begin(); i != objects.end(); i++) {
-            if (0 == answer.compare((*i)->getName())) {
-               return *i;
-            }
+         // temporary lookahead on a bi-directional const_iterator
+         else if (++i == objects.end()) {
+            user->out() << " or the ";
+            i--;
          }
 
-         // user typed a name that wasn't in the list
-         throw answer;
+         // pre-decrement to undo temporary lookahead
+         else if (--i != objects.begin()) {
+            user->out() << ", ";
+         }
       }
+
+      user->out() << "?" << std::endl;
    }
 }
 

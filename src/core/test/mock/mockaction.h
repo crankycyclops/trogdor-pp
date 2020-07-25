@@ -1,4 +1,4 @@
-#include <trogdor/action.h>
+#include <trogdor/actions/action.h>
 
 class MockAction: public trogdor::Action {
 
