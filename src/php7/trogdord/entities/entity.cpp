@@ -42,18 +42,12 @@ const char *PLAYER_TYPE_STR = "player";
 // By default, we read from an entity's output buffer on this channel
 static const char *ENTITY_DEFAULT_OUTPUT_CHANNEL = "notifications";
 
-// This request sends a command to the entity's input buffer.
-static const char *ENTITY_POST_INPUT_REQUEST = "{\"method\":\"post\",\"scope\":\"entity\",\"action\":\"input\",\"args\":{\"game_id\":%gid,\"name\":\"%ename\",\"command\":\"%input\"}}";
-
 // This request returns all buffered output for the specified entity and channel.
 static const char *ENTITY_GET_OUTPUT_REQUEST = "{\"method\":\"get\",\"scope\":\"entity\",\"action\":\"output\",\"args\":{\"game_id\":%gid,\"name\":\"%ename\",\"channel\":\"%channel\"}}";
 
 // This request appends a string to the entity's output buffer on the specified
 // channel.
 static const char *ENTITY_POST_OUTPUT_REQUEST = "{\"method\":\"post\",\"scope\":\"entity\",\"action\":\"output\",\"args\":{\"game_id\":%gid,\"name\":\"%ename\",\"channel\":\"%channel\",\"message\":\"%output\"}}";
-
-// Utility function that sends a command to an entity's input buffer.
-static void sendEntityInput(zval *entityObj, std::string command);
 
 // Utility function that returns the contents of an entity's output buffer on
 // the specified channel.
@@ -99,57 +93,6 @@ PHP_METHOD(Entity, __get) {
 	// I read to help me understand what all the arguments mean:
 	// https://medium.com/@davidtstrauss/copy-and-move-semantics-of-zvals-in-php-7-41427223d784
 	RETURN_ZVAL(propVal, 1, 0);
-}
-
-/*****************************************************************************/
-
-// Sends a command to the entity's input buffer.
-ZEND_BEGIN_ARG_INFO(arginfoInput, 0)
-	ZEND_ARG_TYPE_INFO(0, command, IS_STRING, 0)
-ZEND_END_ARG_INFO()
-
-PHP_METHOD(Entity, input) {
-
-	char *command;
-	size_t commandLength;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &command, &commandLength) == FAILURE) {
-		RETURN_NULL();
-	}
-
-	try {
-		sendEntityInput(getThis(), command);
-	}
-
-	// Throw \Trogord\NetworkException
-	catch (const NetworkException &e) {
-		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
-		RETURN_NULL();
-	}
-
-	catch (const RequestException &e) {
-
-		if (404 == e.getCode()) {
-
-			// Throw \Trogdord\GameNotFound
-			if (0 == strcmp(e.what(), "game not found")) {
-				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
-				RETURN_NULL();
-			}
-
-			// Throw \Trogdord\EntityNotFound
-			else {
-				zend_throw_exception(EXCEPTION_GLOBALS(entityNotFound), e.what(), e.getCode());
-				RETURN_NULL();
-			}
-		}
-
-		// Throw \Trogdord\RequestException
-		else {
-			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
-			RETURN_NULL();
-		}
-	}
 }
 
 /*****************************************************************************/
@@ -239,32 +182,9 @@ PHP_METHOD(Entity, output) {
 static const zend_function_entry entityMethods[] =  {
 	PHP_ME(Entity, __construct, arginfoCtor, ZEND_ACC_PRIVATE | ZEND_ACC_CTOR)
 	PHP_ME(Entity, __get, arginfoMagicGet, ZEND_ACC_PUBLIC)
-	PHP_ME(Entity, input, arginfoInput, ZEND_ACC_PUBLIC)
 	PHP_ME(Entity, output, arginfoOutput, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
-
-/*****************************************************************************/
-
-static void sendEntityInput(zval *entityObj, std::string command) {
-
-	zval rv; // ???
-	zval *gameObj = ENTITY_TO_GAME(entityObj, &rv);
-
-	std::string request = ENTITY_POST_INPUT_REQUEST;
-
-	strReplace(request, "%gid", std::to_string(Z_LVAL_P(GAME_TO_ID(gameObj, &rv))));
-	strReplace(request, "%ename", Z_STRVAL_P(ENTITY_TO_NAME(entityObj, &rv)));
-	strReplace(request, "%input", command);
-
-	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(GAME_TO_TROGDORD(gameObj, &rv)));
-
-	Document response = Request::execute(
-		objWrapper->data.hostname,
-		objWrapper->data.port,
-		request
-	);
-}
 
 /*****************************************************************************/
 

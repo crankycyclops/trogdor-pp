@@ -97,11 +97,7 @@ int main(int argc, char **argv) {
 	  );
 
 	  // The optional callback forces the user to acknowledge they've read the
-     // introduction before they can start playing. Since we call Game::start()
-     // after this, and since std::cin will block until it gets a result, it
-     // also results in the game remaining in a paused state until the user
-     // enters. Be aware that this would be catastrophic in a multi-player
-     // environment.
+     // introduction before they can start playing.
 	  currentGame->insertPlayer(player, [&player]() {
 
          std::string blah;

@@ -10,6 +10,9 @@
 // Scope name that should be used in requests
 const char *PlayerController::SCOPE = "player";
 
+// Actions served by the "Player" scope
+const char *PlayerController::INPUT_ACTION = "input";
+
 // Error messages
 const char *PlayerController::MISSING_PLAYER_NAME = "missing required player name";
 const char *PlayerController::INVALID_PLAYER_NAME = "invalid player name";
@@ -69,6 +72,10 @@ PlayerController::PlayerController(): BeingController() {
 
 	registerAction(Request::DELETE, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
 		return this->destroyPlayer(request);
+	});
+
+	registerAction(Request::POST, INPUT_ACTION, [&] (JSONObject request) -> JSONObject {
+		return this->postInput(request);
 	});
 }
 
@@ -205,4 +212,43 @@ JSONObject PlayerController::destroyPlayer(JSONObject request) {
 
 		return response;
 	}
+}
+
+/*****************************************************************************/
+
+JSONObject PlayerController::postInput(JSONObject request) {
+
+	JSONObject response;
+
+	size_t gameId;
+	trogdor::entity::Entity *ePtr;
+	std::string entityName;
+
+	std::optional<JSONObject> error = getEntityHelper(
+		request,
+		gameId,
+		entityName,
+		ePtr,
+		MISSING_PLAYER_NAME,
+		INVALID_PLAYER_NAME,
+		PLAYER_NOT_FOUND
+	);
+
+	if (error.has_value()) {
+		return *error;
+	}
+
+	boost::optional command = request.get_optional<std::string>("args.command");
+
+	if (!command) {
+		response.put("status", Response::STATUS_INVALID);
+		response.put("message", MISSING_COMMAND);
+	}
+
+	else {
+		static_cast<trogdor::entity::Player *>(ePtr)->input(*command);
+		response.put("status", Response::STATUS_SUCCESS);
+	}
+
+	return response;
 }

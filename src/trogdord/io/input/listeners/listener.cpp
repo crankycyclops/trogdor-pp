@@ -1,5 +1,7 @@
+#include <trogdor/entities/player.h>
+
 #include "../../../include/json.h"
-#include "../../../include/io/input/driver.h"
+#include "../../../include/gamecontainer.h"
 #include "../../../include/io/input/listeners/listener.h"
 
 namespace input {
@@ -24,7 +26,12 @@ namespace input {
 		boost::optional command = data.get_optional<std::string>("command");
 
 		if (gameId && entity && command) {
-			input::Driver::get()->set(*gameId, *entity, *command);
+
+			if (auto &game = GameContainer::get()->getGame(*gameId)) {
+				if (auto player = game->get()->getPlayer(*entity)) {
+					player->input(*command);
+				}
+			}
 		}
 	}
 }

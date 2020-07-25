@@ -18,7 +18,6 @@ class EntityController: public ScopeController {
 		// Actions served by the "entity" scope
 		static const char *LIST_ACTION;
 		static const char *OUTPUT_ACTION;
-		static const char *INPUT_ACTION;
 
 		// Error messages
 		static const char *MISSING_OUTPUT_MESSAGE;
@@ -66,7 +65,10 @@ class EntityController: public ScopeController {
 			JSONObject request,
 			size_t &gameId,
 			std::string &entityName,
-			trogdor::entity::Entity *&ePtr
+			trogdor::entity::Entity *&ePtr,
+			std::string missingNameMsg = MISSING_ENTITY_NAME,
+			std::string invalidNameMsg = INVALID_ENTITY_NAME,
+			std::string notFoundMsg = ENTITY_NOT_FOUND
 		);
 
 	public:
@@ -89,9 +91,6 @@ class EntityController: public ScopeController {
 
 		// Appends an output message to the given entity on the given channel.
 		JSONObject appendOutput(JSONObject request);
-
-		// Sends input on behalf of an entity.
-		JSONObject postInput(JSONObject request);
 };
 
 

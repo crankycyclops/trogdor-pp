@@ -1,9 +1,11 @@
 #include <any>
 
+#include <trogdor/entities/player.h>
+
 #include "include/filesystem.h"
 #include "include/gamecontainer.h"
 
-#include "include/io/iostream/serverin.h"
+#include <trogdor/iostream/nullin.h>
 #include "include/io/iostream/serverout.h"
 
 
@@ -64,10 +66,6 @@ GameContainer::GameContainer() {
 /*****************************************************************************/
 
 GameContainer::~GameContainer() {
-
-	// Stop listening for player input on all currently running games and free
-	// the listener's memory.
-	playerListeners.clear();
 
 	// Optimization: this pre-step, along with its corresponding call to
 	// game->shutdown() in the next loop instead of game->stop(), reduces
@@ -153,14 +151,6 @@ size_t GameContainer::createGame(
 
 	size_t gameId = games.size() - 1;
 
-	playerListeners.insert(
-		std::make_pair(
-			gameId,
-			// The double get resolves like so: GameWrapper -> unique_ptr<trogdord::Game> -> trogdord::Game *
-			std::make_unique<InputListener>(games[gameId]->get().get())
-		)
-	);
-
 	// Update the running index whenever the game is started
 	games[gameId]->get()->addCallback("start",
 	std::make_shared<std::function<void(std::any)>>([&, gameId](std::any data) {
@@ -224,7 +214,6 @@ void GameContainer::destroyGame(size_t id) {
 	if (games.size() > id && nullptr != games[id]) {
 
 		numPlayers -= games[id]->getNumPlayers();
-		playerListeners[id] = nullptr;
 
 		indices.mutex.lock();
 
@@ -250,7 +239,6 @@ void GameContainer::startGame(size_t id) {
 
 	if (games.size() > id && nullptr != games[id]) {
 		games[id]->get()->start();
-		playerListeners[id]->start();
 	}
 }
 
@@ -260,7 +248,6 @@ void GameContainer::stopGame(size_t id) {
 
 	if (games.size() > id && nullptr != games[id]) {
 		games[id]->get()->stop();
-		playerListeners[id]->stop();
 	}
 }
 
@@ -316,18 +303,12 @@ trogdor::entity::Player *GameContainer::createPlayer(size_t gameId, std::string 
 	std::shared_ptr<trogdor::entity::Player> player = game->get()->createPlayer(
 		playerName,
 		std::make_unique<ServerOut>(gameId),
-		std::make_unique<ServerIn>(gameId),
+		std::make_unique<trogdor::NullIn>(),
 		Config::get()->err().copy()
 	);
 
-	static_cast<ServerIn *>(&(player->in()))->setEntity(player.get());
 	static_cast<ServerOut *>(&(player->out()))->setEntity(player.get());
-
 	game->get()->insertPlayer(player);
-
-	if (game->get()->inProgress()) {
-		playerListeners[gameId]->subscribe(player);
-	}
 
 	numPlayers++;
 	return player.get();
@@ -349,18 +330,6 @@ void GameContainer::removePlayer(size_t gameId, std::string playerName, std::str
 		throw PlayerNotFound();
 	}
 
-	// If we're already processing a player's input, we'll have to remove them
-	// from the game after unblocking their input stream.
-	if (static_cast<ServerIn &>(pPtr->in()).isBlocked()) {
-		playerListeners[gameId]->unsubscribe(pPtr, [&game, playerName, message] {
-			game->get()->removePlayer(playerName, message);
-		});
-	}
-
-	else {
-		playerListeners[gameId]->unsubscribe(pPtr);
-		game->get()->removePlayer(playerName, message);
-	}
-
+	game->get()->removePlayer(playerName, message);
 	numPlayers--;
 }

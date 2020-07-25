@@ -820,29 +820,6 @@ Result:
 Player {}
 ```
 
-### Sending a Command to an Entity's Input Stream
-
-Entity.input(command) will send a command to the entity's input stream. Return value will be a promise that resolves to a successful response object.
-
-Example:
-
-```javascript
-const connection = new Trogdord();
-
-connection.on('connect', () => {
-
-	// Retrieve a player from an existing game and send a command on its behalf
-	connection.getGame(0)
-	.then(game => game.getPlayer('n00bslay3r'))
-	.then(player => {
-		player.input('go north');
-	})
-	.catch(error => {
-		// ...Handle error...
-	});
-});
-```
-
 ### Retrieving Entity Output Messages
 
 To retrieve the output messages for an entity (for example, a player), call Entity.output(channel).
@@ -914,6 +891,29 @@ connection.on('connect', () => {
 	.then(game => game.getPlayer('n00bslay3r'))
 	.then(player => {
 		player.output('notifications', 'You were naughty. Be aware that further abuse will result in a permanent ban.');
+	})
+	.catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+### Sending a Command to a Player's Input Stream
+
+Player.input(command) will send a command to the player's input stream. Return value will be a promise that resolves to a successful response object.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// Retrieve a player from an existing game and send a command on its behalf
+	connection.getGame(0)
+	.then(game => game.getPlayer('n00bslay3r'))
+	.then(player => {
+		player.input('go north');
 	})
 	.catch(error => {
 		// ...Handle error...

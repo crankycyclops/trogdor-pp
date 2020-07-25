@@ -410,58 +410,6 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Game::processCommand(entity::Player *player) {
-
-      std::string commandStr;
-
-      // Prompt the user for input
-      player->out("prompt") << "\n> ";
-      player->out("prompt").flush();
-      player->in() >> commandStr;
-
-      std::shared_ptr<Command> command = std::make_shared<Command>(vocabulary, commandStr);
-
-      // don't do anything if the user didn't actually enter a command
-      if (command->isNull()) {
-         return;
-      }
-
-      // do nothing if we're not in a running state
-      else if (!inGame) {
-         player->out() << "Game is stopped and not accepting commands." << std::endl;
-         return;
-      }
-
-      if (!command->isInvalid()) {
-
-         // player is attempting to re-execute his last command
-         if (0 == command->getVerb().compare("a") ||
-         0 == command->getVerb().compare("again")) {
-
-            if (nullptr != lastCommand) {
-               command = lastCommand;
-            }
-
-            else {
-               player->out() << "You haven't entered any commands yet!" << std::endl;
-               return;
-            }
-         }
-
-         if (!executeAction(player, *command)) {
-            player->out() << "Sorry, I don't understand you." << std::endl;
-         }
-      }
-
-      else {
-         player->out() << "Sorry, I don't understand you." << std::endl;
-      }
-
-      lastCommand = command;
-   }
-
-   /***************************************************************************/
-
    bool Game::executeAction(entity::Player *player, const Command &command) {
 
       Action *action = vocabulary.getVerbAction(command.getVerb());
