@@ -59,16 +59,24 @@ namespace trogdor {
                lookupThingByName[player].lock() == playerShared
             ) {
 
+               bool itemFound = false;
+
                // This list should be pretty small, so I think it's okay to just
                // iterate through them until we find the right one.
                for (auto &item: items) {
                   if (0 == object.compare(item->getName())) {
                      look(player, item);
+                     itemFound = true;
                      break;
                   }
                }
 
                lookupThingByName.erase(player);
+
+               if (!itemFound) {
+                  player->out("display") << "There is no " << command.getDirectObject()
+                     << " here!" << std::endl;
+               }
             }
 
             else if (0 == items.size()) {
