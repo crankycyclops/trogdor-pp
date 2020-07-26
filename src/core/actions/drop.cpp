@@ -1,7 +1,4 @@
-#include <trogdor/entities/player.h>
 #include <trogdor/actions/drop.h>
-
-#include <trogdor/exception/beingexception.h>
 
 namespace trogdor {
 
@@ -25,9 +22,31 @@ namespace trogdor {
       Game *game
    ) {
 
+      std::shared_ptr<entity::Player> playerShared = player->getShared();
       auto invItems = player->getInventoryObjectsByName(command.getDirectObject());
 
-      if (invItems.begin() == invItems.end()) {
+      // We're calling this action a second time after asking the user to
+      // supply a unique name out of a list of items with the same alias,
+      // so now we need to lookup the item by name instead of by alias.
+      if (
+         lookupThingByName.end() != lookupThingByName.find(player) &&
+         !lookupThingByName[player].expired() &&
+         lookupThingByName[player].lock() == playerShared
+      ) {
+
+         // This list should be pretty small, so I think it's okay to just
+         // iterate through them until we find the right one.
+         for (auto &item: invItems) {
+            if (0 == command.getDirectObject().compare(item->getName())) {
+               drop(player, item);
+               break;
+            }
+         }
+
+         lookupThingByName.erase(player);
+      }
+
+      else if (invItems.begin() == invItems.end()) {
          player->out("display") << "You don't have a " << command.getDirectObject()
             << "!" << std::endl;
          return;
@@ -36,6 +55,7 @@ namespace trogdor {
       else if (invItems.size() > 1) {
 
          entity::Entity::clarifyEntity<entity::ObjectList>(invItems, player);
+         lookupThingByName[player] = playerShared;
 
          player->setInputInterceptor(std::make_unique<std::function<bool(std::string)>>(
             [player, command](std::string input) -> bool {
@@ -47,39 +67,7 @@ namespace trogdor {
       }
 
       else {
-
-         entity::Object *object = *invItems.begin();
-
-         try {
-
-            player->drop(object->getShared());
-
-            std::string message = object->getMessage("drop");
-            if (message.length() > 0) {
-               player->out("display") << message << std::endl;
-            }
-
-            else {
-               player->out("display") << "You drop the " << object->getName()
-                  << "." << std::endl;
-            }
-         }
-
-         catch (const entity::BeingException &e) {
-
-            switch (e.getErrorCode()) {
-
-               case entity::BeingException::DROP_UNDROPPABLE:
-                  // TODO: add message for this (named undroppable)
-                  player->out("display") << "You can't drop that!" << std::endl;
-                  break;
-
-               default:
-                  player->err() << "Unknown error dropping object.  This is a "
-                     << "bug." << std::endl;
-                  break;
-            }
-         }
+         drop(player, *invItems.begin());
       }
    }
 }

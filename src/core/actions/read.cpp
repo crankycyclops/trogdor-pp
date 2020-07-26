@@ -1,4 +1,3 @@
-#include <trogdor/entities/player.h>
 #include <trogdor/actions/read.h>
 
 namespace trogdor {
@@ -24,6 +23,8 @@ namespace trogdor {
 
       if (auto location = player->getLocation().lock()) {
 
+         std::shared_ptr<entity::Player> playerShared = player->getShared();
+
          if (thingName.length() == 0) {
             location->observe(player->getShared(), true, true);
          }
@@ -42,7 +43,28 @@ namespace trogdor {
                items.push_front(roomThing);
             };
 
-            if (0 == items.size()) {
+            // We're calling this action a second time after asking the user to
+            // supply a unique name out of a list of items with the same alias,
+            // so now we need to lookup the item by name instead of by alias.
+            if (
+               lookupThingByName.end() != lookupThingByName.find(player) &&
+               !lookupThingByName[player].expired() &&
+               lookupThingByName[player].lock() == playerShared
+            ) {
+
+               // This list should be pretty small, so I think it's okay to just
+               // iterate through them until we find the right one.
+               for (auto &item: items) {
+                  if (0 == command.getDirectObject().compare(item->getName())) {
+                     read(game, player, item);
+                     break;
+                  }
+               }
+
+               lookupThingByName.erase(player);
+            }
+
+            else if (0 == items.size()) {
                player->out("display") << "There is no " << thingName << " here!" << std::endl;
                return;
             }
@@ -50,6 +72,7 @@ namespace trogdor {
             else if (items.size() > 1) {
 
                entity::Entity::clarifyEntity<entity::ThingList>(items, player);
+               lookupThingByName[player] = playerShared;
 
                player->setInputInterceptor(std::make_unique<std::function<bool(std::string)>>(
                   [player, command](std::string input) -> bool {
@@ -61,31 +84,7 @@ namespace trogdor {
             }
 
             else {
-
-               entity::Thing *thing = *items.begin();
-               std::string text = thing->getMeta("text");
-
-               if (!game->event({
-                  "beforeRead",
-                  {player->getEventListener(), thing->getEventListener()},
-                  {player, thing}
-               })) {
-                  return;
-               }
-
-               if (text.length()) {
-                  player->out("display") << text << std::endl;
-               }
-
-               else {
-                  player->out("display") << "There's nothing to read." << std::endl;
-               }
-
-               game->event({
-                  "afterRead",
-                  {player->getEventListener(), thing->getEventListener()},
-                  {player, thing}
-               });
+               read(game, player, *items.begin());
             }
          }
       }

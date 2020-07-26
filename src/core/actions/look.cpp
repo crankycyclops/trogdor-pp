@@ -1,4 +1,3 @@
-#include <trogdor/entities/player.h>
 #include <trogdor/actions/look.h>
 
 
@@ -15,6 +14,8 @@ namespace trogdor {
       return true;
    }
 
+   /***************************************************************************/
+
    void LookAction::execute(
       entity::Player *player,
       const Command &command,
@@ -29,8 +30,10 @@ namespace trogdor {
 
       if (auto location = player->getLocation().lock()) {
 
+         std::shared_ptr<entity::Player> playerShared = player->getShared();
+
          if (object.length() == 0) {
-            location->observe(player->getShared(), true, true);
+            location->observe(playerShared, true, true);
          }
 
          else {
@@ -47,14 +50,35 @@ namespace trogdor {
                items.push_front(roomThing);
             };
 
-            if (0 == items.size()) {
+            // We're calling this action a second time after asking the user to
+            // supply a unique name out of a list of items with the same alias,
+            // so now we need to lookup the item by name instead of by alias.
+            if (
+               lookupThingByName.end() != lookupThingByName.find(player) &&
+               !lookupThingByName[player].expired() &&
+               lookupThingByName[player].lock() == playerShared
+            ) {
+
+               // This list should be pretty small, so I think it's okay to just
+               // iterate through them until we find the right one.
+               for (auto &item: items) {
+                  if (0 == object.compare(item->getName())) {
+                     look(player, item);
+                     break;
+                  }
+               }
+
+               lookupThingByName.erase(player);
+            }
+
+            else if (0 == items.size()) {
                player->out("display") << "There is no " << object << " here!" << std::endl;
-               return;
             }
 
             else if (items.size() > 1) {
 
                entity::Entity::clarifyEntity<entity::ThingList>(items, player);
+               lookupThingByName[player] = playerShared;
 
                player->setInputInterceptor(std::make_unique<std::function<bool(std::string)>>(
                   [player, command](std::string input) -> bool {
@@ -66,7 +90,7 @@ namespace trogdor {
             }
 
             else {
-               (*items.begin())->observe(player->getShared(), true, true);
+               look(player, *items.begin());
             }
          }
       }
