@@ -23,9 +23,31 @@ namespace trogdor {
 
       if (auto location = player->getLocation().lock()) {
 
+         std::shared_ptr<entity::Player> playerShared = player->getShared();
          auto roomItems = location->getThingsByName(command.getDirectObject());
 
-         if (0 == roomItems.size()) {
+         // We're calling this action a second time after asking the user to
+         // supply a unique name out of a list of items with the same alias,
+         // so now we need to lookup the item by name instead of by alias.
+         if (
+            lookupThingByName.end() != lookupThingByName.find(player) &&
+            !lookupThingByName[player].expired() &&
+            lookupThingByName[player].lock() == playerShared
+         ) {
+
+            // This list should be pretty small, so I think it's okay to just
+            // iterate through them until we find the right one.
+            for (auto &item: roomItems) {
+               if (0 == command.getDirectObject().compare(item->getName())) {
+                  take(player, item);
+                  break;
+               }
+            }
+
+            lookupThingByName.erase(player);
+         }
+
+         else if (0 == roomItems.size()) {
             player->out("display") << "There is no " << command.getDirectObject()
                << " here!" << std::endl;
             return;
@@ -34,6 +56,7 @@ namespace trogdor {
          else if (roomItems.size() > 1) {
 
             entity::Entity::clarifyEntity<entity::ThingList>(roomItems, player);
+            lookupThingByName[player] = playerShared;
 
             player->setInputInterceptor(std::make_unique<std::function<bool(std::string)>>(
                [player, command](std::string input) -> bool {
@@ -45,52 +68,7 @@ namespace trogdor {
          }
 
          else {
-
-            entity::Thing *thing = *roomItems.begin();
-
-            if (entity::ENTITY_OBJECT != thing->getType()) {
-               player->out("display") << "You can't take that!" << std::endl;
-            }
-
-            else {
-
-               try {
-
-                  player->take(static_cast<entity::Object *>(thing)->getShared());
-
-                  std::string message = thing->getMessage("take");
-                  if (message.length() > 0) {
-                     player->out("display") << message << std::endl;
-                  }
-
-                  else {
-                     player->out("display") << "You take the " << thing->getName()
-                        << "." << std::endl;
-                  }
-               }
-
-               catch (const entity::BeingException &e) {
-
-                  // TODO: consider custom messages
-                  switch (e.getErrorCode()) {
-
-                     case entity::BeingException::TAKE_TOO_HEAVY:
-                        player->out("display") << command.getDirectObject()
-                           << " is too heavy.  Try dropping something first."
-                           << std::endl;
-                        break;
-
-                     case entity::BeingException::TAKE_UNTAKEABLE:
-                        player->out("display") << "You can't take that!" << std::endl;
-                        break;
-
-                     default:
-                        player->err() << "Unknown error taking object.  "
-                           << "This is a bug." << std::endl;
-                        break;
-                  }
-               }
-            }
+            take(player, *roomItems.begin());
          }
       }
    }
