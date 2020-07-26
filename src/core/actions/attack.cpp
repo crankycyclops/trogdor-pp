@@ -27,41 +27,49 @@ namespace trogdor {
       // TODO: you can say "attack myself with fish" even if you don't have a
       // fish in your inventory. While technically not a big deal in the case of
       // self-termination, I should probably fix this.
-      if (0 == strToLower(command.getDirectObject()).compare("myself")) {
-
-         static const char *suicideResponses[] = {
-            "Done.",
-            "If you insist...",
-            "You know, they have hotlines for that sort of thing.",
-            "Was life really so hard?",
-            "I hope you left a note.",
-            "You'll be missed."
-         };
-
-         static int arrSize = sizeof(suicideResponses) / sizeof (const char *);
-
-         static std::random_device rd;
-         static std::minstd_rand generator(rd());
-         static std::uniform_int_distribution<unsigned> distribution(0, arrSize - 1);
-
-         if (player->isAlive()) {
-
-            player->out("display") << suicideResponses[distribution(generator)] << std::endl;
-            player->die(true);
-         }
-
-         else {
-            player->out("display") << "You're already dead." << std::endl;
-         }
-
+      if (
+         0 == strToLower(command.getDirectObject()).compare("myself") ||
+         0 == command.getDirectObject().compare(player->getName())
+      ) {
+         commitSuicide(player);
          return;
       }
 
       if (auto location = player->getLocation().lock()) {
 
+         std::shared_ptr<entity::Player> playerShared = player->getShared();
+
+         // The Being the player will be attacking and the weapon the player
+         // will be using (if this remains nullptr after a call to selectWeapon(),
+         // the player will be attacking without one.)
+         entity::Being *defender;
+         entity::Object *weapon = nullptr;
+
          auto beings = location->getBeingsByName(command.getDirectObject());
 
-         if (beings.begin() == beings.end()) {
+         if (
+            lookupDefenderByName.end() != lookupDefenderByName.find(player) &&
+            !lookupDefenderByName[player].expired() &&
+            lookupDefenderByName[player].lock() == playerShared
+         ) {
+
+            for (auto &being: beings) {
+               if (0 == command.getDirectObject().compare(being->getName())) {
+                  defender = being;
+                  break;
+               }
+            }
+
+            lookupDefenderByName.erase(player);
+
+            if (!defender) {
+               player->out("display") << "There is no " << command.getDirectObject()
+                  << " here!" << std::endl;
+               return;
+            }
+         }
+
+         else if (beings.begin() == beings.end()) {
             player->out("display") << "There is no " << command.getDirectObject()
                << " here!" << std::endl;
             return;
@@ -70,6 +78,7 @@ namespace trogdor {
          else if (beings.size() > 1) {
 
             entity::Entity::clarifyEntity<entity::BeingList>(beings, player);
+            lookupDefenderByName[player] = playerShared;
 
             player->setInputInterceptor(std::make_unique<std::function<bool(std::string)>>(
                [player, command](std::string input) -> bool {
@@ -78,60 +87,81 @@ namespace trogdor {
                   return player->getGame()->executeAction(player, cmd);
                }
             ));
+
+            return;
          }
 
          else {
+            defender = *beings.begin();
+         }
 
-            entity::Being *defender = *beings.begin();
-            std::string weaponName = command.getIndirectObject();
-            entity::Object *weapon = 0;
+         if (
+            lookupWeaponByName.end() != lookupWeaponByName.find(player) &&
+            !lookupWeaponByName[player].expired() &&
+            lookupWeaponByName[player].lock() == playerShared
+         ) {
 
-            if (weaponName.length() > 0) {
-
-               auto items = player->getInventoryObjectsByName(weaponName);
-
-               if (items.begin() == items.end()) {
-                  player->out("display") << "You don't have a " << weaponName << "!" << std::endl;
-                  return;
-               }
-
-               else if (items.size() > 1) {
-
-                  entity::Entity::clarifyEntity<entity::ObjectList>(items, player);
-
-                  player->setInputInterceptor(std::make_unique<std::function<bool(std::string)>>(
-                     [player, command](std::string input) -> bool {
-
-                        Command cmd(
-                           player->getGame()->getVocabulary(),
-                           command.getVerb(),
-                           command.getDirectObject(),
-                           input,
-                           "with"
-                        );
-
-                        return player->getGame()->executeAction(player, cmd);
-                     }
-                  ));
-
-                  return;
-               }
-
-               else {
-
-                  weapon = *items.begin();
-
-                  // TODO: this check should be made inside Being (we'd have an
-                  // exception to catch)
-                  if (!weapon->isTagSet(entity::Object::WeaponTag)) {
-                     player->out("display") << "The " << weaponName << " isn't a weapon!" << std::endl;
-                     return;
-                  }
+            for (auto &item: player->getInventoryObjectsByName(command.getIndirectObject())) {
+               if (0 == command.getDirectObject().compare(item->getName())) {
+                  weapon = item;
+                  break;
                }
             }
 
-            player->attack(defender, weapon);
+            lookupWeaponByName.erase(player);
+
+            if (!weapon) {
+               player->out("display") << "There is no " << command.getDirectObject()
+                  << " here!" << std::endl;
+               return;
+            }
          }
+
+         else if (command.getIndirectObject().length() > 0) {
+
+            auto items = player->getInventoryObjectsByName(command.getIndirectObject());
+
+            if (items.begin() == items.end()) {
+               player->out("display") << "You don't have a " << command.getIndirectObject() << "!" << std::endl;
+               return;
+            }
+
+            else if (items.size() > 1) {
+
+               entity::Entity::clarifyEntity<entity::ObjectList>(items, player);
+
+               player->setInputInterceptor(std::make_unique<std::function<bool(std::string)>>(
+                  [player, command](std::string input) -> bool {
+
+                     Command cmd(
+                        player->getGame()->getVocabulary(),
+                        command.getVerb(),
+                        command.getDirectObject(),
+                        input,
+                        "with"
+                     );
+
+                     return player->getGame()->executeAction(player, cmd);
+                  }
+               ));
+
+               return;
+            }
+
+            else {
+
+               weapon = *items.begin();
+
+               // TODO: this check should be made inside Being (we'd have an
+               // exception to catch)
+               if (!weapon->isTagSet(entity::Object::WeaponTag)) {
+                  player->out("display") << "The " << command.getIndirectObject() << " isn't a weapon!" << std::endl;
+                  return;
+               }
+            }
+         }
+
+         player->attack(defender, weapon);
       }
    }
 }
