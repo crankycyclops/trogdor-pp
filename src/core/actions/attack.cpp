@@ -129,14 +129,22 @@ namespace trogdor {
             else if (items.size() > 1) {
 
                entity::Entity::clarifyEntity<entity::ObjectList>(items, player);
+               auto defenderShared = defender->getShared();
+
+               // By supplying the chosen defender's name in the command and
+               // forcing us to look that up by name, we avoid a potential bug
+               // in the case where we have to clarify both the defender and the
+               // weapon.
+               lookupDefenderByName[player] = playerShared;
+               lookupWeaponByName[player] = playerShared;
 
                player->setInputInterceptor(std::make_unique<std::function<bool(std::string)>>(
-                  [player, command](std::string input) -> bool {
+                  [player, defenderShared, command](std::string input) -> bool {
 
                      Command cmd(
                         player->getGame()->getVocabulary(),
                         command.getVerb(),
-                        command.getDirectObject(),
+                        defenderShared->getName(),
                         input,
                         "with"
                      );
