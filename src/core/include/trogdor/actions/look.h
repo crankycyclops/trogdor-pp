@@ -30,6 +30,11 @@ namespace trogdor {
          // Observe the specified object
          inline void look(entity::Player *player, entity::Thing *thing) {
 
+            if (thing == player) {
+               player->out() << "You can't look at yourself!" << std::endl;
+               return;
+            }
+
             thing->observe(player->getShared(), true, true);
          }
 
