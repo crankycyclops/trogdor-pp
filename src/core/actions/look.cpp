@@ -28,6 +28,11 @@ namespace trogdor {
          object = command.getIndirectObject();
       }
 
+      if (0 == object.compare(player->getName()) || 0 == strToLower(object).compare("myself")) {
+         player->out() << "You can't look at yourself!" << std::endl;
+         return;
+      }
+
       if (auto location = player->getLocation().lock()) {
 
          std::shared_ptr<entity::Player> playerShared = player->getShared();

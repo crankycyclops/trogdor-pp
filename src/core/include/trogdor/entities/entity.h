@@ -37,6 +37,12 @@ namespace trogdor::entity {
    // Defines a valid entity or entity class name
    static const char *validEntityNameRegex = "^[A-Za-z0-9_-]+$";
 
+   // An entity name cannot be any of these
+   static const char *reservedNames[] = {
+      "myself",
+      nullptr
+   };
+
    /***************************************************************************/
 
    class Entity: public std::enable_shared_from_this<Entity> {
@@ -152,6 +158,17 @@ namespace trogdor::entity {
                True if the name is valid and false if not
          */
          static inline bool isNameValid(std::string name) {
+
+            // There are certain names that are forbidden to entities
+            for (
+               const char **reservedNamePtr = reservedNames;
+               *reservedNamePtr != nullptr;
+               reservedNamePtr++
+            ) {
+               if (0 == name.compare(*reservedNamePtr)) {
+                  return false;
+               }
+            }
 
             return std::regex_match(name, std::regex(validEntityNameRegex)) ? true : false;
          }
