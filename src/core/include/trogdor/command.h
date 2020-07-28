@@ -86,7 +86,9 @@ namespace trogdor {
             verb(c.verb),
             directObject(c.directObject),
             indirectObject(c.indirectObject),
-            preposition(c.preposition) {}
+            preposition(c.preposition),
+            directObjectQty(c.directObjectQty),
+            indirectObjectQty(c.indirectObjectQty) {}
 
          /*
             Returns true if the command is invalid.
