@@ -329,6 +329,7 @@ add_executable(test_core
 	src/core/test/vocabulary.cpp
 	src/core/test/command.cpp
 	src/core/test/utility.cpp
+	src/core/test/entities/tangible.cpp
 	src/core/test/event/eventlistener.cpp
 	src/core/test/event/triggers/deathdrop.cpp
 	src/core/test/event/triggers/respawn.cpp
