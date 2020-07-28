@@ -6,6 +6,7 @@
 #include <trogdor/instantiator/instantiators/runtime.h>
 
 #include <trogdor/entities/entity.h>
+#include <trogdor/entities/resource.h>
 #include <trogdor/entities/tangible.h>
 #include <trogdor/entities/place.h>
 #include <trogdor/entities/room.h>
@@ -190,6 +191,10 @@ namespace trogdor {
 
       switch (entity->getType()) {
 
+         case entity::ENTITY_RESOURCE:
+            resources[name] = std::dynamic_pointer_cast<entity::Resource>(entity);
+            break;
+
          case entity::ENTITY_ROOM:
             tangibles[name] = std::dynamic_pointer_cast<entity::Tangible>(entity);
             places[name] = std::dynamic_pointer_cast<entity::Place>(entity);
@@ -256,6 +261,10 @@ namespace trogdor {
       mutex.lock();
 
       switch (entities[name]->getType()) {
+
+         case entity::ENTITY_RESOURCE:
+            resources.erase(name);
+            break;
 
          case entity::ENTITY_ROOM:
             tangibles.erase(name);

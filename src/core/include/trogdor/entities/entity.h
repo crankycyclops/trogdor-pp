@@ -25,6 +25,7 @@
 namespace trogdor::entity {
 
 
+   class Resource;
    class Tangible;
    class Place;
    class Room;
@@ -188,6 +189,7 @@ namespace trogdor::entity {
             // Maps name of Entity type to enum EntityType (initialized in entity.cpp)
             static std::unordered_map<std::string, enum EntityType> strToTypeMap = {
                {"entity", ENTITY_ENTITY},
+               {"resource", ENTITY_RESOURCE},
                {"tangible", ENTITY_TANGIBLE},
                {"place", ENTITY_PLACE},
                {"room", ENTITY_ROOM},
@@ -219,6 +221,7 @@ namespace trogdor::entity {
             // https://stackoverflow.com/questions/18837857/cant-use-enum-class-as-unordered-map-key
             static std::unordered_map<enum EntityType, std::string, std::hash<int>> typeToStrMap = {
                {ENTITY_ENTITY, "entity"},
+               {ENTITY_RESOURCE, "resource"},
                {ENTITY_TANGIBLE, "tangible"},
                {ENTITY_PLACE, "place"},
                {ENTITY_ROOM, "room"},
@@ -834,6 +837,7 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   typedef std::list<Resource *> ResourceList;
    typedef std::list<Tangible *> TangibleList;
    typedef std::list<Place *>    PlaceList;
    typedef std::list<Room *>     RoomList;
@@ -843,6 +847,7 @@ namespace trogdor::entity {
    typedef std::list<Creature *> CreatureList;
    typedef std::list<Object *>   ObjectList;
 
+   typedef std::unordered_map<std::string, ResourceList> ResourcesByNameMap;
    typedef std::unordered_map<std::string, TangibleList> TangiblesByNameMap;
    typedef std::unordered_map<std::string, ThingList>    ThingsByNameMap;
    typedef std::unordered_map<std::string, BeingList>    BeingsByNameMap;
@@ -853,6 +858,7 @@ namespace trogdor::entity {
    /***************************************************************************/
 
    // Special empty lists used for returning results when no result exists
+   extern ResourceList  emptyResourceList;
    extern TangibleList  emptyTangibleList;
    extern PlaceList     emptyPlaceList;
    extern RoomList      emptyRoomList;

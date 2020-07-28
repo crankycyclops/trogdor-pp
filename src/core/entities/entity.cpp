@@ -15,6 +15,8 @@ namespace trogdor::entity {
    const char *Entity::DEFAULT_OUTPUT_CHANNEL = "notifications";
 
    // Special empty lists used for returning results when no result exists
+   ResourceList  emptyResourceList;
+   TangibleList  emptyTangibleList;
    PlaceList     emptyPlaceList;
    RoomList      emptyRoomList;
    ThingList     emptyThingList;

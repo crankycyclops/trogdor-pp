@@ -40,6 +40,7 @@ namespace trogdor {
 
       // Resolve circular dependencies
       class Entity;
+      class Resource;
       class Tangible;
       class Place;
       class Thing;
@@ -131,6 +132,7 @@ namespace trogdor {
 
          // Hash table of all entities in the game
          std::unordered_map<std::string, std::shared_ptr<entity::Entity>> entities;
+         std::unordered_map<std::string, std::shared_ptr<entity::Resource>> resources;
          std::unordered_map<std::string, std::shared_ptr<entity::Tangible>> tangibles;
          std::unordered_map<std::string, std::shared_ptr<entity::Place>> places;
          std::unordered_map<std::string, std::shared_ptr<entity::Thing>> things;
@@ -429,6 +431,38 @@ namespace trogdor {
                const unordered_map<string, shared_ptr<Entity>> &
          */
          inline const auto &getEntities() const {return entities;}
+
+        /*
+            Returns the Resoure associated with the specified name.
+
+            Input:
+               Name of Resource (std::string)
+
+            Output:
+               const shared_ptr<Resource> &
+         */
+         inline const std::shared_ptr<entity::Resource> &getResource(const std::string name) {
+
+            static std::shared_ptr<entity::Resource> nullResource(nullptr);
+
+            if (resources.find(name) == resources.end()) {
+               return nullResource;
+            }
+
+            return resources[name];
+         }
+
+         /*
+            Returns a read-only unordered_map of all resources
+            (shared_ptr<Resource>) in the game.
+
+            Input:
+               (none)
+
+            Output:
+               const unordered_map<string, shared_ptr<Resource>> &
+         */
+         inline const auto &getResources() const {return resources;}
 
         /*
             Returns the Tangible associated with the specified name.

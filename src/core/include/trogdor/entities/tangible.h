@@ -1,15 +1,28 @@
 #ifndef TANGIBLE_H
 #define TANGIBLE_H
 
+#include <memory>
+#include <unordered_map>
+
 #include <trogdor/entities/entity.h>
 
+class Resource;
 
-// All physically instantiable entities in the game inherit from this entity
-// type.
 namespace trogdor::entity {
 
 
+   // All physically instantiable entities in the game inherit from this entity
+   // type.
    class Tangible: public Entity {
+
+      private:
+
+         // Keeps track of which resources the entity holds and how much
+         std::unordered_map<
+            std::weak_ptr<Resource>,
+            double,
+            std::owner_less<>
+         > resources;
 
       public:
 
@@ -47,7 +60,10 @@ namespace trogdor::entity {
             Output:
                std::shared_ptr<Entity>
          */
-         inline std::shared_ptr<Entity> getShared() {return shared_from_this();}
+         inline std::shared_ptr<Tangible> getShared() {
+
+            return std::dynamic_pointer_cast<Tangible>(Entity::getShared());
+         }
    };
 }
 

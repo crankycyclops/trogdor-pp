@@ -87,6 +87,7 @@ set(CORE_SOURCES
 	src/core/lua/api/entities/luabeing.cpp
 	src/core/lua/api/entities/luacreature.cpp
 	src/core/lua/api/entities/luaentity.cpp
+	src/core/lua/api/entities/luaresource.cpp
 	src/core/lua/api/entities/luatangible.cpp
 	src/core/lua/api/entities/luaobject.cpp
 	src/core/lua/api/entities/luaplace.cpp
@@ -114,6 +115,7 @@ set(CORE_SOURCES
 	src/core/entities/being.cpp
 	src/core/entities/creature.cpp
 	src/core/entities/entity.cpp
+	src/core/entities/resource.cpp
 	src/core/entities/tangible.cpp
 	src/core/entities/object.cpp
 	src/core/entities/place.cpp
