@@ -8,7 +8,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include <trogdor/entities/entity.h>
+#include <trogdor/entities/tangible.h>
 
 
 namespace trogdor::entity {
@@ -22,7 +22,7 @@ namespace trogdor::entity {
    class Object;
 
 
-   class Place: public Entity {
+   class Place: public Tangible {
 
       protected:
 

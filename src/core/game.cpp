@@ -6,6 +6,7 @@
 #include <trogdor/instantiator/instantiators/runtime.h>
 
 #include <trogdor/entities/entity.h>
+#include <trogdor/entities/tangible.h>
 #include <trogdor/entities/place.h>
 #include <trogdor/entities/room.h>
 #include <trogdor/entities/thing.h>
@@ -190,16 +191,19 @@ namespace trogdor {
       switch (entity->getType()) {
 
          case entity::ENTITY_ROOM:
+            tangibles[name] = std::dynamic_pointer_cast<entity::Tangible>(entity);
             places[name] = std::dynamic_pointer_cast<entity::Place>(entity);
             rooms[name] = std::dynamic_pointer_cast<entity::Room>(entity);
             break;
 
          case entity::ENTITY_OBJECT:
+            tangibles[name] = std::dynamic_pointer_cast<entity::Tangible>(entity);
             things[name] = std::dynamic_pointer_cast<entity::Thing>(entity);
             objects[name] = std::dynamic_pointer_cast<entity::Object>(entity);
             break;
 
          case entity::ENTITY_CREATURE:
+            tangibles[name] = std::dynamic_pointer_cast<entity::Tangible>(entity);
             things[name] = std::dynamic_pointer_cast<entity::Thing>(entity);
             beings[name] = std::dynamic_pointer_cast<entity::Being>(entity);
             creatures[name] = std::dynamic_pointer_cast<entity::Creature>(entity);
@@ -254,16 +258,19 @@ namespace trogdor {
       switch (entities[name]->getType()) {
 
          case entity::ENTITY_ROOM:
+            tangibles.erase(name);
             places.erase(name);
             rooms.erase(name);
             break;
 
          case entity::ENTITY_OBJECT:
+            tangibles.erase(name);
             things.erase(name);
             objects.erase(name);
             break;
 
          case entity::ENTITY_CREATURE:
+            tangibles.erase(name);
             things.erase(name);
             beings.erase(name);
             creatures.erase(name);
@@ -311,6 +318,7 @@ namespace trogdor {
       mutex.lock();
 
       entities[player->getName()] = player;
+      tangibles[player->getName()] = player;
       things[player->getName()] = player;
       beings[player->getName()] = player;
       players[player->getName()] = player;
@@ -371,6 +379,7 @@ namespace trogdor {
          entities[name]->setGame(nullptr);
 
          entities.erase(name);
+         tangibles.erase(name);
          things.erase(name);
          beings.erase(name);
          players.erase(name);

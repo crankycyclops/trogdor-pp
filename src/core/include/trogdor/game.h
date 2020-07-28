@@ -40,6 +40,7 @@ namespace trogdor {
 
       // Resolve circular dependencies
       class Entity;
+      class Tangible;
       class Place;
       class Thing;
       class Being;
@@ -129,10 +130,8 @@ namespace trogdor {
          std::unique_ptr<entity::Player> defaultPlayer;
 
          // Hash table of all entities in the game
-         // Note: the logical conclusion of having a hierarchical mapping of
-         // object types is that no object of any type can share the same name!
-         // This can be worked around via aliases :)
          std::unordered_map<std::string, std::shared_ptr<entity::Entity>> entities;
+         std::unordered_map<std::string, std::shared_ptr<entity::Tangible>> tangibles;
          std::unordered_map<std::string, std::shared_ptr<entity::Place>> places;
          std::unordered_map<std::string, std::shared_ptr<entity::Thing>> things;
          std::unordered_map<std::string, std::shared_ptr<entity::Room>> rooms;
@@ -430,6 +429,38 @@ namespace trogdor {
                const unordered_map<string, shared_ptr<Entity>> &
          */
          inline const auto &getEntities() const {return entities;}
+
+        /*
+            Returns the Tangible associated with the specified name.
+
+            Input:
+               Name of Tangible (std::string)
+
+            Output:
+               const shared_ptr<Tangible> &
+         */
+         inline const std::shared_ptr<entity::Tangible> &getTangible(const std::string name) {
+
+            static std::shared_ptr<entity::Tangible> nullTangible(nullptr);
+
+            if (tangibles.find(name) == tangibles.end()) {
+               return nullTangible;
+            }
+
+            return tangibles[name];
+         }
+
+         /*
+            Returns a read-only unordered_map of all tangibles
+            (shared_ptr<Tangible>) in the game.
+
+            Input:
+               (none)
+
+            Output:
+               const unordered_map<string, shared_ptr<Tangible>> &
+         */
+         inline const auto &getTangibles() const {return tangibles;}
 
         /*
             Returns the Place object associated with the specified name.

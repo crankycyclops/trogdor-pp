@@ -5,7 +5,7 @@
 #include <trogdor/lua/luatable.h>
 #include <trogdor/lua/luastate.h>
 
-#include <trogdor/lua/api/entities/luaentity.h>
+#include <trogdor/lua/api/entities/luatangible.h>
 
 
 namespace trogdor::entity {
@@ -14,7 +14,7 @@ namespace trogdor::entity {
    class Place;
 
 
-   class LuaPlace: public LuaEntity {
+   class LuaPlace: public LuaTangible {
 
 
       protected:

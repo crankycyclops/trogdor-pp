@@ -3,6 +3,8 @@
 
 
 #include <unordered_map>
+
+#include <trogdor/entities/player.h>
 #include <trogdor/actions/action.h>
 
 #include <trogdor/exception/beingexception.h>

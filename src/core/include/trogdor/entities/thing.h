@@ -5,14 +5,14 @@
 #include <vector>
 #include <memory>
 
-#include <trogdor/entities/entity.h>
+#include <trogdor/entities/tangible.h>
 #include <trogdor/entities/place.h>
 
 
 namespace trogdor::entity {
 
 
-   class Thing: public Entity {
+   class Thing: public Tangible {
 
       protected:
 

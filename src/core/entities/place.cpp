@@ -16,7 +16,7 @@
 namespace trogdor::entity {
 
    Place::Place(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Entity(g, n, std::move(o), std::move(e)) {
+   std::unique_ptr<Trogerr> e): Tangible(g, n, std::move(o), std::move(e)) {
 
       types.push_back(ENTITY_PLACE);
       static_cast<PlaceOut *>(outStream.get())->setPlace(this);
@@ -24,7 +24,7 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Place::Place(const Place &p, std::string n): Entity(p, n) {}
+   Place::Place(const Place &p, std::string n): Tangible(p, n) {}
 
    /****************************************************************************/
 
