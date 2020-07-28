@@ -21,7 +21,7 @@ namespace trogdor::entity {
          std::unordered_map<
             std::weak_ptr<Resource>,
             double,
-            std::owner_less<>
+            std::owner_less<std::weak_ptr<Resource>>
          > resources;
 
       public:

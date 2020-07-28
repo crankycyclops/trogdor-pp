@@ -21,7 +21,7 @@ namespace trogdor::entity {
          std::unordered_map<
             std::weak_ptr<Tangible>,
             double,
-            std::owner_less<>
+            std::owner_less<std::weak_ptr<Tangible>>
          > holders;
 
       public:
