@@ -2,7 +2,7 @@
 #define COMMAND_H
 
 
-#include <iostream>
+#include <optional>
 #include <string>
 #include <cstring>
 
@@ -37,6 +37,11 @@ namespace trogdor {
          std::string indirectObject;
          std::string preposition;
 
+         // Optional quantities that were specified along with the direct or
+         // indirect objects
+         std::optional<double> directObjectQty = std::nullopt;
+         std::optional<double> indirectObjectQty = std::nullopt;
+
          void parse(std::string commandStr);
 
          int parseDirectObject(Tokenizer &tokenizer);
@@ -57,9 +62,12 @@ namespace trogdor {
             std::string verb,
             std::string directObject,
             std::string indirectObject = "",
-            std::string preposition = ""
+            std::string preposition = "",
+            std::optional<double> directObjectQty = std::nullopt,
+            std::optional<double> indirectObjectQty = std::nullopt
          ): vocabulary(vocabulary), verb(verb), directObject(directObject),
-         indirectObject(indirectObject), preposition(preposition) {
+         indirectObject(indirectObject), preposition(preposition),
+         directObjectQty(directObjectQty), indirectObjectQty(indirectObjectQty) {
 
             nullCommand = verb.length() ? true : false;
 
@@ -108,6 +116,8 @@ namespace trogdor {
          inline std::string getDirectObject() const {return directObject;}
          inline std::string getIndirectObject() const {return indirectObject;}
          inline std::string getPreposition() const {return preposition;}
+         inline std::optional<double> getDirectObjectQty() const {return directObjectQty;}
+         inline std::optional<double> getIndirectObjectQty() const {return indirectObjectQty;}
 
          /*
             Makes Command object printable via trogout.

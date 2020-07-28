@@ -115,6 +115,8 @@ namespace trogdor {
 
    int Command::parseDirectObject(Tokenizer &tokenizer) {
 
+      bool foundQty = false;
+
       std::string dobj = "";
       std::string token = tokenizer.getCurToken();
 
@@ -122,6 +124,14 @@ namespace trogdor {
 
          // ignore filler words such as articles like "the" or "a"
          if (vocabulary.isFillerWord(token)) {
+            tokenizer.next();
+            token = tokenizer.getCurToken();
+            continue;
+         }
+
+         else if (!foundQty && isValidDouble(token)) {
+            directObjectQty = std::stod(token);
+            foundQty = true;
             tokenizer.next();
             token = tokenizer.getCurToken();
             continue;
@@ -149,6 +159,8 @@ namespace trogdor {
 
    int Command::parseIndirectObject(Tokenizer &tokenizer) {
 
+      bool foundQty = false;
+
       std::string idobj = "";
       std::string token = tokenizer.getCurToken();
 
@@ -166,6 +178,14 @@ namespace trogdor {
 
          // ignore filler words
          if (vocabulary.isFillerWord(token)) {
+            tokenizer.next();
+            token = tokenizer.getCurToken();
+            continue;
+         }
+
+         else if (!foundQty && isValidDouble(token)) {
+            indirectObjectQty = std::stod(token);
+            foundQty = true;
             tokenizer.next();
             token = tokenizer.getCurToken();
             continue;
@@ -206,9 +226,12 @@ namespace trogdor {
 
       std::cout << "Verb: " << c.verb << std::endl;
       std::cout << "Direct Object: " << c.directObject << std::endl;
+      std::cout << "Direct Object qty: " << (c.directObjectQty ? std::to_string(*(c.directObjectQty)) : "(none)") << std::endl;
       std::cout << "Preposition: " << c.preposition << std::endl;
       std::cout << "Indirect Object: " << c.indirectObject << std::endl;
+      std::cout << "Indirect Object qty: " << (c.indirectObjectQty ? std::to_string(*(c.indirectObjectQty)) : "(none)") << std::endl;
       std::cout << "Invalid? " << c.invalid << std::endl;
+      std::cout << "Null? " << c.nullCommand << std::endl;
 
       return out;
    }
