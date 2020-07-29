@@ -21,7 +21,6 @@
 #include <trogdor/iostream/trogout.h>
 #include <trogdor/iostream/trogerr.h>
 
-
 namespace trogdor::entity {
 
 

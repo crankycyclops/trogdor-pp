@@ -4,9 +4,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include <trogdor/entities/entity.h>
-
-class Resource;
+#include <trogdor/entities/resource.h>
 
 namespace trogdor::entity {
 
@@ -18,11 +16,23 @@ namespace trogdor::entity {
       private:
 
          // Keeps track of which resources the entity holds and how much
-         std::unordered_map<
+         std::map<
             std::weak_ptr<Resource>,
             double,
             std::owner_less<std::weak_ptr<Resource>>
          > resources;
+
+         // Resource allocation should be handled solely by Resource::allocate()
+         // and Resource::free()
+         friend Resource::AllocateStatus Resource::allocate(
+            const std::shared_ptr<Tangible> &entity,
+            double amount
+         );
+
+         friend Resource::FreeStatus Resource::free(
+            const std::shared_ptr<Tangible> &entity,
+            double amount
+         );
 
       public:
 
