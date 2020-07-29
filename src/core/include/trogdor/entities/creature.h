@@ -22,13 +22,18 @@ namespace trogdor::entity {
          };
 
          // by default, a creature will automatically attack when attacked
-         static const bool DEFAULT_COUNTER_ATTACK = true;
-         static const enum AllegianceType DEFAULT_ALLEGIANCE = NEUTRAL;
+         static constexpr bool DEFAULT_COUNTER_ATTACK = true;
+         static constexpr enum AllegianceType DEFAULT_ALLEGIANCE = NEUTRAL;
 
          // default auto-attack settings
-         static const bool DEFAULT_AUTO_ATTACK_ENABLED = false;
-         static const bool DEFAULT_AUTO_ATTACK_REPEAT = false;
-         static const int  DEFAULT_AUTO_ATTACK_INTERVAL = 5;
+         static constexpr bool DEFAULT_AUTO_ATTACK_ENABLED = false;
+         static constexpr bool DEFAULT_AUTO_ATTACK_REPEAT = false;
+         static constexpr int  DEFAULT_AUTO_ATTACK_INTERVAL = 5;
+
+         // Default wander settings
+         static constexpr bool DEFAULT_WANDER_ENABLE = false;
+         static constexpr int DEFAULT_WANDER_INTERVAL = 10;
+         static constexpr double DEFAULT_WANDER_LUST = 0.5;
 
       private:
 

@@ -18,6 +18,10 @@ namespace trogdor::entity {
       autoAttack.enabled = DEFAULT_AUTO_ATTACK_ENABLED;
       autoAttack.interval = DEFAULT_AUTO_ATTACK_INTERVAL;
       autoAttack.repeat = DEFAULT_AUTO_ATTACK_REPEAT;
+
+      wanderSettings.enabled = DEFAULT_WANDER_ENABLE;
+      wanderSettings.interval = DEFAULT_WANDER_INTERVAL;
+      wanderSettings.wanderlust = DEFAULT_WANDER_LUST;
    }
 
    /***************************************************************************/
