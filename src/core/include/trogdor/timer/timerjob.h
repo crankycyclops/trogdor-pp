@@ -5,6 +5,8 @@
 #include <memory>
 #include <trogdor/timer/timer.h>
 
+#include <trogdor/exception/undefinedexception.h>
+
 
 namespace trogdor {
 
@@ -56,6 +58,15 @@ namespace trogdor {
          inline TimerJob(Game *g, int i, int e, int s) {
 
             initTime = 0; // will be set by insertJob()
+
+            // An interval of 0 or less doesn't make sense and would lead to
+            // undefined behavior
+            // TODO: use unsigned int for this (but if I do, I still have to
+            // disallow interval = 0, which can lead to floating point exceptions
+            // due to division by 0.)
+            if (i < 1) {
+               throw UndefinedException("TimerJob::TimerJob(): cannot set interval less than 1");
+            }
 
             game = g;
             interval = i;
