@@ -9,11 +9,13 @@
 #include <trogdor/iostream/nullerr.h>
 
 
+// Since Tangible's resources are managed by Resource via friend functions, the
+// bulk of the unit tests for that functionality will be done in the Resource
+// test suite (test/resource.cpp.)
 TEST_SUITE("Tangible (entities/tangible.cpp)") {
 
-	// Tests to ensure that all physical entity types test true as instances of
-	// Tangible
-	TEST_CASE("Tangible (entities/tangible.cpp): Proper inheritance") {
+	// Tests for sane construction of all derived types
+	TEST_CASE("Tangible (entities/tangible.cpp): Sane Construction and Inheritance") {
 
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
 
@@ -49,5 +51,10 @@ TEST_SUITE("Tangible (entities/tangible.cpp)") {
 		CHECK(testObject.isType(trogdor::entity::ENTITY_TANGIBLE));
 		CHECK(testCreature.isType(trogdor::entity::ENTITY_TANGIBLE));
 		CHECK(testPlayer.isType(trogdor::entity::ENTITY_TANGIBLE));
+
+		CHECK(0 == testRoom.getResources().size());
+		CHECK(0 == testObject.getResources().size());
+		CHECK(0 == testCreature.getResources().size());
+		CHECK(0 == testPlayer.getResources().size());
 	}
 }

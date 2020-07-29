@@ -74,6 +74,20 @@ namespace trogdor::entity {
 
             return std::dynamic_pointer_cast<Tangible>(Entity::getShared());
          }
+
+         /*
+            Returns const reference to all resources held by the entity.
+
+            Input:
+               (none)
+
+            Output:
+               Const reference to resources
+         */
+         inline const auto &getResources() const {
+
+            return resources;
+         }
    };
 }
 

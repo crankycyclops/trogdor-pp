@@ -86,15 +86,15 @@ namespace trogdor::entity {
          // resource available,
          std::optional<double> maxAmountPerDepositor;
 
+         // Total amount of the resource that's currently allocated
+         double totalAmountAllocated = 0;
+
          // Keeps track of who holds the resource and how much
          std::map<
             std::weak_ptr<Tangible>,
             double,
             std::owner_less<std::weak_ptr<Tangible>>
          > depositors;
-
-         // Total amount of the resource that's currently allocated
-         double totalAmountAllocated = 0;
 
       public:
 
@@ -141,6 +141,70 @@ namespace trogdor::entity {
 
             return std::dynamic_pointer_cast<Resource>(Entity::getShared());
          }
+
+         /*
+            Returns true if integer allocations are required and false if not.
+
+            Input:
+               (none)
+
+            Output:
+               Whether or not integer allocations are required (bool)
+         */
+         inline bool areIntegerAllocationsRequired() const {return requireIntegerAllocations;}
+
+         /*
+            Returns the total amount of the resource available (this has no
+            bearing on how much of the resources has been allocated, but rather
+            tells the caller how much of the resource currently exists.) A
+            value of std::nullopt indicates that the resource has an infinite
+            supply.
+
+            Input:
+               (none)
+
+            Output:
+               How much of the resource exists (std::optional<double>)
+         */
+         inline std::optional<double> getAmountAvailable() const {return amountAvailable;}
+
+         /*
+            Returns the total amount of the resource that can be allocated by a
+            tangible entity at once. A value of std::nullopt indicates that
+            entities can hold as much as they want.
+
+            Input:
+               (none)
+
+            Output:
+               How much of the resource can be allocated to each entity at one
+                  time (std::optional<double>)
+         */
+         inline std::optional<double> getMaxAmountPerDepositor() const {return maxAmountPerDepositor;}
+
+         /*
+            Returns the total amount of the resource currently allocated to
+            various entities.
+
+            Input:
+               (none)
+
+            Output:
+               How much of the resource is currently allocated (double)
+         */
+         inline double getTotalAmountAllocated() const {return totalAmountAllocated;}
+
+         /*
+            Returns a const reference to all tangible entities that hold some
+            amount of the resource.
+
+            Input:
+               (none)
+
+            Output:
+               An unordered_map of entity weak_ptrs -> allocated amount
+         */
+         inline const auto &getDepositors() const {return depositors;}
 
          /*
             Allocates the specified amount to the specified tangible entity.
