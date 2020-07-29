@@ -35,7 +35,7 @@ namespace trogdor::entity {
 
 
    // Defines a valid entity or entity class name
-   static const char *validEntityNameRegex = "^[A-Za-z0-9_-]+$";
+   static const char *validEntityNameRegex = "^[ A-Za-z0-9_-]+$";
 
    // An entity name cannot be any of these
    static const char *reservedNames[] = {
