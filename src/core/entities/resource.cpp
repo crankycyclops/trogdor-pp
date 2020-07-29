@@ -20,6 +20,7 @@ namespace trogdor::entity {
    amountAvailable(amountAvailable), maxAmountPerDepositor(maxAmountPerDepositor) {
 
       types.push_back(ENTITY_RESOURCE);
+      setClass("resource");
    }
 
    /***************************************************************************/
