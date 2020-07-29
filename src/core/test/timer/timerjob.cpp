@@ -48,4 +48,28 @@ TEST_SUITE("TimerJob (timer/timerjob.cpp)") {
 		// Make sure the number of executions was decremented from 2 to 1
 		CHECK(1 == mockJob.getExecutions());
 	}
+
+	TEST_CASE("TimerJob (timer/timerjob.cpp): Test setting invalid interval") {
+
+		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+		trogdor::Timer mockTimer(&mockGame);
+
+		try {
+			MockTimerJob mockJob(&mockGame, 0, 2, 3, [] {});
+			FAIL("Shouldn't be able to set an interval of 0");
+		}
+
+		catch (const trogdor::UndefinedException &e) {
+			CHECK(true);
+		}
+
+		try {
+			MockTimerJob mockJob(&mockGame, -1, 2, 3, [] {});
+			FAIL("Shouldn't be able to set an interval of -1");
+		}
+
+		catch (const trogdor::UndefinedException &e) {
+			CHECK(true);
+		}
+	}
 }
