@@ -35,7 +35,7 @@ namespace trogdor::entity {
       if (!isNameValid(n)) {
          throw ValidationException(std::string("name '") + n
             + "' is invalid (must contain only letters, numbers, underscores, "
-            + "and dashes.)");
+            + "dashes, and single spaces.)");
       }
 
       types.push_back(ENTITY_ENTITY);
