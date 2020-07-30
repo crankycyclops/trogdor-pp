@@ -27,7 +27,8 @@ namespace trogdor::entity {
 
    Resource::Resource(const Resource &r, std::string n): Entity(r, n),
    requireIntegerAllocations(r.requireIntegerAllocations),
-   amountAvailable(r.amountAvailable), maxAmountPerDepositor(r.maxAmountPerDepositor) {}
+   amountAvailable(r.amountAvailable), maxAmountPerDepositor(r.maxAmountPerDepositor),
+   totalAmountAllocated(0) {}
 
    /***************************************************************************/
 
