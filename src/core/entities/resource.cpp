@@ -59,7 +59,7 @@ namespace trogdor::entity {
          }
       }
 
-      if (amountAvailable && amount > *amountAvailable) {
+      if (amountAvailable && amount + totalAmountAllocated > *amountAvailable) {
          return ALLOCATE_TOTAL_AMOUNT_EXCEEDED;
       }
 

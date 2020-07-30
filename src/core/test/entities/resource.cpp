@@ -492,7 +492,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 				(*testResource->getDepositors().begin()).first.lock());
 			CHECK(5 == (*testResource->getDepositors().begin()).second);
 			CHECK(5 == (*testRoom->getResources().begin()).second);
-			CHECK(0 == (*testRoom2->getResources().begin()).second);
+			CHECK(0 == testRoom2->getResources().size());
 			CHECK(5 == testResource->getTotalAmountAllocated());
 		}
 	}
