@@ -169,15 +169,7 @@ namespace trogdor {
    void XMLParser::parseClassesRooms() {
 
       while (nextTag() && 3 == getDepth()) {
-
-         if (0 == getTagName().compare("room")) {
-            parseClassesRoom();
-         }
-
-         else {
-            throw ParseException(std::string("invalid tag <") + getTagName()
-               + "> in rooms section of <classes>");
-         }
+         parseClassesRoom();
       }
 
       checkClosingTag("rooms");
@@ -187,7 +179,7 @@ namespace trogdor {
 
    void XMLParser::parseClassesRoom() {
 
-      std::string name = getAttribute("class");
+      std::string name = getTagName();
 
       if (isClassNameReserved(name)) {
          throw ParseException(std::string("class name '") + name + "' is reserved");
@@ -202,7 +194,7 @@ namespace trogdor {
       ));
 
       parseRoomProperties(name, "class", 4);
-      checkClosingTag("room");
+      checkClosingTag(name);
    }
 
    /***************************************************************************/
@@ -210,15 +202,7 @@ namespace trogdor {
    void XMLParser::parseClassesObjects() {
 
       while (nextTag() && 3 == getDepth()) {
-
-         if (0 == getTagName().compare("object")) {
-            parseClassesObject();
-         }
-
-         else {
-            throw ParseException(std::string("invalid tag <") + getTagName()
-               + "> in objects section of <classes>");
-         }
+         parseClassesObject();
       }
 
       checkClosingTag("objects");
@@ -228,7 +212,7 @@ namespace trogdor {
 
    void XMLParser::parseClassesObject() {
 
-      std::string name = getAttribute("class");
+      std::string name = getTagName();
 
       if (isClassNameReserved(name)) {
          throw ParseException(std::string("class name '") + name + "' is reserved");
@@ -244,7 +228,7 @@ namespace trogdor {
 
       // Don't pass object! It's been moved and is no longer a valid pointer.
       parseObjectProperties(name, "class", 4);
-      checkClosingTag("object");
+      checkClosingTag(name);
    }
 
    /***************************************************************************/
@@ -252,15 +236,7 @@ namespace trogdor {
    void XMLParser::parseClassesCreatures() {
 
       while (nextTag() && 3 == getDepth()) {
-
-         if (0 == getTagName().compare("creature")) {
-            parseClassesCreature();
-         }
-
-         else {
-            throw ParseException(std::string("invalid tag <") + getTagName()
-               + "> in creatures section of <classes>");
-         }
+         parseClassesCreature();
       }
 
       checkClosingTag("creatures");
@@ -270,7 +246,7 @@ namespace trogdor {
 
    void XMLParser::parseClassesCreature() {
 
-      std::string name = getAttribute("class");
+      std::string name = getTagName();
 
       if (isClassNameReserved(name)) {
          throw ParseException(std::string("class name '") + name + "' is reserved");
@@ -286,7 +262,7 @@ namespace trogdor {
 
       // Don't pass creature! It's been moved and is no longer a valid pointer.
       parseCreatureProperties(name, "class", 4);
-      checkClosingTag("creature");
+      checkClosingTag(name);
    }
 
    /***************************************************************************/

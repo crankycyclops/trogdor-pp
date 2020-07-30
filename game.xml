@@ -18,7 +18,7 @@
       <objects>
 
          <!-- Any defined objects of type "weapon" will assume these attributes. -->
-         <object class="weapon">
+         <weapon>
 
             <!-- One or more arbitrary tags can be applied to an Entity. A few,
                  such as "weapon" (objects only) are used to define an Entity's
@@ -32,13 +32,13 @@
             <!-- Amount of damage object does as a weapon (optional: default 1) -->
             <damage>1</damage>
 
-         </object>
+         </weapon>
 
       </objects>
 
       <creatures>
 
-         <creature class="soul">
+         <soul>
 
             <!-- any creature of this type can be referenced by these aliases -->
             <aliases>
@@ -49,7 +49,7 @@
                <alias>phantom</alias>
             </aliases>
 
-         </creature>
+         </soul>
 
       </creatures>
 
