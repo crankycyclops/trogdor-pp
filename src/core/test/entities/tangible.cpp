@@ -57,4 +57,52 @@ TEST_SUITE("Tangible (entities/tangible.cpp)") {
 		CHECK(0 == testCreature.getResources().size());
 		CHECK(0 == testPlayer.getResources().size());
 	}
+
+	TEST_CASE("Tangible (entities/tangible.cpp): getResources() and getResourceByName()") {
+
+		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+
+		std::shared_ptr<trogdor::entity::Resource> testResource =
+		std::make_shared<trogdor::entity::Resource>(
+			&mockGame,
+			"gold"
+		);
+
+		std::shared_ptr<trogdor::entity::Room> testRoom =
+		std::make_shared<trogdor::entity::Room>(
+			&mockGame,
+			"start",
+			std::make_unique<trogdor::NullOut>(),
+			std::make_unique<trogdor::NullErr>()
+		);
+
+		// When the tangible entity is initialized, it shouldn't have any
+		// allocations.
+		auto allocation = testRoom->getResourceByName("gold");
+
+		CHECK(0 == testRoom->getResources().size());
+		CHECK(allocation.first.expired());
+		CHECK(0 == allocation.second);
+
+		// Next, allocate some of the resource to the entity and verify that
+		// we can retrieve it.
+		auto status = testResource->allocate(testRoom, 1);
+		allocation = testRoom->getResourceByName("gold");
+
+		CHECK(trogdor::entity::Resource::ALLOCATE_SUCCESS == status);
+		CHECK(1 == testRoom->getResources().size());
+		CHECK(testResource == (*testRoom->getResources().begin()).first.lock());
+		CHECK(testResource == allocation.first.lock());
+		CHECK(1 == allocation.second);
+
+		// Finally, free the resource allocation and verify that it's empty
+		// again.
+		auto statusFree = testResource->free(testRoom);
+		allocation = testRoom->getResourceByName("gold");
+
+		CHECK(trogdor::entity::Resource::FREE_SUCCESS == statusFree);
+		CHECK(0 == testRoom->getResources().size());
+		CHECK(allocation.first.expired());
+		CHECK(0 == allocation.second);
+	}
 }

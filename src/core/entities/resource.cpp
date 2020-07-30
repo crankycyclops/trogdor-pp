@@ -71,7 +71,7 @@ namespace trogdor::entity {
       entity->mutex.lock();
 
       depositors[entity] = updatedBalance;
-      entity->resources[shared] = updatedBalance;
+      entity->recordResourceAllocation(shared, updatedBalance);
       totalAmountAllocated += amount;
 
       entity->mutex.unlock();
@@ -123,7 +123,7 @@ namespace trogdor::entity {
 
       if (0 == depositors[entity]) {
          depositors.erase(entity);
-         entity->resources.erase(shared);
+         entity->removeResourceAllocation(shared);
       }
 
       entity->mutex.unlock();

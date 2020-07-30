@@ -22,6 +22,41 @@ namespace trogdor::entity {
             std::owner_less<std::weak_ptr<Resource>>
          > resources;
 
+         // A name-based index into the resources the entity possesses
+         std::unordered_map<
+            std::string,
+            std::weak_ptr<Resource>
+         > resourcesByName;
+
+         /*
+            Record the Entity's allocation of a specific resource.
+
+            Input:
+               Weak pointer to the resource
+               The current allocated value
+         */
+         inline void recordResourceAllocation(
+            const std::shared_ptr<Resource> &resource,
+            double value
+         ) {
+
+            resources[resource] = value;
+            resourcesByName[resource->getName()] = resource;
+         }
+
+         /*
+            Removes the Entity's allocation record for a specific resource.
+
+            Input:
+               Weak pointer to the resource
+               The current allocated value
+         */
+         inline void removeResourceAllocation(const std::shared_ptr<Resource> &resource) {
+
+            resourcesByName.erase(resource->getName());
+            resources.erase(resource);
+         }
+
          // Resource allocation should be handled solely by Resource::allocate()
          // and Resource::free()
          friend Resource::AllocateStatus Resource::allocate(
@@ -87,6 +122,36 @@ namespace trogdor::entity {
          inline const auto &getResources() const {
 
             return resources;
+         }
+
+         /*
+            Returns the allocation record for the specified resource if one
+            exists or a std::pair with an expired weak_ptr and 0 if one doesn't.
+
+            Input:
+               (none)
+
+            Output:
+               std::pair<weak_ptr<Resource>, double> containing either a pointer
+                  to the resource along with the amount the Entity currently
+                  possesses or an expired pointer and 0 if no allocation is found.
+         */
+         inline std::pair<std::weak_ptr<Resource>, double> getResourceByName(
+            std::string name
+         ) const {
+
+            if (
+               resourcesByName.end() != resourcesByName.find(name) &&
+               resources.end() != resources.find(resourcesByName.find(name)->second)
+            ) {
+               return *resources.find(resourcesByName.find(name)->second);
+            }
+
+            // If an allocation of th requested resource isn't found, we return
+            // a std::pair with an expired weak_ptr and a value of 0.
+            else {
+               return {};
+            }
          }
    };
 }
