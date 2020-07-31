@@ -4,10 +4,13 @@
 
 
    <!-- Entity class definitions are optional. If they are used, they must
-        precede everything else, including the manifest. Entity classes are a
-        way to quickly define game Entities that are similar. You define a set
-        of attributes for a class, and then any Entity whose type is that class
-        will assume those attributes.
+        precede the definitions of the rooms, creatures, and objects that use
+        them. Otherwise, an Entity class undefined error will be thrown during
+        parsing.
+
+        Entity classes are a way to quickly define game Entities that are
+        similar. You define a set of attributes for a class, and then any Entity
+        whose type is that class will assume those attributes.
 
         Attributes can be overridden in a specific Entity. So, if you define an
         object class of type "weapon," and you assign to it a damage of 1, but
@@ -18,7 +21,7 @@
       <objects>
 
          <!-- Any defined objects of type "weapon" will assume these attributes. -->
-         <object class="weapon">
+         <weapon>
 
             <!-- One or more arbitrary tags can be applied to an Entity. A few,
                  such as "weapon" (objects only) are used to define an Entity's
@@ -32,13 +35,13 @@
             <!-- Amount of damage object does as a weapon (optional: default 1) -->
             <damage>1</damage>
 
-         </object>
+         </weapon>
 
       </objects>
 
       <creatures>
 
-         <creature class="soul">
+         <soul>
 
             <!-- any creature of this type can be referenced by these aliases -->
             <aliases>
@@ -49,48 +52,11 @@
                <alias>phantom</alias>
             </aliases>
 
-         </creature>
+         </soul>
 
       </creatures>
 
    </classes>
-
-
-   <!-- This section MUST precede everything except class definitions.  The
-        manifest declares the names and types of all entities in the game.  If a
-        game entity is defined below but is not declared here first, the engine
-        will throw an error.  All entities declared in the manifest must be
-        defined below.  If an entity is declared in this section and is not
-        defined below, the engine will throw an error.
-
-         Note that each item, regardless of type, must have a unique name.
-         A room and an object, for example, cannot both be named the same thing.
-         If two or more objects need to be identified by the same word, you can
-         define aliases for them in the entity definitions. -->
-   <manifest>
-
-      <!-- every game must include at least one room named "start" -->
-      <rooms>
-         <room name="start"></room>
-         <room name="mysticalhall"></room>
-         <room name="cave"></room>
-         <room name="chamber"></room>
-      </rooms>
-
-      <creatures>
-         <creature name="trogdor"></creature>
-         <soul name="casper"></soul>
-      </creatures>
-
-      <objects>
-         <object name="candle"></object>
-         <object name="rock"></object>
-         <object name="boulder"></object>
-         <weapon name="sword"></weapon>
-         <weapon name="stick"></weapon>
-      </objects>
-
-   </manifest>
 
 
    <!-- This section is optional, and defines whether or not new players should
@@ -110,7 +76,6 @@ This is an introduction. If introductions are enabled, new players will have to 
    </introduction>
 
 
-
    <!-- The meta section is optional and defines any meta data variables you
         want to set in the game.  All values are stored internally as
         strings. -->
@@ -122,7 +87,6 @@ This is an introduction. If introductions are enabled, new players will have to 
       <author>James Colannino</author>
 
    </meta>
-
 
 
    <!-- Optional section that allows you to modify the game's vocabulary -->
@@ -160,7 +124,6 @@ This is an introduction. If introductions are enabled, new players will have to 
    </vocabulary>
 
 
-
    <!-- Global Event Handlers and Scripts (optional) -->
    <events>
 
@@ -188,7 +151,6 @@ This is an introduction. If introductions are enabled, new players will have to 
       <event name="beforeDrop">testFunctionDrop</event>
 
    </events>
-
 
 
    <!-- Player Configuration -->
@@ -276,7 +238,6 @@ This is an introduction. If introductions are enabled, new players will have to 
       </default>
 
    </player>
-
 
 
    <!-- Game Objects -->
@@ -402,7 +363,6 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
    </objects>
 
 
-
    <!-- Creatures -->
    <creatures>
 
@@ -449,9 +409,7 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
                  the two are no longer in the same room. (optional: default 0) -->
             <repeat>1</repeat>
 
-         </autoattack>
-
-         
+         </autoattack>         
 
          <!-- creature's maximum probability of being hit during combat
               (optional: default is 0.5) -->
@@ -545,7 +503,6 @@ He's white, transparent and floating six or seven feet off the ground.  He smile
 
 
    </creatures>
-
 
 
    <!-- Rooms -->
@@ -657,4 +614,3 @@ You find yourself in a dark secluded chamber.  It's dank, musty and generally ic
 
 
 </game>
-

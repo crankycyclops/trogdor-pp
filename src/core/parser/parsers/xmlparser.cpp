@@ -21,6 +21,144 @@ namespace trogdor {
 
    /***************************************************************************/
 
+   void XMLParser::declareEntity(
+      std::string name,
+      std::string className,
+      entity::EntityType type,
+      int lineno
+   ) {
+
+      // What can I say? I like grammatically correct error messages.
+      static std::unordered_set<char> vowels = {'a', 'e', 'i', 'o', 'u'};
+
+      if (declaredEntities.end() != declaredEntities.find(name)) {
+
+         std::string typeStr = entity::Entity::typeToStr(declaredEntities[name].type);
+         std::string article = vowels.end() != vowels.find(typeStr[0]) ?
+            std::string("an") : std::string("a");
+
+         throw ParseException(article + " " + typeStr + " named '"
+            + name + "' was already defined on line " +
+            std::to_string(declaredEntities[name].lineno) +
+            ". Please ensure that all entity names are unique.");
+      }
+
+      // Primitive class names ("room", "object", etc.) are an exception to the
+      // rule that the class has to have been previously defined because it's
+      // already defined internally
+      else if (
+         entity::ENTITY_UNDEFINED == entity::Entity::strToType(className) &&
+         declaredEntityClasses.end() == declaredEntityClasses.find(className)
+      ) {
+
+         std::string article = vowels.end() != vowels.find(entity::Entity::typeToStr(type)[0]) ?
+            std::string("an") : std::string("a");
+
+         throw ParseException(article + " " + entity::Entity::typeToStr(type) + " named '"
+            + name + "' was defined according to the '" + className
+            + "' class, but that class hasn't been defined.");
+      }
+
+      // Same note as above about primitive class names
+      else if (
+         entity::ENTITY_UNDEFINED == entity::Entity::strToType(className) &&
+         type != declaredEntityClasses[className]
+      ) {
+
+         std::string article = vowels.end() != vowels.find(entity::Entity::typeToStr(type)[0]) ?
+            std::string("an") : std::string("a");
+
+         throw ParseException(article + " " + Entity::typeToStr(type) + " named '"
+            + name + "' was defined according to the '" + className
+            + "' class, but that class is for " +
+            entity::Entity::typeToStr(declaredEntityClasses[className]) + "s.");
+      }
+
+      // An implicit definition was already made, so all we have to do is update
+      // that AST node to make sure it contains the correct class and then
+      // remove the unresolved reference.
+      if (unresolvedEntityReferences.end() != unresolvedEntityReferences.find(name)) {
+         unresolvedEntityReferences[name].first->getChildren()[2]->updateValue(className);
+         unresolvedEntityReferences.erase(name);
+      }
+
+      else {
+         insertDefineEntityOperation(
+            name,
+            className,
+            type,
+            lineno
+         );
+      }
+
+      declaredEntities[name] = {
+         lineno,
+         name,
+         className,
+         type
+      };
+   }
+
+   /***************************************************************************/
+
+   void XMLParser::setUnresolvedEntityReference(
+      std::string name,
+      std::string className,
+      entity::EntityType type,
+      int lineno
+   ) {
+
+      if (declaredEntities.end() == declaredEntities.find(name)) {
+
+         if (unresolvedEntityReferences.end() == unresolvedEntityReferences.find(name)) {
+
+            unresolvedEntityReferences[name] = {
+               insertDefineEntityOperation(
+                  name,
+                  entity::Entity::typeToStr(type),
+                  type,
+                  lineno
+               ), {}
+            };
+         }
+
+         unresolvedEntityReferences[name].second.push_back(lineno);
+      }
+   }
+
+   /***************************************************************************/
+
+   std::shared_ptr<ASTNode> &XMLParser::insertDefineEntityOperation(
+      std::string name,
+      std::string className,
+      entity::EntityType type,
+      int lineno
+   ) {
+
+      std::string defaultTitle = entity::ENTITY_OBJECT == type ?
+         std::string("a ") + name : name;
+
+      std::shared_ptr<ASTNode> &definitionNode = ast->appendChild(ASTDefineEntity(
+         name,
+         entity::Entity::typeToStr(type),
+         className,
+         lineno
+      ));
+
+      // Set entity's default title
+      ast->appendChild(ASTSetProperty(
+         "entity",
+         "title",
+         defaultTitle,
+         xmlTextReaderGetParserLineNumber(reader),
+         name
+      ));
+
+      return definitionNode;
+   }
+
+   /***************************************************************************/
+
    void XMLParser::parse(std::string filename) {
 
       // Keeping track of this will help us later when we need to locate Lua
@@ -63,6 +201,33 @@ namespace trogdor {
             xmlTextReaderGetParserLineNumber(reader));
       }
 
+      // If there are unresolved entity references, the game.xml is incomplete
+      // and we should throw an exception.
+      if (unresolvedEntityReferences.size()) {
+
+         std::string errorMsg = "The following entity references are undefined:";
+
+         for (const auto &reference: unresolvedEntityReferences) {
+
+            std::string name = reference.first;
+            std::string type = reference.second.first->getChildren()[1]->getValue();
+            std::string lines = reference.second.second.size() > 1 ? "lines " : "line ";
+
+            for (unsigned i = 0; i < reference.second.second.size(); i++) {
+
+               lines += std::to_string(reference.second.second[i]);
+
+               if (i < reference.second.second.size() - 1) {
+                  lines += i < reference.second.second.size() - 2 ? ", " : ", and ";
+               }
+            }
+
+            errorMsg += "\n\t" + type + " '" + name + "' on " + lines;
+         }
+
+         throw ParseException(errorMsg, gamefilePath, 0);
+      }
+
       instantiator->instantiate(ast);
    }
 
@@ -70,31 +235,14 @@ namespace trogdor {
 
    void XMLParser::parseGame() {
 
-      bool manifestParsed = false;
-
-      // class definitions and the manifest ALWAYS come first!
-      while (!manifestParsed) {
-
-         nextTag();
-
-         if (0 == getTagName().compare("manifest")) {
-            parseManifest();
-            manifestParsed = true;
-         }
-
-         else if (0 == getTagName().compare("classes")) {
-            parseClasses();
-         }
-
-         else {
-            throw ParseException("expected <manifest> or <classes>");
-         }
-      }
-
       // parse the remaining sections
       while (nextTag() && 1 == getDepth()) {
 
-         if (0 == getTagName().compare("vocabulary")) {
+         if (0 == getTagName().compare("classes")) {
+            parseClasses();
+         }
+
+         else if (0 == getTagName().compare("vocabulary")) {
               parseVocabulary();
          }
 
@@ -126,12 +274,8 @@ namespace trogdor {
             parseRooms();
          }
 
-         else if (0 != getTagName().compare("classes")) {
-            throw ParseException("<classes> must appear before manifest");
-         }
-
          else {
-            throw ParseException(std::string("invalid section <") + getTagName() + ">");
+            throw ParseException(std::string("invalid section: <") + getTagName() + ">");
          }
       }
 
@@ -169,15 +313,7 @@ namespace trogdor {
    void XMLParser::parseClassesRooms() {
 
       while (nextTag() && 3 == getDepth()) {
-
-         if (0 == getTagName().compare("room")) {
-            parseClassesRoom();
-         }
-
-         else {
-            throw ParseException(std::string("invalid tag <") + getTagName()
-               + "> in rooms section of <classes>");
-         }
+         parseClassesRoom();
       }
 
       checkClosingTag("rooms");
@@ -187,7 +323,7 @@ namespace trogdor {
 
    void XMLParser::parseClassesRoom() {
 
-      std::string name = getAttribute("class");
+      std::string name = getTagName();
 
       if (isClassNameReserved(name)) {
          throw ParseException(std::string("class name '") + name + "' is reserved");
@@ -202,7 +338,7 @@ namespace trogdor {
       ));
 
       parseRoomProperties(name, "class", 4);
-      checkClosingTag("room");
+      checkClosingTag(name);
    }
 
    /***************************************************************************/
@@ -210,15 +346,7 @@ namespace trogdor {
    void XMLParser::parseClassesObjects() {
 
       while (nextTag() && 3 == getDepth()) {
-
-         if (0 == getTagName().compare("object")) {
-            parseClassesObject();
-         }
-
-         else {
-            throw ParseException(std::string("invalid tag <") + getTagName()
-               + "> in objects section of <classes>");
-         }
+         parseClassesObject();
       }
 
       checkClosingTag("objects");
@@ -228,7 +356,7 @@ namespace trogdor {
 
    void XMLParser::parseClassesObject() {
 
-      std::string name = getAttribute("class");
+      std::string name = getTagName();
 
       if (isClassNameReserved(name)) {
          throw ParseException(std::string("class name '") + name + "' is reserved");
@@ -244,7 +372,7 @@ namespace trogdor {
 
       // Don't pass object! It's been moved and is no longer a valid pointer.
       parseObjectProperties(name, "class", 4);
-      checkClosingTag("object");
+      checkClosingTag(name);
    }
 
    /***************************************************************************/
@@ -252,15 +380,7 @@ namespace trogdor {
    void XMLParser::parseClassesCreatures() {
 
       while (nextTag() && 3 == getDepth()) {
-
-         if (0 == getTagName().compare("creature")) {
-            parseClassesCreature();
-         }
-
-         else {
-            throw ParseException(std::string("invalid tag <") + getTagName()
-               + "> in creatures section of <classes>");
-         }
+         parseClassesCreature();
       }
 
       checkClosingTag("creatures");
@@ -270,7 +390,7 @@ namespace trogdor {
 
    void XMLParser::parseClassesCreature() {
 
-      std::string name = getAttribute("class");
+      std::string name = getTagName();
 
       if (isClassNameReserved(name)) {
          throw ParseException(std::string("class name '") + name + "' is reserved");
@@ -286,7 +406,7 @@ namespace trogdor {
 
       // Don't pass creature! It's been moved and is no longer a valid pointer.
       parseCreatureProperties(name, "class", 4);
-      checkClosingTag("creature");
+      checkClosingTag(name);
    }
 
    /***************************************************************************/
@@ -468,168 +588,6 @@ namespace trogdor {
       }
 
       checkClosingTag("synonyms");
-   }
-
-   /***************************************************************************/
-
-   void XMLParser::parseManifest() {
-
-      while (nextTag() && 2 == getDepth()) {
-
-         if (0 == getTagName().compare("rooms")) {
-            parseManifestRooms();
-         }
-
-         else if (0 == getTagName().compare("creatures")) {
-            parseManifestCreatures();
-         }
-
-         else if (0 == getTagName().compare("objects")) {
-            parseManifestObjects();
-         }
-
-         else {
-            throw ParseException(std::string("invalid tag <") + getTagName()
-               + "> in <manifest>");
-         }
-      }
-
-      checkClosingTag("manifest");
-   }
-
-   /***************************************************************************/
-
-   void XMLParser::parseManifestRooms() {
-
-      while (nextTag() && 3 == getDepth()) {
-
-         if (0 == getTagName().compare("room")) {
-            parseManifestRoom();
-         }
-
-         else if (entityClassDeclared(getTagName(), entity::ENTITY_ROOM)) {
-            parseManifestRoom(getTagName());
-         }
-
-         else {
-            throw ParseException(std::string("invalid tag <") + getTagName()
-               + "> in rooms section of <manifest>");
-         }
-      }
-
-      checkClosingTag("rooms");
-   }
-
-   /***************************************************************************/
-
-   void XMLParser::parseManifestRoom(std::string className) {
-
-      std::string name = getAttribute("name");
-
-      declaredEntities[name] = {
-         name,
-         className,
-         entity::ENTITY_ROOM
-      };
-
-      ast->appendChild(ASTDefineEntity(
-         name,
-         entity::Entity::typeToStr(entity::ENTITY_ROOM),
-         className,
-         xmlTextReaderGetParserLineNumber(reader)
-      ));
-
-      checkClosingTag(className);
-   }
-
-   /***************************************************************************/
-
-   void XMLParser::parseManifestObjects() {
-
-      while (nextTag() && 3 == getDepth()) {
-
-         if (0 == getTagName().compare("object")) {
-            parseManifestObject();
-         }
-
-         else if (entityClassDeclared(getTagName(), entity::ENTITY_OBJECT)) {
-            parseManifestObject(getTagName());
-         }
-
-         else {
-            throw ParseException(std::string("<") + getTagName()
-               + "> is not an object class in objects section of <manifest>");
-         }
-      }
-
-      checkClosingTag("objects");
-   }
-
-   /***************************************************************************/
-
-   void XMLParser::parseManifestObject(std::string className) {
-
-      std::string name = getAttribute("name");
-
-      declaredEntities[name] = {
-         name,
-         className,
-         entity::ENTITY_OBJECT
-      };
-
-      ast->appendChild(ASTDefineEntity(
-         name,
-         entity::Entity::typeToStr(entity::ENTITY_OBJECT),
-         className,
-         xmlTextReaderGetParserLineNumber(reader)
-      ));
-
-      checkClosingTag(className);
-   }
-
-   /***************************************************************************/
-
-   void XMLParser::parseManifestCreatures() {
-
-      while (nextTag() && 3 == getDepth()) {
-
-         if (0 == getTagName().compare("creature")) {
-            parseManifestCreature();
-         }
-
-         else if (entityClassDeclared(getTagName(), entity::ENTITY_CREATURE)) {
-            parseManifestCreature(getTagName());
-         }
-
-         else {
-            throw ParseException(std::string("invalid tag <") + getTagName()
-               + "> in creatures section of <manifest>");
-         }
-      }
-
-      checkClosingTag("creatures");
-   }
-
-   /***************************************************************************/
-
-   void XMLParser::parseManifestCreature(std::string className) {
-
-      std::string name = getAttribute("name");
-
-      declaredEntities[name] = {
-         name,
-         className,
-         entity::ENTITY_CREATURE
-      };
-
-      ast->appendChild(ASTDefineEntity(
-         name,
-         entity::Entity::typeToStr(entity::ENTITY_CREATURE),
-         className,
-         xmlTextReaderGetParserLineNumber(reader)
-      ));
-
-      checkClosingTag(className);
    }
 
    /***************************************************************************/
@@ -816,36 +774,12 @@ namespace trogdor {
 
       std::string name = getAttribute("name");
 
-      // Make sure entity exists
-      if (!entityDeclared(name)) {
-         throw ParseException(std::string("object '") + name
-            + "' was not declared in <manifest>");
-      }
-
-      // Make sure entity is an object
-      else if (entity::ENTITY_OBJECT != declaredEntities[name].type) {
-         throw ParseException(std::string("object type mismatch: '")
-            + name + "' is of type "
-            + Entity::typeToStr(declaredEntities[name].type)
-            + ", but was declared in <objects>");
-      }
-
-      // Make sure object is the correct class
-      else if (className != declaredEntities[name].className) {
-         throw ParseException(std::string("object type mismatch: '")
-            + name + "' is of class "
-            + declaredEntities[name].className
-            + ", but was declared in <objects> to be of class " + className);
-      }
-
-      // set the object's default title
-      ast->appendChild(ASTSetProperty(
-         "entity",
-         "title",
-         std::string("a ") + name,
-         xmlTextReaderGetParserLineNumber(reader),
-         name
-      ));
+      declareEntity(
+         name,
+         className,
+         entity::ENTITY_OBJECT,
+         xmlTextReaderGetParserLineNumber(reader)
+      );
 
       parseObjectProperties(name, "entity", 3);
       checkClosingTag(className);
@@ -1010,33 +944,12 @@ namespace trogdor {
 
       std::string name = getAttribute("name");
 
-      if (!entityDeclared(name)) {
-         throw ParseException(std::string("creature '") + name
-            + "' was not declared in <manifest>");
-      }
-
-      // Make sure entity is a creature
-      else if (entity::ENTITY_CREATURE != declaredEntities[name].type) {
-         throw ParseException(std::string("creature type mismatch: '")
-            + name + "' is of type " + Entity::typeToStr(declaredEntities[name].type)
-            + ", but was declared in <creatures>");
-      }
-
-      // Make sure creature is the correct class
-      else if (className != declaredEntities[name].className) {
-         throw ParseException(std::string("creature type mismatch: '")
-            + name + "' is of class " + declaredEntities[name].className
-            + ", but was declared in <creatures> to be of class " + className);
-      }
-
-      // set the creature's default title and parse the rest of its properties
-      ast->appendChild(ASTSetProperty(
-         "entity",
-         "title",
+      declareEntity(
          name,
-         xmlTextReaderGetParserLineNumber(reader),
-         name
-      ));
+         className,
+         entity::ENTITY_CREATURE,
+         xmlTextReaderGetParserLineNumber(reader)
+      );
 
       parseCreatureProperties(name, "entity", 3);
       checkClosingTag(className);
@@ -1157,35 +1070,12 @@ namespace trogdor {
 
       std::string name = getAttribute("name");
 
-      if (!entityDeclared(name)) {
-         throw ParseException(std::string("room '") + name
-            + "' was not declared in <manifest>");
-      }
-
-      // Make sure entity is a room
-      else if (entity::ENTITY_ROOM != declaredEntities[name].type) {
-         throw ParseException(std::string("room type mismatch: '")
-            + name + "' is of type "
-            + Entity::typeToStr(declaredEntities[name].type)
-            + ", but was declared in <rooms>");
-      }
-
-      // Make sure room is the correct class
-      else if (className != declaredEntities[name].className) {
-         throw ParseException(std::string("room type mismatch: '")
-            + name + "' is of class "
-            + declaredEntities[name].className
-            + ", but was declared in <rooms> to be of type " + className);
-      }
-
-      // set Room's default title and parse remaining properties
-      ast->appendChild(ASTSetProperty(
-         "entity",
-         "title",
+      declareEntity(
          name,
-         xmlTextReaderGetParserLineNumber(reader),
-         name
-      ));
+         className,
+         entity::ENTITY_ROOM,
+         xmlTextReaderGetParserLineNumber(reader)
+      );
 
       parseRoomProperties(name, "entity", 3);
       checkClosingTag(className);
@@ -1258,6 +1148,13 @@ namespace trogdor {
    void XMLParser::parseRoomConnection(std::string direction, std::string roomName,
    std::string connectTo, std::string targetType) {
 
+      setUnresolvedEntityReference(
+         connectTo,
+         entity::Entity::typeToStr(entity::ENTITY_ROOM),
+         entity::ENTITY_ROOM,
+         xmlTextReaderGetParserLineNumber(reader)
+      );
+
       ast->appendChild(ASTConnectRooms(
          targetType,
          roomName,
@@ -1285,6 +1182,13 @@ namespace trogdor {
             if (0 == targetType.compare("entity")) {
 
                std::string thingName = parseString();
+
+               setUnresolvedEntityReference(
+                  thingName,
+                  tag,
+                  entity::Entity::strToType(tag),
+                  xmlTextReaderGetParserLineNumber(reader)
+               );
 
                ast->appendChild(ASTInsertIntoRoom(
                   thingName,
@@ -1439,6 +1343,13 @@ namespace trogdor {
             std::string value = parseString();
 
             if (0 == targetType.compare("entity")) {
+
+               setUnresolvedEntityReference(
+                  value,
+                  tag,
+                  entity::Entity::strToType(tag),
+                  xmlTextReaderGetParserLineNumber(reader)
+               );
 
                ast->appendChild(ASTInsertIntoInventory(
                   value,

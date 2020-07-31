@@ -34,8 +34,12 @@ namespace trogdor {
          // locate Lua script files using relative paths
          std::string gamefilePath;
 
-         // Record corresponding to an Entity declared in <manifest>
+         // Whenever an entity is explicitly declared, it's recorded here. We
+         // check this later to see if any entities are referenced that weren't
+         // declared (i.e. Room "start" has an eastern connection to room "cave",
+         // which was never declared) and throw an error if so
          struct DeclaredEntity {
+            int lineno;
             std::string name;
             std::string className;
             entity::EntityType type;
@@ -49,28 +53,96 @@ namespace trogdor {
          // walking the XML tree.
          std::string lastClosedTag;
 
-         // Keeps track of Entities that were declared in <manifest>
+         // Keeps track of Entities as they're declared
          std::unordered_map<std::string, DeclaredEntity> declaredEntities;
 
-         // Keeps track of Entity classes that were defined in <classes>
+         // Keeps track of Entity classes, defined in <classes>
          std::unordered_map<std::string, entity::EntityType> declaredEntityClasses;
+
+         // Any time an entity is referenced by another (i.e. a room connection
+         // or an item in a Creature's inventory) and hasn't been declared, that
+         // reference is recorded here. When parsing is complete, we'll perform
+         // a check for unresolved references, and if any are found, an error
+         // will be thrown.
+         std::unordered_map<
+
+            // The referenced entity's name
+            std::string,
+
+            std::pair<
+
+               // AST Node where the entity is defined (this way, we can modify
+               // it in place later if necessary)
+               std::shared_ptr<ASTNode>,
+
+               // All the line numbers where the entity is referenced
+               std::vector<int>
+            >
+
+         > unresolvedEntityReferences;
 
          // Keeps track of custom directions and direction synonyms
          std::unordered_set<std::string> customDirections;
 
          /*
-            Returns true if the specified Entity was declared and false if not.
+            Declare an entity. If the entity has already been previously
+            declared, an error will be thrown. If the specified class hasn't
+            been defined for entities of its type, then an error will also be
+            thrown.
 
             Input:
-               (none)
+               Entity name (std::string)
+               Entity class name (std::string)
+               Entity type (entity::EntityType)
+               Line number (int)
 
             Output:
-               Whether or not the Entity exists (bool)
+               (none)
          */
-         inline bool entityDeclared(std::string name) {
+         void declareEntity(
+            std::string name,
+            std::string className,
+            entity::EntityType type,
+            int lineno
+         );
 
-            return declaredEntities.end() != declaredEntities.find(name) ? true : false;
-         }
+         /*
+            Records a reference to an Entity that hasn't been declared yet.
+
+            Input:
+               Entity name (std::string)
+               Entity class name (std::string)
+               Entity type (entity::EntityType)
+               Line number (int)
+
+            Output:
+               Reference to the resulting ASTNode (std::shared_ptr<ASTNode> &)
+         */
+         void setUnresolvedEntityReference(
+            std::string name,
+            std::string className,
+            entity::EntityType type,
+            int lineno
+         );
+
+         /*
+            Updates the AST with a define entity operation.
+
+            Input:
+               Entity name (std::string)
+               Entity class name (std::string)
+               Entity type (entity::EntityType)
+               Line number (int)
+
+            Output:
+               Reference to the resulting ASTNode (std::shared_ptr<ASTNode> &)
+         */
+         std::shared_ptr<ASTNode> &insertDefineEntityOperation(
+            std::string name,
+            std::string className,
+            entity::EntityType type,
+            int lineno
+         );
 
          /*
             Returns true if the specified Entity class was declared and is of
@@ -366,24 +438,6 @@ namespace trogdor {
                (none)
          */
          void parseIntroduction();
-
-         /*
-            This group of functions parses the <manifest> section of the XML
-            file.
-
-            Input:
-               (none)
-
-            Output:
-               (none)
-         */
-         void parseManifest();
-         void parseManifestRooms();
-         void parseManifestRoom(std::string className = "room");
-         void parseManifestCreatures();
-         void parseManifestCreature(std::string className = "creature");
-         void parseManifestObjects();
-         void parseManifestObject(std::string className = "object");
 
          /*
             Parses meta data for entities or for the game.
