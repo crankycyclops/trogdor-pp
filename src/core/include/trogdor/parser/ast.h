@@ -154,7 +154,21 @@ namespace trogdor {
          }
 
          /*
-            Append a child node.
+            Updates the value after it was initially set in the constructor.
+
+            Input:
+               New value (std::string)
+
+            Output:
+               (none)
+         */
+         inline void updateValue(std::string newVal) {
+
+            value = newVal;
+         }
+
+         /*
+            Appends a child node and returns a reference to the inserted copy.
 
             Input:
                Child node (ASTNode)
@@ -162,9 +176,10 @@ namespace trogdor {
             Output:
                (none)
          */
-         inline void appendChild(std::shared_ptr<ASTNode> child) {
+         inline std::shared_ptr<ASTNode> &appendChild(std::shared_ptr<ASTNode> child) {
 
             children.push_back(child);
+            return children.back();
          }
 
          /*
