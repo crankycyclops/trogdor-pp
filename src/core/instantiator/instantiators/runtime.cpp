@@ -97,6 +97,25 @@ namespace trogdor {
 
          switch (entityType) {
 
+            case entity::ENTITY_RESOURCE:
+
+               // Entity has no class, so create a blank Entity
+               if (
+                  0 == className.compare("") ||
+                  0 == className.compare(Entity::typeToStr(entity::ENTITY_RESOURCE))
+               ) {
+                  entity = std::make_shared<entity::Resource>(game, entityName);
+               }
+
+               // Entity has a class, so copy the class's prototype
+               else {
+                  entity = std::make_shared<entity::Resource>(
+                     *(dynamic_cast<entity::Resource *>(typeClasses[className].get())), entityName
+                  );
+               }
+
+               break;
+
             case entity::ENTITY_ROOM:
 
                // Entity has no class, so create a blank Entity
@@ -182,6 +201,10 @@ namespace trogdor {
          );
 
          switch (classType) {
+
+            case entity::ENTITY_RESOURCE:
+               entity = std::make_unique<Resource>(game, className);
+               break;
 
             case entity::ENTITY_ROOM:
                entity = std::make_unique<Room>(
@@ -551,6 +574,7 @@ namespace trogdor {
    void Runtime::mapEntitySetters() {
 
       // Set Entity title (all types)
+      propSetters["resource"]["title"] =
       propSetters["room"]["title"] =
       propSetters["object"]["title"] =
       propSetters["creature"]["title"] =
@@ -562,6 +586,7 @@ namespace trogdor {
       /**********/
 
       // Set Entity's long description (all types)
+      propSetters["resource"]["longDesc"] =
       propSetters["room"]["longDesc"] =
       propSetters["object"]["longDesc"] =
       propSetters["creature"]["longDesc"] =
@@ -573,6 +598,7 @@ namespace trogdor {
       /**********/
 
       // Set Entity's short description (all types)
+      propSetters["resource"]["shortDesc"] =
       propSetters["room"]["shortDesc"] =
       propSetters["object"]["shortDesc"] =
       propSetters["creature"]["shortDesc"] =
@@ -780,6 +806,35 @@ namespace trogdor {
       propSetters["object"]["damage"] = [](Game *game, entity::Entity *object,
       std::string value) {
          dynamic_cast<entity::Object *>(object)->setDamage(stoi(value));
+      };
+
+      /**********/
+
+      propSetters["resource"]["amountAvailable"] = [](Game *game, entity::Entity *resource,
+      std::string value) {
+
+         if (!dynamic_cast<entity::Resource *>(resource)->setAmountAvailable(stod(value))) {
+            throw ValidationException(
+               "Some tangible entity possesses more of the '" +
+               resource->getName() + "' than is allowed."
+            );
+         }
+      };
+
+      /**********/
+
+      propSetters["resource"]["requireIntegerAllocations"] = [](Game *game, entity::Entity *resource,
+      std::string value) {
+
+         dynamic_cast<entity::Resource *>(resource)->setRequireIntegerAllocations(stoi(value));
+      };
+
+      /**********/
+
+      propSetters["resource"]["maxAmountPerDepositor"] = [](Game *game, entity::Entity *resource,
+      std::string value) {
+
+         dynamic_cast<entity::Resource *>(resource)->setMaxAmountPerDepositor(stod(value));
       };
    }
 }

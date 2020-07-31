@@ -4,6 +4,8 @@
 
 const char *g_reservedClassNames[] = {
    "entity",
+   "resource",
+   "tangible",
    "place",
    "room",
    "thing",

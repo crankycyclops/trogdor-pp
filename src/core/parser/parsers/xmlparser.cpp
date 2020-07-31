@@ -274,6 +274,10 @@ namespace trogdor {
             parseRooms();
          }
 
+         else if (0 == getTagName().compare("resources")) {
+            parseResources();
+         }
+
          else {
             throw ParseException(std::string("invalid section: <") + getTagName() + ">");
          }
@@ -298,6 +302,10 @@ namespace trogdor {
 
          else if (0 == getTagName().compare("creatures")) {
             parseClassesCreatures();
+         }
+
+         else if (0 == getTagName().compare("resources")) {
+            parseClassesResources();
          }
 
          else {
@@ -406,6 +414,39 @@ namespace trogdor {
 
       // Don't pass creature! It's been moved and is no longer a valid pointer.
       parseCreatureProperties(name, "class", 4);
+      checkClosingTag(name);
+   }
+
+   /***************************************************************************/
+
+   void XMLParser::parseClassesResources() {
+
+      while (nextTag() && 3 == getDepth()) {
+         parseClassesResource();
+      }
+
+      checkClosingTag("resources");
+   }
+
+   /***************************************************************************/
+
+   void XMLParser::parseClassesResource() {
+
+      std::string name = getTagName();
+
+      if (isClassNameReserved(name)) {
+         throw ParseException(std::string("class name '") + name + "' is reserved");
+      }
+
+      declaredEntityClasses[name] = entity::ENTITY_RESOURCE;
+
+      ast->appendChild(ASTDefineEntityClass(
+         name,
+         entity::Entity::typeToStr(entity::ENTITY_RESOURCE),
+         xmlTextReaderGetParserLineNumber(reader)
+      ));
+
+      parseResourceProperties(name, "class", 4);
       checkClosingTag(name);
    }
 
@@ -1465,6 +1506,98 @@ namespace trogdor {
       }
 
       checkClosingTag("aliases");
+   }
+
+   /***************************************************************************/
+
+   void XMLParser::parseResources() {
+
+      while (nextTag() && 2 == getDepth()) {
+
+         if (0 == getTagName().compare("resource")) {
+            parseResource();
+         }
+
+         else if (entityClassDeclared(getTagName(), entity::ENTITY_RESOURCE)) {
+            parseResource(getTagName());
+         }
+
+         else {
+            throw ParseException(std::string("invalid tag <") + getTagName()
+               + "> in <resources>");
+         }
+      }
+
+      checkClosingTag("resources");
+   }
+
+   /***************************************************************************/
+
+   void XMLParser::parseResource(std::string className) {
+
+      std::string name = getAttribute("name");
+
+      declareEntity(
+         name,
+         className,
+         entity::ENTITY_RESOURCE,
+         xmlTextReaderGetParserLineNumber(reader)
+      );
+
+      parseResourceProperties(name, "entity", 3);
+      checkClosingTag(className);
+   }
+
+   /***************************************************************************/
+
+   void XMLParser::parseResourceProperties(std::string name, std::string targetType, int depth) {
+
+      static std::unordered_map<std::string, std::string> tagToProperty({
+         {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"},
+         {"integer", "requireIntegerAllocations"}, {"amount", "amountAvailable"},
+         {"maxallocation", "maxAmountPerDepositor"}
+      });
+
+      while (nextTag() && depth == getDepth()) {
+
+         std::string tag = getTagName();
+
+         if (0 == tag.compare("meta")) {
+            parseEntityMeta(name, targetType, depth + 1);
+         }
+
+         else if (0 == tag.compare("messages")) {
+            parseMessages(name, targetType, depth + 1);
+         }
+
+         else if (0 == tag.compare("tags")) {
+            parseEntityTags(name, targetType, depth + 1);
+         }
+
+         else if (0 == tag.compare("events")) {
+            parseEvents(name, targetType, depth + 1);
+         }
+
+         else if (tagToProperty.find(tag) != tagToProperty.end()) {
+
+            std::string value = parseString();
+
+            ast->appendChild(ASTSetProperty(
+               targetType,
+               tagToProperty[tag],
+               value,
+               xmlTextReaderGetParserLineNumber(reader),
+               name
+            ));
+
+            checkClosingTag(tag);
+         }
+
+         else {
+            throw ParseException(std::string("invalid tag <") + tag
+               + "> in resource or class definition");
+         }
+      }
    }
 
    /***************************************************************************/

@@ -154,6 +154,20 @@ namespace trogdor::entity {
          inline bool areIntegerAllocationsRequired() const {return requireIntegerAllocations;}
 
          /*
+            Set whether or not allocations must be made in integer-only amounts.
+
+            Input:
+               Whether or not integer-only allocations are required (bool)
+
+            Output:
+               (none)
+         */
+         inline void setRequireIntegerAllocations(bool required) {
+
+            requireIntegerAllocations = required;
+         }
+
+         /*
             Returns the total amount of the resource available (this has no
             bearing on how much of the resources has been allocated, but rather
             tells the caller how much of the resource currently exists.) A
@@ -169,6 +183,28 @@ namespace trogdor::entity {
          inline std::optional<double> getAmountAvailable() const {return amountAvailable;}
 
          /*
+            Set the total amount of the resource available. Setting this to
+            std::nullopt will result in the resource having an infinite supply.
+            If caller attempts to set a value that's below the amount currently
+            allocated, false will be returned, indicating failure.
+
+            Input:
+               The total amount of the resource available (std::optional<double>)
+
+            Output:
+               True if the call was successful and false if not (bool)
+         */
+         inline bool setAmountAvailable(std::optional<double> newAmount = std::nullopt) {
+
+            if (newAmount && *newAmount < totalAmountAllocated) {
+               return false;
+            }
+
+            amountAvailable = newAmount;
+            return true;
+         }
+
+         /*
             Returns the total amount of the resource that can be allocated by a
             tangible entity at once. A value of std::nullopt indicates that
             entities can hold as much as they want.
@@ -181,6 +217,26 @@ namespace trogdor::entity {
                   time (std::optional<double>)
          */
          inline std::optional<double> getMaxAmountPerDepositor() const {return maxAmountPerDepositor;}
+
+         /*
+            Set the total amount of the resource a tangible entity can possess
+            at one given time. Setting this to std::nullopt will result in no
+            limit. If you set this to a lower value than any current allocations
+            that have already been made, the call will succeed and the tangible
+            entity will retain the allocation they already have, but will not
+            be able to allocate more and, if they ever release their amount and
+            try to allocate more, the new maximum will be enforced.
+
+            Input:
+               How much a tangible entity can possess at one time (std::optional<double>)
+
+            Output:
+               (none)
+         */
+         inline void setMaxAmountPerDepositor(std::optional<double> newMax = std::nullopt) {
+
+            maxAmountPerDepositor = newMax;
+         }
 
          /*
             Returns the total amount of the resource currently allocated to

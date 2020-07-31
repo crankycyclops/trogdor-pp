@@ -613,4 +613,53 @@ You find yourself in a dark secluded chamber.  It's dank, musty and generally ic
    </rooms>
 
 
+   <!-- Game Resources -->
+   <resources>
+
+      <!-- Resources are special kinds of entities that can be allocated in
+           various amounts to players, creatures, and rooms in the game. One
+           example of a resource might be a kind of in-game currency (in the
+           example in this file, we'll use the name "gold") to illustrate that
+           point.
+
+           Like most other entities in the game, you can also set a title,
+           short description, meta data, event handlers, and custom messages. -->
+      <resource name="gold">
+
+         <!-- If set to true (a value of 1), this will require all allocations
+              of the resource to be made in integer increments only. For example,
+              an entity can be assigned 10 of the resource, but not 10.5. By
+              default, this is set to false (a value of 0), which allows numbers
+              with fractional parts. -->
+         <integer>0</integer>
+
+         <!-- If this setting is enabled, it determines how much of the resource
+              is available to allocate to other entites in the game. Once this
+              value has been reached, no more of the resource is available until
+              an entity releases their amount. This value can be an integer
+              (ex: 5) or a floating point value (ex: 10.5). By default, this
+              setting is disabled.
+         <amount>10</amount>
+         -->
+
+         <!-- If this setting is enabled, the value will set the maximum amount
+              of the resource that can be held by a creature, player, or room.
+              By default, this setting is disabled.
+         <maxallocation>10</maxallocation>
+         -->
+
+         <!-- Like most other entities in the game, resources can have
+              descriptions that the player will see when they look at the
+              resource. The description the player gets to read will be the
+              same whether they're looking at a plural or singular amount of
+              the resource. -->
+         <description>
+It's shiny and worth a LOT of money!
+         </description>
+
+      </resource>
+
+   </resources>
+
+
 </game>

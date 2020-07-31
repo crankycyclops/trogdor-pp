@@ -426,6 +426,8 @@ namespace trogdor {
          void parseClassesObject();
          void parseClassesCreatures();
          void parseClassesCreature();
+         void parseClassesResources();
+         void parseClassesResource();
 
          /*
             This group of functions parses the <introduction> section of the XML
@@ -547,6 +549,19 @@ namespace trogdor {
          void parseRooms();
          void parseRoom(std::string className = "room");
          void parseRoomProperties(std::string name, std::string targetType, int depth);
+
+         /*
+            Parses resource definitions in game.xml.
+
+            Input:
+               Tag that closes the room definition
+
+            Output:
+               (none)
+         */
+         void parseResources();
+         void parseResource(std::string className = "resource");
+         void parseResourceProperties(std::string name, std::string targetType, int depth);
 
          /*
             Parses the <game> section of the XML file.  Throws an exception if
