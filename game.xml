@@ -551,6 +551,14 @@ To the north, you see a dark hole in the wall big enough to walk through.
             <object>sword</object>
          </contains>
 
+         <!-- One or more resources can be allocated to a room, creature, or
+              object using the optional <resources> section. -->
+         <resources>
+            <!-- Resources can be allocated in whole number or floating point
+            amounts. -->
+            <resource name="gold">5</resource>
+         </resources>
+
       </room>
 
       <room name="mysticalhall">

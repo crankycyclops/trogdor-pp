@@ -36,7 +36,8 @@ namespace trogdor {
       SET_PROPERTY = 13,
       INSERT_INTO_INVENTORY = 14,
       INSERT_INTO_PLACE = 15,
-      CONNECT_ROOMS = 16
+      CONNECT_ROOMS = 16,
+      ALLOCATE_RESOURCE = 17
    };
 
    /**************************************************************************/
@@ -272,6 +273,9 @@ namespace trogdor {
 
                case CONNECT_ROOMS:
                   return "CONNECT_ROOMS";
+
+               case ALLOCATE_RESOURCE:
+                  return "ALLOCATE_RESOURCE";
 
                default:
                   return "UNDEFINED";

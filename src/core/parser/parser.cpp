@@ -577,5 +577,35 @@ namespace trogdor {
 
       return operation;
    }
-}
 
+   /**************************************************************************/
+
+   std::shared_ptr<ASTOperationNode> Parser::ASTAllocateResource(std::string tangible,
+   std::string resource, std::string amount, int lineNumber) {
+
+      auto operation = std::make_shared<ASTOperationNode>(
+         ALLOCATE_RESOURCE,
+         lineNumber
+      );
+
+      operation->appendChild(std::make_shared<ASTNode>(
+         tangible,
+         AST_VALUE,
+         lineNumber
+      ));
+
+      operation->appendChild(std::make_shared<ASTNode>(
+         resource,
+         AST_VALUE,
+         lineNumber
+      ));
+
+      operation->appendChild(std::make_shared<ASTNode>(
+         amount,
+         AST_VALUE,
+         lineNumber
+      ));
+
+      return operation;
+   }
+}

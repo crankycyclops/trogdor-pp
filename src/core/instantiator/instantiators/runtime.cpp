@@ -547,6 +547,34 @@ namespace trogdor {
 
          room->setConnection(direction, connectToRoom);
       });
+
+      /**********/
+
+      registerOperation(ALLOCATE_RESOURCE, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         std::string entityName = operation->getChildren()[0]->getValue();
+         std::string resourceName = operation->getChildren()[1]->getValue();
+         std::string amount = operation->getChildren()[2]->getValue();
+
+         if (!isValidDouble(amount)) {
+            throw ValidationException("resource allocation: amount must be a valid integer or floating point value");
+         }
+
+         auto status = game->getResource(resourceName)->allocate(
+            game->getTangible(entityName),
+            stod(amount)
+         );
+
+         switch (status) {
+
+            case entity::Resource::ALLOCATE_SUCCESS:
+               return;
+
+            default:
+               throw ValidationException("TODO: ba juju!");
+         }
+      });
    }
 
    /***************************************************************************/

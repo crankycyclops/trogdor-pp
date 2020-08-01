@@ -859,6 +859,15 @@ namespace trogdor {
             parseEvents(name, targetType, depth + 1);
          }
 
+         else if (0 == tag.compare("resources")) {
+
+            if (0 != targetType.compare("entity")) {
+               throw ParseException("Cannot allocate resources to a class");
+            }
+
+            parseTangibleResources(name, depth + 1);
+         }
+
          else if (tagToProperty.find(tag) != tagToProperty.end()) {
 
             std::string value = parseString();
@@ -1051,6 +1060,15 @@ namespace trogdor {
             parseEvents(name, targetType, depth + 1);
          }
 
+         else if (0 == tag.compare("resources")) {
+
+            if (0 != targetType.compare("entity")) {
+               throw ParseException("Cannot allocate resources to a class");
+            }
+
+            parseTangibleResources(name, depth + 1);
+         }
+
          else if (tagToProperty.find(tag) != tagToProperty.end()) {
 
             std::string value = parseString();
@@ -1160,6 +1178,15 @@ namespace trogdor {
 
          else if (0 == tag.compare("events")) {
             parseEvents(name, targetType, depth + 1);
+         }
+
+         else if (0 == tag.compare("resources")) {
+
+            if (0 != targetType.compare("entity")) {
+               throw ParseException("Cannot allocate resources to a class");
+            }
+
+            parseTangibleResources(name, depth + 1);
          }
 
          else if (tagToProperty.find(tag) != tagToProperty.end()) {
@@ -1598,6 +1625,48 @@ namespace trogdor {
                + "> in resource or class definition");
          }
       }
+   }
+
+   /***************************************************************************/
+
+   void XMLParser::parseTangibleResources(std::string entityName, int depth) {
+
+      while (nextTag() && depth == getDepth()) {
+
+         if (0 == getTagName().compare("resource")) {
+
+            std::string resourceName = getAttribute("name");
+            std::string resourceAmount = parseString();
+
+            trim(resourceAmount);
+
+            if (!resourceAmount.length()) {
+               throw ParseException("resource allocation: expected numeric value but got an empty string");
+            }
+
+            setUnresolvedEntityReference(
+               resourceName,
+               entity::Entity::typeToStr(entity::ENTITY_RESOURCE),
+               entity::ENTITY_RESOURCE,
+               xmlTextReaderGetParserLineNumber(reader)
+            );
+
+            ast->appendChild(ASTAllocateResource(
+               entityName,
+               resourceName,
+               resourceAmount,
+               xmlTextReaderGetParserLineNumber(reader)
+            ));
+
+            checkClosingTag("resource");
+         }
+
+         else {
+            throw ParseException("expected <resource> in <resources>");
+         }
+      }
+
+      checkClosingTag("resources");
    }
 
    /***************************************************************************/

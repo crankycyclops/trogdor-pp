@@ -564,6 +564,17 @@ namespace trogdor {
          void parseResourceProperties(std::string name, std::string targetType, int depth);
 
          /*
+            Parses a tangible entity's resource allocation section.
+
+            Input:
+               The entity name
+
+            Output:
+               (none)
+         */
+         void parseTangibleResources(std::string entityName, int depth);
+
+         /*
             Parses the <game> section of the XML file.  Throws an exception if
             there's a parse error.
 
