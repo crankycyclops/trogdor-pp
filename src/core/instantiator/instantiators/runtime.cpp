@@ -571,8 +571,42 @@ namespace trogdor {
             case entity::Resource::ALLOCATE_SUCCESS:
                return;
 
+            case entity::Resource::ALLOCATE_INT_REQUIRED:
+               throw ValidationException(
+                  std::string("can only allocate '") + resourceName + "' to '" +
+                  entityName + "' in integer amounts (line "
+                  + std::to_string(operation->getLineNumber()) + ")"
+               );
+
+            case entity::Resource::ALLOCATE_MAX_PER_DEPOSITOR_EXCEEDED:
+               throw ValidationException(
+                  std::string("cannot allocate ") + amount + " of '"
+                  + resourceName + "' to '" + entityName
+                  + "' because it exceeds the amount a tangible entity is allowed to possess (line "
+                  + std::to_string(operation->getLineNumber()) + ")"
+               );
+
+            case entity::Resource::ALLOCATE_TOTAL_AMOUNT_EXCEEDED:
+               throw ValidationException(
+                  std::string("cannot allocate ") + amount + " of '"
+                  + resourceName + "' to '" + entityName
+                  + "' because it exceeds the total amount of the resource that's available (line "
+                  + std::to_string(operation->getLineNumber()) + ")"
+               );
+
+            case entity::Resource::ALLOCATE_ZERO_OR_NEGATIVE_AMOUNT:
+               throw ValidationException(
+                  std::string("cannot allocate a zero or negative amount of '")
+                  + resourceName + "' to '" + entityName + "' (line "
+                  + std::to_string(operation->getLineNumber()) + ")"
+               );
+
             default:
-               throw ValidationException("TODO: ba juju!");
+               throw ValidationException(
+                  std::string("unknown error occurred when attempting to allocate '")
+                  + resourceName + "' to '" + entityName + "' (line "
+                  + std::to_string(operation->getLineNumber()) + ")"
+               );
          }
       });
    }
