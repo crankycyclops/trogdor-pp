@@ -72,7 +72,7 @@ namespace trogdor::entity {
          // the Entity is removed)
          Game *game;
 
-         std::string name;
+         const std::string name;
          std::string className;
 
          std::string title;

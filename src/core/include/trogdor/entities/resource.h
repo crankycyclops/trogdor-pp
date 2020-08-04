@@ -97,7 +97,7 @@ namespace trogdor::entity {
          double totalAmountAllocated = 0;
 
          // Contains the plural version of the resource's name
-         std::string plural;
+         const std::string plural;
 
          // Keeps track of who holds the resource and how much
          std::map<
