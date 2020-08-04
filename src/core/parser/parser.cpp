@@ -105,7 +105,7 @@ namespace trogdor {
 
    std::shared_ptr<ASTOperationNode> Parser::ASTDefineEntity(
    std::string entityName, std::string entityType, std::string className,
-   int lineNumber) {
+   std::optional<std::string> pluralName, int lineNumber) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          DEFINE_ENTITY,
@@ -129,6 +129,16 @@ namespace trogdor {
          AST_VALUE,
          lineNumber
       ));
+
+      // Entities of the Resource type can take a fourth optional parameter to
+      // specify a custom plural version of the name
+      if (pluralName) {
+         operation->appendChild(std::make_shared<ASTNode>(
+            *pluralName,
+            AST_VALUE,
+            lineNumber
+         ));
+      }
 
       return operation;
    }

@@ -556,7 +556,7 @@ To the north, you see a dark hole in the wall big enough to walk through.
          <resources>
             <!-- Resources can be allocated in whole number or floating point
             amounts. -->
-            <resource name="gold">5</resource>
+            <resource name="coin">5</resource>
          </resources>
 
       </room>
@@ -627,19 +627,24 @@ You find yourself in a dark secluded chamber.  It's dank, musty and generally ic
       <!-- Resources are special kinds of entities that can be allocated in
            various amounts to players, creatures, and rooms in the game. One
            example of a resource might be a kind of in-game currency (in the
-           example in this file, we'll use the name "gold") to illustrate that
+           example in this file, we'll use the name "coin") to illustrate that
            point.
 
            Like most other entities in the game, you can also set a title,
-           short description, meta data, event handlers, and custom messages. -->
-      <resource name="gold">
+           short description, meta data, event handlers, and custom messages.
+
+           Resource names should ordinarily be defined in the singular case. The
+           plural attribute is optional; if it's missing, the enine will attempt
+           to intuit the plural case automatically. -->
+      <resource name="coin" plural="coins">
 
          <!-- If set to true (a value of 1), this will require all allocations
               of the resource to be made in integer increments only. For example,
               an entity can be assigned 10 of the resource, but not 10.5. By
               default, this is set to false (a value of 0), which allows numbers
-              with fractional parts. -->
-         <integer>0</integer>
+              with fractional parts. Since this example is a discreet value
+              (an integer number of coins), we'll set this to true. -->
+         <integer>1</integer>
 
          <!-- If this setting is enabled, it determines how much of the resource
               is available to allocate to other entites in the game. Once this

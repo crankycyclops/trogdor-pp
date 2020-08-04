@@ -15,10 +15,20 @@ namespace trogdor::entity {
          std::string n,
          std::optional<double> amountAvailable,
          std::optional<double> maxAmountPerDepositor,
-         bool requireIntegerAllocations
+         bool requireIntegerAllocations,
+         std::optional<std::string> pluralName
    ): Entity(g, n, std::make_unique<NullOut>(), std::make_unique<NullErr>()),
    requireIntegerAllocations(requireIntegerAllocations),
    amountAvailable(amountAvailable), maxAmountPerDepositor(maxAmountPerDepositor) {
+
+      if (pluralName) {
+         plural = *pluralName;
+      }
+
+      // TODO: attempt to determine the plural automatically using new class
+      else {
+         plural = "";
+      }
 
       types.push_back(ENTITY_RESOURCE);
       setClass("resource");
@@ -26,10 +36,13 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Resource::Resource(const Resource &r, std::string n): Entity(r, n),
-   requireIntegerAllocations(r.requireIntegerAllocations),
+   Resource::Resource(
+      const Resource &r,
+      std::string n,
+      std::optional<std::string> plural
+   ): Entity(r, n), requireIntegerAllocations(r.requireIntegerAllocations),
    amountAvailable(r.amountAvailable), maxAmountPerDepositor(r.maxAmountPerDepositor),
-   totalAmountAllocated(0) {}
+   totalAmountAllocated(0), plural(plural ? *plural : r.plural) {}
 
    /***************************************************************************/
 

@@ -241,17 +241,26 @@ namespace trogdor::entity {
             observer->out("display") << std::endl;
 
             // Display quantity as an integer
-            // TODO: when I'm distinguishing between singular and plural, I'll
-            // have to add an extra check here.
             if (resourcePtr->areIntegerAllocationsRequired()) {
-               observer->out("display") << "You see " << std::lround(resource.second)
-                  << " " << resourcePtr->getTitle() << "." << std::endl;
+
+               if (1 == std::lround(resource.second)) {
+                  observer->out("display") << "You see a " << resourcePtr->getTitle() << "." << std::endl;
+               }
+
+               // TODO: I need to figure out how to handle a plural title instead
+               // of falling back to the Resource's name
+               else {
+                  observer->out("display") << "You see " << std::lround(resource.second)
+                     << " " << resourcePtr->getPluralName() << "." << std::endl;
+               }
             }
 
             // Display quantity as a double
             else {
+               // TODO: I need to figure out how to handle a plural title instead
+               // of falling back to the Resource's name
                observer->out("display") << "You see " << resource.second << " "
-                  << resourcePtr->getTitle() << "." << std::endl;
+                  << resourcePtr->getPluralName() << "." << std::endl;
             }
          }
       }

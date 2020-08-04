@@ -98,13 +98,15 @@ namespace trogdor {
                Entity name (std::string)
                Entity type (std::string)
                Class name (std::string)
+               Plural name -- for Resource type only (std::optional<std::string>)
                Current line number in the source being parsed (int)
 
             Output:
                ASTOperationNode
          */
          std::shared_ptr<ASTOperationNode> ASTDefineEntity(std::string entityName,
-         std::string entityType, std::string className, int lineNumber = 0);
+         std::string entityType, std::string className,
+         std::optional<std::string> pluralName = std::nullopt, int lineNumber = 0);
 
          /*
             Returns an AST subtree representing a setMessage operation.

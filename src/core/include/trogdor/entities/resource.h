@@ -83,11 +83,14 @@ namespace trogdor::entity {
          // allocate the same amount again, the new allocation will also fail.
          // Not setting a value indicates that they can allocate as much of
          // the resource as they wish, subject only to the maximum amount of the
-         // resource available,
+         // resource available.
          std::optional<double> maxAmountPerDepositor;
 
          // Total amount of the resource that's currently allocated
          double totalAmountAllocated = 0;
+
+         // Contains the plural version of the resource's name
+         std::string plural;
 
          // Keeps track of who holds the resource and how much
          std::map<
@@ -110,7 +113,8 @@ namespace trogdor::entity {
             std::string n,
             std::optional<double> amountAvailable = std::nullopt,
             std::optional<double> maxAmountPerDepositor = std::nullopt,
-            bool requireIntegerAllocations = false
+            bool requireIntegerAllocations = false,
+            std::optional<std::string> plural = std::nullopt
          );
 
          /*
@@ -118,11 +122,20 @@ namespace trogdor::entity {
             cloning a resource will NOT copy over its allocations. It will be
             treated as an entirely separate resource.
 
+            The plural name is a bit of a hack and is necessary only because of
+            the way that Entities are spawned from Entity classes. Unless you're
+            instantiating from a class, don't pass in a value for this.
+
             Input:
                Reference to entity to copy
                Name of copy (std::string)
+               Plural name (std::optional<std::string>)
          */
-         Resource(const Resource &e, std::string n);
+         Resource(
+            const Resource &e,
+            std::string n,
+            std::optional<std::string> plural = std::nullopt
+         );
 
          /*
             Returns a smart pointer representing a raw Resource pointer. Be
@@ -141,6 +154,17 @@ namespace trogdor::entity {
 
             return std::dynamic_pointer_cast<Resource>(Entity::getShared());
          }
+
+         /*
+            Returns the Resource's plural name.
+
+            Input:
+               (none)
+
+            Output:
+               std::string
+         */
+         inline std::string getPluralName() const {return plural;}
 
          /*
             Displays a Resource.

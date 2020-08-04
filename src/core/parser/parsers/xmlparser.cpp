@@ -25,6 +25,7 @@ namespace trogdor {
       std::string name,
       std::string className,
       entity::EntityType type,
+      std::optional<std::string> plural,
       int lineno
    ) {
 
@@ -78,7 +79,21 @@ namespace trogdor {
       // that AST node to make sure it contains the correct class and then
       // remove the unresolved reference.
       if (unresolvedEntityReferences.end() != unresolvedEntityReferences.find(name)) {
+
          unresolvedEntityReferences[name].first->getChildren()[2]->updateValue(className);
+
+         // Resource types might also have a fourth optional AST parameter to
+         // specify a custom plural name
+         if (plural) {
+            unresolvedEntityReferences[name].first->appendChild(
+               std::make_shared<ASTNode>(
+                  *plural,
+                  AST_VALUE,
+                  lineno
+               )
+            );
+         }
+
          unresolvedEntityReferences.erase(name);
       }
 
@@ -87,7 +102,8 @@ namespace trogdor {
             name,
             className,
             type,
-            lineno
+            lineno,
+            plural
          );
       }
 
@@ -132,7 +148,8 @@ namespace trogdor {
       std::string name,
       std::string className,
       entity::EntityType type,
-      int lineno
+      int lineno,
+      std::optional<std::string> plural
    ) {
 
       std::string defaultTitle = entity::ENTITY_OBJECT == type ?
@@ -142,6 +159,7 @@ namespace trogdor {
          name,
          entity::Entity::typeToStr(type),
          className,
+         plural,
          lineno
       ));
 
@@ -819,6 +837,7 @@ namespace trogdor {
          name,
          className,
          entity::ENTITY_OBJECT,
+         std::nullopt,
          xmlTextReaderGetParserLineNumber(reader)
       );
 
@@ -998,6 +1017,7 @@ namespace trogdor {
          name,
          className,
          entity::ENTITY_CREATURE,
+         std::nullopt,
          xmlTextReaderGetParserLineNumber(reader)
       );
 
@@ -1133,6 +1153,7 @@ namespace trogdor {
          name,
          className,
          entity::ENTITY_ROOM,
+         std::nullopt,
          xmlTextReaderGetParserLineNumber(reader)
       );
 
@@ -1563,11 +1584,13 @@ namespace trogdor {
    void XMLParser::parseResource(std::string className) {
 
       std::string name = getAttribute("name");
+      std::optional<std::string> plural = getOptionalAttribute("plural");
 
       declareEntity(
          name,
          className,
          entity::ENTITY_RESOURCE,
+         plural,
          xmlTextReaderGetParserLineNumber(reader)
       );
 
@@ -1724,17 +1747,30 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   std::string XMLParser::getAttribute(const char *name) {
+   std::optional<std::string> XMLParser::getOptionalAttribute(const char *name) {
 
       const char *attr;
 
       attr = (const char *)xmlTextReaderGetAttribute(reader, (xmlChar *)name);
 
       if (!attr) {
-         throw ParseException(std::string("missing attribute '") + name);
+         return std::nullopt;
       }
 
       return attr;
+   }
+
+   /***************************************************************************/
+
+   std::string XMLParser::getAttribute(const char *name) {
+
+      std::optional<std::string> attr = getOptionalAttribute(name);
+
+      if (!attr) {
+         throw ParseException(std::string("missing attribute '") + name);
+      }
+
+      return *attr;
    }
 
    /***************************************************************************/

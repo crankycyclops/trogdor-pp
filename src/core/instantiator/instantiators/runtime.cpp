@@ -95,6 +95,14 @@ namespace trogdor {
             operation->getChildren()[1]->getValue()
          );
 
+         // Resources optionally take a fourth parameter which is a custom
+         // plural name.
+         std::optional<std::string> plural = std::nullopt;
+
+         if (4 == operation->getChildren().size()) {
+            plural = operation->getChildren()[3]->getValue();
+         }
+
          switch (entityType) {
 
             case entity::ENTITY_RESOURCE:
@@ -104,13 +112,22 @@ namespace trogdor {
                   0 == className.compare("") ||
                   0 == className.compare(Entity::typeToStr(entity::ENTITY_RESOURCE))
                ) {
-                  entity = std::make_shared<entity::Resource>(game, entityName);
+                  entity = std::make_shared<entity::Resource>(
+                     game,
+                     entityName,
+                     std::nullopt,
+                     std::nullopt,
+                     false,
+                     plural
+                  );
                }
 
                // Entity has a class, so copy the class's prototype
                else {
                   entity = std::make_shared<entity::Resource>(
-                     *(dynamic_cast<entity::Resource *>(typeClasses[className].get())), entityName
+                     *(dynamic_cast<entity::Resource *>(typeClasses[className].get())),
+                     entityName,
+                     plural
                   );
                }
 
@@ -131,7 +148,8 @@ namespace trogdor {
                // Entity has a class, so copy the class's prototype
                else {
                   entity = std::make_shared<entity::Room>(
-                     *(dynamic_cast<entity::Room *>(typeClasses[className].get())), entityName
+                     *(dynamic_cast<entity::Room *>(typeClasses[className].get())),
+                     entityName
                   );
                }
 
@@ -150,7 +168,8 @@ namespace trogdor {
 
                else {
                   entity = std::make_shared<entity::Object>(
-                     *(dynamic_cast<entity::Object *>(typeClasses[className].get())), entityName
+                     *(dynamic_cast<entity::Object *>(typeClasses[className].get())),
+                     entityName
                   );
                }
 
@@ -170,7 +189,8 @@ namespace trogdor {
 
                else {
                   entity = std::make_shared<entity::Creature>(
-                     *(dynamic_cast<entity::Creature *>(typeClasses[className].get())), entityName
+                     *(dynamic_cast<entity::Creature *>(typeClasses[className].get())),
+                     entityName
                   );
                }
 

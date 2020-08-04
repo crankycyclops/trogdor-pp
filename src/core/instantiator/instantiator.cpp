@@ -102,6 +102,19 @@ namespace trogdor {
    /***************************************************************************/
 
    void Instantiator::assertValidASTArguments(const std::shared_ptr<ASTOperationNode> &operation,
+   unsigned int minNumArgs, unsigned int maxNumArgs) {
+
+      if (operation->size() < minNumArgs || operation->size() > maxNumArgs) {
+         throw ValidationException(
+            ASTOperationNode::getOperationStr(operation->getOperation()) +
+            ": invalid number of arguments. This is a bug."
+         );
+      }
+   }
+
+   /***************************************************************************/
+
+   void Instantiator::assertValidASTArguments(const std::shared_ptr<ASTOperationNode> &operation,
    unsigned int minArgs, std::unordered_map<std::string, unsigned int> targetTypeToNumArgs) {
 
       if (operation->size() < minArgs) {
@@ -263,14 +276,18 @@ namespace trogdor {
       // Validates and adds newly defined Entities to the symbol table
       preOperations[DEFINE_ENTITY] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
 
-         assertValidASTArguments(operation, 3);
+         assertValidASTArguments(operation, 3, 4);
 
          std::string name = operation->getChildren()[0]->getValue();
          std::string className = operation->getChildren()[2]->getValue();
          std::string typeStr = operation->getChildren()[1]->getValue();
          entity::EntityType type = entity::Entity::strToType(typeStr);
 
-         if (entity::ENTITY_UNDEFINED == type) {
+         if (4 == operation->getChildren().size() && type != entity::ENTITY_RESOURCE) {
+            throw ValidationException("Only resources can have a plural name.");
+         }
+
+         else if (entity::ENTITY_UNDEFINED == type) {
             throw ValidationException(std::string("invalid entity type '") +
                operation->getChildren()[1]->getValue() + "'.");
          }
