@@ -76,6 +76,7 @@ set(CORE_SOURCES
 	src/core/vocabulary.cpp
 	src/core/exception/beingexception.cpp
 	src/core/exception/parseexception.cpp
+	src/core/languages/english.cpp
 	src/core/parser/ast.cpp
 	src/core/parser/data.cpp
 	src/core/parser/parser.cpp

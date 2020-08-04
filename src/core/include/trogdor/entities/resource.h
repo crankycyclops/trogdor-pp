@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 #include <trogdor/entities/entity.h>
+#include <trogdor/languages/english.h>
 
 class Tangible;
 
@@ -61,6 +62,12 @@ namespace trogdor::entity {
          };
 
       private:
+
+         // TODO: add support for other languages? Perhaps this can be
+         // configurable via the game.xml file and then a global language
+         // instance (maybe singleton) can be available for this to use instead
+         // of forcing English.
+         static English language;
 
          // If set to true, allocations must be made in whole number values.
          bool requireIntegerAllocations = false;

@@ -10,6 +10,10 @@
 namespace trogdor::entity {
 
 
+   English Resource::language = English();
+
+   /***************************************************************************/
+
    Resource::Resource(
          Game *g,
          std::string n,
@@ -19,16 +23,8 @@ namespace trogdor::entity {
          std::optional<std::string> pluralName
    ): Entity(g, n, std::make_unique<NullOut>(), std::make_unique<NullErr>()),
    requireIntegerAllocations(requireIntegerAllocations),
-   amountAvailable(amountAvailable), maxAmountPerDepositor(maxAmountPerDepositor) {
-
-      if (pluralName) {
-         plural = *pluralName;
-      }
-
-      // TODO: attempt to determine the plural automatically using new class
-      else {
-         plural = "";
-      }
+   amountAvailable(amountAvailable), maxAmountPerDepositor(maxAmountPerDepositor),
+   plural(pluralName ? *pluralName : language.pluralizeNoun(n)) {
 
       types.push_back(ENTITY_RESOURCE);
       setClass("resource");
