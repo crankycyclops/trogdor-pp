@@ -35,8 +35,6 @@ namespace trogdor::entity {
 
    void Resource::display(Being *observer, bool displayFull) {
 
-      std::shared_ptr<Being> observerShared = observer->getShared();
-
       if (ENTITY_PLAYER == observer->getType()) {
 
          if (getLongDescription().length() > 0) {

@@ -259,6 +259,20 @@ namespace trogdor::entity {
 
    /****************************************************************************/
 
+   void Place::displayThings(Being *observer) {
+
+      for (const auto &thing: things) {
+
+         // Players should see everything except themselves
+         if (observer != static_cast<Being *>(thing.get())) {
+            observer->out("display") << std::endl;
+            thing->glance(observer->getShared());
+         }
+      }
+   }
+
+   /****************************************************************************/
+
    void Place::display(Being *observer, bool displayFull) {
 
       observer->out("location") << getTitle();
@@ -268,12 +282,6 @@ namespace trogdor::entity {
       Tangible::display(observer, displayFull);
 
       displayResources(observer);
-
-      for (const auto &thing: things) {
-         if (observer != static_cast<Being *>(thing.get())) { // dirty, but it works (prevents you from seeing yourself)
-            observer->out("display") << std::endl;
-            thing->glance(observer->getShared());
-         }
-      }
+      displayThings(observer);
    }
 }
