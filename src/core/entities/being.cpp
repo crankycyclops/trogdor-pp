@@ -77,12 +77,12 @@ namespace trogdor::entity {
             }
 
             else {
-               Entity::display(observer, displayFull);
+               Tangible::display(observer, displayFull);
             }
          }
 
          else {
-            Entity::display(observer, displayFull);
+            Tangible::display(observer, displayFull);
          }
       }
    }

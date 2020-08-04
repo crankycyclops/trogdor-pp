@@ -41,7 +41,18 @@ namespace trogdor::entity {
          std::unordered_map<std::string, std::list<Object *>>   objectsByName;
 
          /*
-            Overrides Entity::display() and shows a Place's description in the
+            Display all resources currently allocated to the Place.
+
+            Input:
+               Being observing the Place
+
+            Output:
+               (none)
+         */
+         void displayResources(Being *observer);
+
+         /*
+            Overrides Tangible::display() and shows a Place's description in the
             proper format.
 
             Input:

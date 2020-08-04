@@ -81,6 +81,53 @@ namespace trogdor::entity {
                Tangible or nil if it doesn't exist
          */
          static int getTangible(lua_State *L);
+
+         /*
+            Lua binding to Tangible->observe().
+
+            Lua input:
+               Being observing the Tangible (required)
+               Whether or not to trigger events (default: true)
+               Whether or not to always display full descripton (default: false)
+
+            Lua output:
+               (none)
+         */
+         static int glance(lua_State *L);
+
+         /*
+            Lua binding to Tangible->glance().
+
+            Lua input:
+               Being observing the Tangible (required)
+               Whether or not to trigger events (default: true)
+
+            Lua output:
+               (none)
+         */
+         static int observe(lua_State *L);
+
+         /*
+            Lua binding to Tangible->glancedBy().
+
+            Lua input:
+               Being (Being *) that may or may not have glanced at the Tangible.
+
+            Lua output:
+               (none)
+         */
+         static int glancedBy(lua_State *L);
+
+         /*
+            Lua binding to Tangible->observedBy().
+
+            Lua input:
+               Being (Being *) that may or may not have observed the Tangible.
+
+            Lua output:
+               (none)
+         */
+         static int observedBy(lua_State *L);
    };
 }
 

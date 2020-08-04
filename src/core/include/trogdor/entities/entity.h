@@ -54,21 +54,6 @@ namespace trogdor::entity {
          // on or with the Entity
          Messages msgs;
 
-         // maintains a list of all Beings that have glanced at but not fully
-         // observed the Entity (cannot use unordered_set here because you can't
-         // hash a weak_ptr.)
-         std::set<
-            std::weak_ptr<Being>,
-            std::owner_less<std::weak_ptr<Being>>
-         > glancedByMap;
-
-         // maintains a list of all Beings that have observed the Entity (cannot
-         // use unordered_set here because you can't hash a weak_ptr.)
-         std::set<
-            std::weak_ptr<Being>,
-            std::owner_less<std::weak_ptr<Being>>
-         > observedByMap;
-
          // Entity tags are labels that are either set or not set and are an
          // easy method of categorization
          std::unordered_set<std::string> tags;
@@ -116,8 +101,9 @@ namespace trogdor::entity {
          bool managedByLua = false;
 
          /*
-            Displays an Entity.  This may be overridden by Entity types that
-            have a different display format.
+            Displays an Entity. Displaying an entity means different things for
+            different Entit types, so it will be up to child classes to actually
+            implement this.
 
             Input:
                Being doing the observing
@@ -126,8 +112,11 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         virtual void display(Being *observer, bool displayFull = false);
-         inline void display(const std::shared_ptr<Being> &being, bool displayFull = false) {display(being.get(), displayFull);}
+         virtual void display(Being *observer, bool displayFull = false) = 0;
+         inline void display(const std::shared_ptr<Being> &being, bool displayFull = false) {
+
+            display(being.get(), displayFull);
+         }
 
          /*
             Displays the short description of an Entity.  This may be
@@ -140,7 +129,10 @@ namespace trogdor::entity {
                (none)
          */
          virtual void displayShort(Being *observer);
-         inline void displayShort(const std::shared_ptr<Being> &being) {displayShort(being.get());}
+         inline void displayShort(const std::shared_ptr<Being> &being) {
+
+            displayShort(being.get());
+         }
 
       public:
 
@@ -577,45 +569,6 @@ namespace trogdor::entity {
          inline event::EventListener *getEventListener() {return triggers.get();}
 
          /*
-            Returns whether or not a given Being has observed the Entity.
-
-            Input:
-               Being that may have observed the Entity
-
-            Output:
-               bool
-         */
-         inline bool observedBy(const std::shared_ptr<Being> &b) {
-
-            if (observedByMap.find(b) == observedByMap.end()) {
-               return false;
-            }
-
-            return true;
-         }
-
-         /*
-            Returns whether or not a given Being has glanced at the Entity.  If
-            a Being has fully observed an Entity, it stands to reason that the
-            Being has also glanced at it, so both will be checked.
-
-            Input:
-               Being that may have glanced at the Entity
-
-            Output:
-               bool
-         */
-         inline bool glancedBy(const std::shared_ptr<Being> &b) {
-
-            if (observedByMap.find(b) == observedByMap.end() &&
-            glancedByMap.find(b) == glancedByMap.end()) {
-               return false;
-            }
-
-            return true;
-         }
-
-         /*
             Returns the specified message.  If it doesn't exist, an empty string
             is returned.
 
@@ -750,45 +703,6 @@ namespace trogdor::entity {
                (none)
          */
          virtual void removeTag(std::string tag);
-
-         /*
-            Gives a Being the ability to observe an Entity.  If the Being is a
-            Player, a description of what is seen (Entity's long description)
-            will be printed to the output stream.
-
-            Input:
-               Being doing the observing
-               Whether or not to trigger a before and after event
-               Whether or not to always display the long description
-
-            Output:
-               (none)
-
-            Events Triggered:
-               beforeObserve
-               afterObserve
-         */
-         virtual void observe(const std::shared_ptr<Being> &observer, bool triggerEvents = true,
-         bool displayFull = false);
-
-         /*
-            Gives a Being the ability to partially observe an Entity without
-            looking straight at it (what you might see during a cursory glance
-            of a room, for example.)  If the Being is a Player, the Entity's
-            short description will be printed to the output stream.
-
-            Input:
-               Being doing the observing
-               Whether or not to trigger a before and after event
-
-            Output:
-               (none)
-
-            Events Triggered:
-               beforeGlance
-               afterGlance
-         */
-         virtual void glance(const std::shared_ptr<Being> &observer, bool triggerEvents = true);
 
          /*
             Static method that takes as input iterators over a list of Entities

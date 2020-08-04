@@ -20,7 +20,7 @@ namespace trogdor::entity {
          std::vector<std::string>  aliases;   // list of aliases
 
          /*
-            Overrides Entity::display() and shows a Thing's description in the
+            Overrides Tangible::display() and shows a Thing's description in the
             proper format.
 
             Input:
@@ -33,7 +33,7 @@ namespace trogdor::entity {
          virtual void display(Being *observer, bool displayFull = false);
 
          /*
-            Overrides Entity::displayShort() and shows a Thing's short
+            Overrides Tangible::displayShort() and shows a Thing's short
             description in the proper format.
 
             Input:

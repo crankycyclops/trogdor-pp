@@ -1,4 +1,4 @@
-#include <algorithm>
+#include <cmath>
 #include <memory>
 
 #include <trogdor/entities/place.h>
@@ -230,19 +230,50 @@ namespace trogdor::entity {
 
    /****************************************************************************/
 
+   void Place::displayResources(Being *observer) {
+
+      for (const auto &resource: getResources()) {
+
+         auto resourcePtr = resource.first.lock();
+
+         if (resourcePtr) {
+
+            observer->out("display") << std::endl;
+
+            // Display quantity as an integer
+            // TODO: when I'm distinguishing between singular and plural, I'll
+            // have to add an extra check here.
+            if (resourcePtr->areIntegerAllocationsRequired()) {
+               observer->out("display") << "You see " << std::lround(resource.second)
+                  << " " << resourcePtr->getTitle() << "." << std::endl;
+            }
+
+            // Display quantity as a double
+            else {
+               observer->out("display") << "You see " << resource.second << " "
+                  << resourcePtr->getTitle() << "." << std::endl;
+            }
+         }
+      }
+   }
+
+   /****************************************************************************/
+
    void Place::display(Being *observer, bool displayFull) {
 
       observer->out("location") << getTitle();
       observer->out("location").flush();
 
       observer->out("display") << getTitle() << std::endl << std::endl;
-      Entity::display(observer, displayFull);
+      Tangible::display(observer, displayFull);
 
-      for_each(things.begin(), things.end(), [&](const std::shared_ptr<Thing> &thing) {
-         if (observer != static_cast<Being *>(thing.get())) { // dirty, but it works
+      displayResources(observer);
+
+      for (const auto &thing: things) {
+         if (observer != static_cast<Being *>(thing.get())) { // dirty, but it works (prevents you from seeing yourself)
             observer->out("display") << std::endl;
             thing->glance(observer->getShared());
          }
-      });
+      }
    }
 }

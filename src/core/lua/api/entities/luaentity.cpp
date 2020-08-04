@@ -59,10 +59,6 @@ namespace trogdor::entity {
       {"setLongDesc",  LuaEntity::setLongDesc},
       {"getShortDesc", LuaEntity::getShortDesc},
       {"setShortDesc", LuaEntity::setShortDesc},
-      {"observe",      LuaEntity::observe},
-      {"glance",       LuaEntity::glance},
-      {"observedBy",   LuaEntity::observedBy},
-      {"glancedBy",    LuaEntity::glancedBy},
       {"__tostring",   LuaEntity::getName},
       {"__gc",         LuaEntity::gcEntity},
       {0, 0}
@@ -526,108 +522,5 @@ namespace trogdor::entity {
       e->setShortDescription(desc);
 
       return 0;
-   }
-
-   /***************************************************************************/
-
-   int LuaEntity::observe(lua_State *L) {
-
-      // default values for optional arguments
-      bool triggerEvents = true;
-      bool displayFull = false;
-
-      int n = lua_gettop(L);
-
-      if (n < 2) {
-         return luaL_error(L, "requires at least one string argument");
-      }
-
-      else if (n > 4) {
-         return luaL_error(L, "too many arguments");
-      }
-
-      Entity *observed = LuaEntity::checkEntity(L, -n);
-      Being  *observer = LuaBeing::checkBeing(L, 1 - n);
-
-      if (n > 2) {
-         triggerEvents = lua_toboolean(L, 2 - n);
-      }
-
-      if (n > 3) {
-         displayFull = lua_toboolean(L, 3 - n);
-      }
-
-      observed->observe(observer->getShared(), triggerEvents, displayFull);
-      return 0;
-   }
-
-   /***************************************************************************/
-
-   int LuaEntity::glance(lua_State *L) {
-
-      // default values for optional argument
-      bool triggerEvents = true;
-
-      int n = lua_gettop(L);
-
-      if (n < 2) {
-         return luaL_error(L, "requires one string argument");
-      }
-
-      else if (n > 3) {
-         return luaL_error(L, "too many arguments");
-      }
-
-      Entity *observed = LuaEntity::checkEntity(L, -n);
-      Being  *observer = LuaBeing::checkBeing(L, 1 - n);
-
-      if (n > 2) {
-         triggerEvents = lua_toboolean(L, 2 - n);
-      }
-
-      observed->glance(observer->getShared(), triggerEvents);
-      return 0;
-   }
-
-   /***************************************************************************/
-
-   int LuaEntity::observedBy(lua_State *L) {
-
-      int n = lua_gettop(L);
-
-      if (n < 2) {
-         return luaL_error(L, "requires one argument");
-      }
-
-      else if (n > 2) {
-         return luaL_error(L, "too many arguments");
-      }
-
-      Entity *observed = LuaEntity::checkEntity(L, -2);
-      Being  *observer = LuaBeing::checkBeing(L, -1);
-
-      lua_pushboolean(L, observed->observedBy(observer->getShared()));
-      return 1;
-   }
-
-   /***************************************************************************/
-
-   int LuaEntity::glancedBy(lua_State *L) {
-
-      int n = lua_gettop(L);
-
-      if (n < 2) {
-         return luaL_error(L, "requires one argument");
-      }
-
-      else if (n > 2) {
-         return luaL_error(L, "too many arguments");
-      }
-
-      Entity *glanced = LuaEntity::checkEntity(L, -2);
-      Being  *glancer = LuaBeing::checkBeing(L, -1);
-
-      lua_pushboolean(L, glanced->glancedBy(glancer->getShared()));
-      return 1;
    }
 }

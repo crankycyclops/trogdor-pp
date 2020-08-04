@@ -85,7 +85,7 @@ namespace trogdor::entity {
          } inventory;
 
          /*
-            Overrides Entity::display() in order to handle the description of
+            Overrides Tangible::display() in order to handle the description of
             living vs. deceased Beings.
 
             Input:
@@ -98,7 +98,7 @@ namespace trogdor::entity {
          virtual void display(Being *observer, bool displayFull = false);
 
          /*
-            Overrides Entity::displayShort in order to handle the short
+            Overrides Tangible::displayShort in order to handle the short
             description of living vs. deceased Beings.
 
             Input:

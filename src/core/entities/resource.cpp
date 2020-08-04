@@ -2,6 +2,7 @@
 
 #include <trogdor/entities/resource.h>
 #include <trogdor/entities/tangible.h>
+#include <trogdor/entities/being.h>
 
 #include <trogdor/iostream/nullout.h>
 #include <trogdor/iostream/nullerr.h>
@@ -29,6 +30,28 @@ namespace trogdor::entity {
    requireIntegerAllocations(r.requireIntegerAllocations),
    amountAvailable(r.amountAvailable), maxAmountPerDepositor(r.maxAmountPerDepositor),
    totalAmountAllocated(0) {}
+
+   /***************************************************************************/
+
+   void Resource::display(Being *observer, bool displayFull) {
+
+      std::shared_ptr<Being> observerShared = observer->getShared();
+
+      if (ENTITY_PLAYER == observer->getType()) {
+
+         if (getLongDescription().length() > 0) {
+            observer->out("display") << getLongDescription() << std::endl;
+         }
+
+         else if (getShortDescription().length() > 0) {
+            observer->out("display") << getShortDescription() << std::endl;
+         }
+
+         else {
+            observer->out("display") << "You see " << getTitle() << '.' << std::endl;
+         }
+      }
+   }
 
    /***************************************************************************/
 

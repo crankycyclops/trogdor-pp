@@ -15,6 +15,21 @@ namespace trogdor::entity {
 
       private:
 
+         // maintains a list of all Beings that have glanced at but not fully
+         // observed the Entity (cannot use unordered_set here because you can't
+         // hash a weak_ptr.)
+         std::set<
+            std::weak_ptr<Being>,
+            std::owner_less<std::weak_ptr<Being>>
+         > glancedByMap;
+
+         // maintains a list of all Beings that have observed the Entity (cannot
+         // use unordered_set here because you can't hash a weak_ptr.)
+         std::set<
+            std::weak_ptr<Being>,
+            std::owner_less<std::weak_ptr<Being>>
+         > observedByMap;
+
          // Keeps track of which resources the entity holds and how much
          std::map<
             std::weak_ptr<Resource>,
@@ -109,6 +124,96 @@ namespace trogdor::entity {
 
             return std::dynamic_pointer_cast<Tangible>(Entity::getShared());
          }
+
+         /*
+            Returns whether or not a given Being has observed the Tangible.
+
+            Input:
+               Being that may have observed the Tangible
+
+            Output:
+               bool
+         */
+         inline bool observedBy(const std::shared_ptr<Being> &b) {
+
+            if (observedByMap.find(b) == observedByMap.end()) {
+               return false;
+            }
+
+            return true;
+         }
+
+         /*
+            Returns whether or not a given Being has glanced at the Tangible. If
+            a Being has fully observed a Tangible, it stands to reason that the
+            Being has also glanced at it, so both will be checked.
+
+            Input:
+               Being that may have glanced at the Tangible
+
+            Output:
+               bool
+         */
+         inline bool glancedBy(const std::shared_ptr<Being> &b) {
+
+            if (observedByMap.find(b) == observedByMap.end() &&
+            glancedByMap.find(b) == glancedByMap.end()) {
+               return false;
+            }
+
+            return true;
+         }
+
+         /*
+            Gives a Being the ability to observe an Entity.  If the Being is a
+            Player, a description of what is seen (Entity's long description)
+            will be printed to the output stream.
+
+            Input:
+               Being doing the observing
+               Whether or not to trigger a before and after event
+               Whether or not to always display the long description
+
+            Output:
+               (none)
+
+            Events Triggered:
+               beforeObserve
+               afterObserve
+         */
+         virtual void observe(const std::shared_ptr<Being> &observer, bool triggerEvents = true,
+         bool displayFull = false);
+
+         /*
+            Gives a Being the ability to partially observe an Entity without
+            looking straight at it (what you might see during a cursory glance
+            of a room, for example.)  If the Being is a Player, the Entity's
+            short description will be printed to the output stream.
+
+            Input:
+               Being doing the observing
+               Whether or not to trigger a before and after event
+
+            Output:
+               (none)
+
+            Events Triggered:
+               beforeGlance
+               afterGlance
+         */
+         virtual void glance(const std::shared_ptr<Being> &observer, bool triggerEvents = true);
+
+         /*
+            Displays a Tangible.
+
+            Input:
+               Being doing the observing
+               Whether or not to always display the full description
+
+            Output:
+               (none)
+         */
+         virtual void display(Being *observer, bool displayFull = false);
 
          /*
             Returns const reference to all resources held by the entity.

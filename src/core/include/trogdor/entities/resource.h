@@ -143,6 +143,18 @@ namespace trogdor::entity {
          }
 
          /*
+            Displays a Resource.
+
+            Input:
+               Being doing the observing
+               Whether or not to always display the full description
+
+            Output:
+               (none)
+         */
+         virtual void display(Being *observer, bool displayFull = false);
+
+         /*
             Returns true if integer allocations are required and false if not.
 
             Input:
