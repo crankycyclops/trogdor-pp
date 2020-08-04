@@ -44,7 +44,7 @@ namespace trogdor::entity {
             Display all Resources currently allocated to the Place.
 
             Input:
-               Being observing the Place
+               Being observing the Place (Being *)
 
             Output:
                (none)
@@ -55,12 +55,24 @@ namespace trogdor::entity {
             Display all Things inside the Place.
 
             Input:
-               Being observing the Place
+               Being observing the Place (Being *)
 
             Output:
                (none)
          */
          void displayThings(Being *observer);
+
+         /*
+            Show just the Place's description (called by Place::display.)
+
+            Input:
+               Being observing the Place (Being *)
+               Whether or not to show the full description (bool)
+
+            Output:
+               (none)
+         */
+         void displayPlace(Being *observer, bool displayFull);
 
          /*
             Overrides Tangible::display() and shows a Place's description in the

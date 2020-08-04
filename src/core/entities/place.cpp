@@ -273,14 +273,20 @@ namespace trogdor::entity {
 
    /****************************************************************************/
 
-   void Place::display(Being *observer, bool displayFull) {
+   void Place::displayPlace(Being *observer, bool displayFull) {
 
       observer->out("location") << getTitle();
       observer->out("location").flush();
 
       observer->out("display") << getTitle() << std::endl << std::endl;
       Tangible::display(observer, displayFull);
+   }
 
+   /****************************************************************************/
+
+   void Place::display(Being *observer, bool displayFull) {
+
+      displayPlace(observer, displayFull);
       displayResources(observer);
       displayThings(observer);
    }
