@@ -99,6 +99,10 @@ namespace trogdor::entity {
          // Contains the plural version of the resource's name
          const std::string plural;
 
+         // The plural analog to Entity::title. By default, this is equivalent
+         // to the plural name.
+         std::string pluralTitle;
+
          // Keeps track of who holds the resource and how much
          std::map<
             std::weak_ptr<Tangible>,
@@ -163,6 +167,22 @@ namespace trogdor::entity {
          }
 
          /*
+            Sets the Resource's plural title.
+
+            Input:
+               New plural title (std::string)
+
+            Output:
+               (none)
+         */
+         inline void setPluralTitle(std::string pt) {
+
+            mutex.lock();
+            pluralTitle = pt;
+            mutex.unlock();
+         }
+
+         /*
             Returns the Resource's plural name.
 
             Input:
@@ -172,6 +192,17 @@ namespace trogdor::entity {
                std::string
          */
          inline std::string getPluralName() const {return plural;}
+
+         /*
+            Returns the Resource's plural title.
+
+            Input:
+               (none)
+
+            Output:
+               std::string
+         */
+         inline std::string getPluralTitle() const {return pluralTitle;}
 
          /*
             Displays a Resource.
@@ -207,7 +238,9 @@ namespace trogdor::entity {
          */
          inline void setRequireIntegerAllocations(bool required) {
 
+            mutex.lock();
             requireIntegerAllocations = required;
+            mutex.unlock();
          }
 
          /*
@@ -243,7 +276,10 @@ namespace trogdor::entity {
                return false;
             }
 
+            mutex.lock();
             amountAvailable = newAmount;
+            mutex.unlock();
+
             return true;
          }
 
@@ -278,7 +314,9 @@ namespace trogdor::entity {
          */
          inline void setMaxAmountPerDepositor(std::optional<double> newMax = std::nullopt) {
 
+            mutex.lock();
             maxAmountPerDepositor = newMax;
+            mutex.unlock();
          }
 
          /*

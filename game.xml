@@ -670,6 +670,20 @@ You find yourself in a dark secluded chamber.  It's dank, musty and generally ic
 It's shiny and worth a LOT of money!
          </description>
 
+         <!-- Like other entities in the game, you can override how a resource is
+              displayed to a player so that, instead of seeing its name, the
+              player sees a more rich description. Unlike inherently singular
+              entities like objects, however, resources can be shown either in
+              the singular case or in the plural. If you don't specify a plural
+              name, the engine will attempt to pluralize it for you. This is not,
+              however, the case with titles, because the noun that needs to be
+              pluralized could potentially fall somewhere other than at the end,
+              making automatic pluralization impossible (at least for now).
+              Instead, if you choose to override the name with a title, you
+              pair that title with a plural version using the pluralTitle tag. -->
+         <title>gold coin</title>
+         <pluralTitle>gold coins</pluralTitle>
+
       </resource>
 
    </resources>

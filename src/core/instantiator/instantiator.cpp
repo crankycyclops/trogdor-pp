@@ -913,6 +913,9 @@ namespace trogdor {
       // The maximum amount of a resource that a tangible entity can possess at
       // any one time
       entityPropValidators["resource"]["maxAmountPerDepositor"] = assertDouble;
+
+      // A Resource's plural title
+      entityPropValidators["resource"]["pluralTitle"] = assertString;
    }
 
    /***************************************************************************/

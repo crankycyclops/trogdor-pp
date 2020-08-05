@@ -24,7 +24,8 @@ namespace trogdor::entity {
    ): Entity(g, n, std::make_unique<NullOut>(), std::make_unique<NullErr>()),
    requireIntegerAllocations(requireIntegerAllocations),
    amountAvailable(amountAvailable), maxAmountPerDepositor(maxAmountPerDepositor),
-   plural(pluralName ? *pluralName : language.pluralizeNoun(n)) {
+   plural(pluralName ? *pluralName : language.pluralizeNoun(n)),
+   pluralTitle(plural) {
 
       types.push_back(ENTITY_RESOURCE);
       setClass("resource");
@@ -38,7 +39,8 @@ namespace trogdor::entity {
       std::optional<std::string> plural
    ): Entity(r, n), requireIntegerAllocations(r.requireIntegerAllocations),
    amountAvailable(r.amountAvailable), maxAmountPerDepositor(r.maxAmountPerDepositor),
-   totalAmountAllocated(0), plural(plural ? *plural : r.plural) {}
+   totalAmountAllocated(0), plural(plural ? *plural : r.plural),
+   pluralTitle(r.pluralTitle) {}
 
    /***************************************************************************/
 

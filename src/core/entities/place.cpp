@@ -247,20 +247,16 @@ namespace trogdor::entity {
                   observer->out("display") << "You see a " << resourcePtr->getTitle() << "." << std::endl;
                }
 
-               // TODO: I need to figure out how to handle a plural title instead
-               // of falling back to the Resource's name
                else {
                   observer->out("display") << "You see " << std::lround(resource.second)
-                     << " " << resourcePtr->getPluralName() << "." << std::endl;
+                     << " " << resourcePtr->getPluralTitle() << "." << std::endl;
                }
             }
 
             // Display quantity as a double
             else {
-               // TODO: I need to figure out how to handle a plural title instead
-               // of falling back to the Resource's name
                observer->out("display") << "You see " << resource.second << " "
-                  << resourcePtr->getPluralName() << "." << std::endl;
+                  << resourcePtr->getPluralTitle() << "." << std::endl;
             }
          }
       }

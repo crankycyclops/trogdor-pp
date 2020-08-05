@@ -1603,7 +1603,8 @@ namespace trogdor {
    void XMLParser::parseResourceProperties(std::string name, std::string targetType, int depth) {
 
       static std::unordered_map<std::string, std::string> tagToProperty({
-         {"title", "title"}, {"description", "longDesc"}, {"short", "shortDesc"},
+         {"title", "title"}, {"pluraltitle", "pluralTitle"},
+         {"description", "longDesc"}, {"short", "shortDesc"},
          {"integer", "requireIntegerAllocations"}, {"amount", "amountAvailable"},
          {"maxallocation", "maxAmountPerDepositor"}
       });
