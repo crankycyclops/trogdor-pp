@@ -44,7 +44,8 @@ namespace trogdor::entity {
          > resourcesByName;
 
          /*
-            Record the Entity's allocation of a specific resource.
+            Record the Entity's allocation of a specific resource. Mutex locking
+            is currently done by Resource::allocate().
 
             Input:
                Weak pointer to the resource
@@ -57,10 +58,12 @@ namespace trogdor::entity {
 
             resources[resource] = value;
             resourcesByName[resource->getName()] = resource;
+            resourcesByName[resource->getPluralName()] = resource;
          }
 
          /*
             Removes the Entity's allocation record for a specific resource.
+            Mutex locking is currently done by Resource::free().
 
             Input:
                Weak pointer to the resource
@@ -69,6 +72,7 @@ namespace trogdor::entity {
          inline void removeResourceAllocation(const std::shared_ptr<Resource> &resource) {
 
             resourcesByName.erase(resource->getName());
+            resourcesByName.erase(resource->getPluralName());
             resources.erase(resource);
          }
 
