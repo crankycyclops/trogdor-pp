@@ -73,70 +73,38 @@ namespace trogdor {
 
             if (auto resource = allocation.first.lock()) {
 
-               double amount;
+               double amount = resolveResourceAmount(
+                  resource.get(),
+                  resourceName,
+                  allocation.second,
+                  resourceQty
+               );
 
-               if (resourceQty) {
-                  amount = *resourceQty;
-               }
+               operateOnResource(resource.get(), depositor, player, amount, [&] {
 
-               else if (resource->isPlural(resourceName)) {
-                  amount = allocation.second;
-               }
-
-               else {
-                  amount = 1;
-               }
-
-               if (!game->event({
-                  "beforeRead",
-                  {player->getEventListener(), resource->getEventListener()},
-                  {player, resource.get(), amount}
-               })) {
-                  return;
-               }
-
-               std::string text = resource->getMeta("text");
-
-               if (amount > allocation.second) {
-
-                  std::string title = resource->getPluralTitle();
-
-                  if (
-                     resource->areIntegerAllocationsRequired() &&
-                     1 == std::lround(allocation.second)
-                  ) {
-                     title = resource->getTitle();
+                  if (!game->event({
+                     "beforeRead",
+                     {player->getEventListener(), resource->getEventListener()},
+                     {player, resource.get(), amount}
+                  })) {
+                     return;
                   }
 
-                  std::string qtyStr = std::to_string(allocation.second);
+                  std::string text = resource->getMeta("text");
 
-                  if (resource->areIntegerAllocationsRequired()) {
-                     qtyStr = std::to_string(std::lround(allocation.second));
-                  }
-
-                  if (depositor->isType(entity::ENTITY_PLAYER)) {
-                     player->out("display") << "You only have " << qtyStr
-                        << ' ' << title << '.' << std::endl;
+                  if (!text.length()) {
+                     player->out("display") << "There's nothing to read." << std::endl;
                   }
 
                   else {
-                     player->out("display") << "There are only " << qtyStr
-                        << ' ' << title << '.' << std::endl;
+                     player->out("display") << text << std::endl;
                   }
-               }
 
-               else if (!text.length()) {
-                  player->out("display") << "There's nothing to read." << std::endl;
-               }
-
-               else {
-                  player->out("display") << text << std::endl;
-               }
-
-               game->event({
-                  "afterRead",
-                  {player->getEventListener(), resource->getEventListener()},
-                  {player, resource.get(), amount}
+                  game->event({
+                     "afterRead",
+                     {player->getEventListener(), resource->getEventListener()},
+                     {player, resource.get(), amount}
+                  });
                });
             }
          }
