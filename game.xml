@@ -684,6 +684,18 @@ It's shiny and worth a LOT of money!
          <title>gold coin</title>
          <pluralTitle>gold coins</pluralTitle>
 
+         <!-- Like with objects, setting the "text" meta value will allow the
+         player to read a resource in their inventory or in the room they
+         currently occupy. The engine currently does not distinguish between
+         singular and plural instances of the resource, so any text you want the
+         player to read should apply equally well to both cases.
+
+         In this example, "read coin" or "read coins" will output this block of
+         text. -->
+         <meta>
+            <text>Each coin is inscribed with the noble words, "In unicorns we trust."</text>
+         </meta>
+
       </resource>
 
    </resources>

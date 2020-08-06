@@ -64,6 +64,27 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   void Resource::observe(const std::shared_ptr<Being> &observer, double amount) {
+
+      if (!game->event({
+         "beforeObserve",
+         {triggers.get(), observer->getEventListener()},
+         {this, observer.get(), amount}
+      })) {
+         return;
+      }
+
+      display(observer.get(), true);
+
+      game->event({
+         "afterObserve",
+         {triggers.get(), observer->getEventListener()},
+         {this, observer.get(), amount}
+      });
+   }
+
+   /***************************************************************************/
+
    Resource::AllocateStatus Resource::allocate(
       const std::shared_ptr<Tangible> &entity,
       double amount

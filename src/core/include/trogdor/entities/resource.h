@@ -205,16 +205,58 @@ namespace trogdor::entity {
          inline std::string getPluralTitle() const {return pluralTitle;}
 
          /*
-            Displays a Resource.
+            Returns true if the given name is a plural representation of the
+            Resource and false if not. The existence of this method will prove
+            its worth once we start having to deal with plural aliases.
 
             Input:
-               Being doing the observing
-               Whether or not to always display the full description
+               std::string
+
+            Output:
+               bool
+         */
+         inline bool isPlural(std::string name) const {
+
+            return 0 == plural.compare(name) ? true : false;
+         }
+
+         /*
+            Displays a Resource. I would like to combine display() and
+            displayPlural() into a single method that looks something like
+            display(Being *observer, double amount), but since display() is
+            pure virtual in Entity and needs to stay that way, I need to
+            separate this functionality. I'll revisit this later, as I suspect
+            I'm doing something stupid.
+
+            Input:
+               Being we're outputing a description to
+               displayFull is unused in this method
 
             Output:
                (none)
          */
          virtual void display(Being *observer, bool displayFull = false);
+
+         /*
+            This is similar to Tangible::observe() except that there's really
+            no specific instance of a thing to observe. Instead, this method
+            exists as a wrapper around display() that also fires before and
+            after events. If you want to unconditionally show a description of
+            the Resource to the Being without triggering events, just call
+            display() directly.
+
+            Input:
+               Being doing the observing
+               The amount of the resource being observed
+
+            Output:
+               (none)
+
+            Events Triggered:
+               beforeObserve
+               afterObserve
+         */
+         virtual void observe(const std::shared_ptr<Being> &observer, double amount);
 
          /*
             Returns true if integer allocations are required and false if not.
