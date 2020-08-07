@@ -158,12 +158,12 @@ namespace trogdor {
                double intPart, fracPart = modf(amount, &intPart);
 
                if (amount <= 0) {
-                  player->out("display") << "Please specify a positive amount greater than zero."
+                  player->out("display") << "Please specify an amount greater than zero."
                      << std::endl;
                }
 
                else if (resource->areIntegerAllocationsRequired() && fracPart) {
-                  player->out("display") << "Please specify a whole number amount of "
+                  player->out("display") << "Please specify a whole number of "
                      << resource->getPluralTitle() << '.' << std::endl;
                }
 

@@ -679,7 +679,10 @@ You find yourself in a dark secluded chamber.  It's dank, musty and generally ic
               the user depending on if they're seeing it in the singular or the
               plural:
 
-              "It's shiny and worth a LOT of money!" (singular) -->
+              "It's shiny and worth a LOT of money!" (singular)
+              "They're shiny and worth a LOT of money!" (plural)
+
+              The same parameters can be used in the <short> description tag. -->
          <description>
 {%Its} shiny and worth a LOT of money!
          </description>
