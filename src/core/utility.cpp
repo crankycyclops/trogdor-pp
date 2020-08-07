@@ -12,6 +12,16 @@
 namespace trogdor {
 
    /*
+      If a string starts with an alphabetic character, capitalize it. Leading
+      whitespace is ignored when determining if the first character should be
+      capitalized.
+
+      Input: string
+      Output: capitalized version of string
+   */
+   std::string capitalize(std::string str);
+
+   /*
       Converts a string to lowercase.
 
       Input: string
@@ -88,6 +98,20 @@ namespace trogdor {
       Output: true if the string is a valid double and false if not
    */
    bool isValidDouble(const std::string &s);
+
+
+   std::string capitalize(std::string str) {
+
+      size_t i;
+
+      for (i = 0; i < str.length() && isspace(str[i]); i++);
+
+      if (isalpha(str[i])) {
+         str[i] = toupper(str[i]);
+      }
+
+      return str;
+   }
 
 
    std::string strToLower(std::string str) {

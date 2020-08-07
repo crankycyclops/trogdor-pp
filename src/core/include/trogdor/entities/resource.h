@@ -67,7 +67,14 @@ namespace trogdor::entity {
          // configurable via the game.xml file and then a global language
          // instance (maybe singleton) can be available for this to use instead
          // of forcing English.
-         static English language;
+         static const English language;
+
+         // By replacing these parameters with their singular or plural version,
+         // we can use a single description to fit both cases.
+         static const std::unordered_map<
+            bool,
+            std::unordered_map<std::string, std::string>
+         > constTemplateParameters;
 
          // If set to true, allocations must be made in whole number values.
          bool requireIntegerAllocations = false;
@@ -109,6 +116,36 @@ namespace trogdor::entity {
             double,
             std::owner_less<std::weak_ptr<Tangible>>
          > depositors;
+
+         /*
+            Replaces parameters in the provided template with their appropriate
+            values.
+
+            Input:
+               Template (std::string)
+               Whether or not we're outputing the plural versions (bool)
+
+            Output:
+               A fully hydrated string
+         */
+         std::string hydrateString(std::string templateStr, bool isPlural);
+
+         /*
+            Displays a Resource. I would like to combine display() and
+            displayPlural() into a single method that looks something like
+            display(Being *observer, double amount), but since display() is
+            pure virtual in Entity and needs to stay that way, I need to
+            separate this functionality. I'll revisit this later, as I suspect
+            I'm doing something stupid.
+
+            Input:
+               Being we're outputing a description to (Being *)
+               Whether or not the description should be plural (bool)
+
+            Output:
+               (none)
+         */
+         void display(Being *observer, bool plural);
 
       public:
 
@@ -221,33 +258,13 @@ namespace trogdor::entity {
          }
 
          /*
-            Displays a Resource. I would like to combine display() and
-            displayPlural() into a single method that looks something like
-            display(Being *observer, double amount), but since display() is
-            pure virtual in Entity and needs to stay that way, I need to
-            separate this functionality. I'll revisit this later, as I suspect
-            I'm doing something stupid.
-
-            Input:
-               Being we're outputing a description to
-               displayFull is unused in this method
-
-            Output:
-               (none)
-         */
-         virtual void display(Being *observer, bool displayFull = false);
-
-         /*
             This is similar to Tangible::observe() except that there's really
-            no specific instance of a thing to observe. Instead, this method
-            exists as a wrapper around display() that also fires before and
-            after events. If you want to unconditionally show a description of
-            the Resource to the Being without triggering events, just call
-            display() directly.
+            no specific instance of a thing to observe.
 
             Input:
                Being doing the observing
                The amount of the resource being observed
+               Whether or not to fire before and after events
 
             Output:
                (none)
@@ -256,7 +273,11 @@ namespace trogdor::entity {
                beforeObserve
                afterObserve
          */
-         virtual void observe(const std::shared_ptr<Being> &observer, double amount);
+         void observe(
+            const std::shared_ptr<Being> &observer,
+            double amount,
+            bool triggerEvents = true
+         );
 
          /*
             Returns true if integer allocations are required and false if not.

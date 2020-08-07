@@ -23,9 +23,11 @@ namespace trogdor {
    ) {
 
       std::string object = command.getDirectObject();
+      std::optional<double> amount = command.getDirectObjectQty();
 
       if (object.length() == 0) {
          object = command.getIndirectObject();
+         amount = command.getIndirectObjectQty();
       }
 
       if (0 == object.compare(player->getName()) || 0 == strToLower(object).compare("myself")) {
@@ -37,8 +39,19 @@ namespace trogdor {
 
          std::shared_ptr<entity::Player> playerShared = player->getShared();
 
+         // Player isn't looking at anything in particular, so observe room
          if (object.length() == 0) {
             location->observe(playerShared, true, true);
+         }
+
+         // Player is looking at a resource they possess
+         else if (!player->getResourceByName(object).first.expired()) {
+            lookAtResource(player, player, object, amount);
+         }
+
+         // Player is looking at a resource in the room
+         else if (!location->getResourceByName(object).first.expired()) {
+            lookAtResource(player, location.get(), object, amount);
          }
 
          else {

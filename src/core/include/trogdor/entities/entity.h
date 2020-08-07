@@ -101,24 +101,6 @@ namespace trogdor::entity {
          bool managedByLua = false;
 
          /*
-            Displays an Entity. Displaying an entity means different things for
-            different Entit types, so it will be up to child classes to actually
-            implement this.
-
-            Input:
-               Being doing the observing
-               Whether or not to always display the full description
-
-            Output:
-               (none)
-         */
-         virtual void display(Being *observer, bool displayFull = false) = 0;
-         inline void display(const std::shared_ptr<Being> &being, bool displayFull = false) {
-
-            display(being.get(), displayFull);
-         }
-
-         /*
             Displays the short description of an Entity.  This may be
             overridden by Entity types that have a different display format.
 

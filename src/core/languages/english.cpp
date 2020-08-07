@@ -105,6 +105,7 @@ namespace trogdor {
       pluralNounExceptions["aircraft"] = "aircraft";
       pluralNounExceptions["alms"] = "alms";
       pluralNounExceptions["alumimum"] = "alumimum";
+      pluralNounExceptions["baggage"] = "baggage";
       pluralNounExceptions["barracks"] = "barracks";
       pluralNounExceptions["binoculars"] = "binoculars";
       pluralNounExceptions["bison"] = "bison";
@@ -130,6 +131,7 @@ namespace trogdor {
       pluralNounExceptions["dice"] = "dice";
       pluralNounExceptions["djinn"] = "djinn";
       pluralNounExceptions["doldrums"] = "doldrums";
+      pluralNounExceptions["dozen"] = "dozen";
       pluralNounExceptions["dungarees"] = "dungarees";
       pluralNounExceptions["education"] = "education";
       pluralNounExceptions["efreet"] = "efreeti";
@@ -143,6 +145,8 @@ namespace trogdor {
       pluralNounExceptions["gallows"] = "gallows";
       pluralNounExceptions["goy"] = "goyim";
       pluralNounExceptions["graffiti"] = "graffiti";
+      pluralNounExceptions["grouse"] = "grouse";
+      pluralNounExceptions["gymnastics"] = "gymnastics";
       pluralNounExceptions["haddock"] = "haddock";
       pluralNounExceptions["halibut"] = "halibut";
       pluralNounExceptions["headquarters"] = "headquarters";
@@ -152,6 +156,7 @@ namespace trogdor {
       pluralNounExceptions["high-jinks"] = "high-jinks";
       pluralNounExceptions["homework"] = "homework";
       pluralNounExceptions["ides"] = "ides";
+      pluralNounExceptions["information"] = "information";
       pluralNounExceptions["insignia"] = "insignia";
       pluralNounExceptions["jackanapes"] = "jackanapes";
       pluralNounExceptions["jeans"] = "jeans";
@@ -161,10 +166,12 @@ namespace trogdor {
       pluralNounExceptions["leggins"] = "leggins";
       pluralNounExceptions["lumen"] = "lumens";
       pluralNounExceptions["mackerel"] = "mackerel";
+      pluralNounExceptions["means"] = "means";
       pluralNounExceptions["measles"] = "measles";
       pluralNounExceptions["mews"] = "mews";
       pluralNounExceptions["moose"] = "moose";
       pluralNounExceptions["mumps"] = "mumps";
+      pluralNounExceptions["music"] = "music";
       pluralNounExceptions["news"] = "news";
       pluralNounExceptions["offspring"] = "offspring";
       pluralNounExceptions["oxygen"] = "oxygen";
@@ -173,10 +180,12 @@ namespace trogdor {
       pluralNounExceptions["pliers"] = "pliers";
       pluralNounExceptions["police"] = "police";
       pluralNounExceptions["premises"] = "premises";
+      pluralNounExceptions["public"] = "public";
       pluralNounExceptions["pyjamas"] = "pyjamas";
       pluralNounExceptions["rabies"] = "rabies";
       pluralNounExceptions["rendezvous"] = "rendezvous";
       pluralNounExceptions["salmon"] = "salmon";
+      pluralNounExceptions["scenery"] = "scenery";
       pluralNounExceptions["scissors"] = "scissors";
       pluralNounExceptions["seraph"] = "seraphum";
       pluralNounExceptions["series"] = "series";
@@ -200,6 +209,22 @@ namespace trogdor {
       pluralNounExceptions["wildebeest"] = "wildebeest";
       pluralNounExceptions["wood"] = "wood";
       pluralNounExceptions["woods"] = "woods";
+
+      // A few common (or maybe not so common?) resource names that, in most
+      // ordinary cases, will be uncountable and thus treated as the same in
+      // both singular and plural uses
+      pluralNounExceptions["amethyst"] = "amethyst";
+      pluralNounExceptions["bronze"] = "bronze";
+      pluralNounExceptions["gold"] = "gold";
+      pluralNounExceptions["jade"] = "jade";
+      pluralNounExceptions["palladium"] = "palladium";
+      pluralNounExceptions["pewter"] = "pewter";
+      pluralNounExceptions["plaster"] = "plaster";
+      pluralNounExceptions["plastic"] = "plastic";
+      pluralNounExceptions["platinum"] = "platinum";
+      pluralNounExceptions["silver"] = "silver";
+      pluralNounExceptions["quartz"] = "quartz";
+      pluralNounExceptions["wood"] = "wood"; // woods has a different meaning
 
       // Categories of regex-matchable nouns that don't change when made plural.
       // Be careful! The order in which these rules are inserted is important!

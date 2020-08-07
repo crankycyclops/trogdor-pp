@@ -663,11 +663,25 @@ You find yourself in a dark secluded chamber.  It's dank, musty and generally ic
 
          <!-- Like most other entities in the game, resources can have
               descriptions that the player will see when they look at the
-              resource. The description the player gets to read will be the
-              same whether they're looking at a plural or singular amount of
-              the resource. -->
+              resource. The description the player gets to read will be the same
+              whether they're looking at a plural or singular amount of the
+              resource, but for resources, the following template parameters can
+              be specified to alter the text depending on the case:
+
+              {%title} -> singular or plural title ({%Title} for capitalized version)
+              {%name} -> singular or plural name ({%Name} for capitalized version)
+              {%a} or {%A} -> the appropriate indefinite article: "a" or "some"
+              {%an} or {%An} -> the appropriate indefinite article: "an" or "some"
+              {%it} or {%It} -> the appropriate pronoun: "it" or "they"
+              {%its} or {%Its} -> the appropriate choice between "it's" and "they're"
+
+              In the example below, the following descriptions would be shown to
+              the user depending on if they're seeing it in the singular or the
+              plural:
+
+              "It's shiny and worth a LOT of money!" (singular) -->
          <description>
-It's shiny and worth a LOT of money!
+{%Its} shiny and worth a LOT of money!
          </description>
 
          <!-- Like other entities in the game, you can override how a resource is

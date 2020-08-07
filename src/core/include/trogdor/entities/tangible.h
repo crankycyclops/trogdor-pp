@@ -208,7 +208,9 @@ namespace trogdor::entity {
          virtual void glance(const std::shared_ptr<Being> &observer, bool triggerEvents = true);
 
          /*
-            Displays a Tangible.
+            Displays any tangible entity. Some Entity types need to display
+            themselves differently, so this method is virtual and can be
+            overridden.
 
             Input:
                Being doing the observing
@@ -218,6 +220,10 @@ namespace trogdor::entity {
                (none)
          */
          virtual void display(Being *observer, bool displayFull = false);
+         inline void display(const std::shared_ptr<Being> &being, bool displayFull = false) {
+
+            display(being.get(), displayFull);
+         }
 
          /*
             Returns const reference to all resources held by the entity.

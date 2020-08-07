@@ -155,8 +155,19 @@ namespace trogdor {
             if (i != depositor->getResources().end()) {
 
                auto allocation = *i;
+               double intPart, fracPart = modf(amount, &intPart);
 
-               if (amount > allocation.second) {
+               if (amount <= 0) {
+                  player->out("display") << "Please specify a positive amount greater than zero."
+                     << std::endl;
+               }
+
+               else if (resource->areIntegerAllocationsRequired() && fracPart) {
+                  player->out("display") << "Please specify a whole number amount of "
+                     << resource->getPluralTitle() << '.' << std::endl;
+               }
+
+               else if (amount > allocation.second) {
 
                   std::string title = resource->getPluralTitle();
 

@@ -1,5 +1,7 @@
 #include <cmath>
 
+#include <trogdor/utility.h>
+
 #include <trogdor/entities/resource.h>
 #include <trogdor/entities/tangible.h>
 #include <trogdor/entities/being.h>
@@ -10,7 +12,35 @@
 namespace trogdor::entity {
 
 
-   English Resource::language = English();
+   const English Resource::language = English();
+
+   const std::unordered_map<
+      bool,
+      std::unordered_map<std::string, std::string>
+   > Resource::constTemplateParameters = {
+
+      {false, {
+         {"{%A}", "A"},
+         {"{%a}", "a"},
+         {"{%An}", "An"},
+         {"{%an}", "an"},
+         {"{%It}", "It"},
+         {"{%it}", "it"},
+         {"{%Its}", "It's"},
+         {"{%its}", "it's"}
+      }},
+
+      {true, {
+         {"{%A}", "Some"},
+         {"{%a}", "some"},
+         {"{%An}", "Some"},
+         {"{%an}", "some"},
+         {"{%It}", "They"},
+         {"{%it}", "they"},
+         {"{%Its}", "They're"},
+         {"{%its}", "they're"}
+      }}
+   };
 
    /***************************************************************************/
 
@@ -44,43 +74,94 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   void Resource::display(Being *observer, bool displayFull) {
+   std::string Resource::hydrateString(std::string templateStr, bool isPlural) {
+
+      std::string result = templateStr;
+
+      std::unordered_map<
+         bool,
+         std::unordered_map<std::string, std::string>
+      > templateParameters = {
+
+         {false, {
+            {"{%title}", getTitle()},
+            {"{%name}", getName()},
+            {"{%Title}", capitalize(getTitle())},
+            {"{%Name}", capitalize(getName())}
+         }},
+
+         {true, {
+            {"{%title}", getPluralTitle()},
+            {"{%name}", getPluralName()},
+            {"{%Title}", capitalize(getPluralTitle())},
+            {"{%Name}", capitalize(getPluralName())}
+         }}
+      };
+
+      for (const auto &parameter: constTemplateParameters.find(isPlural)->second) {
+         result = replaceAll(result, parameter.first, parameter.second);
+      }
+
+      for (const auto &parameter: templateParameters[isPlural]) {
+         result = replaceAll(result, parameter.first, parameter.second);
+      }
+
+      return result;
+   }
+
+   /***************************************************************************/
+
+   void Resource::display(Being *observer, bool isPlural) {
 
       if (ENTITY_PLAYER == observer->getType()) {
 
          if (getLongDescription().length() > 0) {
-            observer->out("display") << getLongDescription() << std::endl;
+            observer->out("display") << hydrateString(getLongDescription(), isPlural)
+               << std::endl;
          }
 
          else if (getShortDescription().length() > 0) {
-            observer->out("display") << getShortDescription() << std::endl;
+            observer->out("display") << hydrateString(getShortDescription(), isPlural)
+               << std::endl;
          }
 
          else {
-            observer->out("display") << "You see " << getTitle() << '.' << std::endl;
+            observer->out("display") << "You see "
+               << (isPlural ? getPluralTitle() : getTitle()) << '.' << std::endl;
          }
       }
    }
 
    /***************************************************************************/
 
-   void Resource::observe(const std::shared_ptr<Being> &observer, double amount) {
+   void Resource::observe(
+      const std::shared_ptr<Being> &observer,
+      double amount,
+      bool triggerEvents
+   ) {
 
-      if (!game->event({
-         "beforeObserve",
-         {triggers.get(), observer->getEventListener()},
-         {this, observer.get(), amount}
-      })) {
-         return;
+      if (triggerEvents) {
+         if (!game->event({
+            "beforeObserve",
+            {triggers.get(), observer->getEventListener()},
+            {this, observer.get(), amount}
+         })) {
+            return;
+         }
       }
 
-      display(observer.get(), true);
+      display(
+         observer.get(),
+         areIntegerAllocationsRequired() && 1 == amount ? false : true
+      );
 
-      game->event({
-         "afterObserve",
-         {triggers.get(), observer->getEventListener()},
-         {this, observer.get(), amount}
-      });
+      if (triggerEvents) {
+         game->event({
+            "afterObserve",
+            {triggers.get(), observer->getEventListener()},
+            {this, observer.get(), amount}
+         });
+      }
    }
 
    /***************************************************************************/

@@ -33,6 +33,30 @@ namespace trogdor {
             thing->observe(player->getShared(), true, true);
          }
 
+         inline void lookAtResource(
+            entity::Player *player,
+            entity::Tangible *depositor,
+            std::string resourceName,
+            std::optional<double> resourceQty
+         ) {
+
+            auto allocation = depositor->getResourceByName(resourceName);
+
+            if (auto resource = allocation.first.lock()) {
+
+               double amount = resolveResourceAmount(
+                  resource.get(),
+                  resourceName,
+                  allocation.second,
+                  resourceQty
+               );
+
+               operateOnResource(resource.get(), depositor, player, amount, [&] {
+                  resource->observe(player->getShared(), amount);
+               });
+            }
+         }
+
       public:
 
          /*
