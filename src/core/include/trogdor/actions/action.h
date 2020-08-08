@@ -2,8 +2,6 @@
 #define ACTION_H
 
 
-#include <cmath>
-
 #include <trogdor/game.h>
 #include <trogdor/command.h>
 
@@ -178,20 +176,16 @@ namespace trogdor {
                      title = resource->getTitle();
                   }
 
-                  std::string qtyStr = std::to_string(allocation.second);
-
-                  if (resource->areIntegerAllocationsRequired()) {
-                     qtyStr = std::to_string(std::lround(allocation.second));
-                  }
-
                   if (static_cast<entity::Tangible *>(player) == depositor) {
-                     player->out("display") << "You only have " << qtyStr
-                        << ' ' << title << '.' << std::endl;
+                     player->out("display") << "You only have "
+                        << resource->amountToString(allocation.second) << ' '
+                        << title << '.' << std::endl;
                   }
 
                   else {
-                     player->out("display") << "There are only " << qtyStr
-                        << ' ' << title << '.' << std::endl;
+                     player->out("display") << "There are only "
+                        << resource->amountToString(allocation.second) << ' '
+                        << title << '.' << std::endl;
                   }
                }
 

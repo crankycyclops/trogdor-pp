@@ -1,5 +1,3 @@
-#include <cmath>
-
 #include <trogdor/utility.h>
 
 #include <trogdor/entities/resource.h>

@@ -101,29 +101,21 @@ namespace trogdor {
                      1 == std::lround(amount) ? resource->getTitle() :
                      resource->getPluralTitle();
 
-                  std::string amountStr = resource->areIntegerAllocationsRequired() ?
-                     std::to_string(std::lround(amount)) :
-                     std::to_string(amount);
-
-                  std::string roomAmountStr = resource->areIntegerAllocationsRequired() ?
-                     std::to_string(std::lround(allocation.second))
-                     : std::to_string(allocation.second);
-
                   // The player might not have an allocation, so I don't know in
                   // advance if I can do this. I would have set a variable, but
                   // I can't do so under a case.
                   auto getPlayerAmountStr = [&]() -> std::string {
 
-                     return resource->areIntegerAllocationsRequired() ?
-                        std::to_string(std::lround(player->getResources().find(resource)->second)) :
-                        std::to_string(player->getResources().find(resource)->second);
+                     return resource->amountToString(
+                        player->getResources().find(resource)->second
+                     );
                   };
 
                   auto getAmountAllowedStr = [&]() -> std::string {
 
-                     return resource->areIntegerAllocationsRequired() ?
-                        std::to_string(std::roundl(*resource->getMaxAmountPerDepositor())) :
-                        std::to_string(*resource->getMaxAmountPerDepositor());
+                     return resource->amountToString(
+                        *resource->getMaxAmountPerDepositor()
+                     );
                   };
 
                   if (auto location = player->getLocation().lock()) {
@@ -160,8 +152,9 @@ namespace trogdor {
                         // requested amount
                         case entity::Resource::FREE_EXCEEDS_ALLOCATION:
 
-                           player->out("display") << "You can only take " <<
-                              roomAmountStr << ' ' << resource->getPluralTitle() << '.' << std::endl;
+                           player->out("display") << "You can only take "
+                              << resource->amountToString(allocation.second)
+                              << ' ' << resource->getPluralTitle() << '.' << std::endl;
                            break;
 
                         // Success!
@@ -172,13 +165,14 @@ namespace trogdor {
                            for (auto const &thing: location->getThings()) {
                               if (thing.get() != player) {
                                  thing->out("notifications") << player->getTitle()
-                                    << " takes " << amountStr << ' '
+                                    << " takes " << resource->amountToString(amount) << ' '
                                     << titleStr << '.' << std::endl;
                               }
                            };
 
-                           player->out("display") << "You take " << amountStr
-                              << ' ' << titleStr << '.' << std::endl;
+                           player->out("display") << "You take "
+                              << resource->amountToString(amount) << ' '
+                              << titleStr << '.' << std::endl;
 
                            break;
 

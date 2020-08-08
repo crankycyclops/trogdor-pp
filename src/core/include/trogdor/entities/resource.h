@@ -1,6 +1,7 @@
 #ifndef RESOURCE_H
 #define RESOURCE_H
 
+#include <cmath>
 #include <memory>
 #include <optional>
 #include <unordered_map>
@@ -412,6 +413,23 @@ namespace trogdor::entity {
                An unordered_map of entity weak_ptrs -> allocated amount
          */
          inline const auto &getDepositors() const {return depositors;}
+
+         /*
+            A helper function that takes as input some amount and returns,
+            depending on the value of requireIntegerAllocations, an integer
+            or decimal value in the form of a string.
+
+            Input:
+               An arbitrary value (double)
+
+            Output:
+               The appropriate string representation (std::string)
+         */
+         inline std::string amountToString(double amount) const {
+
+            return requireIntegerAllocations ?
+               std::to_string(std::lround(amount)) : std::to_string(amount);
+         }
 
          /*
             Allocates the specified amount to the specified tangible entity.
