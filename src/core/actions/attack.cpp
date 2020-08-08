@@ -70,8 +70,19 @@ namespace trogdor {
          }
 
          else if (beings.begin() == beings.end()) {
-            player->out("display") << "There is no " << command.getDirectObject()
-               << " here!" << std::endl;
+
+            if (
+               location->getThingsByName(command.getDirectObject()).size() ||
+               !location->getResourceByName(command.getDirectObject()).first.expired()
+            ) {
+               player->out("display") << "You can't attack that!" << std::endl;
+            }
+
+            else {
+               player->out("display") << "There is no " << command.getDirectObject()
+                  << " here!" << std::endl;
+            }
+
             return;
          }
 
