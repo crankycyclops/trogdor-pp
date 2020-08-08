@@ -36,15 +36,9 @@ namespace trogdor {
 
          // List resources
          for (auto const &allocation: player->getResources()) {
-
             if (auto resource = allocation.first.lock()) {
-
-               std::string titleStr = resource->areIntegerAllocationsRequired() &&
-                  1 == std::lround(allocation.second) ? resource->getTitle() :
-                  resource->getPluralTitle();
-
                player->out ("display") << resource->amountToString(allocation.second)
-                  << ' ' << titleStr << std::endl;
+                  << ' ' << resource->titleToString(allocation.second) << std::endl;
             }
          }
 

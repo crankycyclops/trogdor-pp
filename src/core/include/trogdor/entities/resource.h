@@ -436,6 +436,23 @@ namespace trogdor::entity {
          }
 
          /*
+            A helper function that takes as input some amount and returns,
+            depending on the value passed in and whether or not integer
+            allocations are required, a plural or singular title.
+
+            Input:
+               An arbitrary value (double)
+
+            Output:
+               The appropriate string representation of the title (std::string)
+         */
+         inline std::string titleToString(double amount) const {
+
+            return requireIntegerAllocations && 1 == std::lround(amount) ?
+               getTitle() : getPluralTitle();
+         }
+
+         /*
             Allocates the specified amount to the specified tangible entity.
             Returns an enum indicating success or the nature of the failure.
 

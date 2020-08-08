@@ -38,7 +38,35 @@ namespace trogdor {
             double amount
          ) {
 
-            player->out("display") << "TODO: resource will disappear from inventory" << std::endl;
+            switch(resource->free(player->getShared(), amount)) {
+
+               case entity::Resource::ALLOCATE_OR_FREE_SUCCESS:
+
+                  player->out("display") << "You drop "
+                     << resource->amountToString(amount) << ' '
+                     << resource->titleToString(amount) << '.' << std::endl;
+                  break;
+
+               // If the action was aborted due to an event handler, we'll let
+               // that event send appropriate feedback to the player
+               case entity::Resource::ALLOCATE_OR_FREE_ABORT:
+
+                  break;
+
+               // An error occurred :(
+               default:
+
+                  if (resource->getMessage("resourceCantDrop").length()) {
+                     player->out("display") << resource->getMessage("resourceCantDrop")
+                        << std::endl;
+                  }
+
+                  else {
+                     player->out("display") << "You can't drop that!" << std::endl;
+                  }
+
+                  break;
+            }
          }
 
          /********************************************************************/
@@ -48,11 +76,52 @@ namespace trogdor {
          // resides.
          inline void transferResourceToRoom(
             entity::Player *player,
+            std::shared_ptr<entity::Place> &location,
             std::shared_ptr<entity::Resource> &resource,
             double amount
          ) {
 
-            player->out("display") << "TODO: resource will be transferred to the room" << std::endl;
+            switch (resource->transfer(player->getShared(), location, amount)) {
+
+               // Yay!
+               case entity::Resource::ALLOCATE_OR_FREE_SUCCESS:
+
+                  player->out("display") << "You drop "
+                     << resource->amountToString(amount) << ' '
+                     << resource->titleToString(amount) << '.' << std::endl;
+                  break;
+
+               // The room has alrady reached max capacity for this resource
+               // and can't take anymore
+               case entity::Resource::ALLOCATE_MAX_PER_DEPOSITOR_EXCEEDED:
+
+                  player->out("display") << "This place can only hold "
+                     << resource->amountToString(*resource->getMaxAmountPerDepositor())
+                     << ' ' << resource->titleToString(*resource->getMaxAmountPerDepositor())
+                     << '.' << std::endl;
+
+                  break;
+
+               // If the action was aborted due to an event handler, we'll let
+               // that event send appropriate feedback to the player
+               case entity::Resource::ALLOCATE_OR_FREE_ABORT:
+
+                  break;
+
+               // An error occurred :(
+               default:
+
+                  if (resource->getMessage("resourceCantDrop").length()) {
+                     player->out("display") << resource->getMessage("resourceCantDrop")
+                        << std::endl;
+                  }
+
+                  else {
+                     player->out("display") << "You can't drop that!" << std::endl;
+                  }
+
+                  break;
+            }
          }
 
          /********************************************************************/
@@ -120,7 +189,7 @@ namespace trogdor {
                   else {
 
                      if (auto location = player->getLocation().lock()) {
-                        transferResourceToRoom(player, resource, amount);
+                        transferResourceToRoom(player, location, resource, amount);
                      }
                   }
                });

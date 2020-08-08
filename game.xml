@@ -658,8 +658,8 @@ You find yourself in a dark secluded chamber.  It's dank, musty and generally ic
          <!-- If this setting is enabled, the value will set the maximum amount
               of the resource that can be held by a creature, player, or room.
               By default, this setting is disabled.
-         -->
          <maxallocation>10</maxallocation>
+         -->
 
          <!-- Like most other entities in the game, resources can have
               descriptions that the player will see when they look at the
@@ -717,7 +717,7 @@ You find yourself in a dark secluded chamber.  It's dank, musty and generally ic
             <!-- If the ephemeral tag is set on a resource, the amount held by
                  a player will disappear when it's dropped instead of appearing
                  in the room where the player dropped it. -->
-            <tag>ephemeral</tag>
+            <!-- <tag>ephemeral</tag> -->
          </tags>
 
       </resource>

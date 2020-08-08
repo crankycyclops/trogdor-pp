@@ -167,25 +167,16 @@ namespace trogdor {
 
                else if (amount > allocation.second) {
 
-                  std::string title = resource->getPluralTitle();
-
-                  if (
-                     resource->areIntegerAllocationsRequired() &&
-                     1 == std::lround(allocation.second)
-                  ) {
-                     title = resource->getTitle();
-                  }
-
                   if (static_cast<entity::Tangible *>(player) == depositor) {
                      player->out("display") << "You only have "
                         << resource->amountToString(allocation.second) << ' '
-                        << title << '.' << std::endl;
+                        << resource->titleToString(allocation.second) << '.' << std::endl;
                   }
 
                   else {
                      player->out("display") << "There are only "
                         << resource->amountToString(allocation.second) << ' '
-                        << title << '.' << std::endl;
+                        << resource->titleToString(allocation.second) << '.' << std::endl;
                   }
                }
 

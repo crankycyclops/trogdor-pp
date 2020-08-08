@@ -101,10 +101,6 @@ namespace trogdor {
 
                operateOnResource(resource.get(), depositor, player, amount, [&] {
 
-                  std::string titleStr = resource->areIntegerAllocationsRequired() &&
-                     1 == std::lround(amount) ? resource->getTitle() :
-                     resource->getPluralTitle();
-
                   if (auto location = player->getLocation().lock()) {
 
                      switch (resource->transfer(location, player->getShared(), amount)) {
@@ -179,13 +175,13 @@ namespace trogdor {
                               if (thing.get() != player) {
                                  thing->out("notifications") << player->getTitle()
                                     << " takes " << resource->amountToString(amount) << ' '
-                                    << titleStr << '.' << std::endl;
+                                    << resource->titleToString(amount) << '.' << std::endl;
                               }
                            };
 
                            player->out("display") << "You take "
                               << resource->amountToString(amount) << ' '
-                              << titleStr << '.' << std::endl;
+                              << resource->titleToString(amount) << '.' << std::endl;
 
                            break;
 
