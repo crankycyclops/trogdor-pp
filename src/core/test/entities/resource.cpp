@@ -117,7 +117,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 		auto status = testResource->allocate(testRoom, 1);
 
 		// Verify that the allocation succeeded
-		CHECK(trogdor::entity::Resource::ALLOCATE_SUCCESS == status);
+		CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == status);
 		CHECK(1 == testResource->getDepositors().size());
 		CHECK(std::dynamic_pointer_cast<trogdor::entity::Tangible>(testRoom) ==
 			(*testResource->getDepositors().begin()).first.lock());
@@ -173,7 +173,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			auto status = testResource->allocate(testRoom, 1);
 
 			// Verify that the allocation succeeded and that the amount is correct
-			CHECK(trogdor::entity::Resource::ALLOCATE_SUCCESS == status);
+			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == status);
 			CHECK(1 == testResource->getDepositors().size());
 			CHECK(std::dynamic_pointer_cast<trogdor::entity::Tangible>(testRoom) ==
 				(*testResource->getDepositors().begin()).first.lock());
@@ -185,7 +185,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 
 			// Verify that the second allocation succeeded and that it's
 			// accounted for properly
-			CHECK(trogdor::entity::Resource::ALLOCATE_SUCCESS == status);
+			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == status);
 			CHECK(1 == testResource->getDepositors().size());
 			CHECK(std::dynamic_pointer_cast<trogdor::entity::Tangible>(testRoom) ==
 				(*testResource->getDepositors().begin()).first.lock());
@@ -196,7 +196,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			// Verify that fractional allocations work
 			status = testResource->allocate(testRoom2, 0.5);
 
-			CHECK(trogdor::entity::Resource::ALLOCATE_SUCCESS == status);
+			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == status);
 			CHECK(2 == testResource->getDepositors().size());
 			CHECK(3.5 == testResource->getTotalAmountAllocated());
 
@@ -244,7 +244,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			auto statusFree = testResource->free(testRoom2);
 
 			// Verify that testRoom2's entire allocation is gone
-			CHECK(trogdor::entity::Resource::FREE_SUCCESS == statusFree);
+			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == statusFree);
 			CHECK(1 == testResource->getDepositors().size());
 			CHECK(std::dynamic_pointer_cast<trogdor::entity::Tangible>(testRoom) ==
 				(*testResource->getDepositors().begin()).first.lock());
@@ -284,7 +284,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 
 			// Verify that the entity's allocation has been updated, along
 			// with the resource's aggregate total
-			CHECK(trogdor::entity::Resource::FREE_SUCCESS == statusFree);
+			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == statusFree);
 			CHECK(1 == testResource->getDepositors().size());
 			CHECK(std::dynamic_pointer_cast<trogdor::entity::Tangible>(testRoom) ==
 				(*testResource->getDepositors().begin()).first.lock());
@@ -297,7 +297,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			// free the entity's entire allocation.
 			statusFree = testResource->free(testRoom, 0);
 
-			CHECK(trogdor::entity::Resource::FREE_SUCCESS == statusFree);
+			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == statusFree);
 			CHECK(0 == testResource->getDepositors().size());
 			CHECK(0 == testRoom->getResources().size());
 			CHECK(0 == testResource->getTotalAmountAllocated());
@@ -340,7 +340,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			// Now, verify that integral allocations succeed
 			status = testResource->allocate(testRoom, 1);
 
-			CHECK(trogdor::entity::Resource::ALLOCATE_SUCCESS == status);
+			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == status);
 			CHECK(1 == testResource->getDepositors().size());
 			CHECK(std::dynamic_pointer_cast<trogdor::entity::Tangible>(testRoom) ==
 				(*testResource->getDepositors().begin()).first.lock());
@@ -363,7 +363,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			// Finally, test that ingegral free succeeds
 			statusFree = testResource->free(testRoom, 1);
 
-			CHECK(trogdor::entity::Resource::FREE_SUCCESS == statusFree);
+			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == statusFree);
 			CHECK(0 == testResource->getDepositors().size());
 			CHECK(0 == testRoom->getResources().size());
 			CHECK(0 == testResource->getTotalAmountAllocated());
@@ -405,7 +405,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			// This allocation should succeed
 			status = testResource->allocate(testRoom, 1);
 
-			CHECK(trogdor::entity::Resource::ALLOCATE_SUCCESS == status);
+			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == status);
 			CHECK(1 == testResource->getDepositors().size());
 			CHECK(std::dynamic_pointer_cast<trogdor::entity::Tangible>(testRoom) ==
 				(*testResource->getDepositors().begin()).first.lock());
@@ -427,7 +427,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 
 			auto statusFree = testResource->free(testRoom);
 
-			CHECK(trogdor::entity::Resource::FREE_SUCCESS == statusFree);
+			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == statusFree);
 			CHECK(0 == testResource->getDepositors().size());
 			CHECK(0 == testRoom->getResources().size());
 			CHECK(0 == testResource->getTotalAmountAllocated());

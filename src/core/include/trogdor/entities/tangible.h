@@ -13,6 +13,10 @@ namespace trogdor::entity {
    // type.
    class Tangible: public Entity {
 
+      // Resource allocation should be handled solely by Resource::transfer(),
+      // Resource::allocate(), and Resource::free()
+      friend Resource;
+
       private:
 
          // maintains a list of all Beings that have glanced at but not fully
@@ -75,18 +79,6 @@ namespace trogdor::entity {
             resourcesByName.erase(resource->getPluralName());
             resources.erase(resource);
          }
-
-         // Resource allocation should be handled solely by Resource::allocate()
-         // and Resource::free()
-         friend Resource::AllocateStatus Resource::allocate(
-            const std::shared_ptr<Tangible> &entity,
-            double amount
-         );
-
-         friend Resource::FreeStatus Resource::free(
-            const std::shared_ptr<Tangible> &entity,
-            double amount
-         );
 
       public:
 

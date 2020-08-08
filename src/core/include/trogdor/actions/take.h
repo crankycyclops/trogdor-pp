@@ -77,6 +77,123 @@ namespace trogdor {
             }
          }
 
+         inline void takeResource(
+            entity::Player *player,
+            entity::Tangible *depositor,
+            std::string resourceName,
+            std::optional<double> resourceQty
+         ) {
+
+            auto allocation = depositor->getResourceByName(resourceName);
+
+            if (auto resource = allocation.first.lock()) {
+
+               double amount = resolveResourceAmount(
+                  resource.get(),
+                  resourceName,
+                  allocation.second,
+                  resourceQty
+               );
+
+               operateOnResource(resource.get(), depositor, player, amount, [&] {
+
+                  std::string titleStr = resource->areIntegerAllocationsRequired() &&
+                     1 == std::lround(amount) ? resource->getTitle() :
+                     resource->getPluralTitle();
+
+                  std::string amountStr = resource->areIntegerAllocationsRequired() ?
+                     std::to_string(std::lround(amount)) :
+                     std::to_string(amount);
+
+                  std::string roomAmountStr = resource->areIntegerAllocationsRequired() ?
+                     std::to_string(std::lround(allocation.second))
+                     : std::to_string(allocation.second);
+
+                  // The player might not have an allocation, so I don't know in
+                  // advance if I can do this. I would have set a variable, but
+                  // I can't do so under a case.
+                  auto getPlayerAmountStr = [&]() -> std::string {
+
+                     return resource->areIntegerAllocationsRequired() ?
+                        std::to_string(std::lround(player->getResources().find(resource)->second)) :
+                        std::to_string(player->getResources().find(resource)->second);
+                  };
+
+                  auto getAmountAllowedStr = [&]() -> std::string {
+
+                     return resource->areIntegerAllocationsRequired() ?
+                        std::to_string(std::roundl(*resource->getMaxAmountPerDepositor())) :
+                        std::to_string(*resource->getMaxAmountPerDepositor());
+                  };
+
+                  if (auto location = player->getLocation().lock()) {
+
+                     switch (resource->transfer(location, player->getShared(), amount)) {
+
+                        // Transfers must be made in integer amounts
+                        case entity::Resource::FREE_INT_REQUIRED:
+                        case entity::Resource::ALLOCATE_INT_REQUIRED:
+
+                           player->out("display") << "Please specify a whole number of "
+                              << resource->getPluralTitle() << '.' << std::endl;
+                           break;
+
+                        // The transfer would result in the player possessing
+                        // more of the resource than they're allowed to have
+                        case entity::Resource::ALLOCATE_MAX_PER_DEPOSITOR_EXCEEDED:
+
+                           player->out("display") << "You already have "
+                              << getPlayerAmountStr() << ' ' << resource->getPluralTitle()
+                              << " and are only allowed to possess "
+                              << getAmountAllowedStr() << '.' << std::endl;
+                           break;
+
+                        // We can't transfer an amount less than or equal to 0
+                        case entity::Resource::FREE_NEGATIVE_VALUE:
+                        case entity::Resource::ALLOCATE_ZERO_OR_NEGATIVE_AMOUNT:
+
+                           player->out("display") << "Please specify an amount greater than zero."
+                              << std::endl;
+                           break;
+
+                        // The original holder of the resource doesn't have the
+                        // requested amount
+                        case entity::Resource::FREE_EXCEEDS_ALLOCATION:
+
+                           player->out("display") << "You can only take " <<
+                              roomAmountStr << ' ' << resource->getPluralTitle() << '.' << std::endl;
+                           break;
+
+                        // Success!
+                        case entity::Resource::ALLOCATE_OR_FREE_SUCCESS:
+
+                           // Notify every entity in the room that the resource has
+                           // been taken EXCEPT the one who's doing the taking
+                           for (auto const &thing: location->getThings()) {
+                              if (thing.get() != player) {
+                                 thing->out("notifications") << player->getTitle()
+                                    << " takes " << amountStr << ' '
+                                    << titleStr << '.' << std::endl;
+                              }
+                           };
+
+                           player->out("display") << "You take " << amountStr
+                              << ' ' << titleStr << '.' << std::endl;
+
+                           break;
+
+                        // It's possible we'll get here if ALLOCATE_ABORT is
+                        // returned due to cancellation by the event handler. In
+                        // such a case, we'll let the specific event trigger that
+                        // canceled the allocation handle the explanitory output.
+                        default:
+                           break;
+                     }
+                  }
+               });
+            }
+         }
+
       public:
 
          /*

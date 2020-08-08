@@ -588,7 +588,8 @@ namespace trogdor {
 
          switch (status) {
 
-            case entity::Resource::ALLOCATE_SUCCESS:
+            case entity::Resource::ALLOCATE_OR_FREE_SUCCESS:
+            case entity::Resource::ALLOCATE_OR_FREE_ABORT:
                return;
 
             case entity::Resource::ALLOCATE_INT_REQUIRED:

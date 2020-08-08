@@ -166,17 +166,16 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Resource::AllocateStatus Resource::allocate(
+   void Resource::allocateRaw(
       const std::shared_ptr<Tangible> &entity,
       double amount
    ) {
 
-      if (amount <= 0) {
-         return ALLOCATE_ZERO_OR_NEGATIVE_AMOUNT;
-      }
-
+      auto sharedPtr = getShared();
       double updatedBalance = amount;
-      auto shared = getShared();
+
+      mutex.lock();
+      entity->mutex.lock();
 
       // If the entity already possesses some amount of the resource, make sure
       // to take it into account when updating its balance after the allocation
@@ -184,44 +183,141 @@ namespace trogdor::entity {
          updatedBalance += depositors[entity];
       }
 
+      depositors[entity] = updatedBalance;
+      entity->recordResourceAllocation(sharedPtr, updatedBalance);
+      totalAmountAllocated += amount;
+
+      if (depositors[entity] <= 0) {
+         depositors.erase(entity);
+         entity->removeResourceAllocation(sharedPtr);
+      }
+
+      entity->mutex.unlock();
+      mutex.unlock();
+   }
+
+   /***************************************************************************/
+
+   Resource::AllocationStatus Resource::allocate(
+      const std::shared_ptr<Tangible> &entity,
+      double amount,
+      bool triggerEvents
+   ) {
+
+      if (triggerEvents && !game->event({
+         "beforeAllocateResource",
+         {triggers.get(), entity->getEventListener()},
+         {this, entity.get(), amount}
+      })) {
+         return ALLOCATE_OR_FREE_ABORT;
+      }
+
+      if (amount <= 0) {
+
+         if (triggerEvents) {
+            game->event({
+               "allocateResourceZeroOrNegativeAmount",
+               {triggers.get(), entity->getEventListener()},
+               {this, entity.get(), amount}
+            });
+         }
+
+         return ALLOCATE_ZERO_OR_NEGATIVE_AMOUNT;
+      }
+
+      auto shared = getShared();
+
       if (requireIntegerAllocations) {
 
          double intPart, fracPart = modf(amount, &intPart);
 
          if (fracPart) {
+
+            if (triggerEvents) {
+               game->event({
+                  "allocateResourceIntegerRequired",
+                  {triggers.get(), entity->getEventListener()},
+                  {this, entity.get(), amount}
+               });
+            }
+
             return ALLOCATE_INT_REQUIRED;
          }
       }
 
       if (amountAvailable && amount + totalAmountAllocated > *amountAvailable) {
+
+         if (triggerEvents) {
+            game->event({
+               "allocateResourceTotalAmountExceeded",
+               {triggers.get(), entity->getEventListener()},
+               {this, entity.get(), amount}
+            });
+         }
+
          return ALLOCATE_TOTAL_AMOUNT_EXCEEDED;
       }
 
+      // If the entity already possesses some amount of the resource, make sure
+      // to take it into account when updating its balance after the allocation
+      double updatedBalance = amount;
+
+      if (depositors.end() != depositors.find(entity)) {
+         updatedBalance += depositors[entity];
+      }
+
       if (maxAmountPerDepositor && updatedBalance > *maxAmountPerDepositor) {
+
+         if (triggerEvents) {
+            game->event({
+               "allocateResourceMaxPerDepositorExceeded",
+               {triggers.get(), entity->getEventListener()},
+               {this, entity.get(), amount}
+            });
+         }
+
          return ALLOCATE_MAX_PER_DEPOSITOR_EXCEEDED;
       }
 
-      mutex.lock();
-      entity->mutex.lock();
+      allocateRaw(entity, amount);
 
-      depositors[entity] = updatedBalance;
-      entity->recordResourceAllocation(shared, updatedBalance);
-      totalAmountAllocated += amount;
+      if (triggerEvents) {
+         game->event({
+            "afterAllocateResource",
+            {triggers.get(), entity->getEventListener()},
+            {this, entity.get(), amount}
+         });
+      }
 
-      entity->mutex.unlock();
-      mutex.unlock();
-
-      return ALLOCATE_SUCCESS;
+      return ALLOCATE_OR_FREE_SUCCESS;
    }
 
    /***************************************************************************/
 
-   Resource::FreeStatus Resource::free(
+   Resource::AllocationStatus Resource::free(
       const std::shared_ptr<Tangible> &entity,
-      double amount
+      double amount,
+      bool triggerEvents
    ) {
 
+      if (triggerEvents && !game->event({
+         "beforeFreeResource",
+         {triggers.get(), entity->getEventListener()},
+         {this, entity.get(), amount}
+      })) {
+         return ALLOCATE_OR_FREE_ABORT;
+      }
+
       if (amount < 0) {
+
+         if (triggerEvents) {
+            game->event({
+               "freeResourceNegativeValue",
+               {triggers.get(), entity->getEventListener()},
+               {this, entity.get(), amount}
+            });
+         }
+
          return FREE_NEGATIVE_VALUE;
       }
 
@@ -230,6 +326,15 @@ namespace trogdor::entity {
          double intPart, fracPart = modf(amount, &intPart);
 
          if (fracPart) {
+
+            if (triggerEvents) {
+               game->event({
+                  "freeResourceIntegerRequired",
+                  {triggers.get(), entity->getEventListener()},
+                  {this, entity.get(), amount}
+               });
+            }
+
             return FREE_INT_REQUIRED;
          }
       }
@@ -240,29 +345,92 @@ namespace trogdor::entity {
          depositors.end() == depositors.find(entity) ||
          depositors[entity] < amount
       ) {
+
+         if (triggerEvents) {
+            game->event({
+               "freeResourceExceedsAllocation",
+               {triggers.get(), entity->getEventListener()},
+               {this, entity.get(), amount}
+            });
+         }
+
          return FREE_EXCEEDS_ALLOCATION;
       }
-
-      mutex.lock();
-      entity->mutex.lock();
 
       // Free everything
       if (0 == amount) {
          amount = depositors[entity];
       }
 
-      depositors[entity] -= amount;
-      entity->resources[shared] -= amount;
-      totalAmountAllocated -= amount;
+      allocateRaw(entity, -amount);
 
-      if (0 == depositors[entity]) {
-         depositors.erase(entity);
-         entity->removeResourceAllocation(shared);
+      if (triggerEvents) {
+         game->event({
+            "afterFreeResource",
+            {triggers.get(), entity->getEventListener()},
+            {this, entity.get(), amount}
+         });
       }
 
-      entity->mutex.unlock();
-      mutex.unlock();
+      return ALLOCATE_OR_FREE_SUCCESS;
+   }
 
-      return FREE_SUCCESS;
+   /***************************************************************************/
+
+   Resource::AllocationStatus Resource::transfer(
+      const std::shared_ptr<Tangible> &depositor,
+      const std::shared_ptr<Tangible> &beneficiary,
+      double amount,
+      bool triggerEvents
+   ) {
+
+      if (triggerEvents && !game->event({
+         "beforeTransferResource",
+         {triggers.get(), depositor->getEventListener(), beneficiary->getEventListener()},
+         {this, depositor.get(), beneficiary.get(), amount}
+      })) {
+         return ALLOCATE_OR_FREE_ABORT;
+      }
+
+      // The transfer should be transactional
+      transferMutex.lock();
+
+      auto status = free(depositor, amount, false);
+
+      if (ALLOCATE_OR_FREE_SUCCESS != status) {
+
+         game->event({
+            "transferResourceCantFree",
+            {triggers.get(), depositor->getEventListener(), beneficiary->getEventListener()},
+            {this, depositor.get(), beneficiary.get(), amount}
+         });
+
+         return status;
+      }
+
+      status = allocate(beneficiary, amount, false);
+
+      if (ALLOCATE_OR_FREE_SUCCESS != status) {
+
+         game->event({
+            "transferResourceCantAllocate",
+            {triggers.get(), depositor->getEventListener(), beneficiary->getEventListener()},
+            {this, depositor.get(), beneficiary.get(), amount}
+         });
+
+         // Return the depositor's previous allocation because the transfer failed
+         allocateRaw(depositor, amount);
+         return status;
+      }
+
+      transferMutex.unlock();
+
+      game->event({
+         "afterTransferResource",
+         {triggers.get(), depositor->getEventListener(), beneficiary->getEventListener()},
+         {this, depositor.get(), beneficiary.get(), amount}
+      });
+
+      return ALLOCATE_OR_FREE_SUCCESS;
    }
 }

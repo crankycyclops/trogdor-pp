@@ -19,12 +19,16 @@ namespace trogdor::entity {
 
       public:
 
-         // When calling allocate(), one of these values is returned to indicate
-         // success or the reason for failure.
-         enum AllocateStatus {
+         // When calling allocate() or free(), one of these values is returned
+         // to indicate success or the reason for failure.
+         enum AllocationStatus {
 
-            // Allocation was successful
-            ALLOCATE_SUCCESS,
+            // Allocation/deallocation was successful
+            ALLOCATE_OR_FREE_SUCCESS,
+
+            // The beforeAllocateResource or beforeFreeResource event canceled
+            // the allocation or freeing of the resource
+            ALLOCATE_OR_FREE_ABORT,
 
             // Only positive values greater than 0 are valid amounts
             ALLOCATE_ZERO_OR_NEGATIVE_AMOUNT,
@@ -40,15 +44,10 @@ namespace trogdor::entity {
 
             // Allocation would have resulted in the holder receiving more of
             // the resource than they're allowed to have
-            ALLOCATE_MAX_PER_DEPOSITOR_EXCEEDED
-         };
+            ALLOCATE_MAX_PER_DEPOSITOR_EXCEEDED,
 
-         // When calling free(), one of these values is returned to indicate
-         // success or the reason for failure.
-         enum FreeStatus {
-
-            // Deallocation was successful
-            FREE_SUCCESS,
+            // The beforeFreeResource event canceled the freeing of the resource
+            FREE_ABORT,
 
             // Only values >= 0 are valid (0 means we free everything)
             FREE_NEGATIVE_VALUE,
@@ -75,6 +74,10 @@ namespace trogdor::entity {
             bool,
             std::unordered_map<std::string, std::string>
          > constTemplateParameters;
+
+         // Lock on this when we're transferring a resource allocation from one
+         // tangible entity to another.
+         std::mutex transferMutex;
 
          // If set to true, allocations must be made in whole number values.
          bool requireIntegerAllocations = false;
@@ -116,6 +119,10 @@ namespace trogdor::entity {
             double,
             std::owner_less<std::weak_ptr<Tangible>>
          > depositors;
+
+         // Modify's a tangible entity's allocation without any checks. This is
+         // utilized by the public methods allocate(), free(), and transfer().
+         void allocateRaw(const std::shared_ptr<Tangible> &entity, double amount);
 
          /*
             Replaces parameters in the provided template with their appropriate
@@ -413,8 +420,13 @@ namespace trogdor::entity {
             Input:
                Reference to tangible entity (const std::shared_ptr<Tangible> &)
                Amount of resource to allocate (double)
+               Whether or not to fire event triggers (bool: default = true)
          */
-         AllocateStatus allocate(const std::shared_ptr<Tangible> &entity, double amount);
+         AllocationStatus allocate(
+            const std::shared_ptr<Tangible> &entity,
+            double amount,
+            bool triggerEvents = true
+         );
 
          /*
             Deallocates the specified amount of the resource from the entity.
@@ -423,8 +435,31 @@ namespace trogdor::entity {
             Input:
                Reference to tangible entity (const std::shared_ptr<Tangible> &)
                Amount of resource to deallocate (double -- 0 means to deallocate everything)
+               Whether or not to fire event triggers (bool: default = true)
          */
-         FreeStatus free(const std::shared_ptr<Tangible> &entity, double amount = 0);
+         AllocationStatus free(
+            const std::shared_ptr<Tangible> &entity,
+            double amount = 0,
+            bool triggerEvents = true
+         );
+
+         /*
+            Transfers some amount of a resource from one entity to another.
+
+            Input:
+               Reference to tangible entity who possesses the resource
+                  (const std::shared_ptr<Tangible> &)
+               Reference to tangible entity who's to receive the resource
+                  (const std::shared_ptr<Tangible> &)
+               The amount of the resource to transfer (double)
+               Whether or not to fire event triggers (bool: default = true)
+         */
+         AllocationStatus transfer(
+            const std::shared_ptr<Tangible> &depositor,
+            const std::shared_ptr<Tangible> &beneficiary,
+            double amount,
+            bool triggerEvents = true
+         );
    };
 }
 

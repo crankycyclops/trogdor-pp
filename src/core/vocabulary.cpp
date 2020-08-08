@@ -100,6 +100,9 @@ namespace trogdor {
    void Vocabulary::initBuiltinFillerWords() {
 
       fillerWords.insert("the");
+      fillerWords.insert("a");
+      fillerWords.insert("an");
+      fillerWords.insert("some");
    }
 
    /**************************************************************************/

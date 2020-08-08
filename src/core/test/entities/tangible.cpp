@@ -89,7 +89,7 @@ TEST_SUITE("Tangible (entities/tangible.cpp)") {
 		auto status = testResource->allocate(testRoom, 1);
 		allocation = testRoom->getResourceByName("gold");
 
-		CHECK(trogdor::entity::Resource::ALLOCATE_SUCCESS == status);
+		CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == status);
 		CHECK(1 == testRoom->getResources().size());
 		CHECK(testResource == (*testRoom->getResources().begin()).first.lock());
 		CHECK(testResource == allocation.first.lock());
@@ -100,7 +100,7 @@ TEST_SUITE("Tangible (entities/tangible.cpp)") {
 		auto statusFree = testResource->free(testRoom);
 		allocation = testRoom->getResourceByName("gold");
 
-		CHECK(trogdor::entity::Resource::FREE_SUCCESS == statusFree);
+		CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == statusFree);
 		CHECK(0 == testRoom->getResources().size());
 		CHECK(allocation.first.expired());
 		CHECK(0 == allocation.second);
