@@ -713,6 +713,13 @@ You find yourself in a dark secluded chamber.  It's dank, musty and generally ic
             <text>Each coin is inscribed with the noble words, "In unicorns we trust."</text>
          </meta>
 
+          <tags>
+            <!-- If the ephemeral tag is set on a resource, the amount held by
+                 a player will disappear when it's dropped instead of appearing
+                 in the room where the player dropped it. -->
+            <tag>ephemeral</tag>
+          </tags>
+
       </resource>
 
    </resources>

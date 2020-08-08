@@ -27,11 +27,15 @@ namespace trogdor {
             std::weak_ptr<entity::Player>
          > lookupThingByName;
 
+         /********************************************************************/
+
          // Observe the specified object
          inline void look(entity::Player *player, entity::Thing *thing) {
 
             thing->observe(player->getShared(), true, true);
          }
+
+         /********************************************************************/
 
          inline void lookAtResource(
             entity::Player *player,

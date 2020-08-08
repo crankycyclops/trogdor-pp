@@ -29,6 +29,8 @@ namespace trogdor {
             std::weak_ptr<entity::Player>
          > lookupThingByName;
 
+         /********************************************************************/
+
          // Takes the object and adds it to the player's inventory
          inline void take(entity::Player *player, entity::Thing *thing) {
 
@@ -76,6 +78,8 @@ namespace trogdor {
                }
             }
          }
+
+         /********************************************************************/
 
          inline void takeResource(
             entity::Player *player,

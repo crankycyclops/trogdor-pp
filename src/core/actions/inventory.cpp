@@ -23,7 +23,7 @@ namespace trogdor {
       Game *game
    ) {
 
-      if (0 == player->getInventoryCount()) {
+      if (0 == player->getInventoryCount() && 0 == player->getResources().size()) {
          player->out("display") << "You don't have anything!" << std::endl;
       }
 
@@ -34,6 +34,21 @@ namespace trogdor {
 
          player->out("display") << "Items in your inventory:" << std::endl << std::endl;
 
+         // List resources
+         for (auto const &allocation: player->getResources()) {
+
+            if (auto resource = allocation.first.lock()) {
+
+               std::string titleStr = resource->areIntegerAllocationsRequired() &&
+                  1 == std::lround(allocation.second) ? resource->getTitle() :
+                  resource->getPluralTitle();
+
+               player->out ("display") << resource->amountToString(allocation.second)
+                  << ' ' << titleStr << std::endl;
+            }
+         }
+
+         // List objects
          for (auto const &obj: player->getInventoryObjects()) {
 
             player->out("display") << obj->getTitle();

@@ -20,6 +20,10 @@ namespace trogdor::entity {
 
       public:
 
+         // Tag is set if the Resource should disappear when it's dropped by a
+         // Being instead of appearing in the Room the Being currently resides in.
+         static const char *ephemeralTag;
+
          // When calling allocate() or free(), one of these values is returned
          // to indicate success or the reason for failure.
          enum AllocationStatus {

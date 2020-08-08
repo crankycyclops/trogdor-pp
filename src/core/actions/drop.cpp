@@ -25,10 +25,19 @@ namespace trogdor {
       std::shared_ptr<entity::Player> playerShared = player->getShared();
       auto invItems = player->getInventoryObjectsByName(command.getDirectObject());
 
+      // Player is dropping a resource into the room
+      if (!player->getResourceByName(command.getDirectObject()).first.expired()) {
+         dropResource(
+            player,
+            command.getDirectObject(),
+            command.getDirectObjectQty()
+         );
+      }
+
       // We're calling this action a second time after asking the user to
       // supply a unique name out of a list of items with the same alias,
       // so now we need to lookup the item by name instead of by alias.
-      if (
+      else if (
          lookupThingByName.end() != lookupThingByName.find(player) &&
          !lookupThingByName[player].expired() &&
          lookupThingByName[player].lock() == playerShared

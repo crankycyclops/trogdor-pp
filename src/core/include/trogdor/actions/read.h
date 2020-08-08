@@ -28,6 +28,8 @@ namespace trogdor {
             std::weak_ptr<entity::Player>
          > lookupThingByName;
 
+         /********************************************************************/
+
          // Complete the read operation if there's text that can be read.
          inline void read(Game *game, entity::Player *player, entity::Thing *thing) {
 
@@ -55,6 +57,8 @@ namespace trogdor {
                {player, thing}
             });
          }
+
+         /********************************************************************/
 
          // Does the same as read() except it reads a resource with an allocated
          // amount. Takes as input the name of the resource as the player typed

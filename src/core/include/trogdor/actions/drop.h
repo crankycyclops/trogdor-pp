@@ -28,6 +28,35 @@ namespace trogdor {
             std::weak_ptr<entity::Player>
          > lookupThingByName;
 
+         /********************************************************************/
+
+         // If the resource is ephemeral, dropResource() will call this method
+         // to make the player's resource allocation disappear.
+         inline void freeResource(
+            entity::Player *player,
+            std::shared_ptr<entity::Resource> &resource,
+            double amount
+         ) {
+
+            player->out("display") << "TODO: resource will disappear from inventory" << std::endl;
+         }
+
+         /********************************************************************/
+
+         // If the resource is not ephemeral, dropResource() will call this
+         // method to drop the resource into the room where the player currently
+         // resides.
+         inline void transferResourceToRoom(
+            entity::Player *player,
+            std::shared_ptr<entity::Resource> &resource,
+            double amount
+         ) {
+
+            player->out("display") << "TODO: resource will be transferred to the room" << std::endl;
+         }
+
+         /********************************************************************/
+
          // Drops the object from the player's inventory
          inline void drop(entity::Player *player, entity::Object *object) {
 
@@ -60,6 +89,41 @@ namespace trogdor {
                         << "bug." << std::endl;
                      break;
                }
+            }
+         }
+
+         /********************************************************************/
+
+         inline void dropResource(
+            entity::Player *player,
+            std::string resourceName,
+            std::optional<double> resourceQty
+         ) {
+
+            auto allocation = player->getResourceByName(resourceName);
+
+            if (auto resource = allocation.first.lock()) {
+
+               double amount = resolveResourceAmount(
+                  resource.get(),
+                  resourceName,
+                  allocation.second,
+                  resourceQty
+               );
+
+               operateOnResource(resource.get(), player, player, amount, [&] {
+
+                  if (resource->isTagSet(entity::Resource::ephemeralTag)) {
+                     freeResource(player, resource, amount);
+                  }
+
+                  else {
+
+                     if (auto location = player->getLocation().lock()) {
+                        transferResourceToRoom(player, resource, amount);
+                     }
+                  }
+               });
             }
          }
 
