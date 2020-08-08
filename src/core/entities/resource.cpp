@@ -405,6 +405,7 @@ namespace trogdor::entity {
             {this, depositor.get(), beneficiary.get(), amount}
          });
 
+         transferMutex.unlock();
          return status;
       }
 
@@ -420,6 +421,8 @@ namespace trogdor::entity {
 
          // Return the depositor's previous allocation because the transfer failed
          allocateRaw(depositor, amount);
+
+         transferMutex.unlock();
          return status;
       }
 

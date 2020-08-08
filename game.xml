@@ -556,7 +556,7 @@ To the north, you see a dark hole in the wall big enough to walk through.
          <resources>
             <!-- Resources can be allocated in whole number or floating point
             amounts. -->
-            <resource name="coin">5</resource>
+            <resource name="coin">15</resource>
          </resources>
 
       </room>
@@ -658,8 +658,8 @@ You find yourself in a dark secluded chamber.  It's dank, musty and generally ic
          <!-- If this setting is enabled, the value will set the maximum amount
               of the resource that can be held by a creature, player, or room.
               By default, this setting is disabled.
-         <maxallocation>10</maxallocation>
          -->
+         <maxallocation>10</maxallocation>
 
          <!-- Like most other entities in the game, resources can have
               descriptions that the player will see when they look at the
@@ -713,12 +713,12 @@ You find yourself in a dark secluded chamber.  It's dank, musty and generally ic
             <text>Each coin is inscribed with the noble words, "In unicorns we trust."</text>
          </meta>
 
-          <tags>
+         <tags>
             <!-- If the ephemeral tag is set on a resource, the amount held by
                  a player will disappear when it's dropped instead of appearing
                  in the room where the player dropped it. -->
             <tag>ephemeral</tag>
-          </tags>
+         </tags>
 
       </resource>
 

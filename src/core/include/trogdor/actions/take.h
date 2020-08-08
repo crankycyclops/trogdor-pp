@@ -105,23 +105,6 @@ namespace trogdor {
                      1 == std::lround(amount) ? resource->getTitle() :
                      resource->getPluralTitle();
 
-                  // The player might not have an allocation, so I don't know in
-                  // advance if I can do this. I would have set a variable, but
-                  // I can't do so under a case.
-                  auto getPlayerAmountStr = [&]() -> std::string {
-
-                     return resource->amountToString(
-                        player->getResources().find(resource)->second
-                     );
-                  };
-
-                  auto getAmountAllowedStr = [&]() -> std::string {
-
-                     return resource->amountToString(
-                        *resource->getMaxAmountPerDepositor()
-                     );
-                  };
-
                   if (auto location = player->getLocation().lock()) {
 
                      switch (resource->transfer(location, player->getShared(), amount)) {
@@ -130,35 +113,61 @@ namespace trogdor {
                         case entity::Resource::FREE_INT_REQUIRED:
                         case entity::Resource::ALLOCATE_INT_REQUIRED:
 
-                           player->out("display") << "Please specify a whole number of "
-                              << resource->getPluralTitle() << '.' << std::endl;
+                           if (resource->getMessage("resourceIntRequired").length()) {
+                              player->out("display") << resource->getMessage("resourceIntRequired")
+                                 << std::endl;
+                           } else {
+                              player->out("display") << "Please specify a whole number of "
+                                 << resource->getPluralTitle() << '.' << std::endl;
+                           }
+
                            break;
 
                         // The transfer would result in the player possessing
                         // more of the resource than they're allowed to have
                         case entity::Resource::ALLOCATE_MAX_PER_DEPOSITOR_EXCEEDED:
 
-                           player->out("display") << "You already have "
-                              << getPlayerAmountStr() << ' ' << resource->getPluralTitle()
-                              << " and are only allowed to possess "
-                              << getAmountAllowedStr() << '.' << std::endl;
+                           if (resource->getMessage("resourceMaxExceeded").length()) {
+                              player->out("display") << resource->getMessage("resourceMaxExceeded")
+                                 << std::endl;
+                           } else {
+                              player->out("display") << "That would give you "
+                                 << resource->amountToString(player->getResources().find(resource)->second + amount)
+                                 << ' ' << resource->getPluralTitle()
+                                 << " and you're only allowed to possess "
+                                 << resource->amountToString(*resource->getMaxAmountPerDepositor())
+                                 << '.' << std::endl;
+                           }
+
                            break;
 
                         // We can't transfer an amount less than or equal to 0
                         case entity::Resource::FREE_NEGATIVE_VALUE:
                         case entity::Resource::ALLOCATE_ZERO_OR_NEGATIVE_AMOUNT:
 
-                           player->out("display") << "Please specify an amount greater than zero."
-                              << std::endl;
+                           if (resource->getMessage("resourceInvalidValue").length()) {
+                              player->out("display") << resource->getMessage("resourceInvalidValue")
+                                 << std::endl;
+                           } else {
+                              player->out("display") << "Please specify an amount greater than zero."
+                                 << std::endl;
+                           }
+
                            break;
 
                         // The original holder of the resource doesn't have the
                         // requested amount
                         case entity::Resource::FREE_EXCEEDS_ALLOCATION:
 
-                           player->out("display") << "You can only take "
-                              << resource->amountToString(allocation.second)
-                              << ' ' << resource->getPluralTitle() << '.' << std::endl;
+                           if (resource->getMessage("resourceRequestTooMuch").length()) {
+                              player->out("display") << resource->getMessage("resourceRequestTooMuch")
+                                 << std::endl;
+                           } else {
+                              player->out("display") << "You can only take "
+                                 << resource->amountToString(allocation.second)
+                                 << ' ' << resource->getPluralTitle() << '.' << std::endl;
+                           }
+
                            break;
 
                         // Success!
