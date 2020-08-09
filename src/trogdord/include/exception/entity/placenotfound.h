@@ -1,14 +1,14 @@
 #ifndef PLACE_NOT_FOUND_H
 #define PLACE_NOT_FOUND_H
 
-#include "entitynotfound.h"
+#include "tangiblenotfound.h"
 
 
-class PlaceNotFound: public EntityNotFound {
+class PlaceNotFound: public TangibleNotFound {
 
 	public:
 
-		using EntityNotFound::EntityNotFound;
+		using TangibleNotFound::TangibleNotFound;
 };
 
 

@@ -1,14 +1,14 @@
 #ifndef THING_NOT_FOUND_H
 #define THING_NOT_FOUND_H
 
-#include "entitynotfound.h"
+#include "tangiblenotfound.h"
 
 
-class ThingNotFound: public EntityNotFound {
+class ThingNotFound: public TangibleNotFound {
 
 	public:
 
-		using EntityNotFound::EntityNotFound;
+		using TangibleNotFound::TangibleNotFound;
 };
 
 
