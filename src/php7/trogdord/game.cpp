@@ -696,6 +696,51 @@ PHP_METHOD(Game, entities) {
 
 /*****************************************************************************/
 
+// Returns a list of all tangibles in the game. Throws an instance of
+// \Trogdord\NetworkException if the call fails due to network connectivity
+// issues and an instance of \Trogdord\GameNotFound if the game has since been
+// destroyed and no longer exists.
+ZEND_BEGIN_ARG_INFO(arginfoListTangibles, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, tangibles) {
+
+	zval rv; // ???
+
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+
+	try {
+		zval list = getEntityList(Z_LVAL_P(id), TANGIBLE_TYPE_STR, trogdord);
+		RETURN_ZVAL(&list, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		RETURN_NULL();
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+	}
+}
+
+/*****************************************************************************/
+
 // Returns a list of all places in the game. Throws an instance of
 // \Trogdord\NetworkException if the call fails due to network connectivity
 // issues and an instance of \Trogdord\GameNotFound if the game has since been
@@ -804,6 +849,51 @@ PHP_METHOD(Game, beings) {
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), BEING_TYPE_STR, trogdord);
+		RETURN_ZVAL(&list, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		RETURN_NULL();
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+	}
+}
+
+/*****************************************************************************/
+
+// Returns a list of all resources in the game. Throws an instance of
+// \Trogdord\NetworkException if the call fails due to network connectivity
+// issues and an instance of \Trogdord\GameNotFound if the game has since been
+// destroyed and no longer exists.
+ZEND_BEGIN_ARG_INFO(arginfoListResources, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, resources) {
+
+	zval rv; // ???
+
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+
+	try {
+		zval list = getEntityList(Z_LVAL_P(id), RESOURCE_TYPE_STR, trogdord);
 		RETURN_ZVAL(&list, 1, 1);
 	}
 
@@ -1073,6 +1163,68 @@ PHP_METHOD(Game, getEntity) {
 
 /*****************************************************************************/
 
+// Returns an object that inherits from \Trogdord\Tangible representing the
+// specified tangible in the game. Throws an instance of
+// \Trogdord\NetworkException if the call fails due to network connectivity
+// issues, an instance of \Trogdord\GameNotFound if the game has since been
+// destroyed and no longer exists, and an instance of Trogdord\TangibleNotFound
+// if the specified tangible does not exist.
+ZEND_BEGIN_ARG_INFO(arginfoGetTangible, 0)
+	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, getTangible) {
+
+	char *name;
+	size_t nameLength;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	zval rv;
+	zval *gameId = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
+
+	try {
+		zval entity = getEntity(name, TANGIBLE_TYPE_STR, getThis());
+		RETURN_ZVAL(&entity, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		RETURN_NULL();
+	}
+
+	catch (const RequestException &e) {
+
+		if (404 == e.getCode()) {
+
+			// Throw \Trogdord\GameNotFound
+			if (0 == strcmp(e.what(), "game not found")) {
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+				RETURN_NULL();
+			}
+
+			// Throw \Trogdord\TangibleNotFound
+			else {
+				zend_throw_exception(EXCEPTION_GLOBALS(tangibleNotFound), e.what(), e.getCode());
+				RETURN_NULL();
+			}
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+	}
+}
+
+/*****************************************************************************/
+
 // Returns an object that inherits from \Trogdord\Place representing the
 // specified place in the game. Throws an instance of
 // \Trogdord\NetworkException if the call fails due to network connectivity
@@ -1245,6 +1397,68 @@ PHP_METHOD(Game, getBeing) {
 			// Throw \Trogdord\BeingNotFound
 			else {
 				zend_throw_exception(EXCEPTION_GLOBALS(beingNotFound), e.what(), e.getCode());
+				RETURN_NULL();
+			}
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+	}
+}
+
+/*****************************************************************************/
+
+// Returns an instance of \Trogdord\Resource representing the specified resource
+// in the game. Throws an instance of \Trogdord\NetworkException if the call
+// fails due to network connectivity issues, an instance of
+// \Trogdord\GameNotFound if the game has since been destroyed and no longer
+// exists, and an instance of Trogdord\ResourceNotFound if the specified
+// resource does not exist.
+ZEND_BEGIN_ARG_INFO(arginfoGetResource, 0)
+	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, getResource) {
+
+	char *name;
+	size_t nameLength;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	zval rv;
+	zval *gameId = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
+
+	try {
+		zval entity = getEntity(name, RESOURCE_TYPE_STR, getThis());
+		RETURN_ZVAL(&entity, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		RETURN_NULL();
+	}
+
+	catch (const RequestException &e) {
+
+		if (404 == e.getCode()) {
+
+			// Throw \Trogdord\GameNotFound
+			if (0 == strcmp(e.what(), "game not found")) {
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+				RETURN_NULL();
+			}
+
+			// Throw \Trogdord\ResourceNotFound
+			else {
+				zend_throw_exception(EXCEPTION_GLOBALS(resourceNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 		}
@@ -1601,17 +1815,21 @@ static const zend_function_entry classMethods[] =  {
 	PHP_ME(Game, getMeta, arginfoGetMeta, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, setMeta, arginfoSetMeta, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, entities, arginfoListEntities, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, tangibles, arginfoListTangibles, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, places, arginfoListPlaces, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, things, arginfoListThings, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, beings, arginfoListBeings, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, resources, arginfoListResources, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, rooms, arginfoListRooms, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, objects, arginfoListObjects, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, creatures, arginfoListCreatures, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, players, arginfoListPlayers, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, getEntity, arginfoGetEntity, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, getTangible, arginfoGetTangible, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, getPlace, arginfoGetPlace, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, getThing, arginfoGetThing, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, getBeing, arginfoGetBeing, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, getResource, arginfoGetResource, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, getRoom, arginfoGetRoom, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, getObject, arginfoGetObject, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, getCreature, arginfoGetCreature, ZEND_ACC_PUBLIC)

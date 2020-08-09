@@ -5,9 +5,11 @@
 #include "network/tcpconnectionmap.h"
 
 #include "entities/entity.h"
+#include "entities/tangible.h"
 #include "entities/place.h"
 #include "entities/thing.h"
 #include "entities/being.h"
+#include "entities/resource.h"
 #include "entities/room.h"
 #include "entities/object.h"
 #include "entities/creature.h"
@@ -31,9 +33,11 @@ PHP_MINIT_FUNCTION(trogdord) {
 
 	// Entity class hierarchy
 	defineEntityClass();
+	defineTangibleClass();
 	definePlaceClass();
 	defineThingClass();
 	defineBeingClass();
+	defineResourceClass();
 	defineRoomClass();
 	defineObjectClass();
 	defineCreatureClass();
@@ -60,6 +64,12 @@ PHP_MINIT_FUNCTION(trogdord) {
 	);
 
 	REGISTER_STRING_CONSTANT(
+		"Trogdord\\Entity\\Type\\TANGIBLE",
+		(char *)TANGIBLE_TYPE_STR,
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
 		"Trogdord\\Entity\\Type\\PLACE",
 		(char *)PLACE_TYPE_STR,
 		CONST_CS | CONST_PERSISTENT
@@ -74,6 +84,12 @@ PHP_MINIT_FUNCTION(trogdord) {
 	REGISTER_STRING_CONSTANT(
 		"Trogdord\\Entity\\Type\\BEING",
 		(char *)BEING_TYPE_STR,
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_STRING_CONSTANT(
+		"Trogdord\\Entity\\Type\\RESOURCE",
+		(char *)RESOURCE_TYPE_STR,
 		CONST_CS | CONST_PERSISTENT
 	);
 

@@ -591,6 +591,14 @@ TODO
 
 TODO
 
+### \Trogdord\Resource
+
+TODO
+
+### \Trogdord\Tangible
+
+TODO
+
 ### \Trogdord\Place
 
 TODO
