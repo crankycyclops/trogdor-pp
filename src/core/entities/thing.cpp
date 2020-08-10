@@ -10,7 +10,7 @@ namespace trogdor::entity {
 
 
    Thing::Thing(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Entity(g, n, std::move(o), std::move(e)),
+   std::unique_ptr<Trogerr> e): Tangible(g, n, std::move(o), std::move(e)),
    location(std::weak_ptr<Place>()) {
 
       types.push_back(ENTITY_THING);
@@ -21,7 +21,7 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Thing::Thing(const Thing &t, std::string n): Entity(t, n) {
+   Thing::Thing(const Thing &t, std::string n): Tangible(t, n) {
 
       location = t.location;
 
@@ -37,7 +37,7 @@ namespace trogdor::entity {
    void Thing::display(Being *observer, bool displayFull) {
 
       observer->out("display") << "You see " << getTitle() << '.' << std::endl;
-      Entity::display(observer, displayFull);
+      Tangible::display(observer, displayFull);
    }
 
    /***************************************************************************/
@@ -45,7 +45,7 @@ namespace trogdor::entity {
    void Thing::displayShort(Being *observer) {
 
       if (shortDesc.length()) {
-         Entity::displayShort(observer);
+         Tangible::displayShort(observer);
       }
 
       else {

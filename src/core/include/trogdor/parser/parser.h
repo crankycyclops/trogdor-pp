@@ -98,13 +98,15 @@ namespace trogdor {
                Entity name (std::string)
                Entity type (std::string)
                Class name (std::string)
+               Plural name -- for Resource type only (std::optional<std::string>)
                Current line number in the source being parsed (int)
 
             Output:
                ASTOperationNode
          */
          std::shared_ptr<ASTOperationNode> ASTDefineEntity(std::string entityName,
-         std::string entityType, std::string className, int lineNumber = 0);
+         std::string entityType, std::string className,
+         std::optional<std::string> pluralName = std::nullopt, int lineNumber = 0);
 
          /*
             Returns an AST subtree representing a setMessage operation.
@@ -323,6 +325,22 @@ namespace trogdor {
          std::shared_ptr<ASTOperationNode> ASTConnectRooms(std::string targetType,
          std::string sourceRoomOrClass, std::string connectTo, std::string direction,
          int lineNumber = 0);
+
+         /*
+            Returns an AST subtree representing an allocateResource operation
+            (doesn't work on classes, only on concrete intantiations of Tangible.)
+
+            Input:
+               Tangible entity's name (std::string)
+               Resource's name (std::string)
+               The amount to allocate (std::string--must be able to parse as a double)
+               Current line number in the source being parsed (int)
+
+            Output:
+               ASTOperationNode
+         */
+         std::shared_ptr<ASTOperationNode> ASTAllocateResource(std::string tangible,
+         std::string resource, std::string amount, int lineNumber = 0);
 
       public:
 

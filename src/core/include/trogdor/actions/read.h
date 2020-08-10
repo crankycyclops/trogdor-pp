@@ -6,6 +6,7 @@
 
 #include <trogdor/game.h>
 #include <trogdor/entities/player.h>
+#include <trogdor/entities/resource.h>
 #include <trogdor/actions/action.h>
 
 
@@ -27,8 +28,9 @@ namespace trogdor {
             std::weak_ptr<entity::Player>
          > lookupThingByName;
 
-         // Complete the read operation if there's text on the Thing that can be
-         // read.
+         /********************************************************************/
+
+         // Complete the read operation if there's text that can be read.
          inline void read(Game *game, entity::Player *player, entity::Thing *thing) {
 
             std::string text = thing->getMeta("text");
@@ -54,6 +56,61 @@ namespace trogdor {
                {player->getEventListener(), thing->getEventListener()},
                {player, thing}
             });
+         }
+
+         /********************************************************************/
+
+         // Does the same as read() except it reads a resource with an allocated
+         // amount. Takes as input the name of the resource as the player typed
+         // it, the amount the player typed in (might not contain a value), and
+         // the amount currently allocated to the room or the player and uses
+         // those values to determine how much of the resource we're "reading."
+         inline void readResource(
+            Game *game,
+            entity::Player *player,
+            entity::Tangible *depositor,
+            std::string resourceName,
+            std::optional<double> resourceQty
+         ) {
+
+            auto allocation = depositor->getResourceByName(resourceName);
+
+            if (auto resource = allocation.first.lock()) {
+
+               double amount = resolveResourceAmount(
+                  resource.get(),
+                  resourceName,
+                  allocation.second,
+                  resourceQty
+               );
+
+               operateOnResource(resource.get(), depositor, player, amount, [&] {
+
+                  if (!game->event({
+                     "beforeRead",
+                     {player->getEventListener(), resource->getEventListener()},
+                     {player, resource.get(), amount}
+                  })) {
+                     return;
+                  }
+
+                  std::string text = resource->getMeta("text");
+
+                  if (!text.length()) {
+                     player->out("display") << "There's nothing to read." << std::endl;
+                  }
+
+                  else {
+                     player->out("display") << text << std::endl;
+                  }
+
+                  game->event({
+                     "afterRead",
+                     {player->getEventListener(), resource->getEventListener()},
+                     {player, resource.get(), amount}
+                  });
+               });
+            }
          }
 
       public:

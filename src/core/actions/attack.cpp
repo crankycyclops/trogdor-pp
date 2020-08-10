@@ -70,8 +70,19 @@ namespace trogdor {
          }
 
          else if (beings.begin() == beings.end()) {
-            player->out("display") << "There is no " << command.getDirectObject()
-               << " here!" << std::endl;
+
+            if (
+               location->getThingsByName(command.getDirectObject()).size() ||
+               !location->getResourceByName(command.getDirectObject()).first.expired()
+            ) {
+               player->out("display") << "You can't attack that!" << std::endl;
+            }
+
+            else {
+               player->out("display") << "There is no " << command.getDirectObject()
+                  << " here!" << std::endl;
+            }
+
             return;
          }
 
@@ -111,8 +122,8 @@ namespace trogdor {
             lookupWeaponByName.erase(player);
 
             if (!weapon) {
-               player->out("display") << "There is no " << command.getDirectObject()
-                  << " here!" << std::endl;
+               player->out("display") << "You don't have a " << command.getDirectObject()
+                  << '!' << std::endl;
                return;
             }
          }
@@ -122,7 +133,16 @@ namespace trogdor {
             auto items = player->getInventoryObjectsByName(command.getIndirectObject());
 
             if (items.begin() == items.end()) {
-               player->out("display") << "You don't have a " << command.getIndirectObject() << "!" << std::endl;
+
+               if (!player->getResourceByName(command.getIndirectObject()).first.expired()) {
+                  player->out("display") << "You can't attack with that!" << std::endl;
+               }
+
+               else {
+                  player->out("display") << "You don't have a "
+                     << command.getIndirectObject() << '!' << std::endl;
+               }
+
                return;
             }
 

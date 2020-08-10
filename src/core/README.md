@@ -1,4 +1,4 @@
-![Unit Tests](https://github.com/crankycyclops/trogdor-pp/workflows/Unit%20Tests/badge.svg)
+![Core Library Tests](https://github.com/crankycyclops/trogdor-pp/workflows/Core%20Library%20Tests/badge.svg)
 
 # Trogdor++ Core Library
 

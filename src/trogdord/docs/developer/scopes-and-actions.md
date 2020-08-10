@@ -23,6 +23,8 @@ If trogdord were an MVC application, then the scope would be your controller. Sc
 | global | Requests that have an effect on the server as a whole. |
 | game | Requests related to games. |
 | entity | Requests related to entities of any type. |
+| resource | Requests related to entities of type Resource. |
+| tangible | Requests related to entities of type Tangible. |
 | place | Requests related to entities of type Place. |
 | room | Requests related to entities of type Room. |
 | thing | Requests related to entities of type Thing. |

@@ -48,6 +48,9 @@ TEST_SUITE("Command (command.cpp)") {
 		CHECK(0 == command.getDirectObject().compare(""));
 		CHECK(0 == command.getIndirectObject().compare(""));
 		CHECK(0 == command.getPreposition().compare(""));
+
+		CHECK(!command.getDirectObjectQty());
+		CHECK(!command.getIndirectObjectQty());
 	}
 
 	TEST_CASE("Command (command.cpp): Test parsing of verb + single word direct object") {
@@ -62,6 +65,9 @@ TEST_SUITE("Command (command.cpp)") {
 		CHECK(0 == command.getDirectObject().compare("candle"));
 		CHECK(0 == command.getIndirectObject().compare(""));
 		CHECK(0 == command.getPreposition().compare(""));
+
+		CHECK(!command.getDirectObjectQty());
+		CHECK(!command.getIndirectObjectQty());
 	}
 
 	TEST_CASE("Command (command.cpp): Test parsing of verb + filler word + single word direct object") {
@@ -76,6 +82,9 @@ TEST_SUITE("Command (command.cpp)") {
 		CHECK(0 == command.getDirectObject().compare("candle"));
 		CHECK(0 == command.getIndirectObject().compare(""));
 		CHECK(0 == command.getPreposition().compare(""));
+
+		CHECK(!command.getDirectObjectQty());
+		CHECK(!command.getIndirectObjectQty());
 	}
 
 	TEST_CASE("Command (command.cpp): Test parsing of verb + multi-word direct object") {
@@ -90,6 +99,9 @@ TEST_SUITE("Command (command.cpp)") {
 		CHECK(0 == command.getDirectObject().compare("damp candle holder"));
 		CHECK(0 == command.getIndirectObject().compare(""));
 		CHECK(0 == command.getPreposition().compare(""));
+
+		CHECK(!command.getDirectObjectQty());
+		CHECK(!command.getIndirectObjectQty());
 	}
 
 	TEST_CASE("Command (command.cpp): Test parsing of verb + filler word + multi-word direct object") {
@@ -104,6 +116,9 @@ TEST_SUITE("Command (command.cpp)") {
 		CHECK(0 == command.getDirectObject().compare("damp candle holder"));
 		CHECK(0 == command.getIndirectObject().compare(""));
 		CHECK(0 == command.getPreposition().compare(""));
+
+		CHECK(!command.getDirectObjectQty());
+		CHECK(!command.getIndirectObjectQty());
 	}
 
 	TEST_CASE("Command (command.cpp): Test parsing of verb + do + prep + ido") {
@@ -118,6 +133,9 @@ TEST_SUITE("Command (command.cpp)") {
 		CHECK(0 == command.getDirectObject().compare("candle"));
 		CHECK(0 == command.getIndirectObject().compare("wizard"));
 		CHECK(0 == command.getPreposition().compare("from"));
+
+		CHECK(!command.getDirectObjectQty());
+		CHECK(!command.getIndirectObjectQty());
 	}
 
 	TEST_CASE("Command (command.cpp): Test parsing of verb + multi-word do + prep + multi-word ido") {
@@ -132,6 +150,9 @@ TEST_SUITE("Command (command.cpp)") {
 		CHECK(0 == command.getDirectObject().compare("wet candle"));
 		CHECK(0 == command.getIndirectObject().compare("stupid wizard"));
 		CHECK(0 == command.getPreposition().compare("from"));
+
+		CHECK(!command.getDirectObjectQty());
+		CHECK(!command.getIndirectObjectQty());
 	}
 
 	TEST_CASE("Command (command.cpp): Test parsing of verb + filler + multi-word do + prep + filler + multi-word ido") {
@@ -146,6 +167,66 @@ TEST_SUITE("Command (command.cpp)") {
 		CHECK(0 == command.getDirectObject().compare("wet candle"));
 		CHECK(0 == command.getIndirectObject().compare("stupid wizard"));
 		CHECK(0 == command.getPreposition().compare("from"));
+
+		CHECK(!command.getDirectObjectQty());
+		CHECK(!command.getIndirectObjectQty());
+	}
+
+	TEST_CASE("Command (command.cpp): Test parsing of verb + filler + integer do qty + multi-word do + prep + filler + integer ido qty + multi-word ido") {
+
+		trogdor::Vocabulary mockVocab;
+		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+		trogdor::Command command(mockVocab, "take the 3 wet candles from the 2 stupid wizards");
+
+		CHECK(!command.isInvalid());
+		CHECK(!command.isNull());
+		CHECK(0 == command.getVerb().compare("take"));
+		CHECK(0 == command.getDirectObject().compare("wet candles"));
+		CHECK(0 == command.getIndirectObject().compare("stupid wizards"));
+		CHECK(0 == command.getPreposition().compare("from"));
+
+		CHECK(command.getDirectObjectQty());
+		CHECK(command.getIndirectObjectQty());
+		CHECK(3 == *(command.getDirectObjectQty()));
+		CHECK(2 == *(command.getIndirectObjectQty()));
+	}
+
+	TEST_CASE("Command (command.cpp): Test parsing of verb + filler + fractional do qty + multi-word do + prep + filler + fractional ido qty + multi-word ido") {
+
+		trogdor::Vocabulary mockVocab;
+		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+		trogdor::Command command(mockVocab, "take the 3.1 wet candles from the 2.2 stupid wizards");
+
+		CHECK(!command.isInvalid());
+		CHECK(!command.isNull());
+		CHECK(0 == command.getVerb().compare("take"));
+		CHECK(0 == command.getDirectObject().compare("wet candles"));
+		CHECK(0 == command.getIndirectObject().compare("stupid wizards"));
+		CHECK(0 == command.getPreposition().compare("from"));
+
+		CHECK(command.getDirectObjectQty());
+		CHECK(command.getIndirectObjectQty());
+		CHECK(3.1 == *(command.getDirectObjectQty()));
+		CHECK(2.2 == *(command.getIndirectObjectQty()));
+	}
+
+	TEST_CASE("Command (command.cpp): Make sure only the first numeric value of a direct object and indirect object count as a quantity") {
+
+		trogdor::Vocabulary mockVocab;
+		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+		trogdor::Command command(mockVocab, "take the 3 3 wet candles from the 2 2 stupid wizards");
+
+		CHECK(!command.isInvalid());
+		CHECK(!command.isNull());
+		CHECK(0 == command.getVerb().compare("take"));
+		CHECK(0 == command.getDirectObject().compare("3 wet candles"));
+		CHECK(0 == command.getIndirectObject().compare("2 stupid wizards"));
+		CHECK(0 == command.getPreposition().compare("from"));
+
+		CHECK(command.getDirectObjectQty());
+		CHECK(command.getIndirectObjectQty());
+		CHECK(3 == *(command.getDirectObjectQty()));
+		CHECK(2 == *(command.getIndirectObjectQty()));
 	}
 
 	TEST_CASE("Command (command.cpp): Invalid case #1: single word sentence with unrecognized verb") {

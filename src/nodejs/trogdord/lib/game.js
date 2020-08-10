@@ -9,6 +9,7 @@ class Game {
 
 	// Private class definitions for each entity type
 	#EntityTypes = {
+		resource: require('./resource'),
 		room: require('./room'),
 		object: require('./object'),
 		creature: require('./creature'),
@@ -436,6 +437,16 @@ class Game {
 	}
 
 	/**
+	 * Returns a promise that resolves to an array of all tangibles in the game.
+	 *
+	 * @param {Boolean} returnEntities If true, return an array of Tangibles instead of simple objects (optional)
+	 */
+	tangibles(returnEntities = true) {
+
+		return this.#getEntityList('tangible', returnEntities);
+	}
+
+	/**
 	 * Returns a promise that resolves to an array of all places in the game.
 	 *
 	 * @param {Boolean} returnEntities If true, return an array of Places instead of simple objects (optional)
@@ -463,6 +474,16 @@ class Game {
 	beings(returnEntities = true) {
 
 		return this.#getEntityList('being', returnEntities);
+	}
+
+	/**
+	 * Returns a promise that resolves to an array of all resources in the game.
+	 *
+	 * @param {Boolean} returnEntities If true, return an array of Resources instead of simple objects (optional)
+	 */
+	resources(returnEntities = true) {
+
+		return this.#getEntityList('resource', returnEntities);
 	}
 
 	/**

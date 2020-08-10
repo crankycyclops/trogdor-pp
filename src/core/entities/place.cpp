@@ -1,4 +1,4 @@
-#include <algorithm>
+#include <cmath>
 #include <memory>
 
 #include <trogdor/entities/place.h>
@@ -16,7 +16,7 @@
 namespace trogdor::entity {
 
    Place::Place(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Entity(g, n, std::move(o), std::move(e)) {
+   std::unique_ptr<Trogerr> e): Tangible(g, n, std::move(o), std::move(e)) {
 
       types.push_back(ENTITY_PLACE);
       static_cast<PlaceOut *>(outStream.get())->setPlace(this);
@@ -24,7 +24,7 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Place::Place(const Place &p, std::string n): Entity(p, n) {}
+   Place::Place(const Place &p, std::string n): Tangible(p, n) {}
 
    /****************************************************************************/
 
@@ -230,19 +230,69 @@ namespace trogdor::entity {
 
    /****************************************************************************/
 
-   void Place::display(Being *observer, bool displayFull) {
+   void Place::displayResources(Being *observer) {
+
+      for (const auto &resource: getResources()) {
+
+         auto resourcePtr = resource.first.lock();
+
+         if (resourcePtr) {
+
+            observer->out("display") << std::endl;
+
+            // Display quantity as an integer
+            if (resourcePtr->areIntegerAllocationsRequired()) {
+
+               if (1 == std::lround(resource.second)) {
+                  observer->out("display") << "You see a " << resourcePtr->getTitle() << "." << std::endl;
+               }
+
+               else {
+                  observer->out("display") << "You see " << std::lround(resource.second)
+                     << " " << resourcePtr->getPluralTitle() << "." << std::endl;
+               }
+            }
+
+            // Display quantity as a double
+            else {
+               observer->out("display") << "You see " << resource.second << " "
+                  << resourcePtr->getPluralTitle() << "." << std::endl;
+            }
+         }
+      }
+   }
+
+   /****************************************************************************/
+
+   void Place::displayThings(Being *observer) {
+
+      for (const auto &thing: things) {
+
+         // Players should see everything except themselves
+         if (observer != static_cast<Being *>(thing.get())) {
+            observer->out("display") << std::endl;
+            thing->glance(observer->getShared());
+         }
+      }
+   }
+
+   /****************************************************************************/
+
+   void Place::displayPlace(Being *observer, bool displayFull) {
 
       observer->out("location") << getTitle();
       observer->out("location").flush();
 
       observer->out("display") << getTitle() << std::endl << std::endl;
-      Entity::display(observer, displayFull);
+      Tangible::display(observer, displayFull);
+   }
 
-      for_each(things.begin(), things.end(), [&](const std::shared_ptr<Thing> &thing) {
-         if (observer != static_cast<Being *>(thing.get())) { // dirty, but it works
-            observer->out("display") << std::endl;
-            thing->glance(observer->getShared());
-         }
-      });
+   /****************************************************************************/
+
+   void Place::display(Being *observer, bool displayFull) {
+
+      displayPlace(observer, displayFull);
+      displayResources(observer);
+      displayThings(observer);
    }
 }

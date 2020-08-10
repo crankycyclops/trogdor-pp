@@ -20,15 +20,28 @@ namespace trogdor {
    ) {
 
       std::string thingName = command.getDirectObject();
+      std::optional<double> thingAmount = command.getDirectObjectQty();
+
+      if (!thingName.length()) {
+         thingName = command.getIndirectObject();
+         thingAmount = command.getIndirectObjectQty();
+      }
 
       if (auto location = player->getLocation().lock()) {
 
          std::shared_ptr<entity::Player> playerShared = player->getShared();
 
-         if (thingName.length() == 0) {
-            location->observe(player->getShared(), true, true);
+         // Player is reading a resource they possess
+         if (!playerShared->getResourceByName(thingName).first.expired()) {
+            readResource(game, player, player, thingName, thingAmount);
          }
 
+         // Player is reading a resource in the room
+         else if (!location->getResourceByName(thingName).first.expired()) {
+            readResource(game, player, location.get(), thingName, thingAmount);
+         }
+
+         // Player is reading an object
          else {
 
             entity::ThingList items;

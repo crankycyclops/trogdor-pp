@@ -15,6 +15,8 @@ namespace trogdor::entity {
       ENTITY_BEING = 6,
       ENTITY_PLAYER = 7,
       ENTITY_CREATURE = 8,
+      ENTITY_TANGIBLE = 9,
+      ENTITY_RESOURCE = 10
    };
 };
 

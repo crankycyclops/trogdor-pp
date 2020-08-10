@@ -3,10 +3,10 @@
 
 
 #include <trogdor/entities/place.h>
-#include "entity.h"
+#include "tangible.h"
 
 
-class PlaceController: public EntityController {
+class PlaceController: public TangibleController {
 
 	private:
 

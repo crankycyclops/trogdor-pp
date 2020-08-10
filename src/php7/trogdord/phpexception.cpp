@@ -33,15 +33,24 @@ void defineExceptionClasses() {
 	INIT_CLASS_ENTRY(ce, "Trogdord\\EntityNotFound", NULL);
 	EXCEPTION_GLOBALS(entityNotFound) = zend_register_internal_class_ex(&ce, EXCEPTION_GLOBALS(requestException));
 
+	// Thrown if a request refers to a specific resource doesn't exist
+	INIT_CLASS_ENTRY(ce, "Trogdord\\ResourceNotFound", NULL);
+	EXCEPTION_GLOBALS(resourceNotFound) = zend_register_internal_class_ex(&ce, EXCEPTION_GLOBALS(resourceNotFound));
+
+	// Thrown if a request refers to a specific tangible (or any entity type that
+	// inherits from Tangible) in a game but that tangible doesn't exist
+	INIT_CLASS_ENTRY(ce, "Trogdord\\TangibleNotFound", NULL);
+	EXCEPTION_GLOBALS(tangibleNotFound) = zend_register_internal_class_ex(&ce, EXCEPTION_GLOBALS(tangibleNotFound));
+
 	// Thrown if a request refers to a specific place (or any entity type that
 	// inherits from Place) in a game but that place doesn't exist
 	INIT_CLASS_ENTRY(ce, "Trogdord\\PlaceNotFound", NULL);
-	EXCEPTION_GLOBALS(placeNotFound) = zend_register_internal_class_ex(&ce, EXCEPTION_GLOBALS(entityNotFound));
+	EXCEPTION_GLOBALS(placeNotFound) = zend_register_internal_class_ex(&ce, EXCEPTION_GLOBALS(tangibleNotFound));
 
 	// Thrown if a request refers to a specific thing (or any entity type that
 	// inherits from Thing) in a game but that thing doesn't exist
 	INIT_CLASS_ENTRY(ce, "Trogdord\\ThingNotFound", NULL);
-	EXCEPTION_GLOBALS(thingNotFound) = zend_register_internal_class_ex(&ce, EXCEPTION_GLOBALS(entityNotFound));
+	EXCEPTION_GLOBALS(thingNotFound) = zend_register_internal_class_ex(&ce, EXCEPTION_GLOBALS(tangibleNotFound));
 
 	// Thrown if a request refers to a specific being (or any entity type that
 	// inherits from Being) in a game but that being doesn't exist

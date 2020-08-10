@@ -3,6 +3,8 @@
 
 
 #include <unordered_map>
+
+#include <trogdor/entities/player.h>
 #include <trogdor/actions/action.h>
 
 #include <trogdor/exception/beingexception.h>
@@ -26,6 +28,8 @@ namespace trogdor {
             entity::Player *,
             std::weak_ptr<entity::Player>
          > lookupThingByName;
+
+         /********************************************************************/
 
          // Takes the object and adds it to the player's inventory
          inline void take(entity::Player *player, entity::Thing *thing) {
@@ -72,6 +76,124 @@ namespace trogdor {
                         break;
                   }
                }
+            }
+         }
+
+         /********************************************************************/
+
+         inline void takeResource(
+            entity::Player *player,
+            entity::Tangible *depositor,
+            std::string resourceName,
+            std::optional<double> resourceQty
+         ) {
+
+            auto allocation = depositor->getResourceByName(resourceName);
+
+            if (auto resource = allocation.first.lock()) {
+
+               double amount = resolveResourceAmount(
+                  resource.get(),
+                  resourceName,
+                  allocation.second,
+                  resourceQty
+               );
+
+               operateOnResource(resource.get(), depositor, player, amount, [&] {
+
+                  if (auto location = player->getLocation().lock()) {
+
+                     switch (resource->transfer(location, player->getShared(), amount)) {
+
+                        // Transfers must be made in integer amounts
+                        case entity::Resource::FREE_INT_REQUIRED:
+                        case entity::Resource::ALLOCATE_INT_REQUIRED:
+
+                           if (resource->getMessage("resourceIntRequired").length()) {
+                              player->out("display") << resource->getMessage("resourceIntRequired")
+                                 << std::endl;
+                           } else {
+                              player->out("display") << "Please specify a whole number of "
+                                 << resource->getPluralTitle() << '.' << std::endl;
+                           }
+
+                           break;
+
+                        // The transfer would result in the player possessing
+                        // more of the resource than they're allowed to have
+                        case entity::Resource::ALLOCATE_MAX_PER_DEPOSITOR_EXCEEDED:
+
+                           if (resource->getMessage("resourceMaxExceeded").length()) {
+                              player->out("display") << resource->getMessage("resourceMaxExceeded")
+                                 << std::endl;
+                           } else {
+                              player->out("display") << "That would give you "
+                                 << resource->amountToString(player->getResources().find(resource)->second + amount)
+                                 << ' ' << resource->getPluralTitle()
+                                 << " and you're only allowed to possess "
+                                 << resource->amountToString(*resource->getMaxAmountPerDepositor())
+                                 << '.' << std::endl;
+                           }
+
+                           break;
+
+                        // We can't transfer an amount less than or equal to 0
+                        case entity::Resource::FREE_NEGATIVE_VALUE:
+                        case entity::Resource::ALLOCATE_ZERO_OR_NEGATIVE_AMOUNT:
+
+                           if (resource->getMessage("resourceInvalidValue").length()) {
+                              player->out("display") << resource->getMessage("resourceInvalidValue")
+                                 << std::endl;
+                           } else {
+                              player->out("display") << "Please specify an amount greater than zero."
+                                 << std::endl;
+                           }
+
+                           break;
+
+                        // The original holder of the resource doesn't have the
+                        // requested amount
+                        case entity::Resource::FREE_EXCEEDS_ALLOCATION:
+
+                           if (resource->getMessage("resourceRequestTooMuch").length()) {
+                              player->out("display") << resource->getMessage("resourceRequestTooMuch")
+                                 << std::endl;
+                           } else {
+                              player->out("display") << "You can only take "
+                                 << resource->amountToString(allocation.second)
+                                 << ' ' << resource->getPluralTitle() << '.' << std::endl;
+                           }
+
+                           break;
+
+                        // Success!
+                        case entity::Resource::ALLOCATE_OR_FREE_SUCCESS:
+
+                           // Notify every entity in the room that the resource has
+                           // been taken EXCEPT the one who's doing the taking
+                           for (auto const &thing: location->getThings()) {
+                              if (thing.get() != player) {
+                                 thing->out("notifications") << player->getTitle()
+                                    << " takes " << resource->amountToString(amount) << ' '
+                                    << resource->titleToString(amount) << '.' << std::endl;
+                              }
+                           };
+
+                           player->out("display") << "You take "
+                              << resource->amountToString(amount) << ' '
+                              << resource->titleToString(amount) << '.' << std::endl;
+
+                           break;
+
+                        // It's possible we'll get here if ALLOCATE_ABORT is
+                        // returned due to cancellation by the event handler. In
+                        // such a case, we'll let the specific event trigger that
+                        // canceled the allocation handle the explanitory output.
+                        default:
+                           break;
+                     }
+                  }
+               });
             }
          }
 

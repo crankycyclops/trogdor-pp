@@ -76,6 +76,10 @@ namespace trogdor {
 
          switch (e->getType()) {
 
+            case entity::ENTITY_RESOURCE:
+               luaL_getmetatable(L, entity::LuaResource::MetatableName);
+               break;
+
             case entity::ENTITY_ROOM:
                luaL_getmetatable(L, entity::LuaRoom::MetatableName);
                break;

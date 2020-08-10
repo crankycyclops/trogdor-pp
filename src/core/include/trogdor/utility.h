@@ -13,13 +13,22 @@
 namespace trogdor {
 
    /*
+      If a string starts with an alphabetic character, capitalize it. Leading
+      whitespace is ignored when determining if the first character should be
+      capitalized.
+
+      Input: string
+      Output: capitalized version of string
+   */
+   extern std::string capitalize(std::string str);
+
+   /*
       Converts a string to lowercase.
 
       Input: string
       Output: lowercase version of string
    */
    extern std::string strToLower(std::string str);
-
 
    /*
       Trims whitespace from the left of a string.  Shamelessly stolen from:

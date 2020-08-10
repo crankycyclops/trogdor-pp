@@ -13,6 +13,8 @@ ZEND_BEGIN_MODULE_GLOBALS(exception)
 	zend_class_entry *filterException;
 	zend_class_entry *gameNotFound;
 	zend_class_entry *entityNotFound;
+	zend_class_entry *resourceNotFound;
+	zend_class_entry *tangibleNotFound;
 	zend_class_entry *placeNotFound;
 	zend_class_entry *thingNotFound;
 	zend_class_entry *beingNotFound;

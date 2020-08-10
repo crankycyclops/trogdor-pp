@@ -75,6 +75,7 @@ namespace trogdor::entity {
       lua_setfield(L, -2, "__index");
 
       LuaState::luaL_register_wrapper(L, 0, LuaEntity::getMethods());
+      LuaState::luaL_register_wrapper(L, 0, LuaTangible::getMethods());
       LuaState::luaL_register_wrapper(L, 0, methods);
 
       LuaState::luaL_register_wrapper(L, PackageName, functions);

@@ -17,6 +17,8 @@ extern "C" {
 #include <trogdor/lua/api/luagame.h>
 
 #include <trogdor/lua/api/entities/luaentity.h>
+#include <trogdor/lua/api/entities/luaresource.h>
+#include <trogdor/lua/api/entities/luatangible.h>
 #include <trogdor/lua/api/entities/luaplace.h>
 #include <trogdor/lua/api/entities/luaroom.h>
 #include <trogdor/lua/api/entities/luathing.h>

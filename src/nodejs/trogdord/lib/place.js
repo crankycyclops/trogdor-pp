@@ -1,8 +1,8 @@
 'use strict';
 
-const Entity = require('./entity');
+const Tangible = require('./tangible');
 
-class Place extends Entity {
+class Place extends Tangible {
 
 	/**
 	 * Create a new object representing a place inside of a trogdord game.

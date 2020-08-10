@@ -5,14 +5,14 @@
 #include <vector>
 #include <memory>
 
-#include <trogdor/entities/entity.h>
+#include <trogdor/entities/tangible.h>
 #include <trogdor/entities/place.h>
 
 
 namespace trogdor::entity {
 
 
-   class Thing: public Entity {
+   class Thing: public Tangible {
 
       protected:
 
@@ -20,7 +20,7 @@ namespace trogdor::entity {
          std::vector<std::string>  aliases;   // list of aliases
 
          /*
-            Overrides Entity::display() and shows a Thing's description in the
+            Overrides Tangible::display() and shows a Thing's description in the
             proper format.
 
             Input:
@@ -33,7 +33,7 @@ namespace trogdor::entity {
          virtual void display(Being *observer, bool displayFull = false);
 
          /*
-            Overrides Entity::displayShort() and shows a Thing's short
+            Overrides Tangible::displayShort() and shows a Thing's short
             description in the proper format.
 
             Input:

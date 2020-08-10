@@ -128,6 +128,8 @@ namespace trogdor {
          */
          void assertValidASTArguments(const std::shared_ptr<ASTOperationNode> &operation,
          unsigned int numArgs);
+         void assertValidASTArguments(const std::shared_ptr<ASTOperationNode> &operation,
+         unsigned int minNumArgs, unsigned int maxNumArgs);
 
          /*
             Asserts that the correct number of arguments were passed to an AST

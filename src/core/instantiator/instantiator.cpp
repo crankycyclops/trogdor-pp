@@ -26,6 +26,7 @@ namespace trogdor {
       mapGamePropValidators();
 
       // Default Entity classes that should always exist
+      symbols.entityClasses["resource"] = entity::ENTITY_RESOURCE;
       symbols.entityClasses["room"] = entity::ENTITY_ROOM;
       symbols.entityClasses["object"] = entity::ENTITY_OBJECT;
       symbols.entityClasses["creature"] = entity::ENTITY_CREATURE;
@@ -91,6 +92,19 @@ namespace trogdor {
    unsigned int numArgs) {
 
       if (operation->size() != numArgs) {
+         throw ValidationException(
+            ASTOperationNode::getOperationStr(operation->getOperation()) +
+            ": invalid number of arguments. This is a bug."
+         );
+      }
+   }
+
+   /***************************************************************************/
+
+   void Instantiator::assertValidASTArguments(const std::shared_ptr<ASTOperationNode> &operation,
+   unsigned int minNumArgs, unsigned int maxNumArgs) {
+
+      if (operation->size() < minNumArgs || operation->size() > maxNumArgs) {
          throw ValidationException(
             ASTOperationNode::getOperationStr(operation->getOperation()) +
             ": invalid number of arguments. This is a bug."
@@ -262,14 +276,18 @@ namespace trogdor {
       // Validates and adds newly defined Entities to the symbol table
       preOperations[DEFINE_ENTITY] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
 
-         assertValidASTArguments(operation, 3);
+         assertValidASTArguments(operation, 3, 4);
 
          std::string name = operation->getChildren()[0]->getValue();
          std::string className = operation->getChildren()[2]->getValue();
          std::string typeStr = operation->getChildren()[1]->getValue();
          entity::EntityType type = entity::Entity::strToType(typeStr);
 
-         if (entity::ENTITY_UNDEFINED == type) {
+         if (4 == operation->getChildren().size() && type != entity::ENTITY_RESOURCE) {
+            throw ValidationException("Only resources can have a plural name.");
+         }
+
+         else if (entity::ENTITY_UNDEFINED == type) {
             throw ValidationException(std::string("invalid entity type '") +
                operation->getChildren()[1]->getValue() + "'.");
          }
@@ -635,6 +653,25 @@ namespace trogdor {
                   symbols.entityClasses[entityOrClassName]
             );
 
+            if (entityPropValidators.end() == entityPropValidators.find(entityTypeStr)) {
+               throw UndefinedException(std::string(
+                  "Setting property on unsupported entity type: ") +
+                  (operation->getLineNumber() ?
+                  " (line " + std::to_string(operation->getLineNumber()) + ")" : "")
+               );
+            }
+
+            else if (
+               entityPropValidators[entityTypeStr].end() ==
+               entityPropValidators[entityTypeStr].find(property)
+            ) {
+               throw UndefinedException(std::string(
+                  "Attempt to set undefined entity property ") +
+                  (operation->getLineNumber() ?
+                  " (line " + std::to_string(operation->getLineNumber()) + ")" : "")
+               );
+            }
+
             // TODO: entity type is a string for historical reasons, but I'd
             // rather be hashing the enum value instead, so go back and
             // refactor this later
@@ -767,18 +804,21 @@ namespace trogdor {
    void Instantiator::mapEntityPropValidators() {
 
       // An Entity's title
+      entityPropValidators["resource"]["title"] =
       entityPropValidators["room"]["title"] =
       entityPropValidators["object"]["title"] =
       entityPropValidators["creature"]["title"] =
       entityPropValidators["player"]["title"] = assertString;
 
       // An Entity's long description
+      entityPropValidators["resource"]["longDesc"] =
       entityPropValidators["room"]["longDesc"] =
       entityPropValidators["object"]["longDesc"] =
       entityPropValidators["creature"]["longDesc"] =
       entityPropValidators["player"]["longDesc"] = assertString;
 
       // An Entity's short description
+      entityPropValidators["resource"]["shortDesc"] =
       entityPropValidators["room"]["shortDesc"] =
       entityPropValidators["object"]["shortDesc"] =
       entityPropValidators["creature"]["shortDesc"] =
@@ -863,6 +903,19 @@ namespace trogdor {
 
       // How much damage the Object inflicts if it's a weapon
       entityPropValidators["object"]["damage"] = assertInt;
+
+      // A resource's total available amount
+      entityPropValidators["resource"]["amountAvailable"] = assertDouble;
+
+      // Whether or not a resource should only be allocated in integer amounts
+      entityPropValidators["resource"]["requireIntegerAllocations"] = assertBool;
+
+      // The maximum amount of a resource that a tangible entity can possess at
+      // any one time
+      entityPropValidators["resource"]["maxAmountPerDepositor"] = assertDouble;
+
+      // A Resource's plural title
+      entityPropValidators["resource"]["pluralTitle"] = assertString;
    }
 
    /***************************************************************************/

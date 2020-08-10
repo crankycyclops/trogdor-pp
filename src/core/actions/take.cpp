@@ -26,57 +26,70 @@ namespace trogdor {
          std::shared_ptr<entity::Player> playerShared = player->getShared();
          auto roomItems = location->getThingsByName(command.getDirectObject());
 
-         // We're calling this action a second time after asking the user to
-         // supply a unique name out of a list of items with the same alias,
-         // so now we need to lookup the item by name instead of by alias.
-         if (
-            lookupThingByName.end() != lookupThingByName.find(player) &&
-            !lookupThingByName[player].expired() &&
-            lookupThingByName[player].lock() == playerShared
-         ) {
-
-            bool itemFound = false;
-
-            // This list should be pretty small, so I think it's okay to just
-            // iterate through them until we find the right one.
-            for (auto &item: roomItems) {
-               if (0 == command.getDirectObject().compare(item->getName())) {
-                  itemFound = true;
-                  take(player, item);
-                  break;
-               }
-            }
-
-            lookupThingByName.erase(player);
-
-            if (!itemFound) {
-               player->out("display") << "There is no " << command.getDirectObject()
-                  << " here!" << std::endl;
-            }
-         }
-
-         else if (0 == roomItems.size()) {
-            player->out("display") << "There is no " << command.getDirectObject()
-               << " here!" << std::endl;
-            return;
-         }
-
-         else if (roomItems.size() > 1) {
-
-            entity::Entity::clarifyEntity<entity::ThingList>(roomItems, player);
-            lookupThingByName[player] = playerShared;
-
-            player->setInputInterceptor(std::make_unique<std::function<bool(std::string)>>(
-               [player, command](std::string input) -> bool {
-
-                  Command cmd(player->getGame()->getVocabulary(), command.getVerb(), input);
-                  return player->getGame()->executeAction(player, cmd);
-               }
-            ));
+         // Player is taking a resource in the room
+         if (!location->getResourceByName(command.getDirectObject()).first.expired()) {
+            takeResource(
+               player,
+               location.get(),
+               command.getDirectObject(),
+               command.getDirectObjectQty()
+            );
          }
 
          else {
-            take(player, *roomItems.begin());
+
+            // We're calling this action a second time after asking the user to
+            // supply a unique name out of a list of items with the same alias,
+            // so now we need to lookup the item by name instead of by alias.
+            if (
+               lookupThingByName.end() != lookupThingByName.find(player) &&
+               !lookupThingByName[player].expired() &&
+               lookupThingByName[player].lock() == playerShared
+            ) {
+
+               bool itemFound = false;
+
+               // This list should be pretty small, so I think it's okay to just
+               // iterate through them until we find the right one.
+               for (auto &item: roomItems) {
+                  if (0 == command.getDirectObject().compare(item->getName())) {
+                     itemFound = true;
+                     take(player, item);
+                     break;
+                  }
+               }
+
+               lookupThingByName.erase(player);
+
+               if (!itemFound) {
+                  player->out("display") << "There is no " << command.getDirectObject()
+                     << " here!" << std::endl;
+               }
+            }
+
+            else if (0 == roomItems.size()) {
+               player->out("display") << "There is no " << command.getDirectObject()
+                  << " here!" << std::endl;
+               return;
+            }
+
+            else if (roomItems.size() > 1) {
+
+               entity::Entity::clarifyEntity<entity::ThingList>(roomItems, player);
+               lookupThingByName[player] = playerShared;
+
+               player->setInputInterceptor(std::make_unique<std::function<bool(std::string)>>(
+                  [player, command](std::string input) -> bool {
+
+                     Command cmd(player->getGame()->getVocabulary(), command.getVerb(), input);
+                     return player->getGame()->executeAction(player, cmd);
+                  }
+               ));
+            }
+
+            else {
+               take(player, *roomItems.begin());
+            }
          }
       }
    }

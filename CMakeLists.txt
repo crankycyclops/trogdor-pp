@@ -90,6 +90,8 @@ set(CORE_SOURCES
 	src/core/lua/api/entities/luabeing.cpp
 	src/core/lua/api/entities/luacreature.cpp
 	src/core/lua/api/entities/luaentity.cpp
+	src/core/lua/api/entities/luaresource.cpp
+	src/core/lua/api/entities/luatangible.cpp
 	src/core/lua/api/entities/luaobject.cpp
 	src/core/lua/api/entities/luaplace.cpp
 	src/core/lua/api/entities/luaplayer.cpp
@@ -116,6 +118,8 @@ set(CORE_SOURCES
 	src/core/entities/being.cpp
 	src/core/entities/creature.cpp
 	src/core/entities/entity.cpp
+	src/core/entities/resource.cpp
+	src/core/entities/tangible.cpp
 	src/core/entities/object.cpp
 	src/core/entities/place.cpp
 	src/core/entities/player.cpp
@@ -195,6 +199,8 @@ if (Boost_FOUND)
 		src/trogdord/scopes/global.cpp
 		src/trogdord/scopes/game.cpp
 		src/trogdord/scopes/entity.cpp
+		src/trogdord/scopes/resource.cpp
+		src/trogdord/scopes/tangible.cpp
 		src/trogdord/scopes/place.cpp
 		src/trogdord/scopes/room.cpp
 		src/trogdord/scopes/thing.cpp
@@ -330,6 +336,8 @@ add_executable(test_core
 	src/core/test/vocabulary.cpp
 	src/core/test/command.cpp
 	src/core/test/utility.cpp
+	src/core/test/entities/resource.cpp
+	src/core/test/entities/tangible.cpp
 	src/core/test/event/eventlistener.cpp
 	src/core/test/event/triggers/deathdrop.cpp
 	src/core/test/event/triggers/respawn.cpp

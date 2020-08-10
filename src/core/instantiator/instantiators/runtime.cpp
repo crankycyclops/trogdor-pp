@@ -95,7 +95,43 @@ namespace trogdor {
             operation->getChildren()[1]->getValue()
          );
 
+         // Resources optionally take a fourth parameter which is a custom
+         // plural name.
+         std::optional<std::string> plural = std::nullopt;
+
+         if (4 == operation->getChildren().size()) {
+            plural = operation->getChildren()[3]->getValue();
+         }
+
          switch (entityType) {
+
+            case entity::ENTITY_RESOURCE:
+
+               // Entity has no class, so create a blank Entity
+               if (
+                  0 == className.compare("") ||
+                  0 == className.compare(Entity::typeToStr(entity::ENTITY_RESOURCE))
+               ) {
+                  entity = std::make_shared<entity::Resource>(
+                     game,
+                     entityName,
+                     std::nullopt,
+                     std::nullopt,
+                     false,
+                     plural
+                  );
+               }
+
+               // Entity has a class, so copy the class's prototype
+               else {
+                  entity = std::make_shared<entity::Resource>(
+                     *(dynamic_cast<entity::Resource *>(typeClasses[className].get())),
+                     entityName,
+                     plural
+                  );
+               }
+
+               break;
 
             case entity::ENTITY_ROOM:
 
@@ -112,7 +148,8 @@ namespace trogdor {
                // Entity has a class, so copy the class's prototype
                else {
                   entity = std::make_shared<entity::Room>(
-                     *(dynamic_cast<entity::Room *>(typeClasses[className].get())), entityName
+                     *(dynamic_cast<entity::Room *>(typeClasses[className].get())),
+                     entityName
                   );
                }
 
@@ -131,7 +168,8 @@ namespace trogdor {
 
                else {
                   entity = std::make_shared<entity::Object>(
-                     *(dynamic_cast<entity::Object *>(typeClasses[className].get())), entityName
+                     *(dynamic_cast<entity::Object *>(typeClasses[className].get())),
+                     entityName
                   );
                }
 
@@ -151,7 +189,8 @@ namespace trogdor {
 
                else {
                   entity = std::make_shared<entity::Creature>(
-                     *(dynamic_cast<entity::Creature *>(typeClasses[className].get())), entityName
+                     *(dynamic_cast<entity::Creature *>(typeClasses[className].get())),
+                     entityName
                   );
                }
 
@@ -182,6 +221,10 @@ namespace trogdor {
          );
 
          switch (classType) {
+
+            case entity::ENTITY_RESOURCE:
+               entity = std::make_unique<Resource>(game, className);
+               break;
 
             case entity::ENTITY_ROOM:
                entity = std::make_unique<Room>(
@@ -524,6 +567,69 @@ namespace trogdor {
 
          room->setConnection(direction, connectToRoom);
       });
+
+      /**********/
+
+      registerOperation(ALLOCATE_RESOURCE, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         std::string entityName = operation->getChildren()[0]->getValue();
+         std::string resourceName = operation->getChildren()[1]->getValue();
+         std::string amount = operation->getChildren()[2]->getValue();
+
+         if (!isValidDouble(amount)) {
+            throw ValidationException("resource allocation: amount must be a valid integer or floating point value");
+         }
+
+         auto status = game->getResource(resourceName)->allocate(
+            game->getTangible(entityName),
+            stod(amount)
+         );
+
+         switch (status) {
+
+            case entity::Resource::ALLOCATE_OR_FREE_SUCCESS:
+            case entity::Resource::ALLOCATE_OR_FREE_ABORT:
+               return;
+
+            case entity::Resource::ALLOCATE_INT_REQUIRED:
+               throw ValidationException(
+                  std::string("can only allocate '") + resourceName + "' to '" +
+                  entityName + "' in integer amounts (line "
+                  + std::to_string(operation->getLineNumber()) + ")"
+               );
+
+            case entity::Resource::ALLOCATE_MAX_PER_DEPOSITOR_EXCEEDED:
+               throw ValidationException(
+                  std::string("cannot allocate ") + amount + " of '"
+                  + resourceName + "' to '" + entityName
+                  + "' because it exceeds the amount a tangible entity is allowed to possess (line "
+                  + std::to_string(operation->getLineNumber()) + ")"
+               );
+
+            case entity::Resource::ALLOCATE_TOTAL_AMOUNT_EXCEEDED:
+               throw ValidationException(
+                  std::string("cannot allocate ") + amount + " of '"
+                  + resourceName + "' to '" + entityName
+                  + "' because it exceeds the total amount of the resource that's available (line "
+                  + std::to_string(operation->getLineNumber()) + ")"
+               );
+
+            case entity::Resource::ALLOCATE_ZERO_OR_NEGATIVE_AMOUNT:
+               throw ValidationException(
+                  std::string("cannot allocate a zero or negative amount of '")
+                  + resourceName + "' to '" + entityName + "' (line "
+                  + std::to_string(operation->getLineNumber()) + ")"
+               );
+
+            default:
+               throw ValidationException(
+                  std::string("unknown error occurred when attempting to allocate '")
+                  + resourceName + "' to '" + entityName + "' (line "
+                  + std::to_string(operation->getLineNumber()) + ")"
+               );
+         }
+      });
    }
 
    /***************************************************************************/
@@ -551,6 +657,7 @@ namespace trogdor {
    void Runtime::mapEntitySetters() {
 
       // Set Entity title (all types)
+      propSetters["resource"]["title"] =
       propSetters["room"]["title"] =
       propSetters["object"]["title"] =
       propSetters["creature"]["title"] =
@@ -562,6 +669,7 @@ namespace trogdor {
       /**********/
 
       // Set Entity's long description (all types)
+      propSetters["resource"]["longDesc"] =
       propSetters["room"]["longDesc"] =
       propSetters["object"]["longDesc"] =
       propSetters["creature"]["longDesc"] =
@@ -573,6 +681,7 @@ namespace trogdor {
       /**********/
 
       // Set Entity's short description (all types)
+      propSetters["resource"]["shortDesc"] =
       propSetters["room"]["shortDesc"] =
       propSetters["object"]["shortDesc"] =
       propSetters["creature"]["shortDesc"] =
@@ -780,6 +889,43 @@ namespace trogdor {
       propSetters["object"]["damage"] = [](Game *game, entity::Entity *object,
       std::string value) {
          dynamic_cast<entity::Object *>(object)->setDamage(stoi(value));
+      };
+
+      /**********/
+
+      propSetters["resource"]["amountAvailable"] = [](Game *game, entity::Entity *resource,
+      std::string value) {
+
+         if (!dynamic_cast<entity::Resource *>(resource)->setAmountAvailable(stod(value))) {
+            throw ValidationException(
+               "Some tangible entity possesses more of the '" +
+               resource->getName() + "' than is allowed."
+            );
+         }
+      };
+
+      /**********/
+
+      propSetters["resource"]["requireIntegerAllocations"] = [](Game *game, entity::Entity *resource,
+      std::string value) {
+
+         dynamic_cast<entity::Resource *>(resource)->setRequireIntegerAllocations(stoi(value));
+      };
+
+      /**********/
+
+      propSetters["resource"]["maxAmountPerDepositor"] = [](Game *game, entity::Entity *resource,
+      std::string value) {
+
+         dynamic_cast<entity::Resource *>(resource)->setMaxAmountPerDepositor(stod(value));
+      };
+
+      /**********/
+
+      propSetters["resource"]["pluralTitle"] = [](Game *game, entity::Entity *resource,
+      std::string value) {
+
+         dynamic_cast<entity::Resource *>(resource)->setPluralTitle(value);
       };
    }
 }

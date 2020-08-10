@@ -1,5 +1,6 @@
 #include "entity.h"
 
+#include "resource.h"
 #include "room.h"
 #include "object.h"
 #include "creature.h"
@@ -18,6 +19,7 @@ ZEND_DECLARE_MODULE_GLOBALS(entity);
 
 ZEND_EXTERN_MODULE_GLOBALS(trogdord);
 ZEND_EXTERN_MODULE_GLOBALS(game);
+ZEND_EXTERN_MODULE_GLOBALS(resource);
 ZEND_EXTERN_MODULE_GLOBALS(room);
 ZEND_EXTERN_MODULE_GLOBALS(object);
 ZEND_EXTERN_MODULE_GLOBALS(creature);
@@ -31,9 +33,11 @@ const char *GAME_PROPERTY_NAME = "game";
 
 // String representations of each entity type
 const char *ENTITY_TYPE_STR = "entity";
+const char *TANGIBLE_TYPE_STR = "tangible";
 const char *PLACE_TYPE_STR = "place";
 const char *THING_TYPE_STR = "thing";
 const char *BEING_TYPE_STR = "being";
+const char *RESOURCE_TYPE_STR = "resource";
 const char *ROOM_TYPE_STR = "room";
 const char *OBJECT_TYPE_STR = "object";
 const char *CREATURE_TYPE_STR = "creature";
@@ -244,8 +248,12 @@ bool createEntityObj(zval *entityObj, Value &properties, zval *gameObj) {
 	// Ignore cppcheck's flagging of this as a syntax error
 	if (
 		std::string eType = properties["type"].GetString();
-		0 == eType.compare(ROOM_TYPE_STR)
+		0 == eType.compare(RESOURCE_TYPE_STR)
 	) {
+		eClassEntry = RESOURCE_GLOBALS(classEntry);
+	}
+
+	else if (0 == eType.compare(ROOM_TYPE_STR)) {
 		eClassEntry = ROOM_GLOBALS(classEntry);
 	}
 

@@ -8,7 +8,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include <trogdor/entities/entity.h>
+#include <trogdor/entities/tangible.h>
 
 
 namespace trogdor::entity {
@@ -22,7 +22,7 @@ namespace trogdor::entity {
    class Object;
 
 
-   class Place: public Entity {
+   class Place: public Tangible {
 
       protected:
 
@@ -41,7 +41,41 @@ namespace trogdor::entity {
          std::unordered_map<std::string, std::list<Object *>>   objectsByName;
 
          /*
-            Overrides Entity::display() and shows a Place's description in the
+            Display all Resources currently allocated to the Place.
+
+            Input:
+               Being observing the Place (Being *)
+
+            Output:
+               (none)
+         */
+         void displayResources(Being *observer);
+
+         /*
+            Display all Things inside the Place.
+
+            Input:
+               Being observing the Place (Being *)
+
+            Output:
+               (none)
+         */
+         void displayThings(Being *observer);
+
+         /*
+            Show just the Place's description (called by Place::display.)
+
+            Input:
+               Being observing the Place (Being *)
+               Whether or not to show the full description (bool)
+
+            Output:
+               (none)
+         */
+         void displayPlace(Being *observer, bool displayFull);
+
+         /*
+            Overrides Tangible::display() and shows a Place's description in the
             proper format.
 
             Input:

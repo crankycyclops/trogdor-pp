@@ -39,9 +39,11 @@ extern const char *GAME_PROPERTY_NAME;
 
 // String representations of each entity type
 extern const char *ENTITY_TYPE_STR;
+extern const char *TANGIBLE_TYPE_STR;
 extern const char *PLACE_TYPE_STR;
 extern const char *THING_TYPE_STR;
 extern const char *BEING_TYPE_STR;
+extern const char *RESOURCE_TYPE_STR;
 extern const char *ROOM_TYPE_STR;
 extern const char *OBJECT_TYPE_STR;
 extern const char *CREATURE_TYPE_STR;

@@ -551,6 +551,14 @@ To the north, you see a dark hole in the wall big enough to walk through.
             <object>sword</object>
          </contains>
 
+         <!-- One or more resources can be allocated to a room, creature, or
+              object using the optional <resources> section. -->
+         <resources>
+            <!-- Resources can be allocated in whole number or floating point
+            amounts. -->
+            <resource name="coin">15</resource>
+         </resources>
+
       </room>
 
       <room name="mysticalhall">
@@ -611,6 +619,110 @@ You find yourself in a dark secluded chamber.  It's dank, musty and generally ic
       </room>
 
    </rooms>
+
+
+   <!-- Game Resources -->
+   <resources>
+
+      <!-- Resources are special kinds of entities that can be allocated in
+           various amounts to players, creatures, and rooms in the game. One
+           example of a resource might be a kind of in-game currency (in the
+           example in this file, we'll use the name "coin") to illustrate that
+           point.
+
+           Like most other entities in the game, you can also set a title,
+           short description, meta data, event handlers, and custom messages.
+
+           Resource names should ordinarily be defined in the singular case. The
+           plural attribute is optional; if it's missing, the enine will attempt
+           to intuit the plural case automatically. -->
+      <resource name="coin" plural="coins">
+
+         <!-- If set to true (a value of 1), this will require all allocations
+              of the resource to be made in integer increments only. For example,
+              an entity can be assigned 10 of the resource, but not 10.5. By
+              default, this is set to false (a value of 0), which allows numbers
+              with fractional parts. Since this example is a discreet value
+              (an integer number of coins), we'll set this to true. -->
+         <integer>1</integer>
+
+         <!-- If this setting is enabled, it determines how much of the resource
+              is available to allocate to other entites in the game. Once this
+              value has been reached, no more of the resource is available until
+              an entity releases their amount. This value can be an integer
+              (ex: 5) or a floating point value (ex: 10.5). By default, this
+              setting is disabled.
+         <amount>10</amount>
+         -->
+
+         <!-- If this setting is enabled, the value will set the maximum amount
+              of the resource that can be held by a creature, player, or room.
+              By default, this setting is disabled.
+         <maxallocation>10</maxallocation>
+         -->
+
+         <!-- Like most other entities in the game, resources can have
+              descriptions that the player will see when they look at the
+              resource. The description the player gets to read will be the same
+              whether they're looking at a plural or singular amount of the
+              resource, but for resources, the following template parameters can
+              be specified to alter the text depending on the case:
+
+              {%title} -> singular or plural title ({%Title} for capitalized version)
+              {%name} -> singular or plural name ({%Name} for capitalized version)
+              {%a} or {%A} -> the appropriate indefinite article: "a" or "some"
+              {%an} or {%An} -> the appropriate indefinite article: "an" or "some"
+              {%it} or {%It} -> the appropriate pronoun: "it" or "they"
+              {%its} or {%Its} -> the appropriate choice between "it's" and "they're"
+
+              In the example below, the following descriptions would be shown to
+              the user depending on if they're seeing it in the singular or the
+              plural:
+
+              "It's shiny and worth a LOT of money!" (singular)
+              "They're shiny and worth a LOT of money!" (plural)
+
+              The same parameters can be used in the <short> description tag. -->
+         <description>
+{%Its} shiny and worth a LOT of money!
+         </description>
+
+         <!-- Like other entities in the game, you can override how a resource is
+              displayed to a player so that, instead of seeing its name, the
+              player sees a more rich description. Unlike inherently singular
+              entities like objects, however, resources can be shown either in
+              the singular case or in the plural. If you don't specify a plural
+              name, the engine will attempt to pluralize it for you. This is not,
+              however, the case with titles, because the noun that needs to be
+              pluralized could potentially fall somewhere other than at the end,
+              making automatic pluralization impossible (at least for now).
+              Instead, if you choose to override the name with a title, you
+              pair that title with a plural version using the pluralTitle tag. -->
+         <title>gold coin</title>
+         <pluralTitle>gold coins</pluralTitle>
+
+         <!-- Like with objects, setting the "text" meta value will allow the
+         player to read a resource in their inventory or in the room they
+         currently occupy. The engine currently does not distinguish between
+         singular and plural instances of the resource, so any text you want the
+         player to read should apply equally well to both cases.
+
+         In this example, "read coin" or "read coins" will output this block of
+         text. -->
+         <meta>
+            <text>Each coin is inscribed with the noble words, "In unicorns we trust."</text>
+         </meta>
+
+         <tags>
+            <!-- If the ephemeral tag is set on a resource, the amount held by
+                 a player will disappear when it's dropped instead of appearing
+                 in the room where the player dropped it. -->
+            <!-- <tag>ephemeral</tag> -->
+         </tags>
+
+      </resource>
+
+   </resources>
 
 
 </game>

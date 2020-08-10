@@ -32,6 +32,8 @@ namespace trogdor {
             std::weak_ptr<entity::Player>
          > lookupWeaponByName;
 
+         /********************************************************************/
+
          // The player has decided to kill himself. What a shame.
          inline void commitSuicide(entity::Player *player) {
 

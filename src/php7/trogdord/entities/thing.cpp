@@ -18,6 +18,6 @@ void defineThingClass() {
 	zend_class_entry thingClass;
 
 	INIT_CLASS_ENTRY(thingClass, "Trogdord\\Thing", thingMethods);
-	THING_GLOBALS(classEntry) = zend_register_internal_class_ex(&thingClass, ENTITY_GLOBALS(classEntry));
+	THING_GLOBALS(classEntry) = zend_register_internal_class_ex(&thingClass, TANGIBLE_GLOBALS(classEntry));
 	THING_GLOBALS(classEntry)->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 }

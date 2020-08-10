@@ -8,6 +8,7 @@
 
 #include "include/scopes/global.h"
 #include "include/scopes/game.h"
+#include "include/scopes/resource.h"
 #include "include/scopes/room.h"
 #include "include/scopes/object.h"
 #include "include/scopes/creature.h"
@@ -41,6 +42,8 @@ Dispatcher::Dispatcher() {
 	scopes[GlobalController::SCOPE] = GlobalController::get().get();
 	scopes[GameController::SCOPE] = GameController::get().get();
 	scopes[EntityController::SCOPE] = EntityController::get().get();
+	scopes[ResourceController::SCOPE] = ResourceController::get().get();
+	scopes[TangibleController::SCOPE] = TangibleController::get().get();
 	scopes[PlaceController::SCOPE] = PlaceController::get().get();
 	scopes[RoomController::SCOPE] = RoomController::get().get();
 	scopes[ThingController::SCOPE] = ThingController::get().get();

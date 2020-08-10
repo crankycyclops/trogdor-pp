@@ -25,6 +25,7 @@ namespace trogdor {
       std::string name,
       std::string className,
       entity::EntityType type,
+      std::optional<std::string> plural,
       int lineno
    ) {
 
@@ -78,7 +79,21 @@ namespace trogdor {
       // that AST node to make sure it contains the correct class and then
       // remove the unresolved reference.
       if (unresolvedEntityReferences.end() != unresolvedEntityReferences.find(name)) {
+
          unresolvedEntityReferences[name].first->getChildren()[2]->updateValue(className);
+
+         // Resource types might also have a fourth optional AST parameter to
+         // specify a custom plural name
+         if (plural) {
+            unresolvedEntityReferences[name].first->appendChild(
+               std::make_shared<ASTNode>(
+                  *plural,
+                  AST_VALUE,
+                  lineno
+               )
+            );
+         }
+
          unresolvedEntityReferences.erase(name);
       }
 
@@ -87,7 +102,8 @@ namespace trogdor {
             name,
             className,
             type,
-            lineno
+            lineno,
+            plural
          );
       }
 
@@ -132,7 +148,8 @@ namespace trogdor {
       std::string name,
       std::string className,
       entity::EntityType type,
-      int lineno
+      int lineno,
+      std::optional<std::string> plural
    ) {
 
       std::string defaultTitle = entity::ENTITY_OBJECT == type ?
@@ -142,6 +159,7 @@ namespace trogdor {
          name,
          entity::Entity::typeToStr(type),
          className,
+         plural,
          lineno
       ));
 
@@ -274,6 +292,10 @@ namespace trogdor {
             parseRooms();
          }
 
+         else if (0 == getTagName().compare("resources")) {
+            parseResources();
+         }
+
          else {
             throw ParseException(std::string("invalid section: <") + getTagName() + ">");
          }
@@ -298,6 +320,10 @@ namespace trogdor {
 
          else if (0 == getTagName().compare("creatures")) {
             parseClassesCreatures();
+         }
+
+         else if (0 == getTagName().compare("resources")) {
+            parseClassesResources();
          }
 
          else {
@@ -406,6 +432,39 @@ namespace trogdor {
 
       // Don't pass creature! It's been moved and is no longer a valid pointer.
       parseCreatureProperties(name, "class", 4);
+      checkClosingTag(name);
+   }
+
+   /***************************************************************************/
+
+   void XMLParser::parseClassesResources() {
+
+      while (nextTag() && 3 == getDepth()) {
+         parseClassesResource();
+      }
+
+      checkClosingTag("resources");
+   }
+
+   /***************************************************************************/
+
+   void XMLParser::parseClassesResource() {
+
+      std::string name = getTagName();
+
+      if (isClassNameReserved(name)) {
+         throw ParseException(std::string("class name '") + name + "' is reserved");
+      }
+
+      declaredEntityClasses[name] = entity::ENTITY_RESOURCE;
+
+      ast->appendChild(ASTDefineEntityClass(
+         name,
+         entity::Entity::typeToStr(entity::ENTITY_RESOURCE),
+         xmlTextReaderGetParserLineNumber(reader)
+      ));
+
+      parseResourceProperties(name, "class", 4);
       checkClosingTag(name);
    }
 
@@ -778,6 +837,7 @@ namespace trogdor {
          name,
          className,
          entity::ENTITY_OBJECT,
+         std::nullopt,
          xmlTextReaderGetParserLineNumber(reader)
       );
 
@@ -816,6 +876,15 @@ namespace trogdor {
 
          else if (0 == tag.compare("events")) {
             parseEvents(name, targetType, depth + 1);
+         }
+
+         else if (0 == tag.compare("resources")) {
+
+            if (0 != targetType.compare("entity")) {
+               throw ParseException("Cannot allocate resources to a class");
+            }
+
+            parseTangibleResources(name, depth + 1);
          }
 
          else if (tagToProperty.find(tag) != tagToProperty.end()) {
@@ -948,6 +1017,7 @@ namespace trogdor {
          name,
          className,
          entity::ENTITY_CREATURE,
+         std::nullopt,
          xmlTextReaderGetParserLineNumber(reader)
       );
 
@@ -1008,6 +1078,15 @@ namespace trogdor {
 
          else if (0 == tag.compare("events")) {
             parseEvents(name, targetType, depth + 1);
+         }
+
+         else if (0 == tag.compare("resources")) {
+
+            if (0 != targetType.compare("entity")) {
+               throw ParseException("Cannot allocate resources to a class");
+            }
+
+            parseTangibleResources(name, depth + 1);
          }
 
          else if (tagToProperty.find(tag) != tagToProperty.end()) {
@@ -1074,6 +1153,7 @@ namespace trogdor {
          name,
          className,
          entity::ENTITY_ROOM,
+         std::nullopt,
          xmlTextReaderGetParserLineNumber(reader)
       );
 
@@ -1119,6 +1199,15 @@ namespace trogdor {
 
          else if (0 == tag.compare("events")) {
             parseEvents(name, targetType, depth + 1);
+         }
+
+         else if (0 == tag.compare("resources")) {
+
+            if (0 != targetType.compare("entity")) {
+               throw ParseException("Cannot allocate resources to a class");
+            }
+
+            parseTangibleResources(name, depth + 1);
          }
 
          else if (tagToProperty.find(tag) != tagToProperty.end()) {
@@ -1469,6 +1558,143 @@ namespace trogdor {
 
    /***************************************************************************/
 
+   void XMLParser::parseResources() {
+
+      while (nextTag() && 2 == getDepth()) {
+
+         if (0 == getTagName().compare("resource")) {
+            parseResource();
+         }
+
+         else if (entityClassDeclared(getTagName(), entity::ENTITY_RESOURCE)) {
+            parseResource(getTagName());
+         }
+
+         else {
+            throw ParseException(std::string("invalid tag <") + getTagName()
+               + "> in <resources>");
+         }
+      }
+
+      checkClosingTag("resources");
+   }
+
+   /***************************************************************************/
+
+   void XMLParser::parseResource(std::string className) {
+
+      std::string name = getAttribute("name");
+      std::optional<std::string> plural = getOptionalAttribute("plural");
+
+      declareEntity(
+         name,
+         className,
+         entity::ENTITY_RESOURCE,
+         plural,
+         xmlTextReaderGetParserLineNumber(reader)
+      );
+
+      parseResourceProperties(name, "entity", 3);
+      checkClosingTag(className);
+   }
+
+   /***************************************************************************/
+
+   void XMLParser::parseResourceProperties(std::string name, std::string targetType, int depth) {
+
+      static std::unordered_map<std::string, std::string> tagToProperty({
+         {"title", "title"}, {"pluraltitle", "pluralTitle"},
+         {"description", "longDesc"}, {"short", "shortDesc"},
+         {"integer", "requireIntegerAllocations"}, {"amount", "amountAvailable"},
+         {"maxallocation", "maxAmountPerDepositor"}
+      });
+
+      while (nextTag() && depth == getDepth()) {
+
+         std::string tag = getTagName();
+
+         if (0 == tag.compare("meta")) {
+            parseEntityMeta(name, targetType, depth + 1);
+         }
+
+         else if (0 == tag.compare("messages")) {
+            parseMessages(name, targetType, depth + 1);
+         }
+
+         else if (0 == tag.compare("tags")) {
+            parseEntityTags(name, targetType, depth + 1);
+         }
+
+         else if (0 == tag.compare("events")) {
+            parseEvents(name, targetType, depth + 1);
+         }
+
+         else if (tagToProperty.find(tag) != tagToProperty.end()) {
+
+            std::string value = parseString();
+
+            ast->appendChild(ASTSetProperty(
+               targetType,
+               tagToProperty[tag],
+               value,
+               xmlTextReaderGetParserLineNumber(reader),
+               name
+            ));
+
+            checkClosingTag(tag);
+         }
+
+         else {
+            throw ParseException(std::string("invalid tag <") + tag
+               + "> in resource or class definition");
+         }
+      }
+   }
+
+   /***************************************************************************/
+
+   void XMLParser::parseTangibleResources(std::string entityName, int depth) {
+
+      while (nextTag() && depth == getDepth()) {
+
+         if (0 == getTagName().compare("resource")) {
+
+            std::string resourceName = getAttribute("name");
+            std::string resourceAmount = parseString();
+
+            trim(resourceAmount);
+
+            if (!resourceAmount.length()) {
+               throw ParseException("resource allocation: expected numeric value but got an empty string");
+            }
+
+            setUnresolvedEntityReference(
+               resourceName,
+               entity::Entity::typeToStr(entity::ENTITY_RESOURCE),
+               entity::ENTITY_RESOURCE,
+               xmlTextReaderGetParserLineNumber(reader)
+            );
+
+            ast->appendChild(ASTAllocateResource(
+               entityName,
+               resourceName,
+               resourceAmount,
+               xmlTextReaderGetParserLineNumber(reader)
+            ));
+
+            checkClosingTag("resource");
+         }
+
+         else {
+            throw ParseException("expected <resource> in <resources>");
+         }
+      }
+
+      checkClosingTag("resources");
+   }
+
+   /***************************************************************************/
+
    std::string XMLParser::parseString() {
 
       std::string value = getNodeValue();
@@ -1522,17 +1748,30 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   std::string XMLParser::getAttribute(const char *name) {
+   std::optional<std::string> XMLParser::getOptionalAttribute(const char *name) {
 
       const char *attr;
 
       attr = (const char *)xmlTextReaderGetAttribute(reader, (xmlChar *)name);
 
       if (!attr) {
-         throw ParseException(std::string("missing attribute '") + name);
+         return std::nullopt;
       }
 
       return attr;
+   }
+
+   /***************************************************************************/
+
+   std::string XMLParser::getAttribute(const char *name) {
+
+      std::optional<std::string> attr = getOptionalAttribute(name);
+
+      if (!attr) {
+         throw ParseException(std::string("missing attribute '") + name);
+      }
+
+      return *attr;
    }
 
    /***************************************************************************/

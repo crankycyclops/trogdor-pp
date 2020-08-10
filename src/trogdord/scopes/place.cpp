@@ -53,7 +53,7 @@ std::vector<trogdor::entity::Entity *> PlaceController::getEntityPtrList(
 
 /*****************************************************************************/
 
-PlaceController::PlaceController(): EntityController() {
+PlaceController::PlaceController(): TangibleController() {
 
 }
 

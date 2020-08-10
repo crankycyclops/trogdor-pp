@@ -15,6 +15,8 @@ namespace trogdor::entity {
    const char *Entity::DEFAULT_OUTPUT_CHANNEL = "notifications";
 
    // Special empty lists used for returning results when no result exists
+   ResourceList  emptyResourceList;
+   TangibleList  emptyTangibleList;
    PlaceList     emptyPlaceList;
    RoomList      emptyRoomList;
    ThingList     emptyThingList;
@@ -190,82 +192,11 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   void Entity::display(Being *observer, bool displayFull) {
-
-      std::shared_ptr<Being> observerShared = observer->getShared();
-
-      if (!observedBy(observerShared) || displayFull) {
-         if (ENTITY_PLAYER == observer->getType()) {
-            observer->out("display") << getLongDescription() << std::endl;
-         }
-      }
-
-      else {
-         displayShort(observer);
-      }
-   }
-
-   /***************************************************************************/
-
    void Entity::displayShort(Being *observer) {
 
       if (ENTITY_PLAYER == observer->getType()
       && getShortDescription().length() > 0) {
          observer->out("display") << getShortDescription() << std::endl;
-      }
-   }
-
-   /***************************************************************************/
-
-   void Entity::observe(const std::shared_ptr<Being> &observer, bool triggerEvents, bool displayFull) {
-
-      if (triggerEvents && !game->event({
-         "beforeObserve",
-         {triggers.get(), observer->getEventListener()},
-         {this, observer.get()}
-      })) {
-         return;
-      }
-
-      display(observer, displayFull);
-
-      mutex.lock();
-      observedByMap.insert(observer);
-      mutex.unlock();
-
-      if (triggerEvents) {
-         game->event({
-            "afterObserve",
-            {triggers.get(), observer->getEventListener()},
-            {this, observer.get()}
-         });
-      }
-   }
-
-   /***************************************************************************/
-
-   void Entity::glance(const std::shared_ptr<Being> &observer, bool triggerEvents) {
-
-      if (triggerEvents && !game->event({
-         "beforeGlance",
-         {triggers.get(), observer->getEventListener()},
-         {this, observer.get()}
-      })) {
-         return;
-      }
-
-      displayShort(observer);
-
-      mutex.lock();
-      glancedByMap.insert(observer);
-      mutex.unlock();
-
-      if (triggerEvents) {
-         game->event({
-            "afterGlance",
-            {triggers.get(), observer->getEventListener()},
-            {this, observer.get()}
-         });
       }
    }
 }

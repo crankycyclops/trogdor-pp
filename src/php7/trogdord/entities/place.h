@@ -1,7 +1,7 @@
 #ifndef PHP_PLACE_H
 #define PHP_PLACE_H
 
-#include "entity.h"
+#include "tangible.h"
 
 // For an explanation of what I'm doing here, see:
 // https://www.php.net/manual/en/internals2.structure.globals.php
@@ -15,7 +15,7 @@ ZEND_END_MODULE_GLOBALS(place)
 #define PLACE_GLOBALS(v) (place_globals.v)
 #endif
 
-ZEND_EXTERN_MODULE_GLOBALS(entity);
+ZEND_EXTERN_MODULE_GLOBALS(tangible);
 
 /*****************************************************************************/
 

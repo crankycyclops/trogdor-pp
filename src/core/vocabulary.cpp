@@ -100,6 +100,9 @@ namespace trogdor {
    void Vocabulary::initBuiltinFillerWords() {
 
       fillerWords.insert("the");
+      fillerWords.insert("a");
+      fillerWords.insert("an");
+      fillerWords.insert("some");
    }
 
    /**************************************************************************/
@@ -190,6 +193,9 @@ namespace trogdor {
       insertVerbSynonym("show", "look");
       insertVerbSynonym("describe", "look");
       insertVerbSynonym("examine", "look");
+
+      // A fun Easter egg that *nix users will readily recognize :)
+      insertVerbSynonym("ls", "look");
 
       insertVerbAction("read", std::make_unique<ReadAction>());
 

@@ -3,6 +3,7 @@
 
 
 #include <memory>
+#include <optional>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -94,6 +95,7 @@ namespace trogdor {
                Entity name (std::string)
                Entity class name (std::string)
                Entity type (entity::EntityType)
+               Entity's plural name, for Resource type only (std::optional<std::string>)
                Line number (int)
 
             Output:
@@ -103,6 +105,7 @@ namespace trogdor {
             std::string name,
             std::string className,
             entity::EntityType type,
+            std::optional<std::string> plural,
             int lineno
          );
 
@@ -132,6 +135,7 @@ namespace trogdor {
                Entity name (std::string)
                Entity class name (std::string)
                Entity type (entity::EntityType)
+               Entity's plural name for Resource type only (std::optional<std::string>)
                Line number (int)
 
             Output:
@@ -141,7 +145,8 @@ namespace trogdor {
             std::string name,
             std::string className,
             entity::EntityType type,
-            int lineno
+            int lineno,
+            std::optional<std::string> plural = std::nullopt
          );
 
          /*
@@ -202,12 +207,38 @@ namespace trogdor {
                left to parse.
 
             Exceptions:
-               Exception is thrown if the next tag isn't opening or there's a
-               parse error.
+               ParseException is thrown if the next tag isn't opening or there's
+               a parse error.
          */
          bool nextTag();
 
+         /*
+            Gets the value of the specified attribute.
+
+            Input:
+               Attribute name (const C string)
+
+            Output:
+               Attribute value (std::string)
+
+            Exceptions:
+               ParseException is thrown if the attribute isn't set.
+         */
          std::string getAttribute(const char *name);
+
+         /*
+            Gets the value of the specified attribute. Since the attribute is
+            optional, this does not throw an exception if the attribute isn't
+            set but returns std::nullopt instead.
+
+            Input:
+               Attribute name (const C string)
+
+            Output:
+               Attribute value if it's set and std::nullopt if it's not
+               (std::optional<std::string>)
+         */
+         std::optional<std::string> getOptionalAttribute(const char *name);
 
          /*
             Returns the raw value of an XML tag.  Should not be called directly,
@@ -426,6 +457,8 @@ namespace trogdor {
          void parseClassesObject();
          void parseClassesCreatures();
          void parseClassesCreature();
+         void parseClassesResources();
+         void parseClassesResource();
 
          /*
             This group of functions parses the <introduction> section of the XML
@@ -547,6 +580,30 @@ namespace trogdor {
          void parseRooms();
          void parseRoom(std::string className = "room");
          void parseRoomProperties(std::string name, std::string targetType, int depth);
+
+         /*
+            Parses resource definitions in game.xml.
+
+            Input:
+               Tag that closes the room definition
+
+            Output:
+               (none)
+         */
+         void parseResources();
+         void parseResource(std::string className = "resource");
+         void parseResourceProperties(std::string name, std::string targetType, int depth);
+
+         /*
+            Parses a tangible entity's resource allocation section.
+
+            Input:
+               The entity name
+
+            Output:
+               (none)
+         */
+         void parseTangibleResources(std::string entityName, int depth);
 
          /*
             Parses the <game> section of the XML file.  Throws an exception if
