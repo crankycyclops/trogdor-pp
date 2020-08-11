@@ -416,7 +416,7 @@ namespace trogdor {
       registerOperation(SET_ALIAS, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         entity::Entity *thing;
+         entity::Entity *thing = nullptr;
 
          std::string targetType = operation->getChildren()[0]->getValue();
          std::string alias = operation->getChildren()[1]->getValue();
@@ -431,7 +431,11 @@ namespace trogdor {
             thing = typeClasses[operation->getChildren()[2]->getValue()].get();
          }
 
-         dynamic_cast<entity::Thing *>(thing)->addAlias(alias);
+         if (thing) {
+            dynamic_cast<entity::Thing *>(thing)->addAlias(alias);
+         } else {
+            throw UndefinedException("thing = nullptr in Runtime::SET_ALIAS");
+         }
       });
 
       /**********/
@@ -465,7 +469,7 @@ namespace trogdor {
       registerOperation(SET_ATTRIBUTE, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         entity::Entity *being;
+         entity::Entity *being = nullptr;
 
          std::string targetType = operation->getChildren()[0]->getValue();
          std::string attribute = operation->getChildren()[1]->getValue();
@@ -485,8 +489,12 @@ namespace trogdor {
             being = game->getDefaultPlayer();
          }
 
-         dynamic_cast<entity::Being *>(being)->setAttribute(attribute, stoi(value));
-         dynamic_cast<entity::Being *>(being)->setAttributesInitialTotal();
+         if (being) {
+            dynamic_cast<entity::Being *>(being)->setAttribute(attribute, stoi(value));
+            dynamic_cast<entity::Being *>(being)->setAttributesInitialTotal();
+         } else {
+            throw UndefinedException("being = nullptr in Runtime::SET_ATTRIBUTE");
+         }
       });
 
       /**********/
