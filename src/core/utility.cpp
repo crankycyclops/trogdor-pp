@@ -116,7 +116,7 @@ namespace trogdor {
 
    std::string strToLower(std::string str) {
 
-      for (unsigned int i = 0; i < strlen(str.c_str()); i++) {
+      for (unsigned int i = 0; i < str.length(); i++) {
          str[i] = tolower(str[i]);
       }
 

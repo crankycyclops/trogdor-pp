@@ -42,7 +42,7 @@ namespace trogdor {
          // The Being the player will be attacking and the weapon the player
          // will be using (if this remains nullptr after a call to selectWeapon(),
          // the player will be attacking without one.)
-         entity::Being *defender;
+         entity::Being *defender = nullptr;
          entity::Object *weapon = nullptr;
 
          auto beings = location->getBeingsByName(command.getDirectObject());
