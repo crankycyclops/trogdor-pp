@@ -169,15 +169,17 @@ namespace trogdor {
          }
 
          /*
-            Appends a child node and returns a reference to the inserted copy.
+            Appends a child node and returns a shared pointer referencing the
+            inserted copy (I can't return a reference because that reference
+            will be invalidated if the underlying std::vector is resized.)
 
             Input:
                Child node (ASTNode)
 
             Output:
-               (none)
+               Pointer to the child node in the tree (std::shared_ptr<ASTNode>)
          */
-         inline std::shared_ptr<ASTNode> &appendChild(std::shared_ptr<ASTNode> child) {
+         inline std::shared_ptr<ASTNode> appendChild(std::shared_ptr<ASTNode> child) {
 
             children.push_back(child);
             return children.back();
