@@ -139,9 +139,9 @@ namespace trogdor {
                Line number (int)
 
             Output:
-               Reference to the resulting ASTNode (std::shared_ptr<ASTNode> &)
+               Shared pointer to the resulting ASTNode (std::shared_ptr<ASTNode>)
          */
-         std::shared_ptr<ASTNode> &insertDefineEntityOperation(
+         std::shared_ptr<ASTNode> insertDefineEntityOperation(
             std::string name,
             std::string className,
             entity::EntityType type,

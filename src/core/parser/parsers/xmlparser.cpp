@@ -144,7 +144,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   std::shared_ptr<ASTNode> &XMLParser::insertDefineEntityOperation(
+   std::shared_ptr<ASTNode> XMLParser::insertDefineEntityOperation(
       std::string name,
       std::string className,
       entity::EntityType type,
@@ -155,7 +155,7 @@ namespace trogdor {
       std::string defaultTitle = entity::ENTITY_OBJECT == type ?
          std::string("a ") + name : name;
 
-      std::shared_ptr<ASTNode> &definitionNode = ast->appendChild(ASTDefineEntity(
+      std::shared_ptr<ASTNode> definitionNode = ast->appendChild(ASTDefineEntity(
          name,
          entity::Entity::typeToStr(type),
          className,
