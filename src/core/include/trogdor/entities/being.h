@@ -96,8 +96,8 @@ namespace trogdor::entity {
                // An error occurred :(
                default:
 
-                  if (resource->getMessage("resourceCantDrop").length()) {
-                     out("display") << resource->getMessage("resourceCantDrop")
+                  if (resource->getMessage("cantDrop").length()) {
+                     out("display") << resource->getMessage("cantDrop")
                         << std::endl;
                   }
 
@@ -127,8 +127,6 @@ namespace trogdor::entity {
                   return;
                }
 
-               std::string message = resource->getMessage("drop");
-
                switch (resource->transfer(getShared(), location, amount)) {
 
                   // Yay!
@@ -150,8 +148,9 @@ namespace trogdor::entity {
                         }
                      };
 
-                     if (message.length() > 0) {
-                        out("display") << message << std::endl;
+                     if (resource->getMessage("drop").length()) {
+                        out("display") << resource->getMessage("drop")
+                           << std::endl;
                      } else {
                         out("display") << "You drop "
                            << resource->amountToString(amount) << ' '
@@ -164,10 +163,15 @@ namespace trogdor::entity {
                   // and can't take anymore
                   case entity::Resource::ALLOCATE_MAX_PER_DEPOSITOR_EXCEEDED:
 
+                     if (resource->getMessage("dropErrorPlaceFull").length()) {
+                        out("display") << resource->getMessage("dropErrorPlaceFull")
+                           << std::endl;
+                     } else {
                      out("display") << "This place can only hold "
                         << resource->amountToString(*resource->getMaxAmountPerDepositor())
                         << ' ' << resource->titleToString(*resource->getMaxAmountPerDepositor())
                         << '.' << std::endl;
+                     }
 
                      break;
 
@@ -180,8 +184,8 @@ namespace trogdor::entity {
                   // An error occurred :(
                   default:
 
-                     if (resource->getMessage("resourceCantDrop").length()) {
-                        out("display") << resource->getMessage("resourceCantDrop")
+                     if (resource->getMessage("cantDrop").length()) {
+                        out("display") << resource->getMessage("cantDrop")
                            << std::endl;
                      }
 
