@@ -339,6 +339,8 @@ namespace trogdor::entity {
                status = resource->transfer(location, getShared(), amount);
             }
 
+            std::string message = resource->getMessage("take");
+
             switch (status) {
 
                // Transfers must be made in integer amounts
@@ -402,6 +404,17 @@ namespace trogdor::entity {
 
                   break;
 
+               // We already check for this condition above, but checking this
+               // case squashes a compiler warning, so I'm leaving it here, even
+               // if it's redundant.
+               case entity::Resource::ALLOCATE_TOTAL_AMOUNT_EXCEEDED:
+
+                  out("display") << "You can only take "
+                     << resource->amountToString(allocatedToPlace)
+                     << ' ' << resource->getPluralTitle() << '.' << std::endl;
+
+                  break;
+
                // Success!
                case entity::Resource::ALLOCATE_OR_FREE_SUCCESS:
 
@@ -414,8 +427,6 @@ namespace trogdor::entity {
                            << resource->titleToString(amount) << '.' << std::endl;
                      }
                   };
-
-                  std::string message = resource->getMessage("take");
 
                   if (message.length() > 0) {
                      out("display") << message << std::endl;
@@ -435,10 +446,10 @@ namespace trogdor::entity {
 
                   break;
 
-               // It's possible we'll get here if ALLOCATE_ABORT is
-               // returned due to cancellation by the event handler. In
-               // such a case, we'll let the specific event trigger that
+               // If we get ALLOCATE_OR_FREE_ABORT due to cancellation by the
+               // event handler, we'll let the specific event trigger that
                // canceled the allocation handle the explanitory output.
+               case entity::Resource::ALLOCATE_OR_FREE_ABORT:
                default:
                   break;
             }
