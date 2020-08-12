@@ -49,7 +49,7 @@ namespace trogdor {
          // iterate through them until we find the right one.
          for (auto &item: invItems) {
             if (0 == command.getDirectObject().compare(item->getName())) {
-               drop(player, item);
+               player->drop(item->getShared());
                itemFound = true;
                break;
             }
@@ -84,7 +84,7 @@ namespace trogdor {
       }
 
       else {
-         drop(player, *invItems.begin());
+         player->drop((*invItems.begin())->getShared());
       }
    }
 }

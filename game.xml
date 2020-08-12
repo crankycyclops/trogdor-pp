@@ -732,6 +732,13 @@ You find yourself in a dark secluded chamber.  It's dank, musty and generally ic
 
          </tags>
 
+         <!-- Just like objects, you can set custom take and drop messages for
+              resources. -->
+         <!-- <messages>
+            <message name="take">Display this when player takes some of the resource</message>
+            <message name="drop">Display this when player drops some of the resource.</message>
+         </messages> -->
+
       </resource>
 
    </resources>

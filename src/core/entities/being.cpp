@@ -235,7 +235,8 @@ namespace trogdor::entity {
                });
             }
 
-            throw BeingException("", BeingException::TAKE_UNTAKEABLE);
+            out("display") << "You can't take that!" << std::endl;
+            return;
          }
 
          if (!insertIntoInventory(object)) {
@@ -248,10 +249,14 @@ namespace trogdor::entity {
                });
             }
 
-            throw BeingException("", BeingException::TAKE_TOO_HEAVY);
+            out("display") << object->getName()
+               << " is too heavy.  Try dropping something first." << std::endl;
+            return;
          }
 
          else {
+
+            location->removeThing(object);
 
             // Notify every entity in the room that the object has been taken
             // EXCEPT the one who's doing the taking
@@ -262,7 +267,14 @@ namespace trogdor::entity {
                }
             };
 
-            location->removeThing(object);
+            std::string message = object->getMessage("take");
+
+            if (message.length() > 0) {
+               out("display") << message << std::endl;
+            } else {
+               out("display") << "You take the " << object->getName()
+                  << "." << std::endl;
+            }
          }
 
          if (doEvents) {
@@ -271,6 +283,165 @@ namespace trogdor::entity {
                {triggers.get(), object->getEventListener()},
                {this, object.get()}
             });
+         }
+      }
+   }
+
+   /***************************************************************************/
+
+   void Being::takeResource(
+      const std::shared_ptr<Resource> &resource,
+      double amount,
+      bool doEvents
+   ) {
+
+      if (auto location = getLocation().lock()) {
+
+         if (doEvents && !game->event({
+            "beforeTakeResource",
+            {triggers.get(), resource->getEventListener()},
+            {this, resource.get(), amount}
+         })) {
+            return;
+         }
+
+         // If we find a resource, make sure a process in another thread doesn't
+         // remove the allocation before we've had the chance to read its value.
+         mutex.lock();
+
+         if (location->getResources().end() != location->getResources().find(resource)) {
+
+            entity::Resource::AllocationStatus status;
+            double allocatedToPlace = location->getResources().find(resource)->second;
+
+            mutex.unlock();
+
+            // If the resource is "sticky" and can be allocated in
+            // unlimited amounts, the room should keep what it has and
+            // we should allocate extra (as long as it's less than or
+            // equal to the amount already in the room.)
+            if (
+               resource->isTagSet(entity::Resource::stickyTag) &&
+               !resource->getAmountAvailable()
+            ) {
+
+               if (amount > allocatedToPlace) {
+                  out("display") << "You can only take "
+                     << resource->amountToString(allocatedToPlace)
+                     << ' ' << resource->getPluralTitle() << '.' << std::endl;
+                  return;
+               }
+
+               status = resource->allocate(getShared(), amount);
+            }
+
+            else {
+               status = resource->transfer(location, getShared(), amount);
+            }
+
+            switch (status) {
+
+               // Transfers must be made in integer amounts
+               case entity::Resource::FREE_INT_REQUIRED:
+               case entity::Resource::ALLOCATE_INT_REQUIRED:
+
+                  if (resource->getMessage("resourceIntRequired").length()) {
+                     out("display") << resource->getMessage("resourceIntRequired")
+                        << std::endl;
+                  } else {
+                     out("display") << "Please specify a whole number of "
+                        << resource->getPluralTitle() << '.' << std::endl;
+                  }
+
+                  break;
+
+               // The transfer would result in the player possessing
+               // more of the resource than they're allowed to have
+               case entity::Resource::ALLOCATE_MAX_PER_DEPOSITOR_EXCEEDED:
+
+                  if (resource->getMessage("resourceMaxExceeded").length()) {
+                     out("display") << resource->getMessage("resourceMaxExceeded")
+                        << std::endl;
+                  } else {
+                     out("display") << "That would give you "
+                        << resource->amountToString(getResources().find(resource)->second + amount)
+                        << ' ' << resource->getPluralTitle()
+                        << " and you're only allowed to possess "
+                        << resource->amountToString(*resource->getMaxAmountPerDepositor())
+                        << '.' << std::endl;
+                  }
+
+                  break;
+
+               // We can't transfer an amount less than or equal to 0
+               case entity::Resource::FREE_NEGATIVE_VALUE:
+               case entity::Resource::ALLOCATE_ZERO_OR_NEGATIVE_AMOUNT:
+
+                  if (resource->getMessage("resourceInvalidValue").length()) {
+                     out("display") << resource->getMessage("resourceInvalidValue")
+                        << std::endl;
+                  } else {
+                     out("display") << "Please specify an amount greater than zero."
+                        << std::endl;
+                  }
+
+                  break;
+
+               // The original holder of the resource doesn't have the
+               // requested amount
+               case entity::Resource::FREE_EXCEEDS_ALLOCATION:
+
+                  if (resource->getMessage("resourceRequestTooMuch").length()) {
+                     out("display") << resource->getMessage("resourceRequestTooMuch")
+                        << std::endl;
+                  } else {
+                     out("display") << "You can only take "
+                        << resource->amountToString(allocatedToPlace)
+                        << ' ' << resource->getPluralTitle() << '.' << std::endl;
+                  }
+
+                  break;
+
+               // Success!
+               case entity::Resource::ALLOCATE_OR_FREE_SUCCESS:
+
+                  // Notify every entity in the room that the resource has
+                  // been taken EXCEPT the one who's doing the taking
+                  for (auto const &thing: location->getThings()) {
+                     if (thing.get() != this) {
+                        thing->out("notifications") << getTitle()
+                           << " takes " << resource->amountToString(amount) << ' '
+                           << resource->titleToString(amount) << '.' << std::endl;
+                     }
+                  };
+
+                  std::string message = resource->getMessage("take");
+
+                  if (message.length() > 0) {
+                     out("display") << message << std::endl;
+                  } else {
+                     out("display") << "You take "
+                        << resource->amountToString(amount) << ' '
+                        << resource->titleToString(amount) << '.' << std::endl;
+                  }
+
+                  if (doEvents) {
+                     game->event({
+                        "afterTakeResource",
+                        {triggers.get(), resource->getEventListener()},
+                        {this, resource.get(), amount}
+                     });
+                  }
+
+                  break;
+
+               // It's possible we'll get here if ALLOCATE_ABORT is
+               // returned due to cancellation by the event handler. In
+               // such a case, we'll let the specific event trigger that
+               // canceled the allocation handle the explanitory output.
+               default:
+                  break;
+            }
          }
       }
    }
@@ -303,8 +474,12 @@ namespace trogdor::entity {
                });
             }
 
-            throw BeingException("", BeingException::DROP_UNDROPPABLE);
+            out("display") << "You can't drop that!" << std::endl;
+            return;
          }
+
+         removeFromInventory(object);
+         location->insertThing(object);
 
          // Notify every entity in the room that the object has been dropped EXCEPT
          // the one who's doing the dropping
@@ -315,8 +490,14 @@ namespace trogdor::entity {
             }
          };
 
-         removeFromInventory(object);
-         location->insertThing(object);
+         std::string message = object->getMessage("drop");
+
+         if (message.length() > 0) {
+            out("display") << message << std::endl;
+         } else {
+            out("display") << "You drop the " << object->getName()
+               << "." << std::endl;
+         }
 
          if (doEvents) {
             game->event({
@@ -325,6 +506,22 @@ namespace trogdor::entity {
                {this, object.get()}
             });
          }
+      }
+   }
+
+   /***************************************************************************/
+
+   // Events will be triggered by freeResource() and transferResourceToPlace()
+   void Being::dropResource(
+      const std::shared_ptr<Resource> &resource,
+      double amount,
+      bool doEvents
+   ) {
+
+      if (resource->isTagSet(entity::Resource::ephemeralTag)) {
+         freeResource(resource.get(), amount, doEvents);
+      } else {
+         transferResourceToPlace(resource.get(), amount, doEvents);
       }
    }
 
