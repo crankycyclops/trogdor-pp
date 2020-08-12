@@ -10,6 +10,7 @@
 namespace trogdor::entity {
 
 
+   const char *Resource::stickyTag = "sticky";
    const char *Resource::ephemeralTag = "ephemeral";
 
    const English Resource::language = English();

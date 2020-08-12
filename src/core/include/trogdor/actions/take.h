@@ -103,7 +103,32 @@ namespace trogdor {
 
                   if (auto location = player->getLocation().lock()) {
 
-                     switch (resource->transfer(location, player->getShared(), amount)) {
+                     entity::Resource::AllocationStatus status;
+
+                     // If the resource is "sticky" and can be allocated in
+                     // unlimited amounts, the room should keep what it has and
+                     // we should allocate extra (as long as it's less than or
+                     // equal to the amount already in the room.)
+                     if (
+                        resource->isTagSet(entity::Resource::stickyTag) &&
+                        !resource->getAmountAvailable()
+                     ) {
+
+                        if (amount > allocation.second) {
+                           player->out("display") << "You can only take "
+                              << resource->amountToString(allocation.second)
+                              << ' ' << resource->getPluralTitle() << '.' << std::endl;
+                           return;
+                        }
+
+                        status = resource->allocate(player->getShared(), amount);
+                     }
+
+                     else {
+                        status = resource->transfer(location, player->getShared(), amount);
+                     }
+
+                     switch (status) {
 
                         // Transfers must be made in integer amounts
                         case entity::Resource::FREE_INT_REQUIRED:
