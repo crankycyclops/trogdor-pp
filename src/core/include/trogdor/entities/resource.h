@@ -56,9 +56,6 @@ namespace trogdor::entity {
             // the resource than they're allowed to have
             ALLOCATE_MAX_PER_DEPOSITOR_EXCEEDED,
 
-            // The beforeFreeResource event canceled the freeing of the resource
-            FREE_ABORT,
-
             // Only values >= 0 are valid (0 means we free everything)
             FREE_NEGATIVE_VALUE,
 
