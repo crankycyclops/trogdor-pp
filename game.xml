@@ -714,10 +714,22 @@ You find yourself in a dark secluded chamber.  It's dank, musty and generally ic
          </meta>
 
          <tags>
+
+            <!-- If the sticky tag is set on a resource and the resource is
+                 available in unlimited amounts, then when a player or creature
+                 picks up some amount from the room, they'll get their own
+                 allocation of the resource and the amount in the room will stay.
+                 If you're using this tag, there's a pretty good chance you'll
+                 want to also use the ephemeral tag (unless it's expected that
+                 the amount of a resource in a room can multiply every time a
+                 resource is taken and then dropped. -->
+            <!-- <tag>sticky</tag> -->
+
             <!-- If the ephemeral tag is set on a resource, the amount held by
                  a player will disappear when it's dropped instead of appearing
                  in the room where the player dropped it. -->
             <!-- <tag>ephemeral</tag> -->
+
          </tags>
 
       </resource>

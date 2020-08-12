@@ -20,6 +20,11 @@ namespace trogdor::entity {
 
       public:
 
+         // If the sticky tag is set and the resource can be allocated in
+         // unlimited amounts, then when a Being picks some up from a Place, the
+         // Place will keep its current allocation.
+         static const char *stickyTag;
+
          // Tag is set if the Resource should disappear when it's dropped by a
          // Being instead of appearing in the Room the Being currently resides in.
          static const char *ephemeralTag;
