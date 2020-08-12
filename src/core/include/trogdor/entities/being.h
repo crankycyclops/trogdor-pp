@@ -47,6 +47,153 @@ namespace trogdor::entity {
          // set explicitly)
          static const int DEFAULT_MAX_HEALTH = 0;
 
+      private:
+
+         // If Being is dropping an ephemeral Resource, we call this to free the
+         // allocation.
+         inline void freeResource(
+            Resource *resource,
+            double amount,
+            bool doEvents = true
+         ) {
+
+            if (doEvents && !game->event({
+               "beforeDropResource",
+               {triggers.get(), resource->getEventListener()},
+               {this, resource, amount}
+            })) {
+               return;
+            }
+
+            std::string message = resource->getMessage("drop");
+
+            switch(resource->free(getShared(), amount)) {
+
+               case entity::Resource::ALLOCATE_OR_FREE_SUCCESS:
+
+                  game->event({
+                     "afterDropResource",
+                     {triggers.get(), resource->getEventListener()},
+                     {this, resource, amount}
+                  });
+
+                  if (message.length() > 0) {
+                     out("display") << message << std::endl;
+                  } else {
+                     out("display") << "You drop "
+                        << resource->amountToString(amount) << ' '
+                        << resource->titleToString(amount) << '.' << std::endl;
+                  }
+
+                  break;
+
+               // If the action was aborted due to an event handler, we'll let
+               // that event send appropriate feedback to the player
+               case entity::Resource::ALLOCATE_OR_FREE_ABORT:
+
+                  break;
+
+               // An error occurred :(
+               default:
+
+                  if (resource->getMessage("resourceCantDrop").length()) {
+                     out("display") << resource->getMessage("resourceCantDrop")
+                        << std::endl;
+                  }
+
+                  else {
+                     out("display") << "You can't drop that!" << std::endl;
+                  }
+
+                  break;
+            }
+         }
+
+         // If Being is dropping a Resource that isn't ephemeral, we call this
+         // to transfer the allocation to the Place the Being occupies.
+         inline void transferResourceToPlace(
+            Resource *resource,
+            double amount,
+            bool doEvents = true
+         ) {
+
+            if (auto location = getLocation().lock()) {
+
+               if (doEvents && !game->event({
+                  "beforeDropResource",
+                  {triggers.get(), resource->getEventListener()},
+                  {this, resource, amount}
+               })) {
+                  return;
+               }
+
+               std::string message = resource->getMessage("drop");
+
+               switch (resource->transfer(getShared(), location, amount)) {
+
+                  // Yay!
+                  case entity::Resource::ALLOCATE_OR_FREE_SUCCESS:
+
+                     game->event({
+                        "afterDropResource",
+                        {triggers.get(), resource->getEventListener()},
+                        {this, resource, amount}
+                     });
+
+                     // Notify every entity in the room that the resource has
+                     // been dropped EXCEPT the one who's doing the dropping.
+                     for (auto const &thing: location->getThings()) {
+                        if (thing.get() != this) {
+                           thing->out("notifications") << getTitle() << " drops "
+                              << resource->amountToString(amount) << ' '
+                              << resource->titleToString(amount) << "." << std::endl;
+                        }
+                     };
+
+                     if (message.length() > 0) {
+                        out("display") << message << std::endl;
+                     } else {
+                        out("display") << "You drop "
+                           << resource->amountToString(amount) << ' '
+                           << resource->titleToString(amount) << '.' << std::endl;
+                     }
+
+                     break;
+
+                  // The room has alrady reached max capacity for this resource
+                  // and can't take anymore
+                  case entity::Resource::ALLOCATE_MAX_PER_DEPOSITOR_EXCEEDED:
+
+                     out("display") << "This place can only hold "
+                        << resource->amountToString(*resource->getMaxAmountPerDepositor())
+                        << ' ' << resource->titleToString(*resource->getMaxAmountPerDepositor())
+                        << '.' << std::endl;
+
+                     break;
+
+                  // If the action was aborted due to an event handler, we'll let
+                  // that event send appropriate feedback to the player
+                  case entity::Resource::ALLOCATE_OR_FREE_ABORT:
+
+                     break;
+
+                  // An error occurred :(
+                  default:
+
+                     if (resource->getMessage("resourceCantDrop").length()) {
+                        out("display") << resource->getMessage("resourceCantDrop")
+                           << std::endl;
+                     }
+
+                     else {
+                        out("display") << "You can't drop that!" << std::endl;
+                     }
+
+                     break;
+               }
+            }
+         }
+
       protected:
 
          // Once the value for health has been initialized, set this to true.
@@ -663,15 +810,27 @@ namespace trogdor::entity {
 
             Output:
                (none)
-
-            Exceptions:
-               Throws the following errors:
-                  TAKE_TOO_HEAVY - object is too heavy
-                  TAKE_UNTAKEABLE - attempted to take an untakeable object
          */
          void take(
             const std::shared_ptr<Object> &object,
             bool checkUntakeable = true,
+            bool doEvents = true
+         );
+
+         /*
+            Allows a Being to take some amount of a resource.
+
+            Input:
+               Resource to take (const std::shared_ptr<Resource> &)
+               Amount to take (double)
+               Whether or not to trigger before and after take events (bool)
+
+            Output:
+               (none)
+         */
+         void takeResource(
+            const std::shared_ptr<Resource> &resource,
+            double amount,
             bool doEvents = true
          );
 
@@ -686,14 +845,27 @@ namespace trogdor::entity {
 
             Output:
                (none)
-
-            Exceptions:
-               Throws the following errors:
-                  DROP_UNDROPPABLE - attempt to drop an undroppable object
          */
          void drop(
             const std::shared_ptr<Object> &object,
             bool checkUndroppable = true,
+            bool doEvents = true
+         );
+
+         /*
+            Allows a Being to drop some amount of a resource.
+
+            Input:
+               Resource to drop (const std::shared_ptr<Resource> &)
+               Amount to drop (double)
+               Whether or not to trigger before and after drop events (bool)
+
+            Output:
+               (none)
+         */
+         void dropResource(
+            const std::shared_ptr<Resource> &resource,
+            double amount,
             bool doEvents = true
          );
 
