@@ -461,7 +461,7 @@ namespace trogdor {
 
    void Inform7Parser::parsePlacement(std::vector<std::string> subjects) {
 
-      Token t;
+      Token t = lexer.peek();
 
       if (0 == strToLower(t.value).compare("in")) {
          parseInClause(subjects);
@@ -539,7 +539,7 @@ namespace trogdor {
       }
 
       else if (QUOTED_STRING == t.type) {
-         throw ParseException(std::string("The sentence on line ") + std::to_string(t.lineno) + "appears to say that one or more things are equal to a value, but that makes no sense.");
+         throw ParseException(std::string("The sentence on line ") + std::to_string(t.lineno) + " appears to say that one or more things are equal to a value, but that makes no sense.");
       }
 
       else {
