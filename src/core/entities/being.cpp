@@ -347,8 +347,8 @@ namespace trogdor::entity {
                case entity::Resource::FREE_INT_REQUIRED:
                case entity::Resource::ALLOCATE_INT_REQUIRED:
 
-                  if (resource->getMessage("resourceIntRequired").length()) {
-                     out("display") << resource->getMessage("resourceIntRequired")
+                  if (resource->getMessage("takeErrorIntRequired").length()) {
+                     out("display") << resource->getMessage("takeErrorIntRequired")
                         << std::endl;
                   } else {
                      out("display") << "Please specify a whole number of "
@@ -361,8 +361,8 @@ namespace trogdor::entity {
                // more of the resource than they're allowed to have
                case entity::Resource::ALLOCATE_MAX_PER_DEPOSITOR_EXCEEDED:
 
-                  if (resource->getMessage("resourceMaxExceeded").length()) {
-                     out("display") << resource->getMessage("resourceMaxExceeded")
+                  if (resource->getMessage("takeErrorMaxExceeded").length()) {
+                     out("display") << resource->getMessage("takeErrorMaxExceeded")
                         << std::endl;
                   } else {
                      out("display") << "That would give you "
@@ -379,8 +379,8 @@ namespace trogdor::entity {
                case entity::Resource::FREE_NEGATIVE_VALUE:
                case entity::Resource::ALLOCATE_ZERO_OR_NEGATIVE_AMOUNT:
 
-                  if (resource->getMessage("resourceInvalidValue").length()) {
-                     out("display") << resource->getMessage("resourceInvalidValue")
+                  if (resource->getMessage("takeErrorInvalidValue").length()) {
+                     out("display") << resource->getMessage("takeErrorInvalidValue")
                         << std::endl;
                   } else {
                      out("display") << "Please specify an amount greater than zero."
@@ -393,8 +393,8 @@ namespace trogdor::entity {
                // requested amount
                case entity::Resource::FREE_EXCEEDS_ALLOCATION:
 
-                  if (resource->getMessage("resourceRequestTooMuch").length()) {
-                     out("display") << resource->getMessage("resourceRequestTooMuch")
+                  if (resource->getMessage("takeErrorRequestTooMuch").length()) {
+                     out("display") << resource->getMessage("takeErrorRequestTooMuch")
                         << std::endl;
                   } else {
                      out("display") << "You can only take "
