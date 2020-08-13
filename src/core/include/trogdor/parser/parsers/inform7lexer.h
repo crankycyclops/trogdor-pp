@@ -29,7 +29,7 @@ namespace trogdor {
    struct Token {
       std::string value;
       TokenType type;
-      int lineno;
+      size_t lineno;
    };
 
    /**************************************************************************/
@@ -72,10 +72,10 @@ namespace trogdor {
          std::string source;
 
          // Index to next unparsed character in source
-         unsigned int sourceIndex = 0;
+         size_t sourceIndex = 0;
 
          // Current line number in the source code
-         unsigned int sourceLine = 1;
+         size_t sourceLine = 1;
 
          // Tokens that were read ahead to make a decision and then "pushed back"
          std::stack<Token> tokenBuffer;

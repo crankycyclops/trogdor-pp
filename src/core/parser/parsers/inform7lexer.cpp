@@ -263,6 +263,13 @@ namespace trogdor {
          quotedString += source.at(sourceIndex);
       }
 
+      // If a period appears at the end of the quoted string, it should be
+      // treated as a PHRASE_TERMINATOR and returned when it's time to retrieve
+      // the next token.
+      if ('.' == quotedString.back()) {
+         tokenBuffer.push({".", PHRASE_TERMINATOR, sourceLine});
+      }
+
       return quotedString;
    }
 
