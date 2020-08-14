@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include <trogdor/utility.h>
+#include <trogdor/entities/entity.h>
 
 
 namespace trogdor {
@@ -60,7 +61,10 @@ namespace trogdor {
          const std::unordered_map<std::string, std::string> &directions;
 
          // Reference to parser's list of defined classes
-         const std::unordered_set<std::string> &classes;
+         const std::unordered_map<
+            std::string,
+            std::pair<entity::EntityType, std::function<void(size_t)>>
+         > &classes;
 
          // Reference to parser's list of defined properties
          const std::unordered_set<std::string> &properties;
@@ -195,7 +199,9 @@ namespace trogdor {
          */
          inline Inform7Lexer(
             const std::unordered_map<std::string, std::string> &dirs,
-            const std::unordered_set<std::string> &cls,
+            const std::unordered_map<std::string, std::pair<
+               entity::EntityType, std::function<void(size_t)>>
+            > &cls,
             const std::unordered_set<std::string> &props,
             const std::unordered_set<std::string> &adjs
          ):

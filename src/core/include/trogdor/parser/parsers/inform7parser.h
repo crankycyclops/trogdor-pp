@@ -131,9 +131,6 @@ namespace trogdor {
          // directions["north"] = "south".
          std::unordered_map<std::string, std::string> directions;
 
-         // Set of classes recognized by Inform 7
-         std::unordered_set<std::string> classes;
-
          // Plural lookup mapping plural classes to their singular equivalents
          std::unordered_map<std::string, std::string> classPlurals;
 
@@ -142,6 +139,14 @@ namespace trogdor {
 
          // Set of non-property adjectives recognized by Inform 7
          std::unordered_set<std::string> adjectives;
+
+         // Set of classes recognized by Inform 7, mapped to the corresponding
+         // Entity type and a callback that will insert an AST node that
+         // defines an internal class with the appropriate properties
+         std::unordered_map<
+            std::string,
+            std::pair<entity::EntityType, std::function<void(size_t)>>
+         > classes;
 
          /*
             Parses one or more identifiers on the left hand side of an equality.
@@ -363,13 +368,19 @@ namespace trogdor {
 
             Input:
                Class name (std::string)
+               Entity type (entity::EntityType)
+               Callback to define AST node (std::function<void()>)
 
             Output:
                (none)
          */
-         inline void insertClass(std::string className) {
+         inline void insertClass(
+            std::string className,
+            entity::EntityType type,
+            std::function<void(size_t)> ASTCallback
+         ) {
 
-            classes.insert(className);
+            classes[className] = {type, ASTCallback};
             classPlurals[language.pluralizeNoun(className)] = className;
          }
 
