@@ -235,11 +235,12 @@ namespace trogdor {
       Token t = lexer.next();
       std::vector<Inform7Parser::ParsedProperty> propertyList;
 
-      // Flags whether or not an adjective is preceded by "not"
+      // Flags whether or not an adjective/property is preceded by "not"
       bool negated = false;
 
       while (
          properties.end() != properties.find(strToLower(t.value)) ||
+         adjectives.end() != adjectives.find(strToLower(t.value)) ||
          0 == strToLower(t.value).compare("not")
       ) {
 
@@ -249,6 +250,14 @@ namespace trogdor {
             negated = true;
             t = lexer.next();
             continue;
+         }
+
+         else if (adjectives.end() != adjectives.find(strToLower(t.value))) {
+            throw ParseException(
+               std::string("'") + strToLower(t.value)
+               + "' is only an adjective that can be checked during runtime, not a property that can be set (line "
+               + std::to_string(t.lineno) + ')'
+            );
          }
 
          propertyList.push_back({t.value, negated});
@@ -520,6 +529,7 @@ namespace trogdor {
 
       if (
          properties.end() != properties.find(strToLower(t.value)) ||
+         adjectives.end() != adjectives.find(strToLower(t.value)) ||
          0 == strToLower(t.value).compare("not")
       ) {
 
