@@ -111,6 +111,37 @@ namespace trogdor {
 
    /**************************************************************************/
 
+   void Inform7Parser::parseDescriptionStatement(std::string identifier) {
+
+      Token t = lexer.peek();
+
+      if (EQUALITY == t.type) {
+
+         t = lexer.next();
+
+         if (QUOTED_STRING != t.type) {
+            throw ParseException(
+               std::string("You said you were going to describe ") + identifier
+               + " but never did (line " + std::to_string(t.lineno) + ')'
+            );
+         }
+
+         else {
+            lexer.push(t);
+            parseDescription({identifier});
+         }
+      }
+
+      else {
+         throw ParseException(
+            std::string("I can't find a verb that I know how to deal with. (line ")
+            + std::to_string(t.lineno) + ')'
+         );
+      }
+   }
+
+   /**************************************************************************/
+
    void Inform7Parser::parseBibliographic() {
 
       Token t = lexer.next();
@@ -345,11 +376,11 @@ namespace trogdor {
 
          t = lexer.next();
 
-         if (PHRASE_TERMINATOR != t.type) {
+         if (PHRASE_TERMINATOR != t.type && SOURCE_EOF != t.type) {
 
             std::string combined = "\"" + description + "\"";
 
-            for (; t.type != PHRASE_TERMINATOR; t = lexer.next()) {
+            for (; PHRASE_TERMINATOR != t.type && SOURCE_EOF != t.type; t = lexer.next()) {
 
                if (COMMA != t.type && COLON != t.type && SEMICOLON != t.type) {
                   combined += " ";
@@ -373,6 +404,7 @@ namespace trogdor {
 
          else {
             // TODO
+            std::cout << "parseDescription stub!" << std::endl;
             std::cout << "Description of " + identifiers[0] + ": " << description
                << std::endl << std::endl;
          }
@@ -568,12 +600,20 @@ namespace trogdor {
       std::vector<std::string> identifiers = parseIdentifiersList();
       t = lexer.next();
 
-      if (!identifiers.size()) {
+      // This is a bit hacky, but it works and results in minimal changes to my
+      // code. If relying on parseIdentifiersList() ever causes me problems in
+      // the future, I'll revisit this.
+      size_t descriptionOfIndex;
+      if (1 == identifiers.size() && 0 == (descriptionOfIndex = identifiers[0].find("description of "))) {
+         parseDescriptionStatement(identifiers[0].substr(15));
+      }
+
+      else if (!identifiers.size()) {
          throw ParseException(std::string("You've used a verb ('" + t.value + "') without a subject (line ") + std::to_string(t.lineno) + ')');
       }
 
       // We're parsing an expression with an "is" or "are" verb
-      if (EQUALITY == t.type) {
+      else if (EQUALITY == t.type) {
          parseEquality(identifiers);
       }
 

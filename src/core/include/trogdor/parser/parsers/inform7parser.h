@@ -36,7 +36,9 @@ namespace trogdor {
       <bibliographic>        ::= <quoted string> ["by" <author name>]
                                  <phrase terminator>
       <author name>          ::= /[A-Za-z ']+/ | <quoted string>
-      <phrase>               ::= <equality statement>
+      <phrase>               ::= <equality statement> | <description stmt>
+      <description stmt>     ::= {<article>} description of {<article>} <noun>
+                                 <equality verb> <description>
       <equality statement>   ::= (<definition> | <property assignment> |
                                  <placement>) [<phrase terminator> <description>]
       <definition>           ::= <identifier list> <equality verb> {<article>} (
@@ -274,6 +276,19 @@ namespace trogdor {
                (none)
          */
          void parseEquality(std::vector<std::string> identifiers);
+
+         /*
+            Parses a description statement of the form "the description of
+            <identifier> is "<description>". Matches the <description stmt>
+            production in the EBNF above.
+
+            Input:
+               Name of the thing being described (std::string)
+
+            Output:
+               (none)
+         */
+         void parseDescriptionStatement(std::string identifier);
 
          /*
             Parses the optional bibliographic sentence at the beginning of the
