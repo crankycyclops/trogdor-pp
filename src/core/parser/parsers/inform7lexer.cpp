@@ -230,6 +230,11 @@ namespace trogdor {
 
       std::string terminator = "";
 
+      // We've already reached EOF
+      if (sourceIndex >= source.length()) {
+         return terminator;
+      }
+
       if ('.' == source.at(sourceIndex)) {
          terminator += source.at(sourceIndex);
          sourceIndex++;
