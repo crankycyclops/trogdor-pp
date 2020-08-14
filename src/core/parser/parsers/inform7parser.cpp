@@ -15,7 +15,7 @@ namespace trogdor {
 
 
    Inform7Parser::Inform7Parser(std::unique_ptr<Instantiator> i,
-   const Vocabulary &v): Parser(std::move(i), v), lexer(directions, classes,
+   const Vocabulary &v): Parser(std::move(i), v), lexer(directions, kinds,
    properties, adjectives) {
 
       // Built-in directions that Inform 7 recognizes by default. List can be
@@ -27,7 +27,7 @@ namespace trogdor {
       insertDirection("northwest", "southeast");
       insertDirection("northeast", "southwest");
 
-      // Built-in properties that Inform 7 recognizes for certain classes by
+      // Built-in properties that Inform 7 recognizes for certain kinds by
       // default.
       insertProperty("touchable");
       insertProperty("untouchable");
@@ -84,8 +84,8 @@ namespace trogdor {
       insertAdjective("even");
       insertAdjective("odd");
 
-      // Built-in classes that Inform 7 recognizes by default.
-      insertClass("direction", entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
+      // Built-in kinds that Inform 7 recognizes by default.
+      insertKind("direction", entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
 
          // This is just temporary for our current subset of Inform 7; we can
          // define custom directions internally already, and when I'm ready to
@@ -95,7 +95,7 @@ namespace trogdor {
          );
       });
 
-      insertClass("room", entity::ENTITY_ROOM, [&] (size_t lineno) {
+      insertKind("room", entity::ENTITY_ROOM, [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_room",
@@ -104,14 +104,14 @@ namespace trogdor {
          ));
       });
 
-      insertClass("region", entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
+      insertKind("region", entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
 
          throw UndefinedException(
             "Inform 7 regions aren't currently supported (line " + lineno + ')'
          );
       });
 
-      insertClass("thing", entity::ENTITY_OBJECT, [&] (size_t lineno) {
+      insertKind("thing", entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_thing",
@@ -120,7 +120,7 @@ namespace trogdor {
          ));
       });
 
-      insertClass("door", entity::ENTITY_OBJECT, [&] (size_t lineno) {
+      insertKind("door", entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -139,7 +139,7 @@ namespace trogdor {
          ));
       });
 
-      insertClass("container", entity::ENTITY_OBJECT, [&] (size_t lineno) {
+      insertKind("container", entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -149,7 +149,7 @@ namespace trogdor {
          ));
       });
 
-      insertClass("vehicle", entity::ENTITY_OBJECT, [&] (size_t lineno) {
+      insertKind("vehicle", entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -168,7 +168,7 @@ namespace trogdor {
          ));
       });
 
-      insertClass("player's holdall", entity::ENTITY_OBJECT, [&] (size_t lineno) {
+      insertKind("player's holdall", entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -178,7 +178,7 @@ namespace trogdor {
          ));
       });
 
-      insertClass("supporter", entity::ENTITY_OBJECT, [&] (size_t lineno) {
+      insertKind("supporter", entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -188,14 +188,14 @@ namespace trogdor {
          ));
       });
 
-      insertClass("backdrop", entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
+      insertKind("backdrop", entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
 
          throw UndefinedException(
             "Inform 7 backdrops aren't yet supported (line " + lineno + ')'
          );
       });
 
-      insertClass("device", entity::ENTITY_OBJECT, [&] (size_t lineno) {
+      insertKind("device", entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -205,7 +205,7 @@ namespace trogdor {
          ));
       });
 
-      insertClass("person", entity::ENTITY_CREATURE, [&] (size_t lineno) {
+      insertKind("person", entity::ENTITY_CREATURE, [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_person",
@@ -214,7 +214,7 @@ namespace trogdor {
          ));
       });
 
-      insertClass("man", entity::ENTITY_CREATURE, [&] (size_t lineno) {
+      insertKind("man", entity::ENTITY_CREATURE, [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_man",
@@ -223,7 +223,7 @@ namespace trogdor {
          ));
       });
 
-      insertClass("woman", entity::ENTITY_CREATURE, [&] (size_t lineno) {
+      insertKind("woman", entity::ENTITY_CREATURE, [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_woman",
@@ -232,7 +232,7 @@ namespace trogdor {
          ));
       });
 
-      insertClass("animal", entity::ENTITY_CREATURE, [&] (size_t lineno) {
+      insertKind("animal", entity::ENTITY_CREATURE, [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_animal",
@@ -241,14 +241,17 @@ namespace trogdor {
          ));
       });
 
-      // NOTE: this is a base kind, so how it's defined will probably change as
-      // the parser becomes more complete (see: http://inform7.com/book/WI_22_1.html)
-      insertClass("object", entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
+      // From my observations playing with the i7 compiler, it seems like, by
+      // default, untyped entities assume this kind by default and behave like
+      // things. I'm using that observed behavior to determine how I'm going to
+      // treat this generic case.
+      insertKind("object", entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
 
-         throw UndefinedException(
-            "The original Inform 7 compiler allows you to define generic objects (although I'm not quite sure yet what that means), but this engine will not (line "
-            + lineno + ')'
-         );
+         ast->appendChild(ASTDefineEntityClass(
+            "inform7_object",
+            entity::Entity::typeToStr(entity::ENTITY_OBJECT),
+            lineno
+         ));
       });
    }
 
@@ -616,15 +619,15 @@ namespace trogdor {
       }
 
       if (
-         classes.end() != classes.find(strToLower(t.value)) ||
-         classPlurals.end() != classPlurals.find(strToLower(t.value))
+         kinds.end() != kinds.find(strToLower(t.value)) ||
+         kindPlurals.end() != kindPlurals.find(strToLower(t.value))
       ) {      
 
-         std::string className = classPlurals.end() != classPlurals.find(strToLower(t.value)) ?
-            classPlurals[strToLower(t.value)] : strToLower(t.value);
+         std::string kindName = kindPlurals.end() != kindPlurals.find(strToLower(t.value)) ?
+            kindPlurals[strToLower(t.value)] : strToLower(t.value);
 
          // TODO
-         std::cout << std::endl << "Identifiers are of type '" << className << "'" << std::endl;
+         std::cout << std::endl << "Identifiers are of type '" << kindName << "'" << std::endl;
 
          t = lexer.next();
 
@@ -737,8 +740,8 @@ namespace trogdor {
       // instantiate a room implicitly by saying that the name of a room is in a
       // certain direction from another already defined room.
       else if (
-         classes.end() != classes.find(strToLower(t.value)) ||
-         classPlurals.end() != classPlurals.find(strToLower(t.value)) ||
+         kinds.end() != kinds.find(strToLower(t.value)) ||
+         kindPlurals.end() != kindPlurals.find(strToLower(t.value)) ||
          directions.end() != directions.find(strToLower(t.value))
       ) {
          lexer.next();

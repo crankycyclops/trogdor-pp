@@ -42,7 +42,7 @@ namespace trogdor {
       <equality statement>   ::= (<definition> | <property assignment> |
                                  <placement>) [<phrase terminator> <description>]
       <definition>           ::= <identifier list> <equality verb> {<article>} (
-                                 [<property list>] <class> [<in clause> | 
+                                 [<property list>] <kind> [<in clause> | 
                                  <on clause>] | <location clause>)
       <property assignment>  ::= <identifier list> <equality verb> {<article>}
                                  <property list>
@@ -62,11 +62,11 @@ namespace trogdor {
       <direction>            ::= "north" | "northeast" | "east" | "southeast" |
                                  "south" | "southwest" | "west" | "northwest" |
                                  "up" | "down" | "inside" | "outside"
-      <class>                ::= "object" | "direction" | "room" | "region" |
+      <kind>                 ::= "object" | "direction" | "room" | "region" |
                                  "thing" | "door" | "container" | "vehicle" |
                                  "player's holdall" | "supporter" | "backdrop" |
                                  "device" | "person" | "man" | "woman" | "animal"
-      <plural class>         ::= "objects" | "directions" | "rooms" |
+      <plural kind>          ::= "objects" | "directions" | "rooms" |
                                  "regions" | "things" | "doors" | "containers" |
                                  "vehicles" | "player's holdalls" |
                                  "supporters" | "backdrops" | "devices" |
@@ -91,9 +91,9 @@ namespace trogdor {
       <quoted string>        ::= "\" "/^[\"]+/" \""
       <phrase terminator>    ::= ("." | "\n\n") {"\n"}
 
-      * Directions, classes, properties, and adjectives listed in the above EBNF
+      * Directions, kinds, properties, and adjectives listed in the above EBNF
       are those that are built into Inform 7. I'll eventually add support for
-      parsing custom classes and adjectives, in which case the grammar should
+      parsing custom kinds and adjectives, in which case the grammar should
       also consider those, once inserted, as their respective types.
 
       Note that I had to cobble together the EBNF above myself using examples
@@ -131,8 +131,8 @@ namespace trogdor {
          // directions["north"] = "south".
          std::unordered_map<std::string, std::string> directions;
 
-         // Plural lookup mapping plural classes to their singular equivalents
-         std::unordered_map<std::string, std::string> classPlurals;
+         // Plural lookup mapping plural kinds to their singular equivalents
+         std::unordered_map<std::string, std::string> kindPlurals;
 
          // Set of properties (both either/or and value) recognized by Inform 7
          std::unordered_set<std::string> properties;
@@ -140,13 +140,13 @@ namespace trogdor {
          // Set of non-property adjectives recognized by Inform 7
          std::unordered_set<std::string> adjectives;
 
-         // Set of classes recognized by Inform 7, mapped to the corresponding
+         // Set of kinds recognized by Inform 7, mapped to the corresponding
          // Entity type and a callback that will insert an AST node that
-         // defines an internal class with the appropriate properties
+         // defines an internal kind with the appropriate properties
          std::unordered_map<
             std::string,
             std::pair<entity::EntityType, std::function<void(size_t)>>
-         > classes;
+         > kinds;
 
          /*
             Parses one or more identifiers on the left hand side of an equality.
@@ -364,29 +364,29 @@ namespace trogdor {
          }
 
          /*
-            Inserts an Inform 7 class.
+            Inserts an Inform 7 kind.
 
             Input:
-               Class name (std::string)
+               Kind name (std::string)
                Entity type (entity::EntityType)
                Callback to define AST node (std::function<void()>)
 
             Output:
                (none)
          */
-         inline void insertClass(
-            std::string className,
+         inline void insertKind(
+            std::string kindName,
             entity::EntityType type,
             std::function<void(size_t)> ASTCallback
          ) {
 
-            classes[className] = {type, ASTCallback};
-            classPlurals[language.pluralizeNoun(className)] = className;
+            kinds[kindName] = {type, ASTCallback};
+            kindPlurals[language.pluralizeNoun(kindName)] = kindName;
          }
 
          /*
             Inserts an Inform 7 property that can be assigned to an instance of
-            a certain class.
+            a certain kind.
 
             Input:
                Property (std::string)

@@ -107,7 +107,7 @@ namespace trogdor {
                      lexing as many words as it can before the end of a
                      statement (or before the maximum depth is reached) and
                      attempts to match the result to entries in directions,
-                     classes, properties, and adjectives. If no match is found,
+                     kinds, properties, and adjectives. If no match is found,
                      we truncate the last single word from the compound and try
                      matching again. This continues until either a match is
                      found or we reach a base case length of 1, in which case
@@ -146,8 +146,8 @@ namespace trogdor {
                         // more than one word, I'll have to include a check for
                         // those, too
                         directions.end() == directions.find(potentialWord) &&
-                        classes.end()    == classes.find(potentialWord) &&
-                        // TODO: also search plural forms of classes
+                        kinds.end()    == kinds.find(potentialWord) &&
+                        // TODO: also search plural forms of kinds
                         properties.end() == properties.find(potentialWord) &&
                         adjectives.end() == adjectives.find(potentialWord)
                      ) {

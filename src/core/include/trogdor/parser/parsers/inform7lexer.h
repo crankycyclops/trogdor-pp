@@ -47,7 +47,7 @@ namespace trogdor {
          // composed of two. In the lexer's current implementation, when parsing
          // a word, we start by temporarily lexing as many words as we can
          // before the end of a statement and attempting to match them to
-         // entries in directions, classes, properties, and adjectives. If no
+         // entries in directions, kinds, properties, and adjectives. If no
          // match is found, we reduce the compound word by one less word and try
          // matching again until either we found a match or we only have one
          // word left (in which case we return just the one word.) The problem
@@ -60,11 +60,11 @@ namespace trogdor {
          // Reference to parser's list of defined directions
          const std::unordered_map<std::string, std::string> &directions;
 
-         // Reference to parser's list of defined classes
+         // Reference to parser's list of defined kinds
          const std::unordered_map<
             std::string,
             std::pair<entity::EntityType, std::function<void(size_t)>>
-         > &classes;
+         > &kinds;
 
          // Reference to parser's list of defined properties
          const std::unordered_set<std::string> &properties;
@@ -201,7 +201,7 @@ namespace trogdor {
             const std::unordered_map<std::string, std::string> &dirs,
             const std::unordered_map<std::string, std::pair<
                entity::EntityType, std::function<void(size_t)>>
-            > &cls,
+            > &ks,
             const std::unordered_set<std::string> &props,
             const std::unordered_set<std::string> &adjs
          ):
@@ -216,7 +216,7 @@ namespace trogdor {
             {EQUALITY, "EQUALITY"},
             {AND, "AND"},
             {QUOTED_STRING, "QUOTED_STRING"}
-         }), directions(dirs), classes(cls), properties(props), adjectives(adjs),
+         }), directions(dirs), kinds(ks), properties(props), adjectives(adjs),
          currentToken({"", SOURCE_EOF, 0}) {}
 
          Inform7Lexer() = delete;
