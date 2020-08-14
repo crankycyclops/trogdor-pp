@@ -32,20 +32,18 @@ namespace trogdor {
       Here's the current subset of the language I'm parsing in EBNF format (I'll
       keep this updated as support for additional language features grows):
 
-      <program>              ::= [<bibliographic>] {<rule>}
+      <program>              ::= [<bibliographic>] <phrase> [{<phrase terminator> <phrase>}]
       <bibliographic>        ::= <quoted string> ["by" <author name>]
                                  <phrase terminator>
       <author name>          ::= /[A-Za-z ']+/ | <quoted string>
       <phrase>               ::= <equality statement>
-      <equality statement>   ::= <definition> | <property assignment> |
-                                 <placement>
+      <equality statement>   ::= (<definition> | <property assignment> |
+                                 <placement>) [<phrase terminator> <description>]
       <definition>           ::= <identifier list> <equality verb> {<article>} (
                                  [<property list>] <class> [<in clause> | 
                                  <on clause>] | <location clause>)
-                                 <phrase terminator> [<description>]
       <property assignment>  ::= <identifier list> <equality verb> {<article>}
                                  <property list>
-                                 <phrase terminator>
       <placement>            ::= <identifier list> <equality verb> ("in" | "on")
                                  {<article>} <noun>
       <identifier list>      ::= {<article>} <noun> {("," | [","] "and")
@@ -53,8 +51,7 @@ namespace trogdor {
       <in clause>            ::= "in" {<article>} <noun>
       <on clause>            ::= "on" {<article>} <noun>
       <location clause>      ::= <direction> ("of" | "from") {<article>} <noun>
-      <description>          ::= "\"" "/^[\"]+/" ".\"" [<phrase terminator>] |
-                                 "\"" "/^[\"]+/\"" <phrase terminator>
+      <description>          ::= "\"" "/^[\"]+/" ".\"" | "\"" "/^[\"]+/\""
       <equality verb>        ::= "is" | "are"
       <assertion verb>       ::= "has" | "carries" | "is carrying" | "wears" |
                                  "is wearing" | "contains" | "supports" |
@@ -211,6 +208,17 @@ namespace trogdor {
                (none)
          */
          void parseLocationClause();
+
+         /*
+            Parses a thing's description.
+
+            Input:
+               All identifiers being described (if more than 1, we output an error)
+
+            Output:
+               (none)
+         */
+         void parseDescription(std::vector<std::string> identifiers);
 
          /*
             Parses the definition of one or more things. Matches the

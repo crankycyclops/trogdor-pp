@@ -327,6 +327,62 @@ namespace trogdor {
 
    /**************************************************************************/
 
+   void Inform7Parser::parseDescription(std::vector<std::string> identifiers) {
+
+      Token t = lexer.next();
+
+      // A description of the thing being described was included
+      if (QUOTED_STRING == t.type) {
+
+         std::string description = t.value;
+
+         if (identifiers.size() > 1) {
+         throw ParseException(std::string("You wrote '") + description +
+            "' (line " + std::to_string(t.lineno) + "): but I don't know if " +
+            "you're trying to describe " + vectorToStr(identifiers, "or") +
+            ".");
+         }
+
+         t = lexer.next();
+
+         if (PHRASE_TERMINATOR != t.type) {
+
+            std::string combined = "\"" + description + "\"";
+
+            for (; t.type != PHRASE_TERMINATOR; t = lexer.next()) {
+
+               if (COMMA != t.type && COLON != t.type && SEMICOLON != t.type) {
+                  combined += " ";
+               }
+
+               combined += t.value;
+            }
+
+            throw ParseException(std::string("You wrote '") + combined +
+               "' (line " + std::to_string(t.lineno) + "): but it looks as if " +
+               "perhaps you did not intend that to read as a single " +
+               "sentence, and possibly the text in quotes was supposed to " +
+               "stand as as a sentence on its own? (The convention is " +
+               "that if text ends in a full stop, exclamation or question " +
+               "mark, perhaps with a close bracket or quotation mark " +
+               "involved as well, then that punctuation mark also closes " +
+               "the sentence to which the text belongs: but otherwise the " +
+               "words following the quoted text are considered part of " +
+               "the same sentence.");
+         }
+
+         else {
+            // TODO
+            std::cout << "Description of " + identifiers[0] + ": " << description
+               << std::endl << std::endl;
+         }
+      } else {
+         lexer.push(t);
+      }
+   }
+
+   /**************************************************************************/
+
    void Inform7Parser::parseDefinition(std::vector<std::string> identifiers,
    std::vector<Inform7Parser::ParsedProperty> propertyList) {
 
@@ -381,61 +437,7 @@ namespace trogdor {
          parseLocationClause();
       }
 
-      t = lexer.next();
-
-      if (PHRASE_TERMINATOR == t.type) {
-
-         t = lexer.next();
-
-         // A description of the thing being described was included
-         if (QUOTED_STRING == t.type) {
-
-            std::string description = t.value;
-
-            if (identifiers.size() > 1) {
-            throw ParseException(std::string("You wrote '") + description +
-               "' (line " + std::to_string(t.lineno) + "): but I don't know if " +
-               "you're trying to describe " + vectorToStr(identifiers, "or") +
-               ".");
-            }
-
-            t = lexer.next();
-
-            if (PHRASE_TERMINATOR != t.type) {
-
-               std::string combined = "\"" + description + "\"";
-
-               for (; t.type != PHRASE_TERMINATOR; t = lexer.next()) {
-
-                  if (COMMA != t.type && COLON != t.type && SEMICOLON != t.type) {
-                     combined += " ";
-                  }
-
-                  combined += t.value;
-               }
-
-               throw ParseException(std::string("You wrote '") + combined +
-                  "' (line " + std::to_string(t.lineno) + "): but it looks as if " +
-                  "perhaps you did not intend that to read as a single " +
-                  "sentence, and possibly the text in quotes was supposed to " +
-                  "stand as as a sentence on its own? (The convention is " +
-                  "that if text ends in a full stop, exclamation or question " +
-                  "mark, perhaps with a close bracket or quotation mark " +
-                  "involved as well, then that punctuation mark also closes " +
-                  "the sentence to which the text belongs: but otherwise the " +
-                  "words following the quoted text are considered part of " +
-                  "the same sentence.");
-            }
-
-            else {
-               // TODO
-               std::cout << "Description of " + identifiers[0] + ": " << description
-                  << std::endl << std::endl;
-            }
-         } else {
-            lexer.push(t);
-         }
-      }
+      lexer.next();
    }
 
    /**************************************************************************/
@@ -544,6 +546,14 @@ namespace trogdor {
 
       else {
          throw ParseException(std::string("I can't find a verb that I know how to deal with. (line ") + std::to_string(t.lineno) + ')');
+      }
+
+      t = lexer.peek();
+
+      if (PHRASE_TERMINATOR == t.type) {
+         parseDescription(identifiers);
+      } else {
+         lexer.push(t);
       }
    }
 

@@ -3,7 +3,7 @@
 
 
 #include <string>
-#include <stack>
+#include <deque>
 #include <unordered_set>
 #include <unordered_map>
 
@@ -78,10 +78,14 @@ namespace trogdor {
          size_t sourceLine = 1;
 
          // Tokens that were read ahead to make a decision and then "pushed back"
-         std::stack<Token> tokenBuffer;
+         std::deque<Token> tokenBuffer;
 
          // The most recently lexed token
          Token currentToken;
+
+         // If true, we should skip over the next phrase terminator we encounter
+         // (workaround to enable parsing terminator inside a quoted string.)
+         bool skipNextPhraseTerminator = false;
 
          /*
             Returns true if the string is a form of the verb to be and false if
@@ -283,7 +287,7 @@ namespace trogdor {
             Output:
                (none)
          */
-         inline void push(Token t) {tokenBuffer.push(t);}
+         inline void push(Token t) {tokenBuffer.push_back(t);}
 
          /*
             Returns the next token. If we've reached the end of the file, the

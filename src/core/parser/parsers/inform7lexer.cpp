@@ -32,7 +32,7 @@ namespace trogdor {
       sourceIndex = 0;
       sourceLine = 1;
       while (!tokenBuffer.empty()) {
-         tokenBuffer.pop();
+         tokenBuffer.pop_back();
       }
    }
 
@@ -43,12 +43,13 @@ namespace trogdor {
       Token t;
 
       if (!tokenBuffer.empty()) {
-         t = tokenBuffer.top();
-         tokenBuffer.pop();
+         t = tokenBuffer.back();
+         tokenBuffer.pop_back();
       }
 
       else {
 
+         readToken:
          skipWhitespace();
 
          // This way the token knows what line it came from (useful for
@@ -60,6 +61,16 @@ namespace trogdor {
             std::string terminator = getSentenceTerminator();
 
             if (terminator.length()) {
+
+               // Evil hack (I swear, this is the first time I've used a
+               // goto statement in at least a decade, and I promise the CS gods
+               // above that I will do penance, go to confession, and NEVER
+               // write such an abomination again.)
+               if (skipNextPhraseTerminator) {
+                  skipNextPhraseTerminator = false;
+                  goto readToken;
+               }
+
                t.value = terminator;
                t.type = PHRASE_TERMINATOR;
             }
@@ -266,8 +277,10 @@ namespace trogdor {
       // If a period appears at the end of the quoted string, it should be
       // treated as a PHRASE_TERMINATOR and returned when it's time to retrieve
       // the next token.
+
       if ('.' == quotedString.back()) {
-         tokenBuffer.push({".", PHRASE_TERMINATOR, sourceLine});
+         skipNextPhraseTerminator = true;
+         tokenBuffer.push_front({".", PHRASE_TERMINATOR, sourceLine});
       }
 
       return quotedString;
