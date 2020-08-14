@@ -80,7 +80,7 @@ set(CORE_SOURCES
 	src/core/parser/ast.cpp
 	src/core/parser/data.cpp
 	src/core/parser/parser.cpp
-	src/core/parser/parsers/inform7lexer.cpp
+	src/core/parser/parsers/inform7/lexer.cpp
 	src/core/parser/parsers/inform7parser.cpp
 	src/core/parser/parsers/xmlparser.cpp
 	src/core/instantiator/instantiator.cpp

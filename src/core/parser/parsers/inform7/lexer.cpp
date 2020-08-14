@@ -7,12 +7,12 @@
 #include <sstream>
 
 #include <trogdor/exception/parseexception.h>
-#include <trogdor/parser/parsers/inform7lexer.h>
+#include <trogdor/parser/parsers/inform7/lexer.h>
 
 namespace trogdor {
 
 
-   void Inform7Lexer::open(std::string filename) {
+   void Lexer::open(std::string filename) {
 
       std::ifstream file;
       std::stringstream s;
@@ -38,7 +38,7 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   Token Inform7Lexer::next() {
+   Token Lexer::next() {
 
       Token t;
 
@@ -206,7 +206,7 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   void Inform7Lexer::skipWhitespace() {
+   void Lexer::skipWhitespace() {
 
      while (
         sourceIndex < source.length() &&
@@ -226,7 +226,7 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   std::string Inform7Lexer::getSentenceTerminator() {
+   std::string Lexer::getSentenceTerminator() {
 
       std::string terminator = "";
 
@@ -267,7 +267,7 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   std::string Inform7Lexer::getQuotedString() {
+   std::string Lexer::getQuotedString() {
 
       std::string quotedString;
 
@@ -293,7 +293,7 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   std::string Inform7Lexer::getWord() {
+   std::string Lexer::getWord() {
 
       std::string word;
 

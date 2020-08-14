@@ -1,5 +1,5 @@
-#ifndef INFORM7LEXER_H
-#define INFORM7LEXER_H
+#ifndef Lexer_H
+#define Lexer_H
 
 
 #include <string>
@@ -35,7 +35,7 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   class Inform7Lexer {
+   class Lexer {
 
       private:
 
@@ -197,7 +197,7 @@ namespace trogdor {
          /*
             Constructor
          */
-         inline Inform7Lexer(
+         inline Lexer(
             const std::unordered_map<std::string, std::string> &dirs,
             const std::unordered_map<std::string, std::pair<
                entity::EntityType, std::function<void(size_t)>>
@@ -219,7 +219,7 @@ namespace trogdor {
          }), directions(dirs), kinds(ks), properties(props), adjectives(adjs),
          currentToken({"", SOURCE_EOF, 0}) {}
 
-         Inform7Lexer() = delete;
+         Lexer() = delete;
 
          /*
             Get a string representation of a token type. Useful for debugging.

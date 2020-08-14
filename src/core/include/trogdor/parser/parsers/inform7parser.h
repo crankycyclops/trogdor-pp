@@ -14,7 +14,7 @@
 #include <trogdor/exception/parseexception.h>
 
 #include <trogdor/parser/parser.h>
-#include <trogdor/parser/parsers/inform7lexer.h>
+#include <trogdor/parser/parsers/inform7/lexer.h>
 
 
 namespace trogdor {
@@ -121,7 +121,7 @@ namespace trogdor {
          };
 
          // Breaks Inform 7 source down into a token stream
-         Inform7Lexer lexer;
+         Lexer lexer;
 
          // All language rules are based on English
          English language;
