@@ -168,12 +168,18 @@ namespace trogdor {
          }
 
          if (!author.length()) {
-            throw ParseException(std::string("Initial bibliographic sentence has 'by' without author (line ") + std::to_string(t.lineno) + ')');
+            throw ParseException(
+               std::string("Initial bibliographic sentence has 'by' without author (line ")
+               + std::to_string(t.lineno) + ')'
+            );
          }
       }
 
       else if (PHRASE_TERMINATOR != t.type) {
-         throw ParseException(std::string("Initial bibliographic sentence can only be a title in double quotes, possibly followed with 'by' and the name of the author (line ") + std::to_string(t.lineno) + ')');
+         throw ParseException(
+            std::string("Initial bibliographic sentence can only be a title in double quotes, possibly followed with 'by' and the name of the author (line ")
+            + std::to_string(t.lineno) + ')'
+         );
       }
 
       // TODO
@@ -220,7 +226,10 @@ namespace trogdor {
          }
 
          else {
-            throw ParseException(std::string("Sentence does not follow a valid syntax. Did you end with a dangling comma or \"and\"? (line ") + std::to_string(t.lineno) + ')');
+            throw ParseException(
+               std::string("Sentence does not follow a valid syntax. Did you end with a dangling comma or \"and\"? (line ")
+               + std::to_string(t.lineno) + ')'
+            );
          }
       } while (COMMA == t.type || AND == t.type);
 
@@ -294,19 +303,23 @@ namespace trogdor {
       std::vector<std::string> containersOrPlaces = parseIdentifiersList();
 
       if (!containersOrPlaces.size()) {
-         throw ParseException(std::string("You said ") + vectorToStr(subjects) +
-            " " + (subjects.size() > 1 ? "are" : "is") +
-            " in a container or a place without saying what that container or " +
-            "place is (line " + std::to_string(t.lineno) + ')');
+         throw ParseException(
+            std::string("You said ") + vectorToStr(subjects) + " "
+            + (subjects.size() > 1 ? "are" : "is")
+            + " in a container or a place without saying what that container or "
+            + "place is (line " + std::to_string(t.lineno) + ')'
+         );
       }
 
       else if (containersOrPlaces.size() > 1) {
-         throw ParseException(std::string("You said ") + vectorToStr(subjects) +
-            (subjects.size() > 1 ? " are" : " is") +
-            " in " + vectorToStr(containersOrPlaces) + ", but " +
-            (subjects.size() > 1 ? "they" : "it") +
-            " can only be in one container or place at a time (line " +
-            std::to_string(t.lineno) + ')');
+         throw ParseException(
+            std::string("You said ") + vectorToStr(subjects)
+            + (subjects.size() > 1 ? " are" : " is")
+            + " in " + vectorToStr(containersOrPlaces) + ", but "
+            + (subjects.size() > 1 ? "they" : "it")
+            + " can only be in one container or place at a time (line "
+            + std::to_string(t.lineno) + ')'
+         );
       }
 
       else {
@@ -329,19 +342,23 @@ namespace trogdor {
       std::vector<std::string> supporters = parseIdentifiersList();
 
       if (!supporters.size()) {
-         throw ParseException(std::string("You said ") + vectorToStr(subjects) +
-            " " + (subjects.size() > 1 ? "are" : "is") +
-            " on a supporter without saying what that supporter is (line " +
-            std::to_string(t.lineno) + ')');
+         throw ParseException(
+            std::string("You said ") + vectorToStr(subjects) + " "
+            + (subjects.size() > 1 ? "are" : "is")
+            + " on a supporter without saying what that supporter is (line "
+            + std::to_string(t.lineno) + ')'
+         );
       }
 
       else if (supporters.size() > 1) {
-         throw ParseException(std::string("You said ") + vectorToStr(subjects) +
-            (subjects.size() > 1 ? " are" : " is") +
-            " on " + vectorToStr(supporters) + ", but " +
-            (subjects.size() > 1 ? "they" : "it") +
-            " can only be on one supporter at a time (line " +
-            std::to_string(t.lineno) + ')');
+         throw ParseException(
+            std::string("You said ") + vectorToStr(subjects)
+            + (subjects.size() > 1 ? " are" : " is") +
+            + " on " + vectorToStr(supporters) + ", but "
+            + (subjects.size() > 1 ? "they" : "it")
+            + " can only be on one supporter at a time (line "
+            + std::to_string(t.lineno) + ')'
+         );
       }
 
       else {
@@ -551,11 +568,17 @@ namespace trogdor {
          }
 
          else if (COMMA == t.type) {
-            throw ParseException(std::string("Your sentence on line ") + std::to_string(t.lineno) + " seems to refer to something whose name begins with a comma, which is forbidden.");
+            throw ParseException(
+               std::string("Your sentence on line ") + std::to_string(t.lineno)
+               + " seems to refer to something whose name begins with a comma, which is forbidden."
+            );
          }
 
          else {
-            throw ParseException(std::string("Illegal character on line ") + std::to_string(t.lineno) + ".");
+            throw ParseException(
+               std::string("Illegal character on line ")
+               + std::to_string(t.lineno) + "."
+            );
          }
       }
 
@@ -579,15 +602,25 @@ namespace trogdor {
       }
 
       else if (WORD == t.type || EQUALITY == t.type || AND == t.type) {
-         throw ParseException(std::string("'") + t.value + "' is not a known kind of thing or property of a thing (line " + std::to_string(t.lineno) + ')');
+         throw ParseException(
+            std::string("'") + t.value
+            + "' is not a known kind of thing or property of a thing (line "
+            + std::to_string(t.lineno) + ')'
+         );
       }
 
       else if (QUOTED_STRING == t.type) {
-         throw ParseException(std::string("The sentence on line ") + std::to_string(t.lineno) + " appears to say that one or more things are equal to a value, but that makes no sense.");
+         throw ParseException(
+            std::string("The sentence on line ") + std::to_string(t.lineno)
+            + " appears to say that one or more things are equal to a value, but that makes no sense."
+         );
       }
 
       else {
-         throw ParseException(std::string("I can't find a verb that I know how to deal with. (line ") + std::to_string(t.lineno) + ')');
+         throw ParseException(
+            std::string("I can't find a verb that I know how to deal with. (line ")
+            + std::to_string(t.lineno) + ')'
+         );
       }
 
       t = lexer.peek();
@@ -619,7 +652,10 @@ namespace trogdor {
       }
 
       else if (!identifiers.size()) {
-         throw ParseException(std::string("You've used a verb ('" + t.value + "') without a subject (line ") + std::to_string(t.lineno) + ')');
+         throw ParseException(
+            std::string("You've used a verb ('" + t.value
+            + "') without a subject (line ") + std::to_string(t.lineno) + ')'
+         );
       }
 
       // We're parsing an expression with an "is" or "are" verb
@@ -628,7 +664,10 @@ namespace trogdor {
       }
 
       else {
-         throw ParseException(std::string("I can't find a verb that I know how to deal with. (line ") + std::to_string(t.lineno) + ')');
+         throw ParseException(
+            std::string("I can't find a verb that I know how to deal with. (line ")
+            + std::to_string(t.lineno) + ')'
+         );
       }
    }
 
