@@ -14,6 +14,7 @@
 #include <trogdor/exception/parseexception.h>
 
 #include <trogdor/parser/parser.h>
+#include <trogdor/parser/parsers/inform7/kind.h>
 #include <trogdor/parser/parsers/inform7/lexer.h>
 
 
@@ -140,13 +141,17 @@ namespace trogdor {
          // Set of non-property adjectives recognized by Inform 7
          std::unordered_set<std::string> adjectives;
 
-         // Set of kinds recognized by Inform 7, mapped to the corresponding
-         // Entity type and a callback that will insert an AST node that
-         // defines an internal kind with the appropriate properties
+         // Represents the Inform 7 kinds hierarchy
+         // (See: http://www.ifwiki.org/index.php/Inform_7_for_Programmers/Part_1#Class_And_Prejudice)
+         std::unique_ptr<Kind> kinds;
+
+         // Maps kind names to their entry in the kinds hierarchy and to a
+         // callback that will insert an AST node to define the internal Entity
+         // class.
          std::unordered_map<
             std::string,
-            std::pair<entity::EntityType, std::function<void(size_t)>>
-         > kinds;
+            std::pair<Kind *, std::function<void(size_t)>>
+         > kindsMap;
 
          /*
             Parses one or more identifiers on the left hand side of an equality.
@@ -367,6 +372,7 @@ namespace trogdor {
             Inserts an Inform 7 kind.
 
             Input:
+               Parent node in the kind hierarchy (Kind *)
                Kind name (std::string)
                Entity type (entity::EntityType)
                Callback to define AST node (std::function<void()>)
@@ -375,12 +381,16 @@ namespace trogdor {
                (none)
          */
          inline void insertKind(
+            Kind *parent,
             std::string kindName,
             entity::EntityType type,
-            std::function<void(size_t)> ASTCallback
+            std::function<void(size_t)> ASTClassDefinitionCallback,
+            std::function<void(size_t)> ASTNodeCallback = {}
          ) {
 
-            kinds[kindName] = {type, ASTCallback};
+            Kind *node = parent->appendChild(kindName, type, ASTNodeCallback);
+
+            kindsMap[kindName] = {node, ASTClassDefinitionCallback};
             kindPlurals[language.pluralizeNoun(kindName)] = kindName;
          }
 

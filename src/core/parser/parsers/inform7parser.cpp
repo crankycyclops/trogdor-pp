@@ -15,7 +15,7 @@ namespace trogdor {
 
 
    Inform7Parser::Inform7Parser(std::unique_ptr<Instantiator> i,
-   const Vocabulary &v): Parser(std::move(i), v), lexer(directions, kinds,
+   const Vocabulary &v): Parser(std::move(i), v), lexer(directions, kindsMap,
    properties, adjectives) {
 
       // Built-in directions that Inform 7 recognizes by default. List can be
@@ -84,8 +84,14 @@ namespace trogdor {
       insertAdjective("even");
       insertAdjective("odd");
 
-      // Built-in kinds that Inform 7 recognizes by default.
-      insertKind("direction", entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
+      kinds = std::make_unique<Kind>("root", entity::ENTITY_UNDEFINED);
+
+      // You'll note that, in the true Inform 7 hierarchy, "direction" is a child
+      // of "object." However, I'm going to deviate from that, at least for now,
+      // and make it its own root type, especially since it doesn't actually
+      // correspond to an Entity type.
+      insertKind(kinds.get(), "direction", entity::ENTITY_UNDEFINED,
+      [&] (size_t lineno) {
 
          // This is just temporary for our current subset of Inform 7; we can
          // define custom directions internally already, and when I'm ready to
@@ -95,7 +101,21 @@ namespace trogdor {
          );
       });
 
-      insertKind("room", entity::ENTITY_ROOM, [&] (size_t lineno) {
+      // Root From my observations playing with the i7 compiler, it seems like, by
+      // default, untyped entities assume this kind by default and behave like
+      // a more general case of "thing."
+      insertKind(kinds.get(), "object", entity::ENTITY_OBJECT,
+      [&] (size_t lineno) {
+
+         ast->appendChild(ASTDefineEntityClass(
+            "inform7_object",
+            entity::Entity::typeToStr(entity::ENTITY_OBJECT),
+            lineno
+         ));
+      });
+
+      insertKind(kindsMap["object"].first, "room", entity::ENTITY_ROOM,
+      [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_room",
@@ -104,14 +124,16 @@ namespace trogdor {
          ));
       });
 
-      insertKind("region", entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
+      insertKind(kindsMap["object"].first, "region", entity::ENTITY_UNDEFINED,
+      [&] (size_t lineno) {
 
          throw UndefinedException(
             "Inform 7 regions aren't currently supported (line " + lineno + ')'
          );
       });
 
-      insertKind("thing", entity::ENTITY_OBJECT, [&] (size_t lineno) {
+      insertKind(kindsMap["object"].first, "thing", entity::ENTITY_OBJECT,
+      [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_thing",
@@ -120,7 +142,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind("door", entity::ENTITY_OBJECT, [&] (size_t lineno) {
+      insertKind(kindsMap["thing"].first, "door", entity::ENTITY_OBJECT,
+      [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -128,9 +151,10 @@ namespace trogdor {
             entity::Entity::typeToStr(entity::ENTITY_OBJECT),
             lineno
          ));
+      }, [&] (size_t lineno) {
 
          // Doors are never allowed to move, so we set the Trogdor-pp
-         // equivalent tag for the class
+         // equivalent tag for the internal Entity class
          ast->appendChild(ASTSetTag(
             "class",
             entity::Object::UntakeableTag,
@@ -139,7 +163,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind("container", entity::ENTITY_OBJECT, [&] (size_t lineno) {
+      insertKind(kindsMap["thing"].first, "container", entity::ENTITY_OBJECT,
+      [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -149,7 +174,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind("vehicle", entity::ENTITY_OBJECT, [&] (size_t lineno) {
+      insertKind(kindsMap["container"].first, "vehicle", entity::ENTITY_OBJECT,
+      [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -157,6 +183,7 @@ namespace trogdor {
             entity::Entity::typeToStr(entity::ENTITY_OBJECT),
             lineno
          ));
+      }, [&] (size_t lineno) {
 
          // Vehicles are not portable by default, so we set the Trogdor-pp
          // equivalent tag for the class
@@ -168,7 +195,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind("player's holdall", entity::ENTITY_OBJECT, [&] (size_t lineno) {
+      insertKind(kindsMap["container"].first, "player's holdall",
+      entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -178,7 +206,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind("supporter", entity::ENTITY_OBJECT, [&] (size_t lineno) {
+      insertKind(kindsMap["thing"].first, "supporter", entity::ENTITY_OBJECT,
+      [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -188,14 +217,16 @@ namespace trogdor {
          ));
       });
 
-      insertKind("backdrop", entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
+      insertKind(kindsMap["thing"].first, "backdrop", entity::ENTITY_UNDEFINED,
+      [&] (size_t lineno) {
 
          throw UndefinedException(
             "Inform 7 backdrops aren't yet supported (line " + lineno + ')'
          );
       });
 
-      insertKind("device", entity::ENTITY_OBJECT, [&] (size_t lineno) {
+      insertKind(kindsMap["thing"].first, "device", entity::ENTITY_OBJECT,
+      [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -205,7 +236,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind("person", entity::ENTITY_CREATURE, [&] (size_t lineno) {
+      insertKind(kindsMap["thing"].first, "person", entity::ENTITY_CREATURE,
+      [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_person",
@@ -214,7 +246,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind("man", entity::ENTITY_CREATURE, [&] (size_t lineno) {
+      insertKind(kindsMap["person"].first, "man", entity::ENTITY_CREATURE,
+      [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_man",
@@ -223,7 +256,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind("woman", entity::ENTITY_CREATURE, [&] (size_t lineno) {
+      insertKind(kindsMap["person"].first, "woman", entity::ENTITY_CREATURE,
+      [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_woman",
@@ -232,24 +266,12 @@ namespace trogdor {
          ));
       });
 
-      insertKind("animal", entity::ENTITY_CREATURE, [&] (size_t lineno) {
+      insertKind(kindsMap["person"].first, "animal", entity::ENTITY_CREATURE,
+      [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_animal",
             entity::Entity::typeToStr(entity::ENTITY_CREATURE),
-            lineno
-         ));
-      });
-
-      // From my observations playing with the i7 compiler, it seems like, by
-      // default, untyped entities assume this kind by default and behave like
-      // things. I'm using that observed behavior to determine how I'm going to
-      // treat this generic case.
-      insertKind("object", entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
-
-         ast->appendChild(ASTDefineEntityClass(
-            "inform7_object",
-            entity::Entity::typeToStr(entity::ENTITY_OBJECT),
             lineno
          ));
       });
@@ -619,7 +641,7 @@ namespace trogdor {
       }
 
       if (
-         kinds.end() != kinds.find(strToLower(t.value)) ||
+         kindsMap.end() != kindsMap.find(strToLower(t.value)) ||
          kindPlurals.end() != kindPlurals.find(strToLower(t.value))
       ) {      
 
@@ -740,7 +762,7 @@ namespace trogdor {
       // instantiate a room implicitly by saying that the name of a room is in a
       // certain direction from another already defined room.
       else if (
-         kinds.end() != kinds.find(strToLower(t.value)) ||
+         kindsMap.end() != kindsMap.find(strToLower(t.value)) ||
          kindPlurals.end() != kindPlurals.find(strToLower(t.value)) ||
          directions.end() != directions.find(strToLower(t.value))
       ) {

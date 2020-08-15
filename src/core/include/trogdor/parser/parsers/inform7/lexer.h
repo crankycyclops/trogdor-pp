@@ -1,5 +1,5 @@
-#ifndef Lexer_H
-#define Lexer_H
+#ifndef LEXER_H
+#define LEXER_H
 
 
 #include <string>
@@ -9,6 +9,8 @@
 
 #include <trogdor/utility.h>
 #include <trogdor/entities/entity.h>
+
+#include <trogdor/parser/parsers/inform7/kind.h>
 
 
 namespace trogdor {
@@ -63,7 +65,7 @@ namespace trogdor {
          // Reference to parser's list of defined kinds
          const std::unordered_map<
             std::string,
-            std::pair<entity::EntityType, std::function<void(size_t)>>
+            std::pair<Kind *, std::function<void(size_t)>>
          > &kinds;
 
          // Reference to parser's list of defined properties
@@ -200,7 +202,7 @@ namespace trogdor {
          inline Lexer(
             const std::unordered_map<std::string, std::string> &dirs,
             const std::unordered_map<std::string, std::pair<
-               entity::EntityType, std::function<void(size_t)>>
+               Kind *, std::function<void(size_t)>>
             > &ks,
             const std::unordered_set<std::string> &props,
             const std::unordered_set<std::string> &adjs
