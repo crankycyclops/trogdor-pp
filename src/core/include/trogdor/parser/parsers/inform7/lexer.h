@@ -4,6 +4,7 @@
 
 #include <string>
 #include <deque>
+#include <tuple>
 #include <unordered_set>
 #include <unordered_map>
 
@@ -65,7 +66,7 @@ namespace trogdor {
          // Reference to parser's list of defined kinds
          const std::unordered_map<
             std::string,
-            std::pair<Kind *, std::function<void(size_t)>>
+            std::tuple<Kind *, std::function<void(size_t)>, bool>
          > &kinds;
 
          // Reference to parser's list of defined properties
@@ -201,8 +202,8 @@ namespace trogdor {
          */
          inline Lexer(
             const std::unordered_map<std::string, std::string> &dirs,
-            const std::unordered_map<std::string, std::pair<
-               Kind *, std::function<void(size_t)>>
+            const std::unordered_map<std::string, std::tuple<
+               Kind *, std::function<void(size_t)>, bool>
             > &ks,
             const std::unordered_set<std::string> &props,
             const std::unordered_set<std::string> &adjs

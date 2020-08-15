@@ -84,6 +84,8 @@ namespace trogdor {
       insertAdjective("even");
       insertAdjective("odd");
 
+      // Insert kinds built into Inform 7 and their internal mappings to Entity
+      // types and classes
       kinds = std::make_unique<Kind>("root", entity::ENTITY_UNDEFINED);
 
       // You'll note that, in the true Inform 7 hierarchy, "direction" is a child
@@ -114,7 +116,7 @@ namespace trogdor {
          ));
       });
 
-      insertKind(kindsMap["object"].first, "room", entity::ENTITY_ROOM,
+      insertKind(std::get<0>(kindsMap["object"]), "room", entity::ENTITY_ROOM,
       [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
@@ -124,7 +126,7 @@ namespace trogdor {
          ));
       });
 
-      insertKind(kindsMap["object"].first, "region", entity::ENTITY_UNDEFINED,
+      insertKind(std::get<0>(kindsMap["object"]), "region", entity::ENTITY_UNDEFINED,
       [&] (size_t lineno) {
 
          throw UndefinedException(
@@ -132,7 +134,7 @@ namespace trogdor {
          );
       });
 
-      insertKind(kindsMap["object"].first, "thing", entity::ENTITY_OBJECT,
+      insertKind(std::get<0>(kindsMap["object"]), "thing", entity::ENTITY_OBJECT,
       [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
@@ -142,7 +144,7 @@ namespace trogdor {
          ));
       });
 
-      insertKind(kindsMap["thing"].first, "door", entity::ENTITY_OBJECT,
+      insertKind(std::get<0>(kindsMap["thing"]), "door", entity::ENTITY_OBJECT,
       [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
@@ -163,7 +165,7 @@ namespace trogdor {
          ));
       });
 
-      insertKind(kindsMap["thing"].first, "container", entity::ENTITY_OBJECT,
+      insertKind(std::get<0>(kindsMap["thing"]), "container", entity::ENTITY_OBJECT,
       [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
@@ -174,7 +176,7 @@ namespace trogdor {
          ));
       });
 
-      insertKind(kindsMap["container"].first, "vehicle", entity::ENTITY_OBJECT,
+      insertKind(std::get<0>(kindsMap["container"]), "vehicle", entity::ENTITY_OBJECT,
       [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
@@ -195,7 +197,7 @@ namespace trogdor {
          ));
       });
 
-      insertKind(kindsMap["container"].first, "player's holdall",
+      insertKind(std::get<0>(kindsMap["container"]), "player's holdall",
       entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
@@ -206,7 +208,7 @@ namespace trogdor {
          ));
       });
 
-      insertKind(kindsMap["thing"].first, "supporter", entity::ENTITY_OBJECT,
+      insertKind(std::get<0>(kindsMap["thing"]), "supporter", entity::ENTITY_OBJECT,
       [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
@@ -217,7 +219,7 @@ namespace trogdor {
          ));
       });
 
-      insertKind(kindsMap["thing"].first, "backdrop", entity::ENTITY_UNDEFINED,
+      insertKind(std::get<0>(kindsMap["thing"]), "backdrop", entity::ENTITY_UNDEFINED,
       [&] (size_t lineno) {
 
          throw UndefinedException(
@@ -225,7 +227,7 @@ namespace trogdor {
          );
       });
 
-      insertKind(kindsMap["thing"].first, "device", entity::ENTITY_OBJECT,
+      insertKind(std::get<0>(kindsMap["thing"]), "device", entity::ENTITY_OBJECT,
       [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
@@ -236,7 +238,7 @@ namespace trogdor {
          ));
       });
 
-      insertKind(kindsMap["thing"].first, "person", entity::ENTITY_CREATURE,
+      insertKind(std::get<0>(kindsMap["thing"]), "person", entity::ENTITY_CREATURE,
       [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
@@ -246,7 +248,7 @@ namespace trogdor {
          ));
       });
 
-      insertKind(kindsMap["person"].first, "man", entity::ENTITY_CREATURE,
+      insertKind(std::get<0>(kindsMap["person"]), "man", entity::ENTITY_CREATURE,
       [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
@@ -256,7 +258,7 @@ namespace trogdor {
          ));
       });
 
-      insertKind(kindsMap["person"].first, "woman", entity::ENTITY_CREATURE,
+      insertKind(std::get<0>(kindsMap["person"]), "woman", entity::ENTITY_CREATURE,
       [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
@@ -266,7 +268,7 @@ namespace trogdor {
          ));
       });
 
-      insertKind(kindsMap["person"].first, "animal", entity::ENTITY_CREATURE,
+      insertKind(std::get<0>(kindsMap["person"]), "animal", entity::ENTITY_CREATURE,
       [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(

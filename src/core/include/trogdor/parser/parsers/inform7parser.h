@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <tuple>
 #include <unordered_set>
 #include <unordered_map>
 
@@ -145,12 +146,13 @@ namespace trogdor {
          // (See: http://www.ifwiki.org/index.php/Inform_7_for_Programmers/Part_1#Class_And_Prejudice)
          std::unique_ptr<Kind> kinds;
 
-         // Maps kind names to their entry in the kinds hierarchy and to a
+         // Maps kind names to their entry in the kinds hierarchy, to a
          // callback that will insert an AST node to define the internal Entity
-         // class.
+         // class, and to a boolean value that determines whether or not the AST
+         // Entity class definition nodes have already been inserted.
          std::unordered_map<
             std::string,
-            std::pair<Kind *, std::function<void(size_t)>>
+            std::tuple<Kind *, std::function<void(size_t)>, bool>
          > kindsMap;
 
          /*
@@ -390,7 +392,7 @@ namespace trogdor {
 
             Kind *node = parent->appendChild(kindName, type, ASTNodeCallback);
 
-            kindsMap[kindName] = {node, ASTClassDefinitionCallback};
+            kindsMap[kindName] = {node, ASTClassDefinitionCallback, false};
             kindPlurals[language.pluralizeNoun(kindName)] = kindName;
          }
 
