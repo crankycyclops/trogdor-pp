@@ -125,6 +125,32 @@ namespace trogdor {
 					properties.insert(property);
 				}
 			}
+
+			/*
+				Returns true if the passed in kind is in another kind's
+				inheritance hierarchy.
+
+				Input:
+					Kind to compare (Kind *)
+
+				Output:
+					True if the passed in kind is in the calling kind's
+					inheritance hierarchy and false if not
+			*/
+			inline bool isKindRelated(Kind *kPtr) {
+
+				Kind *curKind = this;
+
+				while (curKind) {
+					if (curKind == kPtr) {
+						return true;
+					} else {
+						curKind = curKind->parent;
+					}
+				}
+
+				return false;
+			}
 	};
 }
 

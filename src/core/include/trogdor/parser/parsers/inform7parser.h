@@ -18,8 +18,8 @@
 #include <trogdor/parser/parsers/inform7/kind.h>
 #include <trogdor/parser/parsers/inform7/lexer.h>
 
-
 namespace trogdor {
+
 
    /*
       Parses an Inform 7 source file and uses it to instantiate the game. This
@@ -166,6 +166,13 @@ namespace trogdor {
             std::pair<std::vector<Kind *>, std::vector<std::string>>
          > properties;
 
+         // Symbol table for all declared entities in the game, mapping the
+         // entity's name to a set of possible kinds. If the kind is explicitly
+         // set in the source, then this will contain just one value. Otherwise,
+         // we'll have to resort to some tie-breaking logic to decide which kind
+         // we should pick when it comes time to construct the AST.
+         std::unordered_map<std::string, std::unordered_set<Kind *>> entities;
+
          /*
             Parses one or more identifiers on the left hand side of an equality.
             Matches the <identifiers list> production in the EBNF above. This
@@ -176,12 +183,13 @@ namespace trogdor {
             matched.
 
             Input:
-               (none)
+               Whether or not the parsed identifiers should be recorded in the
+                  entity symbol table (bool)
 
             Output:
                Vector containing one or more identifiers.
          */
-         std::vector<std::string> parseIdentifiersList();
+         std::vector<std::string> parseIdentifiersList(bool declareEntities = true);
 
          /*
             Parses one or more properties on the left hand side of an equality.
@@ -227,12 +235,13 @@ namespace trogdor {
             clause> production in the EBNF above.
 
             Input:
-               (none)
+               One or more rooms (if more than 1, an error is thrown - std::vector<std::string>)
+               Direction (std::string)
 
             Output:
                (none)
          */
-         void parseLocationClause();
+         void parseLocationClause(std::vector<std::string> identifiers, std::string direction);
 
          /*
             Parses a thing's description.

@@ -13,7 +13,6 @@
 
 #include <trogdor/parser/parsers/inform7/kind.h>
 
-
 namespace trogdor {
 
 
