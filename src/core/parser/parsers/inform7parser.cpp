@@ -15,8 +15,8 @@ namespace trogdor {
 
 
    Inform7Parser::Inform7Parser(std::unique_ptr<Instantiator> i,
-   const Vocabulary &v): Parser(std::move(i), v), lexer(directions, kindsMap,
-   properties, adjectives) {
+   const Vocabulary &v): Parser(std::move(i), v), lexer(directions, adjectives,
+   kindsMap, properties) {
 
       // Built-in directions that Inform 7 recognizes by default. List can be
       // extended later. This structure maps directions to their opposites.
@@ -27,49 +27,10 @@ namespace trogdor {
       insertDirection("northwest", "southeast");
       insertDirection("northeast", "southwest");
 
-      // Built-in properties that Inform 7 recognizes for certain kinds by
-      // default.
-      insertProperty("touchable");
-      insertProperty("untouchable");
-      insertProperty("lighted");
-      insertProperty("dark");
-      insertProperty("open");
-      insertProperty("closed");
-
-      // These properties can only be set on things
-      insertProperty("lit");
-      insertProperty("unlit");
-      insertProperty("transparent");
-      insertProperty("opaque");
-      insertProperty("fixed in place");
-      insertProperty("portable");
-      insertProperty("openable");
-      insertProperty("unopenable");
-      insertProperty("enterable");
-      insertProperty("pushable between rooms");
-      insertProperty("wearable");
-      insertProperty("edible");
-      insertProperty("inedible");
-      insertProperty("described");
-      insertProperty("undescribed");
-
-      // These properties can only be set on doors
-      insertProperty("locked");
-      insertProperty("unlocked");
-      insertProperty("lockable");
-      insertProperty("unlockable");
-
-      // These properties can only be set on people or animals
-      insertProperty("male");
-      insertProperty("female");
-      insertProperty("neuter"); // as opposed to male or female
-
-      // These properties can only be set on devices
-      insertProperty("switched on");
-      insertProperty("switched off");
-
       // Built-in adjectives that Inform 7 recognizes by default. List can be
       // extended later.
+      insertAdjective("touchable");
+      insertAdjective("untouchable");
       insertAdjective("adjacent");
       insertAdjective("visible");
       insertAdjective("invisible");
@@ -277,6 +238,181 @@ namespace trogdor {
             lineno
          ));
       });
+
+      // Built-in properties that Inform 7 recognizes for things.
+      insertProperty(
+         "lit",
+         {std::get<0>(kindsMap["thing"])},
+         {"unlit"}
+      );
+
+      insertProperty(
+         "unlit",
+         {std::get<0>(kindsMap["thing"])},
+         {"lit"}
+      );
+
+      insertProperty(
+         "transparent",
+         {std::get<0>(kindsMap["thing"])},
+         {"opaque"}
+      );
+
+      insertProperty(
+         "opaque",
+         {std::get<0>(kindsMap["thing"])},
+         {"transparent"}
+      );
+
+      insertProperty(
+         "fixed in place",
+         {std::get<0>(kindsMap["thing"])},
+         {"portable"}
+      );
+
+      insertProperty(
+         "portable",
+         {std::get<0>(kindsMap["thing"])},
+         {"fixed in place"}
+      );
+
+      insertProperty(
+         "openable",
+         {std::get<0>(kindsMap["thing"])},
+         {"unopenable"}
+      );
+
+      insertProperty(
+         "unopenable",
+         {std::get<0>(kindsMap["thing"])},
+         {"openable"}
+      );
+
+      insertProperty(
+         "edible",
+         {std::get<0>(kindsMap["thing"])},
+         {"inedible"}
+      );
+
+      insertProperty(
+         "inedible",
+         {std::get<0>(kindsMap["thing"])},
+         {"edible"}
+      );
+
+      insertProperty(
+         "described",
+         {std::get<0>(kindsMap["thing"])},
+         {"undescribed"}
+      );
+
+      insertProperty(
+         "undescribed",
+         {std::get<0>(kindsMap["thing"])},
+         {"described"}
+      );
+
+      insertProperty(
+         "enterable",
+         {std::get<0>(kindsMap["thing"])}
+      );
+
+      insertProperty(
+         "wearable",
+         {std::get<0>(kindsMap["thing"])}
+      );
+
+      insertProperty(
+         "pushable between rooms",
+         {std::get<0>(kindsMap["thing"])}
+      );
+
+      // Built-in properties that Inform 7 recognizes for rooms.
+      insertProperty(
+         "lighted",
+         {std::get<0>(kindsMap["room"])},
+         {"dark"}
+      );
+
+      insertProperty(
+         "dark",
+         {std::get<0>(kindsMap["room"])},
+         {"lighted"}
+      );
+
+      // Built-in properties that Inform 7 recognizes for doors.
+      insertProperty(
+         "locked",
+         {std::get<0>(kindsMap["door"])},
+         {"unlocked"}
+      );
+
+      insertProperty(
+         "unlocked",
+         {std::get<0>(kindsMap["door"])},
+         {"locked"}
+      );
+
+      insertProperty(
+         "lockable",
+         {std::get<0>(kindsMap["door"])},
+         {"unlockable"}
+      );
+
+      insertProperty(
+         "unlockable",
+         {std::get<0>(kindsMap["door"])},
+         {"lockable"}
+      );
+
+      // Built-in properties that Inform 7 recognizes for devices.
+      insertProperty(
+         "switched on",
+         {std::get<0>(kindsMap["device"])},
+         {"switched off"}
+      );
+
+      insertProperty(
+         "switched off",
+         {std::get<0>(kindsMap["device"])},
+         {"switched on"}
+      );
+
+      // Built-in properties that Inform 7 recognizes for persons.
+      insertProperty(
+         "male",
+         {std::get<0>(kindsMap["person"])},
+         {"female", "neuter"}
+      );
+
+      insertProperty(
+         "female",
+         {std::get<0>(kindsMap["person"])},
+         {"male", "neuter"}
+      );
+
+      insertProperty(
+         "neuter",
+         {std::get<0>(kindsMap["person"])},
+         {"male", "female"}
+      );
+
+      // Built-in properties that Inform 7 recognizes for containers and doors.
+      insertProperty(
+         "open",
+         {std::get<0>(kindsMap["door"]), std::get<0>(kindsMap["container"])},
+         {"closed"}
+      );
+
+      insertProperty(
+         "closed",
+         {std::get<0>(kindsMap["door"]), std::get<0>(kindsMap["container"])},
+         {"open"}
+      );
+
+      // According to Inform 7, men are always male and women are always female
+      std::get<0>(kindsMap["man"])->insertProperty("male");
+      std::get<0>(kindsMap["woman"])->insertProperty("female");
    }
 
    /**************************************************************************/

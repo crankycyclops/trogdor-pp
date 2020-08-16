@@ -63,6 +63,9 @@ namespace trogdor {
          // Reference to parser's list of defined directions
          const std::unordered_map<std::string, std::string> &directions;
 
+         // Reference to parser's list of defined non-property adjectives
+         const std::unordered_set<std::string> &adjectives;
+
          // Reference to parser's list of defined kinds
          const std::unordered_map<
             std::string,
@@ -70,10 +73,10 @@ namespace trogdor {
          > &kinds;
 
          // Reference to parser's list of defined properties
-         const std::unordered_set<std::string> &properties;
-
-         // Reference to parser's list of defined non-property adjectives
-         const std::unordered_set<std::string> &adjectives;
+         const std::unordered_map<
+            std::string,
+            std::pair<std::vector<Kind *>, std::vector<std::string>>
+         > &properties;
 
          // Inform 7 source code
          std::string source;
@@ -202,11 +205,13 @@ namespace trogdor {
          */
          inline Lexer(
             const std::unordered_map<std::string, std::string> &dirs,
+            const std::unordered_set<std::string> &adjs,
             const std::unordered_map<std::string, std::tuple<
                Kind *, std::function<void(size_t)>, bool>
             > &ks,
-            const std::unordered_set<std::string> &props,
-            const std::unordered_set<std::string> &adjs
+            const std::unordered_map<std::string, std::pair<
+	            std::vector<Kind *>, std::vector<std::string>>
+            > &props
          ):
          tokenTypeToStr({
             {SOURCE_EOF, "SOURCE_EOF"},
@@ -219,7 +224,7 @@ namespace trogdor {
             {EQUALITY, "EQUALITY"},
             {AND, "AND"},
             {QUOTED_STRING, "QUOTED_STRING"}
-         }), directions(dirs), kinds(ks), properties(props), adjectives(adjs),
+         }), directions(dirs), adjectives(adjs), kinds(ks), properties(props),
          currentToken({"", SOURCE_EOF, 0}) {}
 
          Lexer() = delete;

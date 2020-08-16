@@ -34,7 +34,8 @@ namespace trogdor {
       Here's the current subset of the language I'm parsing in EBNF format (I'll
       keep this updated as support for additional language features grows):
 
-      <program>              ::= [<bibliographic>] <phrase> [{<phrase terminator> <phrase>}]
+      <program>              ::= [<bibliographic>] <phrase> [{<phrase terminator>
+                                 <phrase>}]
       <bibliographic>        ::= <quoted string> ["by" <author name>]
                                  <phrase terminator>
       <author name>          ::= /[A-Za-z ']+/ | <quoted string>
@@ -109,7 +110,10 @@ namespace trogdor {
       http://mirrors.ibiblio.org/interactive-fiction/programming/inform7/manuals/Inform7_CheatSheet.pdf
 
       Where possible, I try to throw the same (or similar) error messages as
-      those returned by the original Inform 7 compiler.
+      those returned by the original Inform 7 compiler, but I deviate from
+      these in many places, both because I can't know how the original parser
+      walks through the source code and because I'm able to provide, in some
+      cases, more detailed messages about what went wrong.
    */
    class Inform7Parser: public Parser {
 
@@ -133,12 +137,6 @@ namespace trogdor {
          // directions["north"] = "south".
          std::unordered_map<std::string, std::string> directions;
 
-         // Plural lookup mapping plural kinds to their singular equivalents
-         std::unordered_map<std::string, std::string> kindPlurals;
-
-         // Set of properties (both either/or and value) recognized by Inform 7
-         std::unordered_set<std::string> properties;
-
          // Set of non-property adjectives recognized by Inform 7
          std::unordered_set<std::string> adjectives;
 
@@ -154,6 +152,19 @@ namespace trogdor {
             std::string,
             std::tuple<Kind *, std::function<void(size_t)>, bool>
          > kindsMap;
+
+         // Plural lookup mapping plural kinds to their singular equivalents
+         std::unordered_map<std::string, std::string> kindPlurals;
+
+         // Set of properties (both either/or and value) recognized by Inform 7.
+         // Each property maps to the highest and most basic kinds in the
+         // hierarchy on which the property can be set, and to a set of
+         // other properties that are contradictory and which can't be set if
+         // the property that forms the key of the unordered_map is.
+         std::unordered_map<
+            std::string,
+            std::pair<std::vector<Kind *>, std::vector<std::string>>
+         > properties;
 
          /*
             Parses one or more identifiers on the left hand side of an equality.
@@ -402,14 +413,20 @@ namespace trogdor {
 
             Input:
                Property (std::string)
+               The most basic kinds on which the property can be set (std::vector<Kind *>)
+               Properties that are contradictory (std::vector<std::string>)
 
             Output:
                (none)
          */
-         inline void insertProperty(std::string property) {
+         inline void insertProperty(
+            std::string property,
+            std::vector<Kind *> kinds,
+            std::vector<std::string> contradictions = {}
+         ) {
 
             if (properties.end() == properties.find(property)) {
-               properties.insert(property);
+               properties[property] = {kinds, contradictions};
             }
          }
 

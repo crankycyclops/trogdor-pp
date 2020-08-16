@@ -4,6 +4,7 @@
 #include <list>
 #include <string>
 #include <memory>
+#include <unordered_set>
 #include <functional>
 
 #include <trogdor/entities/entity.h>
@@ -22,6 +23,10 @@ namespace trogdor {
 
 			// The kind's internal Entity type
 			entity::EntityType internalType;
+
+			// These are properties that are always true and must always be
+			// set for the given kind
+			std::unordered_set<std::string> properties;
 
 			// Each kind can have one or more children that inherit from it
 			std::list<std::unique_ptr<Kind>> children;
@@ -89,6 +94,36 @@ namespace trogdor {
 				childPtr->parent = this;
 
 				return childPtr;
+			}
+
+			/*
+				Return the properties that must always be set for the kind.
+
+				Input:
+					(none)
+
+				Output:
+					All properties that must always be true for this kind
+			*/
+			inline const std::unordered_set<std::string> &getProperties() const {
+
+				return properties;
+			}
+
+			/*
+				Sets a property that must always be set for the given kind.
+
+				Input:
+					(none)
+
+				Output:
+					All properties that must always be true for this kind
+			*/
+			inline void insertProperty(std::string property) {
+
+				if (properties.end() == properties.find(property)) {
+					properties.insert(property);
+				}
 			}
 	};
 }
