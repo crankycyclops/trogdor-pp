@@ -575,30 +575,34 @@ namespace trogdor {
          0 == strToLower(t.value).compare("not")
       ) {
 
+         std::string property = strToLower(t.value);
+
          // If a property is preceded by not, flag it so we can record the
          // negation when the property is parsed
-         if (0 == strToLower(t.value).compare("not")) {
+         if (0 == property.compare("not")) {
             negated = true;
             t = lexer.next();
             continue;
          }
 
-         else if (adjectives.end() != adjectives.find(strToLower(t.value))) {
+         else if (adjectives.end() != adjectives.find(property)) {
             throw ParseException(
                "(line " + std::to_string(t.lineno) + "): "
-               + "'" + strToLower(t.value)
+               + "'" + property
                + "' is only an adjective that can be checked during runtime, not a property that can be set (line "
                + std::to_string(t.lineno) + ')'
             );
          }
 
-         propertyList.push_back({strToLower(t.value), negated});
+         propertyList.push_back({property, negated});
 
          for (const auto &identifier: identifiers) {
 
+            auto &entityProperties = std::get<1>(entities[identifier]);
+
             // Check to see if the source code is trying to set a property and
             // its negation
-            if (negated != std::get<1>(entities[identifier])[strToLower(t.value)].first) {
+            if (negated != entityProperties[property].first) {
                throw ParseException("TODO: contradiction! You said it was, then it wasn't, or vice versa.");
             }
 
@@ -610,16 +614,15 @@ namespace trogdor {
                std::unordered_map<std::string, std::optional<bool>> contraries;
 
                // Initialize list of all possible contraries
-               for (const auto &property: properties[strToLower(t.value)].second) {
-                  contraries[property] = std::nullopt;
+               for (const auto &contrary: properties[property].second) {
+                  contraries[contrary] = std::nullopt;
                }
 
                // Record in that list any contraries which have been set (in a
                // positive or negative state)
-               for (const auto &property: contraries) {
-                  if (std::get<1>(entities[identifier]).end() !=
-                  std::get<1>(entities[identifier]).find(property.first)) {
-                     contraries[property.first] = std::get<1>(entities[identifier])[property.first].first;
+               for (auto &contrary: contraries) {
+                  if (entityProperties.end() != entityProperties.find(contrary.first)) {
+                     contrary.second = entityProperties[contrary.first].first;
                   }
                }
 
@@ -630,8 +633,8 @@ namespace trogdor {
 
                   bool wereGood = false;
 
-                  for (const auto &property: contraries) {
-                     if (!property.second || *property.second) {
+                  for (const auto &contrary: contraries) {
+                     if (!contrary.second || *contrary.second) {
                         wereGood = true;
                         break;
                      }
@@ -648,8 +651,8 @@ namespace trogdor {
 
                   bool wereGood = true;
 
-                  for (const auto &property: contraries) {
-                     if (property.second && *property.second) {
+                  for (const auto &contrary: contraries) {
+                     if (contrary.second && *contrary.second) {
                         wereGood = false;
                         break;
                      }
@@ -662,7 +665,7 @@ namespace trogdor {
             }
 
             // There are no contradictions, so set the property on the entity
-            std::get<1>(entities[identifier])[strToLower(t.value)] = {negated, t.lineno};
+            std::get<1>(entities[identifier])[property] = {negated, t.lineno};
          }
 
          t = lexer.next();
@@ -678,7 +681,7 @@ namespace trogdor {
          }
 
          // Reset the negated flag for the next property
-         if (0 != strToLower(t.value).compare("not")) {
+         if (0 != property.compare("not")) {
             negated = false;
          }
       }
