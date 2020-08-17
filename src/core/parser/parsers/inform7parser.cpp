@@ -654,17 +654,53 @@ namespace trogdor {
 
                   bool wereGood = false;
 
+                  std::set<size_t> linenos = {t.lineno};
+                  std::vector<std::string> propertyStrs = {
+                     std::string(negated ? "not " : "") + property
+                  };
+
                   // Careful: contrary.second is true if the property is negated,
                   // not the other way around
                   for (const auto &contrary: contraries) {
+
                      if (!contrary.second || !*contrary.second) {
                         wereGood = true;
                         break;
                      }
+
+                     if (entityProperties.end() != entityProperties.find(contrary.first)) {
+
+                        propertyStrs.push_back(
+                           std::string(entityProperties[contrary.first].first ? "not " : "")
+                           + contrary.first
+                        );
+
+                        if (linenos.end() == linenos.find(entityProperties[contrary.first].second)) {
+                           linenos.insert(entityProperties[contrary.first].second);
+                        }
+                     }
                   }
 
                   if (!wereGood) {
-                     throw ParseException("TODO: contradiction! All can't be negated.");
+
+                     std::string lineNosStr = linenos.size() > 1 ? "lines " : "line ";
+                     std::string propertyStr = "";
+
+                     for (auto [i, it] = std::tuple(static_cast<size_t>(0), linenos.begin()); it != linenos.end(); it++, i++) {
+                        lineNosStr += std::to_string(*it);
+                        lineNosStr += linenos.size() > 1 && i < linenos.size() - 2 ? ", " : i < linenos.size() - 1 ? " and " : "";
+                     }
+
+                     for (size_t i = 0; i < propertyStrs.size(); i++) {
+                        propertyStr += propertyStrs[i];
+                        propertyStr += (i < propertyStrs.size() - 2 ? ", " : i < propertyStrs.size() - 1 ? " and " : "");
+                     }
+
+                     throw ParseException(
+                        "On " + lineNosStr + ", you stated that " + identifier
+                        + " is " + propertyStr
+                        + ", but this seems to be a contradiction."
+                     );
                   }
                }
 
@@ -672,19 +708,12 @@ namespace trogdor {
                // any of its contraries set in a non-negated state.
                else {
 
-                  bool wereGood = true;
-
                   // Careful: contrary.second is true if the property is negated,
                   // not the other way around
                   for (const auto &contrary: contraries) {
                      if (contrary.second && !*contrary.second) {
-                        wereGood = false;
-                        break;
+                        throw ParseException("TODO: contradiction! You said it was, then set a contradictory property.");
                      }
-                  }
-
-                  if (!wereGood) {
-                     throw ParseException("TODO: contradiction! You said it was, then set a contradictory property.");
                   }
                }
             }
