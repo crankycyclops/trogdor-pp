@@ -167,20 +167,31 @@ namespace trogdor {
          > properties;
 
          // Symbol table for all declared entities in the game, mapping the
-         // entity's name to a set of possible kinds. If the kind is explicitly
-         // set in the source, then this will contain just one value. Otherwise,
-         // we'll have to resort to some tie-breaking logic to decide which kind
-         // we should pick when it comes time to construct the AST.
-         std::unordered_map<std::string, std::unordered_set<Kind *>> entities;
+         // entity's name to a set of possible kinds and whatever properties
+         // have been set on the entity in the source.
+         std::unordered_map<std::string, std::tuple<
+
+            // If the kind is explicitly set in the source, then this will
+            // contain just one value. Otherwise, we'll have to resort to some
+            // tie-breaking logic to decide which kind we should pick when it
+            // comes time to construct the AST.
+            std::unordered_set<Kind *>,
+
+            // Each property that has been set on the entity, along with whether
+            // or not the property has been negated and the line number where the
+            // property was set.
+            std::unordered_map<std::string, std::pair<bool, size_t>>,
+
+            // The entity's description
+            std::string
+
+         >> entities;
 
          /*
             Parses one or more identifiers on the left hand side of an equality.
             Matches the <identifiers list> production in the EBNF above. This
             method is kind of a cheat and deviates from the LL parsing pattern.
-            If I don't do this, I'll have far too much lookahead. The result of
-            this method will either be passed to parseDefinition() or
-            parsePropertyAssignment(), depending on which phrase ends up being
-            matched.
+            If I don't do this, I'll have far too much lookahead.
 
             Input:
                Whether or not the parsed identifiers should be recorded in the
@@ -199,12 +210,12 @@ namespace trogdor {
             lookahead.
 
             Input:
-               (none)
+               Identifiers for entities the properties apply to (std::vector<std::string>)
 
             Output:
                Vector containing one or more properties
          */
-         std::vector<ParsedProperty> parsePropertyList();
+         std::vector<ParsedProperty> parsePropertyList(std::vector<std::string> identifiers);
 
          /*
             Parses the in clause of a definition. Matches the <in clause>
@@ -280,9 +291,10 @@ namespace trogdor {
             Output:
                (none)
          */
+/*
          void parsePropertyAssignment(std::vector<std::string> identifiers,
          std::vector<ParsedProperty> propertyList);
-
+*/
          /*
             Parses the placement of one or more things into or onto a room,
             container, or supporter. Matches the <placement> production in the

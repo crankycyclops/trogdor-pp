@@ -535,8 +535,14 @@ namespace trogdor {
          }
 
          if (noun.length()) {
+
             identifiers.push_back(noun);
             startingNewNoun = true;
+
+            // Add the identifier to the entities symbol table
+            if (declareEntities && entities.end() == entities.find(noun)) {
+               entities[noun] = {{}, {}, ""};
+            }
          }
 
          else {
@@ -553,7 +559,9 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   std::vector<Inform7Parser::ParsedProperty> Inform7Parser::parsePropertyList() {
+   std::vector<Inform7Parser::ParsedProperty> Inform7Parser::parsePropertyList(
+      std::vector<std::string> identifiers
+   ) {
 
       Token t = lexer.next();
       std::vector<Inform7Parser::ParsedProperty> propertyList;
@@ -584,7 +592,79 @@ namespace trogdor {
             );
          }
 
-         propertyList.push_back({t.value, negated});
+         propertyList.push_back({strToLower(t.value), negated});
+
+         for (const auto &identifier: identifiers) {
+
+            // Check to see if the source code is trying to set a property and
+            // its negation
+            if (negated != std::get<1>(entities[identifier])[strToLower(t.value)].first) {
+               throw ParseException("TODO: contradiction! You said it was, then it wasn't, or vice versa.");
+            }
+
+            else {
+
+               // If the boolean value is unset, it means that contrary wasn't
+               // set on the entity at all and we can skip over it when checking
+               // for contradictions.
+               std::unordered_map<std::string, std::optional<bool>> contraries;
+
+               // Initialize list of all possible contraries
+               for (const auto &property: properties[strToLower(t.value)].second) {
+                  contraries[property] = std::nullopt;
+               }
+
+               // Record in that list any contraries which have been set (in a
+               // positive or negative state)
+               for (const auto &property: contraries) {
+                  if (std::get<1>(entities[identifier]).end() !=
+                  std::get<1>(entities[identifier]).find(property.first)) {
+                     contraries[property.first] = std::get<1>(entities[identifier])[property.first].first;
+                  }
+               }
+
+               // The property was negated, so if there are any contraries, make
+               // sure we don't have the situation where a property and all of its
+               // contraries are negated, which would also be a contradiction.
+               if (negated) {
+
+                  bool wereGood = false;
+
+                  for (const auto &property: contraries) {
+                     if (!property.second || *property.second) {
+                        wereGood = true;
+                        break;
+                     }
+                  }
+
+                  if (!wereGood) {
+                     throw ParseException("TODO: contradiction! All can't be negated.");
+                  }
+               }
+
+               // If the property was not negated, then make sure we don't have
+               // any of its contraries set in a non-negated state.
+               else {
+
+                  bool wereGood = true;
+
+                  for (const auto &property: contraries) {
+                     if (property.second && *property.second) {
+                        wereGood = false;
+                        break;
+                     }
+                  }
+
+                  if (!wereGood) {
+                     throw ParseException("TODO: contradiction! You said it was, then set a contradictory property.");
+                  }
+               }
+            }
+
+            // There are no contradictions, so set the property on the entity
+            std::get<1>(entities[identifier])[strToLower(t.value)] = {negated, t.lineno};
+         }
+
          t = lexer.next();
 
          // Properties might be delimited by a comma and/or "and" rather than
@@ -861,6 +941,7 @@ namespace trogdor {
 
    /**************************************************************************/
 
+/*
    void Inform7Parser::parsePropertyAssignment(std::vector<std::string> identifiers,
    std::vector<Inform7Parser::ParsedProperty> propertyList) {
 
@@ -877,7 +958,7 @@ namespace trogdor {
          std::cout << i->value + (i->negated ? " (negated)" : "") << std::endl;
       }
    }
-
+*/
    /**************************************************************************/
 
    void Inform7Parser::parsePlacement(std::vector<std::string> subjects) {
@@ -916,15 +997,25 @@ namespace trogdor {
          // If we have a list of properties, parse them. We're breaking away
          // from a standard recursive descent in order to avoid too much
          // lookahead.
-         propertyList = parsePropertyList();
+         propertyList = parsePropertyList(identifiers);
 
          t = lexer.next();
 
-         if (PHRASE_TERMINATOR == t.type) {
-            parsePropertyAssignment(identifiers, propertyList);
-         }
+         /*
+            Previously, I had an extra if statement that looked like this:
 
-         else if (WORD == t.type) {
+            if (PHRASE_TERMINATOR == t.type) {
+               parsePropertyAssignment(identifiers, propertyList);
+            }
+
+            However, that is no longer necessary because property assignment
+            occurs in parsePropertyList(), and if we're matching the
+            <property assignment> production in the EBNF, we've already reached
+            the phrase terminator and no longer have anything left in the
+            sentence to parse.
+         */
+
+         if (WORD == t.type) {
             parseDefinition(identifiers, propertyList);
          }
 
