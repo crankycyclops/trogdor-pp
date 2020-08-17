@@ -712,7 +712,26 @@ namespace trogdor {
                   // not the other way around
                   for (const auto &contrary: contraries) {
                      if (contrary.second && !*contrary.second) {
-                        throw ParseException("TODO: contradiction! You said it was, then set a contradictory property.");
+                        if (t.lineno != entityProperties[contrary.first].second) {
+                           throw ParseException(
+                              std::string("You stated on line ") + std::to_string(t.lineno)
+                              + " that " + identifier + " is " + (negated ? "not " : "")
+                              + property + ", but previously, on line "
+                              + std::to_string(entityProperties[contrary.first].second)
+                              + ", you stated that " + identifier
+                              + " is " + (entityProperties[contrary.first].first ? "not " : "")
+                              + contrary.first + ". This seems to be a contradiction."
+                           );
+                        } else {
+                           throw ParseException(
+                              std::string("You stated on line ") + std::to_string(t.lineno)
+                              + " that " + identifier + " is " + (negated ? "not " : "")
+                              + property + ", but on the same line, you also stated that "
+                              + identifier + " is "
+                              + (entityProperties[contrary.first].first ? "not " : "")
+                              + contrary.first + ". This seems to be a contradiction."
+                           );
+                        }
                      }
                   }
                }
