@@ -52,7 +52,7 @@ namespace trogdor {
          readToken:
          skipWhitespace();
 
-         // This way the token knows what line it came from (useful for
+         // This way the token knows what line it came from (necessary for
          // reporting errors)
          t.lineno = sourceLine;
 
@@ -123,14 +123,14 @@ namespace trogdor {
                   */
                   // BEGIN AWKWARD BLOCK OF CODE
                   std::string potentialWord;
-                  std::stack<int> tokenSourceIndices;
+                  std::stack<std::pair<int, int>> tokenSourceIndicesAndLines;
 
                   for (int compoundWordLength = 0;
                   compoundWordLength < maxCompoundWordLength; compoundWordLength++) {
 
                      potentialWord += (compoundWordLength > 0 ? " " : "");
                      potentialWord += getWord();
-                     tokenSourceIndices.push(sourceIndex);
+                     tokenSourceIndicesAndLines.push({sourceIndex, sourceLine});
 
                      sourceIndex++;
 
@@ -139,7 +139,7 @@ namespace trogdor {
                      }
                   }
 
-                  while (tokenSourceIndices.size() > 1) {
+                  while (tokenSourceIndicesAndLines.size() > 1) {
 
                      if (
                         // TODO: when I introduce verb synonyms that can be
@@ -152,7 +152,7 @@ namespace trogdor {
                         adjectives.end() == adjectives.find(potentialWord)
                      ) {
                         potentialWord.erase(potentialWord.rfind(' '));
-                        tokenSourceIndices.pop();
+                        tokenSourceIndicesAndLines.pop();
                      }
 
                      else {
@@ -160,8 +160,11 @@ namespace trogdor {
                      }
                   }
 
-                  sourceIndex = tokenSourceIndices.top();
-                  tokenSourceIndices.pop();
+                  auto prevSourceIndexAndLine = tokenSourceIndicesAndLines.top();
+
+                  sourceIndex = prevSourceIndexAndLine.first;
+                  sourceLine = prevSourceIndexAndLine.second;
+                  tokenSourceIndicesAndLines.pop();
                   t.value = potentialWord;
                   // END AWKWARD BLOCK OF CODE
 
@@ -216,8 +219,11 @@ namespace trogdor {
 
          // Count comments as whitespace
          if ('[' == source.at(sourceIndex)) {
-            for (; sourceIndex < source.length() && ']' != source.at(sourceIndex);
-               sourceIndex++);
+            for (; sourceIndex < source.length() && ']' != source.at(sourceIndex); sourceIndex++) {
+               if ('\n' == source.at(sourceIndex)) {
+                  sourceLine++;
+               }
+            }
          }
 
          sourceIndex++;

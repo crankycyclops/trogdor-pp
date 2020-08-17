@@ -606,7 +606,25 @@ namespace trogdor {
                entityProperties.end() != entityProperties.find(property) &&
                negated != entityProperties[property].first
             ) {
-               throw ParseException("TODO: contradiction! You said it was, then it wasn't, or vice versa.");
+               if (t.lineno != entityProperties[property].second) {
+                  throw ParseException(
+                     std::string("You stated on line ") + std::to_string(t.lineno)
+                     + " that " + identifier + " is " + (negated ? "not " : "")
+                     + property + ", but previously, on line "
+                     + std::to_string(entityProperties[property].second)
+                     + ", you stated that " + identifier
+                     + " is " + (entityProperties[property].first ? "not " : "")
+                     + property + ". This seems to be a contradiction."
+                  );
+               } else {
+                  throw ParseException(
+                     std::string("You stated on line ") + std::to_string(t.lineno)
+                     + " that " + identifier + " is " + (negated ? "not " : "")
+                     + property + ", but on the same line, you also stated that "
+                     + identifier + " is " + (entityProperties[property].first ? "not " : "")
+                     + property + ". This seems to be a contradiction."
+                  );
+               }
             }
 
             else {
