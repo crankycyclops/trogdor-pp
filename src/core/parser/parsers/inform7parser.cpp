@@ -600,9 +600,12 @@ namespace trogdor {
 
             auto &entityProperties = std::get<1>(entities[identifier]);
 
-            // Check to see if the source code is trying to set a property and
-            // its negation
-            if (negated != entityProperties[property].first) {
+            // Check to see if the source code is trying to set a property,
+            // followed again by its negation
+            if (
+               entityProperties.end() != entityProperties.find(property) &&
+               negated != entityProperties[property].first
+            ) {
                throw ParseException("TODO: contradiction! You said it was, then it wasn't, or vice versa.");
             }
 
@@ -633,8 +636,10 @@ namespace trogdor {
 
                   bool wereGood = false;
 
+                  // Careful: contrary.second is true if the property is negated,
+                  // not the other way around
                   for (const auto &contrary: contraries) {
-                     if (!contrary.second || *contrary.second) {
+                     if (!contrary.second || !*contrary.second) {
                         wereGood = true;
                         break;
                      }
@@ -651,8 +656,10 @@ namespace trogdor {
 
                   bool wereGood = true;
 
+                  // Careful: contrary.second is true if the property is negated,
+                  // not the other way around
                   for (const auto &contrary: contraries) {
-                     if (contrary.second && *contrary.second) {
+                     if (contrary.second && !*contrary.second) {
                         wereGood = false;
                         break;
                      }
@@ -885,8 +892,7 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   void Inform7Parser::parseDefinition(std::vector<std::string> identifiers,
-   std::vector<Inform7Parser::ParsedProperty> propertyList) {
+   void Inform7Parser::parseDefinition(std::vector<std::string> identifiers) {
 
       Token t = lexer.peek();
 
@@ -899,15 +905,6 @@ namespace trogdor {
       }
 
       std::cout << std::endl;
-
-      if (propertyList.size()) {
-         std::cout << "Properties: " << std::endl;
-         for (auto i = propertyList.begin(); i != propertyList.end(); i++) {
-            std::cout << i->value + (i->negated ? " (negated)" : "") << std::endl;
-         }
-      } else {
-         std::cout << "(No properties.)" << std::endl;
-      }
 
       if (
          kindsMap.end() != kindsMap.find(strToLower(t.value)) ||
@@ -942,26 +939,6 @@ namespace trogdor {
       lexer.next();
    }
 
-   /**************************************************************************/
-
-/*
-   void Inform7Parser::parsePropertyAssignment(std::vector<std::string> identifiers,
-   std::vector<Inform7Parser::ParsedProperty> propertyList) {
-
-      // TODO
-      std::cout << std::endl << "parsePropertyAssignment stub!" << std::endl << std::endl;
-
-      std::cout << "Identifiers: " << std::endl;
-      for (auto i = identifiers.begin(); i != identifiers.end(); i++) {
-         std::cout << *i << std::endl;
-      }
-
-      std::cout << std::endl << "Properties: " << std::endl;
-      for (auto i = propertyList.begin(); i != propertyList.end(); i++) {
-         std::cout << i->value + (i->negated ? " (negated)" : "") << std::endl;
-      }
-   }
-*/
    /**************************************************************************/
 
    void Inform7Parser::parsePlacement(std::vector<std::string> subjects) {
@@ -1000,26 +977,29 @@ namespace trogdor {
          // If we have a list of properties, parse them. We're breaking away
          // from a standard recursive descent in order to avoid too much
          // lookahead.
-         propertyList = parsePropertyList(identifiers);
+         parsePropertyList(identifiers);
 
          t = lexer.next();
 
          /*
-            Previously, I had an extra if statement that looked like this:
+            Previously, the if statement below looked like this:
 
             if (PHRASE_TERMINATOR == t.type) {
-               parsePropertyAssignment(identifiers, propertyList);
+               parsePropertyAssignment(identifiers);
             }
 
-            However, that is no longer necessary because property assignment
+            However, that's no longer necessary because property assignment
             occurs in parsePropertyList(), and if we're matching the
             <property assignment> production in the EBNF, we've already reached
             the phrase terminator and no longer have anything left in the
             sentence to parse.
          */
+         if (PHRASE_TERMINATOR == t.type) {
+            lexer.next();
+         }
 
-         if (WORD == t.type) {
-            parseDefinition(identifiers, propertyList);
+         else if (WORD == t.type) {
+            parseDefinition(identifiers);
          }
 
          else if (COMMA == t.type) {

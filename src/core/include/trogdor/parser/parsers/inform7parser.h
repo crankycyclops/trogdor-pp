@@ -271,30 +271,12 @@ namespace trogdor {
 
             Input:
                One or more identifiers (std::vector<std::string>)
-               One or more optional properties (std::vector<ParsedProperty>)
 
             Output:
                (none)
          */
-         void parseDefinition(std::vector<std::string> identifiers,
-         std::vector<ParsedProperty> propertyList = std::vector<ParsedProperty>());
+         void parseDefinition(std::vector<std::string> identifiers);
 
-         /*
-            Parses the assignment of one or more properties to one or more
-            identifiers. Matches the <property assignment> production in the
-            EBNF above.
-
-            Input:
-               One or more identifiers (std::vector<std::string>)
-               One or more properties (std::vector<ParsedProperty>)
-
-            Output:
-               (none)
-         */
-/*
-         void parsePropertyAssignment(std::vector<std::string> identifiers,
-         std::vector<ParsedProperty> propertyList);
-*/
          /*
             Parses the placement of one or more things into or onto a room,
             container, or supporter. Matches the <placement> production in the
