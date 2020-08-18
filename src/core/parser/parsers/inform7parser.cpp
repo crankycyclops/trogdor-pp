@@ -965,13 +965,13 @@ namespace trogdor {
             );
          }
 
+         // Set the entity's description
          else {
-            // TODO
-            std::cout << "parseDescription stub!" << std::endl;
-            std::cout << "Description of " + identifiers[0] + ": " << description
-               << std::endl << std::endl;
+            std::get<2>(entities[identifiers[0]]) = description;
          }
-      } else {
+      }
+
+      else {
          lexer.push(t);
       }
    }
