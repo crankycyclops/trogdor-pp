@@ -16,7 +16,7 @@ namespace trogdor {
 
    Inform7Parser::Inform7Parser(std::unique_ptr<Instantiator> i,
    const Vocabulary &v): Parser(std::move(i), v), lexer(directions, adjectives,
-   kindsMap, properties) {
+   kindsMap, properties), parsedTitle(std::nullopt), parsedAuthor(std::nullopt) {
 
       initStandardRules();
    }
@@ -516,8 +516,13 @@ namespace trogdor {
          );
       }
 
-      // TODO
-      std::cout << "Stub: Title is \"" + title + "\" and author is \"" + (author.length() ? author : "(undefined)") << '\"' << std::endl;
+      if (title.length()) {
+         parsedTitle = title;
+      }
+
+      if (author.length()) {
+         parsedAuthor = author;
+      }
    }
 
    /**************************************************************************/

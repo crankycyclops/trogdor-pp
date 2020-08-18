@@ -187,6 +187,10 @@ namespace trogdor {
 
          >> entities;
 
+         // Optional Bibliographic Data
+         std::optional<std::string> parsedTitle;
+         std::optional<std::string> parsedAuthor;
+
          /*
             Initializes standard rules, including built-in kinds, directions,
             and adjectives.
