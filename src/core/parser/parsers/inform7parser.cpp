@@ -820,11 +820,85 @@ namespace trogdor {
       }
 
       else {
-         // TODO
-         std::cout << "parseInClause stub!" << std::endl << std::endl;
-         std::cout << vectorToStr(subjects) << " " <<
-            (subjects.size() > 1 ? "are" : "is") << " in " <<
-            containersOrPlaces[0] << "." << std::endl << std::endl;
+
+         for (const auto &subject: subjects) {
+
+            auto &subjectKinds = std::get<0>(entities[subject]);
+
+            // If we haven't already given the subject entity a kind, default to
+            // "thing", which can go inside of a room or container.
+            if (!subjectKinds.size()) {
+               subjectKinds.insert(std::get<0>(kindsMap["thing"]));
+            }
+
+            else {
+
+               for (auto it = subjectKinds.begin(); it != subjectKinds.end(); ) {
+                  if (!(*it)->isKindRelated(std::get<0>(kindsMap["thing"]))) {
+                     it = subjectKinds.erase(it);
+                  } else {
+                     it++;
+                  }
+               }
+
+               // If, after removing all incompatible types from the list of
+               // possible kinds, no kinds are left, we obviously have a
+               // contradiction.
+               if (!subjectKinds.size()) {
+                  throw ParseException("TODO: subject contradiction");
+               }
+            }
+         }
+
+         for (const auto &containerOrPlace: containersOrPlaces) {
+
+            auto &containerOrPlaceKinds = std::get<0>(entities[containerOrPlace]);
+
+            // If we haven't already given the containing thing a kind, default
+            // to either "room" or "container", since both can contain things.
+            if (!containerOrPlaceKinds.size()) {
+               containerOrPlaceKinds.insert(std::get<0>(kindsMap["container"]));
+               containerOrPlaceKinds.insert(std::get<0>(kindsMap["room"]));
+            }
+
+            else {
+
+               // If this is set to true, it means that there's an entity of
+               // type "thing" that needs to be automatically promoted to
+               // "container."
+               bool promoteThingToContainer = false;
+
+               for (auto it = containerOrPlaceKinds.begin(); it != containerOrPlaceKinds.end(); ) {
+
+                  if (
+                     !(*it)->isKindRelated(std::get<0>(kindsMap["container"])) &&
+                     !(*it)->isKindRelated(std::get<0>(kindsMap["room"]))
+                  ) {
+
+                     // We have a generic "thing" that we're going to promote to
+                     // "container"; we'll remove the generic "thing" kind now,
+                     // then add the more specific type at the end of the loop.
+                     if (*it == std::get<0>(kindsMap["thing"])) {
+                        promoteThingToContainer = true;
+                     }
+
+                     it = containerOrPlaceKinds.erase(it);
+                  }
+
+                  else {
+                     it++;
+                  }
+               }
+
+               if (promoteThingToContainer) {
+                  containerOrPlaceKinds.insert(std::get<0>(kindsMap["container"]));
+               }
+
+               if (!containerOrPlaceKinds.size()) {
+                  throw ParseException("TODO: container contradiction");
+               }
+            }
+         }
       }
    }
 
