@@ -845,7 +845,11 @@ namespace trogdor {
                // possible kinds, no kinds are left, we obviously have a
                // contradiction.
                if (!subjectKinds.size()) {
-                  throw ParseException("TODO: subject contradiction");
+                  throw ParseException(
+                     subject + " is not a physical thing, yet on line "
+                     + std::to_string(t.lineno) + ", you attempt to place it inside "
+                     + containersOrPlaces[0] + ". This makes no sense and is not allowed."
+                  );
                }
             }
          }
@@ -895,7 +899,17 @@ namespace trogdor {
                }
 
                if (!containerOrPlaceKinds.size()) {
-                  throw ParseException("TODO: container contradiction");
+
+                  std::string subjectsStr = vectorToStr(subjects);
+                  std::string toBe = subjects.size() > 1 ? "are" : "is";
+
+                  throw ParseException(
+                     std::string("You stated that '")
+                     + subjectsStr + ' ' + toBe + " in " + containerOrPlace
+                     + "' (line " + std::to_string(t.lineno)
+                     + "), but " + containerOrPlace
+                     + " is neither a room nor a container and therefore cannot contain things."
+                  );
                }
             }
          }
