@@ -947,11 +947,93 @@ namespace trogdor {
       }
 
       else {
-         // TODO
-         std::cout << "parseOnClause stub!" << std::endl << std::endl;
-         std::cout << vectorToStr(subjects) << " " <<
-            (subjects.size() > 1 ? "are" : "is") << " on " <<
-            supporters[0] << "." << std::endl << std::endl;
+
+         for (const auto &subject: subjects) {
+
+            auto &subjectKinds = std::get<0>(entities[subject]);
+
+            // If we haven't already given the subject entity a kind, default to
+            // "thing", which can go inside of a room or container.
+            if (!subjectKinds.size()) {
+               subjectKinds.insert(std::get<0>(kindsMap["thing"]));
+            }
+
+            else {
+
+               for (auto it = subjectKinds.begin(); it != subjectKinds.end(); ) {
+                  if (!(*it)->isKindRelated(std::get<0>(kindsMap["thing"]))) {
+                     it = subjectKinds.erase(it);
+                  } else {
+                     it++;
+                  }
+               }
+
+               // If, after removing all incompatible types from the list of
+               // possible kinds, no kinds are left, we obviously have a
+               // contradiction.
+               if (!subjectKinds.size()) {
+                  throw ParseException(
+                     subject + " is not a physical thing, yet on line "
+                     + std::to_string(t.lineno) + ", you attempt to place it on "
+                     + supporters[0] + ". This makes no sense and is not allowed."
+                  );
+               }
+            }
+         }
+
+         for (const auto &supporter: supporters) {
+
+            auto &supporterKinds = std::get<0>(entities[supporter]);
+
+            if (!supporterKinds.size()) {
+               supporterKinds.insert(std::get<0>(kindsMap["supporter"]));
+            }
+
+            else {
+
+               // If this is set to true, it means that there's an entity of
+               // type "thing" that needs to be automatically promoted to
+               // "supporter."
+               bool promoteThingToSupporter = false;
+
+               for (auto it = supporterKinds.begin(); it != supporterKinds.end(); ) {
+
+                  if (!(*it)->isKindRelated(std::get<0>(kindsMap["supporter"]))) {
+
+                     // We have a generic "thing" that we're going to promote to
+                     // "container"; we'll remove the generic "thing" kind now,
+                     // then add the more specific type at the end of the loop.
+                     if (*it == std::get<0>(kindsMap["thing"])) {
+                        promoteThingToSupporter = true;
+                     }
+
+                     it = supporterKinds.erase(it);
+                  }
+
+                  else {
+                     it++;
+                  }
+               }
+
+               if (promoteThingToSupporter) {
+                  supporterKinds.insert(std::get<0>(kindsMap["supporter"]));
+               }
+
+               if (!supporterKinds.size()) {
+
+                  std::string subjectsStr = vectorToStr(subjects);
+                  std::string toBe = subjects.size() > 1 ? "are" : "is";
+
+                  throw ParseException(
+                     std::string("You stated that '")
+                     + subjectsStr + ' ' + toBe + " on " + supporter
+                     + "' (line " + std::to_string(t.lineno)
+                     + "), but " + supporter
+                     + " is not a supporter and therefore cannot support things."
+                  );
+               }
+            }
+         }
       }
    }
 
