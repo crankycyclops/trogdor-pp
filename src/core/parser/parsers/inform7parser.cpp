@@ -68,23 +68,26 @@ namespace trogdor {
 
          // This is just temporary for our current subset of Inform 7; we can
          // define custom directions internally already, and when I'm ready to
-         // support this in my parser, I can implement this
+         // support this in my parser, I can implement this callback.
          throw UndefinedException(
             "Custom directions aren't yet supported (line " + lineno + ')'
          );
       });
 
-      // Root From my observations playing with the i7 compiler, it seems like, by
-      // default, untyped entities assume this kind by default and behave like
-      // a more general case of "thing."
-      insertKind(kinds.get(), "object", entity::ENTITY_OBJECT,
+      insertKind(kinds.get(), "object", entity::ENTITY_UNDEFINED,
       [&] (size_t lineno) {
 
-         ast->appendChild(ASTDefineEntityClass(
-            "inform7_object",
-            entity::Entity::typeToStr(entity::ENTITY_OBJECT),
-            lineno
-         ));
+         throw UndefinedException(
+            "The 'object' kind shouldn't be directly instantiable. Instead, entities should default to things or some other more specific type. This is a bug in the Inform 7 parser and should be fixed. (line " + lineno + ')'
+         );
+      });
+
+      insertKind(std::get<0>(kindsMap["object"]), "region", entity::ENTITY_UNDEFINED,
+      [&] (size_t lineno) {
+
+         throw UndefinedException(
+            "Inform 7 regions aren't currently supported (line " + lineno + ')'
+         );
       });
 
       insertKind(std::get<0>(kindsMap["object"]), "room", entity::ENTITY_ROOM,
@@ -95,14 +98,6 @@ namespace trogdor {
             entity::Entity::typeToStr(entity::ENTITY_ROOM),
             lineno
          ));
-      });
-
-      insertKind(std::get<0>(kindsMap["object"]), "region", entity::ENTITY_UNDEFINED,
-      [&] (size_t lineno) {
-
-         throw UndefinedException(
-            "Inform 7 regions aren't currently supported (line " + lineno + ')'
-         );
       });
 
       insertKind(std::get<0>(kindsMap["object"]), "thing", entity::ENTITY_OBJECT,
@@ -987,16 +982,6 @@ namespace trogdor {
 
       Token t = lexer.peek();
 
-      // TODO
-      std::cout << std::endl << "parseDefinition stub!" << std::endl << std::endl;
-
-      std::cout << "Identifiers: " << std::endl;
-      for (auto i = identifiers.begin(); i != identifiers.end(); i++) {
-         std::cout << *i << std::endl;
-      }
-
-      std::cout << std::endl;
-
       if (
          kindsMap.end() != kindsMap.find(strToLower(t.value)) ||
          kindPlurals.end() != kindPlurals.find(strToLower(t.value))
@@ -1004,9 +989,68 @@ namespace trogdor {
 
          std::string kindName = kindPlurals.end() != kindPlurals.find(strToLower(t.value)) ?
             kindPlurals[strToLower(t.value)] : strToLower(t.value);
+         Kind *kind = std::get<0>(kindsMap[kindName]);
 
-         // TODO
-         std::cout << std::endl << "Identifiers are of type '" << kindName << "'" << std::endl;
+         for (const auto &identifier: identifiers) {
+
+            auto &entityKinds = std::get<0>(entities[identifier]);
+
+            // The entity's kind hasn't been declared yet, so we'll do that now
+            if (!entityKinds.size()) {
+               entityKinds.insert(std::get<0>(kindsMap[kindName]));
+            }
+
+            // The entity has already been constrained to one or more possible
+            // kinds, so we have to do some detective work to determine whether
+            // or not the definition is a contradiction.
+            else {
+
+               bool relatedKindFound = false;
+               Kind *replacement = nullptr;
+
+               for (const auto &possibleKind: entityKinds) {
+
+                  // The specified kind is either the same or less specific than
+                  // one of the entity's already declared possible kinds.
+                  if (possibleKind->isKindRelated(kind)) {
+                     relatedKindFound = true;
+                     replacement = possibleKind;
+                     break;
+                  }
+
+                  // The specified kind is more specific than one of the
+                  // entity's possible kinds, so replace the old with the new.
+                  else if (kind->isKindRelated(possibleKind)) {
+                     relatedKindFound = true;
+                     replacement = kind;
+                     break;
+                  }
+               }
+
+               // Oh no! The program tried to say that the entity is a kind
+               // that's unrelated to any of the possible kinds already declared
+               // and must now smite the evil developer with the compiler error
+               // of death! :-O
+               if (!relatedKindFound) {
+                  // TODO: throw informative error
+                  throw ParseException(
+                     std::string("TODO: Contradiction! (line ")
+                     + std::to_string(t.lineno) + ")"
+                  );
+               }
+
+               // This has two purposes: one is to lock down the entity to a
+               // single kind (for example, after parsing an <in clause>, an
+               // entity could be a container or a room, and a definition
+               // statement would then force it to be one or the other. The
+               // other is to replace a less specific kind with a more specific
+               // kind.
+               else if (replacement) {
+                  entityKinds.clear();
+                  entityKinds.insert(replacement);
+               }
+            }
+         }
 
          t = lexer.next();
 
