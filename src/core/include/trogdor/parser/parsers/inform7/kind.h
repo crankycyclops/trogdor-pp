@@ -71,6 +71,17 @@ namespace trogdor {
 			inline Kind *getParent() const {return parent;}
 
 			/*
+				Return's the kind's name.
+
+				Input:
+					(none)
+
+				Output:
+					The kind's name (std::string)
+			*/
+			inline std::string getName() const {return name;}
+
+			/*
 				Append a new child kind.
 
 				Input:

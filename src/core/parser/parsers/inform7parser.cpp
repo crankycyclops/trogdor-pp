@@ -1032,11 +1032,34 @@ namespace trogdor {
                // and must now smite the evil developer with the compiler error
                // of death! :-O
                if (!relatedKindFound) {
-                  // TODO: throw informative error
-                  throw ParseException(
-                     std::string("TODO: Contradiction! (line ")
-                     + std::to_string(t.lineno) + ")"
-                  );
+
+                  if (entityKinds.size() > 1) {
+
+                     std::vector<std::string> kindNames;
+
+                     for (const auto &kind: entityKinds) {
+                        kindNames.push_back(kind->getName());
+                     }
+
+                     throw ParseException(
+                        std::string("You stated on line ")
+                        + std::to_string(t.lineno) + " that " + identifier
+                        + " is a " + kind->getName()
+                        + ", but due to previous statements, it must be a "
+                        + vectorToStr(kindNames, "or") + "."
+                     );
+                  }
+
+                  else {
+                     throw ParseException(
+                        std::string("You stated '") + identifier + " is a "
+                        + kind->getName() + "' (line " + std::to_string(t.lineno)
+                        + "), but previously, you stated that '" + identifier
+                        + " is a " + (*entityKinds.begin())->getName()
+                        + "', and a " + kind->getName() + " and a "
+                        + (*entityKinds.begin())->getName() + " are incompatible."
+                     );
+                  }
                }
 
                // This has two purposes: one is to lock down the entity to a
