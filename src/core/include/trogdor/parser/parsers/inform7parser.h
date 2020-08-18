@@ -188,6 +188,51 @@ namespace trogdor {
          >> entities;
 
          /*
+            Initializes standard rules, including built-in kinds, directions,
+            and adjectives.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void initStandardRules();
+
+         /*
+            Initializes built-in directions.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void initBuiltinDirections();
+
+         /*
+            Initializes built-in kinds and their settable properties.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void initBuiltinKindsAndProperties();
+
+         /*
+            Initializes built-in non-property adjectives.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void initBuiltinNonPropertyAdjectives();
+
+         /*
             Parses one or more identifiers on the left hand side of an equality.
             Matches the <identifiers list> production in the EBNF above. This
             method is kind of a cheat and deviates from the LL parsing pattern.

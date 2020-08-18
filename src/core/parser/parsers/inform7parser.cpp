@@ -18,6 +18,29 @@ namespace trogdor {
    const Vocabulary &v): Parser(std::move(i), v), lexer(directions, adjectives,
    kindsMap, properties) {
 
+      initStandardRules();
+   }
+
+   /**************************************************************************/
+
+   Inform7Parser::~Inform7Parser() {
+
+      // TODO
+   }
+
+   /**************************************************************************/
+
+   void Inform7Parser::initStandardRules() {
+
+      initBuiltinDirections();
+      initBuiltinKindsAndProperties();
+      initBuiltinNonPropertyAdjectives();
+   }
+
+   /**************************************************************************/
+
+   void Inform7Parser::initBuiltinDirections() {
+
       // Built-in directions that Inform 7 recognizes by default. List can be
       // extended later. This structure maps directions to their opposites.
       insertDirection("up", "down");
@@ -26,24 +49,11 @@ namespace trogdor {
       insertDirection("east", "west");
       insertDirection("northwest", "southeast");
       insertDirection("northeast", "southwest");
+   }
 
-      // Built-in adjectives that Inform 7 recognizes by default. List can be
-      // extended later.
-      insertAdjective("touchable");
-      insertAdjective("untouchable");
-      insertAdjective("adjacent");
-      insertAdjective("visible");
-      insertAdjective("invisible");
-      insertAdjective("visited");
-      insertAdjective("empty");
-      insertAdjective("non-empty");
-      insertAdjective("carried");
+   /**************************************************************************/
 
-      // These special adjectives are for numerical values only
-      insertAdjective("positive");
-      insertAdjective("negative");
-      insertAdjective("even");
-      insertAdjective("odd");
+   void Inform7Parser::initBuiltinKindsAndProperties() {
 
       // Insert kinds built into Inform 7 and their internal mappings to Entity
       // types and classes
@@ -417,9 +427,24 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   Inform7Parser::~Inform7Parser() {
+   void Inform7Parser::initBuiltinNonPropertyAdjectives() {
 
-      // TODO
+      // Built-in non-property adjectives that Inform 7 recognizes by default.
+      insertAdjective("touchable");
+      insertAdjective("untouchable");
+      insertAdjective("adjacent");
+      insertAdjective("visible");
+      insertAdjective("invisible");
+      insertAdjective("visited");
+      insertAdjective("empty");
+      insertAdjective("non-empty");
+      insertAdjective("carried");
+
+      // These special adjectives are for numerical values only
+      insertAdjective("positive");
+      insertAdjective("negative");
+      insertAdjective("even");
+      insertAdjective("odd");
    }
 
    /**************************************************************************/
