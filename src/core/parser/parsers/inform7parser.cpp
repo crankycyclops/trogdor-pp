@@ -576,7 +576,10 @@ namespace trogdor {
             startingNewNoun = true;
 
             // Add the identifier to the entities symbol table
-            if (declareEntities && entities.end() == entities.find(noun)) {
+            if (
+               specialIdentifiers.end() == specialIdentifiers.find(noun) &&
+               declareEntities && entities.end() == entities.find(noun)
+            ) {
                entities[noun] = {{}, {}, ""};
             }
          }
