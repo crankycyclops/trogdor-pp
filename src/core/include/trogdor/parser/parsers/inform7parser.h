@@ -140,6 +140,9 @@ namespace trogdor {
          // Set of non-property adjectives recognized by Inform 7
          std::unordered_set<std::string> adjectives;
 
+         // Special entity names that shouldn't be instantiated, like "nowhere"
+         std::unordered_set<std::string> specialIdentifiers;
+
          // Represents the Inform 7 kinds hierarchy
          // (See: http://www.ifwiki.org/index.php/Inform_7_for_Programmers/Part_1#Class_And_Prejudice)
          std::unique_ptr<Kind> kinds;

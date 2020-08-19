@@ -35,6 +35,8 @@ namespace trogdor {
       initBuiltinDirections();
       initBuiltinKindsAndProperties();
       initBuiltinNonPropertyAdjectives();
+
+      specialIdentifiers.insert("nowhere");
    }
 
    /**************************************************************************/
@@ -460,6 +462,15 @@ namespace trogdor {
             );
          }
 
+         else if (specialIdentifiers.end() != specialIdentifiers.find(identifier)) {
+            throw ParseException(
+               "You referred to '" + identifier
+               + "' as if it were a thing (line " + std::to_string(t.lineno)
+               + "), but " + identifier
+               + " cannot be made specific, and so cannot have specific properties or be of any given kind."
+            );
+         }
+
          else {
             lexer.push(t);
             parseDescription({identifier});
@@ -622,6 +633,15 @@ namespace trogdor {
          propertyList.push_back({property, negated});
 
          for (const auto &identifier: identifiers) {
+
+            if (specialIdentifiers.end() != specialIdentifiers.find(identifier)) {
+               throw ParseException(
+                  "You referred to '" + identifier
+                  + "' as if it were a thing (line " + std::to_string(t.lineno)
+                  + "), but " + identifier
+                  + " cannot be made specific, and so cannot have specific properties or be of any given kind."
+               );
+            }
 
             auto &entityProperties = std::get<1>(entities[identifier]);
 
@@ -792,7 +812,7 @@ namespace trogdor {
 
    void Inform7Parser::parseInClause(std::vector<std::string> subjects) {
 
-      Token t;
+      Token t = lexer.peek();
 
       // Grab list of containers or places where the subject(s) should go (there
       // should only be one, and if there are more we'll report it as an error)
@@ -822,6 +842,15 @@ namespace trogdor {
       else {
 
          for (const auto &subject: subjects) {
+
+            if (specialIdentifiers.end() != specialIdentifiers.find(subject)) {
+               throw ParseException(
+                  "You referred to '" + subject
+                  + "' as if it were a thing (line " + std::to_string(t.lineno)
+                  + "), but " + subject
+                  + " cannot be made specific, and so cannot have specific properties or be of any given kind."
+               );
+            }
 
             auto &subjectKinds = std::get<0>(entities[subject]);
 
@@ -855,6 +884,15 @@ namespace trogdor {
          }
 
          for (const auto &containerOrPlace: containersOrPlaces) {
+
+            if (specialIdentifiers.end() != specialIdentifiers.find(containerOrPlace)) {
+               throw ParseException(
+                  "You referred to '" + containerOrPlace
+                  + "' as if it were a thing (line " + std::to_string(t.lineno)
+                  + "), but " + containerOrPlace
+                  + " cannot be made specific, and so cannot have specific properties or be of any given kind."
+               );
+            }
 
             auto &containerOrPlaceKinds = std::get<0>(entities[containerOrPlace]);
 
@@ -920,7 +958,7 @@ namespace trogdor {
 
    void Inform7Parser::parseOnClause(std::vector<std::string> subjects) {
 
-      Token t;
+      Token t = lexer.peek();
 
       // Grab list of supports where the subject(s) should go (there should only
       // be one, and if there are more we'll report it as an error)
@@ -949,6 +987,15 @@ namespace trogdor {
       else {
 
          for (const auto &subject: subjects) {
+
+            if (specialIdentifiers.end() != specialIdentifiers.find(subject)) {
+               throw ParseException(
+                  "You referred to '" + subject
+                  + "' as if it were a thing (line " + std::to_string(t.lineno)
+                  + "), but " + subject
+                  + " cannot be made specific, and so cannot have specific properties or be of any given kind."
+               );
+            }
 
             auto &subjectKinds = std::get<0>(entities[subject]);
 
@@ -982,6 +1029,15 @@ namespace trogdor {
          }
 
          for (const auto &supporter: supporters) {
+
+            if (specialIdentifiers.end() != specialIdentifiers.find(supporter)) {
+               throw ParseException(
+                  "You referred to '" + supporter
+                  + "' as if it were a thing (line " + std::to_string(t.lineno)
+                  + "), but " + supporter
+                  + " cannot be made specific, and so cannot have specific properties or be of any given kind."
+               );
+            }
 
             auto &supporterKinds = std::get<0>(entities[supporter]);
 
