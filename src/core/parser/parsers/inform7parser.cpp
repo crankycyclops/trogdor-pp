@@ -1086,9 +1086,86 @@ namespace trogdor {
          );
       }
 
-      // TODO
-      std::cout << std::endl << "parseLocationClause stub!" << std::endl;
-      std::cout << std::endl << identifiers[0] << " is " + direction + " of " + connections[0] << std::endl;
+      auto &subjectKinds = std::get<0>(entities[identifiers[0]]);
+
+      // If we haven't already given the subject entity a kind, default to
+      // "room."
+      if (!subjectKinds.size()) {
+         subjectKinds.insert(std::get<0>(kindsMap["room"]));
+      }
+
+      else {
+
+         for (auto it = subjectKinds.begin(); it != subjectKinds.end(); ) {
+            if (
+               !(*it)->isKindRelated(std::get<0>(kindsMap["room"])) &&
+               !(*it)->isKindRelated(std::get<0>(kindsMap["door"]))
+            ) {
+               it = subjectKinds.erase(it);
+            } else {
+               it++;
+            }
+         }
+
+         // If, after removing all incompatible types from the list of
+         // possible kinds, no kinds are left, we obviously have a
+         // contradiction.
+         if (!subjectKinds.size()) {
+            throw ParseException(
+               std::string("You stated that ") + identifiers[0]
+               + " is not a door or a room, but in another sentence, you stated that '"
+               + identifiers[0] + " is " + direction + " of " + connections[0]
+               + "' (line " + std::to_string(t.lineno) + "). " + identifiers[0]
+               + " must be a room or a door in order to be reached via a map connection."
+            );
+         }
+      }
+
+      auto &connectionKinds = std::get<0>(entities[connections[0]]);
+
+      if (!connectionKinds.size()) {
+         connectionKinds.insert(std::get<0>(kindsMap["room"]));
+      }
+
+      else {
+
+         for (auto it = connectionKinds.begin(); it != connectionKinds.end(); ) {
+            if (
+               !(*it)->isKindRelated(std::get<0>(kindsMap["room"])) &&
+               !(*it)->isKindRelated(std::get<0>(kindsMap["door"]))
+            ) {
+               it = connectionKinds.erase(it);
+            } else {
+               it++;
+            }
+         }
+
+         if (!connectionKinds.size()) {
+            throw ParseException(
+               std::string("You stated that ") + connections[0]
+               + " is not a door or a room, but in another sentence, you stated that '"
+               + identifiers[0] + " is " + direction + " of " + connections[0]
+               + "' (line " + std::to_string(t.lineno) + "). " + connections[0]
+               + " must be a room or a door in order to be reached via a map connection."
+            );
+         }
+      }
+
+      // Both the subject and the direct object can't be doors
+      if (
+         1 == subjectKinds.size() && 
+         1 == connectionKinds.size() &&
+         *subjectKinds.begin() == std::get<0>(kindsMap["door"]) &&
+         *connectionKinds.begin() == std::get<0>(kindsMap["door"])
+      ) {
+         throw ParseException(
+            identifiers[0]
+            + " seems to be a door opening onto something not a room, but a door must connect one or two rooms (and in particular is not allowed to connect to another door.)"
+         );
+      }
+
+      // TODO: record connections in new data structure
+      std::cout << "Stub: parseLocationClause: add connections to data structure" << std::endl;
    }
 
    /**************************************************************************/
