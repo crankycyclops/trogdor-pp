@@ -1443,8 +1443,8 @@ namespace trogdor {
                      throw ParseException(
                         std::string("You stated '") + identifier + " is a "
                         + kind->getName() + "' (line " + std::to_string(t.lineno)
-                        + "), but previously, you stated that '" + identifier
-                        + " is a " + (*entityKinds.begin())->getName()
+                        + "), but previously, you stated or implied that '"
+                        + identifier + " is a " + (*entityKinds.begin())->getName()
                         + "', and a " + kind->getName() + " and a "
                         + (*entityKinds.begin())->getName() + " are incompatible."
                      );
