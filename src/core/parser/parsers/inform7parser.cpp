@@ -606,7 +606,7 @@ namespace trogdor {
          // Grab the next identifier
          for (; WORD == t.type || ARTICLE == t.type; t = lexer.next()) {
             noun += (noun.length() ? " " : "");
-            noun += t.value;
+            noun += strToLower(t.value);
          }
 
          if (noun.length()) {

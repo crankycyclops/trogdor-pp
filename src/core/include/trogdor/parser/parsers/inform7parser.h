@@ -566,7 +566,7 @@ namespace trogdor {
                std::string propertiesStr;
 
                for (const auto &property: std::get<1>(entity.second)) {
-                  propertiesStr += (property.second.second ? "not " : "");
+                  propertiesStr += (property.second.first ? "not " : "");
                   propertiesStr += property.first + ", ";
                }
 
@@ -599,8 +599,9 @@ namespace trogdor {
 
             for (const auto &entity: entityConnections) {
                for (const auto &connection: entity.second) {
-                  std::cout << connection.second.first << " is "
-                     << connection.first << " of " << entity.first
+                  std::cout << (connection.second.first.length() ? connection.second.first : "nowhere")
+                     << " is " << connection.first << " of "
+                     << (entity.first.length() ? entity.first : "nowhere")
                      << (connection.second.second ? " (explicit)" : "")
                      << std::endl;
                }
