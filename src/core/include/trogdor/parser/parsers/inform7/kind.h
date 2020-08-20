@@ -60,6 +60,29 @@ namespace trogdor {
 			): name(name), internalType(type), ASTCallback(ASTCallback) {}
 
 			/*
+				Return's the kind's name.
+
+				Input:
+					(none)
+
+				Output:
+					The kind's name (std::string)
+			*/
+			inline std::string getName() const {return name;}
+
+			/*
+				Return's the internal entity type that corresponds to the
+				Inform 7 kind.
+
+				Input:
+					(none)
+
+				Output:
+					The kind's name (std::string)
+			*/
+			inline entity::EntityType getInternalType() const {return internalType;}
+
+			/*
 				Return's the kind's parent kind.
 
 				Input:
@@ -71,15 +94,59 @@ namespace trogdor {
 			inline Kind *getParent() const {return parent;}
 
 			/*
-				Return's the kind's name.
+				Return the properties that must always be set for the kind.
 
 				Input:
 					(none)
 
 				Output:
-					The kind's name (std::string)
+					All properties that must always be true for this kind
 			*/
-			inline std::string getName() const {return name;}
+			inline const std::unordered_set<std::string> &getProperties() const {
+
+				return properties;
+			}
+
+			/*
+				Return the callback necessary to map the kind's properties
+				to AST operations that the core library understands.
+
+				Input:
+					(none)
+
+				Output:
+					Callback (std::function<void(size_t)>)
+			*/
+			inline const std::function<void(size_t)> &getCallback() const {
+
+				return ASTCallback;
+			}
+
+			/*
+				Returns true if the passed in kind is in another kind's
+				inheritance hierarchy.
+
+				Input:
+					Kind to compare (Kind *)
+
+				Output:
+					True if the passed in kind is in the calling kind's
+					inheritance hierarchy and false if not
+			*/
+			inline bool isKindRelated(Kind *kPtr) {
+
+				Kind *curKind = this;
+
+				while (curKind) {
+					if (curKind == kPtr) {
+						return true;
+					} else {
+						curKind = curKind->parent;
+					}
+				}
+
+				return false;
+			}
 
 			/*
 				Append a new child kind.
@@ -108,20 +175,6 @@ namespace trogdor {
 			}
 
 			/*
-				Return the properties that must always be set for the kind.
-
-				Input:
-					(none)
-
-				Output:
-					All properties that must always be true for this kind
-			*/
-			inline const std::unordered_set<std::string> &getProperties() const {
-
-				return properties;
-			}
-
-			/*
 				Sets a property that must always be set for the given kind.
 
 				Input:
@@ -135,32 +188,6 @@ namespace trogdor {
 				if (properties.end() == properties.find(property)) {
 					properties.insert(property);
 				}
-			}
-
-			/*
-				Returns true if the passed in kind is in another kind's
-				inheritance hierarchy.
-
-				Input:
-					Kind to compare (Kind *)
-
-				Output:
-					True if the passed in kind is in the calling kind's
-					inheritance hierarchy and false if not
-			*/
-			inline bool isKindRelated(Kind *kPtr) {
-
-				Kind *curKind = this;
-
-				while (curKind) {
-					if (curKind == kPtr) {
-						return true;
-					} else {
-						curKind = curKind->parent;
-					}
-				}
-
-				return false;
 			}
 	};
 }

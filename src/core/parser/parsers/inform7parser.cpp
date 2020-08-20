@@ -65,7 +65,7 @@ namespace trogdor {
       // of "object." However, I'm going to deviate from that, at least for now,
       // and make it its own root type, especially since it doesn't actually
       // correspond to an Entity type.
-      insertKind(kinds.get(), "direction", entity::ENTITY_UNDEFINED,
+      insertKind(kinds.get(), "direction", "inform7_direction", entity::ENTITY_UNDEFINED,
       [&] (size_t lineno) {
 
          // This is just temporary for our current subset of Inform 7; we can
@@ -76,7 +76,7 @@ namespace trogdor {
          );
       });
 
-      insertKind(kinds.get(), "object", entity::ENTITY_UNDEFINED,
+      insertKind(kinds.get(), "object", "inform7_object", entity::ENTITY_UNDEFINED,
       [&] (size_t lineno) {
 
          throw UndefinedException(
@@ -84,16 +84,16 @@ namespace trogdor {
          );
       });
 
-      insertKind(std::get<0>(kindsMap["object"]), "region", entity::ENTITY_UNDEFINED,
-      [&] (size_t lineno) {
+      insertKind(std::get<0>(kindsMap["object"]), "region", "inform7_region",
+      entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
 
          throw UndefinedException(
             "Inform 7 regions aren't currently supported (line " + lineno + ')'
          );
       });
 
-      insertKind(std::get<0>(kindsMap["object"]), "room", entity::ENTITY_ROOM,
-      [&] (size_t lineno) {
+      insertKind(std::get<0>(kindsMap["object"]), "room", "inform7_room",
+      entity::ENTITY_ROOM, [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_room",
@@ -102,8 +102,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind(std::get<0>(kindsMap["object"]), "thing", entity::ENTITY_OBJECT,
-      [&] (size_t lineno) {
+      insertKind(std::get<0>(kindsMap["object"]), "thing", "inform7_thing",
+      entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_thing",
@@ -112,8 +112,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind(std::get<0>(kindsMap["thing"]), "door", entity::ENTITY_OBJECT,
-      [&] (size_t lineno) {
+      insertKind(std::get<0>(kindsMap["thing"]), "door", "inform7_door",
+      entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -133,8 +133,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind(std::get<0>(kindsMap["thing"]), "container", entity::ENTITY_OBJECT,
-      [&] (size_t lineno) {
+      insertKind(std::get<0>(kindsMap["thing"]), "container", "inform7_container",
+      entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -144,8 +144,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind(std::get<0>(kindsMap["container"]), "vehicle", entity::ENTITY_OBJECT,
-      [&] (size_t lineno) {
+      insertKind(std::get<0>(kindsMap["container"]), "vehicle", "inform7_vehicle",
+      entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -166,7 +166,7 @@ namespace trogdor {
       });
 
       insertKind(std::get<0>(kindsMap["container"]), "player's holdall",
-      entity::ENTITY_OBJECT, [&] (size_t lineno) {
+      "inform7_players_holdall", entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -176,8 +176,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind(std::get<0>(kindsMap["thing"]), "supporter", entity::ENTITY_OBJECT,
-      [&] (size_t lineno) {
+      insertKind(std::get<0>(kindsMap["thing"]), "supporter", "inform7_supporter",
+      entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -187,16 +187,16 @@ namespace trogdor {
          ));
       });
 
-      insertKind(std::get<0>(kindsMap["thing"]), "backdrop", entity::ENTITY_UNDEFINED,
-      [&] (size_t lineno) {
+      insertKind(std::get<0>(kindsMap["thing"]), "backdrop", "inform7_backdrop",
+      entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
 
          throw UndefinedException(
             "Inform 7 backdrops aren't yet supported (line " + lineno + ')'
          );
       });
 
-      insertKind(std::get<0>(kindsMap["thing"]), "device", entity::ENTITY_OBJECT,
-      [&] (size_t lineno) {
+      insertKind(std::get<0>(kindsMap["thing"]), "device", "inform7_device",
+      entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          // TODO: issue warning about only partial support
          ast->appendChild(ASTDefineEntityClass(
@@ -206,8 +206,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind(std::get<0>(kindsMap["thing"]), "person", entity::ENTITY_CREATURE,
-      [&] (size_t lineno) {
+      insertKind(std::get<0>(kindsMap["thing"]), "person", "inform7_person",
+      entity::ENTITY_CREATURE, [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_person",
@@ -216,8 +216,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind(std::get<0>(kindsMap["person"]), "man", entity::ENTITY_CREATURE,
-      [&] (size_t lineno) {
+      insertKind(std::get<0>(kindsMap["person"]), "man", "inform7_man",
+      entity::ENTITY_CREATURE, [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_man",
@@ -226,8 +226,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind(std::get<0>(kindsMap["person"]), "woman", entity::ENTITY_CREATURE,
-      [&] (size_t lineno) {
+      insertKind(std::get<0>(kindsMap["person"]), "woman", "inform7_woman",
+      entity::ENTITY_CREATURE, [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_woman",
@@ -236,8 +236,8 @@ namespace trogdor {
          ));
       });
 
-      insertKind(std::get<0>(kindsMap["person"]), "animal", entity::ENTITY_CREATURE,
-      [&] (size_t lineno) {
+      insertKind(std::get<0>(kindsMap["person"]), "animal", "inform7_animal",
+      entity::ENTITY_CREATURE, [&] (size_t lineno) {
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_animal",
@@ -619,7 +619,7 @@ namespace trogdor {
                specialIdentifiers.end() == specialIdentifiers.find(noun) &&
                declareEntities && entities.end() == entities.find(noun)
             ) {
-               entities[noun] = {{}, {}, ""};
+               entities[noun] = {{}, {}, "", t.lineno};
             }
          }
 
@@ -1149,6 +1149,7 @@ namespace trogdor {
 
       if (!connectionKinds.size()) {
          connectionKinds.insert(std::get<0>(kindsMap["room"]));
+         connectionKinds.insert(std::get<0>(kindsMap["door"]));
       }
 
       else {
@@ -1189,14 +1190,14 @@ namespace trogdor {
          // set to nowhere (empty string), we have a contradiction
          else if (
             entityConnections[connections[0]].end() != entityConnections[connections[0]].find(direction) &&
-            entityConnections[connections[0]][direction].second &&
+            std::get<1>(entityConnections[connections[0]][direction]) &&
             connections[0].length() > 0
          ) {
             throw ParseException(
                "You stated that '" + identifiers[0] + " is " + direction + " of "
                + connections[0] + "' (line " + std::to_string(t.lineno)
                + "), but in another sentence you also stated that '"
-               + entityConnections[connections[0]][direction].first + " is " +
+               + std::get<0>(entityConnections[connections[0]][direction]) + " is " +
                direction + " of " + connections[0] + "', which is a contradiction."
             );
          }
@@ -1204,7 +1205,7 @@ namespace trogdor {
          // Setting the connecting entity to an empty string is how we signal
          // that the connection is to nowhere
          else {
-            entityConnections[connections[0]][direction] = {"", true};
+            entityConnections[connections[0]][direction] = {"", true, t.lineno};
          }
       }
 
@@ -1221,10 +1222,9 @@ namespace trogdor {
 
          auto &subjectKinds = std::get<0>(entities[identifiers[0]]);
 
-         // If we haven't already given the subject entity a kind, default to
-         // "room."
          if (!subjectKinds.size()) {
             subjectKinds.insert(std::get<0>(kindsMap["room"]));
+            subjectKinds.insert(std::get<0>(kindsMap["door"]));
          }
 
          else {
@@ -1248,39 +1248,12 @@ namespace trogdor {
             }
          }
 
-         // Both the subject and the direct object can't be doors
-         if (1 == subjectKinds.size() && *subjectKinds.begin() == std::get<0>(kindsMap["door"])) {
-
-            filterKinds(connections[0], {std::get<0>(kindsMap["room"])});
-
-            if (!connectionKinds.size()) {
-               throw ParseException(
-                  identifiers[0]
-                  + " seems to be a door opening onto something not a room, but a door must connect one or two rooms, and in particular is not allowed to connect to another door (line "
-                  + std::to_string(t.lineno) + ".)"
-               );
-            }
-         }
-
-         else if (1 == connectionKinds.size() && *connectionKinds.begin() == std::get<0>(kindsMap["door"])) {
-
-            filterKinds(identifiers[0], {std::get<0>(kindsMap["room"])});
-
-            if (!subjectKinds.size()) {
-               throw ParseException(
-                  identifiers[0]
-                  + " seems to be a door opening onto something not a room, but a door must connect one or two rooms, and in particular is not allowed to connect to another door (line "
-                  + std::to_string(t.lineno) + ".)"
-               );
-            }
-         }
-
          // We've already explicitly set another connection in the same
          // direction, so we have a contradiction
-         if (entityConnections[connections[0]][direction].second) {
+         if (std::get<1>(entityConnections[connections[0]][direction])) {
 
-            std::string previousSubject = entityConnections[connections[0]][direction].first.length() ?
-               entityConnections[connections[0]][direction].first : "nowhere";
+            std::string previousSubject = std::get<0>(entityConnections[connections[0]][direction]).length() ?
+               std::get<0>(entityConnections[connections[0]][direction]) : "nowhere";
 
             throw ParseException(
                std::string("You stated that '") + identifiers[0] + " is "
@@ -1292,15 +1265,15 @@ namespace trogdor {
             );
          }
 
-         entityConnections[connections[0]][direction] = {identifiers[0], true};
+         entityConnections[connections[0]][direction] = {identifiers[0], true, t.lineno};
 
          // If an explicit connection hasn't already been made in the opposite
          // direction, create an implicit one now.
          if (
             directions[direction].length() &&
-            !entityConnections[identifiers[0]][directions[direction]].second
+            !std::get<1>(entityConnections[identifiers[0]][directions[direction]])
          ) {
-            entityConnections[identifiers[0]][directions[direction]] = {connections[0], false};
+            entityConnections[identifiers[0]][directions[direction]] = {connections[0], false, t.lineno};
          }
       }
    }
@@ -1674,16 +1647,196 @@ namespace trogdor {
 
    /**************************************************************************/
 
+   Kind *Inform7Parser::resolveKind(std::string entityName) const {
+
+      const auto &entity = entities.find(entityName);
+
+      if (1 == std::get<0>(entity->second).size()) {
+         return *std::get<0>(entity->second).begin();
+      }
+
+      else if (2 == std::get<0>(entity->second).size()) {
+
+         Kind *room = std::get<0>(kindsMap.find("room")->second);
+         Kind *door = std::get<0>(kindsMap.find("door")->second);
+         Kind *container = std::get<0>(kindsMap.find("container")->second);
+
+         if (
+            std::get<0>(entity->second).count(room) &&
+            std::get<0>(entity->second).count(container)
+         ) {
+            return container;
+         }
+
+         else if (
+            std::get<0>(entity->second).count(door) &&
+            std::get<0>(entity->second).count(room)
+         ) {
+            return room;
+         }
+
+         else {
+
+            std::string kindsStr;
+
+            for (const auto &kind: std::get<0>(entity->second)) {
+               kindsStr += kind->getName() + ", ";
+            }
+
+            kindsStr = kindsStr.substr(0, kindsStr.length() - 2);
+
+            throw UndefinedException(
+               entityName + " was assigned the following incompatible kinds: "
+               + kindsStr + ". This is a bug and should be fixed."
+            );
+         }
+      }
+
+      else if (!std::get<0>(entity->second).size()) {
+         throw UndefinedException(
+            entityName + " has an empty number of possible kinds. This is a bug and should be fixed."
+         );
+      }
+
+      else {
+
+         std::string kindsStr;
+
+         for (const auto &kind: std::get<0>(entity->second)) {
+            kindsStr += kind->getName() + ", ";
+         }
+
+         kindsStr = kindsStr.substr(0, kindsStr.length() - 2);
+
+         throw UndefinedException(
+            entityName + " has too many possible kinds: " + kindsStr
+            + ". This is a bug and should be fixed."
+         );
+      }
+   }
+
+   /**************************************************************************/
+
+   void Inform7Parser::buildAST() {
+
+      // Keeps track of which kinds an entity resolves to just before it's
+      // instantiated
+      std::unordered_map<std::string, Kind *> entityToResolvedKind;
+
+      for (const auto &entity: entities) {
+
+         size_t lineno = std::get<3>(entity.second);
+         Kind *entityKind = resolveKind(entity.first);
+         std::string description = std::get<2>(entity.second);
+         std::string entityClassName = std::get<3>(kindsMap[entityKind->getName()]);
+
+         entityToResolvedKind[entity.first] = entityKind;
+
+         // The kind's internal entity class definitions haven't been inserted
+         // into the AST yet, so do that now
+         if (bool &classInserted = std::get<2>(kindsMap[entityKind->getName()]); !classInserted) {
+
+            // Inserts the entity class definition itself
+            std::get<1>(kindsMap[entityKind->getName()])(lineno);
+
+            // Inserts any additional AST nodes necessary to configure that
+            // entity class, starting with the parent kind and working its way
+            // down to the child
+            std::stack<std::function<void(size_t)>> classCallbacks;
+
+            for (Kind *curKind = entityKind; curKind != nullptr; curKind = curKind->getParent()) {
+
+               const auto &callback = curKind->getCallback();
+
+               if (callback) {
+                  classCallbacks.push(curKind->getCallback());
+               }
+            }
+
+            while (classCallbacks.size()) {
+               classCallbacks.top()(lineno);
+               classCallbacks.pop();
+            }
+
+            classInserted = true;
+         }
+
+         // Finally, insert the entity definition itself into the AST
+         ast->appendChild(ASTDefineEntity(
+            entity.first,
+            entity::Entity::typeToStr(entityKind->getInternalType()),
+            entityClassName,
+            std::nullopt,
+            lineno
+         ));
+
+         // TODO: I think Inform allows some way to customize thie value
+         ast->appendChild(ASTSetProperty(
+            "entity",
+            "title",
+            entity.first,
+            lineno,
+            entity.first
+         ));
+
+         if (description.length()) {
+
+            ast->appendChild(ASTSetProperty(
+               "entity",
+               "longDesc",
+               description,
+               lineno,
+               entity.first
+            ));
+
+            // TODO: what is Inform 7's shortDesc equivalent?
+         }
+      }
+
+      // Insert AST nodes representing connections between doors and rooms
+      for (const auto &entityToConnect: entityConnections) {
+
+         for (const auto &connection: entityToConnect.second) {
+
+            std::string direction = connection.first;
+            std::string connectTo = std::get<0>(connection.second);
+
+            // A door can only connect to a room, not another door or anything else
+            if (
+               entityToResolvedKind[entityToConnect.first] == std::get<0>(kindsMap["door"]) &&
+               entityToResolvedKind[connectTo] != std::get<0>(kindsMap["room"])
+            ) {
+               throw ParseException(
+                  entityToConnect.first
+                  + " seems to be a door opening onto something not a room, but a door must connect one or two rooms, and in particular is not allowed to connect to another door (line "
+                  + std::to_string(std::get<3>(entities[entityToConnect.first])) + ".)"
+               );
+            }
+
+            // We can ignore connections to nowhere (represented by an empty
+            // string) since it's just a way for Inform7 to remove an otherwise
+            // implied connection.
+            if (connectTo.length()) {
+               ast->appendChild(ASTConnectRooms(
+                  "entity",
+                  entityToConnect.first,
+                  connectTo,
+                  direction,
+                  std::get<2>(connection.second)
+               ));
+            }
+         }
+      }
+   }
+
+   /**************************************************************************/
+
    void Inform7Parser::parse(std::string filename) {
 
       lexer.open(filename);
       parseProgram();
+      buildAST();
 
-      // TODO: start using the AST (undefined so far) to populate the game
-      std::cout << "Entities:\n" << std::endl;
-      dumpEntities();
-
-      std::cout << "Connections:\n" << std::endl;
-      dumpEntityConnections();
+      instantiator->instantiate(ast);
    }
 }

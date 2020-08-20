@@ -68,7 +68,7 @@ namespace trogdor {
          // Reference to parser's list of defined kinds
          const std::unordered_map<
             std::string,
-            std::tuple<Kind *, std::function<void(size_t)>, bool>
+            std::tuple<Kind *, std::function<void(size_t)>, bool, std::string>
          > &kinds;
 
          // Reference to parser's list of defined properties
@@ -206,7 +206,7 @@ namespace trogdor {
             const std::unordered_map<std::string, std::string> &dirs,
             const std::unordered_set<std::string> &adjs,
             const std::unordered_map<std::string, std::tuple<
-               Kind *, std::function<void(size_t)>, bool>
+               Kind *, std::function<void(size_t)>, bool, std::string>
             > &ks,
             const std::unordered_map<std::string, std::pair<
 	            std::vector<Kind *>, std::vector<std::string>>

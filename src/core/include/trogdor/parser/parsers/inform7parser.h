@@ -147,13 +147,29 @@ namespace trogdor {
          // (See: http://www.ifwiki.org/index.php/Inform_7_for_Programmers/Part_1#Class_And_Prejudice)
          std::unique_ptr<Kind> kinds;
 
-         // Maps kind names to their entry in the kinds hierarchy, to a
-         // callback that will insert an AST node to define the internal Entity
-         // class, and to a boolean value that determines whether or not the AST
-         // Entity class definition nodes have already been inserted.
+         // Maps kind names to their entry in the kinds hierarchy
          std::unordered_map<
+
+            // The Kind's name
             std::string,
-            std::tuple<Kind *, std::function<void(size_t)>, bool>
+
+            std::tuple<
+
+               // The Kind we're referencing
+               Kind *,
+
+               // A callback that will insert an AST node defining the internal
+               // entity class
+               std::function<void(size_t)>,
+
+               // Whether or not the AST node has been inserted already (prevents
+               // multiple insertions)
+               bool,
+
+               // The name of the internal entity class corresponding to the
+               // Inform 7 kind
+               std::string
+            >
          > kindsMap;
 
          // Plural lookup mapping plural kinds to their singular equivalents
@@ -186,7 +202,10 @@ namespace trogdor {
             std::unordered_map<std::string, std::pair<bool, size_t>>,
 
             // The entity's description
-            std::string
+            std::string,
+
+            // Line number where the entity was defined
+            size_t
 
          >> entities;
 
@@ -201,7 +220,7 @@ namespace trogdor {
          // removed.
          std::unordered_map<
             std::string,
-            std::unordered_map<std::string, std::pair<std::string, bool>>
+            std::unordered_map<std::string, std::tuple<std::string, bool, size_t>>
          > entityConnections;
 
          // Optional Bibliographic Data
@@ -446,6 +465,34 @@ namespace trogdor {
          */
          void parseProgram();
 
+         /*
+            Takes as input an entity with a set of possible kinds assigned and
+            applies rules to determine which will be the entity's type. In the
+            simplest case where there is only one, that one kind will simply be
+            returned. If a group of kinds is passed in that we have no rule for,
+            an instance of UndefinedException will be thrown.
+
+            Input:
+               The name of the entity whose kinds we're examining (std::string)
+
+            Output:
+               The chosen kind (Kind *)
+         */
+         Kind *resolveKind(std::string entityName) const;
+
+         /*
+            Builds the AST that will then be fed to the instantiator. Does some
+            additional constraint checking in the process that couldn't be
+            completed during the parsing step.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void buildAST();
+
       protected:
 
          /*
@@ -492,6 +539,7 @@ namespace trogdor {
          inline void insertKind(
             Kind *parent,
             std::string kindName,
+            std::string entityClassName,
             entity::EntityType type,
             std::function<void(size_t)> ASTClassDefinitionCallback,
             std::function<void(size_t)> ASTNodeCallback = {}
@@ -499,7 +547,7 @@ namespace trogdor {
 
             Kind *node = parent->appendChild(kindName, type, ASTNodeCallback);
 
-            kindsMap[kindName] = {node, ASTClassDefinitionCallback, false};
+            kindsMap[kindName] = {node, ASTClassDefinitionCallback, false, entityClassName};
             kindPlurals[language.pluralizeNoun(kindName)] = kindName;
          }
 
@@ -573,7 +621,8 @@ namespace trogdor {
                propertiesStr = propertiesStr.substr(0, propertiesStr.length() - 2);
 
                std::cout << "Entity name: " << entity.first << std::endl;
-               std::cout << "Kinds: " << kindsStr << std::endl;
+               std::cout << "Possible Kinds: " << kindsStr << std::endl;
+               std::cout << "Resolved Kind: " << resolveKind(entity.first)->getName() << std::endl;
                std::cout << "Properties: "
                   << (propertiesStr.length() ? propertiesStr : "(none)")
                   << std::endl;
@@ -599,10 +648,10 @@ namespace trogdor {
 
             for (const auto &entity: entityConnections) {
                for (const auto &connection: entity.second) {
-                  std::cout << (connection.second.first.length() ? connection.second.first : "nowhere")
+                  std::cout << (std::get<0>(connection.second).length() ? std::get<0>(connection.second) : "nowhere")
                      << " is " << connection.first << " of "
                      << (entity.first.length() ? entity.first : "nowhere")
-                     << (connection.second.second ? " (explicit)" : "")
+                     << (std::get<1>(connection.second) ? " (explicit)" : "")
                      << std::endl;
                }
             }
