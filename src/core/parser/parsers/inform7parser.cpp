@@ -1,9 +1,6 @@
 #include <memory>
 #include <vector>
 
-// TODO: remove this after testing
-#include <iostream>
-
 #include <trogdor/utility.h>
 #include <trogdor/vocabulary.h>
 #include <trogdor/exception/parseexception.h>
