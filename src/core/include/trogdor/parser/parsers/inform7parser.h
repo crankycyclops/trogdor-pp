@@ -542,6 +542,71 @@ namespace trogdor {
             }
          }
 
+         /*
+            Debug method that dumps all parsed entities to stdout.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline void dumpEntities() const {
+
+            for (const auto &entity: entities) {
+
+               std::string kindsStr;
+
+               for (const auto &kind: std::get<0>(entity.second)) {
+                  kindsStr += kind->getName() += ", ";
+               }
+
+               kindsStr = kindsStr.substr(0, kindsStr.length() - 2);
+
+               std::string propertiesStr;
+
+               for (const auto &property: std::get<1>(entity.second)) {
+                  propertiesStr += (property.second.second ? "not " : "");
+                  propertiesStr += property.first + ", ";
+               }
+
+               propertiesStr = propertiesStr.substr(0, propertiesStr.length() - 2);
+
+               std::cout << "Entity name: " << entity.first << std::endl;
+               std::cout << "Kinds: " << kindsStr << std::endl;
+               std::cout << "Properties: "
+                  << (propertiesStr.length() ? propertiesStr : "(none)")
+                  << std::endl;
+               std::cout << "Description: "
+                  << (std::get<2>(entity.second).length() ? std::get<2>(entity.second) : "(none)")
+                  << std::endl;
+
+               std::cout << "\n" << std::endl;
+            }
+         }
+
+         /*
+            Debug method that dumps all connections between rooms and doors to
+            stdout.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline void dumpEntityConnections() const {
+
+            for (const auto &entity: entityConnections) {
+               for (const auto &connection: entity.second) {
+                  std::cout << connection.second.first << " is "
+                     << connection.first << " of " << entity.first
+                     << (connection.second.second ? " (explicit)" : "")
+                     << std::endl;
+               }
+            }
+         }
+
       public:
 
          /*

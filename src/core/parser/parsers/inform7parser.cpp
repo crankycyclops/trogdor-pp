@@ -1680,5 +1680,10 @@ namespace trogdor {
       parseProgram();
 
       // TODO: start using the AST (undefined so far) to populate the game
+      std::cout << "Entities:\n" << std::endl;
+      dumpEntities();
+
+      std::cout << "Connections:\n" << std::endl;
+      dumpEntityConnections();
    }
 }
