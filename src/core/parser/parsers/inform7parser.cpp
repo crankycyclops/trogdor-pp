@@ -1827,6 +1827,14 @@ namespace trogdor {
             }
          }
       }
+
+      // TODO: I still have to build out contains and supports relationships in
+      // parseInClause and parseOnClause and then insert the appropriate AST
+      // nodes. I also need to make sure I automatically create a room called
+      // start based on which room is encountered first (and take care of
+      // scenario where someone names a room start but it's not actually
+      // supposed to be the starting room. Maybe I could make that a reserved
+      // word that's not allowed as an identifier name?)
    }
 
    /**************************************************************************/
