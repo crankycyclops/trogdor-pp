@@ -446,6 +446,45 @@ namespace trogdor {
 
    /**************************************************************************/
 
+   bool Inform7Parser::filterKinds(
+      std::string entity,
+      std::vector<Kind *> compatibleKinds,
+      Kind *exactMatch
+   ) {
+
+      bool foundExactMatch = false;
+      auto &entityKinds = std::get<0>(entities[entity]);
+
+      for (auto it = entityKinds.begin(); it != entityKinds.end(); ) {
+
+         bool kindMatches = false;
+
+         for (const auto &kind: compatibleKinds) {
+            if ((*it)->isKindRelated(kind)) {
+               kindMatches = true;
+               break;
+            }
+         }
+
+         if (!kindMatches) {
+
+            if (exactMatch == *it) {
+               foundExactMatch = true;
+            }
+
+            it = entityKinds.erase(it);
+         }
+
+         else {
+            it++;
+         }
+      }
+
+      return foundExactMatch;
+   }
+
+   /**************************************************************************/
+
    void Inform7Parser::parseDescriptionStatement(std::string identifier) {
 
       Token t = lexer.peek();
@@ -865,13 +904,7 @@ namespace trogdor {
 
             else {
 
-               for (auto it = subjectKinds.begin(); it != subjectKinds.end(); ) {
-                  if (!(*it)->isKindRelated(std::get<0>(kindsMap["thing"]))) {
-                     it = subjectKinds.erase(it);
-                  } else {
-                     it++;
-                  }
-               }
+               filterKinds(subject, {std::get<0>(kindsMap["thing"])});
 
                // If, after removing all incompatible types from the list of
                // possible kinds, no kinds are left, we obviously have a
@@ -908,34 +941,14 @@ namespace trogdor {
 
             else {
 
-               // If this is set to true, it means that there's an entity of
-               // type "thing" that needs to be automatically promoted to
-               // "container."
-               bool promoteThingToContainer = false;
+               if (filterKinds(
+                  containerOrPlace,
+                  {std::get<0>(kindsMap["container"]), std::get<0>(kindsMap["room"])},
+                  std::get<0>(kindsMap["thing"])
+               )) {
 
-               for (auto it = containerOrPlaceKinds.begin(); it != containerOrPlaceKinds.end(); ) {
-
-                  if (
-                     !(*it)->isKindRelated(std::get<0>(kindsMap["container"])) &&
-                     !(*it)->isKindRelated(std::get<0>(kindsMap["room"]))
-                  ) {
-
-                     // We have a generic "thing" that we're going to promote to
-                     // "container"; we'll remove the generic "thing" kind now,
-                     // then add the more specific type at the end of the loop.
-                     if (*it == std::get<0>(kindsMap["thing"])) {
-                        promoteThingToContainer = true;
-                     }
-
-                     it = containerOrPlaceKinds.erase(it);
-                  }
-
-                  else {
-                     it++;
-                  }
-               }
-
-               if (promoteThingToContainer) {
+                  // If one of the possible types is "thing", it needs to be
+                  // automatically promoted to "container."
                   containerOrPlaceKinds.insert(std::get<0>(kindsMap["container"]));
                }
 
@@ -1010,13 +1023,7 @@ namespace trogdor {
 
             else {
 
-               for (auto it = subjectKinds.begin(); it != subjectKinds.end(); ) {
-                  if (!(*it)->isKindRelated(std::get<0>(kindsMap["thing"]))) {
-                     it = subjectKinds.erase(it);
-                  } else {
-                     it++;
-                  }
-               }
+               filterKinds(subject, {std::get<0>(kindsMap["thing"])});
 
                // If, after removing all incompatible types from the list of
                // possible kinds, no kinds are left, we obviously have a
@@ -1050,31 +1057,14 @@ namespace trogdor {
 
             else {
 
-               // If this is set to true, it means that there's an entity of
-               // type "thing" that needs to be automatically promoted to
-               // "supporter."
-               bool promoteThingToSupporter = false;
+               if (filterKinds(
+                  supporter,
+                  {std::get<0>(kindsMap["supporter"])},
+                  std::get<0>(kindsMap["thing"])
+               )) {
 
-               for (auto it = supporterKinds.begin(); it != supporterKinds.end(); ) {
-
-                  if (!(*it)->isKindRelated(std::get<0>(kindsMap["supporter"]))) {
-
-                     // We have a generic "thing" that we're going to promote to
-                     // "container"; we'll remove the generic "thing" kind now,
-                     // then add the more specific type at the end of the loop.
-                     if (*it == std::get<0>(kindsMap["thing"])) {
-                        promoteThingToSupporter = true;
-                     }
-
-                     it = supporterKinds.erase(it);
-                  }
-
-                  else {
-                     it++;
-                  }
-               }
-
-               if (promoteThingToSupporter) {
+                  // If one of the possible types is "thing", it needs to be
+                  // automatically promoted to "supporter."
                   supporterKinds.insert(std::get<0>(kindsMap["supporter"]));
                }
 
@@ -1163,16 +1153,10 @@ namespace trogdor {
 
       else {
 
-         for (auto it = connectionKinds.begin(); it != connectionKinds.end(); ) {
-            if (
-               !(*it)->isKindRelated(std::get<0>(kindsMap["room"])) &&
-               !(*it)->isKindRelated(std::get<0>(kindsMap["door"]))
-            ) {
-               it = connectionKinds.erase(it);
-            } else {
-               it++;
-            }
-         }
+         filterKinds(connections[0], {
+            std::get<0>(kindsMap["room"]),
+            std::get<0>(kindsMap["door"])
+         });
 
          if (!connectionKinds.size()) {
             throw ParseException(
@@ -1188,20 +1172,40 @@ namespace trogdor {
       // We're removing a connection
       if (0 == identifiers[0].compare("nowhere")) {
 
-         if (
-            1 == connectionKinds.size() &&
-            (*connectionKinds.begin())->isKindRelated(std::get<0>(kindsMap["door"]))
-         ) {
+         // A door can't connect to nowhere, so remove it from the list of
+         // possible kinds
+         filterKinds(connections[0], {std::get<0>(kindsMap["room"])});
+
+         // If there are no possible kinds left, we know that we attempted to
+         // connect a door to nowhere, which is also a no-no
+         if (!connectionKinds.size()) {
             throw ParseException(
                std::string("A door cannot be connected to nowhere (line ")
                + std::to_string(t.lineno) + ".)"
             );
          }
 
-         // TODO: remove connection (and look for existing connections that would
-         // be a contradiction)
-         std::cout << "parseLocationStub: removing connection " + direction
-         + " of " + connections[0] + "." << std::endl;
+         // If the connection exists, it was explicitly defined, and it was not
+         // set to nowhere (empty string), we have a contradiction
+         else if (
+            entityConnections[connections[0]].end() != entityConnections[connections[0]].find(direction) &&
+            entityConnections[connections[0]][direction].second &&
+            connections[0].length() > 0
+         ) {
+            throw ParseException(
+               "You stated that '" + identifiers[0] + " is " + direction + " of "
+               + connections[0] + "' (line " + std::to_string(t.lineno)
+               + "), but in another sentence you also stated that '"
+               + entityConnections[connections[0]][direction].first + " is " +
+               direction + " of " + connections[0] + "', which is a contradiction."
+            );
+         }
+
+         // Setting the connecting entity to an empty string is how we signal
+         // that the connection is to nowhere
+         else {
+            entityConnections[connections[0]][direction] = {"", true};
+         }
       }
 
       else if (specialIdentifiers.end() != specialIdentifiers.find(identifiers[0])) {
@@ -1225,16 +1229,10 @@ namespace trogdor {
 
          else {
 
-            for (auto it = subjectKinds.begin(); it != subjectKinds.end(); ) {
-               if (
-                  !(*it)->isKindRelated(std::get<0>(kindsMap["room"])) &&
-                  !(*it)->isKindRelated(std::get<0>(kindsMap["door"]))
-               ) {
-                  it = subjectKinds.erase(it);
-               } else {
-                  it++;
-               }
-            }
+            filterKinds(identifiers[0], {
+               std::get<0>(kindsMap["room"]),
+               std::get<0>(kindsMap["door"])
+            });
 
             // If, after removing all incompatible types from the list of
             // possible kinds, no kinds are left, we obviously have a
@@ -1251,24 +1249,59 @@ namespace trogdor {
          }
 
          // Both the subject and the direct object can't be doors
-         if (
-            1 == subjectKinds.size() && 
-            1 == connectionKinds.size() &&
-            *subjectKinds.begin() == std::get<0>(kindsMap["door"]) &&
-            *connectionKinds.begin() == std::get<0>(kindsMap["door"])
-         ) {
+         if (1 == subjectKinds.size() && *subjectKinds.begin() == std::get<0>(kindsMap["door"])) {
+
+            filterKinds(connections[0], {std::get<0>(kindsMap["room"])});
+
+            if (!connectionKinds.size()) {
+               throw ParseException(
+                  identifiers[0]
+                  + " seems to be a door opening onto something not a room, but a door must connect one or two rooms, and in particular is not allowed to connect to another door (line "
+                  + std::to_string(t.lineno) + ".)"
+               );
+            }
+         }
+
+         else if (1 == connectionKinds.size() && *connectionKinds.begin() == std::get<0>(kindsMap["door"])) {
+
+            filterKinds(identifiers[0], {std::get<0>(kindsMap["room"])});
+
+            if (!subjectKinds.size()) {
+               throw ParseException(
+                  identifiers[0]
+                  + " seems to be a door opening onto something not a room, but a door must connect one or two rooms, and in particular is not allowed to connect to another door (line "
+                  + std::to_string(t.lineno) + ".)"
+               );
+            }
+         }
+
+         // We've already explicitly set another connection in the same
+         // direction, so we have a contradiction
+         if (entityConnections[connections[0]][direction].second) {
+
+            std::string previousSubject = entityConnections[connections[0]][direction].first.length() ?
+               entityConnections[connections[0]][direction].first : "nowhere";
+
             throw ParseException(
-               identifiers[0]
-               + " seems to be a door opening onto something not a room, but a door must connect one or two rooms (and in particular is not allowed to connect to another door) (line "
-               + std::to_string(t.lineno) + ".)"
+               std::string("You stated that '") + identifiers[0] + " is "
+               + direction + " of " + connections[0] + "' (line "
+               + std::to_string(t.lineno)
+               + "), but in another sentence, you stated that '"
+               + previousSubject + " is " + direction + " of " + connections[0]
+               + ", which is a contradiction."
             );
          }
 
-         // TODO: record connections in new data structure (and look for nowhere
-         // to signal that we should only create a one-way connection, or if there's
-         // a contradiction, either because nowhere or because of other room in
-         // same direction, report that too.)
-         std::cout << "Stub: parseLocationClause: creating connection" << std::endl;
+         entityConnections[connections[0]][direction] = {identifiers[0], true};
+
+         // If an explicit connection hasn't already been made in the opposite
+         // direction, create an implicit one now.
+         if (
+            directions[direction].length() &&
+            !entityConnections[identifiers[0]][directions[direction]].second
+         ) {
+            entityConnections[identifiers[0]][directions[direction]] = {connections[0], false};
+         }
       }
    }
 

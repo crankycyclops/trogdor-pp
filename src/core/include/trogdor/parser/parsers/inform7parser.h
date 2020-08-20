@@ -190,9 +190,50 @@ namespace trogdor {
 
          >> entities;
 
+         // Tracks connections between rooms and doors by mapping an entity
+         // name to another unordered_map that maps a direction to another
+         // entity name, as well as to a boolean that determines whether the
+         // connection was explicitly or implicitly defined (if the former, we
+         // check for contradictions; if the latter, we try to find conditions
+         // under which both statements could be true). If an entity name and
+         // direction map to an empty string as opposed to the pair just not
+         // mapping to anything, we know that the connection has been explicitly
+         // removed.
+         std::unordered_map<
+            std::string,
+            std::unordered_map<std::string, std::pair<std::string, bool>>
+         > entityConnections;
+
          // Optional Bibliographic Data
          std::optional<std::string> parsedTitle;
          std::optional<std::string> parsedAuthor;
+
+         /*
+            Reduces an entity's set of possible kinds down to only those that
+            inherit from the passed in kinds. Can also take an optional third
+            parameter which will look for an exact kind match and return true if
+            that match is found.
+
+            The way I described the use of lookForExactMatch isn't very clear,
+            but I can't think of a better way to do so. Instead, to understand
+            what this is for, just look for any call to filterKinds() that
+            passes in a third parameter and checks the return value. You should
+            be able to figure it out that way.
+
+            Input:
+               Entity's name (std::string)
+               All possible kinds (std::vector<Kind *>)
+               An optional kind to look for an exact match with (std::vector<Kind *>)
+
+            Output:
+               True if we find one or more exact matches (listed in
+               lookForExactMatch) and false if not.
+         */
+         bool filterKinds(
+            std::string entity,
+            std::vector<Kind *> compatibleKinds,
+            Kind *exactMatch = nullptr
+         );
 
          /*
             Initializes standard rules, including built-in kinds, directions,
