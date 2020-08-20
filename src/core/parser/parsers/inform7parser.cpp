@@ -1832,6 +1832,10 @@ namespace trogdor {
       // scenario where someone names a room start but it's not actually
       // supposed to be the starting room. Maybe I could make that a reserved
       // word that's not allowed as an identifier name?)
+
+      // I also have to build out support for properties (both validation, like
+      // whether or not that property is allowed to be set on that kind, and
+      // the resulting AST nodes.)
    }
 
    /**************************************************************************/
