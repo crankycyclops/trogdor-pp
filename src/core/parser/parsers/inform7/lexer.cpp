@@ -49,7 +49,6 @@ namespace trogdor {
 
       else {
 
-         readToken:
          skipWhitespace();
 
          // This way the token knows what line it came from (necessary for
@@ -61,16 +60,6 @@ namespace trogdor {
             std::string terminator = getSentenceTerminator();
 
             if (terminator.length()) {
-
-               // Evil hack (I swear, this is the first time I've used a
-               // goto statement in at least a decade, and I promise the CS gods
-               // above that I will do penance, go to confession, and NEVER
-               // write such an abomination again.)
-               if (skipNextPhraseTerminator) {
-                  skipNextPhraseTerminator = false;
-                  goto readToken;
-               }
-
                t.value = terminator;
                t.type = PHRASE_TERMINATOR;
             }
@@ -288,10 +277,26 @@ namespace trogdor {
       // If a period appears at the end of the quoted string, it should be
       // treated as a PHRASE_TERMINATOR and returned when it's time to retrieve
       // the next token.
-
       if ('.' == quotedString.back()) {
-         skipNextPhraseTerminator = true;
+
          tokenBuffer.push_front({".", PHRASE_TERMINATOR, sourceLine});
+
+         size_t prevSourceLine = sourceLine;
+         size_t prevSourceIndex = sourceIndex;
+
+         sourceIndex++;
+
+         // Okay, so what's going on here is, I might, after pushing a phrase
+         // terminator due to a period at the end of the quoted string, then lex
+         // in the next token another phrase terminator due to a new paragraph
+         // (two newlines.) I attempt to skip ahead of this possible second
+         // phrase terminator so we can ignore it, and if it turns out there's
+         // no phrase terminator but another token that needs to be lexed
+         // instead, we restore our previous state and continue on our merry way.
+         if (!getSentenceTerminator().length()) {
+            sourceLine = prevSourceLine;
+            sourceIndex = prevSourceIndex;
+         }
       }
 
       return quotedString;

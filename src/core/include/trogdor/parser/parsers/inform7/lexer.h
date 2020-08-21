@@ -92,10 +92,6 @@ namespace trogdor {
          // The most recently lexed token
          Token currentToken;
 
-         // If true, we should skip over the next phrase terminator we encounter
-         // (workaround to enable parsing terminator inside a quoted string.)
-         bool skipNextPhraseTerminator = false;
-
          /*
             Returns true if the string is a form of the verb to be and false if
             not.

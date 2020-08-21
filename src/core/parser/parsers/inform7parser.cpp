@@ -69,7 +69,8 @@ namespace trogdor {
          // define custom directions internally already, and when I'm ready to
          // support this in my parser, I can implement this callback.
          throw UndefinedException(
-            "Custom directions aren't yet supported (line " + lineno + ')'
+            "Custom directions aren't yet supported (line "
+            + std::to_string(lineno) + ')'
          );
       });
 
@@ -77,7 +78,8 @@ namespace trogdor {
       [&] (size_t lineno) {
 
          throw UndefinedException(
-            "The 'object' kind shouldn't be directly instantiable. Instead, entities should default to things or some other more specific type. This is a bug in the Inform 7 parser and should be fixed. (line " + lineno + ')'
+            "The 'object' kind shouldn't be directly instantiable. Instead, entities should default to things or some other more specific type. This is a bug in the Inform 7 parser and should be fixed. (line "
+            + std::to_string(lineno) + ')'
          );
       });
 
@@ -85,7 +87,8 @@ namespace trogdor {
       entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
 
          throw UndefinedException(
-            "Inform 7 regions aren't currently supported (line " + lineno + ')'
+            "Inform 7 regions aren't currently supported (line "
+            + std::to_string(lineno) + ')'
          );
       });
 
@@ -188,7 +191,8 @@ namespace trogdor {
       entity::ENTITY_UNDEFINED, [&] (size_t lineno) {
 
          throw UndefinedException(
-            "Inform 7 backdrops aren't yet supported (line " + lineno + ')'
+            "Inform 7 backdrops aren't yet supported (line "
+            + std::to_string(lineno) + ')'
          );
       });
 
