@@ -34,6 +34,8 @@ namespace trogdor {
       while (!tokenBuffer.empty()) {
          tokenBuffer.pop_back();
       }
+
+      skipWhitespace(true);
    }
 
    /**************************************************************************/
@@ -198,13 +200,17 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   void Lexer::skipWhitespace() {
+   void Lexer::skipWhitespace(bool includeNewlines) {
 
      while (
         sourceIndex < source.length() &&
         (isspace(source.at(sourceIndex)) || '[' == source.at(sourceIndex)) &&
-        '\n' != source.at(sourceIndex)
+        ('\n' != source.at(sourceIndex) || includeNewlines)
      ) {
+
+         if ('\n' == source.at(sourceIndex)) {
+            sourceLine++;
+         }
 
          // Count comments as whitespace
          if ('[' == source.at(sourceIndex)) {

@@ -149,15 +149,17 @@ namespace trogdor {
          }
 
          /*
-            Skips over whitespace (not counting \n) in the source.
+            Skips over whitespace in the source. Newlines are considered
+            non-whitespace (since two in a row are considered a sentence
+            terminator) unless includeNewLines is set to true.
 
             Input:
-               (none)
+               Whether or not newlines should be counted as whitespace (bool)
 
             Output:
                (none)
          */
-         void skipWhitespace();
+         void skipWhitespace(bool includeNewlines = false);
 
          /*
             Reads a sentence terminator (if one exists.) Returns an empty string
