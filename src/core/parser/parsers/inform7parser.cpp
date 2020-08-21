@@ -1720,6 +1720,8 @@ namespace trogdor {
 
    void Inform7Parser::buildAST() {
 
+      bool atLeastOneRoomFound = false;
+
       // Keeps track of which kinds an entity resolves to just before it's
       // instantiated
       std::unordered_map<std::string, Kind *> entityToResolvedKind;
@@ -1730,6 +1732,10 @@ namespace trogdor {
          Kind *entityKind = resolveKind(entity.first);
          std::string description = std::get<2>(entity.second);
          std::string entityClassName = std::get<3>(kindsMap[entityKind->getName()]);
+
+         if (entityKind == std::get<0>(kindsMap["room"])) {
+            atLeastOneRoomFound = true;
+         }
 
          entityToResolvedKind[entity.first] = entityKind;
 
@@ -1792,6 +1798,10 @@ namespace trogdor {
 
             // TODO: what is Inform 7's shortDesc equivalent?
          }
+      }
+
+      if (!atLeastOneRoomFound) {
+         throw ParseException("There doesn't seem to be any location in this story, so there's nowhere for the player to begin.");
       }
 
       // Insert AST nodes representing connections between doors and rooms
