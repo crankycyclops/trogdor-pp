@@ -959,14 +959,39 @@ namespace trogdor {
 
    void Instantiator::instantiate(const std::shared_ptr<ASTNode> &ast) {
 
+      // Make sure at least one room named "start" exists in the game
+      bool atLeastOneRoomNamedStart = false;
+
       // For now, we assume that each child of the root ASTNode is an operation.
       // This might very well change as the AST becomes more complex.
-      for (const auto &operation: ast->getChildren()) {
-         if (AST_OPERATION == operation->getType()) {
-            executeOperation(std::dynamic_pointer_cast<ASTOperationNode>(operation));
-         } else {
+      for (const auto &astChild: ast->getChildren()) {
+
+         if (AST_OPERATION == astChild->getType()) {
+
+            auto operation = std::dynamic_pointer_cast<ASTOperationNode>(astChild);
+
+            if (DEFINE_ENTITY == operation->getOperation()) {
+
+               std::string entityName = operation->getChildren()[0]->getValue();
+               entity::EntityType entityType = entity::Entity::strToType(
+                  operation->getChildren()[1]->getValue()
+               );
+
+               if (0 == entityName.compare("start") && entity::ENTITY_ROOM == entityType) {
+                  atLeastOneRoomNamedStart = true;
+               }
+            }
+
+            executeOperation(operation);
+         }
+
+         else {
             throw UndefinedException("Attempted to execute nonoperable AST node. This is a bug.");
          }
+      }
+
+      if (!atLeastOneRoomNamedStart) {
+         throw ValidationException("There must be at least one room in the game named \"start\" so that the engine knows where to insert new players.");
       }
 
       // If implemented in child, this will be like a hook at the end of instantiate()
