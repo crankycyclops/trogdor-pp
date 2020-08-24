@@ -14,7 +14,7 @@ namespace trogdor {
    Inform7Parser::Inform7Parser(
       std::unique_ptr<Instantiator> i,
       const Vocabulary &v,
-      const Trogerr &e
+      Trogerr &e
    ): Parser(std::move(i), v, e), lexer(directions, adjectives,
    kindsMap, properties), parsedTitle(std::nullopt), parsedAuthor(std::nullopt) {
 
@@ -118,12 +118,11 @@ namespace trogdor {
       insertKind(std::get<0>(kindsMap["thing"]), "door", "inform7_door",
       entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
-         // TODO: issue warning about only partial support
-         ast->appendChild(ASTDefineEntityClass(
-            "inform7_door",
-            entity::Entity::typeToStr(entity::ENTITY_OBJECT),
-            lineno
-         ));
+         throw UndefinedException(
+            "Inform 7 regions aren't currently supported (line "
+            + std::to_string(lineno) + ')'
+         );
+
       }, [&] (size_t lineno) {
 
          // Doors are never allowed to move, so we set the Trogdor-pp
@@ -139,7 +138,9 @@ namespace trogdor {
       insertKind(std::get<0>(kindsMap["thing"]), "container", "inform7_container",
       entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
-         // TODO: issue warning about only partial support
+         errStream.setErrorLevel(Trogerr::WARNING);
+         errStream << "Inform 7 containers are not yet supported and, for the time being, will be instantiated as ordinary things." << std::endl;
+
          ast->appendChild(ASTDefineEntityClass(
             "inform7_container",
             entity::Entity::typeToStr(entity::ENTITY_OBJECT),
@@ -150,7 +151,9 @@ namespace trogdor {
       insertKind(std::get<0>(kindsMap["container"]), "vehicle", "inform7_vehicle",
       entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
-         // TODO: issue warning about only partial support
+         errStream.setErrorLevel(Trogerr::WARNING);
+         errStream << "Inform 7 vehicles are not yet supported and, for the time being, will be instantiated as ordinary things." << std::endl;
+
          ast->appendChild(ASTDefineEntityClass(
             "inform7_vehicle",
             entity::Entity::typeToStr(entity::ENTITY_OBJECT),
@@ -171,7 +174,9 @@ namespace trogdor {
       insertKind(std::get<0>(kindsMap["container"]), "player's holdall",
       "inform7_players_holdall", entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
-         // TODO: issue warning about only partial support
+         errStream.setErrorLevel(Trogerr::WARNING);
+         errStream << "Inform 7 player's holdalls are not yet supported and, for the time being, will be instantiated as ordinary things." << std::endl;
+
          ast->appendChild(ASTDefineEntityClass(
             "inform7_players_holdall",
             entity::Entity::typeToStr(entity::ENTITY_OBJECT),
@@ -182,7 +187,9 @@ namespace trogdor {
       insertKind(std::get<0>(kindsMap["thing"]), "supporter", "inform7_supporter",
       entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
-         // TODO: issue warning about only partial support
+         errStream.setErrorLevel(Trogerr::WARNING);
+         errStream << "Inform 7 supporters are not yet supported and, for the time being, will be instantiated as ordinary things." << std::endl;
+
          ast->appendChild(ASTDefineEntityClass(
             "inform7_supporter",
             entity::Entity::typeToStr(entity::ENTITY_OBJECT),
@@ -202,7 +209,9 @@ namespace trogdor {
       insertKind(std::get<0>(kindsMap["thing"]), "device", "inform7_device",
       entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
-         // TODO: issue warning about only partial support
+         errStream.setErrorLevel(Trogerr::WARNING);
+         errStream << "Inform 7 devices are not yet supported and, for the time being, will be instantiated as ordinary things." << std::endl;
+
          ast->appendChild(ASTDefineEntityClass(
             "inform7_device",
             entity::Entity::typeToStr(entity::ENTITY_OBJECT),

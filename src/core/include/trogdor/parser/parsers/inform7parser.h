@@ -687,7 +687,7 @@ namespace trogdor {
          Inform7Parser(
             std::unique_ptr<Instantiator> i,
             const Vocabulary &v,
-            const Trogerr &e
+            Trogerr &e
          );
 
          /*
