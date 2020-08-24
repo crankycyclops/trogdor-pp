@@ -180,13 +180,26 @@ namespace trogdor {
          std::unordered_map<std::string, Kind *> abstractKinds;
 
          // Set of properties (both either/or and value) recognized by Inform 7.
-         // Each property maps to the highest and most basic kinds in the
-         // hierarchy on which the property can be set, and to a set of
-         // other properties that are contradictory and which can't be set if
-         // the property that forms the key of the unordered_map is.
          std::unordered_map<
+
+            // Property name
             std::string,
-            std::pair<std::vector<Kind *>, std::vector<std::string>>
+
+            std::tuple<
+
+               // The highest and most basic kinds in the hierarchy for which
+               // the properties can be set
+               std::vector<Kind *>,
+
+               // Properties that are contradictory
+               std::vector<std::string>,
+
+               // A callback that inserts the appropriate AST nodes. Takes as
+               // input an entity name, whether or not the property was negated,
+               // and the line number where the property was set.
+               std::function<void(std::string, size_t, bool)>
+            >
+
          > properties;
 
          // Symbol table for all declared entities in the game, mapping the
@@ -229,7 +242,7 @@ namespace trogdor {
 
          // Maintains a list of entities in the order that they were declared,
          // either implicitly or explicitly
-         std::vector<std::string> entityOrder;
+         std::vector<std::string> entitiesOrdered;
 
          // Optional Bibliographic Data
          std::optional<std::string> parsedTitle;
@@ -574,11 +587,12 @@ namespace trogdor {
          inline void insertProperty(
             std::string property,
             std::vector<Kind *> kinds,
+            std::function<void(std::string, size_t, bool)> ASTNodeCallback = {},
             std::vector<std::string> contradictions = {}
          ) {
 
             if (properties.end() == properties.find(property)) {
-               properties[property] = {kinds, contradictions};
+               properties[property] = {kinds, contradictions, ASTNodeCallback};
             }
          }
 

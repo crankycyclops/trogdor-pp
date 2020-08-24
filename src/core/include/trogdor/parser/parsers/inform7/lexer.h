@@ -74,7 +74,10 @@ namespace trogdor {
          // Reference to parser's list of defined properties
          const std::unordered_map<
             std::string,
-            std::pair<std::vector<Kind *>, std::vector<std::string>>
+            std::tuple<
+               std::vector<Kind *>,
+               std::vector<std::string>, std::function<void(std::string, size_t, bool)>
+            >
          > &properties;
 
          // Inform 7 source code
@@ -206,8 +209,9 @@ namespace trogdor {
             const std::unordered_map<std::string, std::tuple<
                Kind *, std::function<void(size_t)>, bool, std::string>
             > &ks,
-            const std::unordered_map<std::string, std::pair<
-	            std::vector<Kind *>, std::vector<std::string>>
+            const std::unordered_map<std::string, std::tuple<
+	            std::vector<Kind *>,
+               std::vector<std::string>, std::function<void(std::string, size_t, bool)>>
             > &props
          ):
          tokenTypeToStr({

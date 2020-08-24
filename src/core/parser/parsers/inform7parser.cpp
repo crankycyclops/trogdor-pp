@@ -254,171 +254,230 @@ namespace trogdor {
       insertProperty(
          "lit",
          {std::get<0>(kindsMap["thing"])},
-         {"unlit"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"unlit"}
       );
 
       insertProperty(
          "unlit",
          {std::get<0>(kindsMap["thing"])},
-         {"lit"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"lit"}
       );
 
       insertProperty(
          "transparent",
          {std::get<0>(kindsMap["thing"])},
-         {"opaque"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"opaque"}
       );
 
       insertProperty(
          "opaque",
          {std::get<0>(kindsMap["thing"])},
-         {"transparent"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"transparent"}
       );
 
       insertProperty(
          "fixed in place",
          {std::get<0>(kindsMap["thing"])},
-         {"portable"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"portable"}
       );
 
       insertProperty(
          "portable",
          {std::get<0>(kindsMap["thing"])},
-         {"fixed in place"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"fixed in place"}
       );
 
       insertProperty(
          "openable",
          {std::get<0>(kindsMap["thing"])},
-         {"unopenable"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"unopenable"}
       );
 
       insertProperty(
          "unopenable",
          {std::get<0>(kindsMap["thing"])},
-         {"openable"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"openable"}
       );
 
       insertProperty(
          "edible",
          {std::get<0>(kindsMap["thing"])},
-         {"inedible"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"inedible"}
       );
 
       insertProperty(
          "inedible",
          {std::get<0>(kindsMap["thing"])},
-         {"edible"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"edible"}
       );
 
       insertProperty(
          "described",
          {std::get<0>(kindsMap["thing"])},
-         {"undescribed"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"undescribed"}
       );
 
       insertProperty(
          "undescribed",
          {std::get<0>(kindsMap["thing"])},
-         {"described"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"described"}
       );
 
       insertProperty(
          "enterable",
-         {std::get<0>(kindsMap["thing"])}
+         {std::get<0>(kindsMap["thing"])},
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }
       );
 
       insertProperty(
          "wearable",
-         {std::get<0>(kindsMap["thing"])}
+         {std::get<0>(kindsMap["thing"])},
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }
       );
 
       insertProperty(
          "pushable between rooms",
-         {std::get<0>(kindsMap["thing"])}
+         {std::get<0>(kindsMap["thing"])},
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }
       );
 
       // Built-in properties that Inform 7 recognizes for rooms.
       insertProperty(
          "lighted",
          {std::get<0>(kindsMap["room"])},
-         {"dark"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"dark"}
       );
 
       insertProperty(
          "dark",
          {std::get<0>(kindsMap["room"])},
-         {"lighted"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"lighted"}
       );
 
       // Built-in properties that Inform 7 recognizes for doors.
       insertProperty(
          "locked",
          {std::get<0>(kindsMap["door"])},
-         {"unlocked"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"unlocked"}
       );
 
       insertProperty(
          "unlocked",
          {std::get<0>(kindsMap["door"])},
-         {"locked"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"locked"}
       );
 
       insertProperty(
          "lockable",
          {std::get<0>(kindsMap["door"])},
-         {"unlockable"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"unlockable"}
       );
 
       insertProperty(
          "unlockable",
          {std::get<0>(kindsMap["door"])},
-         {"lockable"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"lockable"}
       );
 
       // Built-in properties that Inform 7 recognizes for devices.
       insertProperty(
          "switched on",
          {std::get<0>(kindsMap["device"])},
-         {"switched off"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"switched off"}
       );
 
       insertProperty(
          "switched off",
          {std::get<0>(kindsMap["device"])},
-         {"switched on"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"switched on"}
       );
 
       // Built-in properties that Inform 7 recognizes for persons.
       insertProperty(
          "male",
          {std::get<0>(kindsMap["person"])},
-         {"female", "neuter"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"female", "neuter"}
       );
 
       insertProperty(
          "female",
          {std::get<0>(kindsMap["person"])},
-         {"male", "neuter"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"male", "neuter"}
       );
 
       insertProperty(
          "neuter",
          {std::get<0>(kindsMap["person"])},
-         {"male", "female"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"male", "female"}
       );
 
       // Built-in properties that Inform 7 recognizes for containers and doors.
       insertProperty(
          "open",
          {std::get<0>(kindsMap["door"]), std::get<0>(kindsMap["container"])},
-         {"closed"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"closed"}
       );
 
       insertProperty(
          "closed",
          {std::get<0>(kindsMap["door"]), std::get<0>(kindsMap["container"])},
-         {"open"}
+         [&] (std::string, size_t, bool) {
+            // TODO
+         }, {"open"}
       );
 
       // According to Inform 7, men are always male and women are always female
@@ -624,7 +683,7 @@ namespace trogdor {
                declareEntities && entities.end() == entities.find(noun)
             ) {
                entities[noun] = {{}, {}, "", t.lineno};
-               entityOrder.push_back(noun);
+               entitiesOrdered.push_back(noun);
             }
          }
 
@@ -727,7 +786,7 @@ namespace trogdor {
                std::unordered_map<std::string, std::optional<bool>> contraries;
 
                // Initialize list of all possible contraries
-               for (const auto &contrary: properties[property].second) {
+               for (const auto &contrary: std::get<1>(properties[property])) {
                   contraries[contrary] = std::nullopt;
                }
 
@@ -1741,16 +1800,18 @@ namespace trogdor {
       // instantiated
       std::unordered_map<std::string, Kind *> entityToResolvedKind;
 
-      // I iterate over entityOrder instead of entities directly because I need
+      // I iterate over entitiesOrdered instead of entities directly because I need
       // to make sure I'm going in the order in which the entities were declared
-      for (const auto &entityName:entityOrder) {
+      for (const auto &entityName: entitiesOrdered) {
 
          const auto &entity = *entities.find(entityName);
 
-         size_t lineno = std::get<3>(entity.second);
-         Kind *entityKind = resolveKind(entity.first);
+         Kind *entityKind = resolveKind(entityName);
+
          std::string description = std::get<2>(entity.second);
          std::string entityClassName = std::get<3>(kindsMap[entityKind->getName()]);
+         const auto &entityProperties = std::get<1>(entity.second);
+         size_t lineno = std::get<3>(entity.second);
 
          if (entityKind == std::get<0>(kindsMap["room"])) {
 
@@ -1761,7 +1822,7 @@ namespace trogdor {
             }
          }
 
-         entityToResolvedKind[entity.first] = entityKind;
+         entityToResolvedKind[entityName] = entityKind;
 
          // The kind's internal entity class definitions haven't been inserted
          // into the AST yet, so do that now
@@ -1792,7 +1853,7 @@ namespace trogdor {
             classInserted = true;
          }
 
-         std::string astName = 0 == startRoomName.compare(entity.first) ? "start" : entity.first;
+         std::string astName = 0 == startRoomName.compare(entityName) ? "start" : entityName;
 
          // Finally, insert the entity definition itself into the AST
          ast->appendChild(ASTDefineEntity(
@@ -1807,7 +1868,7 @@ namespace trogdor {
          ast->appendChild(ASTSetProperty(
             "entity",
             "title",
-            entity.first,
+            entityName,
             lineno,
             astName
          ));
@@ -1823,6 +1884,38 @@ namespace trogdor {
             ));
 
             // TODO: what is Inform 7's shortDesc equivalent?
+         }
+
+         // Insert AST nodes for entity's implied properties
+         for (Kind *curKind = entityKind; curKind != nullptr; curKind = curKind->getParent()) {
+            for (const std::string &property: curKind->getProperties()) {
+               std::get<2>(properties[property])(entityName, lineno, false);
+            }
+         }
+
+         // Insert AST nodes for entity's assigned properties
+         for (const auto &property: entityProperties) {
+
+            bool kindIsAllowed = false;
+
+            for (auto const &kind: std::get<0>(properties[property.first])) {
+               if (entityKind->isKindRelated(kind)) {
+                  kindIsAllowed = true;
+                  break;
+               }
+            }
+
+            if (kindIsAllowed) {
+               std::get<2>(properties[property.first])(entityName, property.second.second, property.second.first);
+            } else {
+               throw ParseException(
+                  std::string("You stated that '") + entityName + " is "
+                  + (property.second.first ? "not " : "") + property.first
+                  + "' (line " + std::to_string(property.second.second)
+                  + "), but the property " + property.first + "" +
+                  + " is not allowed to exist because you haven't said it is. What properties something can have depends on what kind of thing it is."
+               );
+            }
          }
       }
 
@@ -1867,15 +1960,12 @@ namespace trogdor {
 
       // TODO: I still have to build out contains and supports relationships in
       // parseInClause and parseOnClause and then insert the appropriate AST
-      // nodes. I also need to make sure I automatically create a room called
-      // start based on which room is encountered first (and take care of
-      // scenario where someone names a room start but it's not actually
-      // supposed to be the starting room. Maybe I could make that a reserved
-      // word that's not allowed as an identifier name?)
-
-      // I also have to build out support for properties (both validation, like
-      // whether or not that property is allowed to be set on that kind, and
-      // the resulting AST nodes.)
+      // nodes. I also need to take care of scenario where someone names a room
+      // "start" but it's not actually supposed to be the starting room. Maybe I
+      // could make that a reserved word that's not allowed as an identifier
+      // name?) Except then that would violate the rules of Inform 7. So, I
+      // think that if I find a room by this name, I should just transparently
+      // rename it.
    }
 
    /**************************************************************************/
