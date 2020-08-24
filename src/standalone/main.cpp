@@ -53,14 +53,16 @@ int main(int argc, char **argv) {
    if (argc > 2 && 0 == strcmp("inform7", argv[2])) {
       parser = std::make_unique<trogdor::Inform7Parser>(
          currentGame->makeInstantiator(),
-         currentGame->getVocabulary()
+         currentGame->getVocabulary(),
+         currentGame->err()
       );
    }
 
    else {
       parser = std::make_unique<trogdor::XMLParser>(
          currentGame->makeInstantiator(),
-         currentGame->getVocabulary()
+         currentGame->getVocabulary(),
+         currentGame->err()
       );
    }
 

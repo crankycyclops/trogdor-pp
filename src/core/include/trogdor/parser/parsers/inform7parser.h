@@ -684,7 +684,11 @@ namespace trogdor {
          /*
             Constructor
          */
-         Inform7Parser(std::unique_ptr<Instantiator> i, const Vocabulary &v);
+         Inform7Parser(
+            std::unique_ptr<Instantiator> i,
+            const Vocabulary &v,
+            const Trogerr &e
+         );
 
          /*
             Destructor

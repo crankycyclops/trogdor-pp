@@ -22,7 +22,9 @@ GameWrapper::GameWrapper(
 	);
 
 	std::unique_ptr<trogdor::XMLParser> parser = std::make_unique<trogdor::XMLParser>(
-		gamePtr->makeInstantiator(), gamePtr->getVocabulary()
+		gamePtr->makeInstantiator(),
+		gamePtr->getVocabulary(),
+		gamePtr->err()
 	);
 
 	if (!gamePtr->initialize(parser.get(), definitionPath, true)) {
