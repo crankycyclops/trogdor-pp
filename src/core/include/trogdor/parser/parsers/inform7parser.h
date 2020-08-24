@@ -227,6 +227,10 @@ namespace trogdor {
             std::unordered_map<std::string, std::tuple<std::string, bool, size_t>>
          > entityConnections;
 
+         // Maintains a list of entities in the order that they were declared,
+         // either implicitly or explicitly
+         std::vector<std::string> entityOrder;
+
          // Optional Bibliographic Data
          std::optional<std::string> parsedTitle;
          std::optional<std::string> parsedAuthor;

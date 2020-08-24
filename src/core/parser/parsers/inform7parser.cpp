@@ -624,6 +624,7 @@ namespace trogdor {
                declareEntities && entities.end() == entities.find(noun)
             ) {
                entities[noun] = {{}, {}, "", t.lineno};
+               entityOrder.push_back(noun);
             }
          }
 
@@ -1732,11 +1733,19 @@ namespace trogdor {
 
       bool atLeastOneRoomFound = false;
 
+      // We internally re-name this room to "start" while maintaining its
+      // displayed title
+      std::string startRoomName;
+
       // Keeps track of which kinds an entity resolves to just before it's
       // instantiated
       std::unordered_map<std::string, Kind *> entityToResolvedKind;
 
-      for (const auto &entity: entities) {
+      // I iterate over entityOrder instead of entities directly because I need
+      // to make sure I'm going in the order in which the entities were declared
+      for (const auto &entityName:entityOrder) {
+
+         const auto &entity = *entities.find(entityName);
 
          size_t lineno = std::get<3>(entity.second);
          Kind *entityKind = resolveKind(entity.first);
@@ -1744,7 +1753,12 @@ namespace trogdor {
          std::string entityClassName = std::get<3>(kindsMap[entityKind->getName()]);
 
          if (entityKind == std::get<0>(kindsMap["room"])) {
+
             atLeastOneRoomFound = true;
+
+            if (startRoomName.empty()) {
+               startRoomName = entityName;
+            }
          }
 
          entityToResolvedKind[entity.first] = entityKind;
@@ -1778,9 +1792,11 @@ namespace trogdor {
             classInserted = true;
          }
 
+         std::string astName = 0 == startRoomName.compare(entity.first) ? "start" : entity.first;
+
          // Finally, insert the entity definition itself into the AST
          ast->appendChild(ASTDefineEntity(
-            entity.first,
+            astName,
             entity::Entity::typeToStr(entityKind->getInternalType()),
             entityClassName,
             std::nullopt,
@@ -1793,7 +1809,7 @@ namespace trogdor {
             "title",
             entity.first,
             lineno,
-            entity.first
+            astName
          ));
 
          if (description.length()) {
@@ -1803,7 +1819,7 @@ namespace trogdor {
                "longDesc",
                description,
                lineno,
-               entity.first
+               astName
             ));
 
             // TODO: what is Inform 7's shortDesc equivalent?
@@ -1840,8 +1856,8 @@ namespace trogdor {
             if (connectTo.length()) {
                ast->appendChild(ASTConnectRooms(
                   "entity",
-                  entityToConnect.first,
-                  connectTo,
+                  0 == startRoomName.compare(entityToConnect.first) ? "start" : entityToConnect.first,
+                  0 == startRoomName.compare(connectTo) ? "start" : connectTo,
                   direction,
                   std::get<2>(connection.second)
                ));
