@@ -139,7 +139,8 @@ namespace trogdor {
       entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          errStream.setErrorLevel(Trogerr::WARNING);
-         errStream << "Inform 7 containers are not yet supported and, for the time being, will be instantiated as ordinary things." << std::endl;
+         errStream << "Inform 7 containers (line " << std::to_string(lineno)
+            << ") are not yet supported and, for the time being, will be instantiated as ordinary things." << std::endl;
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_container",
@@ -152,7 +153,8 @@ namespace trogdor {
       entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          errStream.setErrorLevel(Trogerr::WARNING);
-         errStream << "Inform 7 vehicles are not yet supported and, for the time being, will be instantiated as ordinary things." << std::endl;
+         errStream << "Inform 7 vehicles (line " << std::to_string(lineno)
+            << ") are not yet supported and, for the time being, will be instantiated as ordinary things." << std::endl;
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_vehicle",
@@ -175,7 +177,8 @@ namespace trogdor {
       "inform7_players_holdall", entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          errStream.setErrorLevel(Trogerr::WARNING);
-         errStream << "Inform 7 player's holdalls are not yet supported and, for the time being, will be instantiated as ordinary things." << std::endl;
+         errStream << "Inform 7 player's holdalls (line " << std::to_string(lineno)
+            << ") are not yet supported and, for the time being, will be instantiated as ordinary things." << std::endl;
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_players_holdall",
@@ -188,7 +191,8 @@ namespace trogdor {
       entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          errStream.setErrorLevel(Trogerr::WARNING);
-         errStream << "Inform 7 supporters are not yet supported and, for the time being, will be instantiated as ordinary things." << std::endl;
+         errStream << "Inform 7 supporters (line " << std::to_string(lineno)
+            << ") are not yet supported and, for the time being, will be instantiated as ordinary things." << std::endl;
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_supporter",
@@ -210,7 +214,8 @@ namespace trogdor {
       entity::ENTITY_OBJECT, [&] (size_t lineno) {
 
          errStream.setErrorLevel(Trogerr::WARNING);
-         errStream << "Inform 7 devices are not yet supported and, for the time being, will be instantiated as ordinary things." << std::endl;
+         errStream << "Inform 7 devices (line " << std::to_string(lineno)
+            << ") are not yet supported and, for the time being, will be instantiated as ordinary things." << std::endl;
 
          ast->appendChild(ASTDefineEntityClass(
             "inform7_device",
@@ -266,111 +271,179 @@ namespace trogdor {
       insertProperty(
          "lit",
          {std::get<0>(kindsMap["thing"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The lit property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"unlit"}
       );
 
       insertProperty(
          "unlit",
          {std::get<0>(kindsMap["thing"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The unlit property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"lit"}
       );
 
       insertProperty(
          "transparent",
          {std::get<0>(kindsMap["thing"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The transparent property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"opaque"}
       );
 
       insertProperty(
          "opaque",
          {std::get<0>(kindsMap["thing"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The opaque property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"transparent"}
       );
 
       insertProperty(
          "fixed in place",
          {std::get<0>(kindsMap["thing"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            if (negated) {
+               ast->appendChild(ASTRemoveTag(
+                  "entity",
+                  entity::Object::UntakeableTag,
+                  lineno,
+                  entity
+               ));
+            }
+
+            else {
+               ast->appendChild(ASTSetTag(
+                  "entity",
+                  entity::Object::UntakeableTag,
+                  lineno,
+                  entity
+               ));
+            }
          }, {"portable"}
       );
 
       insertProperty(
          "portable",
          {std::get<0>(kindsMap["thing"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            if (negated) {
+               ast->appendChild(ASTSetTag(
+                  "entity",
+                  entity::Object::UntakeableTag,
+                  lineno,
+                  entity
+               ));
+            }
+
+            else {
+               ast->appendChild(ASTRemoveTag(
+                  "entity",
+                  entity::Object::UntakeableTag,
+                  lineno,
+                  entity
+               ));
+            }
          }, {"fixed in place"}
       );
 
       insertProperty(
          "openable",
          {std::get<0>(kindsMap["thing"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The openable property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"unopenable"}
       );
 
       insertProperty(
          "unopenable",
          {std::get<0>(kindsMap["thing"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The unopenable property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"openable"}
       );
 
       insertProperty(
          "edible",
          {std::get<0>(kindsMap["thing"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The edible property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"inedible"}
       );
 
       insertProperty(
          "inedible",
          {std::get<0>(kindsMap["thing"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The inedible property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"edible"}
       );
 
       insertProperty(
          "described",
          {std::get<0>(kindsMap["thing"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The described property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"undescribed"}
       );
 
       insertProperty(
          "undescribed",
          {std::get<0>(kindsMap["thing"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The undescribed property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"described"}
       );
 
       insertProperty(
          "enterable",
          {std::get<0>(kindsMap["thing"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The enterable property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }
       );
 
       insertProperty(
          "wearable",
          {std::get<0>(kindsMap["thing"])},
-         [&] (std::string, size_t, bool) {
+         [&] (std::string entity, size_t lineno, bool negated) {
+
             // TODO
          }
       );
@@ -378,8 +451,11 @@ namespace trogdor {
       insertProperty(
          "pushable between rooms",
          {std::get<0>(kindsMap["thing"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The pushable between rooms property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }
       );
 
@@ -387,16 +463,22 @@ namespace trogdor {
       insertProperty(
          "lighted",
          {std::get<0>(kindsMap["room"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The lighted property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"dark"}
       );
 
       insertProperty(
          "dark",
          {std::get<0>(kindsMap["room"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The dark property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"lighted"}
       );
 
@@ -404,32 +486,44 @@ namespace trogdor {
       insertProperty(
          "locked",
          {std::get<0>(kindsMap["door"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The locked property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"unlocked"}
       );
 
       insertProperty(
          "unlocked",
          {std::get<0>(kindsMap["door"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The unlocked property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"locked"}
       );
 
       insertProperty(
          "lockable",
          {std::get<0>(kindsMap["door"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The lockable property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"unlockable"}
       );
 
       insertProperty(
          "unlockable",
          {std::get<0>(kindsMap["door"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The unlockable property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"lockable"}
       );
 
@@ -437,16 +531,22 @@ namespace trogdor {
       insertProperty(
          "switched on",
          {std::get<0>(kindsMap["device"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The switched on property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"switched off"}
       );
 
       insertProperty(
          "switched off",
          {std::get<0>(kindsMap["device"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The switched off property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"switched on"}
       );
 
@@ -454,24 +554,33 @@ namespace trogdor {
       insertProperty(
          "male",
          {std::get<0>(kindsMap["person"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The male property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"female", "neuter"}
       );
 
       insertProperty(
          "female",
          {std::get<0>(kindsMap["person"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The female property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"male", "neuter"}
       );
 
       insertProperty(
          "neuter",
          {std::get<0>(kindsMap["person"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The neuter property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"male", "female"}
       );
 
@@ -479,16 +588,22 @@ namespace trogdor {
       insertProperty(
          "open",
          {std::get<0>(kindsMap["door"]), std::get<0>(kindsMap["container"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The open property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"closed"}
       );
 
       insertProperty(
          "closed",
          {std::get<0>(kindsMap["door"]), std::get<0>(kindsMap["container"])},
-         [&] (std::string, size_t, bool) {
-            // TODO
+         [&] (std::string entity, size_t lineno, bool negated) {
+
+            errStream.setErrorLevel(Trogerr::WARNING);
+            errStream << "The closed property (line " << std::to_string(lineno)
+               << ") is not yet supported and will be ignored." << std::endl;
          }, {"open"}
       );
 
