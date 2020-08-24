@@ -625,7 +625,7 @@ namespace trogdor {
          inline XMLParser(
             std::unique_ptr<Instantiator> i,
             const Vocabulary &v,
-            const Trogerr &e
+            Trogerr &e
          ): Parser(std::move(i), v, e) {
 
             reader = nullptr;

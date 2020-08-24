@@ -28,7 +28,7 @@ namespace trogdor {
 
          // Log warnings to this output stream. Actual errors should be handled
          // by throwing instances of ParseException.
-         const Trogerr &errStream;
+         Trogerr &errStream;
 
          // Reference to the game's vocabulary (for lookups)
          const Vocabulary &vocabulary;
@@ -364,7 +364,7 @@ namespace trogdor {
          inline Parser(
             std::unique_ptr<Instantiator> i,
             const Vocabulary &v,
-            const Trogerr &e
+            Trogerr &e
          ): errStream(e), vocabulary(v) {
 
             ast = std::make_shared<ASTNode>();
