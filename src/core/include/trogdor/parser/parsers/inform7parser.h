@@ -175,6 +175,10 @@ namespace trogdor {
          // Plural lookup mapping plural kinds to their singular equivalents
          std::unordered_map<std::string, std::string> kindPlurals;
 
+         // Maps abstract Kinds to their default intantiable kind (for example,
+         // "object" -> "thing")
+         std::unordered_map<std::string, Kind *> abstractKinds;
+
          // Set of properties (both either/or and value) recognized by Inform 7.
          // Each property maps to the highest and most basic kinds in the
          // hierarchy on which the property can be set, and to a set of

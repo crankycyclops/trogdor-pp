@@ -247,6 +247,9 @@ namespace trogdor {
          ));
       });
 
+      // Map purely abstract kinds to their default instantiable kinds
+      abstractKinds["object"] = std::get<0>(kindsMap["thing"]);
+
       // Built-in properties that Inform 7 recognizes for things.
       insertProperty(
          "lit",
@@ -1653,7 +1656,14 @@ namespace trogdor {
       const auto &entity = entities.find(entityName);
 
       if (1 == std::get<0>(entity->second).size()) {
-         return *std::get<0>(entity->second).begin();
+
+         std::string kindName = (*std::get<0>(entity->second).begin())->getName();
+
+         if (abstractKinds.end() != abstractKinds.find(kindName)) {
+            return abstractKinds.find(kindName)->second;
+         } else {
+            return *std::get<0>(entity->second).begin();
+         }
       }
 
       else if (2 == std::get<0>(entity->second).size()) {
