@@ -6,6 +6,7 @@
 #include <string>
 
 #include <trogdor/vocabulary.h>
+#include <trogdor/iostream/trogerr.h>
 #include <trogdor/instantiator/instantiator.h>
 #include <trogdor/exception/undefinedexception.h>
 
@@ -24,6 +25,10 @@ namespace trogdor {
    class Parser {
 
       protected:
+
+         // Log warnings to this output stream. Actual errors should be handled
+         // by throwing instances of ParseException.
+         const Trogerr &errStream;
 
          // Reference to the game's vocabulary (for lookups)
          const Vocabulary &vocabulary;
@@ -356,8 +361,11 @@ namespace trogdor {
             Input:
                Instantiator instance (std::unique_ptr<Intantiator>)
          */
-         inline Parser(std::unique_ptr<Instantiator> i, const Vocabulary &v):
-         vocabulary(v) {
+         inline Parser(
+            std::unique_ptr<Instantiator> i,
+            const Vocabulary &v,
+            const Trogerr &e
+         ): errStream(e), vocabulary(v) {
 
             ast = std::make_shared<ASTNode>();
             instantiator = std::move(i);

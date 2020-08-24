@@ -46,7 +46,8 @@ int main(int argc, char **argv) {
    // trogdor::Instantiator.
    std::unique_ptr<trogdor::XMLParser> parser = std::make_unique<trogdor::XMLParser>(
       currentGame->makeInstantiator(),
-      currentGame->getVocabulary()
+      currentGame->getVocabulary(),
+      currentGame->err()
    );
 
    // The client can also implement its own custom game actions
