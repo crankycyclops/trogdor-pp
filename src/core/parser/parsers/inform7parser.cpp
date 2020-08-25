@@ -1931,14 +1931,13 @@ namespace trogdor {
       // to make sure I'm going in the order in which the entities were declared
       for (const auto &entityName: entitiesOrdered) {
 
-         const auto &entity = *entities.find(entityName);
-
+         auto &entity = *entities.find(entityName);
          Kind *entityKind = resolveKind(entityName);
 
+         auto &entityProperties = std::get<1>(entity.second);
+         size_t lineno = std::get<3>(entity.second);
          std::string description = std::get<2>(entity.second);
          std::string entityClassName = std::get<3>(kindsMap[entityKind->getName()]);
-         const auto &entityProperties = std::get<1>(entity.second);
-         size_t lineno = std::get<3>(entity.second);
 
          if (entityKind == std::get<0>(kindsMap["room"])) {
 
@@ -2015,8 +2014,55 @@ namespace trogdor {
 
          // Insert AST nodes for entity's implied properties
          for (Kind *curKind = entityKind; curKind != nullptr; curKind = curKind->getParent()) {
-            for (const std::string &property: curKind->getProperties()) {
-               std::get<2>(properties[property])(entityName, lineno, false);
+
+            for (const std::string &kindProperty: curKind->getProperties()) {
+
+               // Now that we've resolved a specific type for the entity, we can
+               // check that kind's implicit properties against the properties
+               // that were explicitly assigned for contradictions and
+               // redundancies.
+               if (entityProperties.end() != entityProperties.find(kindProperty)) {
+
+                  if (entityProperties[kindProperty].first) {
+                     throw ParseException(
+                        std::string("You stated on line ")
+                        + std::to_string(entityProperties[kindProperty].second)
+                        + " that " + entityName + " is not "
+                        + kindProperty + ", but it's implied that a "
+                        + curKind->getName()
+                        + " is " + kindProperty + ", making this a contradiction."
+                     );
+                  }
+
+                  // We found an assigned property that was redundant, so we
+                  // can remove it
+                  else {
+                     entityProperties.erase(kindProperty);
+                  }
+               }
+
+               for (const std::string &contrary: std::get<1>(properties[kindProperty])) {
+
+                  if (entityProperties.end() != entityProperties.find(contrary)) {
+
+                     if (!entityProperties[contrary].first) {
+                        throw ParseException(
+                           std::string("You stated on line ")
+                           + std::to_string(entityProperties[contrary].second)
+                           + " that " + entityName + " is "
+                           + contrary + ", but it's implied that a "
+                           + curKind->getName()
+                           + " is " + kindProperty + ", making this a contradiction."
+                        );
+                     }
+
+                     else {
+                        entityProperties.erase(contrary);
+                     }
+                  }
+               }
+
+               std::get<2>(properties[kindProperty])(entityName, lineno, false);
             }
          }
 
