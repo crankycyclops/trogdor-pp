@@ -10,6 +10,7 @@
 #include <cstring>
 
 #include <trogdor/game.h>
+#include <trogdor/filesystem.h>
 #include <trogdor/parser/parsers/xmlparser.h>
 #include <trogdor/parser/parsers/inform7parser.h>
 
@@ -28,8 +29,8 @@ int main(int argc, char **argv) {
       std::string gameXML = "game.xml";
    #endif
 
-   if (argc > 3) {
-	  std::cerr << "Usage: trogdor [game_file] [xml (default) | inform7]\n" << std::endl;
+   if (argc > 2) {
+	  std::cerr << "Usage: trogdor [game_file]\n" << std::endl;
 	  return EXIT_FAILURE;
    }
 
@@ -49,17 +50,21 @@ int main(int argc, char **argv) {
    // only the two built-in parsers available: XML and Inform 7.
    std::unique_ptr<trogdor::Parser> parser;
 
-   // user wants to parse Inform 7 instead of XML, the default
-   if (argc > 2 && 0 == strcmp("inform7", argv[2])) {
-      parser = std::make_unique<trogdor::Inform7Parser>(
+   // We're going to naively use the file extension to decide which parser to
+   // invoke
+   std::string fileExtension = STD_FILESYSTEM::path(gameXML).extension();
+
+   if (0 == trogdor::strToLower(fileExtension).compare(".xml")) {
+      parser = std::make_unique<trogdor::XMLParser>(
          currentGame->makeInstantiator(),
          currentGame->getVocabulary(),
          currentGame->err()
       );
    }
 
+   // We'll assume that all non-xml files must be Inform 7
    else {
-      parser = std::make_unique<trogdor::XMLParser>(
+      parser = std::make_unique<trogdor::Inform7Parser>(
          currentGame->makeInstantiator(),
          currentGame->getVocabulary(),
          currentGame->err()
