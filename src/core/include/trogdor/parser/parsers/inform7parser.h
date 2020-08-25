@@ -226,6 +226,10 @@ namespace trogdor {
 
          >> entities;
 
+         // Maintains a list of entities in the order that they were declared,
+         // either implicitly or explicitly
+         std::vector<std::string> entitiesOrdered;
+
          // Tracks connections between rooms and doors by mapping an entity
          // name to another unordered_map that maps a direction to another
          // entity name, as well as to a boolean that determines whether the
@@ -240,9 +244,18 @@ namespace trogdor {
             std::unordered_map<std::string, std::tuple<std::string, bool, size_t>>
          > entityConnections;
 
-         // Maintains a list of entities in the order that they were declared,
-         // either implicitly or explicitly
-         std::vector<std::string> entitiesOrdered;
+         // Tracks which entities are contained inside other entities
+         std::unordered_map<
+
+            // Name of the room or container that holds one or more other
+            // entities
+            std::string,
+
+            // Names of the entities contained in the room or container, along
+            // with the corresponding line number in the source code
+            std::vector<std::pair<std::string, size_t>>
+
+         > entityContainers;
 
          // Optional Bibliographic Data
          std::optional<std::string> parsedTitle;

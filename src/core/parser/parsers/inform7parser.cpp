@@ -1074,6 +1074,8 @@ namespace trogdor {
 
       else {
 
+         const auto &containerOrPlace = *containersOrPlaces.begin();
+
          for (const auto &subject: subjects) {
 
             if (specialIdentifiers.end() != specialIdentifiers.find(subject)) {
@@ -1108,9 +1110,9 @@ namespace trogdor {
                   );
                }
             }
-         }
 
-         const auto &containerOrPlace = *containersOrPlaces.begin();
+            entityContainers[containerOrPlace].push_back({subject, t.lineno});
+         }
 
          if (specialIdentifiers.end() != specialIdentifiers.find(containerOrPlace)) {
             throw ParseException(
@@ -2130,14 +2132,31 @@ namespace trogdor {
          }
       }
 
-      // TODO: I still have to build out contains and supports relationships in
-      // parseInClause and parseOnClause and then insert the appropriate AST
-      // nodes. I also need to take care of scenario where someone names a room
-      // "start" but it's not actually supposed to be the starting room. Maybe I
-      // could make that a reserved word that's not allowed as an identifier
-      // name?) Except then that would violate the rules of Inform 7. So, I
-      // think that if I find a room by this name, I should just transparently
-      // rename it.
+      // Insert entities into rooms and containers
+      for (const auto &container: entityContainers) {
+
+         if (!entityToResolvedKind[container.first]->isKindRelated(std::get<0>(kindsMap["room"]))) {
+            throw UndefinedException("Inform 7 containers aren't yet supported.");
+         }
+
+         else {
+            for (const auto &contained: container.second) {
+               ast->appendChild(ASTInsertIntoRoom(
+                  contained.first,
+                  0 == startRoomName.compare(container.first) ? "start" : container.first,
+                  contained.second
+               ));
+            }
+         }
+      }
+
+      // TODO: I still have to build out supports relationships in parseOnClause
+      // and then insert the appropriate AST nodes. I also need to take care of
+      // scenario where someone names a room "start" but it's not actually
+      // supposed to be the starting room. Maybe I could make that a reserved
+      // word that's not allowed as an identifier name?) Except then that would
+      // violate the rules of Inform 7. So, I think that if I find a room by
+      // this name, I should just transparently rename it.
    }
 
    /**************************************************************************/
