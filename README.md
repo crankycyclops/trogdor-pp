@@ -58,6 +58,12 @@ An example of this pattern in action is my sister project, [Trogserve](https://g
 
 Other configurations are, of course, possible. You could host single player games online via trogdord, or support multi-player games locally through a custom executable with multiple input devices. You can link any application to core for any purpose; what you choose to do with it is limited only by your imagination :)
 
+## Experimental Inform 7 Support
+
+As a programming exercise, I've been working on support for [Inform 7](http://inform7.com/). It's a tricky endeavor, not only because Inform 7 is closed source (at the moment, although that's supposed to change [someday](https://news.ycombinator.com/item?id=20421189)), but because Inform 7 and Trogdor-pp don't share all the same goals (Inform 7 compiles down to [Z-Code](https://en.wikipedia.org/wiki/Z-machine) and is only for single player games, while Trogdor-pp uses higher level primitives and supports more than one player) and because Inform 7 supports features that don't yet exist or have been implemented differently in Trogdor-pp.
+
+The subset of the language that I currently parse is too limited to be useful, so trogdord doesn't support it. However, if you want to play with the parser and see what it can do, the standalone client is equipped to load single-file Inform 7 games.
+
 ## Copyright and License
 
 Trogdor++ is licensed under the [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.en.html) and is Copyright © 2013 - Present by James Colannino.
