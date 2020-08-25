@@ -1194,6 +1194,8 @@ namespace trogdor {
 
       else {
 
+         const auto &supporter = *supporters.begin();
+
          for (const auto &subject: subjects) {
 
             if (specialIdentifiers.end() != specialIdentifiers.find(subject)) {
@@ -1228,51 +1230,50 @@ namespace trogdor {
                   );
                }
             }
+
+            entitySupporters[supporter].push_back({subject, t.lineno});
          }
 
-         for (const auto &supporter: supporters) {
+         if (specialIdentifiers.end() != specialIdentifiers.find(supporter)) {
+            throw ParseException(
+               "You referred to '" + supporter
+               + "' as if it were a thing (line " + std::to_string(t.lineno)
+               + "), but " + supporter
+               + " cannot be made specific, and so cannot have specific properties or be of any given kind."
+            );
+         }
 
-            if (specialIdentifiers.end() != specialIdentifiers.find(supporter)) {
-               throw ParseException(
-                  "You referred to '" + supporter
-                  + "' as if it were a thing (line " + std::to_string(t.lineno)
-                  + "), but " + supporter
-                  + " cannot be made specific, and so cannot have specific properties or be of any given kind."
-               );
-            }
+         auto &supporterKinds = std::get<0>(entities[supporter]);
 
-            auto &supporterKinds = std::get<0>(entities[supporter]);
+         if (!supporterKinds.size()) {
+            supporterKinds.insert(std::get<0>(kindsMap["supporter"]));
+         }
 
-            if (!supporterKinds.size()) {
+         else {
+
+            if (filterKinds(
+               supporter,
+               {std::get<0>(kindsMap["supporter"])},
+               std::get<0>(kindsMap["thing"])
+            )) {
+
+               // If one of the possible types is "thing", it needs to be
+               // automatically promoted to "supporter."
                supporterKinds.insert(std::get<0>(kindsMap["supporter"]));
             }
 
-            else {
+            if (!supporterKinds.size()) {
 
-               if (filterKinds(
-                  supporter,
-                  {std::get<0>(kindsMap["supporter"])},
-                  std::get<0>(kindsMap["thing"])
-               )) {
+               std::string subjectsStr = vectorToStr(subjects);
+               std::string toBe = subjects.size() > 1 ? "are" : "is";
 
-                  // If one of the possible types is "thing", it needs to be
-                  // automatically promoted to "supporter."
-                  supporterKinds.insert(std::get<0>(kindsMap["supporter"]));
-               }
-
-               if (!supporterKinds.size()) {
-
-                  std::string subjectsStr = vectorToStr(subjects);
-                  std::string toBe = subjects.size() > 1 ? "are" : "is";
-
-                  throw ParseException(
-                     std::string("You stated that '")
-                     + subjectsStr + ' ' + toBe + " on " + supporter
-                     + "' (line " + std::to_string(t.lineno)
-                     + "), but " + supporter
-                     + " is not a supporter and therefore cannot support things."
-                  );
-               }
+               throw ParseException(
+                  std::string("You stated that '")
+                  + subjectsStr + ' ' + toBe + " on " + supporter
+                  + "' (line " + std::to_string(t.lineno)
+                  + "), but " + supporter
+                  + " is not a supporter and therefore cannot support things."
+               );
             }
          }
       }
@@ -2150,13 +2151,18 @@ namespace trogdor {
          }
       }
 
-      // TODO: I still have to build out supports relationships in parseOnClause
-      // and then insert the appropriate AST nodes. I also need to take care of
-      // scenario where someone names a room "start" but it's not actually
-      // supposed to be the starting room. Maybe I could make that a reserved
-      // word that's not allowed as an identifier name?) Except then that would
-      // violate the rules of Inform 7. So, I think that if I find a room by
-      // this name, I should just transparently rename it.
+      // Place things on top of supporters
+      for (const auto &supporter: entitySupporters) {
+
+         throw UndefinedException("Inform 7 supporters aren't yet supported.");
+      }
+
+      // TODO: I also need to take care of scenario where someone names a room
+      // "start" but it's not actually supposed to be the starting room. I'm
+      // probably going to deal with this by simply removing libtrogdor's
+      // reliance on a room named "start" and instead defaulting to the first
+      // defined room and then allowing that to be changed by an additional
+      // setting.
    }
 
    /**************************************************************************/

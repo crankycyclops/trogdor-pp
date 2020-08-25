@@ -257,6 +257,18 @@ namespace trogdor {
 
          > entityContainers;
 
+         // Tracks which entities are on top of supporters
+         std::unordered_map<
+
+            // Name of the supporter
+            std::string,
+
+            // Names of the supported entities, along with the corresponding
+            // line number in the source code
+            std::vector<std::pair<std::string, size_t>>
+
+         > entitySupporters;
+
          // Optional Bibliographic Data
          std::optional<std::string> parsedTitle;
          std::optional<std::string> parsedAuthor;
