@@ -1110,52 +1110,51 @@ namespace trogdor {
             }
          }
 
-         for (const auto &containerOrPlace: containersOrPlaces) {
+         const auto &containerOrPlace = *containersOrPlaces.begin();
 
-            if (specialIdentifiers.end() != specialIdentifiers.find(containerOrPlace)) {
-               throw ParseException(
-                  "You referred to '" + containerOrPlace
-                  + "' as if it were a thing (line " + std::to_string(t.lineno)
-                  + "), but " + containerOrPlace
-                  + " cannot be made specific, and so cannot have specific properties or be of any given kind."
-               );
-            }
+         if (specialIdentifiers.end() != specialIdentifiers.find(containerOrPlace)) {
+            throw ParseException(
+               "You referred to '" + containerOrPlace
+               + "' as if it were a thing (line " + std::to_string(t.lineno)
+               + "), but " + containerOrPlace
+               + " cannot be made specific, and so cannot have specific properties or be of any given kind."
+            );
+         }
 
-            auto &containerOrPlaceKinds = std::get<0>(entities[containerOrPlace]);
+         auto &containerOrPlaceKinds = std::get<0>(entities[containerOrPlace]);
 
-            // If we haven't already given the containing thing a kind, default
-            // to either "room" or "container", since both can contain things.
-            if (!containerOrPlaceKinds.size()) {
+         // If we haven't already given the containing thing a kind, default
+         // to either "room" or "container", since both can contain things.
+         if (!containerOrPlaceKinds.size()) {
+            containerOrPlaceKinds.insert(std::get<0>(kindsMap["container"]));
+            containerOrPlaceKinds.insert(std::get<0>(kindsMap["room"]));
+         }
+
+         else {
+
+            if (filterKinds(
+               containerOrPlace,
+               {std::get<0>(kindsMap["container"]), std::get<0>(kindsMap["room"])},
+               std::get<0>(kindsMap["thing"])
+            )) {
+
+               // If one of the possible types is "thing", it needs to be
+               // automatically promoted to "container."
                containerOrPlaceKinds.insert(std::get<0>(kindsMap["container"]));
-               containerOrPlaceKinds.insert(std::get<0>(kindsMap["room"]));
             }
 
-            else {
+            if (!containerOrPlaceKinds.size()) {
 
-               if (filterKinds(
-                  containerOrPlace,
-                  {std::get<0>(kindsMap["container"]), std::get<0>(kindsMap["room"])},
-                  std::get<0>(kindsMap["thing"])
-               )) {
+               std::string subjectsStr = vectorToStr(subjects);
+               std::string toBe = subjects.size() > 1 ? "are" : "is";
 
-                  // If one of the possible types is "thing", it needs to be
-                  // automatically promoted to "container."
-                  containerOrPlaceKinds.insert(std::get<0>(kindsMap["container"]));
-               }
-
-               if (!containerOrPlaceKinds.size()) {
-
-                  std::string subjectsStr = vectorToStr(subjects);
-                  std::string toBe = subjects.size() > 1 ? "are" : "is";
-
-                  throw ParseException(
-                     std::string("You stated that '")
-                     + subjectsStr + ' ' + toBe + " in " + containerOrPlace
-                     + "' (line " + std::to_string(t.lineno)
-                     + "), but " + containerOrPlace
-                     + " is neither a room nor a container and therefore cannot contain things."
-                  );
-               }
+               throw ParseException(
+                  std::string("You stated that '")
+                  + subjectsStr + ' ' + toBe + " in " + containerOrPlace
+                  + "' (line " + std::to_string(t.lineno)
+                  + "), but " + containerOrPlace
+                  + " is neither a room nor a container and therefore cannot contain things."
+               );
             }
          }
       }
