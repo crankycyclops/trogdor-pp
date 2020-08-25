@@ -62,7 +62,7 @@ Other configurations are, of course, possible. You could host single player game
 
 As a programming exercise, I've been working on support for [Inform 7](http://inform7.com/). It's a tricky endeavor, not only because Inform 7 is closed source (at the moment, although that's supposed to change [someday](https://news.ycombinator.com/item?id=20421189)), but because Inform 7 and Trogdor-pp don't share all the same goals (Inform 7 compiles down to [Inform 6](https://inform-fiction.org/), which in turn compiles down to [Z-Code](https://en.wikipedia.org/wiki/Z-machine), and is only for single player games, while Trogdor-pp uses higher level primitives and supports more than one player) and because Inform 7 supports features that don't yet exist or have been implemented differently in Trogdor-pp.
 
-The subset of the language that I currently parse is too limited to be useful, so trogdord doesn't support it. However, if you want to play with the parser and see what it can do, the standalone client is equipped to load single-file Inform 7 games.
+The subset of the language that I currently parse is too limited to be useful, so trogdord won't even try to open games that are written in it. However, if you want to play with the parser and see what it can do, the standalone client is equipped to load single-file Inform 7 games.
 
 To read more about what I currently support, including an EBNF of the limited grammar my parser can understand, take a look at [src/core/include/trogdor/parser/parsers/inform7parser.h](https://github.com/crankycyclops/trogdor-pp/blob/master/src/core/include/trogdor/parser/parsers/inform7parser.h).
 
