@@ -64,6 +64,8 @@ As a programming exercise, I've been working on support for [Inform 7](http://in
 
 The subset of the language that I currently parse is too limited to be useful, so trogdord doesn't support it. However, if you want to play with the parser and see what it can do, the standalone client is equipped to load single-file Inform 7 games.
 
+To read more about what I currently support, including an EBNF of the limited grammar my parser can understand, take a look at [src/core/include/trogdor/parser/parsers/inform7parser.h](https://github.com/crankycyclops/trogdor-pp/blob/master/src/core/include/trogdor/parser/parsers/inform7parser.h).
+
 ## Copyright and License
 
 Trogdor++ is licensed under the [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.en.html) and is Copyright © 2013 - Present by James Colannino.
