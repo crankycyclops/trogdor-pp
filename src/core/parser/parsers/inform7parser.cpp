@@ -729,7 +729,7 @@ namespace trogdor {
 
          for (t = lexer.next(); (
             t.type != SOURCE_EOF &&
-            t.type != PHRASE_TERMINATOR &&
+            t.type != SENTENCE_TERMINATOR &&
             t.type != COLON &&
             t.type != SEMICOLON
          ); t = lexer.next()) {
@@ -749,7 +749,7 @@ namespace trogdor {
          }
       }
 
-      else if (PHRASE_TERMINATOR != t.type) {
+      else if (SENTENCE_TERMINATOR != t.type) {
          throw ParseException(
             "(line " + std::to_string(t.lineno) + "): "
             + "Initial bibliographic sentence can only be a title in double quotes, possibly followed with 'by' and the name of the author."
@@ -1292,7 +1292,7 @@ namespace trogdor {
 
          std::string rightHandSide;
 
-         for (t = lexer.peek(); PHRASE_TERMINATOR != t.type; t = lexer.next()) {
+         for (t = lexer.peek(); SENTENCE_TERMINATOR != t.type; t = lexer.next()) {
 
             if (rightHandSide.length()) {
                rightHandSide += ' ';
@@ -1492,11 +1492,11 @@ namespace trogdor {
 
          t = lexer.next();
 
-         if (PHRASE_TERMINATOR != t.type && SOURCE_EOF != t.type) {
+         if (SENTENCE_TERMINATOR != t.type && SOURCE_EOF != t.type) {
 
             std::string combined = "\"" + description + "\"";
 
-            for (; PHRASE_TERMINATOR != t.type && SOURCE_EOF != t.type; t = lexer.next()) {
+            for (; SENTENCE_TERMINATOR != t.type && SOURCE_EOF != t.type; t = lexer.next()) {
 
                if (COMMA != t.type && COLON != t.type && SEMICOLON != t.type) {
                   combined += " ";
@@ -1697,17 +1697,17 @@ namespace trogdor {
          /*
             Previously, the if statement below looked like this:
 
-            if (PHRASE_TERMINATOR == t.type) {
+            if (SENTENCE_TERMINATOR == t.type) {
                parsePropertyAssignment(identifiers);
             }
 
             However, that's no longer necessary because property assignment
             occurs in parsePropertyList(), and if we're matching the
             <property assignment> production in the EBNF, we've already reached
-            the phrase terminator and no longer have anything left in the
+            the sentence terminator and no longer have anything left in the
             sentence to parse.
          */
-         if (PHRASE_TERMINATOR == t.type) {
+         if (SENTENCE_TERMINATOR == t.type) {
             lexer.next();
          }
 
@@ -1774,7 +1774,7 @@ namespace trogdor {
 
       t = lexer.peek();
 
-      if (PHRASE_TERMINATOR == t.type) {
+      if (SENTENCE_TERMINATOR == t.type) {
          parseDescription(identifiers);
       } else {
          lexer.push(t);
@@ -1783,7 +1783,7 @@ namespace trogdor {
 
    /**************************************************************************/
 
-   void Inform7Parser::parsePhrase() {
+   void Inform7Parser::parseSentence() {
 
       Token t;
 
@@ -1834,7 +1834,7 @@ namespace trogdor {
 
       for (t = lexer.next(); SOURCE_EOF != t.type; t = lexer.next()) {
          lexer.push(t);
-         parsePhrase();
+         parseSentence();
       }
    }
 

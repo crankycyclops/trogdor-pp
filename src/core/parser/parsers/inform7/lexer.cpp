@@ -63,7 +63,7 @@ namespace trogdor {
 
             if (terminator.length()) {
                t.value = terminator;
-               t.type = PHRASE_TERMINATOR;
+               t.type = SENTENCE_TERMINATOR;
             }
 
             else if (sourceIndex < source.length()) {
@@ -281,11 +281,11 @@ namespace trogdor {
       }
 
       // If a period appears at the end of the quoted string, it should be
-      // treated as a PHRASE_TERMINATOR and returned when it's time to retrieve
+      // treated as a SENTENCE_TERMINATOR and returned when it's time to retrieve
       // the next token.
       if ('.' == quotedString.back()) {
 
-         tokenBuffer.push_front({".", PHRASE_TERMINATOR, sourceLine});
+         tokenBuffer.push_front({".", SENTENCE_TERMINATOR, sourceLine});
 
          size_t prevSourceLine = sourceLine;
          size_t prevSourceIndex = sourceIndex;

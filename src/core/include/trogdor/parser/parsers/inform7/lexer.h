@@ -18,7 +18,7 @@ namespace trogdor {
 
    enum TokenType {
       SOURCE_EOF          = 0,
-      PHRASE_TERMINATOR   = 1,
+      SENTENCE_TERMINATOR = 1,
       COMMA               = 2,
       COLON               = 3,
       SEMICOLON           = 4,
@@ -216,7 +216,7 @@ namespace trogdor {
          ):
          tokenTypeToStr({
             {SOURCE_EOF, "SOURCE_EOF"},
-            {PHRASE_TERMINATOR, "PHRASE_TERMINATOR"},
+            {SENTENCE_TERMINATOR, "SENTENCE_TERMINATOR"},
             {COMMA, "COMMA"},
             {COLON, "COLON"},
             {SEMICOLON, "SEMICOLON"},

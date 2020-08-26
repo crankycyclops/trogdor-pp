@@ -34,16 +34,16 @@ namespace trogdor {
       Here's the current subset of the language I'm parsing in EBNF format (I'll
       keep this updated as support for additional language features grows):
 
-      <program>              ::= [<bibliographic>] <phrase> [{<phrase terminator>
-                                 <phrase>}]
+      <program>              ::= [<bibliographic>] <sentence> [{<sentence terminator>
+                                 <sentence>}]
       <bibliographic>        ::= <quoted string> ["by" <author name>]
-                                 <phrase terminator>
+                                 <sentence terminator>
       <author name>          ::= /[A-Za-z ']+/ | <quoted string>
-      <phrase>               ::= <equality statement> | <description stmt>
+      <sentence>             ::= <equality statement> | <description stmt>
       <description stmt>     ::= {<article>} description of {<article>} <noun>
                                  <equality verb> <description>
       <equality statement>   ::= (<definition> | <property assignment> |
-                                 <placement>) [<phrase terminator> <description>]
+                                 <placement>) [<sentence terminator> <description>]
       <definition>           ::= <identifier list> <equality verb> {<article>} (
                                  [<property list>] <kind> [<in clause> | 
                                  <on clause>] | <location clause>)
@@ -92,7 +92,7 @@ namespace trogdor {
                                  "switched on" | "switched off")
       <noun>                 ::= /[A-Za-z ']+/
       <quoted string>        ::= "\" "/^[\"]+/" \""
-      <phrase terminator>    ::= ("." | "\n\n") {"\n"}
+      <sentence terminator>  ::= ("." | "\n\n") {"\n"}
 
       * Directions, kinds, properties, and adjectives listed in the above EBNF
       are those that are built into Inform 7. I'll eventually add support for
@@ -449,9 +449,9 @@ namespace trogdor {
          void parsePlacement(std::vector<std::string> subjects);
 
          /*
-            Parses an equality phrase, or any phrase that uses the present tense
-            of the verb "to be." Matches the <equality statement> production in
-            the EBNF above.
+            Parses an equality sentence, or any sentence that uses the present
+            tense of the verb "to be." Matches the <equality statement>
+            production in the EBNF above.
 
             Input:
                One or more identifiers as the subject (std::vector<std::string>)
@@ -488,8 +488,8 @@ namespace trogdor {
          void parseBibliographic();
 
          /*
-            Parses a phrase. Corresponds to the <phrase> production in the EBNF
-            above.
+            Parses a sentence. Corresponds to the <sentence> production in the 
+            EBNF above.
 
             Input:
                (none)
@@ -497,7 +497,7 @@ namespace trogdor {
             Output:
                (none)
          */
-         void parsePhrase();
+         void parseSentence();
 
          /*
             Parses an Inform 7 program. Corresponds to the <program> production
