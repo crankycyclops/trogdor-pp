@@ -59,8 +59,8 @@ namespace trogdor {
       <description>          ::= "\"" "/^[\"]+/" ".\"" | "\"" "/^[\"]+/\""
       <equality verb>        ::= "is" | "are"
       <assertion verb>       ::= "has" | "carries" | "is carrying" | "wears" |
-                                 "is wearing" | "contains" | "supports" |
-                                 "is supporting"
+                                 "is wearing" | "contains" | "is containing" |
+                                 "supports" | "is supporting"
       <article>              ::= "a" | "an" | "the"
       <direction>            ::= "north" | "northeast" | "east" | "southeast" |
                                  "south" | "southwest" | "west" | "northwest" |
