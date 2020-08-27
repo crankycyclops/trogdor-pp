@@ -12,11 +12,6 @@
 namespace trogdor::entity {
 
 
-   // Tag is set if the Being is attackable
-   const char *Being::AttackableTag = "attackable";
-
-   /***************************************************************************/
-
    Being::Being(Game *g, std::string n, std::unique_ptr<Trogout> o,
    std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o), std::move(e)),
    maxHealth(DEFAULT_MAX_HEALTH), damageBareHands(DEFAULT_DAMAGE_BARE_HANDS) {
@@ -321,7 +316,7 @@ namespace trogdor::entity {
             // we should allocate extra (as long as it's less than or
             // equal to the amount already in the room.)
             if (
-               resource->isTagSet(entity::Resource::stickyTag) &&
+               resource->isTagSet(entity::Resource::StickyTag) &&
                !resource->getAmountAvailable()
             ) {
 
@@ -529,7 +524,7 @@ namespace trogdor::entity {
       bool doEvents
    ) {
 
-      if (resource->isTagSet(entity::Resource::ephemeralTag)) {
+      if (resource->isTagSet(entity::Resource::EphemeralTag)) {
          freeResource(resource.get(), amount, doEvents);
       } else {
          transferResourceToPlace(resource.get(), amount, doEvents);

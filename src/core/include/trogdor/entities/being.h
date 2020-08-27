@@ -28,24 +28,24 @@ namespace trogdor::entity {
       public:
 
          // Tag is set if the Being is attackable
-         static const char *AttackableTag;
+         static constexpr const char *AttackableTag = "attackable";
 
-         static const int DEFAULT_ATTRIBUTE_STRENGTH     = 10;
-         static const int DEFAULT_ATTRIBUTE_DEXTERITY    = 10;
-         static const int DEFAULT_ATTRIBUTE_INTELLIGENCE = 10;
+         static constexpr int DEFAULT_ATTRIBUTE_STRENGTH     = 10;
+         static constexpr int DEFAULT_ATTRIBUTE_DEXTERITY    = 10;
+         static constexpr int DEFAULT_ATTRIBUTE_INTELLIGENCE = 10;
 
-         static const bool DEFAULT_RESPAWN_ENABLED = false;
-         static const int DEFAULT_RESPAWN_INTERVAL = 0;
-         static const int DEFAULT_RESPAWN_LIVES = -1;
+         static constexpr bool DEFAULT_RESPAWN_ENABLED = false;
+         static constexpr int DEFAULT_RESPAWN_INTERVAL = 0;
+         static constexpr int DEFAULT_RESPAWN_LIVES = -1;
 
-         static const int DEFAULT_INVENTORY_WEIGHT = 0;
+         static constexpr int DEFAULT_INVENTORY_WEIGHT = 0;
 
-         static const bool DEFAULT_ATTACKABLE = true;
-         static const int DEFAULT_DAMAGE_BARE_HANDS = 5;
+         static constexpr bool DEFAULT_ATTACKABLE = true;
+         static constexpr int DEFAULT_DAMAGE_BARE_HANDS = 5;
 
          // By default, Beings are immortal (a maximum health needs to be
          // set explicitly)
-         static const int DEFAULT_MAX_HEALTH = 0;
+         static constexpr int DEFAULT_MAX_HEALTH = 0;
 
       private:
 

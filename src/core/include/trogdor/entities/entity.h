@@ -36,7 +36,7 @@ namespace trogdor::entity {
 
 
    // Defines a valid entity or entity class name
-   static const char *validEntityNameRegex = "^[ A-Za-z0-9_-]+$";
+   static constexpr const char *validEntityNameRegex = "^[ A-Za-z0-9_-]+$";
 
    // An entity name cannot be any of these
    static const char *reservedNames[] = {
@@ -120,7 +120,7 @@ namespace trogdor::entity {
 
          // If no output channel is specified when output is sent to the
          // Entity's output stream, this is the channel we use
-         static const char *DEFAULT_OUTPUT_CHANNEL;
+         static constexpr const char *DEFAULT_OUTPUT_CHANNEL = "notifications";
 
          /*
             Returns true if the given entity or class name is valid and false

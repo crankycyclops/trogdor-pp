@@ -17,17 +17,17 @@ namespace trogdor::entity {
       public:
 
          // Tag is set if the Object is a weapon
-         static const char *WeaponTag;
+         static constexpr const char *WeaponTag = "weapon";
 
          // Tag is set if the Object is untakeable
-         static const char *UntakeableTag;
+         static constexpr const char *UntakeableTag = "untakeable";
 
          // Tag is set if the Object is undroppable
-         static const char *UndroppableTag;
+         static constexpr const char *UndroppableTag = "undroppable";
 
-         static const bool DEFAULT_IS_WEAPON = false;
-         static const int  DEFAULT_DAMAGE = 1;
-         static const int DEFAULT_WEIGHT = 0;
+         static constexpr bool DEFAULT_IS_WEAPON = false;
+         static constexpr int  DEFAULT_DAMAGE = 1;
+         static constexpr int DEFAULT_WEIGHT = 0;
 
       protected:
 
