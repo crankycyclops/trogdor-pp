@@ -1,16 +1,11 @@
 #include <string>
 #include <functional>
-
-#include <boost/asio.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <chrono>
 
 #include "../include/network/tcpconnection.h"
 #include "../include/network/tcpserver.h"
 #include "../include/dispatcher.h"
 #include "../include/config.h"
-
-using namespace boost::system;
-using boost::asio::ip::tcp;
 
 
 void TCPServer::establishConnection(std::shared_ptr<TCPConnection> connection, void *) {
@@ -38,8 +33,8 @@ void TCPServer::serveRequest(std::shared_ptr<TCPConnection> connection, void *) 
 
 /******************************************************************************/
 
-TCPServer::TCPServer(boost::asio::io_service &io_service, unsigned short port):
-acceptor(io_service), timer(io_service, boost::posix_time::milliseconds(SERVE_SLEEP_TIME)) {
+TCPServer::TCPServer(asio::io_service &io_service, unsigned short port):
+acceptor(io_service), timer(io_service, std::chrono::milliseconds(SERVE_SLEEP_TIME)) {
 
 	std::unique_ptr<Config> &config = Config::get();
 
@@ -50,13 +45,13 @@ acceptor(io_service), timer(io_service, boost::posix_time::milliseconds(SERVE_SL
 	// io_service.)
 	// Whether or not to enable ipv6 should be configurable. Also, the port
 	// for ipv4 and ipv6 should be configured independently.
-	tcp::endpoint endpoint(tcp::v4(), port);
+	asio::ip::tcp::endpoint endpoint(asio::ip::tcp::v4(), port);
 	acceptor.open(endpoint.protocol());
 
-	acceptor.set_option(tcp::acceptor::reuse_address(
+	acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(
 		config->value<bool>(Config::CONFIG_KEY_REUSE_ADDRESS)
 	));
-	acceptor.set_option(tcp::acceptor::keep_alive(
+	acceptor.set_option(asio::ip::tcp::acceptor::keep_alive(
 		config->value<bool>(Config::CONFIG_KEY_SEND_TCP_KEEPALIVE)
 	));
 
@@ -83,7 +78,7 @@ TCPServer::~TCPServer() {
 
 void TCPServer::handleAccept(
 	std::shared_ptr<TCPConnection> connection,
-	const boost::system::error_code &e,
+	const asio::error_code &e,
 	TCPConnection::callback_t callback,
 	void *callbackArg
 ) {
@@ -112,7 +107,7 @@ void TCPServer::startAccept(TCPConnection::callback_t callback, void *callbackAr
 			&TCPServer::handleAccept,
 			this,
 			connection,
-			std::placeholders::_1, // replaced boost::placeholders::error
+			std::placeholders::_1,
 			callback,
 			callbackArg
 		)
@@ -147,6 +142,6 @@ void TCPServer::serveConnections() {
 	startAccept(establishConnection, 0);
 
 	// call this again at the next interval
-	timer.expires_at(timer.expires_at() + boost::posix_time::milliseconds(SERVE_SLEEP_TIME));
+	timer.expires_at(timer.expires_at() + std::chrono::milliseconds(SERVE_SLEEP_TIME));
 	timer.async_wait(std::bind(&TCPServer::serveConnections, this));
 }

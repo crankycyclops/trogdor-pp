@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 
-#include <boost/asio.hpp>
+#include <asio.hpp>
 
 #include "include/config.h"
 #include "include/io/input/listenercontainer.h"
@@ -21,7 +21,7 @@ static std::unique_ptr<TCPServer> server;
 /******************************************************************************/
 
 // Called whenever we receive SIGINT (CTRL-C) or SIGTERM.
-static void shutdownHandler(const boost::system::error_code &error, int signal_number) {
+static void shutdownHandler(const asio::error_code &error, int signal_number) {
 
 	// Forces the server's destructor to be called, ensuring that any remaining
 	// connections are closed and that any other cleanup is performed before we
@@ -46,10 +46,10 @@ int main(int argc, char **argv) {
 		// right away.
 		input::ListenerContainer::get();
 
-		boost::asio::io_service io;
+		asio::io_service io;
 
 		// Shutdown the server if we receive CTRL-C or a kill signal.
-		boost::asio::signal_set signals(io, SIGINT, SIGTERM);
+		asio::signal_set signals(io, SIGINT, SIGTERM);
 		signals.async_wait(shutdownHandler);
 
 		// Constructor starts up a deadline_timer that checks at regular intervals

@@ -8,14 +8,11 @@
 
 #include <list>
 
-#include <boost/asio.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <asio.hpp>
+#include <asio/system_timer.hpp>
 
 #include "tcpcommon.h"
 #include "tcpconnection.h"
-
-using namespace boost::system;
-using boost::asio::ip::tcp;
 
 
 // Class adapted from the example found here:
@@ -30,10 +27,10 @@ class TCPServer {
 		std::list<std::shared_ptr<TCPConnection>> activeConnections;
 
 		// Accepts new socket connections
-		tcp::acceptor acceptor;
+		asio::ip::tcp::acceptor acceptor;
 
 		// Used to make sure serveConnections() only fires at a given interval.
-		boost::asio::deadline_timer timer;
+		asio::system_timer timer;
 
 		// Creates a new instance of TCPConnection and sends it an
 		// acknowledgement to let it know it's ready to start accepting
@@ -47,7 +44,7 @@ class TCPServer {
 		// specified callback is called along with the specified argument.
 		void handleAccept(
 			std::shared_ptr<TCPConnection> connection,
-			const boost::system::error_code &e,
+			const asio::error_code &e,
 			TCPConnection::callback_t callback,
 			void *arg
 		);
@@ -69,7 +66,7 @@ class TCPServer {
 
 		// Contructor establishes that we're using IPv4 and that we're
 		// listening on port SERVER_PORT.
-		TCPServer(boost::asio::io_service &io_service, unsigned short port);
+		TCPServer(asio::io_service &io_service, unsigned short port);
 
 		// Makes sure the server is cleanly shutdown
 		~TCPServer();

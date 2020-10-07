@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
+
 include(FindPkgConfig)
 include(CheckIncludeFile)
+include(CheckIncludeFileCXX)
 
 project(Trogdor-pp)
 
@@ -28,6 +30,10 @@ set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY True)
 
 # If we're building trogdord, this indicates that we should build it with redis support
 option(ENABLE_REDIS "Enable Redis support" OFF)
+
+# I'm trying to cut my reliance on the Boost libraries. This ensures that we'll
+# build using the standalone header-only ASIO library.
+add_definitions(-DASIO_STANDALONE)
 
 ###############################################################################
 
@@ -182,100 +188,114 @@ find_package(Boost COMPONENTS system)
 
 if (Boost_FOUND)
 
-	set(TROGDORD_SOURCES
-		src/trogdord/config.cpp
-		src/trogdord/json.cpp
-		src/trogdord/filesystem.cpp
-		src/trogdord/request.cpp
-		src/trogdord/response.cpp
-		src/trogdord/dispatcher.cpp
-		src/trogdord/gamewrapper.cpp
-		src/trogdord/gamecontainer.cpp
-		src/trogdord/exception/requestexception.cpp
-		src/trogdord/filter/filter.cpp
-		src/trogdord/network/tcpconnection.cpp
-		src/trogdord/network/tcpserver.cpp
-		src/trogdord/scopes/controller.cpp
-		src/trogdord/scopes/global.cpp
-		src/trogdord/scopes/game.cpp
-		src/trogdord/scopes/entity.cpp
-		src/trogdord/scopes/resource.cpp
-		src/trogdord/scopes/tangible.cpp
-		src/trogdord/scopes/place.cpp
-		src/trogdord/scopes/room.cpp
-		src/trogdord/scopes/thing.cpp
-		src/trogdord/scopes/object.cpp
-		src/trogdord/scopes/being.cpp
-		src/trogdord/scopes/creature.cpp
-		src/trogdord/scopes/player.cpp
-		src/trogdord/io/input/listeners/listener.cpp
-		src/trogdord/io/input/listenercontainer.cpp
-		src/trogdord/io/output/driver.cpp
-		src/trogdord/io/output/local.cpp
-		src/trogdord/io/iostream/serverout.cpp
-		src/trogdord/io/iostream/servererr.cpp
-	)
+	CHECK_INCLUDE_FILE_CXX("asio.hpp" HAVE_ASIO)
 
-	set(TROGDORD_INCLUDES
-		PUBLIC ${Boost_INCLUDE_DIRS}
-		PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
-	)
+	if (HAVE_ASIO)
 
-	set(TROGDORD_LIBRARIES_MINUS_CORE
-		PUBLIC stdc++fs
-		PUBLIC ${Boost_LIBRARIES}
-	)
-
-	if (ENABLE_REDIS)
-
-		pkg_check_modules (HIREDIS REQUIRED hiredis>=0.13)
-
-		add_library(trogdord_redis STATIC
-			src/trogdord/io/output/redis.cpp
-			src/trogdord/io/input/listeners/redis.cpp
+		set(TROGDORD_SOURCES
+			src/trogdord/config.cpp
+			src/trogdord/json.cpp
+			src/trogdord/filesystem.cpp
+			src/trogdord/request.cpp
+			src/trogdord/response.cpp
+			src/trogdord/dispatcher.cpp
+			src/trogdord/gamewrapper.cpp
+			src/trogdord/gamecontainer.cpp
+			src/trogdord/exception/requestexception.cpp
+			src/trogdord/filter/filter.cpp
+			src/trogdord/network/tcpconnection.cpp
+			src/trogdord/network/tcpserver.cpp
+			src/trogdord/scopes/controller.cpp
+			src/trogdord/scopes/global.cpp
+			src/trogdord/scopes/game.cpp
+			src/trogdord/scopes/entity.cpp
+			src/trogdord/scopes/resource.cpp
+			src/trogdord/scopes/tangible.cpp
+			src/trogdord/scopes/place.cpp
+			src/trogdord/scopes/room.cpp
+			src/trogdord/scopes/thing.cpp
+			src/trogdord/scopes/object.cpp
+			src/trogdord/scopes/being.cpp
+			src/trogdord/scopes/creature.cpp
+			src/trogdord/scopes/player.cpp
+			src/trogdord/io/input/listeners/listener.cpp
+			src/trogdord/io/input/listenercontainer.cpp
+			src/trogdord/io/output/driver.cpp
+			src/trogdord/io/output/local.cpp
+			src/trogdord/io/iostream/serverout.cpp
+			src/trogdord/io/iostream/servererr.cpp
 		)
 
-		target_include_directories(trogdord_redis
+		set(TROGDORD_INCLUDES
+			PUBLIC ${Boost_INCLUDE_DIRS}
 			PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
 		)
 
-	endif (ENABLE_REDIS)
-
-	add_executable(trogdord
-		src/trogdord/main.cpp
-		${TROGDORD_SOURCES}
-	)
-
-	# Link in the redis input and output drivers
-	if (ENABLE_REDIS)
-
-		target_include_directories(trogdord_redis
-			PUBLIC ${HIREDIS_INCLUDE_DIRS}
+		set(TROGDORD_LIBRARIES_MINUS_CORE
+			PUBLIC stdc++fs
+			PUBLIC ${Boost_LIBRARIES}
 		)
 
-		target_link_libraries(trogdord
-			PRIVATE trogdord_redis
-			PUBLIC ${HIREDIS_LIBRARIES}
+		if (ENABLE_REDIS)
+
+			pkg_check_modules (HIREDIS REQUIRED hiredis>=0.13)
+
+			add_library(trogdord_redis STATIC
+				src/trogdord/io/output/redis.cpp
+				src/trogdord/io/input/listeners/redis.cpp
+			)
+
+			target_include_directories(trogdord_redis
+				PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
+			)
+
+		endif (ENABLE_REDIS)
+
+		add_executable(trogdord
+			src/trogdord/main.cpp
+			${TROGDORD_SOURCES}
 		)
 
-		add_definitions(-DENABLE_REDIS)
-		add_dependencies(trogdord trogdord_redis)
+		# Link in the redis input and output drivers
+		if (ENABLE_REDIS)
 
-	endif (ENABLE_REDIS)
+			target_include_directories(trogdord_redis
+				PUBLIC ${HIREDIS_INCLUDE_DIRS}
+			)
 
-	target_include_directories(trogdord ${TROGDORD_INCLUDES})
-	target_link_libraries(trogdord ${TROGDORD_LIBRARIES_MINUS_CORE})
-	target_link_libraries(trogdord PUBLIC trogdor)
+			target_link_libraries(trogdord
+				PRIVATE trogdord_redis
+				PUBLIC ${HIREDIS_LIBRARIES}
+			)
 
-	add_dependencies(trogdord trogdor trogdord_data)
+			add_definitions(-DENABLE_REDIS)
+			add_dependencies(trogdord trogdord_redis)
 
-	# Explose the installation prefix to trogdord
-	add_definitions(-DTROGDORD_INSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
+		endif (ENABLE_REDIS)
 
-	# Default location where trogdord looks for trogdord.ini
-	add_definitions(-DTROGDORD_INI_PATH=\"${CMAKE_INSTALL_PREFIX}/etc/trogdord/trogdord.ini\")
+		target_include_directories(trogdord ${TROGDORD_INCLUDES})
+		target_link_libraries(trogdord ${TROGDORD_LIBRARIES_MINUS_CORE})
+		target_link_libraries(trogdord PUBLIC trogdor)
 
-	install(TARGETS trogdord DESTINATION bin COMPONENT trogdord OPTIONAL)
+		add_dependencies(trogdord trogdor trogdord_data)
+
+		# Explose the installation prefix to trogdord
+		add_definitions(-DTROGDORD_INSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
+
+		# Default location where trogdord looks for trogdord.ini
+		add_definitions(-DTROGDORD_INI_PATH=\"${CMAKE_INSTALL_PREFIX}/etc/trogdord/trogdord.ini\")
+
+		install(TARGETS trogdord DESTINATION bin COMPONENT trogdord OPTIONAL)
+
+	else (HAVE_ASIO)
+
+		# So that we don't cache the result and then never find it even when
+		# it's later installed
+		unset(HAVE_ASIO)
+
+		add_custom_target(trogdord echo "Skipping trogdord because the ASIO headers are not installed in a place where CMake can find them.")
+
+	endif (HAVE_ASIO)
 
 else (Boost_FOUND)
 

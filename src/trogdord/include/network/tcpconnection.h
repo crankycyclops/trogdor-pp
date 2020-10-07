@@ -6,14 +6,11 @@
 #include <vector>
 #include <memory>
 
-#include <boost/asio.hpp>
-#include <boost/algorithm/string.hpp>
+#include <asio.hpp>
 
 #include "../config.h"
 #include "tcpcommon.h"
 
-using namespace boost::system;
-using boost::asio::ip::tcp;
 
 class TCPServer;
 
@@ -40,27 +37,27 @@ class TCPConnection: public std::enable_shared_from_this<TCPConnection> {
 	private:
 
 		TCPServer *server; // server class that spawned this connection
-		tcp::socket socket;
+		asio::ip::tcp::socket socket;
 		bool inUse;
 
-		boost::asio::streambuf inBuffer;
+		asio::streambuf inBuffer;
 		std::string bufferStr;
 
 		// Records the client's hostname/IP address for logging
 		std::string clientHost = "";
 
 		// Constructor should only be called internally by create().
-		TCPConnection(boost::asio::io_service &io_service, TCPServer *s);
+		TCPConnection(asio::io_service &io_service, TCPServer *s);
 
 		// Called after async_read_until() completes. Takes as input a callback
 		// function and a void pointer with an argument. Callback is only
 		// called if there were no errors during read.
-		void handleRead(const boost::system::error_code &e, callback_t callback, void *callbackArg);
+		void handleRead(const asio::error_code &e, callback_t callback, void *callbackArg);
 
 		// Called after async_write() completes. Takes as input a callback
 		// function and a void pointer with an argument. Callback is only
 		// called if there were no errors during write.
-		void handleWrite(const boost::system::error_code &e, callback_t callback, void *callbackArg);
+		void handleWrite(const asio::error_code &e, callback_t callback, void *callbackArg);
 
 		// Clears the buffer once it's been used
 		inline void clearBuffer() {inBuffer.consume(bufferStr.length() + 1);}
@@ -71,7 +68,7 @@ class TCPConnection: public std::enable_shared_from_this<TCPConnection> {
 		// to an instance of TCPConnection that will automatically destruct
 		// when we're done with it.
 		static inline std::shared_ptr<TCPConnection> create(
-			boost::asio::io_service &io_service, TCPServer *s
+			asio::io_service &io_service, TCPServer *s
 		) {
 
 			// Calling new instead of using std::make_shared because the
@@ -96,7 +93,7 @@ class TCPConnection: public std::enable_shared_from_this<TCPConnection> {
 		inline TCPServer *getServer() {return server;}
 
 		// Return a reference to the socket that represents this connection.
-		inline tcp::socket &getSocket() {return socket;}
+		inline asio::ip::tcp::socket &getSocket() {return socket;}
 
 		// Initiates an asynchronous read and returns immediately.
 		void read(TCPConnection::callback_t callback, void *callbackArg);
@@ -130,8 +127,8 @@ class TCPConnection: public std::enable_shared_from_this<TCPConnection> {
 		inline void close() {
 
 			if (socket.is_open()) {
-				boost::system::error_code ignore;
-				socket.shutdown(tcp::socket::shutdown_both, ignore);
+				asio::error_code ignore;
+				socket.shutdown(asio::ip::tcp::socket::shutdown_both, ignore);
 				socket.close();
 			}
 		}
