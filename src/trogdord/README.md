@@ -43,7 +43,7 @@ If you're interested in writing your own client-side connector, or just want to 
 
 * [G++](https://gcc.gnu.org/projects/cxx-status.html) 7+ or [Clang++](https://clang.llvm.org/cxx_status.html) 8+. A different compiler might work, but it hasn't been tested, so you're on your own.
 * [CMake](https://cmake.org/) 3.10 or above
-* [Boost ASIO](https://www.boost.org/doc/libs/1_73_0/doc/html/boost_asio.html) >=1.60 (boost-system-dev package on Ubuntu)
+* [Standalone ASIO library](https://think-async.com/Asio/) >=1.10 (libasio-dev package on Ubuntu)
 * [Boost Ptree](https://www.boost.org/doc/libs/1_73_0/doc/html/property_tree.html) >=1.60 (boost-system-dev package on Ubuntu)
 * [Hiredis](https://github.com/redis/hiredis) 0.13+ (optional, for redis Pub/Sub support in trogdord)
 * The core library, installed as a shared object or DLL in a place where CMake can find it

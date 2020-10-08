@@ -6,11 +6,9 @@
 
 #include <memory>
 #include <string>
-#include <boost/asio.hpp>
+#include <asio.hpp>
 
 #include "../exception/networkexception.h"
-
-using boost::asio::ip::tcp;
 
 
 class TCPConnection {
@@ -27,10 +25,10 @@ class TCPConnection {
 		unsigned short port;
 
 		// The IO service used to read and write data from and to the socket
-		boost::asio::io_service io;
+		asio::io_service io;
 
 		// The underlying socket connection between the client and the server
-		std::unique_ptr<boost::asio::ip::tcp::socket> socket;
+		std::unique_ptr<asio::ip::tcp::socket> socket;
 
 		// Opens the connection
 		void open();
@@ -78,8 +76,8 @@ class TCPConnection {
 		inline void close() {
 
 			if (socket->is_open()) {
-				boost::system::error_code ignore;
-				socket->shutdown(tcp::socket::shutdown_both, ignore);
+				asio::error_code ignore;
+				socket->shutdown(asio::ip::tcp::socket::shutdown_both, ignore);
 				socket->close();
 			}
 		}

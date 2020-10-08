@@ -46,17 +46,17 @@ TCPConnection::~TCPConnection() {
 
 void TCPConnection::open() {
 
-	boost::system::error_code error = boost::asio::error::host_not_found;
+	asio::error_code error = asio::error::host_not_found;
 
 	try {
 
-		tcp::resolver resolver(io);
-		tcp::resolver::query query(hostname, std::to_string(port));
+		asio::ip::tcp::resolver resolver(io);
+		asio::ip::tcp::resolver::query query(hostname, std::to_string(port));
 
-		tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-		tcp::resolver::iterator end;
+		asio::ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+		asio::ip::tcp::resolver::iterator end;
 
-		socket = std::make_unique<boost::asio::ip::tcp::socket>(io);
+		socket = std::make_unique<asio::ip::tcp::socket>(io);
 
 		// Attempt to connect, but timeout if it takes too long
 		std::future_status status = std::async(std::launch::async, [&] () {
@@ -75,12 +75,12 @@ void TCPConnection::open() {
 					std::string response = read();
 
 					if (0 != response.compare(READY_RESPONSE)) {
-						error = boost::asio::error::not_connected;
+						error = asio::error::not_connected;
 					}
 				}
 
 				catch (const std::runtime_error &e) {
-					error = boost::asio::error::not_connected;
+					error = asio::error::not_connected;
 				}
 			}
 
@@ -101,7 +101,7 @@ void TCPConnection::open() {
 		}
 	}
 
-	catch (const boost::system::system_error &e) {
+	catch (const asio::system_error &e) {
 		close();
 		throw NetworkException(e.what());
 	}
@@ -116,14 +116,14 @@ void TCPConnection::open() {
 
 std::string TCPConnection::read() {
 
-	boost::asio::streambuf buffer;
-	boost::system::error_code error;
+	asio::streambuf buffer;
+	asio::error_code error;
 
 	try {
 
 		std::future_status status = std::async(std::launch::async, [&] () {
 
-			boost::asio::read_until(*socket, buffer, std::string() + EOT, error);
+			asio::read_until(*socket, buffer, std::string() + EOT, error);
 		}).wait_for(std::chrono::milliseconds{TIMEOUT});
 
 		switch (status) {
@@ -141,7 +141,7 @@ std::string TCPConnection::read() {
 		}
 	}
 
-	catch (const boost::system::system_error &e) {
+	catch (const asio::system_error &e) {
 		close();
 		throw NetworkException(e.what());
 	}
@@ -151,7 +151,7 @@ std::string TCPConnection::read() {
 		throw NetworkException(error.message());
 	}
 
-	std::string response = boost::asio::buffer_cast<const char *>(buffer.data());
+	std::string response = asio::buffer_cast<const char *>(buffer.data());
 	response.erase(remove(response.begin(), response.end(), EOT), response.end());
 
 	return response;
@@ -161,13 +161,13 @@ std::string TCPConnection::read() {
 
 void TCPConnection::write(std::string &message) {
 
-	boost::system::error_code error;
+	asio::error_code error;
 
 	try {
 
 		std::future_status status = std::async(std::launch::async, [&] () {
 
-			boost::asio::write(*socket, boost::asio::buffer(message + EOT), error);
+			asio::write(*socket, asio::buffer(message + EOT), error);
 		}).wait_for(std::chrono::milliseconds{TIMEOUT});
 
 		switch (status) {
@@ -185,7 +185,7 @@ void TCPConnection::write(std::string &message) {
 		}
 	}
 
-	catch (const boost::system::system_error &e) {
+	catch (const asio::system_error &e) {
 		close();
 		throw NetworkException(e.what());
 	}
