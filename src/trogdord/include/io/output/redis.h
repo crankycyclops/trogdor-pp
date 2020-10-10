@@ -3,8 +3,11 @@
 
 #include <queue>
 #include <thread>
+#include <memory>
 #include <condition_variable>
+
 #include <hiredis.h>
+#include <rapidjson/document.h>
 
 #include "driver.h"
 
@@ -44,7 +47,7 @@ namespace output {
 			std::string redisChannel;
 
 			// Messages waiting to be published to redis
-			std::queue<JSONObject> msgQueue;
+			std::queue<std::unique_ptr<rapidjson::Document>> msgQueue;
 
 			// Thread that will asynchronously publish messages to redis
 			std::unique_ptr<std::thread> redisWorker;

@@ -8,13 +8,13 @@
 const char *PlaceController::SCOPE = "place";
 
 // Singleton instance of PlaceController
-std::unique_ptr<PlaceController> PlaceController::instance = nullptr;
+std::unique_ptr<PlaceController> PlaceController::instance;
 
 /*****************************************************************************/
 
-JSONObject PlaceController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+rapidjson::Document PlaceController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
 
-	JSONObject place = EntityController::entityToJSONObject(ePtr);
+	rapidjson::Document place = EntityController::entityToJSONObject(ePtr);
 
 	// TODO: add place-specific properties
 	return place;

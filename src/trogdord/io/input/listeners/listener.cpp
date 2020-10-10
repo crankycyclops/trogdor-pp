@@ -1,3 +1,4 @@
+#include <rapidjson/pointer.h>
 #include <trogdor/entities/player.h>
 
 #include "../../../include/json.h"
@@ -11,26 +12,26 @@ namespace input {
 	// outside process.
 	void Listener::dispatch(std::string input) {
 
-		JSONObject data;
+		rapidjson::Document data;
 
-		try {
-			data = JSON::deserialize(input);
-		}
+		data.Parse(input.c_str());
 
-		catch (const boost::property_tree::json_parser_error &e) {
+		if (
+			data.HasParseError() ||
+			!data.HasMember("game_id") || !data["game_id"].IsUint() ||
+			!data.HasMember("entity")  || !data["entity"].IsString() ||
+			!data.HasMember("command") || !data["command"].IsString()
+		) {
 			return;
 		}
 
-		boost::optional gameId = data.get_optional<size_t>("game_id");
-		boost::optional entity = data.get_optional<std::string>("entity");
-		boost::optional command = data.get_optional<std::string>("command");
+		size_t gameId = data["game_id"].GetUint();
+		std::string entity = data["entity"].GetString();
+		std::string command = data["command"].GetString();
 
-		if (gameId && entity && command) {
-
-			if (auto &game = GameContainer::get()->getGame(*gameId)) {
-				if (auto player = game->get()->getPlayer(*entity)) {
-					player->input(*command);
-				}
+		if (auto &game = GameContainer::get()->getGame(gameId)) {
+			if (auto player = game->get()->getPlayer(entity)) {
+				player->input(command);
 			}
 		}
 	}

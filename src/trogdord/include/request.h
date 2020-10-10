@@ -2,12 +2,34 @@
 #define REQUEST_H
 
 #include <string>
+#include <rapidjson/document.h>
+#include <rapidjson/pointer.h>
 
-#include "json.h"
 #include "response.h"
 
 
 class Request {
+
+	private:
+
+		static void throwInvalidRequest(std::string errMsg) {
+
+			rapidjson::Document response;
+
+			response.AddMember(
+				"status",
+				rapidjson::Value().SetInt(Response::STATUS_INVALID),
+				response.GetAllocator()
+			);
+
+			response.AddMember(
+				"message",
+				rapidjson::Value().SetString(rapidjson::StringRef(errMsg.c_str())),
+				response.GetAllocator()
+			);
+
+			throw response;
+		}
 
 	public:
 
@@ -22,72 +44,118 @@ class Request {
 		static const char *MISSING_GAME_ID;
 		static const char *INVALID_GAME_ID;
 
-		// Utility function that parses a request's argument.
-		template<typename argumentType>
-		static argumentType parseArgument(
-			JSONObject request,
+		// Parses an integer argument.
+		static int parseArgumentInt(
+			const rapidjson::Document &request,
 			std::string argument,
 			std::string missingErrMsg,
 			std::string invalidErrMsg
 		) {
 
-			try {
-				return request.get<argumentType>(argument);
+			const rapidjson::Value *value = rapidjson::Pointer(argument.c_str()).Get(request);
+
+			if (!value) {
+				throwInvalidRequest(missingErrMsg);
 			}
 
-			// It's kind of yucky catching an exception here just to throw
-			// another one, but as you can see, it cleans up my code a lot.
-			// Perhaps I can return a std::variant instead? I'll think about
-			// this some more and revisit it.
-			catch (boost::property_tree::ptree_bad_path &e) {
-
-				JSONObject response;
-
-				response.put("status", Response::STATUS_INVALID);
-				response.put("message", missingErrMsg);
-
-				throw response;
+			else if (!value->IsInt()) {
+				throwInvalidRequest(invalidErrMsg);
 			}
 
-			catch (boost::property_tree::ptree_bad_data &e) {
-
-				JSONObject response;
-
-				response.put("status", Response::STATUS_INVALID);
-				response.put("message", invalidErrMsg);
-
-				throw response;
-			}
+			return value->GetInt();
 		}
 
-		// Utility function that parses a numeric id from a request's
-		// arguments.
-		static inline int parseId(
-			const JSONObject &request,
-			const std::string &idField,
-			const std::string &missingErrMsg,
-			const std::string &invalidErrMsg
+		// Parses an unsigned integer argument.
+		static int parseArgumentUInt(
+			const rapidjson::Document &request,
+			std::string argument,
+			std::string missingErrMsg,
+			std::string invalidErrMsg
 		) {
 
-			int id = parseArgument<int>(request, idField, missingErrMsg, invalidErrMsg);
+			const rapidjson::Value *value = rapidjson::Pointer(argument.c_str()).Get(request);
 
-			if (id < 0) {
-
-				JSONObject response;
-
-				response.put("status", Response::STATUS_INVALID);
-				response.put("message", invalidErrMsg);
-
-				throw response;
+			if (!value) {
+				throwInvalidRequest(missingErrMsg);
 			}
 
-			return id;
+			else if (!value->IsUint()) {
+				throwInvalidRequest(invalidErrMsg);
+			}
+
+			return value->GetUint();
+		}
+
+		// Parses a double argument.
+		static double parseArgumentDouble(
+			const rapidjson::Document &request,
+			std::string argument,
+			std::string missingErrMsg,
+			std::string invalidErrMsg
+		) {
+
+			const rapidjson::Value *value = rapidjson::Pointer(argument.c_str()).Get(request);
+
+			if (!value) {
+				throwInvalidRequest(missingErrMsg);
+			}
+
+			else if (!value->IsNumber()) {
+				throwInvalidRequest(invalidErrMsg);
+			}
+
+			return value->GetDouble();
+		}
+
+		// Parses a bool argument.
+		static bool parseArgumentBool(
+			const rapidjson::Document &request,
+			std::string argument,
+			std::string missingErrMsg,
+			std::string invalidErrMsg
+		) {
+
+			const rapidjson::Value *value = rapidjson::Pointer(argument.c_str()).Get(request);
+
+			if (!value) {
+				throwInvalidRequest(missingErrMsg);
+			}
+
+			else if (!value->IsBool()) {
+				throwInvalidRequest(invalidErrMsg);
+			}
+
+			return value->GetBool();
+		}
+
+		// Parses a string argument.
+		static std::string parseArgumentString(
+			const rapidjson::Document &request,
+			std::string argument,
+			std::string missingErrMsg,
+			std::string invalidErrMsg
+		) {
+
+			const rapidjson::Value *value = rapidjson::Pointer(argument.c_str()).Get(request);
+
+			if (!value) {
+				throwInvalidRequest(missingErrMsg);
+			}
+
+			else if (!value->IsString()) {
+				throwInvalidRequest(invalidErrMsg);
+			}
+
+			return value->GetString();
 		}
 
 		// Utility function that parses a game id from a request's arguments.
-		static inline int parseGameId(JSONObject request, std::string idField = "args.id") {
+		static size_t parseGameId(
+			const rapidjson::Document &request,
+			std::string idField = "/args/id"
+		) {
 
-			return parseId(request, idField, MISSING_GAME_ID, INVALID_GAME_ID);
+			return parseArgumentUInt(request, idField, MISSING_GAME_ID, INVALID_GAME_ID);
 		}
 };
 

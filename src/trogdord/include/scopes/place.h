@@ -16,7 +16,7 @@ class PlaceController: public TangibleController {
 	protected:
 
 		// Converts a place to a JSON object
-		virtual JSONObject entityToJSONObject(trogdor::entity::Entity *ePtr);
+		virtual rapidjson::Document entityToJSONObject(trogdor::entity::Entity *ePtr);
 
 		// Returns a pointer to the place of the specified name. Throws an
 		// instance of PlaceNotFound if it doesn't exist.

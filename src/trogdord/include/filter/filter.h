@@ -28,7 +28,7 @@ class Filter {
 
 	private:
 
-		typedef std::variant<std::string, bool, size_t> FilterValue;
+		typedef std::variant<std::string, bool, size_t, int, double> FilterValue;
 
 		std::string type;
 		FilterValue value;
@@ -36,10 +36,10 @@ class Filter {
 		// Takes as input a type and value and returns a filter (only called
 		// internally.) This method will make sure the value is parsed into
 		// the appropriate type.
-		static Filter makeFilter(std::string type, std::string value);
+		static Filter makeFilter(std::string type, const rapidjson::Value &value);
 
 		// Parses a filter group out of a JSONObject
-		static Group JSONToFilterGroup(JSONObject json);
+		static Group JSONToFilterGroup(const rapidjson::Value &json);
 
 	public:
 
@@ -57,9 +57,9 @@ class Filter {
 		// Returns the filter's value type
 		size_t getValueType() const {return value.index();}
 
-		// Takes as input a JSONObject and returns the equivalent Union of
+		// Takes as input a JSON object and returns the equivalent Union of
 		// filters
-		static Union JSONToFilterUnion(JSONObject json);
+		static Union JSONToFilterUnion(const rapidjson::Value &json);
 };
 
 #ifdef DEBUG

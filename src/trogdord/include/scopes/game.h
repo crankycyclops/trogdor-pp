@@ -24,7 +24,9 @@ class GameController: public ScopeController {
 		static const char *IS_RUNNING_ACTION;
 
 		// Error messages
+		static const char *INVALID_NAME;
 		static const char *MISSING_REQUIRED_NAME;
+		static const char *INVALID_DEFINITION;
 		static const char *MISSING_REQUIRED_DEFINITION;
 		static const char *DEFINITION_NOT_RELATIVE;
 		static const char *MISSING_META;
@@ -45,40 +47,40 @@ class GameController: public ScopeController {
 		static std::unique_ptr<GameController> &get();
 
 		// Returns details about a running game
-		JSONObject getGame(JSONObject request);
+		rapidjson::Document getGame(const rapidjson::Document &request);
 
 		// Returns a list of all currently existing games
-		JSONObject getGameList(JSONObject request);
+		rapidjson::Document getGameList(const rapidjson::Document &request);
 
 		// Returns a list of all available game definitions
-		JSONObject getDefinitionList(JSONObject request);
+		rapidjson::Document getDefinitionList(const rapidjson::Document &request);
 
 		// Returns all per-game statistics for a given game
-		JSONObject getStatistics(JSONObject request);
+		rapidjson::Document getStatistics(const rapidjson::Document &request);
 
 		// Instantiates a new game and returns its id
-		JSONObject createGame(JSONObject request);
+		rapidjson::Document createGame(const rapidjson::Document &request);
 
 		// Destroys a game
-		JSONObject destroyGame(JSONObject request);
+		rapidjson::Document destroyGame(const rapidjson::Document &request);
 
 		// Starts a game
-		JSONObject startGame(JSONObject request);
+		rapidjson::Document startGame(const rapidjson::Document &request);
 
 		// Stops a game
-		JSONObject stopGame(JSONObject request);
+		rapidjson::Document stopGame(const rapidjson::Document &request);
 
 		// Returns the requested meta values
-		JSONObject getMeta(JSONObject request);
+		rapidjson::Document getMeta(const rapidjson::Document &request);
 
 		// Sets the requested meta values
-		JSONObject setMeta(JSONObject request);
+		rapidjson::Document setMeta(const rapidjson::Document &request);
 
 		// Returns the current game time
-		JSONObject getTime(JSONObject request);
+		rapidjson::Document getTime(const rapidjson::Document &request);
 
 		// Returns whether or not the game is currently running
-		JSONObject getIsRunning(JSONObject request);
+		rapidjson::Document getIsRunning(const rapidjson::Document &request);
 };
 
 

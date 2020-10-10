@@ -7,7 +7,8 @@
 #include <unordered_map>
 #include <memory>
 
-#include "../json.h"
+#include <rapidjson/document.h>
+
 #include "../network/tcpconnection.h"
 
 
@@ -28,7 +29,7 @@ class ScopeController {
 			std::string,
 			std::unordered_map<
 				std::string,
-				std::function<JSONObject(JSONObject)>
+				std::function<rapidjson::Document(const rapidjson::Document &)>
 			>
 		> actionMap;
 
@@ -38,7 +39,7 @@ class ScopeController {
 		void registerAction(
 			const std::string &method,
 			const std::string &action,
-			const std::function<JSONObject(JSONObject)> &callback
+			const std::function<rapidjson::Document(const rapidjson::Document &)> &callback
 		);
 
 	public:
@@ -48,11 +49,11 @@ class ScopeController {
 		static const char *DEFAULT_ACTION;
 
 		// Resolves a request and returns a JSON response.
-		JSONObject resolve(
+		rapidjson::Document resolve(
 			std::shared_ptr<TCPConnection> &connection,
 			std::string method,
 			std::string action,
-			JSONObject requestObj
+			const rapidjson::Document &requestObj
 		);
 };
 

@@ -99,13 +99,11 @@ namespace output {
 
 					while (msgQueue.size()) {
 
-						JSONObject &message = msgQueue.front();
-
 						auto reply = redisCommand(
 							redis,
 							"PUBLISH %s %s",
 							redisChannel.c_str(),
-							JSON::serialize(message).c_str()
+							JSON::serialize(*msgQueue.front()).c_str()
 						);
 
 						// an error occurred
@@ -147,15 +145,17 @@ namespace output {
 		Message message
 	) {
 
+		std::unique_ptr<rapidjson::Document> msgJSON;
 		message.order = nextOrder(gameId, entityName, channel);
-		JSONObject msg = message.toJSONObject();
 
-		msg.put("game_id", gameId);
-		msg.put("entity", entityName);
-		msg.put("channel", channel);
+ 		msgJSON->CopyFrom(message.toJSONObject(), msgJSON->GetAllocator());
+
+		msgJSON->AddMember("game_id", gameId, msgJSON->GetAllocator());
+		msgJSON->AddMember("entity", rapidjson::StringRef(entityName.c_str()), msgJSON->GetAllocator());
+		msgJSON->AddMember("channel", rapidjson::StringRef(channel.c_str()), msgJSON->GetAllocator());
 
 		std::unique_lock<std::mutex> lock(redisMutex);
-		msgQueue.push(msg);
+		msgQueue.push(std::move(msgJSON));
 		lock.unlock();
 
 		msgsReady.notify_one();

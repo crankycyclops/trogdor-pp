@@ -8,13 +8,13 @@
 const char *CreatureController::SCOPE = "creature";
 
 // Singleton instance of CreatureController
-std::unique_ptr<CreatureController> CreatureController::instance = nullptr;
+std::unique_ptr<CreatureController> CreatureController::instance;
 
 /*****************************************************************************/
 
-JSONObject CreatureController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+rapidjson::Document CreatureController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
 
-	JSONObject creature = BeingController::entityToJSONObject(ePtr);
+	rapidjson::Document creature = BeingController::entityToJSONObject(ePtr);
 
 	// TODO: add creature-specific properties
 	return creature;

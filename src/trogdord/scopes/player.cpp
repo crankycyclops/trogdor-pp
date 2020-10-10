@@ -1,10 +1,11 @@
+#include <rapidjson/pointer.h>
+#include <trogdor/exception/duplicateentity.h>
+
 #include "../include/request.h"
 #include "../include/gamecontainer.h"
 
 #include "../include/scopes/player.h"
 #include "../include/exception/entity/playernotfound.h"
-
-#include <trogdor/exception/duplicateentity.h>
 
 
 // Scope name that should be used in requests
@@ -16,16 +17,17 @@ const char *PlayerController::INPUT_ACTION = "input";
 // Error messages
 const char *PlayerController::MISSING_PLAYER_NAME = "missing required player name";
 const char *PlayerController::INVALID_PLAYER_NAME = "invalid player name";
+const char *PlayerController::INVALID_COMMAND = "command must be a string";
 const char *PlayerController::PLAYER_NOT_FOUND = "player not found";
 
 // Singleton instance of PlayerController
-std::unique_ptr<PlayerController> PlayerController::instance = nullptr;
+std::unique_ptr<PlayerController> PlayerController::instance;
 
 /*****************************************************************************/
 
-JSONObject PlayerController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+rapidjson::Document PlayerController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
 
-	JSONObject player = BeingController::entityToJSONObject(ePtr);
+	rapidjson::Document player = BeingController::entityToJSONObject(ePtr);
 
 	// TODO: add player-specific properties
 	return player;
@@ -66,15 +68,15 @@ std::vector<trogdor::entity::Entity *> PlayerController::getEntityPtrList(
 
 PlayerController::PlayerController(): BeingController() {
 
-	registerAction(Request::POST, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
+	registerAction(Request::POST, DEFAULT_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->createPlayer(request);
 	});
 
-	registerAction(Request::DELETE, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
+	registerAction(Request::DELETE, DEFAULT_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->destroyPlayer(request);
 	});
 
-	registerAction(Request::POST, INPUT_ACTION, [&] (JSONObject request) -> JSONObject {
+	registerAction(Request::POST, INPUT_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->postInput(request);
 	});
 }
@@ -92,57 +94,59 @@ std::unique_ptr<PlayerController> &PlayerController::get() {
 
 /*****************************************************************************/
 
-JSONObject PlayerController::createPlayer(JSONObject request) {
+rapidjson::Document PlayerController::createPlayer(const rapidjson::Document &request) {
 
-	JSONObject response;
+	rapidjson::Document response;
 
 	size_t gameId;
 	std::string playerName;
 
 	try {
-		gameId = Request::parseGameId(request, "args.game_id");
-		playerName = Request::parseArgument<std::string>(
+		gameId = Request::parseGameId(request, "/args/game_id");
+		playerName = Request::parseArgumentString(
 			request,
-			"args.name",
+			"/args/name",
 			MISSING_PLAYER_NAME,
 			INVALID_PLAYER_NAME
 		);
 	}
 
-	catch (const JSONObject &error) {
-		return error;
+	catch (const rapidjson::Document &error) {
+		rapidjson::Document errorCopy;
+		errorCopy.CopyFrom(error, errorCopy.GetAllocator());
+		return errorCopy;
 	}
 
 	try {
 
-		response.put("status", Response::STATUS_SUCCESS);
-		response.add_child("player", entityToJSONObject(
-			GameContainer::get()->createPlayer(gameId, playerName))
-		);
+		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+		response.AddMember("player", entityToJSONObject(
+			GameContainer::get()->createPlayer(gameId, playerName)
+		), response.GetAllocator());
 
 		return response;
 	}
 
 	catch (const GameNotFound &e) {
 
-		response.put("status", Response::STATUS_NOT_FOUND);
-		response.put("message", GAME_NOT_FOUND);
+		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(GAME_NOT_FOUND), response.GetAllocator());
 
 		return response;
 	}
 
 	catch (const trogdor::entity::DuplicateEntity &e) {
 
-		response.put("status", Response::STATUS_CONFLICT);
-		response.put("message", e.what());
+		response.AddMember("status", Response::STATUS_CONFLICT, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(e.what()), response.GetAllocator());
 
 		return response;
 	}
 
 	catch (const trogdor::Exception &e) {
 
-		response.put("status", Response::STATUS_INTERNAL_ERROR);
-		response.put("message", e.what());
+		response.AddMember("status", Response::STATUS_INTERNAL_ERROR, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(e.what()), response.GetAllocator());
 
 		return response;
 	}
@@ -150,9 +154,9 @@ JSONObject PlayerController::createPlayer(JSONObject request) {
 
 /*****************************************************************************/
 
-JSONObject PlayerController::destroyPlayer(JSONObject request) {
+rapidjson::Document PlayerController::destroyPlayer(const rapidjson::Document &request) {
 
-	JSONObject response;
+	rapidjson::Document response;
 
 	size_t gameId;
 	std::string playerName;
@@ -161,54 +165,61 @@ JSONObject PlayerController::destroyPlayer(JSONObject request) {
 	// the player's notifications channel before they're removed from the game.
 	std::string removalMessage = "";
 
-	boost::optional messageArg = request.get_optional<std::string>("args.message");
+	const rapidjson::Value *messageArg = rapidjson::Pointer("/args/message").Get(request);
 
 	if (messageArg) {
-		removalMessage = *messageArg;
+
+		std::optional<std::string> mval = JSON::valueToStr(*messageArg);
+
+		if (mval) {
+			removalMessage = *mval;
+		}
 	}
 
 	try {
-		gameId = Request::parseGameId(request, "args.game_id");
-		playerName = Request::parseArgument<std::string>(
+		gameId = Request::parseGameId(request, "/args/game_id");
+		playerName = Request::parseArgumentString(
 			request,
-			"args.name",
+			"/args/name",
 			MISSING_PLAYER_NAME,
 			INVALID_PLAYER_NAME
 		);
 	}
 
-	catch (const JSONObject &error) {
-		return error;
+	catch (const rapidjson::Document &error) {
+		rapidjson::Document errorCopy;
+		errorCopy.CopyFrom(error, errorCopy.GetAllocator());
+		return errorCopy;
 	}
 
 	try {
 
 		GameContainer::get()->removePlayer(gameId, playerName, removalMessage);
-		response.put("status", Response::STATUS_SUCCESS);
+		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 
 		return response;
 	}
 
 	catch (const GameNotFound &e) {
 
-		response.put("status", Response::STATUS_NOT_FOUND);
-		response.put("message", GAME_NOT_FOUND);
+		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(GAME_NOT_FOUND), response.GetAllocator());
 
 		return response;
 	}
 
 	catch (const PlayerNotFound &e) {
 
-		response.put("status", Response::STATUS_NOT_FOUND);
-		response.put("message", PLAYER_NOT_FOUND);
+		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(PLAYER_NOT_FOUND), response.GetAllocator());
 
 		return response;
 	}
 
 	catch (trogdor::Exception &e) {
 
-		response.put("status", Response::STATUS_INTERNAL_ERROR);
-		response.put("message", e.what());
+		response.AddMember("status", Response::STATUS_INTERNAL_ERROR, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(e.what()), response.GetAllocator());
 
 		return response;
 	}
@@ -216,15 +227,15 @@ JSONObject PlayerController::destroyPlayer(JSONObject request) {
 
 /*****************************************************************************/
 
-JSONObject PlayerController::postInput(JSONObject request) {
+rapidjson::Document PlayerController::postInput(const rapidjson::Document &request) {
 
-	JSONObject response;
+	rapidjson::Document response;
 
 	size_t gameId;
 	trogdor::entity::Entity *ePtr;
 	std::string entityName;
 
-	std::optional<JSONObject> error = getEntityHelper(
+	std::optional<rapidjson::Document> error = getEntityHelper(
 		request,
 		gameId,
 		entityName,
@@ -235,19 +246,26 @@ JSONObject PlayerController::postInput(JSONObject request) {
 	);
 
 	if (error.has_value()) {
-		return *error;
+		rapidjson::Document errorCopy;
+		errorCopy.CopyFrom(*error, errorCopy.GetAllocator());
+		return errorCopy;
 	}
 
-	boost::optional command = request.get_optional<std::string>("args.command");
+	const rapidjson::Value *command = rapidjson::Pointer("/args/command").Get(request);
 
 	if (!command) {
-		response.put("status", Response::STATUS_INVALID);
-		response.put("message", MISSING_COMMAND);
+		response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(MISSING_COMMAND), response.GetAllocator());
+	}
+
+	else if (!command->IsString()) {
+		response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(INVALID_COMMAND), response.GetAllocator());
 	}
 
 	else {
-		static_cast<trogdor::entity::Player *>(ePtr)->input(*command);
-		response.put("status", Response::STATUS_SUCCESS);
+		static_cast<trogdor::entity::Player *>(ePtr)->input(command->GetString());
+		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 	}
 
 	return response;

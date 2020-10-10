@@ -8,13 +8,13 @@
 const char *TangibleController::SCOPE = "tangible";
 
 // Singleton instance of TangibleController
-std::unique_ptr<TangibleController> TangibleController::instance = nullptr;
+std::unique_ptr<TangibleController> TangibleController::instance;
 
 /*****************************************************************************/
 
-JSONObject TangibleController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+rapidjson::Document TangibleController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
 
-	JSONObject tangible = EntityController::entityToJSONObject(ePtr);
+	rapidjson::Document tangible = EntityController::entityToJSONObject(ePtr);
 
 	// TODO: add tangible-specific properties
 	return tangible;

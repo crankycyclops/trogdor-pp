@@ -16,20 +16,27 @@ namespace input {
 
 	ListenerContainer::ListenerContainer() {
 
-		JSONObject listenersArr;
+		rapidjson::Document listenersArr;
 
 		std::string listenersStr = Config::get()->value<std::string>(
 			Config::CONFIG_KEY_INPUT_LISTENERS
 		);
 
-		try {
-			listenersArr = JSON::deserialize(listenersStr);
-		}
 
-		catch (const boost::property_tree::json_parser_error &e) {
+		listenersArr.Parse(listenersStr.c_str());
+
+		if (listenersArr.HasParseError()) {
 			throw ServerException(
 				std::string("invalid trogdord.ini value for ") +
-				Config::CONFIG_KEY_INPUT_LISTENERS + ":" + e.what()
+				Config::CONFIG_KEY_INPUT_LISTENERS
+			);
+		}
+
+		else if (rapidjson::kArrayType != listenersArr.GetType()) {
+			throw ServerException(
+				std::string("trogdord.ini value for ") +
+				Config::CONFIG_KEY_INPUT_LISTENERS +
+				" must be a JSON array of strings."
 			);
 		}
 
@@ -40,24 +47,32 @@ namespace input {
 		#endif
 
 		// Start configured listeners
-		for (auto &listener: listenersArr) {
+		for (auto listener = listenersArr.Begin(); listener != listenersArr.End(); listener++) {
 
-			if (!listener.second.data().empty()) {
+			if (rapidjson::kStringType == listener->GetType()) {
 
-				if (listeners.find(listener.second.data()) != listeners.end()) {
-					listeners[listener.second.data()]->start();
+				if (listeners.find(listener->GetString()) != listeners.end()) {
+					listeners[listener->GetString()]->start();
 					Config::get()->err(trogdor::Trogerr::INFO) <<
-						"Starting " + listener.second.data() + " input listener." <<
-						std::endl;
+						"Starting " << listener->GetString() <<
+						" input listener." << std::endl;
 				}
 
 				else {
 					throw ServerException(
 						std::string("Input listener ") +
-						listener.second.data() +
+						listener->GetString() +
 						" doesn't exist."
 					);
 				}
+			}
+
+			else {
+				throw ServerException(
+					std::string("trogdord.ini value for ") +
+						Config::CONFIG_KEY_INPUT_LISTENERS +
+						" must be a JSON array of strings."
+				);
 			}
 		}
 	}

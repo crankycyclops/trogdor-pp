@@ -1,3 +1,4 @@
+#include <rapidjson/pointer.h>
 #include <trogdor/entities/entity.h>
 
 #include "../include/request.h"
@@ -18,6 +19,7 @@ const char *EntityController::OUTPUT_ACTION = "output";
 
 // Error messages
 const char *EntityController::MISSING_OUTPUT_MESSAGE = "missing required message";
+const char *EntityController::INVALID_OUTPUT_MESSAGE = "message must be a string or other scalar value that can be trivially converted to a string (numeric, boolean, or null)";
 const char *EntityController::MISSING_COMMAND = "missing required command";
 const char *EntityController::MISSING_CHANNEL = "missing required channel";
 const char *EntityController::INVALID_CHANNEL = "invalid channel";
@@ -26,16 +28,20 @@ const char *EntityController::INVALID_ENTITY_NAME = "invalid entity name";
 const char *EntityController::ENTITY_NOT_FOUND = "entity not found";
 
 // Singleton instance of EntityController
-std::unique_ptr<EntityController> EntityController::instance = nullptr;
+std::unique_ptr<EntityController> EntityController::instance;
 
 /*****************************************************************************/
 
-JSONObject EntityController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+EntityController::~EntityController() {}
 
-	JSONObject entity;
+/*****************************************************************************/
 
-	entity.put("name", ePtr->getName());
-	entity.put("type", ePtr->getTypeName());
+rapidjson::Document EntityController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+
+	rapidjson::Document entity;
+
+	entity.AddMember("name", rapidjson::StringRef(ePtr->getName().c_str()), entity.GetAllocator());
+	entity.AddMember("type", rapidjson::StringRef(ePtr->getTypeName().c_str()), entity.GetAllocator());
 
 	return entity;
 }
@@ -58,8 +64,8 @@ trogdor::entity::Entity *EntityController::getEntityPtr(
 
 /*****************************************************************************/
 
-std::optional<JSONObject> EntityController::getEntityHelper(
-	JSONObject request,
+std::optional<rapidjson::Document> EntityController::getEntityHelper(
+	const rapidjson::Document &request,
 	size_t &gameId,
 	std::string &entityName,
 	trogdor::entity::Entity *&ePtr,
@@ -69,27 +75,29 @@ std::optional<JSONObject> EntityController::getEntityHelper(
 ) {
 
 	try {
-		gameId = Request::parseGameId(request, "args.game_id");
-		entityName = Request::parseArgument<std::string>(
+		gameId = Request::parseGameId(request, "/args/game_id");
+		entityName = Request::parseArgumentString(
 			request,
-			"args.name",
+			"/args/name",
 			missingNameMsg,
 			invalidNameMsg
 		);
 	}
 
-	catch (const JSONObject &error) {
-		return error;
+	catch (const rapidjson::Document &error) {
+		rapidjson::Document errorCopy;
+		errorCopy.CopyFrom(error, errorCopy.GetAllocator());
+		return errorCopy;
 	}
 
 	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (!game) {
 
-		JSONObject response;
+		rapidjson::Document response;
 
-		response.put("status", Response::STATUS_NOT_FOUND);
-		response.put("message", GAME_NOT_FOUND);
+		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(GAME_NOT_FOUND), response.GetAllocator());
 
 		return response;
 	}
@@ -101,10 +109,10 @@ std::optional<JSONObject> EntityController::getEntityHelper(
 
 	catch (const EntityNotFound &e) {
 
-		JSONObject response;
+		rapidjson::Document response;
 
-		response.put("status", Response::STATUS_NOT_FOUND);
-		response.put("message", notFoundMsg);
+		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(notFoundMsg.c_str()), response.GetAllocator());
 
 		return response;
 	}
@@ -129,19 +137,19 @@ std::vector<trogdor::entity::Entity *> EntityController::getEntityPtrList(
 
 EntityController::EntityController() {
 
-	registerAction(Request::GET, DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
+	registerAction(Request::GET, DEFAULT_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->getEntity(request);
 	});
 
-	registerAction(Request::GET, LIST_ACTION, [&] (JSONObject request) -> JSONObject {
+	registerAction(Request::GET, LIST_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->getEntityList(request);
 	});
 
-	registerAction(Request::GET, OUTPUT_ACTION, [&] (JSONObject request) -> JSONObject {
+	registerAction(Request::GET, OUTPUT_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->getOutput(request);
 	});
 
-	registerAction(Request::POST, OUTPUT_ACTION, [&] (JSONObject request) -> JSONObject {
+	registerAction(Request::POST, OUTPUT_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->appendOutput(request);
 	});
 }
@@ -159,13 +167,13 @@ std::unique_ptr<EntityController> &EntityController::get() {
 
 /*****************************************************************************/
 
-JSONObject EntityController::getEntity(JSONObject request) {
+rapidjson::Document EntityController::getEntity(const rapidjson::Document &request) {
 
 	size_t gameId;
 	std::string entityName;
 	trogdor::entity::Entity *ePtr;
 
-	std::optional<JSONObject> error = getEntityHelper(
+	std::optional<rapidjson::Document> error = getEntityHelper(
 		request,
 		gameId,
 		entityName,
@@ -173,15 +181,17 @@ JSONObject EntityController::getEntity(JSONObject request) {
 	);
 
 	if (error.has_value()) {
-		return *error;
+		rapidjson::Document errorCopy;
+		errorCopy.CopyFrom(*error, errorCopy.GetAllocator());
+		return errorCopy;
 	}
 
 	else {
 
-		JSONObject response;
+		rapidjson::Document response;
 
-		response.put("status", Response::STATUS_SUCCESS);
-		response.add_child("entity", entityToJSONObject(ePtr));
+		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+		response.AddMember("entity", entityToJSONObject(ePtr), response.GetAllocator());
 
 		return response;
 	}
@@ -189,45 +199,39 @@ JSONObject EntityController::getEntity(JSONObject request) {
 
 /*****************************************************************************/
 
-JSONObject EntityController::getEntityList(JSONObject request) {
+rapidjson::Document EntityController::getEntityList(const rapidjson::Document &request) {
 
 	size_t gameId;
 
-	JSONObject response;
+	rapidjson::Document response;
 
 	try {
-		gameId = Request::parseGameId(request, "args.game_id");
+		gameId = Request::parseGameId(request, "/args/game_id");
 	}
 
-	catch (const JSONObject &error) {
-		return error;
+	catch (const rapidjson::Document &error) {
+		rapidjson::Document errorCopy;
+		errorCopy.CopyFrom(error, errorCopy.GetAllocator());
+		return errorCopy;
 	}
 
 	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (game) {
 
-		JSONObject entities;
+		rapidjson::Value entities(rapidjson::kArrayType);
 
 		for (const auto &entity: getEntityPtrList(game->get())) {
-			entities.push_back(std::make_pair("",
-				entityToJSONObject(entity)
-			));
+			entities.PushBack(entityToJSONObject(entity), response.GetAllocator());
 		}
 
-		// See comment in GameController::getGameList describing use of
-		// addedGames for an explanation of what I'm doing here.
-		if (!entities.size()) {
-			entities.push_back(std::make_pair("", JSONObject()));
-		}
-
-		response.put("status", Response::STATUS_SUCCESS);
-		response.add_child("entities", entities);
+		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+		response.AddMember("entities", entities, response.GetAllocator());
 	}
 
 	else {
-		response.put("status", Response::STATUS_NOT_FOUND);
-		response.put("message", GAME_NOT_FOUND);
+		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(GAME_NOT_FOUND), response.GetAllocator());
 	}
 
 	return response;
@@ -235,9 +239,9 @@ JSONObject EntityController::getEntityList(JSONObject request) {
 
 /*****************************************************************************/
 
-JSONObject EntityController::getOutput(JSONObject request) {
+rapidjson::Document EntityController::getOutput(const rapidjson::Document &request) {
 
-	JSONObject response;
+	rapidjson::Document response;
 
 	size_t gameId;
 	trogdor::entity::Entity *ePtr;
@@ -250,19 +254,21 @@ JSONObject EntityController::getOutput(JSONObject request) {
 	);
 
 	try {
-		channel = Request::parseArgument<std::string>(
+		channel = Request::parseArgumentString(
 			request,
-			"args.channel",
+			"/args/channel",
 			MISSING_CHANNEL,
 			INVALID_CHANNEL
 		);
 	}
 
-	catch (const JSONObject &error) {
-		return error;
+	catch (const rapidjson::Document &error) {
+		rapidjson::Document errorCopy;
+		errorCopy.CopyFrom(error, errorCopy.GetAllocator());
+		return errorCopy;
 	}
 
-	std::optional<JSONObject> error = getEntityHelper(
+	std::optional<rapidjson::Document> error = getEntityHelper(
 		request,
 		gameId,
 		entityName,
@@ -270,10 +276,12 @@ JSONObject EntityController::getOutput(JSONObject request) {
 	);
 
 	if (error.has_value()) {
-		return *error;
+		rapidjson::Document errorCopy;
+		errorCopy.CopyFrom(*error, errorCopy.GetAllocator());
+		return errorCopy;
 	}
 
-	JSONObject messages;
+	rapidjson::Value messages(rapidjson::kArrayType);
 
 	try {
 
@@ -282,22 +290,16 @@ JSONObject EntityController::getOutput(JSONObject request) {
 			m.has_value();
 			m = outBuffer->pop(gameId, entityName, channel)
 		) {
-			messages.push_back(std::make_pair("", (*m).toJSONObject()));
+			messages.PushBack(m->toJSONObject(), response.GetAllocator());
 		};
 
-		// See comment in GameController::getGameList describing use of addedGames
-		// for an explanation of what I'm doing here.
-		if (!messages.size()) {
-			messages.push_back(std::make_pair("", JSONObject()));
-		}
-
-		response.put("status", Response::STATUS_SUCCESS);
-		response.add_child("messages", messages);
+		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+		response.AddMember("messages", messages, response.GetAllocator());
 	}
 
 	catch (const UnsupportedOperation &e) {
-		response.put("status", Response::STATUS_UNSUPPORTED);
-		response.put("message", e.what());
+		response.AddMember("status", Response::STATUS_UNSUPPORTED, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(e.what()), response.GetAllocator());
 	}
 
 	return response;
@@ -305,9 +307,9 @@ JSONObject EntityController::getOutput(JSONObject request) {
 
 /*****************************************************************************/
 
-JSONObject EntityController::appendOutput(JSONObject request) {
+rapidjson::Document EntityController::appendOutput(const rapidjson::Document &request) {
 
-	JSONObject response;
+	rapidjson::Document response;
 
 	size_t gameId;
 	trogdor::entity::Entity *ePtr;
@@ -315,22 +317,33 @@ JSONObject EntityController::appendOutput(JSONObject request) {
 	std::string entityName;
 	std::string channel = trogdor::entity::Entity::DEFAULT_OUTPUT_CHANNEL;
 
-	boost::optional channelArg = request.get_optional<std::string>("args.channel");
-	boost::optional messageArg = request.get_optional<std::string>("args.message");
+	const rapidjson::Value *channelArg = rapidjson::Pointer("/args/channel").Get(request);
+	const rapidjson::Value *messageArg = rapidjson::Pointer("/args/message").Get(request);
 
 	if (channelArg) {
-		channel = *channelArg;
+
+		if (channelArg->IsString()) {
+			channel = channelArg->GetString();
+		}
+
+		else {
+
+			response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+			response.AddMember("message", rapidjson::StringRef(INVALID_CHANNEL), response.GetAllocator());
+
+			return response;
+		}
 	}
 
 	if (!messageArg) {
 
-		response.put("status", Response::STATUS_INVALID);
-		response.put("message", MISSING_OUTPUT_MESSAGE);
+		response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(MISSING_OUTPUT_MESSAGE), response.GetAllocator());
 
 		return response;
 	}
 
-	std::optional<JSONObject> error = getEntityHelper(
+	std::optional<rapidjson::Document> error = getEntityHelper(
 		request,
 		gameId,
 		entityName,
@@ -338,11 +351,23 @@ JSONObject EntityController::appendOutput(JSONObject request) {
 	);
 
 	if (error.has_value()) {
-		return *error;
+		rapidjson::Document errorCopy;
+		errorCopy.CopyFrom(*error, errorCopy.GetAllocator());
+		return errorCopy;
 	}
 
-	ePtr->out(channel) << *messageArg << std::endl;
+	std::optional<std::string> outMessage = JSON::valueToStr(*messageArg);
 
-	response.put("status", Response::STATUS_SUCCESS);
+	if (!outMessage) {
+
+		response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(INVALID_OUTPUT_MESSAGE), response.GetAllocator());
+
+		return response;
+	}
+
+	ePtr->out(channel) << *outMessage << std::endl;
+
+	response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 	return response;
 }

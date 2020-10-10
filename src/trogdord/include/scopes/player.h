@@ -21,10 +21,11 @@ class PlayerController: public BeingController {
 		// Error messages
 		static const char *MISSING_PLAYER_NAME;
 		static const char *INVALID_PLAYER_NAME;
+		static const char *INVALID_COMMAND;
 		static const char *PLAYER_NOT_FOUND;
 
 		// Converts a player to a JSON object
-		virtual JSONObject entityToJSONObject(trogdor::entity::Entity *ePtr);
+		virtual rapidjson::Document entityToJSONObject(trogdor::entity::Entity *ePtr);
 
 		// Returns a pointer to the player of the specified name. Throws an
 		// instance of PlayerNotFound if the player doesn't exist.
@@ -52,13 +53,13 @@ class PlayerController: public BeingController {
 		static std::unique_ptr<PlayerController> &get();
 
 		// Creates a player in the specified game
-		JSONObject createPlayer(JSONObject request);
+		rapidjson::Document createPlayer(const rapidjson::Document &request);
 
 		// Removes a player in the specified game
-		JSONObject destroyPlayer(JSONObject request);
+		rapidjson::Document destroyPlayer(const rapidjson::Document &request);
 
 		// Sends input on behalf of a player
-		JSONObject postInput(JSONObject request);
+		rapidjson::Document postInput(const rapidjson::Document &request);
 };
 
 

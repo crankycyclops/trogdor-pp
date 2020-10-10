@@ -8,13 +8,13 @@
 const char *RoomController::SCOPE = "room";
 
 // Singleton instance of RoomController
-std::unique_ptr<RoomController> RoomController::instance = nullptr;
+std::unique_ptr<RoomController> RoomController::instance;
 
 /*****************************************************************************/
 
-JSONObject RoomController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+rapidjson::Document RoomController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
 
-	JSONObject room = PlaceController::entityToJSONObject(ePtr);
+	rapidjson::Document room = PlaceController::entityToJSONObject(ePtr);
 
 	// TODO: add room-specific properties
 	return room;

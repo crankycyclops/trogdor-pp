@@ -1,5 +1,6 @@
 #include <trogdor/utility.h>
 
+#include "include/json.h"
 #include "include/config.h"
 
 #include "include/dispatcher.h"
@@ -66,7 +67,10 @@ std::unique_ptr<Dispatcher> &Dispatcher::get() {
 
 /*****************************************************************************/
 
-std::string Dispatcher::parseRequestComponent(JSONObject requestObj, std::string component) {
+std::string Dispatcher::parseRequestComponent(
+	const rapidjson::Document &requestObj,
+	std::string component
+) {
 
 	static std::unordered_map<std::string, bool> required = {
 		{METHOD, true},
@@ -86,7 +90,7 @@ std::string Dispatcher::parseRequestComponent(JSONObject requestObj, std::string
 		{ACTION, INVALID_ACTION}
 	};
 
-	if (requestObj.not_found() == requestObj.find(component)) {
+	if (!requestObj.HasMember(component.c_str())) {
 		if (required[component]) {
 			throw RequestException(missingMsgs[component], Response::STATUS_INVALID);
 		} else {
@@ -94,31 +98,25 @@ std::string Dispatcher::parseRequestComponent(JSONObject requestObj, std::string
 		}
 	}
 
-	boost::optional value = requestObj.get_optional<std::string>(component);
-
-	if (value) {
-		return trogdor::strToLower(*value);
-	} else {
+	else if (!requestObj[component.c_str()].IsString()) {
 		throw RequestException(invalidMsgs[component], Response::STATUS_INVALID);
 	}
+
+	return trogdor::strToLower(requestObj[component.c_str()].GetString());
 }
 
 /*****************************************************************************/
 
-JSONObject Dispatcher::parseRequest(
+rapidjson::Document Dispatcher::parseRequest(
 	std::string request,
 	std::string &method,
 	std::string &scope,
 	std::string &action
 ) {
-	JSONObject requestObj;
+	rapidjson::Document requestObj;
+	requestObj.Parse(request.c_str());
 
-	// Construct an object based on the request
-	try {
-		requestObj = JSON::deserialize(request);
-	}
-
-	catch (boost::property_tree::json_parser::json_parser_error &e) {
+	if (requestObj.HasParseError()) {
 		throw RequestException(INVALID_JSON, Response::STATUS_INVALID);
 	}
 
@@ -144,7 +142,7 @@ std::string Dispatcher::dispatch(std::shared_ptr<TCPConnection> &connection, std
 
 	try {
 
-		JSONObject requestObj = parseRequest(request, method, scope, action);
+		rapidjson::Document requestObj = parseRequest(request, method, scope, action);
 
 		// Make sure the specified scope can be resolved
 		if (scopes.end() == scopes.find(scope)) {

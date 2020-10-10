@@ -5,7 +5,8 @@
 #include <memory>
 #include <unordered_map>
 
-#include "json.h"
+#include <rapidjson/document.h>
+
 #include "scopes/controller.h"
 #include "network/tcpconnection.h"
 
@@ -98,14 +99,17 @@ class Dispatcher {
 		Dispatcher();
 		Dispatcher(const Dispatcher &) = delete;
 
-		std::string parseRequestComponent(JSONObject requestObj, std::string component);
+		std::string parseRequestComponent(
+			const rapidjson::Document &requestObj,
+			std::string component
+		);
 
-		// Parses a JSON request and returns a JSONObject representation of
-		// it. If there are any errors during parsing, this will throw an
-		// instance of RequestException. Takes as input references to strings
-		// for the method, scope, and action so we can use those values in
-		// dispatch() without having to get them from the ptree again.
-		JSONObject parseRequest(
+		// Parses a JSON request and returns a RapidJSON Document object. If
+		// there are any errors during parsing, this will throw an instance of
+		// RequestException. Takes as input references to strings for the
+		// method, scope, and action so we can use those values in dispatch()
+		// without having to get them from the ptree again.
+		rapidjson::Document parseRequest(
 			std::string request,
 			std::string &method,
 			std::string &scope,

@@ -194,7 +194,6 @@ if (Boost_FOUND)
 
 		set(TROGDORD_SOURCES
 			src/trogdord/config.cpp
-			src/trogdord/json.cpp
 			src/trogdord/filesystem.cpp
 			src/trogdord/request.cpp
 			src/trogdord/response.cpp

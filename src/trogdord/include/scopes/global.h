@@ -29,7 +29,7 @@ class GlobalController: public ScopeController {
 		static std::unique_ptr<GlobalController> &get();
 
 		// Action that returns statistical information about the server
-		JSONObject statistics(JSONObject request);
+		rapidjson::Document statistics(const rapidjson::Document &request);
 };
 
 

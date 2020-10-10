@@ -21,6 +21,7 @@ class EntityController: public ScopeController {
 
 		// Error messages
 		static const char *MISSING_OUTPUT_MESSAGE;
+		static const char *INVALID_OUTPUT_MESSAGE;
 		static const char *MISSING_COMMAND;
 		static const char *MISSING_CHANNEL;
 		static const char *INVALID_CHANNEL;
@@ -34,7 +35,7 @@ class EntityController: public ScopeController {
 		EntityController(const EntityController &) = delete;
 
 		// Converts an entity to a JSON object
-		virtual JSONObject entityToJSONObject(trogdor::entity::Entity *ePtr);
+		virtual rapidjson::Document entityToJSONObject(trogdor::entity::Entity *ePtr);
 
 		// Returns a pointer to the game entity of the specified name. More
 		// specific entity controllers should return only pointers of the
@@ -61,8 +62,8 @@ class EntityController: public ScopeController {
 		// references to their appropriate values. Returns a JSONObject
 		// response if there was an error and nothing if the call was
 		// successful.
-		std::optional<JSONObject> getEntityHelper(
-			JSONObject request,
+		std::optional<rapidjson::Document> getEntityHelper(
+			const rapidjson::Document &request,
 			size_t &gameId,
 			std::string &entityName,
 			trogdor::entity::Entity *&ePtr,
@@ -76,21 +77,24 @@ class EntityController: public ScopeController {
 		// Scope name that should be used in requests
 		static const char *SCOPE;
 
+		// Destructor
+		virtual ~EntityController();
+
 		// Returns singleton instance of EntityController.
 		static std::unique_ptr<EntityController> &get();
 
 		// Returns details about the entity in the specified game
-		JSONObject getEntity(JSONObject request);
+		rapidjson::Document getEntity(const rapidjson::Document &request);
 
 		// Returns a list of all entities in the specified game
-		JSONObject getEntityList(JSONObject request);
+		rapidjson::Document getEntityList(const rapidjson::Document &request);
 
 		// Returns all unfetched output messages from the given channel for an
 		// entity.
-		JSONObject getOutput(JSONObject request);
+		rapidjson::Document getOutput(const rapidjson::Document &request);
 
 		// Appends an output message to the given entity on the given channel.
-		JSONObject appendOutput(JSONObject request);
+		rapidjson::Document appendOutput(const rapidjson::Document &request);
 };
 
 

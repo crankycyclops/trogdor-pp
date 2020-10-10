@@ -16,7 +16,7 @@ class CreatureController: public BeingController {
 	protected:
 
 		// Converts a creature to a JSON object
-		virtual JSONObject entityToJSONObject(trogdor::entity::Entity *ePtr);
+		virtual rapidjson::Document entityToJSONObject(trogdor::entity::Entity *ePtr);
 
 		// Returns a pointer to the creature of the specified name. Throws an
 		// instance of CreatureNotFound if it doesn't exist.

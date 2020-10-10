@@ -8,13 +8,13 @@
 const char *ResourceController::SCOPE = "resource";
 
 // Singleton instance of ResourceController
-std::unique_ptr<ResourceController> ResourceController::instance = nullptr;
+std::unique_ptr<ResourceController> ResourceController::instance;
 
 /*****************************************************************************/
 
-JSONObject ResourceController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+rapidjson::Document ResourceController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
 
-	JSONObject resource = EntityController::entityToJSONObject(ePtr);
+	rapidjson::Document resource = EntityController::entityToJSONObject(ePtr);
 
 	// TODO: add resource-specific properties
 	return resource;

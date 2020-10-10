@@ -8,13 +8,13 @@
 const char *ThingController::SCOPE = "thing";
 
 // Singleton instance of ThingController
-std::unique_ptr<ThingController> ThingController::instance = nullptr;
+std::unique_ptr<ThingController> ThingController::instance;
 
 /*****************************************************************************/
 
-JSONObject ThingController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+rapidjson::Document ThingController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
 
-	JSONObject thing = EntityController::entityToJSONObject(ePtr);
+	rapidjson::Document thing = EntityController::entityToJSONObject(ePtr);
 
 	// TODO: add thing-specific properties
 	return thing;
