@@ -105,7 +105,7 @@ std::unique_ptr<GameController> &GameController::get() {
 rapidjson::Document GameController::getGame(const rapidjson::Document &request) {
 
 	size_t gameId;
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	try {
 		gameId = Request::parseGameId(request);
@@ -140,7 +140,7 @@ rapidjson::Document GameController::getGame(const rapidjson::Document &request) 
 
 rapidjson::Document GameController::getGameList(const rapidjson::Document &request) {
 
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 	rapidjson::Value gameList(rapidjson::kArrayType);
 
 	std::vector<std::string> metaKeys;
@@ -213,7 +213,7 @@ rapidjson::Document GameController::getGameList(const rapidjson::Document &reque
 
 rapidjson::Document GameController::getDefinitionList(const rapidjson::Document &request) {
 
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 	rapidjson::Value definitions(rapidjson::kArrayType);
 
 	std::string definitionsPath = Filesystem::getFullDefinitionsPath();
@@ -253,7 +253,7 @@ rapidjson::Document GameController::getDefinitionList(const rapidjson::Document 
 rapidjson::Document GameController::getStatistics(const rapidjson::Document &request) {
 
 	size_t gameId;
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	try {
 		gameId = Request::parseGameId(request);
@@ -291,7 +291,7 @@ rapidjson::Document GameController::getStatistics(const rapidjson::Document &req
 
 rapidjson::Document GameController::createGame(const rapidjson::Document &request) {
 
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	const rapidjson::Value *name = rapidjson::Pointer("/args/name").Get(request);
 	const rapidjson::Value *definition = rapidjson::Pointer("/args/definition").Get(request);
@@ -387,7 +387,7 @@ rapidjson::Document GameController::createGame(const rapidjson::Document &reques
 rapidjson::Document GameController::destroyGame(const rapidjson::Document &request) {
 
 	size_t gameId;
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	try {
 		gameId = Request::parseGameId(request);
@@ -417,7 +417,7 @@ rapidjson::Document GameController::destroyGame(const rapidjson::Document &reque
 rapidjson::Document GameController::startGame(const rapidjson::Document &request) {
 
 	size_t gameId;
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	try {
 		gameId = Request::parseGameId(request);
@@ -447,7 +447,7 @@ rapidjson::Document GameController::startGame(const rapidjson::Document &request
 rapidjson::Document GameController::stopGame(const rapidjson::Document &request) {
 
 	size_t gameId;
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	try {
 		gameId = Request::parseGameId(request);
@@ -477,7 +477,7 @@ rapidjson::Document GameController::stopGame(const rapidjson::Document &request)
 rapidjson::Document GameController::getMeta(const rapidjson::Document &request) {
 
 	size_t gameId;
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	try {
 		gameId = Request::parseGameId(request);
@@ -548,7 +548,7 @@ rapidjson::Document GameController::getMeta(const rapidjson::Document &request) 
 rapidjson::Document GameController::setMeta(const rapidjson::Document &request) {
 
 	size_t gameId;
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	try {
 		gameId = Request::parseGameId(request);
@@ -617,7 +617,7 @@ rapidjson::Document GameController::setMeta(const rapidjson::Document &request) 
 rapidjson::Document GameController::getTime(const rapidjson::Document &request) {
 
 	size_t gameId;
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	try {
 		gameId = Request::parseGameId(request);
@@ -647,7 +647,7 @@ rapidjson::Document GameController::getTime(const rapidjson::Document &request) 
 rapidjson::Document GameController::getIsRunning(const rapidjson::Document &request) {
 
 	size_t gameId;
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	try {
 		gameId = Request::parseGameId(request);

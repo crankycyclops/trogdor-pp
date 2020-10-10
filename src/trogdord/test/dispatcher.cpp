@@ -93,7 +93,7 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 
 		scope->registerAction(Request::GET, "test", [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			rapidjson::Document retVal;
+			rapidjson::Document retVal(rapidjson::kObjectType);
 
 			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;
@@ -123,7 +123,7 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 
 		scope->registerAction(Request::GET, ScopeController::DEFAULT_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			rapidjson::Document retVal;
+			rapidjson::Document retVal(rapidjson::kObjectType);
 
 			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;
@@ -153,7 +153,7 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 
 		scope->registerAction(Request::GET, "test", [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			rapidjson::Document retVal;
+			rapidjson::Document retVal(rapidjson::kObjectType);
 
 			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;
@@ -183,7 +183,7 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 
 		scope->registerAction(Request::GET, "test", [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			rapidjson::Document retVal;
+			rapidjson::Document retVal(rapidjson::kObjectType);
 
 			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;
@@ -213,7 +213,7 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 
 		scope->registerAction(Request::GET, "test", [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			rapidjson::Document retVal;
+			rapidjson::Document retVal(rapidjson::kObjectType);
 
 			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;
@@ -243,7 +243,7 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 
 		scope->registerAction(Request::GET, "test", [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			rapidjson::Document retVal;
+			rapidjson::Document retVal(rapidjson::kObjectType);
 
 			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;

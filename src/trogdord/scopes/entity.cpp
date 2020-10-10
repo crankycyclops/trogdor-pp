@@ -94,7 +94,7 @@ std::optional<rapidjson::Document> EntityController::getEntityHelper(
 
 	if (!game) {
 
-		rapidjson::Document response;
+		rapidjson::Document response(rapidjson::kObjectType);
 
 		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
 		response.AddMember("message", rapidjson::StringRef(GAME_NOT_FOUND), response.GetAllocator());
@@ -109,7 +109,7 @@ std::optional<rapidjson::Document> EntityController::getEntityHelper(
 
 	catch (const EntityNotFound &e) {
 
-		rapidjson::Document response;
+		rapidjson::Document response(rapidjson::kObjectType);
 
 		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
 		response.AddMember("message", rapidjson::StringRef(notFoundMsg.c_str()), response.GetAllocator());
@@ -188,7 +188,7 @@ rapidjson::Document EntityController::getEntity(const rapidjson::Document &reque
 
 	else {
 
-		rapidjson::Document response;
+		rapidjson::Document response(rapidjson::kObjectType);
 
 		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 		response.AddMember("entity", entityToJSONObject(ePtr), response.GetAllocator());
@@ -203,7 +203,7 @@ rapidjson::Document EntityController::getEntityList(const rapidjson::Document &r
 
 	size_t gameId;
 
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	try {
 		gameId = Request::parseGameId(request, "/args/game_id");
@@ -241,7 +241,7 @@ rapidjson::Document EntityController::getEntityList(const rapidjson::Document &r
 
 rapidjson::Document EntityController::getOutput(const rapidjson::Document &request) {
 
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	size_t gameId;
 	trogdor::entity::Entity *ePtr;
@@ -309,7 +309,7 @@ rapidjson::Document EntityController::getOutput(const rapidjson::Document &reque
 
 rapidjson::Document EntityController::appendOutput(const rapidjson::Document &request) {
 
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	size_t gameId;
 	trogdor::entity::Entity *ePtr;

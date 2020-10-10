@@ -25,7 +25,7 @@ TEST_SUITE("Controller (scopes/controller.cpp)") {
 			return retVal;
 		});
 
-		rapidjson::Document request;
+		rapidjson::Document request(rapidjson::kObjectType);
 
 		request.AddMember("method", rapidjson::StringRef(methodStr.c_str()), request.GetAllocator());
 		request.AddMember("scope", rapidjson::StringRef(scopeStr.c_str()), request.GetAllocator());
@@ -56,7 +56,7 @@ TEST_SUITE("Controller (scopes/controller.cpp)") {
 			return retVal;
 		});
 
-		rapidjson::Document request;
+		rapidjson::Document request(rapidjson::kObjectType);
 
 		request.AddMember("method", rapidjson::StringRef(methodStr.c_str()), request.GetAllocator());
 		request.AddMember("scope", rapidjson::StringRef(scopeStr.c_str()), request.GetAllocator());
@@ -87,7 +87,7 @@ TEST_SUITE("Controller (scopes/controller.cpp)") {
 			return retVal;
 		});
 
-		rapidjson::Document request;
+		rapidjson::Document request(rapidjson::kObjectType);
 
 		request.AddMember("method", rapidjson::StringRef(methodStr.c_str()), request.GetAllocator());
 		request.AddMember("scope", rapidjson::StringRef(scopeStr.c_str()), request.GetAllocator());
@@ -118,7 +118,7 @@ TEST_SUITE("Controller (scopes/controller.cpp)") {
 			return retVal;
 		});
 
-		rapidjson::Document request;
+		rapidjson::Document request(rapidjson::kObjectType);
 
 		request.AddMember("method", rapidjson::StringRef(methodStr.c_str()), request.GetAllocator());
 		request.AddMember("scope", rapidjson::StringRef(scopeStr.c_str()), request.GetAllocator());

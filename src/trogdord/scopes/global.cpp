@@ -39,7 +39,7 @@ std::unique_ptr<GlobalController> &GlobalController::get() {
 
 rapidjson::Document GlobalController::statistics(const rapidjson::Document &request) {
 
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	rapidjson::Value version(rapidjson::kObjectType);
 	rapidjson::Value libVersion(rapidjson::kObjectType);

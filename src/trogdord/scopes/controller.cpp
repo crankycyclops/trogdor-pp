@@ -35,7 +35,7 @@ rapidjson::Document ScopeController::resolve(
 	const rapidjson::Document &requestObj
 ) {
 
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	// If an action is missing from the request, try the default
 	action = 0 == action.compare("") ? DEFAULT_ACTION : action;

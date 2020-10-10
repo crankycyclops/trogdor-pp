@@ -96,7 +96,7 @@ std::unique_ptr<PlayerController> &PlayerController::get() {
 
 rapidjson::Document PlayerController::createPlayer(const rapidjson::Document &request) {
 
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	size_t gameId;
 	std::string playerName;
@@ -156,7 +156,7 @@ rapidjson::Document PlayerController::createPlayer(const rapidjson::Document &re
 
 rapidjson::Document PlayerController::destroyPlayer(const rapidjson::Document &request) {
 
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	size_t gameId;
 	std::string playerName;
@@ -229,7 +229,7 @@ rapidjson::Document PlayerController::destroyPlayer(const rapidjson::Document &r
 
 rapidjson::Document PlayerController::postInput(const rapidjson::Document &request) {
 
-	rapidjson::Document response;
+	rapidjson::Document response(rapidjson::kObjectType);
 
 	size_t gameId;
 	trogdor::entity::Entity *ePtr;
