@@ -17,22 +17,26 @@ TEST_SUITE("Controller (scopes/controller.cpp)") {
 		auto scope = MockScopeController::factory();
 		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
 
-		scope->registerAction(Request::GET, "test", [&] (JSONObject request) -> JSONObject {
+		scope->registerAction(Request::GET, "test", [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			JSONObject retVal;
+			rapidjson::Document retVal;
 
-			retVal.put("status", Response::STATUS_SUCCESS);
+			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;
 		});
 
-		JSONObject request;
+		rapidjson::Document request;
 
-		request.put("method", methodStr);
-		request.put("scope", scopeStr);
-		request.put("action", actionStr);
+		request.AddMember("method", rapidjson::StringRef(methodStr.c_str()), request.GetAllocator());
+		request.AddMember("scope", rapidjson::StringRef(scopeStr.c_str()), request.GetAllocator());
+		request.AddMember("action", rapidjson::StringRef(actionStr.c_str()), request.GetAllocator());
 
-		JSONObject response = scope->resolve(dummyConnection, methodStr, actionStr, request);
-		CHECK(Response::STATUS_NOT_FOUND == response.get<size_t>("status"));
+		rapidjson::Document response = scope->resolve(dummyConnection, methodStr, actionStr, request);
+
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
 	}
 
 	TEST_CASE("Controller (scopes/controller.cpp): resolve() with no action and default action") {
@@ -44,22 +48,26 @@ TEST_SUITE("Controller (scopes/controller.cpp)") {
 		auto scope = MockScopeController::factory();
 		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
 
-		scope->registerAction(Request::GET, ScopeController::DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
+		scope->registerAction(Request::GET, ScopeController::DEFAULT_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			JSONObject retVal;
+			rapidjson::Document retVal;
 
-			retVal.put("status", Response::STATUS_SUCCESS);
+			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;
 		});
 
-		JSONObject request;
+		rapidjson::Document request;
 
-		request.put("method", methodStr);
-		request.put("scope", scopeStr);
-		request.put("action", actionStr);
+		request.AddMember("method", rapidjson::StringRef(methodStr.c_str()), request.GetAllocator());
+		request.AddMember("scope", rapidjson::StringRef(scopeStr.c_str()), request.GetAllocator());
+		request.AddMember("action", rapidjson::StringRef(actionStr.c_str()), request.GetAllocator());
 
-		JSONObject response = scope->resolve(dummyConnection, methodStr, actionStr, request);
-		CHECK(Response::STATUS_SUCCESS == response.get<size_t>("status"));
+		rapidjson::Document response = scope->resolve(dummyConnection, methodStr, actionStr, request);
+
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 	}
 
 	TEST_CASE("Controller (scopes/controller.cpp): resolve() with invalid action") {
@@ -71,22 +79,26 @@ TEST_SUITE("Controller (scopes/controller.cpp)") {
 		auto scope = MockScopeController::factory();
 		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
 
-		scope->registerAction(Request::GET, "test", [&] (JSONObject request) -> JSONObject {
+		scope->registerAction(Request::GET, "test", [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			JSONObject retVal;
+			rapidjson::Document retVal;
 
-			retVal.put("status", Response::STATUS_SUCCESS);
+			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;
 		});
 
-		JSONObject request;
+		rapidjson::Document request;
 
-		request.put("method", methodStr);
-		request.put("scope", scopeStr);
-		request.put("action", actionStr);
+		request.AddMember("method", rapidjson::StringRef(methodStr.c_str()), request.GetAllocator());
+		request.AddMember("scope", rapidjson::StringRef(scopeStr.c_str()), request.GetAllocator());
+		request.AddMember("action", rapidjson::StringRef(actionStr.c_str()), request.GetAllocator());
 
-		JSONObject response = scope->resolve(dummyConnection, methodStr, actionStr, request);
-		CHECK(Response::STATUS_NOT_FOUND == response.get<size_t>("status"));
+		rapidjson::Document response = scope->resolve(dummyConnection, methodStr, actionStr, request);
+
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
 	}
 
 	TEST_CASE("Controller (scopes/controller.cpp): resolve() with valid action") {
@@ -98,21 +110,25 @@ TEST_SUITE("Controller (scopes/controller.cpp)") {
 		auto scope = MockScopeController::factory();
 		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
 
-		scope->registerAction(Request::GET, "test", [&] (JSONObject request) -> JSONObject {
+		scope->registerAction(Request::GET, "test", [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			JSONObject retVal;
+			rapidjson::Document retVal;
 
-			retVal.put("status", Response::STATUS_SUCCESS);
+			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;
 		});
 
-		JSONObject request;
+		rapidjson::Document request;
 
-		request.put("method", methodStr);
-		request.put("scope", scopeStr);
-		request.put("action", actionStr);
+		request.AddMember("method", rapidjson::StringRef(methodStr.c_str()), request.GetAllocator());
+		request.AddMember("scope", rapidjson::StringRef(scopeStr.c_str()), request.GetAllocator());
+		request.AddMember("action", rapidjson::StringRef(actionStr.c_str()), request.GetAllocator());
 
-		JSONObject response = scope->resolve(dummyConnection, methodStr, actionStr, request);
-		CHECK(Response::STATUS_SUCCESS == response.get<size_t>("status"));
+		rapidjson::Document response = scope->resolve(dummyConnection, methodStr, actionStr, request);
+
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 	}
 }

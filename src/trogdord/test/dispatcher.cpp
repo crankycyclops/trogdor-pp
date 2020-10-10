@@ -15,8 +15,13 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 		MockDispatcher dispatcher;
 		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
 
-		JSONObject response = JSON::deserialize(dispatcher.dispatch(dummyConnection, ""));
-		CHECK(Response::STATUS_INVALID == response.get<size_t>("status"));
+		rapidjson::Document response;
+		response.Parse(dispatcher.dispatch(dummyConnection, "").c_str());
+
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_INVALID == response["status"].GetUint());
 	}
 
 	TEST_CASE("Dispatcher (dispatcher.cpp): Request is invalid JSON") {
@@ -24,8 +29,13 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 		MockDispatcher dispatcher;
 		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
 
-		JSONObject response = JSON::deserialize(dispatcher.dispatch(dummyConnection, "I'm not valid JSON"));
-		CHECK(Response::STATUS_INVALID == response.get<size_t>("status"));
+		rapidjson::Document response;
+		response.Parse(dispatcher.dispatch(dummyConnection, "I'm not valid JSON").c_str());
+
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_INVALID == response["status"].GetUint());
 	}
 
 	TEST_CASE("Dispatcher (dispatcher.cpp): Request is empty JSON object") {
@@ -33,8 +43,13 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 		MockDispatcher dispatcher;
 		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
 
-		JSONObject response = JSON::deserialize(dispatcher.dispatch(dummyConnection, "{}"));
-		CHECK(Response::STATUS_INVALID == response.get<size_t>("status"));
+		rapidjson::Document response;
+		response.Parse(dispatcher.dispatch(dummyConnection, "{}").c_str());
+
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_INVALID == response["status"].GetUint());
 	}
 
 	TEST_CASE("Dispatcher (dispatcher.cpp): Request is missing required method") {
@@ -42,8 +57,16 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 		MockDispatcher dispatcher;
 		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
 
-		JSONObject response = JSON::deserialize(dispatcher.dispatch(dummyConnection, "{\"scope\":\"global\",\"action\":\"statistics\"}"));
-		CHECK(Response::STATUS_INVALID == response.get<size_t>("status"));
+		rapidjson::Document response;
+		response.Parse(dispatcher.dispatch(
+			dummyConnection,
+			"{\"scope\":\"global\",\"action\":\"statistics\"}").c_str()
+		);
+
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_INVALID == response["status"].GetUint());
 	}
 
 	TEST_CASE("Dispatcher (dispatcher.cpp): Request is missing required scope") {
@@ -51,8 +74,16 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 		MockDispatcher dispatcher;
 		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
 
-		JSONObject response = JSON::deserialize(dispatcher.dispatch(dummyConnection, "{\"method\":\"get\",\"action\":\"statistics\"}"));
-		CHECK(Response::STATUS_INVALID == response.get<size_t>("status"));
+		rapidjson::Document response;
+		response.Parse(
+			dispatcher.dispatch(dummyConnection,
+			"{\"method\":\"get\",\"action\":\"statistics\"}").c_str()
+		);
+
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_INVALID == response["status"].GetUint());
 	}
 
 	TEST_CASE("Dispatcher (dispatcher.cpp): Request is missing action for scope with no default") {
@@ -60,11 +91,11 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 		auto scope = MockScopeController::factory();
 		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
 
-		scope->registerAction(Request::GET, "test", [&] (JSONObject request) -> JSONObject {
+		scope->registerAction(Request::GET, "test", [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			JSONObject retVal;
+			rapidjson::Document retVal;
 
-			retVal.put("status", Response::STATUS_SUCCESS);
+			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;
 		});
 
@@ -72,12 +103,17 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 			{"test", scope.get()}
 		});
 
-		JSONObject response = JSON::deserialize(dispatcher.dispatch(
+		rapidjson::Document response;
+
+		response.Parse(dispatcher.dispatch(
 			dummyConnection,
 			"{\"method\":\"get\",\"scope\":\"test\"}"
-		));
+		).c_str());
 
-		CHECK(Response::STATUS_NOT_FOUND == response.get<size_t>("status"));
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
 	}
 
 	TEST_CASE("Dispatcher (dispatcher.cpp): Request is missing action for scope with default") {
@@ -85,11 +121,11 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 		auto scope = MockScopeController::factory();
 		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
 
-		scope->registerAction(Request::GET, ScopeController::DEFAULT_ACTION, [&] (JSONObject request) -> JSONObject {
+		scope->registerAction(Request::GET, ScopeController::DEFAULT_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			JSONObject retVal;
+			rapidjson::Document retVal;
 
-			retVal.put("status", Response::STATUS_SUCCESS);
+			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;
 		});
 
@@ -97,12 +133,17 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 			{"test", scope.get()}
 		});
 
-		JSONObject response = JSON::deserialize(dispatcher.dispatch(
+		rapidjson::Document response;
+
+		response.Parse(dispatcher.dispatch(
 			dummyConnection,
 			"{\"method\":\"get\",\"scope\":\"test\"}"
-		));
+		).c_str());
 
-		CHECK(Response::STATUS_SUCCESS == response.get<size_t>("status"));
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 	}
 
 	TEST_CASE("Dispatcher (dispatcher.cpp): Request is valid format but with invalid method") {
@@ -110,11 +151,11 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 		auto scope = MockScopeController::factory();
 		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
 
-		scope->registerAction(Request::GET, "test", [&] (JSONObject request) -> JSONObject {
+		scope->registerAction(Request::GET, "test", [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			JSONObject retVal;
+			rapidjson::Document retVal;
 
-			retVal.put("status", Response::STATUS_SUCCESS);
+			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;
 		});
 
@@ -122,12 +163,17 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 			{"test", scope.get()}
 		});
 
-		JSONObject response = JSON::deserialize(dispatcher.dispatch(
+		rapidjson::Document response;
+
+		response.Parse(dispatcher.dispatch(
 			dummyConnection,
 			"{\"method\":\"invalid\",\"scope\":\"test\",\"action\":\"test\"}"
-		));
+		).c_str());
 
-		CHECK(Response::STATUS_NOT_FOUND == response.get<size_t>("status"));
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
 	}
 
 	TEST_CASE("Dispatcher (dispatcher.cpp): Request is valid format but with invalid scope") {
@@ -135,11 +181,11 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 		auto scope = MockScopeController::factory();
 		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
 
-		scope->registerAction(Request::GET, "test", [&] (JSONObject request) -> JSONObject {
+		scope->registerAction(Request::GET, "test", [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			JSONObject retVal;
+			rapidjson::Document retVal;
 
-			retVal.put("status", Response::STATUS_SUCCESS);
+			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;
 		});
 
@@ -147,12 +193,17 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 			{"test", scope.get()}
 		});
 
-		JSONObject response = JSON::deserialize(dispatcher.dispatch(
+		rapidjson::Document response;
+
+		response.Parse(dispatcher.dispatch(
 			dummyConnection,
 			"{\"method\":\"get\",\"scope\":\"invalid\",\"action\":\"test\"}"
-		));
+		).c_str());
 
-		CHECK(Response::STATUS_NOT_FOUND == response.get<size_t>("status"));
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
 	}
 
 	TEST_CASE("Dispatcher (dispatcher.cpp): Request is valid format but with invalid action") {
@@ -160,11 +211,11 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 		auto scope = MockScopeController::factory();
 		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
 
-		scope->registerAction(Request::GET, "test", [&] (JSONObject request) -> JSONObject {
+		scope->registerAction(Request::GET, "test", [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			JSONObject retVal;
+			rapidjson::Document retVal;
 
-			retVal.put("status", Response::STATUS_SUCCESS);
+			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;
 		});
 
@@ -172,12 +223,17 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 			{"test", scope.get()}
 		});
 
-		JSONObject response = JSON::deserialize(dispatcher.dispatch(
+		rapidjson::Document response;
+
+		response.Parse(dispatcher.dispatch(
 			dummyConnection,
 			"{\"method\":\"get\",\"scope\":\"test\",\"action\":\"invalid\"}"
-		));
+		).c_str());
 
-		CHECK(Response::STATUS_NOT_FOUND == response.get<size_t>("status"));
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
 	}
 
 	TEST_CASE("Dispatcher (dispatcher.cpp): Request is valid and routes to existing method, scope, and action") {
@@ -185,11 +241,11 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 		auto scope = MockScopeController::factory();
 		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
 
-		scope->registerAction(Request::GET, "test", [&] (JSONObject request) -> JSONObject {
+		scope->registerAction(Request::GET, "test", [&] (const rapidjson::Document &request) -> rapidjson::Document {
 
-			JSONObject retVal;
+			rapidjson::Document retVal;
 
-			retVal.put("status", Response::STATUS_SUCCESS);
+			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
 			return retVal;
 		});
 
@@ -197,11 +253,16 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 			{"test", scope.get()}
 		});
 
-		JSONObject response = JSON::deserialize(dispatcher.dispatch(
+		rapidjson::Document response;
+
+		response.Parse(dispatcher.dispatch(
 			dummyConnection,
 			"{\"method\":\"get\",\"scope\":\"test\",\"action\":\"test\"}"
-		));
+		).c_str());
 
-		CHECK(Response::STATUS_SUCCESS == response.get<size_t>("status"));
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 	}
 }

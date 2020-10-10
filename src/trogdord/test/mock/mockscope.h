@@ -20,7 +20,7 @@ class MockScopeController: public ScopeController {
 		inline void registerAction(
 			std::string method,
 			std::string action,
-			std::function<JSONObject(JSONObject)> callback
+			std::function<rapidjson::Document(const rapidjson::Document &)> callback
 		) {
 
 			ScopeController::registerAction(method, action, callback);
