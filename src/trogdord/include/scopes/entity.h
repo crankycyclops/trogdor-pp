@@ -59,10 +59,10 @@ class EntityController: public ScopeController {
 		);
 
 		// Parses a request and sets the gameId, entityName and ePtr
-		// references to their appropriate values. Returns a JSONObject
-		// response if there was an error and nothing if the call was
-		// successful.
-		std::optional<rapidjson::Document> getEntityHelper(
+		// references to their appropriate values. If the call was successful,
+		// the returned response object will be empty. Otherwise, it will
+		// contain an error code and message to be returned to the client.
+		rapidjson::Document getEntityHelper(
 			const rapidjson::Document &request,
 			size_t &gameId,
 			std::string &entityName,

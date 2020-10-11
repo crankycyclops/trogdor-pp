@@ -235,7 +235,7 @@ rapidjson::Document PlayerController::postInput(const rapidjson::Document &reque
 	trogdor::entity::Entity *ePtr;
 	std::string entityName;
 
-	std::optional<rapidjson::Document> error = getEntityHelper(
+	rapidjson::Document error = getEntityHelper(
 		request,
 		gameId,
 		entityName,
@@ -245,10 +245,8 @@ rapidjson::Document PlayerController::postInput(const rapidjson::Document &reque
 		PLAYER_NOT_FOUND
 	);
 
-	if (error.has_value()) {
-		rapidjson::Document errorCopy;
-		errorCopy.CopyFrom(*error, errorCopy.GetAllocator());
-		return errorCopy;
+	if (error.Size()) {
+		return error;
 	}
 
 	const rapidjson::Value *command = rapidjson::Pointer("/args/command").Get(request);

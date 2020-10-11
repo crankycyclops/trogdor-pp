@@ -64,7 +64,7 @@ trogdor::entity::Entity *EntityController::getEntityPtr(
 
 /*****************************************************************************/
 
-std::optional<rapidjson::Document> EntityController::getEntityHelper(
+rapidjson::Document EntityController::getEntityHelper(
 	const rapidjson::Document &request,
 	size_t &gameId,
 	std::string &entityName,
@@ -90,6 +90,7 @@ std::optional<rapidjson::Document> EntityController::getEntityHelper(
 		return errorCopy;
 	}
 
+	rapidjson::Document response(rapidjson::kObjectType);
 	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (!game) {
@@ -98,24 +99,24 @@ std::optional<rapidjson::Document> EntityController::getEntityHelper(
 
 		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
 		response.AddMember("message", rapidjson::StringRef(GAME_NOT_FOUND), response.GetAllocator());
-
-		return response;
 	}
 
-	try {
-		ePtr = getEntityPtr(game->get(), entityName);
-		return std::nullopt;
+	else {
+
+		try {
+			ePtr = getEntityPtr(game->get(), entityName);
+		}
+
+		catch (const EntityNotFound &e) {
+
+			rapidjson::Document response(rapidjson::kObjectType);
+
+			response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
+			response.AddMember("message", rapidjson::StringRef(notFoundMsg.c_str()), response.GetAllocator());
+		}
 	}
 
-	catch (const EntityNotFound &e) {
-
-		rapidjson::Document response(rapidjson::kObjectType);
-
-		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
-		response.AddMember("message", rapidjson::StringRef(notFoundMsg.c_str()), response.GetAllocator());
-
-		return response;
-	}
+	return response;
 }
 
 /*****************************************************************************/
@@ -173,17 +174,15 @@ rapidjson::Document EntityController::getEntity(const rapidjson::Document &reque
 	std::string entityName;
 	trogdor::entity::Entity *ePtr;
 
-	std::optional<rapidjson::Document> error = getEntityHelper(
+	rapidjson::Document error = getEntityHelper(
 		request,
 		gameId,
 		entityName,
 		ePtr
 	);
 
-	if (error.has_value()) {
-		rapidjson::Document errorCopy;
-		errorCopy.CopyFrom(*error, errorCopy.GetAllocator());
-		return errorCopy;
+	if (error.Size()) {
+		return error;
 	}
 
 	else {
@@ -268,17 +267,15 @@ rapidjson::Document EntityController::getOutput(const rapidjson::Document &reque
 		return errorCopy;
 	}
 
-	std::optional<rapidjson::Document> error = getEntityHelper(
+	rapidjson::Document error = getEntityHelper(
 		request,
 		gameId,
 		entityName,
 		ePtr
 	);
 
-	if (error.has_value()) {
-		rapidjson::Document errorCopy;
-		errorCopy.CopyFrom(*error, errorCopy.GetAllocator());
-		return errorCopy;
+	if (error.Size()) {
+		return error;
 	}
 
 	rapidjson::Value messages(rapidjson::kArrayType);
@@ -343,17 +340,15 @@ rapidjson::Document EntityController::appendOutput(const rapidjson::Document &re
 		return response;
 	}
 
-	std::optional<rapidjson::Document> error = getEntityHelper(
+	rapidjson::Document error = getEntityHelper(
 		request,
 		gameId,
 		entityName,
 		ePtr
 	);
 
-	if (error.has_value()) {
-		rapidjson::Document errorCopy;
-		errorCopy.CopyFrom(*error, errorCopy.GetAllocator());
-		return errorCopy;
+	if (error.Size()) {
+		return error;
 	}
 
 	std::optional<std::string> outMessage = JSON::valueToStr(*messageArg);
