@@ -1,12 +1,12 @@
 #include <doctest.h>
 #include <trogdor/version.h>
 
-#include "../include/json.h"
-#include "../include/request.h"
-#include "../include/response.h"
+#include "../../include/json.h"
+#include "../../include/request.h"
+#include "../../include/response.h"
 
-#include "../include/version.h"
-#include "../include/scopes/global.h"
+#include "../../include/version.h"
+#include "../../include/scopes/global.h"
 
 
 TEST_SUITE("GlobalController (scopes/global.cpp)") {

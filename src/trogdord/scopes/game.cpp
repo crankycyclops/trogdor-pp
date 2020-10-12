@@ -220,7 +220,7 @@ rapidjson::Document GameController::getDefinitionList(const rapidjson::Document 
 
 	try {
 
-		for (auto &dirEntry: STD_FILESYSTEM::recursive_directory_iterator(definitionsPath)) {
+		for (const auto &dirEntry: STD_FILESYSTEM::recursive_directory_iterator(definitionsPath, STD_FILESYSTEM::directory_options::skip_permission_denied)) {
 
 			std::string filename = dirEntry.path().string();
 
@@ -230,7 +230,8 @@ rapidjson::Document GameController::getDefinitionList(const rapidjson::Document 
 
 				rapidjson::Value definition(rapidjson::kStringType);
 
-				definition.SetString(rapidjson::StringRef(filename.replace(0, definitionsPath.length(), "").c_str()));
+				filename = filename.replace(0, definitionsPath.length(), "");
+				definition.SetString(rapidjson::StringRef(filename.c_str()), response.GetAllocator());
 				definitions.PushBack(definition.Move(), response.GetAllocator());
 			}
 		}
