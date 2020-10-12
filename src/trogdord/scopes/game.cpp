@@ -370,8 +370,9 @@ rapidjson::Document GameController::createGame(const rapidjson::Document &reques
 		}
 
 		try {
+			size_t gameId = GameContainer::get()->createGame(definitionStr, nameStr, meta);
 			response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
-			response.AddMember("id", GameContainer::get()->createGame(definitionStr, nameStr, meta), response.GetAllocator());
+			response.AddMember("id", gameId, response.GetAllocator());
 		}
 
 		catch (const ServerException &e) {

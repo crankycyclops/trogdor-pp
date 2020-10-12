@@ -9,6 +9,7 @@ const char *ScopeController::DEFAULT_ACTION = "default";
 
 const char *ScopeController::METHOD_NOT_FOUND = "method not found";
 const char *ScopeController::ACTION_NOT_FOUND = "action not found";
+const char *ScopeController::INVALID_ARGUMENTS = "args must be a valid JSON object";
 const char *ScopeController::GAME_NOT_FOUND = "game not found";
 
 /*****************************************************************************/
@@ -50,7 +51,7 @@ rapidjson::Document ScopeController::resolve(
 
 		response.AddMember(
 			"message",
-			rapidjson::Value().SetString(rapidjson::StringRef(METHOD_NOT_FOUND)),
+			rapidjson::StringRef(METHOD_NOT_FOUND),
 			response.GetAllocator()
 		);
 
@@ -73,19 +74,37 @@ rapidjson::Document ScopeController::resolve(
 
 		if (0 == action.compare(DEFAULT_ACTION)) {
 			message = std::string("no default action for method ") + method;
+			rapidjson::Value messageVal(rapidjson::kStringType);
+			messageVal.SetString(rapidjson::StringRef(message.c_str()), response.GetAllocator());
+			response.AddMember("message", messageVal.Move(), response.GetAllocator());
 		} else {
-			message = ACTION_NOT_FOUND;
+			response.AddMember("message", rapidjson::StringRef(ACTION_NOT_FOUND), response.GetAllocator());
 		}
 
 		if (connection) {
 			connection->log(trogdor::Trogerr::INFO, std::string("404: ") + message);
 		}
 
+		return response;
+	}
+
+	else if (requestObj.HasMember("args") && !requestObj["args"].IsObject()) {
+
 		response.AddMember(
-			"message",
-			rapidjson::Value().SetString(rapidjson::StringRef(message.c_str())),
+			"status",
+			rapidjson::Value().SetInt(Response::STATUS_INVALID),
 			response.GetAllocator()
 		);
+
+		response.AddMember(
+			"message",
+			rapidjson::StringRef(INVALID_ARGUMENTS),
+			response.GetAllocator()
+		);
+
+		if (connection) {
+			connection->log(trogdor::Trogerr::INFO, std::string("400: ") + INVALID_ARGUMENTS);
+		}
 
 		return response;
 	}

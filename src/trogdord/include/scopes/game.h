@@ -23,7 +23,15 @@ class GameController: public ScopeController {
 		static const char *TIME_ACTION;
 		static const char *IS_RUNNING_ACTION;
 
+		// Constructor should only be called internally by get(), which will
+		// ensure we only ever have a single instance of the class.
+		GameController();
+		GameController(const GameController &) = delete;
+
+	public:
+
 		// Error messages
+		static const char *INVALID_ARGUMENTS;
 		static const char *INVALID_NAME;
 		static const char *MISSING_REQUIRED_NAME;
 		static const char *INVALID_DEFINITION;
@@ -32,13 +40,6 @@ class GameController: public ScopeController {
 		static const char *MISSING_META;
 		static const char *INVALID_META;
 		static const char *INVALID_META_KEYS;
-
-		// Constructor should only be called internally by get(), which will
-		// ensure we only ever have a single instance of the class.
-		GameController();
-		GameController(const GameController &) = delete;
-
-	public:
 
 		// Scope name that should be used in requests
 		static const char *SCOPE;
