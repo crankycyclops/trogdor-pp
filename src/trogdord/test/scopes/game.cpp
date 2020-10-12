@@ -35,10 +35,6 @@ void initGameXML() {
 	gameXMLFile << "<?xml version=\"1.0\"?>\n" << std::endl;
 	gameXMLFile << "<game>\n" << std::endl;
 
-	gameXMLFile << "\t<meta>\n" << std::endl;
-	gameXMLFile << "\t\t<title>Test Title</title>\n" << std::endl;
-	gameXMLFile << "\t</meta>\n" << std::endl;
-
 	gameXMLFile << "\t<objects>\n" << std::endl;
 	gameXMLFile << "\t\t<object name=\"candle\">\n" << std::endl;
 	gameXMLFile << "\t\t\t<description>Test</description>\n" << std::endl;
@@ -270,6 +266,37 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			destroyConfig();
 		}
 
+		SUBCASE("Optional meta argument passed as incorrect type (array)") {
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+			rapidjson::Value metavalue(rapidjson::kArrayType);
+
+			args.AddMember("name", "test", request.GetAllocator());
+			args.AddMember("definition", rapidjson::StringRef(gameXMLRelativeFilename.c_str()), request.GetAllocator());
+			args.AddMember("metakey", metavalue, request.GetAllocator());
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->createGame(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(GameController::INVALID_META).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
 		SUBCASE("Definition doesn't exist") {
 
 			initGameXML();
@@ -298,18 +325,22 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			destroyConfig();
 		}
 
-		SUBCASE("Optional meta argument passed as incorrect type (array)") {
+		SUBCASE("Game creation is successful without meta") {
+
+			const char *gameName = "myGame";
 
 			initGameXML();
 			initConfig();
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
-			rapidjson::Value meta(rapidjson::kArrayType);
 
-			args.AddMember("name", "test", request.GetAllocator());
-			args.AddMember("definition", rapidjson::StringRef(gameXMLRelativeFilename.c_str()), request.GetAllocator());
-			args.AddMember("metakey", meta, request.GetAllocator());
+			args.AddMember("name", rapidjson::StringRef(gameName), request.GetAllocator());
+			args.AddMember(
+				"definition",
+				rapidjson::StringRef(gameXMLRelativeFilename.c_str()),
+				request.GetAllocator()
+			);
 
 			request.AddMember("method", "post", request.GetAllocator());
 			request.AddMember("scope", "game", request.GetAllocator());
@@ -319,17 +350,66 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
-			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
-			CHECK(response.HasMember("message"));
-			CHECK(response["message"].IsString());
-			CHECK(0 == std::string(GameController::INVALID_META).compare(response["message"].GetString()));
+			CHECK(response.HasMember("id"));
+
+			// Only try to verify that the game was created if we got a
+			// success status back from the last request
+			if (response.HasMember("id")) {
+
+				CHECK(response["id"].IsUint());
+				size_t id = response["id"].GetUint();
+
+				rapidjson::Document getGameRequest(rapidjson::kObjectType);
+				rapidjson::Value getGameArgs(rapidjson::kObjectType);
+
+				getGameArgs.AddMember("id", id, getGameRequest.GetAllocator());
+
+				getGameRequest.AddMember("method", "get", getGameRequest.GetAllocator());
+				getGameRequest.AddMember("scope", "game", getGameRequest.GetAllocator());
+				getGameRequest.AddMember("args", getGameArgs, getGameRequest.GetAllocator());
+
+				response = GameController::get()->getGame(getGameRequest);
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+				CHECK(response.HasMember("name"));
+				CHECK(response["name"].IsString());
+				CHECK(0 == std::string(gameName).compare(response["name"].GetString()));
+
+				CHECK(response.HasMember("definition"));
+				CHECK(response["definition"].IsString());
+				CHECK(0 == std::string(gameXMLRelativeFilename).compare(response["definition"].GetString()));
+
+				rapidjson::Document getMetaRequest(rapidjson::kObjectType);
+				rapidjson::Value getMetaArgs(rapidjson::kObjectType);
+
+				getMetaArgs.AddMember("id", id, getMetaRequest.GetAllocator());
+
+				getMetaRequest.AddMember("method", "get", getMetaRequest.GetAllocator());
+				getMetaRequest.AddMember("scope", "game", getMetaRequest.GetAllocator());
+				getMetaRequest.AddMember("action", "meta", getMetaRequest.GetAllocator());
+				getMetaRequest.AddMember("args", getMetaArgs, getMetaRequest.GetAllocator());
+
+				response = GameController::get()->getMeta(getMetaRequest);
+
+				std::cout << JSON::serialize(response) << std::endl;
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+				CHECK(response.HasMember("meta"));
+				CHECK(response["meta"].IsObject());
+				CHECK(response["meta"].MemberBegin() == response["meta"].MemberEnd());
+			}
 
 			destroyGameXML();
 			destroyConfig();
 		}
-
-		// TODO: finish
 	}
 
 	// TODO: next should be destroyGame()

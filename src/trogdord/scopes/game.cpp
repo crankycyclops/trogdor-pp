@@ -120,10 +120,17 @@ rapidjson::Document GameController::getGame(const rapidjson::Document &request) 
 	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (game) {
+
+		rapidjson::Value name(rapidjson::kStringType);
+		name.SetString(rapidjson::StringRef(game->getName().c_str()), response.GetAllocator());
+
+		rapidjson::Value definition(rapidjson::kStringType);
+		definition.SetString(rapidjson::StringRef(game->getDefinition().c_str()), response.GetAllocator());
+
 		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 		response.AddMember("id", gameId, response.GetAllocator());
-		response.AddMember("name", rapidjson::StringRef(game->getName().c_str()), response.GetAllocator());
-		response.AddMember("definition", rapidjson::StringRef(game->getDefinition().c_str()), response.GetAllocator());
+		response.AddMember("name", name, response.GetAllocator());
+		response.AddMember("definition", definition, response.GetAllocator());
 		response.AddMember("current_time", game->get()->getTime(), response.GetAllocator());
 		response.AddMember("is_running", game->get()->inProgress(), response.GetAllocator());
 	}
