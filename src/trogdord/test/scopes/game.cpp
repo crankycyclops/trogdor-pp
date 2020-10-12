@@ -410,6 +410,115 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			destroyGameXML();
 			destroyConfig();
 		}
+
+		SUBCASE("Game creation is successful with valid meta") {
+
+			const char *gameName = "myGame";
+			const char *argTitle = "My Title";
+			const size_t argPositiveNumber = 1;
+			const int argNegativeNumber = -1;
+			const bool argBool = false;
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			args.AddMember("name", rapidjson::StringRef(gameName), request.GetAllocator());
+			args.AddMember("title", rapidjson::StringRef(argTitle), request.GetAllocator());
+			args.AddMember("positive", argPositiveNumber, request.GetAllocator());
+			args.AddMember("negative", argNegativeNumber, request.GetAllocator());
+			args.AddMember("boolean", argBool, request.GetAllocator());
+			args.AddMember(
+				"definition",
+				rapidjson::StringRef(gameXMLRelativeFilename.c_str()),
+				request.GetAllocator()
+			);
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->createGame(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+
+			// Only try to verify that the game was created if we got a
+			// success status back from the last request
+			if (response.HasMember("id")) {
+
+				CHECK(response["id"].IsUint());
+				size_t id = response["id"].GetUint();
+
+				rapidjson::Document getGameRequest(rapidjson::kObjectType);
+				rapidjson::Value getGameArgs(rapidjson::kObjectType);
+
+				getGameArgs.AddMember("id", id, getGameRequest.GetAllocator());
+
+				getGameRequest.AddMember("method", "get", getGameRequest.GetAllocator());
+				getGameRequest.AddMember("scope", "game", getGameRequest.GetAllocator());
+				getGameRequest.AddMember("args", getGameArgs, getGameRequest.GetAllocator());
+
+				response = GameController::get()->getGame(getGameRequest);
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+				CHECK(response.HasMember("name"));
+				CHECK(response["name"].IsString());
+				CHECK(0 == std::string(gameName).compare(response["name"].GetString()));
+
+				CHECK(response.HasMember("definition"));
+				CHECK(response["definition"].IsString());
+				CHECK(0 == std::string(gameXMLRelativeFilename).compare(response["definition"].GetString()));
+
+				rapidjson::Document getMetaRequest(rapidjson::kObjectType);
+				rapidjson::Value getMetaArgs(rapidjson::kObjectType);
+
+				getMetaArgs.AddMember("id", id, getMetaRequest.GetAllocator());
+
+				getMetaRequest.AddMember("method", "get", getMetaRequest.GetAllocator());
+				getMetaRequest.AddMember("scope", "game", getMetaRequest.GetAllocator());
+				getMetaRequest.AddMember("action", "meta", getMetaRequest.GetAllocator());
+				getMetaRequest.AddMember("args", getMetaArgs, getMetaRequest.GetAllocator());
+
+				response = GameController::get()->getMeta(getMetaRequest);
+
+				std::cout << JSON::serialize(response) << std::endl;
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+				CHECK(response.HasMember("meta"));
+				CHECK(response["meta"].IsObject());
+
+				CHECK(response["meta"].HasMember("title"));
+				CHECK(response["meta"]["title"].IsString());
+				CHECK(0 == std::string(argTitle).compare(response["meta"]["title"].GetString()));
+
+				CHECK(response["meta"].HasMember("positive"));
+				CHECK(response["meta"]["positive"].IsString());
+				CHECK(0 == std::to_string(argPositiveNumber).compare(response["meta"]["positive"].GetString()));
+
+				CHECK(response["meta"].HasMember("negative"));
+				CHECK(response["meta"]["negative"].IsString());
+				CHECK(0 == std::to_string(argNegativeNumber).compare(response["meta"]["negative"].GetString()));
+
+				CHECK(response["meta"].HasMember("boolean"));
+				CHECK(response["meta"]["boolean"].IsString());
+				CHECK(0 == std::string(argBool ? "true" : "false").compare(response["meta"]["boolean"].GetString()));
+			}
+
+			destroyGameXML();
+			destroyConfig();
+		}
 	}
 
 	// TODO: next should be destroyGame()
