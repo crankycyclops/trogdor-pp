@@ -394,6 +394,7 @@ if (Boost_FOUND)
 		src/trogdord/test/gamewrapper.cpp
 		src/trogdord/test/gamecontainer.cpp
 		src/trogdord/test/scopes/controller.cpp
+		src/trogdord/test/scopes/global.cpp
 	)
 
 	target_include_directories(test_trogdord
