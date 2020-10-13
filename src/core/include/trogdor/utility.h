@@ -99,6 +99,14 @@ namespace trogdor {
       Output: true if the string is a valid double and false if not
    */
    extern bool isValidDouble(const std::string &s);
+
+   /*
+      Returns true if a string contains only ASCII characters and false if not.
+
+      Input: string
+      Output: true if string contains only ASCII characters and false if not
+   */
+  extern bool isAscii(const std::string &s);
 }
 
 

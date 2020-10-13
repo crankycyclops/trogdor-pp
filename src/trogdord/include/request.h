@@ -14,7 +14,7 @@ class Request {
 
 		static void throwInvalidRequest(std::string errMsg) {
 
-			rapidjson::Document response;
+			rapidjson::Document response(rapidjson::kObjectType);
 
 			response.AddMember(
 				"status",
@@ -22,11 +22,11 @@ class Request {
 				response.GetAllocator()
 			);
 
-			response.AddMember(
-				"message",
-				rapidjson::Value().SetString(rapidjson::StringRef(errMsg.c_str())),
-				response.GetAllocator()
-			);
+			// For some reason, I have to go through this extra step when
+			// std::string is involved. Annoying.
+			rapidjson::Value messageVal(rapidjson::kStringType);
+			messageVal.SetString(rapidjson::StringRef(errMsg.c_str()), response.GetAllocator());
+			response.AddMember("message", messageVal.Move(), response.GetAllocator());
 
 			throw response;
 		}

@@ -99,6 +99,14 @@ namespace trogdor {
    */
    bool isValidDouble(const std::string &s);
 
+   /*
+      Returns true if a string contains only ASCII characters and false if not.
+
+      Input: string
+      Output: true if string contains only ASCII characters and false if not
+   */
+  bool isAscii(const std::string &s);
+
 
    std::string capitalize(std::string str) {
 
@@ -201,5 +209,16 @@ namespace trogdor {
       char *end = 0;
       double val = strtod(s.c_str(), &end);
       return end != s.c_str() && *end == '\0' && val != HUGE_VAL;
+   }
+
+   bool isAscii(const std::string &s) {
+
+      for (size_t i = 0; i < s.length(); i++) {
+         if (!isascii(s[i])) {
+            return false;
+         }
+      }
+
+      return true;
    }
 }

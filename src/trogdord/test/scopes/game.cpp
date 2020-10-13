@@ -1,4 +1,5 @@
 #include <doctest.h>
+#include <trogdor/utility.h>
 
 #include "../../include/json.h"
 #include "../../include/request.h"
@@ -516,7 +517,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			destroyConfig();
 		}
 
-		SUBCASE("Game creation is successful with invalid meta (object)") {
+		SUBCASE("Game creation fails because of invalid meta (object)") {
 
 			const char *gameName = "myGame";
 
@@ -553,7 +554,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			destroyConfig();
 		}
 
-		SUBCASE("Game creation is successful with invalid meta (array)") {
+		SUBCASE("Game creation fails because of invalid meta (array)") {
 
 			const char *gameName = "myGame";
 
@@ -591,8 +592,32 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		}
 	}
 
-	// TODO: next should be destroyGame()
+	TEST_CASE("GameController (scopes/game.cpp): destroyGame()") {
 
-	// TODO: I can do the rest after this, since I've already validated that
-	// creating an destroying a game work
+		SUBCASE("Game ID is missing") {
+
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "delete", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->destroyGame(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+
+			// This last check helps verify that the string wasn't corrupted
+			// (I run into this with RapidJSON a lot, especially when I try
+			// to insert std::string values into JSON objects.)
+			CHECK(trogdor::isAscii(response["message"].GetString()));
+		}
+
+		// TODO: finish subcases...
+	}
+
+	// TODO: test getGame() next, then all the rest
 }
