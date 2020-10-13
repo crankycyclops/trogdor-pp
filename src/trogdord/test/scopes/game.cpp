@@ -616,6 +616,30 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(trogdor::isAscii(response["message"].GetString()));
 		}
 
+		SUBCASE("Game ID is missing with empty args value") {
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			request.AddMember("method", "delete", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->destroyGame(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+
+			// This last check helps verify that the string wasn't corrupted
+			// (I run into this with RapidJSON a lot, especially when I try
+			// to insert std::string values into JSON objects.)
+			CHECK(trogdor::isAscii(response["message"].GetString()));
+		}
+
 		// TODO: finish subcases...
 	}
 
