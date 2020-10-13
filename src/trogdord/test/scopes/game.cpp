@@ -8,6 +8,7 @@
 #include "../../include/filesystem.h"
 
 #include "../../include/scopes/game.h"
+#include "../../include//gamecontainer.h"
 
 
 // Full path to our unit test's ini file
@@ -114,6 +115,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Missing required game name") {
 
+			GameContainer::get()->reset();
+
 			initGameXML();
 			initConfig();
 
@@ -145,6 +148,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		}
 
 		SUBCASE("Game name is not a string") {
+
+			GameContainer::get()->reset();
 
 			initGameXML();
 			initConfig();
@@ -179,6 +184,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Missing required definition") {
 
+			GameContainer::get()->reset();
+
 			initGameXML();
 			initConfig();
 
@@ -206,6 +213,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		}
 
 		SUBCASE("Definition is not a string") {
+
+			GameContainer::get()->reset();
 
 			initGameXML();
 			initConfig();
@@ -235,6 +244,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		}
 
 		SUBCASE("Definition is an absolute path") {
+
+			GameContainer::get()->reset();
 
 			initGameXML();
 			initConfig();
@@ -269,6 +280,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Optional meta argument passed as incorrect type (array)") {
 
+			GameContainer::get()->reset();
+
 			initGameXML();
 			initConfig();
 
@@ -300,6 +313,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Definition doesn't exist") {
 
+			GameContainer::get()->reset();
+
 			initGameXML();
 			initConfig();
 
@@ -322,6 +337,11 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response.HasMember("message"));
 			CHECK(response["message"].IsString());
 
+			// This last check helps verify that the string wasn't corrupted
+			// (I run into this with RapidJSON a lot, especially when I try
+			// to insert std::string values into JSON objects.)
+			CHECK(trogdor::isAscii(response["message"].GetString()));
+
 			destroyGameXML();
 			destroyConfig();
 		}
@@ -329,6 +349,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		SUBCASE("Game creation is successful without meta") {
 
 			const char *gameName = "myGame";
+
+			GameContainer::get()->reset();
 
 			initGameXML();
 			initConfig();
@@ -417,6 +439,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			const size_t argPositiveNumber = 1;
 			const int argNegativeNumber = -1;
 			const bool argBool = false;
+
+			GameContainer::get()->reset();
 
 			initGameXML();
 			initConfig();
@@ -521,6 +545,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			const char *gameName = "myGame";
 
+			GameContainer::get()->reset();
+
 			initGameXML();
 			initConfig();
 
@@ -557,6 +583,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		SUBCASE("Game creation fails because of invalid meta (array)") {
 
 			const char *gameName = "myGame";
+
+			GameContainer::get()->reset();
 
 			initGameXML();
 			initConfig();
@@ -596,6 +624,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Game ID is missing") {
 
+			GameContainer::get()->reset();
+
 			rapidjson::Document request(rapidjson::kObjectType);
 
 			request.AddMember("method", "delete", request.GetAllocator());
@@ -617,6 +647,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		}
 
 		SUBCASE("Game ID is missing with empty args value") {
+
+			GameContainer::get()->reset();
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
@@ -640,7 +672,125 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(trogdor::isAscii(response["message"].GetString()));
 		}
 
-		// TODO: finish subcases...
+		SUBCASE("Passing non-existent game ID") {
+
+			GameContainer::get()->reset();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			args.AddMember("id", 1, request.GetAllocator());
+
+			request.AddMember("method", "delete", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->destroyGame(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK( 0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+		}
+
+		SUBCASE("Successful destruction of game") {
+
+			// Step 1: create a game and store the ID
+			const char *gameName = "myGame";
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			args.AddMember("name", rapidjson::StringRef(gameName), request.GetAllocator());
+			args.AddMember(
+				"definition",
+				rapidjson::StringRef(gameXMLRelativeFilename.c_str()),
+				request.GetAllocator()
+			);
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->createGame(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+
+			if (response.HasMember("id")) {
+
+				CHECK(response["id"].IsUint());
+				size_t id = response["id"].GetUint();
+
+				// Make sure getGame() can find it
+				rapidjson::Document getRequest(rapidjson::kObjectType);
+				rapidjson::Value getArgs(rapidjson::kObjectType);
+
+				getArgs.AddMember("id", id, getRequest.GetAllocator());
+
+				getRequest.AddMember("method", "get", getRequest.GetAllocator());
+				getRequest.AddMember("scope", "game", getRequest.GetAllocator());
+				getRequest.AddMember("args", getArgs, getRequest.GetAllocator());
+
+				response = GameController::get()->getGame(getRequest);
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+				// Delete the game
+				rapidjson::Document deleteRequest(rapidjson::kObjectType);
+				rapidjson::Value deleteArgs(rapidjson::kObjectType);
+
+				deleteArgs.AddMember("id", id, deleteRequest.GetAllocator());
+
+				deleteRequest.AddMember("method", "delete", deleteRequest.GetAllocator());
+				deleteRequest.AddMember("scope", "game", deleteRequest.GetAllocator());
+				deleteRequest.AddMember("args", deleteArgs, deleteRequest.GetAllocator());
+
+				response = GameController::get()->destroyGame(deleteRequest);
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+				// Make sure getGame() can no longer find it
+				response = GameController::get()->getGame(getRequest);
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+				CHECK(response.HasMember("message"));
+				CHECK(response["message"].IsString());
+				CHECK( 0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+				// Make sure destroyGame() returns 404 if we call it again with the same id
+				response = GameController::get()->destroyGame(deleteRequest);
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+				CHECK(response.HasMember("message"));
+				CHECK(response["message"].IsString());
+				CHECK( 0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+			}
+
+			destroyGameXML();
+			destroyConfig();
+		}
 	}
 
 	// TODO: test getGame() next, then all the rest
