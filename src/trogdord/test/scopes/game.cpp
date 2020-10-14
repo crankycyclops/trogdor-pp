@@ -105,7 +105,16 @@ rapidjson::Document createGame(const char *name, const char *definition) {
 // Destroys a game
 rapidjson::Document destroyGame(size_t id) {
 
+	rapidjson::Document deleteRequest(rapidjson::kObjectType);
+	rapidjson::Value deleteArgs(rapidjson::kObjectType);
 
+	deleteArgs.AddMember("id", id, deleteRequest.GetAllocator());
+
+	deleteRequest.AddMember("method", "delete", deleteRequest.GetAllocator());
+	deleteRequest.AddMember("scope", "game", deleteRequest.GetAllocator());
+	deleteRequest.AddMember("args", deleteArgs, deleteRequest.GetAllocator());
+
+	return GameController::get()->destroyGame(deleteRequest);
 }
 
 TEST_SUITE("GameController (scopes/game.cpp)") {
@@ -748,16 +757,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
 				// Delete the game
-				rapidjson::Document deleteRequest(rapidjson::kObjectType);
-				rapidjson::Value deleteArgs(rapidjson::kObjectType);
-
-				deleteArgs.AddMember("id", id, deleteRequest.GetAllocator());
-
-				deleteRequest.AddMember("method", "delete", deleteRequest.GetAllocator());
-				deleteRequest.AddMember("scope", "game", deleteRequest.GetAllocator());
-				deleteRequest.AddMember("args", deleteArgs, deleteRequest.GetAllocator());
-
-				response = GameController::get()->destroyGame(deleteRequest);
+				response = destroyGame(id);
 
 				CHECK(response.HasMember("status"));
 				CHECK(response["status"].IsUint());
@@ -775,7 +775,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				CHECK( 0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
 
 				// Make sure destroyGame() returns 404 if we call it again with the same id
-				response = GameController::get()->destroyGame(deleteRequest);
+				response = destroyGame(id);
 
 				CHECK(response.HasMember("status"));
 				CHECK(response["status"].IsUint());
@@ -948,16 +948,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response["is_running"].IsBool());
 			CHECK(false == response["is_running"].GetBool());
 
-			rapidjson::Document destroyRequest(rapidjson::kObjectType);
-			rapidjson::Value destroyArgs(rapidjson::kObjectType);
-
-			destroyArgs.AddMember("id", id, destroyRequest.GetAllocator());
-
-			destroyRequest.AddMember("method", "delete", destroyRequest.GetAllocator());
-			destroyRequest.AddMember("scope", "game", destroyRequest.GetAllocator());
-			destroyRequest.AddMember("args", destroyArgs, destroyRequest.GetAllocator());
-
-			response = GameController::get()->destroyGame(destroyRequest);
+			response = destroyGame(id);
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
