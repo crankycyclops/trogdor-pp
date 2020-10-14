@@ -509,7 +509,7 @@ rapidjson::Document GameController::getMeta(const rapidjson::Document &request) 
 		const rapidjson::Value *metaKeys = rapidjson::Pointer("/args/meta").Get(request);
 
 		// Client is only requesting a certain set of meta values
-		if (metaKeys && metaKeys->Size()) {
+		if (metaKeys && metaKeys->IsArray() && metaKeys->Size()) {
 
 			for (auto i = metaKeys->MemberBegin(); i != metaKeys->MemberEnd(); i++) {
 

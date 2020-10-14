@@ -83,7 +83,11 @@ void destroyConfig() {
 }
 
 // Creates a game
-rapidjson::Document createGame(const char *name, const char *definition) {
+rapidjson::Document createGame(
+	const char *name,
+	const char *definition,
+	std::unordered_map<std::string, std::string> meta = {}
+) {
 
 	rapidjson::Document request(rapidjson::kObjectType);
 	rapidjson::Value args(rapidjson::kObjectType);
@@ -94,6 +98,24 @@ rapidjson::Document createGame(const char *name, const char *definition) {
 		rapidjson::StringRef(definition),
 		request.GetAllocator()
 	);
+
+	if (meta.size()) {
+
+		for (const auto &metaVal: meta) {
+
+			rapidjson::Value key(rapidjson::kStringType);
+			rapidjson::Value value(rapidjson::kStringType);
+
+			key.SetString(rapidjson::StringRef(metaVal.first.c_str()));
+			value.SetString(rapidjson::StringRef(metaVal.second.c_str()));
+
+			args.AddMember(
+				key.Move(),
+				value.Move(),
+				request.GetAllocator()
+			);
+		}
+	}
 
 	request.AddMember("method", "post", request.GetAllocator());
 	request.AddMember("scope", "game", request.GetAllocator());
@@ -130,6 +152,30 @@ rapidjson::Document getGame(size_t id) {
 	request.AddMember("args", args, request.GetAllocator());
 
 	return GameController::get()->getGame(request);
+}
+
+// Gets some or all meta data associated with an existing game
+rapidjson::Document getMeta(size_t id, std::vector<const char *> keys = {}) {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+	rapidjson::Value args(rapidjson::kObjectType);
+
+	args.AddMember("id", id, request.GetAllocator());
+
+	if (keys.size()) {
+
+		args.AddMember("meta", rapidjson::Value(rapidjson::kArrayType), request.GetAllocator());
+
+		for (const auto &key: keys) {
+			args["meta"].PushBack(rapidjson::StringRef(key), request.GetAllocator());
+		}
+	}
+
+	request.AddMember("method", "get", request.GetAllocator());
+	request.AddMember("scope", "game", request.GetAllocator());
+	request.AddMember("args", args, request.GetAllocator());
+
+	return GameController::get()->getMeta(request);
 }
 
 TEST_SUITE("GameController (scopes/game.cpp)") {
@@ -932,6 +978,91 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response.HasMember("message"));
 			CHECK(response["message"].IsString());
 			CHECK(0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+		}
+	}
+
+	TEST_CASE("GameController (scopes/game.cpp): getMeta()") {
+
+		SUBCASE("Without args") {
+
+		}
+
+		SUBCASE("With empty args") {
+
+		}
+
+		SUBCASE("Invalid game id, meta arg is not an array") {
+
+		}
+
+		SUBCASE("Valid game id, meta arg is not an array") {
+
+		}
+
+		SUBCASE("Invalid game id, no meta argument") {
+
+		}
+
+		SUBCASE("Valid game id, no meta argument") {
+
+			const char *gameName = "myGame";
+
+			std::unordered_map<std::string, std::string> meta = {
+				{"key1", "value1"},
+				{"key2", "value2"}
+			};
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(
+				gameName,
+				gameXMLRelativeFilename.c_str(),
+				meta
+			);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t id = response["id"].GetUint();
+
+			response = getMeta(id);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("meta"));
+			CHECK(response["meta"].IsObject());
+
+			// rapidjson::Value::Size() only works for arrays, not objects
+			size_t metaCount = 0;
+			for (auto i = response["meta"].MemberBegin(); i != response["meta"].MemberEnd(); i++) {
+
+				CHECK(i->name.IsString());
+				CHECK(i->value.IsString());
+				CHECK(0 == meta[i->name.GetString()].compare(i->value.GetString()));
+
+				metaCount++;
+			}
+
+			CHECK(metaCount == meta.size());
+		}
+
+		SUBCASE("Invalid game id, with meta argument") {
+
+		}
+
+		SUBCASE("Valid game id, with meta argument") {
+
+			// Set some meta
+			// Should succeed and only return meta specified in args
 		}
 	}
 }
