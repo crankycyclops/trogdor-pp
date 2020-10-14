@@ -82,6 +82,32 @@ void destroyConfig() {
 	STD_FILESYSTEM::remove(iniFilename);
 }
 
+// Creates a game
+rapidjson::Document createGame(const char *name, const char *definition) {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+	rapidjson::Value args(rapidjson::kObjectType);
+
+	args.AddMember("name", rapidjson::StringRef(name), request.GetAllocator());
+	args.AddMember(
+		"definition",
+		rapidjson::StringRef(definition),
+		request.GetAllocator()
+	);
+
+	request.AddMember("method", "post", request.GetAllocator());
+	request.AddMember("scope", "game", request.GetAllocator());
+	request.AddMember("args", args, request.GetAllocator());
+
+	return GameController::get()->createGame(request);
+}
+
+// Destroys a game
+rapidjson::Document destroyGame(size_t id) {
+
+
+}
+
 TEST_SUITE("GameController (scopes/game.cpp)") {
 
 	TEST_CASE("GameController (scopes/game.cpp): getDefinitionList()") {
@@ -355,21 +381,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig();
 
-			rapidjson::Document request(rapidjson::kObjectType);
-			rapidjson::Value args(rapidjson::kObjectType);
-
-			args.AddMember("name", rapidjson::StringRef(gameName), request.GetAllocator());
-			args.AddMember(
-				"definition",
-				rapidjson::StringRef(gameXMLRelativeFilename.c_str()),
-				request.GetAllocator()
-			);
-
-			request.AddMember("method", "post", request.GetAllocator());
-			request.AddMember("scope", "game", request.GetAllocator());
-			request.AddMember("args", args, request.GetAllocator());
-
-			rapidjson::Document response = GameController::get()->createGame(request);
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -706,21 +718,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig();
 
-			rapidjson::Document request(rapidjson::kObjectType);
-			rapidjson::Value args(rapidjson::kObjectType);
-
-			args.AddMember("name", rapidjson::StringRef(gameName), request.GetAllocator());
-			args.AddMember(
-				"definition",
-				rapidjson::StringRef(gameXMLRelativeFilename.c_str()),
-				request.GetAllocator()
-			);
-
-			request.AddMember("method", "post", request.GetAllocator());
-			request.AddMember("scope", "game", request.GetAllocator());
-			request.AddMember("args", args, request.GetAllocator());
-
-			rapidjson::Document response = GameController::get()->createGame(request);
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -870,21 +868,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			// Step 2: test with a game running and an invalid id
 
-			rapidjson::Document createRequest(rapidjson::kObjectType);
-			rapidjson::Value createArgs(rapidjson::kObjectType);
-
-			createArgs.AddMember("name", rapidjson::StringRef(gameName), createRequest.GetAllocator());
-			createArgs.AddMember(
-				"definition",
-				rapidjson::StringRef(gameXMLRelativeFilename.c_str()),
-				createRequest.GetAllocator()
-			);
-
-			createRequest.AddMember("method", "post", createRequest.GetAllocator());
-			createRequest.AddMember("scope", "game", createRequest.GetAllocator());
-			createRequest.AddMember("args", createArgs, createRequest.GetAllocator());
-
-			response = GameController::get()->createGame(createRequest);
+			response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -919,21 +903,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig();
 
-			rapidjson::Document createRequest(rapidjson::kObjectType);
-			rapidjson::Value createArgs(rapidjson::kObjectType);
-
-			createArgs.AddMember("name", rapidjson::StringRef(gameName), createRequest.GetAllocator());
-			createArgs.AddMember(
-				"definition",
-				rapidjson::StringRef(gameXMLRelativeFilename.c_str()),
-				createRequest.GetAllocator()
-			);
-
-			createRequest.AddMember("method", "post", createRequest.GetAllocator());
-			createRequest.AddMember("scope", "game", createRequest.GetAllocator());
-			createRequest.AddMember("args", createArgs, createRequest.GetAllocator());
-
-			rapidjson::Document response = GameController::get()->createGame(createRequest);
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
