@@ -11,6 +11,15 @@
 #include "../../include//gamecontainer.h"
 
 
+// Test game name
+const char *gameName = "myGame";
+
+// Test meta data
+std::unordered_map<std::string, std::string> testMeta = {
+	{"key1", "value1"},
+	{"key2", "value2"}
+};
+
 // Full path to our unit test's ini file
 std::string iniFilename;
 
@@ -444,8 +453,6 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Game creation is successful without meta") {
 
-			const char *gameName = "myGame";
-
 			GameContainer::get()->reset();
 
 			initGameXML();
@@ -507,7 +514,6 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Game creation is successful with valid meta") {
 
-			const char *gameName = "myGame";
 			const char *argTitle = "My Title";
 			const size_t argPositiveNumber = 1;
 			const int argNegativeNumber = -1;
@@ -607,8 +613,6 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Game creation fails because of invalid meta (object)") {
 
-			const char *gameName = "myGame";
-
 			GameContainer::get()->reset();
 
 			initGameXML();
@@ -645,8 +649,6 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		}
 
 		SUBCASE("Game creation fails because of invalid meta (array)") {
-
-			const char *gameName = "myGame";
 
 			GameContainer::get()->reset();
 
@@ -762,14 +764,12 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Successful destruction of game") {
 
-			// Step 1: create a game and store the ID
-			const char *gameName = "myGame";
-
 			GameContainer::get()->reset();
 
 			initGameXML();
 			initConfig();
 
+			// Step 1: create a game and store the ID
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
 			CHECK(response.HasMember("status"));
@@ -875,15 +875,12 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Invalid game id") {
 
-			// Step 1: test with no games running
-
-			const char *gameName = "myGame";
-
 			GameContainer::get()->reset();
 
 			initGameXML();
 			initConfig();
 
+			// Step 1: test with no games running
 			rapidjson::Document response = getGame(1);
 
 			CHECK(response.HasMember("status"));
@@ -892,7 +889,6 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK( 0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
 
 			// Step 2: test with a game running and an invalid id
-
 			response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
 			CHECK(response.HasMember("status"));
@@ -919,8 +915,6 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		}
 
 		SUBCASE("Valid game id") {
-
-			const char *gameName = "myGame";
 
 			GameContainer::get()->reset();
 
@@ -1005,13 +999,6 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Valid game id, no meta argument") {
 
-			const char *gameName = "myGame";
-
-			std::unordered_map<std::string, std::string> meta = {
-				{"key1", "value1"},
-				{"key2", "value2"}
-			};
-
 			GameContainer::get()->reset();
 
 			initGameXML();
@@ -1020,7 +1007,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			rapidjson::Document response = createGame(
 				gameName,
 				gameXMLRelativeFilename.c_str(),
-				meta
+				testMeta
 			);
 
 			CHECK(response.HasMember("status"));
@@ -1047,12 +1034,12 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 				CHECK(i->name.IsString());
 				CHECK(i->value.IsString());
-				CHECK(0 == meta[i->name.GetString()].compare(i->value.GetString()));
+				CHECK(0 == testMeta[i->name.GetString()].compare(i->value.GetString()));
 
 				metaCount++;
 			}
 
-			CHECK(metaCount == meta.size());
+			CHECK(metaCount == testMeta.size());
 		}
 
 		SUBCASE("Invalid game id, with meta argument") {
