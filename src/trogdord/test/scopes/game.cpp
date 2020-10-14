@@ -117,6 +117,21 @@ rapidjson::Document destroyGame(size_t id) {
 	return GameController::get()->destroyGame(deleteRequest);
 }
 
+// Gets the details of an existing game
+rapidjson::Document getGame(size_t id) {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+	rapidjson::Value args(rapidjson::kObjectType);
+
+	args.AddMember("id", id, request.GetAllocator());
+
+	request.AddMember("method", "get", request.GetAllocator());
+	request.AddMember("scope", "game", request.GetAllocator());
+	request.AddMember("args", args, request.GetAllocator());
+
+	return GameController::get()->getGame(request);
+}
+
 TEST_SUITE("GameController (scopes/game.cpp)") {
 
 	TEST_CASE("GameController (scopes/game.cpp): getDefinitionList()") {
@@ -405,16 +420,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				CHECK(response["id"].IsUint());
 				size_t id = response["id"].GetUint();
 
-				rapidjson::Document getGameRequest(rapidjson::kObjectType);
-				rapidjson::Value getGameArgs(rapidjson::kObjectType);
-
-				getGameArgs.AddMember("id", id, getGameRequest.GetAllocator());
-
-				getGameRequest.AddMember("method", "get", getGameRequest.GetAllocator());
-				getGameRequest.AddMember("scope", "game", getGameRequest.GetAllocator());
-				getGameRequest.AddMember("args", getGameArgs, getGameRequest.GetAllocator());
-
-				response = GameController::get()->getGame(getGameRequest);
+				response = getGame(id);
 
 				CHECK(response.HasMember("status"));
 				CHECK(response["status"].IsUint());
@@ -499,16 +505,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				CHECK(response["id"].IsUint());
 				size_t id = response["id"].GetUint();
 
-				rapidjson::Document getGameRequest(rapidjson::kObjectType);
-				rapidjson::Value getGameArgs(rapidjson::kObjectType);
-
-				getGameArgs.AddMember("id", id, getGameRequest.GetAllocator());
-
-				getGameRequest.AddMember("method", "get", getGameRequest.GetAllocator());
-				getGameRequest.AddMember("scope", "game", getGameRequest.GetAllocator());
-				getGameRequest.AddMember("args", getGameArgs, getGameRequest.GetAllocator());
-
-				response = GameController::get()->getGame(getGameRequest);
+				response = getGame(id);
 
 				CHECK(response.HasMember("status"));
 				CHECK(response["status"].IsUint());
@@ -741,16 +738,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				size_t id = response["id"].GetUint();
 
 				// Make sure getGame() can find it
-				rapidjson::Document getRequest(rapidjson::kObjectType);
-				rapidjson::Value getArgs(rapidjson::kObjectType);
-
-				getArgs.AddMember("id", id, getRequest.GetAllocator());
-
-				getRequest.AddMember("method", "get", getRequest.GetAllocator());
-				getRequest.AddMember("scope", "game", getRequest.GetAllocator());
-				getRequest.AddMember("args", getArgs, getRequest.GetAllocator());
-
-				response = GameController::get()->getGame(getRequest);
+				response = getGame(id);
 
 				CHECK(response.HasMember("status"));
 				CHECK(response["status"].IsUint());
@@ -764,7 +752,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
 				// Make sure getGame() can no longer find it
-				response = GameController::get()->getGame(getRequest);
+				response = getGame(id);
 
 				CHECK(response.HasMember("status"));
 				CHECK(response["status"].IsUint());
@@ -850,16 +838,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig();
 
-			rapidjson::Document request(rapidjson::kObjectType);
-			rapidjson::Value args(rapidjson::kObjectType);
-
-			args.AddMember("id", 1, request.GetAllocator());
-
-			request.AddMember("method", "get", request.GetAllocator());
-			request.AddMember("scope", "game", request.GetAllocator());
-			request.AddMember("args", args, request.GetAllocator());
-
-			rapidjson::Document response = GameController::get()->getGame(request);
+			rapidjson::Document response = getGame(1);
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -879,8 +858,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			size_t id = response["id"].GetUint();
 
-			request["args"]["id"].SetUint(id + 1);
-			response = GameController::get()->getGame(request);
+			response = getGame(id + 1);
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -914,16 +892,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			size_t id = response["id"].GetUint();
 
-			rapidjson::Document getRequest(rapidjson::kObjectType);
-			rapidjson::Value getArgs(rapidjson::kObjectType);
-
-			getArgs.AddMember("id", id, getRequest.GetAllocator());
-
-			getRequest.AddMember("method", "get", getRequest.GetAllocator());
-			getRequest.AddMember("scope", "game", getRequest.GetAllocator());
-			getRequest.AddMember("args", getArgs, getRequest.GetAllocator());
-
-			response = GameController::get()->getGame(getRequest);
+			response = getGame(id);
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -954,7 +923,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
-			response = GameController::get()->getGame(getRequest);
+			response = getGame(id);
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
