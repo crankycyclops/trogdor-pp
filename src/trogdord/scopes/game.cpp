@@ -511,14 +511,14 @@ rapidjson::Document GameController::getMeta(const rapidjson::Document &request) 
 		// Client is only requesting a certain set of meta values
 		if (metaKeys && metaKeys->IsArray() && metaKeys->Size()) {
 
-			for (auto i = metaKeys->MemberBegin(); i != metaKeys->MemberEnd(); i++) {
+			for (auto i = metaKeys->Begin(); i != metaKeys->End(); i++) {
 
-				if (i->name.IsString()) {
+				if (i->IsString()) {
 
-					std::string key = i->name.GetString();
+					const char *key = i->GetString();
 
 					meta.AddMember(
-						rapidjson::StringRef(key.c_str()),
+						rapidjson::StringRef(key),
 						rapidjson::StringRef(GameContainer::get()->getMeta(gameId, key).c_str()),
 						response.GetAllocator()
 					);
@@ -537,11 +537,14 @@ rapidjson::Document GameController::getMeta(const rapidjson::Document &request) 
 		// Client is requesting all currently set meta values
 		else {
 			for (auto &metaVal: GameContainer::get()->getMetaAll(gameId)) {
-				meta.AddMember(
-					rapidjson::StringRef(metaVal.first.c_str()),
-					rapidjson::StringRef(metaVal.second.c_str()),
-					response.GetAllocator()
-				);
+
+				rapidjson::Value key(rapidjson::kStringType);
+				rapidjson::Value value(rapidjson::kStringType);
+
+				key.SetString(rapidjson::StringRef(metaVal.first.c_str()), response.GetAllocator());
+				value.SetString(rapidjson::StringRef(metaVal.second.c_str()), response.GetAllocator());
+
+				meta.AddMember(key, value.Move(), response.GetAllocator());
 			}
 		}
 

@@ -176,7 +176,9 @@ rapidjson::Document getMeta(size_t id, std::vector<const char *> keys = {}) {
 		args.AddMember("meta", rapidjson::Value(rapidjson::kArrayType), request.GetAllocator());
 
 		for (const auto &key: keys) {
-			args["meta"].PushBack(rapidjson::StringRef(key), request.GetAllocator());
+			rapidjson::Value keyVal(rapidjson::kStringType);
+			keyVal.SetString(rapidjson::StringRef(key));
+			args["meta"].PushBack(keyVal.Move(), request.GetAllocator());
 		}
 	}
 
@@ -1044,12 +1046,53 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Invalid game id, with meta argument") {
 
+			// TODO
 		}
 
 		SUBCASE("Valid game id, with meta argument") {
 
-			// Set some meta
-			// Should succeed and only return meta specified in args
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(
+				gameName,
+				gameXMLRelativeFilename.c_str(),
+				testMeta
+			);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t id = response["id"].GetUint();
+
+			// Test valid value
+			response = getMeta(id, {"key1"});
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("meta"));
+			CHECK(response["meta"].IsObject());
+
+			// rapidjson::Value::Size() only works for arrays, not objects
+			size_t metaCount = 0;
+			for (auto i = response["meta"].MemberBegin(); i != response["meta"].MemberEnd(); i++) {
+
+				CHECK(i->name.IsString());
+				CHECK(i->value.IsString());
+				CHECK(0 == testMeta[i->name.GetString()].compare(i->value.GetString()));
+
+				metaCount++;
+			}
+
+			CHECK(1 == metaCount);
 		}
 	}
 }
