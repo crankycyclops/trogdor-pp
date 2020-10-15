@@ -1318,6 +1318,10 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				CHECK(i->value.IsString());
 				CHECK(0 == testMeta[i->name.GetString()].compare(i->value.GetString()));
 
+std::cout << "Key: " << i->name.GetString() << std::endl;
+std::cout << "Actual: " << testMeta[i->name.GetString()] << std::endl;
+std::cout << "Expected: " << i->value.GetString() << std::endl;
+
 				metaCount++;
 			}
 
@@ -1388,10 +1392,73 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Invalid id argument, no meta argument") {
 
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Document args(rapidjson::kObjectType);
+
+			args.AddMember("id", 1, request.GetAllocator());
+
+			request.AddMember("method", "set", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "meta", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->setMeta(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Valid id argument, no meta argument") {
 
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Document args(rapidjson::kObjectType);
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			args.AddMember("id", response["id"].GetUint(), request.GetAllocator());
+
+			request.AddMember("method", "set", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "meta", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			response = GameController::get()->setMeta(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(GameController::MISSING_META).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Invalid game id, no games running") {
