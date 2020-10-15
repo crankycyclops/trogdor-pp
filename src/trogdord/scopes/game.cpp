@@ -589,7 +589,7 @@ rapidjson::Document GameController::setMeta(const rapidjson::Document &request) 
 
 		const rapidjson::Value *meta = rapidjson::Pointer("/args/meta").Get(request);
 
-		if (meta && meta->Size()) {
+		if (meta && meta->IsObject() && meta->MemberBegin() != meta->MemberEnd()) {
 
 			for (auto i = meta->MemberBegin(); i != meta->MemberEnd(); i++) {
 
@@ -621,6 +621,14 @@ rapidjson::Document GameController::setMeta(const rapidjson::Document &request) 
 			}
 
 			response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+		}
+
+		else if (meta && !meta->IsObject()) {
+
+			response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+			response.AddMember("message", rapidjson::StringRef(INVALID_META), response.GetAllocator());
+
+			return response;
 		}
 
 		else {
