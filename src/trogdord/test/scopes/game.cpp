@@ -974,6 +974,9 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response.HasMember("message"));
 			CHECK(response["message"].IsString());
 			CHECK(0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 	}
 
@@ -981,22 +984,100 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Without args") {
 
+			// TODO
 		}
 
 		SUBCASE("With empty args") {
 
+			// TODO
 		}
 
 		SUBCASE("Invalid game id, meta arg is not an array") {
 
+			// TODO
 		}
 
 		SUBCASE("Valid game id, meta arg is not an array") {
 
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(
+				gameName,
+				gameXMLRelativeFilename.c_str(),
+				testMeta
+			);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t id = response["id"].GetUint();
+
+			rapidjson::Document metaRequest(rapidjson::kObjectType);
+			rapidjson::Value metaRequestArgs(rapidjson::kObjectType);
+
+			metaRequestArgs.AddMember("id", id, metaRequest.GetAllocator());
+			metaRequestArgs.AddMember("meta", rapidjson::Value(rapidjson::kObjectType), metaRequest.GetAllocator());
+
+			metaRequest.AddMember("method", "get", metaRequest.GetAllocator());
+			metaRequest.AddMember("scope", "game", metaRequest.GetAllocator());
+			metaRequest.AddMember("args", metaRequestArgs, metaRequest.GetAllocator());
+
+			response = GameController::get()->getMeta(metaRequest);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(GameController::INVALID_META_KEYS).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Invalid game id, no meta argument") {
 
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(
+				gameName,
+				gameXMLRelativeFilename.c_str(),
+				testMeta
+			);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t id = response["id"].GetUint();
+
+			// id + 1 is guaranteed not to exist
+			response = getMeta(id + 1);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Valid game id, no meta argument") {
@@ -1042,6 +1123,9 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			}
 
 			CHECK(metaCount == testMeta.size());
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Invalid game id, with meta argument") {
@@ -1093,6 +1177,9 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			}
 
 			CHECK(1 == metaCount);
+
+			destroyGameXML();
+			destroyConfig();
 		}
 	}
 }

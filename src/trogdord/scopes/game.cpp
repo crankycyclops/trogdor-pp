@@ -534,6 +534,14 @@ rapidjson::Document GameController::getMeta(const rapidjson::Document &request) 
 			}
 		}
 
+		else if (metaKeys && !metaKeys->IsArray()) {
+
+			response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+			response.AddMember("message", rapidjson::StringRef(INVALID_META_KEYS), response.GetAllocator());
+
+			return response;
+		}
+
 		// Client is requesting all currently set meta values
 		else {
 			for (auto &metaVal: GameContainer::get()->getMetaAll(gameId)) {
