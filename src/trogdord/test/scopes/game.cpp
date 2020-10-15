@@ -1314,10 +1314,6 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			size_t metaCount = 0;
 			for (auto i = response["meta"].MemberBegin(); i != response["meta"].MemberEnd(); i++) {
 
-std::cout << "Key: " << i->name.GetString() << std::endl;
-std::cout << "Actual: " << testMeta[i->name.GetString()] << std::endl;
-std::cout << "Expected: " << i->value.GetString() << std::endl;
-
 				CHECK(i->name.IsString());
 				CHECK(i->value.IsString());
 				CHECK(0 == testMeta[i->name.GetString()].compare(i->value.GetString()));
