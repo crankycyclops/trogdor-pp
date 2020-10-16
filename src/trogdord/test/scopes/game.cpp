@@ -115,8 +115,8 @@ rapidjson::Document createGame(
 			rapidjson::Value key(rapidjson::kStringType);
 			rapidjson::Value value(rapidjson::kStringType);
 
-			key.SetString(rapidjson::StringRef(metaVal.first.c_str()));
-			value.SetString(rapidjson::StringRef(metaVal.second.c_str()));
+			key.SetString(rapidjson::StringRef(metaVal.first.c_str()), request.GetAllocator());
+			value.SetString(rapidjson::StringRef(metaVal.second.c_str()), request.GetAllocator());
 
 			args.AddMember(
 				key.Move(),
