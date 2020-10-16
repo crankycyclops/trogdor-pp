@@ -177,7 +177,7 @@ rapidjson::Document getMeta(size_t id, std::vector<const char *> keys = {}) {
 
 		for (const auto &key: keys) {
 			rapidjson::Value keyVal(rapidjson::kStringType);
-			keyVal.SetString(rapidjson::StringRef(key));
+			keyVal.SetString(rapidjson::StringRef(key), request.GetAllocator());
 			args["meta"].PushBack(keyVal.Move(), request.GetAllocator());
 		}
 	}

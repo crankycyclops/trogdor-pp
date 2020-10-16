@@ -129,8 +129,8 @@ rapidjson::Document GameController::getGame(const rapidjson::Document &request) 
 
 		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 		response.AddMember("id", gameId, response.GetAllocator());
-		response.AddMember("name", name, response.GetAllocator());
-		response.AddMember("definition", definition, response.GetAllocator());
+		response.AddMember("name", name.Move(), response.GetAllocator());
+		response.AddMember("definition", definition.Move(), response.GetAllocator());
 		response.AddMember("current_time", game->get()->getTime(), response.GetAllocator());
 		response.AddMember("is_running", game->get()->inProgress(), response.GetAllocator());
 	}
