@@ -1755,6 +1755,77 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Valid game id, two meta values") {
 
+			const char *key1 = "key1";
+			const char *value1 = "value1";
+
+			const char *key2 = "key2";
+			const char *value2 = "value2";
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Document args(rapidjson::kObjectType);
+			rapidjson::Document meta(rapidjson::kObjectType);
+
+			meta.AddMember(rapidjson::StringRef(key1), rapidjson::StringRef(value1), request.GetAllocator());
+			meta.AddMember(rapidjson::StringRef(key2), rapidjson::StringRef(value2), request.GetAllocator());
+
+			args.AddMember("id", response["id"].GetUint(), request.GetAllocator());
+			args.AddMember("meta", meta, request.GetAllocator());
+
+			request.AddMember("method", "set", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "meta", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			response = GameController::get()->setMeta(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			response = getMeta(gameId);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("meta"));
+			CHECK(response["meta"].IsObject());
+
+			// Because rapidjson::Value.Size() isn't defined for objects. Grr.
+			size_t count = 0;
+
+			for (auto i = response["meta"].MemberBegin(); i != response["meta"].MemberEnd(); i++) {
+				count++;
+			}
+
+			CHECK(2 == count);
+
+			CHECK(response["meta"].HasMember(key1));
+			CHECK(response["meta"][key1].IsString());
+			CHECK(0 == std::string(value1).compare(response["meta"][key1].GetString()));
+
+			CHECK(response["meta"].HasMember(key2));
+			CHECK(response["meta"][key2].IsString());
+			CHECK(0 == std::string(value2).compare(response["meta"][key2].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 	}
 }
