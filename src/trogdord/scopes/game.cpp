@@ -203,13 +203,10 @@ rapidjson::Document GameController::getGameList(const rapidjson::Document &reque
 		// ID and name in the returned list.
 		for (const auto &key: metaKeys) {
 
+			std::string value = GameContainer::get()->getGame(gameId)->get()->getMeta(key);
 			rapidjson::Value metaVal(rapidjson::kStringType);
 
-			metaVal.SetString(
-				GameContainer::get()->getGame(gameId)->get()->getMeta(key).c_str(),
-				response.GetAllocator()
-			);
-
+			metaVal.SetString(value.c_str(), response.GetAllocator());
 			gameJSON.AddMember(rapidjson::StringRef(key.c_str()), metaVal.Move(), response.GetAllocator());
 		}
 
