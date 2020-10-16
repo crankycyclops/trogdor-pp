@@ -519,12 +519,12 @@ rapidjson::Document GameController::getMeta(const rapidjson::Document &request) 
 				if (i->IsString()) {
 
 					const char *key = i->GetString();
-
-					meta.AddMember(
-						rapidjson::StringRef(key),
-						rapidjson::StringRef(GameContainer::get()->getMeta(gameId, key).c_str()),
+					rapidjson::Value value(
+						GameContainer::get()->getMeta(gameId, key).c_str(),
 						response.GetAllocator()
 					);
+
+					meta.AddMember(rapidjson::StringRef(key), value, response.GetAllocator());
 				}
 
 				else {
@@ -549,11 +549,8 @@ rapidjson::Document GameController::getMeta(const rapidjson::Document &request) 
 		else {
 			for (auto &metaVal: GameContainer::get()->getMetaAll(gameId)) {
 
-				rapidjson::Value key(rapidjson::kStringType);
-				rapidjson::Value value(rapidjson::kStringType);
-
-				key.SetString(rapidjson::StringRef(metaVal.first.c_str()), response.GetAllocator());
-				value.SetString(rapidjson::StringRef(metaVal.second.c_str()), response.GetAllocator());
+				rapidjson::Value key(rapidjson::StringRef(metaVal.first.c_str()), response.GetAllocator());
+				rapidjson::Value value(rapidjson::StringRef(metaVal.second.c_str()), response.GetAllocator());
 
 				meta.AddMember(key, value.Move(), response.GetAllocator());
 			}
