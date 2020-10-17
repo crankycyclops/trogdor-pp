@@ -1828,4 +1828,131 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			destroyConfig();
 		}
 	}
+
+	TEST_CASE("GameController (scopes/game.cpp): getDefinitionList()") {
+
+		SUBCASE("definitions directory doesn't exist (results in internal error)") {
+
+			GameContainer::get()->reset();
+			initConfig();
+
+			// initGameXML() creates the subdirectory as well as creates the
+			// definition file, so by not calling this and not manually
+			// creating that directory, this request should fail with a
+			// status of Response::STATUS_INTERNAL_ERROR.
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "definitions", request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->getDefinitionList(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INTERNAL_ERROR == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Response::INTERNAL_ERROR_MSG).compare(response["message"].GetString()));
+
+			destroyConfig();
+		}
+
+		SUBCASE("No definitions available") {
+
+			GameContainer::get()->reset();
+			initConfig();
+
+			// Create the directory for definitions like we do in initGameXML(),
+			// but don't create the XML file
+			gameXMLLocation = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "trogtest";
+
+			STD_FILESYSTEM::create_directory(gameXMLLocation);
+
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "definitions", request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->getDefinitionList(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("definitions"));
+			CHECK(response["definitions"].IsArray());
+			CHECK(0 == response["definitions"].Size());
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
+		SUBCASE("One definition available") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "definitions", request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->getDefinitionList(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("definitions"));
+			CHECK(response["definitions"].IsArray());
+			CHECK(1 == response["definitions"].Size());
+
+			// TODO: check definition name for match
+
+			destroyGameXML();
+			destroyConfig();
+		}
+	}
+
+	TEST_CASE("GameController (scopes/game.cpp): getGameList()") {
+
+		SUBCASE("No games running, without meta, without filters") {
+			// TODO
+		}
+
+		SUBCASE("One game running, without meta, without filters") {
+			// TODO
+		}
+
+		SUBCASE("No games running, with meta, without filters") {
+			// TODO
+		}
+
+		SUBCASE("One game running, with meta, without filters") {
+			// TODO
+		}
+
+		SUBCASE("No games running, without meta, with filters") {
+			// TODO
+		}
+
+		SUBCASE("One game running, without meta, with filters") {
+			// TODO
+		}
+
+		SUBCASE("No games running, with meta, with filters") {
+			// TODO
+		}
+
+		SUBCASE("One game running, with meta, with filters") {
+			// TODO
+		}
+	}
 }
