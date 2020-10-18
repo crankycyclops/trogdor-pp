@@ -1913,8 +1913,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response.HasMember("definitions"));
 			CHECK(response["definitions"].IsArray());
 			CHECK(1 == response["definitions"].Size());
-
-			// TODO: check definition name for match
+			CHECK(response["definitions"][0].IsString());
+			CHECK(0 == std::string(gameXMLRelativeFilename).compare(response["definitions"][0].GetString()));
 
 			destroyGameXML();
 			destroyConfig();
@@ -1924,7 +1924,30 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 	TEST_CASE("GameController (scopes/game.cpp): getGameList()") {
 
 		SUBCASE("No games running, without meta, without filters") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "list", request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->getGameList(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("One game running, without meta, without filters") {
