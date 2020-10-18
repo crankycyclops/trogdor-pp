@@ -241,6 +241,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		rapidjson::Document response = GameController::get()->getDefinitionList(request);
 
+		CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 		CHECK(response.HasMember("status"));
 		CHECK(response["status"].IsUint());
 		CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -279,6 +281,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->createGame(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -314,6 +318,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->createGame(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -343,6 +349,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			request.AddMember("args", args, request.GetAllocator());
 
 			rapidjson::Document response = GameController::get()->createGame(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -374,6 +382,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			request.AddMember("args", args, request.GetAllocator());
 
 			rapidjson::Document response = GameController::get()->createGame(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -410,6 +420,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->createGame(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -443,6 +455,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->createGame(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -474,6 +488,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->createGame(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INTERNAL_ERROR == response["status"].GetUint());
@@ -499,6 +515,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -513,6 +531,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				size_t id = response["id"].GetUint();
 
 				response = getGame(id);
+
+				CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 				CHECK(response.HasMember("status"));
 				CHECK(response["status"].IsUint());
@@ -537,6 +557,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				getMetaRequest.AddMember("args", getMetaArgs, getMetaRequest.GetAllocator());
 
 				response = GameController::get()->getMeta(getMetaRequest);
+
+				CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 				CHECK(response.HasMember("status"));
 				CHECK(response["status"].IsUint());
@@ -583,6 +605,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->createGame(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -597,6 +621,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				size_t id = response["id"].GetUint();
 
 				response = getGame(id);
+
+				CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 				CHECK(response.HasMember("status"));
 				CHECK(response["status"].IsUint());
@@ -621,6 +647,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				getMetaRequest.AddMember("args", getMetaArgs, getMetaRequest.GetAllocator());
 
 				response = GameController::get()->getMeta(getMetaRequest);
+
+				CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 				CHECK(response.HasMember("status"));
 				CHECK(response["status"].IsUint());
@@ -675,6 +703,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->createGame(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -712,6 +742,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->createGame(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -738,6 +770,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->destroyGame(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -763,6 +797,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			request.AddMember("args", args, request.GetAllocator());
 
 			rapidjson::Document response = GameController::get()->destroyGame(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -792,6 +828,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->destroyGame(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
@@ -811,6 +849,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			// Step 1: create a game and store the ID
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -825,6 +865,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				// Make sure getGame() can find it
 				response = getGame(id);
 
+				CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 				CHECK(response.HasMember("status"));
 				CHECK(response["status"].IsUint());
 				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -832,12 +874,16 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				// Delete the game
 				response = destroyGame(id);
 
+				CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 				CHECK(response.HasMember("status"));
 				CHECK(response["status"].IsUint());
 				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
 				// Make sure getGame() can no longer find it
 				response = getGame(id);
+
+				CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 				CHECK(response.HasMember("status"));
 				CHECK(response["status"].IsUint());
@@ -849,6 +895,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 				// Make sure destroyGame() returns 404 if we call it again with the same id
 				response = destroyGame(id);
+
+				CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 				CHECK(response.HasMember("status"));
 				CHECK(response["status"].IsUint());
@@ -880,6 +928,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->getGame(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -903,6 +953,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->getGame(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -922,6 +974,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			// Step 1: test with no games running
 			rapidjson::Document response = getGame(1);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
@@ -929,6 +983,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			// Step 2: test with a game running and an invalid id
 			response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -940,6 +996,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			size_t id = response["id"].GetUint();
 
 			response = getGame(id + 1);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -962,6 +1020,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -972,6 +1032,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			size_t id = response["id"].GetUint();
 
 			response = getGame(id);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -998,11 +1060,15 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			response = destroyGame(id);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
 			response = getGame(id);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1034,6 +1100,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->getMeta(metaRequest);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -1063,6 +1131,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->getMeta(metaRequest);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -1088,6 +1158,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				testMeta
 			);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -1108,6 +1180,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			metaRequest.AddMember("args", metaRequestArgs, metaRequest.GetAllocator());
 
 			response = GameController::get()->getMeta(metaRequest);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1134,6 +1208,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				testMeta
 			);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -1154,6 +1230,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			metaRequest.AddMember("args", metaRequestArgs, metaRequest.GetAllocator());
 
 			response = GameController::get()->getMeta(metaRequest);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1180,6 +1258,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				testMeta
 			);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -1191,6 +1271,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			// id + 1 is guaranteed not to exist
 			response = getMeta(id + 1);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1217,6 +1299,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				testMeta
 			);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -1227,6 +1311,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			size_t id = response["id"].GetUint();
 
 			response = getMeta(id);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1265,6 +1351,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				testMeta
 			);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -1276,6 +1364,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			// id + 1 is guaranteed not to exist
 			response = getMeta(id + 1, {"key1"});
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1302,6 +1392,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				testMeta
 			);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -1313,6 +1405,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			// Test valid value
 			response = getMeta(id, {"key1"});
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1356,6 +1450,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->setMeta(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -1384,6 +1480,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			request.AddMember("args", args, request.GetAllocator());
 
 			rapidjson::Document response = GameController::get()->setMeta(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1416,6 +1514,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->setMeta(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
@@ -1439,6 +1539,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			rapidjson::Document args(rapidjson::kObjectType);
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1491,6 +1593,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->setMeta(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
@@ -1518,6 +1622,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -1534,6 +1640,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			request.AddMember("args", args, request.GetAllocator());
 
 			response = GameController::get()->setMeta(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1568,6 +1676,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->setMeta(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
@@ -1593,6 +1703,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -1609,6 +1721,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			request.AddMember("args", args, request.GetAllocator());
 
 			response = GameController::get()->setMeta(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1643,6 +1757,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->setMeta(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
@@ -1668,6 +1784,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -1684,6 +1802,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			request.AddMember("args", args, request.GetAllocator());
 
 			response = GameController::get()->setMeta(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1708,6 +1828,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initConfig();
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1734,11 +1856,15 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			response = GameController::get()->setMeta(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
 			response = getMeta(gameId);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1779,6 +1905,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -1805,11 +1933,15 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			response = GameController::get()->setMeta(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
 			response = getMeta(gameId);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1859,6 +1991,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->getDefinitionList(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INTERNAL_ERROR == response["status"].GetUint());
@@ -1890,6 +2024,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->getDefinitionList(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -1917,6 +2053,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = GameController::get()->getDefinitionList(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -1943,6 +2081,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = getGameList();
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -1964,6 +2104,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -1974,6 +2116,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			size_t id = response["id"].GetUint();
 
 			response = getGameList();
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
