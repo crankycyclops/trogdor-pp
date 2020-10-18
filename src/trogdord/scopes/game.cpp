@@ -193,10 +193,15 @@ rapidjson::Document GameController::getGameList(const rapidjson::Document &reque
 
 		rapidjson::Value gameJSON(rapidjson::kObjectType);
 
+		rapidjson::Value name(rapidjson::kStringType);
+
+		name.SetString(
+			rapidjson::StringRef(GameContainer::get()->getGame(gameId)->getName().c_str()),
+			response.GetAllocator()
+		);
+
 		gameJSON.AddMember("id", gameId, response.GetAllocator());
-		gameJSON.AddMember("name", rapidjson::StringRef(
-			GameContainer::get()->getGame(gameId)->getName().c_str()
-		), response.GetAllocator());
+		gameJSON.AddMember("name", name.Move(), response.GetAllocator());
 
 		// If an include_meta argument is included, it specifies Game
 		// meta data values that should be included along with the game's

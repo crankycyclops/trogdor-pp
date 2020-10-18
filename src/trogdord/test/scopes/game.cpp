@@ -215,6 +215,17 @@ rapidjson::Document setMeta(size_t id, std::unordered_map<std::string, const cha
 	return GameController::get()->setMeta(request);
 }
 
+rapidjson::Document getGameList() {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+
+	request.AddMember("method", "get", request.GetAllocator());
+	request.AddMember("scope", "game", request.GetAllocator());
+	request.AddMember("action", "list", request.GetAllocator());
+
+	return GameController::get()->getGameList(request);
+}
+
 TEST_SUITE("GameController (scopes/game.cpp)") {
 
 	TEST_CASE("GameController (scopes/game.cpp): getDefinitionList()") {
@@ -1930,13 +1941,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig();
 
-			rapidjson::Document request(rapidjson::kObjectType);
-
-			request.AddMember("method", "get", request.GetAllocator());
-			request.AddMember("scope", "game", request.GetAllocator());
-			request.AddMember("action", "list", request.GetAllocator());
-
-			rapidjson::Document response = GameController::get()->getGameList(request);
+			rapidjson::Document response = getGameList();
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -1951,7 +1956,44 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		}
 
 		SUBCASE("One game running, without meta, without filters") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t id = response["id"].GetUint();
+
+			response = getGameList();
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(1 == response["games"].Size());
+
+			CHECK(response["games"][0].HasMember("id"));
+			CHECK(response["games"][0]["id"].IsUint());
+			CHECK(id == response["games"][0]["id"].GetUint());
+
+			CHECK(response["games"][0].HasMember("name"));
+			CHECK(response["games"][0]["name"].IsString());
+			CHECK(trogdor::isAscii(response["games"][0]["name"].GetString()));
+			CHECK(0 == std::string(gameName).compare(response["games"][0]["name"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("No games running, with meta, without filters") {
