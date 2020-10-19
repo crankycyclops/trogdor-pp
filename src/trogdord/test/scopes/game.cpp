@@ -215,13 +215,26 @@ rapidjson::Document setMeta(size_t id, std::unordered_map<std::string, const cha
 	return GameController::get()->setMeta(request);
 }
 
-rapidjson::Document getGameList() {
+rapidjson::Document getGameList(std::vector<const char *> metaKeys = {}) {
 
 	rapidjson::Document request(rapidjson::kObjectType);
+	rapidjson::Document args(rapidjson::kObjectType);
+
+	if (metaKeys.size()) {
+
+		rapidjson::Value meta(rapidjson::kArrayType);
+
+		for (const auto &key: metaKeys) {
+			meta.PushBack(rapidjson::StringRef(key), request.GetAllocator());
+		}
+
+		args.AddMember("include_meta", meta, request.GetAllocator());
+	}
 
 	request.AddMember("method", "get", request.GetAllocator());
 	request.AddMember("scope", "game", request.GetAllocator());
 	request.AddMember("action", "list", request.GetAllocator());
+	request.AddMember("args", args, request.GetAllocator());
 
 	return GameController::get()->getGameList(request);
 }
@@ -2141,7 +2154,26 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		}
 
 		SUBCASE("No games running, with meta, without filters") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = getGameList({"key1", "key2"});
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("One game running, with meta, without filters") {
