@@ -11,8 +11,9 @@
 #include "../../include//gamecontainer.h"
 
 
-// Test game name
+// Test game names
 const char *gameName = "myGame";
+const char *gameName2 = "yourGame";
 
 // Test meta data
 std::unordered_map<std::string, std::string> testMeta = {
@@ -238,9 +239,14 @@ rapidjson::Document getGameList(
 	if (filters) {
 
 		rapidjson::Document filterArg;
+		rapidjson::Value filterValue(rapidjson::kObjectType);
 
+		// I'm not sure why I have to do this, but if I attempt to use
+		// filterArg directly, I get corrupted memory. Whatever, man.
 		filterArg.Parse(filters);
-		args.AddMember("filters", filterArg, request.GetAllocator());
+		filterValue.CopyFrom(filterArg, request.GetAllocator());
+
+		args.AddMember("filters", filterValue, request.GetAllocator());
 	}
 
 	request.AddMember("method", "get", request.GetAllocator());
@@ -249,6 +255,38 @@ rapidjson::Document getGameList(
 	request.AddMember("args", args, request.GetAllocator());
 
 	return GameController::get()->getGameList(request);
+}
+
+// Starts a game
+rapidjson::Document startGame(size_t id) {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+	rapidjson::Document args(rapidjson::kObjectType);
+
+	args.AddMember("id", id, request.GetAllocator());
+
+	request.AddMember("method", "set", request.GetAllocator());
+	request.AddMember("scope", "game", request.GetAllocator());
+	request.AddMember("action", "start", request.GetAllocator());
+	request.AddMember("args", args, request.GetAllocator());
+
+	return GameController::get()->startGame(request);
+}
+
+// Starts a game
+rapidjson::Document stopGame(size_t id) {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+	rapidjson::Document args(rapidjson::kObjectType);
+
+	args.AddMember("id", id, request.GetAllocator());
+
+	request.AddMember("method", "set", request.GetAllocator());
+	request.AddMember("scope", "game", request.GetAllocator());
+	request.AddMember("action", "stop", request.GetAllocator());
+	request.AddMember("args", args, request.GetAllocator());
+
+	return GameController::get()->stopGame(request);
 }
 
 TEST_SUITE("GameController (scopes/game.cpp)") {
@@ -2292,21 +2330,196 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response["games"].IsArray());
 			CHECK(0 == response["games"].Size());
 
-			// TODO: test all other filter combinations
+			// Single filter group, multiple filters
+			response = getGameList({}, "{\"is_running\":true, \"name_starts\":\"a\"}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
+			// Filter union of groups
+			response = getGameList({}, "[{\"is_running\":true}, {\"is_running\":false}]");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
 
 			destroyGameXML();
 			destroyConfig();
 		}
 
-		SUBCASE("One game running, without meta, with filters") {
-			// TODO
+		SUBCASE("Four games running, without meta, with filters") {
+
+			// Step 1: Setup up games
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t myGameIdStarted = response["id"].GetUint();
+
+			response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t myGameIdStopped = response["id"].GetUint();
+
+			response = createGame(gameName2, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t yourGameIdStarted = response["id"].GetUint();
+
+			response = createGame(gameName2, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t yourGameIdStopped = response["id"].GetUint();
+
+			response = startGame(myGameIdStarted);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			response = startGame(yourGameIdStarted);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// Step 2: Begin Verifying game lists
+
+			// The empty string should translate to a null JSON value, which
+			// should just act as if there are no filters.
+			response = getGameList({}, "");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(4 == response["games"].Size());
+
+			// Empty filter group
+			response = getGameList({}, "{}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(4 == response["games"].Size());
+
+			// Single filter #1
+			response = getGameList({}, "{\"is_running\":true}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(2 == response["games"].Size());
+
+			for (auto i = response["games"].Begin(); i != response["games"].End(); i++) {
+
+				CHECK(i->IsObject());
+				CHECK(i->HasMember("id"));
+				CHECK((*i)["id"].IsUint());
+
+				bool startedIdsValid = myGameIdStarted == (*i)["id"].GetUint() || yourGameIdStarted == (*i)["id"].GetUint();
+
+				CHECK(startedIdsValid);
+			}
+
+			// Single filter #2
+			response = getGameList({}, "{\"is_running\":false}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(2 == response["games"].Size());
+
+			for (auto i = response["games"].Begin(); i != response["games"].End(); i++) {
+
+				CHECK(i->IsObject());
+				CHECK(i->HasMember("id"));
+				CHECK((*i)["id"].IsUint());
+
+				bool stoppedIdsValid = myGameIdStopped == (*i)["id"].GetUint() || yourGameIdStopped == (*i)["id"].GetUint();
+
+				CHECK(stoppedIdsValid);
+			}
+
+			// TODO: finish
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("No games running, with meta, with filters") {
 			// TODO
 		}
 
-		SUBCASE("One game running, with meta, with filters") {
+		SUBCASE("Four games running, with meta, with filters") {
 			// TODO
 		}
 	}

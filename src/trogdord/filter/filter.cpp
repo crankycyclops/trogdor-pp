@@ -10,16 +10,16 @@ Filter Filter::makeFilter(std::string type, const rapidjson::Value &value) {
 
 		case rapidjson::kNumberType:
 
-			if (value.IsDouble()) {
-				return {type, value.GetDouble()};
-			}
-
-			else if (value.IsUint()) {
+			if (value.IsUint()) {
 				return {type, static_cast<size_t>(value.GetUint())};
 			}
 
-			else {
+			else if (value.IsInt()) {
 				return {type, value.GetInt()};
+			}
+
+			else {
+				return {type, value.GetDouble()};
 			}
 
 		case rapidjson::kTrueType:
