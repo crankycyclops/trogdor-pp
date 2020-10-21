@@ -2279,6 +2279,19 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response["games"].IsArray());
 			CHECK(0 == response["games"].Size());
 
+			// Single filter
+			response = getGameList({}, "{\"is_running\":true}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
 			// TODO: test all other filter combinations
 
 			destroyGameXML();

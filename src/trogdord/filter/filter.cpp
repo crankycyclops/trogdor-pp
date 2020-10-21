@@ -60,28 +60,25 @@ Filter::Group Filter::JSONToFilterGroup(const rapidjson::Value &json) {
 		throw FilterException("Filter group must be an object of key, value pairs");
 	}
 
-	else if (json.Size()) {
+	for (auto i = json.MemberBegin(); i != json.MemberEnd(); i++) {
 
-		for (auto i = json.MemberBegin(); i != json.MemberEnd(); i++) {
+		if (!i->name.IsString()) {
+			throw FilterException("Filter type must be a string");
+		}
 
-			if (!i->name.IsString()) {
-				throw FilterException("Filter type must be a string");
+		std::string type = i->name.GetString();
+
+		// We're parsing more than one filter of the same type
+		if (rapidjson::kArrayType == i->value.GetType()) {
+
+			for (auto j = i->value.Begin(); j != i->value.End(); j++) {
+				fg.push_back(makeFilter(type, *j));
 			}
+		}
 
-			std::string type = i->name.GetString();
-
-			// We're parsing more than one filter of the same type
-			if (rapidjson::kArrayType == i->value.GetType()) {
-
-				for (auto j = i->value.Begin(); j != i->value.End(); j++) {
-					fg.push_back(makeFilter(type, *j));
-				}
-			}
-
-			// We're parsing a single filter of the given type
-			else {
-				fg.push_back(makeFilter(type, i->value));
-			}
+		// We're parsing a single filter of the given type
+		else {
+			fg.push_back(makeFilter(type, i->value));
 		}
 	}
 
