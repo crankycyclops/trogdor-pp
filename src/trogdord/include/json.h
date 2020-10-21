@@ -13,8 +13,8 @@ class JSON {
 
 	public:
 
-		// Convert a RapidJSON Document to a string
-		static std::string serialize(const rapidjson::Document &obj) {
+		// Convert a RapidJSON Document or Value to a string
+		static std::string serialize(const rapidjson::Value &obj) {
 
 			rapidjson::StringBuffer buffer;
 			rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);

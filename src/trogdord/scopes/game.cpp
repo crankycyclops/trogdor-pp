@@ -32,6 +32,7 @@ const char *GameController::DEFINITION_NOT_RELATIVE = "definition path must be r
 const char *GameController::MISSING_META = "missing required meta key, value pairs";
 const char *GameController::INVALID_META = "meta values cannot be objects or arrays";
 const char *GameController::INVALID_META_KEYS = "invalid meta keys";
+const char *GameController::INVALID_FILTER_ARG = "filters must be expressed as a JSON object or array";
 
 // Singleton instance of GameController
 std::unique_ptr<GameController> GameController::instance;
@@ -185,14 +186,28 @@ rapidjson::Document GameController::getGameList(const rapidjson::Document &reque
 		}
 	}
 
-	if (filtersArg && filtersArg->Size()) {
-		filters = Filter::JSONToFilterUnion(*filtersArg);
+	if (filtersArg) {
+
+		// If we get a null argument, I think that could be reasonably
+		// construed as intending not to pass in any filters, and since
+		// Filter::JSONToFilterUnion() will just pass over it anyway, I'll
+		// consider it a legal value.
+		if (filtersArg->IsNull() || filtersArg->IsArray() || filtersArg->IsObject()) {
+			filters = Filter::JSONToFilterUnion(*filtersArg);
+		}
+
+		else {
+
+			response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+			response.AddMember("message", rapidjson::StringRef(INVALID_FILTER_ARG), response.GetAllocator());
+
+			return response;
+		}
 	}
 
 	for (const auto &gameId: GameContainer::get()->getGames(filters)) {
 
 		rapidjson::Value gameJSON(rapidjson::kObjectType);
-
 		rapidjson::Value name(rapidjson::kStringType);
 
 		name.SetString(

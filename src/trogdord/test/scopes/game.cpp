@@ -215,7 +215,11 @@ rapidjson::Document setMeta(size_t id, std::unordered_map<std::string, const cha
 	return GameController::get()->setMeta(request);
 }
 
-rapidjson::Document getGameList(std::vector<const char *> metaKeys = {}) {
+// filters should be a valid JSON string
+rapidjson::Document getGameList(
+	std::vector<const char *> metaKeys = {},
+	const char *filters = nullptr
+) {
 
 	rapidjson::Document request(rapidjson::kObjectType);
 	rapidjson::Document args(rapidjson::kObjectType);
@@ -229,6 +233,14 @@ rapidjson::Document getGameList(std::vector<const char *> metaKeys = {}) {
 		}
 
 		args.AddMember("include_meta", meta, request.GetAllocator());
+	}
+
+	if (filters) {
+
+		rapidjson::Document filterArg;
+
+		filterArg.Parse(filters);
+		args.AddMember("filters", filterArg, request.GetAllocator());
 	}
 
 	request.AddMember("method", "get", request.GetAllocator());
@@ -2234,7 +2246,43 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		}
 
 		SUBCASE("No games running, without meta, with filters") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			// The empty string should translate to a null JSON value, which
+			// should just act as if there are no filters.
+			rapidjson::Document response = getGameList({}, "");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
+			// Empty filter group
+			response = getGameList({}, "{}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
+			// TODO: test all other filter combinations
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("One game running, without meta, with filters") {

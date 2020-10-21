@@ -40,6 +40,7 @@ class GameController: public ScopeController {
 		static const char *MISSING_META;
 		static const char *INVALID_META;
 		static const char *INVALID_META_KEYS;
+		static const char *INVALID_FILTER_ARG;
 
 		// Scope name that should be used in requests
 		static const char *SCOPE;

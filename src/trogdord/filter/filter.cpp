@@ -94,25 +94,22 @@ Filter::Union Filter::JSONToFilterUnion(const rapidjson::Value &json) {
 
 	Filter::Union result;
 
-	if (json.Size()) {
+	// We're parsing a union of filter groups
+	if (json.IsArray() && json.Size()) {
 
-		// We're parsing a union of filter groups
-		if (rapidjson::kArrayType == json.GetType()) {
+		for (auto i = json.Begin(); i != json.End(); i++) {
 
-			for (auto i = json.Begin(); i != json.End(); i++) {
+			Group g = JSONToFilterGroup(*i);
 
-				Group g = JSONToFilterGroup(*i);
-
-				if (g.size()) {
-					result.push_back(g);
-				}
+			if (g.size()) {
+				result.push_back(g);
 			}
 		}
+	}
 
-		// We're parsing a single filter group
-		else {
-			result.push_back(JSONToFilterGroup(json));
-		}
+	// We're parsing a single filter group
+	else if (json.IsObject() && json.MemberBegin() != json.MemberEnd()) {
+		result.push_back(JSONToFilterGroup(json));
 	}
 
 	return result;
