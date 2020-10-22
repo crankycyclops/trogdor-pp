@@ -32,7 +32,7 @@ Filter Filter::makeFilter(std::string type, const rapidjson::Value &value) {
 
 		case rapidjson::kStringType:
 
-			return {type, value.GetString()};
+			return {type, std::string(value.GetString())};
 
 		case rapidjson::kNullType:
 

@@ -2510,6 +2510,71 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 				CHECK(stoppedIdsValid);
 			}
 
+			// Single filter #3
+			response = getGameList({}, "{\"name_starts\":\"my\"}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(2 == response["games"].Size());
+
+			for (auto i = response["games"].Begin(); i != response["games"].End(); i++) {
+
+				CHECK(i->IsObject());
+				CHECK(i->HasMember("id"));
+				CHECK((*i)["id"].IsUint());
+
+				bool stoppedIdsValid = myGameIdStopped == (*i)["id"].GetUint() || myGameIdStarted == (*i)["id"].GetUint();
+
+				CHECK(stoppedIdsValid);
+			}
+
+			// Single filter #4
+			response = getGameList({}, "{\"name_starts\":\"your\"}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(2 == response["games"].Size());
+
+			for (auto i = response["games"].Begin(); i != response["games"].End(); i++) {
+
+				CHECK(i->IsObject());
+				CHECK(i->HasMember("id"));
+				CHECK((*i)["id"].IsUint());
+
+				bool stoppedIdsValid = yourGameIdStopped == (*i)["id"].GetUint() || yourGameIdStarted == (*i)["id"].GetUint();
+
+				CHECK(stoppedIdsValid);
+			}
+
+			// Filter group #1
+			response = getGameList({}, "{\"is_running\":true, \"name_starts\":\"my\"}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(1 == response["games"].Size());
+
+			CHECK(response["games"][0].HasMember("id"));
+			CHECK(response["games"][0]["id"].IsUint());
+			CHECK(myGameIdStarted == response["games"][0]["id"].GetUint());
+
 			// TODO: finish
 			destroyGameXML();
 			destroyConfig();

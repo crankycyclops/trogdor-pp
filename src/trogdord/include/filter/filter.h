@@ -71,16 +71,31 @@ class Filter {
 
 		o << "\t\t{Type: " << f.getType() << ", Value: ";
 
-		if (0 == f.getValueType()) {
-			o << f.getValue<std::string>() << " (string)";
-		}
+		switch (f.getValueType()) {
 
-		else if (1 == f.getValueType()) {
-			o << (f.getValue<bool>() ? "true" : "false") << " (bool)";
-		}
+			case 0:
+				o << f.getValue<std::string>() << " (string)";
+				break;
 
-		else {
-			o << f.getValue<size_t>() << " (size_t)";
+			case 1:
+				o << (f.getValue<bool>() ? "true" : "false") << " (bool)";
+				break;
+
+			case 2:
+				o << f.getValue<size_t>() << " (size_t)";
+				break;
+
+			case 3:
+				o << f.getValue<int>() << " (int)";
+				break;
+
+			case 4:
+				o << f.getValue<double>() << " (double)";
+				break;
+
+			default:
+				o << "(unknown type)";
+				break;
 		}
 
 		o << "}\n";
