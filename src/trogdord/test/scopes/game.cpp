@@ -2575,7 +2575,73 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response["games"][0]["id"].IsUint());
 			CHECK(myGameIdStarted == response["games"][0]["id"].GetUint());
 
-			// TODO: finish
+			// Filter group #2
+			response = getGameList({}, "{\"is_running\":false, \"name_starts\":\"your\"}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(1 == response["games"].Size());
+
+			CHECK(response["games"][0].HasMember("id"));
+			CHECK(response["games"][0]["id"].IsUint());
+			CHECK(yourGameIdStopped == response["games"][0]["id"].GetUint());
+
+			// Filter group #3 (contradiction)
+			response = getGameList({}, "{\"is_running\":false, \"is_running\":true}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
+			// Filter group #4 (contradiction)
+			response = getGameList({}, "{\"name_starts\":\"my\", \"name_starts\":\"your\"}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
+			// Filter union
+			response = getGameList({}, "[{\"is_running\":true, \"name_starts\":\"your\"}, {\"is_running\":false, \"name_starts\":\"my\"}]");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(2 == response["games"].Size());
+
+			for (auto i = response["games"].Begin(); i != response["games"].End(); i++) {
+
+				CHECK(i->IsObject());
+				CHECK(i->HasMember("id"));
+				CHECK((*i)["id"].IsUint());
+
+				bool stoppedIdsValid = yourGameIdStarted == (*i)["id"].GetUint() || myGameIdStopped == (*i)["id"].GetUint();
+
+				CHECK(stoppedIdsValid);
+			}
+
 			destroyGameXML();
 			destroyConfig();
 		}
