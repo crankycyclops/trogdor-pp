@@ -24,11 +24,11 @@ Filter Filter::makeFilter(std::string type, const rapidjson::Value &value) {
 
 		case rapidjson::kTrueType:
 
-			return {type, "true"};
+			return {type, true};
 
 		case rapidjson::kFalseType:
 
-			return {type, "false"};
+			return {type, false};
 
 		case rapidjson::kStringType:
 
