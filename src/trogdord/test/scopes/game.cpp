@@ -3153,12 +3153,54 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("One game, non-existent game id") {
 
-			// TODO
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t id = response["id"].GetUint();
+
+			response = startGame(id + 1);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("One game, valid game id") {
 
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
 			// TODO
+			// 1. verify that stopped game can be started
+			// 2. verify that started game can return success but remains started
+			// validate both with isRunning() and getTime()
+
+			destroyGameXML();
+			destroyConfig();
 		}
 	}
 
@@ -3230,12 +3272,54 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("One game, non-existent game id") {
 
-			// TODO
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t id = response["id"].GetUint();
+
+			response = stopGame(id + 1);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("One game, valid game id") {
 
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
 			// TODO
+			// 1. verify that stopped game can return success but remains stopped
+			// 2. verify that stopped game can be started and then stopped
+			// validate both with isRunning() and getTime()
+
+			destroyGameXML();
+			destroyConfig();
 		}
 	}
 }
