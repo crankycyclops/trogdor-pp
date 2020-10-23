@@ -2647,11 +2647,441 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		}
 
 		SUBCASE("No games running, with meta, with filters") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			// The empty string should translate to a null JSON value, which
+			// should just act as if there are no filters.
+			rapidjson::Document response = getGameList({"key1", "key2"}, "");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
+			// Empty filter group
+			response = getGameList({"key1", "key2"}, "{}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
+			// Single filter
+			response = getGameList({"key1", "key2"}, "{\"is_running\":true}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
+			// Single filter group, multiple filters
+			response = getGameList({"key1", "key2"}, "{\"is_running\":true, \"name_starts\":\"a\"}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
+			// Filter union of groups
+			response = getGameList({"key1", "key2"}, "[{\"is_running\":true}, {\"is_running\":false}]");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Four games running, with meta, with filters") {
-			// TODO
+
+			// Step 1: Setup up games. myGameIdStopped and yourGameIdStarted
+			// will have one meta value set ("key1" => "value1") and the
+			// others won't. In the case of the ones that don't, an empty
+			// value for "key1" should be returned along with the list.
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t myGameIdStarted = response["id"].GetUint();
+
+			response = createGame(gameName, gameXMLRelativeFilename.c_str(), {{"key1", "value1"}});
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t myGameIdStopped = response["id"].GetUint();
+
+			response = createGame(gameName2, gameXMLRelativeFilename.c_str(), {{"key1", "value1"}});
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t yourGameIdStarted = response["id"].GetUint();
+
+			response = createGame(gameName2, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t yourGameIdStopped = response["id"].GetUint();
+
+			response = startGame(myGameIdStarted);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			response = startGame(yourGameIdStarted);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// Step 2: Begin Verifying game lists
+
+			// The empty string should translate to a null JSON value, which
+			// should just act as if there are no filters.
+			response = getGameList({"key1"}, "");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(4 == response["games"].Size());
+
+			for (auto i = response["games"].Begin(); i != response["games"].End(); i++) {
+
+				CHECK(i->HasMember("id"));
+				CHECK((*i)["id"].IsUint());
+
+				CHECK(i->HasMember("key1"));
+				CHECK((*i)["key1"].IsString());
+
+				if (myGameIdStopped == (*i)["id"].GetUint() || yourGameIdStarted == (*i)["id"].GetUint()) {
+					CHECK(0 == std::string("value1").compare((*i)["key1"].GetString()));
+				} else {
+					CHECK(0 == std::string((*i)["key1"].GetString()).length());
+				}
+			}
+
+			// Empty filter group
+			response = getGameList({"key1"}, "{}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(4 == response["games"].Size());
+
+			for (auto i = response["games"].Begin(); i != response["games"].End(); i++) {
+
+				CHECK(i->HasMember("id"));
+				CHECK((*i)["id"].IsUint());
+
+				CHECK(i->HasMember("key1"));
+				CHECK((*i)["key1"].IsString());
+
+				if (myGameIdStopped == (*i)["id"].GetUint() || yourGameIdStarted == (*i)["id"].GetUint()) {
+					CHECK(0 == std::string("value1").compare((*i)["key1"].GetString()));
+				} else {
+					CHECK(0 == std::string((*i)["key1"].GetString()).length());
+				}
+			}
+
+			// Single filter #1
+			response = getGameList({"key1"}, "{\"is_running\":true}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(2 == response["games"].Size());
+
+			for (auto i = response["games"].Begin(); i != response["games"].End(); i++) {
+
+				CHECK(i->IsObject());
+				CHECK(i->HasMember("id"));
+				CHECK((*i)["id"].IsUint());
+
+				bool startedIdsValid = myGameIdStarted == (*i)["id"].GetUint() || yourGameIdStarted == (*i)["id"].GetUint();
+
+				CHECK(startedIdsValid);
+				CHECK(i->HasMember("key1"));
+				CHECK((*i)["key1"].IsString());
+
+				if (yourGameIdStarted == (*i)["id"].GetUint()) {
+					CHECK(0 == std::string("value1").compare((*i)["key1"].GetString()));
+				} else {
+					CHECK(0 == std::string((*i)["key1"].GetString()).length());
+				}
+			}
+
+			// Single filter #2
+			response = getGameList({"key1"}, "{\"is_running\":false}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(2 == response["games"].Size());
+
+			for (auto i = response["games"].Begin(); i != response["games"].End(); i++) {
+
+				CHECK(i->IsObject());
+				CHECK(i->HasMember("id"));
+				CHECK((*i)["id"].IsUint());
+
+				bool stoppedIdsValid = myGameIdStopped == (*i)["id"].GetUint() || yourGameIdStopped == (*i)["id"].GetUint();
+
+				CHECK(stoppedIdsValid);
+				CHECK(i->HasMember("key1"));
+				CHECK((*i)["key1"].IsString());
+
+				if (myGameIdStopped == (*i)["id"].GetUint()) {
+					CHECK(0 == std::string("value1").compare((*i)["key1"].GetString()));
+				} else {
+					CHECK(0 == std::string((*i)["key1"].GetString()).length());
+				}
+			}
+
+			// Single filter #3
+			response = getGameList({"key1"}, "{\"name_starts\":\"my\"}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(2 == response["games"].Size());
+
+			for (auto i = response["games"].Begin(); i != response["games"].End(); i++) {
+
+				CHECK(i->IsObject());
+				CHECK(i->HasMember("id"));
+				CHECK((*i)["id"].IsUint());
+
+				bool stoppedIdsValid = myGameIdStopped == (*i)["id"].GetUint() || myGameIdStarted == (*i)["id"].GetUint();
+
+				CHECK(stoppedIdsValid);
+				CHECK(i->HasMember("key1"));
+				CHECK((*i)["key1"].IsString());
+
+				if (myGameIdStopped == (*i)["id"].GetUint()) {
+					CHECK(0 == std::string("value1").compare((*i)["key1"].GetString()));
+				} else {
+					CHECK(0 == std::string((*i)["key1"].GetString()).length());
+				}
+			}
+
+			// Single filter #4
+			response = getGameList({"key1"}, "{\"name_starts\":\"your\"}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(2 == response["games"].Size());
+
+			for (auto i = response["games"].Begin(); i != response["games"].End(); i++) {
+
+				CHECK(i->IsObject());
+				CHECK(i->HasMember("id"));
+				CHECK((*i)["id"].IsUint());
+
+				bool stoppedIdsValid = yourGameIdStopped == (*i)["id"].GetUint() || yourGameIdStarted == (*i)["id"].GetUint();
+
+				CHECK(stoppedIdsValid);
+				CHECK(i->HasMember("key1"));
+				CHECK((*i)["key1"].IsString());
+
+				if (yourGameIdStarted == (*i)["id"].GetUint()) {
+					CHECK(0 == std::string("value1").compare((*i)["key1"].GetString()));
+				} else {
+					CHECK(0 == std::string((*i)["key1"].GetString()).length());
+				}
+			}
+
+			// Filter group #1
+			response = getGameList({"key1"}, "{\"is_running\":true, \"name_starts\":\"my\"}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(1 == response["games"].Size());
+
+			CHECK(response["games"][0].HasMember("id"));
+			CHECK(response["games"][0]["id"].IsUint());
+			CHECK(myGameIdStarted == response["games"][0]["id"].GetUint());
+
+			CHECK(response["games"][0].HasMember("key1"));
+			CHECK(response["games"][0]["key1"].IsString());
+			CHECK(0 == std::string(response["games"][0]["key1"].GetString()).length());
+
+			// Filter group #2
+			response = getGameList({"key1"}, "{\"is_running\":false, \"name_starts\":\"your\"}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(1 == response["games"].Size());
+
+			CHECK(response["games"][0].HasMember("key1"));
+			CHECK(response["games"][0]["key1"].IsString());
+			CHECK(0 == std::string(response["games"][0]["key1"].GetString()).length());
+
+			// Filter group #3 (contradiction)
+			response = getGameList({"key1"}, "{\"is_running\":false, \"is_running\":true}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
+			// Filter group #4 (contradiction)
+			response = getGameList({"key1"}, "{\"name_starts\":\"my\", \"name_starts\":\"your\"}");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
+			// Filter union
+			response = getGameList({"key1"}, "[{\"is_running\":true, \"name_starts\":\"your\"}, {\"is_running\":false, \"name_starts\":\"my\"}]");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(2 == response["games"].Size());
+
+			for (auto i = response["games"].Begin(); i != response["games"].End(); i++) {
+
+				CHECK(i->IsObject());
+				CHECK(i->HasMember("id"));
+				CHECK((*i)["id"].IsUint());
+
+				bool stoppedIdsValid = yourGameIdStarted == (*i)["id"].GetUint() || myGameIdStopped == (*i)["id"].GetUint();
+
+				CHECK(stoppedIdsValid);
+
+				if (yourGameIdStarted == (*i)["id"].GetUint() || myGameIdStopped == (*i)["id"].GetUint()) {
+					CHECK(0 == std::string("value1").compare((*i)["key1"].GetString()));
+				} else {
+					CHECK(0 == std::string((*i)["key1"].GetString()).length());
+				}
+			}
+
+			destroyGameXML();
+			destroyConfig();
 		}
 	}
 }
