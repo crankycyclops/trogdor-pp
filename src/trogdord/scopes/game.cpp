@@ -302,9 +302,12 @@ rapidjson::Document GameController::getStatistics(const rapidjson::Document &req
 
 		std::stringstream timeCreated;
 		timeCreated << std::put_time(std::gmtime(&game->getCreated()), "%Y-%m-%d %H:%M:%S UTC");
+		rapidjson::Value timeCreatedVal(rapidjson::kStringType);
+
+		timeCreatedVal.SetString(timeCreated.str().c_str(), response.GetAllocator());
 
 		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
-		response.AddMember("created", rapidjson::StringRef(timeCreated.str().c_str()), response.GetAllocator());
+		response.AddMember("created", timeCreatedVal, response.GetAllocator());
 		response.AddMember("players", game->getNumPlayers(), response.GetAllocator());
 		response.AddMember("current_time", game->get()->getTime(), response.GetAllocator());
 		response.AddMember("is_running", game->get()->inProgress(), response.GetAllocator());

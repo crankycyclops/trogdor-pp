@@ -11,6 +11,7 @@
 
 TEST_SUITE("GlobalController (scopes/global.cpp)") {
 
+	// TODO: need to add a separate test case for number of games
 	TEST_CASE("GlobalController (scopes/global.cpp): resolve() with no action and no default action") {
 
 		rapidjson::Document request(rapidjson::kObjectType);

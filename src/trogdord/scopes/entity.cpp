@@ -38,7 +38,7 @@ EntityController::~EntityController() {}
 
 rapidjson::Document EntityController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
 
-	rapidjson::Document entity;
+	rapidjson::Document entity(rapidjson::kObjectType);
 
 	entity.AddMember("name", rapidjson::StringRef(ePtr->getName().c_str()), entity.GetAllocator());
 	entity.AddMember("type", rapidjson::StringRef(ePtr->getTypeName().c_str()), entity.GetAllocator());
