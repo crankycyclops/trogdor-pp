@@ -11,6 +11,11 @@
 #include "../../include//gamecontainer.h"
 
 
+// Number of ms between clock ticks (make this value small enough to ensure
+// time-dependent unit tests finish quickly, but not so small that the Timer
+// becomes unstable.)
+constexpr size_t tickInterval = 5;
+
 // Test game names
 const char *gameName = "myGame";
 const char *gameName2 = "yourGame";
@@ -287,6 +292,38 @@ rapidjson::Document stopGame(size_t id) {
 	request.AddMember("args", args, request.GetAllocator());
 
 	return GameController::get()->stopGame(request);
+}
+
+// Returns whether or not the game is running
+rapidjson::Document isRunning(size_t id) {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+	rapidjson::Document args(rapidjson::kObjectType);
+
+	args.AddMember("id", id, request.GetAllocator());
+
+	request.AddMember("method", "get", request.GetAllocator());
+	request.AddMember("scope", "game", request.GetAllocator());
+	request.AddMember("action", "is_running", request.GetAllocator());
+	request.AddMember("args", args, request.GetAllocator());
+
+	return GameController::get()->getIsRunning(request);
+}
+
+// Returns the current time in a game
+rapidjson::Document getTime(size_t id) {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+	rapidjson::Document args(rapidjson::kObjectType);
+
+	args.AddMember("id", id, request.GetAllocator());
+
+	request.AddMember("method", "get", request.GetAllocator());
+	request.AddMember("scope", "game", request.GetAllocator());
+	request.AddMember("action", "time", request.GetAllocator());
+	request.AddMember("args", args, request.GetAllocator());
+
+	return GameController::get()->getTime(request);
 }
 
 TEST_SUITE("GameController (scopes/game.cpp)") {
@@ -3194,10 +3231,104 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig();
 
-			// TODO
-			// 1. verify that stopped game can be started
-			// 2. verify that started game can return success but remains started
-			// validate both with isRunning() and getTime()
+			static std::chrono::milliseconds threadSleepTime(tickInterval * 2);
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t id = response["id"].GetUint();
+
+			// Verify that game is created in a stopped state by default by
+			// waiting a little while and seeing that the game's timer
+			// doesn't advance.
+			std::this_thread::sleep_for(threadSleepTime);
+
+			response = isRunning(id);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("is_running"));
+			CHECK(response["is_running"].IsBool());
+			CHECK(!response["is_running"].GetBool());
+
+			response = getTime(id);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("current_time"));
+			CHECK(response["current_time"].IsUint());
+			CHECK(0 == response["current_time"].GetUint());
+
+			// Next, start the game, wait a little while, and verify that it's
+			// reported as running and that the timer has advanced.
+			response = startGame(id);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			std::this_thread::sleep_for(threadSleepTime);
+			response = isRunning(id);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("is_running"));
+			CHECK(response["is_running"].IsBool());
+			CHECK(response["is_running"].GetBool());
+
+			response = getTime(id);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("current_time"));
+			CHECK(response["current_time"].IsUint());
+			CHECK(response["current_time"].GetUint() > 0);
+
+			size_t currentTick = response["current_time"].GetUint();
+
+			// Now, try starting the game again and verify that we return
+			// success and that the game remains running.
+			response = startGame(id);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			std::this_thread::sleep_for(threadSleepTime);
+			response = isRunning(id);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("is_running"));
+			CHECK(response["is_running"].IsBool());
+			CHECK(response["is_running"].GetBool());
+
+			response = getTime(id);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("current_time"));
+			CHECK(response["current_time"].IsUint());
+			CHECK(response["current_time"].GetUint() > currentTick);
 
 			destroyGameXML();
 			destroyConfig();
