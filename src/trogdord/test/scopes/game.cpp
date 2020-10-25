@@ -1,12 +1,10 @@
 #include <doctest.h>
-#include <trogdor/utility.h>
-
 #include "helper.h"
 
 
 // Test game names
-const char *gameName = "myGame";
-const char *gameName2 = "yourGame";
+static const char *gameName = "myGame";
+static const char *gameName2 = "yourGame";
 
 TEST_SUITE("GameController (scopes/game.cpp)") {
 

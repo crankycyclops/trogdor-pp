@@ -1,4 +1,9 @@
+#ifndef TROGDORD_TEST_HELPER_H
+#define TROGDORD_TEST_HELPER_H
+
+
 #include <unordered_map>
+#include <trogdor/utility.h>
 
 #include "../../include/json.h"
 #include "../../include/request.h"
@@ -17,25 +22,25 @@
 constexpr size_t tickInterval = 5;
 
 // Full path to our unit test's ini file
-std::string iniFilename;
+static std::string iniFilename;
 
 // Full path to where we're storing our unit test xml files
-std::string gameXMLLocation;
+static std::string gameXMLLocation;
 
 // Full path to our unit test's game.xml file
-std::string gameXMLFilename;
+static std::string gameXMLFilename;
 
 // The XML filename of our game.xml file without the prepended path
-std::string gameXMLRelativeFilename = "game.xml";
+static std::string gameXMLRelativeFilename = "game.xml";
 
 // Test meta data
-std::unordered_map<std::string, std::string> testMeta = {
+static std::unordered_map<std::string, std::string> testMeta = {
 	{"key1", "value1"},
 	{"key2", "value2"}
 };
 
 // Sets up a test game.xml file for our unit test
-void initGameXML() {
+inline void initGameXML() {
 
 	gameXMLLocation = STD_FILESYSTEM::temp_directory_path().string() +
 		STD_FILESYSTEM::path::preferred_separator + "trogtest";
@@ -48,11 +53,23 @@ void initGameXML() {
 	gameXMLFile << "<?xml version=\"1.0\"?>\n" << std::endl;
 	gameXMLFile << "<game>\n" << std::endl;
 
+	gameXMLFile << "\t<creatures>\n" << std::endl;
+	gameXMLFile << "\t\t<creature name=\"trogdor\">\n" << std::endl;
+	gameXMLFile << "\t\t\t<description>He be cray cray.</description>\n" << std::endl;
+	gameXMLFile << "\t\t</creature>\n" << std::endl;
+	gameXMLFile << "\t</creatures>\n" << std::endl;
+
 	gameXMLFile << "\t<objects>\n" << std::endl;
 	gameXMLFile << "\t\t<object name=\"candle\">\n" << std::endl;
 	gameXMLFile << "\t\t\t<description>Test</description>\n" << std::endl;
 	gameXMLFile << "\t\t</object>\n" << std::endl;
 	gameXMLFile << "\t</objects>\n" << std::endl;
+
+	gameXMLFile << "\t<resources>\n" << std::endl;
+	gameXMLFile << "\t\t<resource name=\"gold\">\n" << std::endl;
+	gameXMLFile << "\t\t\t<description>It's shiny.</description>\n" << std::endl;
+	gameXMLFile << "\t\t</resource>\n" << std::endl;
+	gameXMLFile << "\t</resources>\n" << std::endl;
 
 	gameXMLFile << "\t<rooms>\n" << std::endl;
 	gameXMLFile << "\t\t<room name=\"start\">\n" << std::endl;
@@ -69,14 +86,14 @@ void initGameXML() {
 }
 
 // Destroys our unit test's game.xml file
-void destroyGameXML() {
+inline void destroyGameXML() {
 
 	STD_FILESYSTEM::remove_all(gameXMLLocation);
 }
 
 // Initializes an ini file with the necessary configuration in /tmp. This must
 // be called *AFTER* a call to initGameXML().
-void initConfig() {
+inline void initConfig() {
 
 	iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
 	std::ofstream iniFile (iniFilename, std::ofstream::out);
@@ -88,13 +105,13 @@ void initConfig() {
 }
 
 // Destroys our unit test's ini file
-void destroyConfig() {
+inline void destroyConfig() {
 
 	STD_FILESYSTEM::remove(iniFilename);
 }
 
 // Creates a game
-rapidjson::Document createGame(
+inline rapidjson::Document createGame(
 	const char *name,
 	const char *definition,
 	std::unordered_map<std::string, std::string> meta = {}
@@ -136,7 +153,7 @@ rapidjson::Document createGame(
 }
 
 // Destroys a game
-rapidjson::Document destroyGame(size_t id) {
+inline rapidjson::Document destroyGame(size_t id) {
 
 	rapidjson::Document deleteRequest(rapidjson::kObjectType);
 	rapidjson::Value deleteArgs(rapidjson::kObjectType);
@@ -151,7 +168,7 @@ rapidjson::Document destroyGame(size_t id) {
 }
 
 // Gets the details of an existing game
-rapidjson::Document getGame(size_t id) {
+inline rapidjson::Document getGame(size_t id) {
 
 	rapidjson::Document request(rapidjson::kObjectType);
 	rapidjson::Value args(rapidjson::kObjectType);
@@ -166,7 +183,7 @@ rapidjson::Document getGame(size_t id) {
 }
 
 // Gets some or all meta data associated with an existing game
-rapidjson::Document getMeta(size_t id, std::vector<const char *> keys = {}) {
+inline rapidjson::Document getMeta(size_t id, std::vector<const char *> keys = {}) {
 
 	rapidjson::Document request(rapidjson::kObjectType);
 	rapidjson::Value args(rapidjson::kObjectType);
@@ -192,7 +209,7 @@ rapidjson::Document getMeta(size_t id, std::vector<const char *> keys = {}) {
 }
 
 // Gets some or all meta data associated with an existing game
-rapidjson::Document setMeta(size_t id, std::unordered_map<std::string, const char *> meta = {}) {
+inline rapidjson::Document setMeta(size_t id, std::unordered_map<std::string, const char *> meta = {}) {
 
 	rapidjson::Document request(rapidjson::kObjectType);
 	rapidjson::Value args(rapidjson::kObjectType);
@@ -218,7 +235,7 @@ rapidjson::Document setMeta(size_t id, std::unordered_map<std::string, const cha
 }
 
 // filters should be a valid JSON string
-rapidjson::Document getGameList(
+inline rapidjson::Document getGameList(
 	std::vector<const char *> metaKeys = {},
 	const char *filters = nullptr
 ) {
@@ -259,7 +276,7 @@ rapidjson::Document getGameList(
 }
 
 // Starts a game
-rapidjson::Document startGame(size_t id) {
+inline rapidjson::Document startGame(size_t id) {
 
 	rapidjson::Document request(rapidjson::kObjectType);
 	rapidjson::Document args(rapidjson::kObjectType);
@@ -275,7 +292,7 @@ rapidjson::Document startGame(size_t id) {
 }
 
 // Starts a game
-rapidjson::Document stopGame(size_t id) {
+inline rapidjson::Document stopGame(size_t id) {
 
 	rapidjson::Document request(rapidjson::kObjectType);
 	rapidjson::Document args(rapidjson::kObjectType);
@@ -291,7 +308,7 @@ rapidjson::Document stopGame(size_t id) {
 }
 
 // Returns whether or not the game is running
-rapidjson::Document isRunning(size_t id) {
+inline rapidjson::Document isRunning(size_t id) {
 
 	rapidjson::Document request(rapidjson::kObjectType);
 	rapidjson::Document args(rapidjson::kObjectType);
@@ -307,7 +324,7 @@ rapidjson::Document isRunning(size_t id) {
 }
 
 // Returns the current time in a game
-rapidjson::Document getTime(size_t id) {
+inline rapidjson::Document getTime(size_t id) {
 
 	rapidjson::Document request(rapidjson::kObjectType);
 	rapidjson::Document args(rapidjson::kObjectType);
@@ -323,7 +340,7 @@ rapidjson::Document getTime(size_t id) {
 }
 
 // Returns a game's statistics
-rapidjson::Document getStatistics(size_t id) {
+inline rapidjson::Document getStatistics(size_t id) {
 
 	rapidjson::Document request(rapidjson::kObjectType);
 	rapidjson::Document args(rapidjson::kObjectType);
@@ -339,7 +356,7 @@ rapidjson::Document getStatistics(size_t id) {
 }
 
 // Creates a player
-rapidjson::Document createPlayer(size_t gameId, const char *name) {
+inline rapidjson::Document createPlayer(size_t gameId, const char *name) {
 
 	rapidjson::Document request(rapidjson::kObjectType);
 	rapidjson::Document args(rapidjson::kObjectType);
@@ -355,7 +372,7 @@ rapidjson::Document createPlayer(size_t gameId, const char *name) {
 }
 
 // Deletes a player
-rapidjson::Document destroyPlayer(size_t gameId, const char *name) {
+inline rapidjson::Document destroyPlayer(size_t gameId, const char *name) {
 
 	rapidjson::Document request(rapidjson::kObjectType);
 	rapidjson::Document args(rapidjson::kObjectType);
@@ -369,3 +386,6 @@ rapidjson::Document destroyPlayer(size_t gameId, const char *name) {
 
 	return PlayerController::get()->destroyPlayer(request);
 }
+
+
+#endif // TROGDORD_TEST_HELPER_H
