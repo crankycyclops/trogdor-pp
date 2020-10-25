@@ -94,9 +94,6 @@ rapidjson::Document EntityController::getEntityHelper(
 	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
 
 	if (!game) {
-
-		rapidjson::Document response(rapidjson::kObjectType);
-
 		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
 		response.AddMember("message", rapidjson::StringRef(GAME_NOT_FOUND), response.GetAllocator());
 	}
@@ -108,9 +105,6 @@ rapidjson::Document EntityController::getEntityHelper(
 		}
 
 		catch (const EntityNotFound &e) {
-
-			rapidjson::Document response(rapidjson::kObjectType);
-
 			response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
 			response.AddMember("message", rapidjson::StringRef(notFoundMsg.c_str()), response.GetAllocator());
 		}
@@ -181,7 +175,7 @@ rapidjson::Document EntityController::getEntity(const rapidjson::Document &reque
 		ePtr
 	);
 
-	if (error.Size()) {
+	if (error.MemberBegin() != error.MemberEnd()) {
 		return error;
 	}
 
@@ -274,7 +268,7 @@ rapidjson::Document EntityController::getOutput(const rapidjson::Document &reque
 		ePtr
 	);
 
-	if (error.Size()) {
+	if (error.MemberBegin() != error.MemberEnd()) {
 		return error;
 	}
 
@@ -347,7 +341,7 @@ rapidjson::Document EntityController::appendOutput(const rapidjson::Document &re
 		ePtr
 	);
 
-	if (error.Size()) {
+	if (error.MemberBegin() != error.MemberEnd()) {
 		return error;
 	}
 

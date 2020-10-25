@@ -387,5 +387,21 @@ inline rapidjson::Document destroyPlayer(size_t gameId, const char *name) {
 	return PlayerController::get()->destroyPlayer(request);
 }
 
+// Get an entity.
+inline rapidjson::Document getEntity(size_t gameId, const char *name) {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+	rapidjson::Document args(rapidjson::kObjectType);
+
+	args.AddMember("game_id", gameId, request.GetAllocator());
+	args.AddMember("name", rapidjson::StringRef(name), request.GetAllocator());
+
+	request.AddMember("method", "get", request.GetAllocator());
+	request.AddMember("scope", "entity", request.GetAllocator());
+	request.AddMember("args", args, request.GetAllocator());
+
+	return EntityController::get()->getEntity(request);
+}
+
 
 #endif // TROGDORD_TEST_HELPER_H

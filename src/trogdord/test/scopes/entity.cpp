@@ -10,11 +10,55 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 	TEST_CASE("EntityController (scopes/entity.cpp): getEntity()") {
 
 		SUBCASE("No args") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "entity", request.GetAllocator());
+
+			rapidjson::Document response = EntityController::get()->getEntity(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Empty args") {
-			// TODO
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Document args(rapidjson::kObjectType);
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "entity", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = EntityController::get()->getEntity(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Missing game id") {
@@ -49,11 +93,59 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 	TEST_CASE("EntityController (scopes/entity.cpp): getEntityList()") {
 
 		SUBCASE("No args") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "entity", request.GetAllocator());
+			request.AddMember("action", "list", request.GetAllocator());
+
+			rapidjson::Document response = EntityController::get()->getEntity(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Empty args") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Document args(rapidjson::kObjectType);
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "entity", request.GetAllocator());
+			request.AddMember("action", "list", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = EntityController::get()->getEntity(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Missing game id") {
@@ -83,11 +175,59 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 	TEST_CASE("EntityController (scopes/entity.cpp): getOutput()") {
 
 		SUBCASE("No args") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "entity", request.GetAllocator());
+			request.AddMember("action", "output", request.GetAllocator());
+
+			rapidjson::Document response = EntityController::get()->getEntity(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Empty args") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Document args(rapidjson::kObjectType);
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "entity", request.GetAllocator());
+			request.AddMember("action", "output", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = EntityController::get()->getEntity(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Missing game id") {
@@ -138,11 +278,59 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 	TEST_CASE("EntityController (scopes/entity.cpp): appendOutput()") {
 
 		SUBCASE("No args") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "entity", request.GetAllocator());
+			request.AddMember("action", "output", request.GetAllocator());
+
+			rapidjson::Document response = EntityController::get()->getEntity(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Empty args") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Document args(rapidjson::kObjectType);
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "entity", request.GetAllocator());
+			request.AddMember("action", "output", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = EntityController::get()->getEntity(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Missing game id") {
