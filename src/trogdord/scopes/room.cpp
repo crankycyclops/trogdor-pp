@@ -12,9 +12,12 @@ std::unique_ptr<RoomController> RoomController::instance;
 
 /*****************************************************************************/
 
-rapidjson::Document RoomController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+rapidjson::Value RoomController::entityToJSONObject(
+	trogdor::entity::Entity *ePtr,
+	rapidjson::MemoryPoolAllocator<> &allocator
+) {
 
-	rapidjson::Document room = PlaceController::entityToJSONObject(ePtr);
+	rapidjson::Value room = PlaceController::entityToJSONObject(ePtr, allocator);
 
 	// TODO: add room-specific properties
 	return room;

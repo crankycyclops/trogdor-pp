@@ -12,9 +12,12 @@ std::unique_ptr<TangibleController> TangibleController::instance;
 
 /*****************************************************************************/
 
-rapidjson::Document TangibleController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+rapidjson::Value TangibleController::entityToJSONObject(
+	trogdor::entity::Entity *ePtr,
+	rapidjson::MemoryPoolAllocator<> &allocator
+) {
 
-	rapidjson::Document tangible = EntityController::entityToJSONObject(ePtr);
+	rapidjson::Value tangible = EntityController::entityToJSONObject(ePtr, allocator);
 
 	// TODO: add tangible-specific properties
 	return tangible;

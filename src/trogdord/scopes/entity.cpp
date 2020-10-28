@@ -36,12 +36,20 @@ EntityController::~EntityController() {}
 
 /*****************************************************************************/
 
-rapidjson::Document EntityController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+rapidjson::Value EntityController::entityToJSONObject(
+	trogdor::entity::Entity *ePtr,
+	rapidjson::MemoryPoolAllocator<> &allocator
+) {
 
-	rapidjson::Document entity(rapidjson::kObjectType);
+	rapidjson::Value entity(rapidjson::kObjectType);
+	rapidjson::Value eName(rapidjson::kStringType);
+	rapidjson::Value eType(rapidjson::kStringType);
 
-	entity.AddMember("name", rapidjson::StringRef(ePtr->getName().c_str()), entity.GetAllocator());
-	entity.AddMember("type", rapidjson::StringRef(ePtr->getTypeName().c_str()), entity.GetAllocator());
+	eName.SetString(rapidjson::StringRef(ePtr->getName().c_str()), allocator);
+	eType.SetString(rapidjson::StringRef(ePtr->getTypeName().c_str()), allocator);
+
+	entity.AddMember("name", eName, allocator);
+	entity.AddMember("type", eType, allocator);
 
 	return entity;
 }
@@ -105,8 +113,12 @@ rapidjson::Document EntityController::getEntityHelper(
 		}
 
 		catch (const EntityNotFound &e) {
+
+			rapidjson::Value errorMsg(rapidjson::kStringType);
+
+			errorMsg.SetString(notFoundMsg.c_str(), response.GetAllocator());
 			response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
-			response.AddMember("message", rapidjson::StringRef(notFoundMsg.c_str()), response.GetAllocator());
+			response.AddMember("message", errorMsg, response.GetAllocator());
 		}
 	}
 
@@ -184,7 +196,7 @@ rapidjson::Document EntityController::getEntity(const rapidjson::Document &reque
 		rapidjson::Document response(rapidjson::kObjectType);
 
 		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
-		response.AddMember("entity", entityToJSONObject(ePtr), response.GetAllocator());
+		response.AddMember("entity", entityToJSONObject(ePtr, response.GetAllocator()), response.GetAllocator());
 
 		return response;
 	}
@@ -215,7 +227,7 @@ rapidjson::Document EntityController::getEntityList(const rapidjson::Document &r
 		rapidjson::Value entities(rapidjson::kArrayType);
 
 		for (const auto &entity: getEntityPtrList(game->get())) {
-			entities.PushBack(entityToJSONObject(entity), response.GetAllocator());
+			entities.PushBack(entityToJSONObject(entity, response.GetAllocator()), response.GetAllocator());
 		}
 
 		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());

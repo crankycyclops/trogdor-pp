@@ -25,7 +25,10 @@ class PlayerController: public BeingController {
 		static const char *PLAYER_NOT_FOUND;
 
 		// Converts a player to a JSON object
-		virtual rapidjson::Document entityToJSONObject(trogdor::entity::Entity *ePtr);
+		virtual rapidjson::Value entityToJSONObject(
+			trogdor::entity::Entity *ePtr,
+			rapidjson::MemoryPoolAllocator<> &allocator
+		);
 
 		// Returns a pointer to the player of the specified name. Throws an
 		// instance of PlayerNotFound if the player doesn't exist.

@@ -12,9 +12,11 @@ std::unique_ptr<ObjectController> ObjectController::instance;
 
 /*****************************************************************************/
 
-rapidjson::Document ObjectController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+rapidjson::Value ObjectController::entityToJSONObject(
+	trogdor::entity::Entity *ePtr,
+	rapidjson::MemoryPoolAllocator<> &allocator) {
 
-	rapidjson::Document object = ThingController::entityToJSONObject(ePtr);
+	rapidjson::Value object = ThingController::entityToJSONObject(ePtr, allocator);
 
 	// TODO: add object-specific properties
 	return object;

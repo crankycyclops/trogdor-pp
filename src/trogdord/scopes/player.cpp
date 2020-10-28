@@ -25,9 +25,12 @@ std::unique_ptr<PlayerController> PlayerController::instance;
 
 /*****************************************************************************/
 
-rapidjson::Document PlayerController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+rapidjson::Value PlayerController::entityToJSONObject(
+	trogdor::entity::Entity *ePtr,
+	rapidjson::MemoryPoolAllocator<> &allocator
+) {
 
-	rapidjson::Document player = BeingController::entityToJSONObject(ePtr);
+	rapidjson::Value player = BeingController::entityToJSONObject(ePtr, allocator);
 
 	// TODO: add player-specific properties
 	return player;
@@ -121,7 +124,8 @@ rapidjson::Document PlayerController::createPlayer(const rapidjson::Document &re
 
 		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 		response.AddMember("player", entityToJSONObject(
-			GameContainer::get()->createPlayer(gameId, playerName)
+			GameContainer::get()->createPlayer(gameId, playerName),
+			response.GetAllocator()
 		), response.GetAllocator());
 
 		return response;

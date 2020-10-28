@@ -12,9 +12,12 @@ std::unique_ptr<BeingController> BeingController::instance;
 
 /*****************************************************************************/
 
-rapidjson::Document BeingController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+rapidjson::Value BeingController::entityToJSONObject(
+	trogdor::entity::Entity *ePtr,
+	rapidjson::MemoryPoolAllocator<> &allocator
+) {
 
-	rapidjson::Document being = ThingController::entityToJSONObject(ePtr);
+	rapidjson::Value being = ThingController::entityToJSONObject(ePtr, allocator);
 
 	// TODO: add being-specific properties
 	return being;

@@ -16,7 +16,10 @@ class ThingController: public TangibleController {
 	protected:
 
 		// Converts a thing to a JSON object
-		virtual rapidjson::Document entityToJSONObject(trogdor::entity::Entity *ePtr);
+		virtual rapidjson::Value entityToJSONObject(
+			trogdor::entity::Entity *ePtr,
+			rapidjson::MemoryPoolAllocator<> &allocator
+		);
 
 		// Returns a pointer to the thing of the specified name. Throws an
 		// instance of ThingNotFound if it doesn't exist.

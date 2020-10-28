@@ -12,9 +12,12 @@ std::unique_ptr<CreatureController> CreatureController::instance;
 
 /*****************************************************************************/
 
-rapidjson::Document CreatureController::entityToJSONObject(trogdor::entity::Entity *ePtr) {
+rapidjson::Value CreatureController::entityToJSONObject(
+	trogdor::entity::Entity *ePtr,
+	rapidjson::MemoryPoolAllocator<> &allocator
+) {
 
-	rapidjson::Document creature = BeingController::entityToJSONObject(ePtr);
+	rapidjson::Value creature = BeingController::entityToJSONObject(ePtr, allocator);
 
 	// TODO: add creature-specific properties
 	return creature;
