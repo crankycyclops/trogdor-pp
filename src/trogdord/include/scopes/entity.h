@@ -19,16 +19,6 @@ class EntityController: public ScopeController {
 		static const char *LIST_ACTION;
 		static const char *OUTPUT_ACTION;
 
-		// Error messages
-		static const char *MISSING_OUTPUT_MESSAGE;
-		static const char *INVALID_OUTPUT_MESSAGE;
-		static const char *MISSING_COMMAND;
-		static const char *MISSING_CHANNEL;
-		static const char *INVALID_CHANNEL;
-		static const char *MISSING_ENTITY_NAME;
-		static const char *INVALID_ENTITY_NAME;
-		static const char *ENTITY_NOT_FOUND;
-
 		// Constructor should only be called internally by get(), which will
 		// ensure we only ever have a single instance of the class.
 		EntityController();
@@ -73,6 +63,16 @@ class EntityController: public ScopeController {
 		);
 
 	public:
+
+		// Error messages
+		static const char *MISSING_OUTPUT_MESSAGE;
+		static const char *INVALID_OUTPUT_MESSAGE;
+		static const char *MISSING_COMMAND;
+		static const char *MISSING_CHANNEL;
+		static const char *INVALID_CHANNEL;
+		static const char *MISSING_ENTITY_NAME;
+		static const char *INVALID_ENTITY_NAME;
+		static const char *ENTITY_NOT_FOUND;
 
 		// Scope name that should be used in requests
 		static const char *SCOPE;
