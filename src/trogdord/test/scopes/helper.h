@@ -403,5 +403,43 @@ inline rapidjson::Document getEntity(size_t gameId, const char *name) {
 	return EntityController::get()->getEntity(request);
 }
 
+// Get all entities in a game.
+inline rapidjson::Document getEntityList(size_t gameId) {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+	rapidjson::Document args(rapidjson::kObjectType);
+
+	args.AddMember("game_id", gameId, request.GetAllocator());
+
+	request.AddMember("method", "get", request.GetAllocator());
+	request.AddMember("scope", "entity", request.GetAllocator());
+	request.AddMember("action", "list", request.GetAllocator());
+	request.AddMember("args", args, request.GetAllocator());
+
+	return EntityController::get()->getEntityList(request);
+}
+
+// Get all output messages for an entity on the specified channel.
+inline rapidjson::Document getOutput(
+	size_t gameId,
+	const char *entityName,
+	const char *channel
+) {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+	rapidjson::Document args(rapidjson::kObjectType);
+
+	args.AddMember("game_id", gameId, request.GetAllocator());
+	args.AddMember("name", rapidjson::StringRef(entityName), request.GetAllocator());
+	args.AddMember("channel", rapidjson::StringRef(channel), request.GetAllocator());
+
+	request.AddMember("method", "get", request.GetAllocator());
+	request.AddMember("scope", "entity", request.GetAllocator());
+	request.AddMember("action", "output", request.GetAllocator());
+	request.AddMember("args", args, request.GetAllocator());
+
+	return EntityController::get()->getOutput(request);
+}
+
 
 #endif // TROGDORD_TEST_HELPER_H

@@ -39,6 +39,8 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 
 		SUBCASE("Empty args") {
 
+			GameContainer::get()->reset();
+
 			initGameXML();
 			initConfig();
 
@@ -66,6 +68,8 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 		}
 
 		SUBCASE("Missing game id") {
+
+			GameContainer::get()->reset();
 
 			initGameXML();
 			initConfig();
@@ -97,6 +101,8 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 
 		SUBCASE("Missing entity name") {
 
+			GameContainer::get()->reset();
+
 			initGameXML();
 			initConfig();
 
@@ -127,6 +133,8 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 
 		SUBCASE("No games, invalid game id") {
 
+			GameContainer::get()->reset();
+
 			initGameXML();
 			initConfig();
 
@@ -147,6 +155,8 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 		}
 
 		SUBCASE("One game, invalid game id") {
+
+			GameContainer::get()->reset();
 
 			initGameXML();
 			initConfig();
@@ -182,6 +192,8 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 
 		SUBCASE("One game, invalid entity name") {
 
+			GameContainer::get()->reset();
+
 			initGameXML();
 			initConfig();
 
@@ -216,11 +228,12 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 
 		SUBCASE("Stopped game, valid game id and entity name") {
 
-			const char *entityName = "start";
+			GameContainer::get()->reset();
 
 			initGameXML();
 			initConfig();
 
+			const char *entityName = "start";
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
 			CHECK(trogdor::isAscii(JSON::serialize(response)));
@@ -267,11 +280,12 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 
 		SUBCASE("Started game, valid game id and entity name") {
 
-			const char *entityName = "start";
+			GameContainer::get()->reset();
 
 			initGameXML();
 			initConfig();
 
+			const char *entityName = "start";
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
 			CHECK(trogdor::isAscii(JSON::serialize(response)));
@@ -334,6 +348,8 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 
 			rapidjson::Document response = EntityController::get()->getEntityList(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -363,6 +379,8 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 
 			rapidjson::Document response = EntityController::get()->getEntityList(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -376,19 +394,150 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 		}
 
 		SUBCASE("No games, invalid game id") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = getEntityList(0);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(EntityController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("One game, invalid game id") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			response = getEntityList(gameId + 1);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(EntityController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Stopped game, valid game id") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			response = stopGame(gameId);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			response = getEntityList(gameId);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("entities"));
+			CHECK(response["entities"].IsArray());
+			CHECK(response["entities"].Size() > 0);
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Started game, valid game id") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			response = startGame(gameId);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			response = getEntityList(gameId);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("entities"));
+			CHECK(response["entities"].IsArray());
+			CHECK(response["entities"].Size() > 0);
+
+			destroyGameXML();
+			destroyConfig();
 		}
 	}
 
@@ -411,6 +560,8 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 			request.AddMember("action", "output", request.GetAllocator());
 
 			rapidjson::Document response = EntityController::get()->getOutput(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -440,6 +591,8 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 			request.AddMember("args", args, request.GetAllocator());
 
 			rapidjson::Document response = EntityController::get()->getOutput(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -473,6 +626,8 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 
 			rapidjson::Document response = EntityController::get()->getOutput(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -504,6 +659,8 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 			request.AddMember("args", args, request.GetAllocator());
 
 			rapidjson::Document response = EntityController::get()->getOutput(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -537,6 +694,8 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 
 			rapidjson::Document response = EntityController::get()->getOutput(request);
 
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
@@ -549,24 +708,182 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 			destroyConfig();
 		}
 
+		SUBCASE("Invalid entity name (not a string)") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Document args(rapidjson::kObjectType);
+
+			args.AddMember("game_id", 0, request.GetAllocator());
+			args.AddMember("name", 0, request.GetAllocator()); // Should be a string for a valid request
+			args.AddMember("channel", "display", request.GetAllocator());
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "entity", request.GetAllocator());
+			request.AddMember("action", "output", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = EntityController::get()->getOutput(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(EntityController::INVALID_ENTITY_NAME).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
+		SUBCASE("One game, Invalid channel (any non-string type)") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Document args(rapidjson::kObjectType);
+
+			args.AddMember("game_id", gameId, request.GetAllocator());
+			args.AddMember("name", "start", request.GetAllocator());
+			args.AddMember("channel", 0, request.GetAllocator()); // Non-string type should make request invalid
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "entity", request.GetAllocator());
+			request.AddMember("action", "output", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			response = EntityController::get()->getOutput(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(EntityController::INVALID_CHANNEL).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
 		SUBCASE("No games, invalid game id") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = getOutput(0, "thisIsAnEntityName", "display");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(EntityController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("One game, invalid game id") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			response = getOutput(gameId + 1, "thisIsAnEntityName", "display");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(EntityController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
-		SUBCASE("No games, invalid entity name") {
-			// TODO
-		}
+		SUBCASE("One game, undefined entity name") {
 
-		SUBCASE("One game, invalid entity name") {
-			// TODO
-		}
+			GameContainer::get()->reset();
 
-		SUBCASE("Invalid channel (any non-string type)") {
-			// TODO: must be a string (test scalers like numerics and bools as well as non-scalars like objects and arrays)
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			response = getOutput(gameId, "NotAnEntity", "display");
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(EntityController::ENTITY_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Stopped game, valid game id, entity name, and channel") {
@@ -579,6 +896,10 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 			// TODO: test both channels that are used which will return non-empty
 			// arrays of messages and channels that aren't used that will return
 			// an empty array.
+		}
+
+		SUBCASE("Valid game id, entity name, and channel, but Redis output driver") {
+			// TODO: in this case, I should get a STATUS_UNSUPPORTED error
 		}
 	}
 
@@ -598,6 +919,8 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 			request.AddMember("action", "output", request.GetAllocator());
 
 			rapidjson::Document response = EntityController::get()->appendOutput(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -627,6 +950,8 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 			request.AddMember("args", args, request.GetAllocator());
 
 			rapidjson::Document response = EntityController::get()->appendOutput(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
