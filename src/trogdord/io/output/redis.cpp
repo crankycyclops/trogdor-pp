@@ -145,11 +145,10 @@ namespace output {
 		Message message
 	) {
 
-		std::unique_ptr<rapidjson::Document> msgJSON;
+		std::unique_ptr<rapidjson::Document> msgJSON = std::make_unique<rapidjson::Document>();
 		message.order = nextOrder(gameId, entityName, channel);
 
- 		msgJSON->CopyFrom(message.toJSONObject(), msgJSON->GetAllocator());
-
+ 		msgJSON->CopyFrom(message.toJSONObject(msgJSON->GetAllocator()), msgJSON->GetAllocator());
 		msgJSON->AddMember("game_id", gameId, msgJSON->GetAllocator());
 		msgJSON->AddMember("entity", rapidjson::StringRef(entityName.c_str()), msgJSON->GetAllocator());
 		msgJSON->AddMember("channel", rapidjson::StringRef(channel.c_str()), msgJSON->GetAllocator());

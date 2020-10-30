@@ -93,10 +93,14 @@ inline void destroyGameXML() {
 
 // Initializes an ini file with the necessary configuration in /tmp. This must
 // be called *AFTER* a call to initGameXML().
-inline void initConfig() {
+inline void initConfig(bool redisSupport = false) {
 
 	iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
 	std::ofstream iniFile (iniFilename, std::ofstream::out);
+
+	if (redisSupport) {
+		iniFile << "[output]\ndriver=redis\n\n" << std::endl;
+	}
 
 	iniFile << "[resources]\ndefinitions_path=" << gameXMLLocation << std::endl;
 	iniFile.close();

@@ -284,16 +284,16 @@ rapidjson::Document EntityController::getOutput(const rapidjson::Document &reque
 		return error;
 	}
 
-	rapidjson::Value messages(rapidjson::kArrayType);
-
 	try {
+
+		rapidjson::Value messages(rapidjson::kArrayType);
 
 		for (
 			std::optional<output::Message> m = outBuffer->pop(gameId, entityName, channel);
 			m.has_value();
 			m = outBuffer->pop(gameId, entityName, channel)
 		) {
-			messages.PushBack(m->toJSONObject(), response.GetAllocator());
+			messages.PushBack(m->toJSONObject(response.GetAllocator()), response.GetAllocator());
 		};
 
 		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
@@ -301,8 +301,12 @@ rapidjson::Document EntityController::getOutput(const rapidjson::Document &reque
 	}
 
 	catch (const UnsupportedOperation &e) {
+
+		rapidjson::Value errorMsg(rapidjson::kStringType);
+
+		errorMsg.SetString(rapidjson::StringRef(e.what()), response.GetAllocator());
 		response.AddMember("status", Response::STATUS_UNSUPPORTED, response.GetAllocator());
-		response.AddMember("message", rapidjson::StringRef(e.what()), response.GetAllocator());
+		response.AddMember("message", errorMsg, response.GetAllocator());
 	}
 
 	return response;

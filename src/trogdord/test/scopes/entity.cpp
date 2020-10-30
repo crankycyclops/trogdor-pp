@@ -887,20 +887,194 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 		}
 
 		SUBCASE("Stopped game, valid game id, entity name, and channel") {
-			// TODO: test both channels that are used which will return non-empty
-			// arrays of messages and channels that aren't used that will return
-			// an empty array.
+
+			const char *playerName = "player";
+			const char *channel = "display";
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			response = stopGame(gameId);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// Right now, players are the only ones who receive output
+			response = createPlayer(gameId, playerName);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			response = getOutput(gameId, playerName, channel);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("messages"));
+			CHECK(response["messages"].IsArray());
+			CHECK(response["messages"].IsArray());
+			CHECK(response["messages"].Size() > 0);
+
+			CHECK(response["messages"][0].HasMember("timestamp"));
+			CHECK(response["messages"][0]["timestamp"].IsUint());
+
+			CHECK(response["messages"][0].HasMember("content"));
+			CHECK(response["messages"][0]["content"].IsString());
+
+			CHECK(response["messages"][0].HasMember("order"));
+			CHECK(response["messages"][0]["order"].IsUint());
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Started game, valid game id, entity name, and channel") {
-			// TODO: test both channels that are used which will return non-empty
-			// arrays of messages and channels that aren't used that will return
-			// an empty array.
+
+			const char *playerName = "player";
+			const char *channel = "display";
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			response = startGame(gameId);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// Right now, players are the only ones who receive output
+			response = createPlayer(gameId, playerName);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			response = getOutput(gameId, playerName, channel);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("messages"));
+			CHECK(response["messages"].IsArray());
+			CHECK(response["messages"].IsArray());
+			CHECK(response["messages"].Size() > 0);
+
+			CHECK(response["messages"][0].HasMember("timestamp"));
+			CHECK(response["messages"][0]["timestamp"].IsUint());
+
+			CHECK(response["messages"][0].HasMember("content"));
+			CHECK(response["messages"][0]["content"].IsString());
+
+			CHECK(response["messages"][0].HasMember("order"));
+			CHECK(response["messages"][0]["order"].IsUint());
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
-		SUBCASE("Valid game id, entity name, and channel, but Redis output driver") {
-			// TODO: in this case, I should get a STATUS_UNSUPPORTED error
-		}
+		#ifdef ENABLE_REDIS
+
+			SUBCASE("Valid game id, entity name, and channel, but Redis output driver") {
+
+				const char *playerName = "player";
+				const char *channel = "display";
+
+				GameContainer::get()->reset();
+
+				initGameXML();
+				initConfig(true);
+
+				rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+				CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+				CHECK(response.HasMember("id"));
+				CHECK(response["id"].IsUint());
+
+				size_t gameId = response["id"].GetUint();
+
+				response = stopGame(gameId);
+
+				CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+				// Right now, players are the only ones who receive output
+				response = createPlayer(gameId, playerName);
+
+				CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+				response = getOutput(gameId, playerName, channel);
+
+				CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+				// getOutput() is unsupported when we're using the Redis
+				// output driver.
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+				destroyGameXML();
+				destroyConfig();
+			}
+
+		#endif
 	}
 
 	TEST_CASE("EntityController (scopes/entity.cpp): appendOutput()") {

@@ -17,13 +17,16 @@ namespace output {
 		size_t order = 0;
 
 		// Converts Message to a JSON object
-		rapidjson::Document toJSONObject() {
+		rapidjson::Value toJSONObject(rapidjson::MemoryPoolAllocator<> &allocator) {
 
-			rapidjson::Document o;
+			rapidjson::Value o(rapidjson::kObjectType);
+			rapidjson::Value val(rapidjson::kStringType);
 
-			o.AddMember("timestamp", timestamp, o.GetAllocator());
-			o.AddMember("content", rapidjson::StringRef(content.c_str()), o.GetAllocator());
-			o.AddMember("order", order, o.GetAllocator());
+			val.SetString(rapidjson::StringRef(content.c_str()), allocator);
+
+			o.AddMember("timestamp", timestamp, allocator);
+			o.AddMember("content", val, allocator);
+			o.AddMember("order", order, allocator);
 
 			return o;
 		}

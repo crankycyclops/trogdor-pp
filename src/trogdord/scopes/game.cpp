@@ -409,8 +409,12 @@ rapidjson::Document GameController::createGame(const rapidjson::Document &reques
 		}
 
 		catch (const ServerException &e) {
+
+			rapidjson::Value errorMsg(rapidjson::kStringType);
+
+			errorMsg.SetString(rapidjson::StringRef(e.what()), response.GetAllocator());
 			response.AddMember("status", Response::STATUS_INTERNAL_ERROR, response.GetAllocator());
-			response.AddMember("message", rapidjson::StringRef(e.what()), response.GetAllocator());
+			response.AddMember("message", errorMsg, response.GetAllocator());
 		}
 	}
 
