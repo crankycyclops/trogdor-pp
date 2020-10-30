@@ -445,5 +445,32 @@ inline rapidjson::Document getOutput(
 	return EntityController::get()->getOutput(request);
 }
 
+// Append a message to an entity's output on the specified channel.
+inline rapidjson::Document appendOutput(
+	size_t gameId,
+	const char *entityName,
+	const char *message,
+	const char *channel = nullptr
+) {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+	rapidjson::Document args(rapidjson::kObjectType);
+
+	args.AddMember("game_id", gameId, request.GetAllocator());
+	args.AddMember("name", rapidjson::StringRef(entityName), request.GetAllocator());
+	args.AddMember("message", rapidjson::StringRef(message), request.GetAllocator());
+
+	if (channel) {
+		args.AddMember("channel", rapidjson::StringRef(channel), request.GetAllocator());
+	}
+
+	request.AddMember("method", "post", request.GetAllocator());
+	request.AddMember("scope", "entity", request.GetAllocator());
+	request.AddMember("action", "output", request.GetAllocator());
+	request.AddMember("args", args, request.GetAllocator());
+
+	return EntityController::get()->appendOutput(request);
+}
+
 
 #endif // TROGDORD_TEST_HELPER_H
