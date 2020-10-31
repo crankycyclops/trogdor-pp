@@ -350,6 +350,16 @@ rapidjson::Document EntityController::appendOutput(const rapidjson::Document &re
 		return response;
 	}
 
+	std::optional<std::string> outMessage = JSON::valueToStr(*messageArg);
+
+	if (!outMessage) {
+
+		response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(INVALID_OUTPUT_MESSAGE), response.GetAllocator());
+
+		return response;
+	}
+
 	rapidjson::Document error = getEntityHelper(
 		request,
 		gameId,
@@ -359,16 +369,6 @@ rapidjson::Document EntityController::appendOutput(const rapidjson::Document &re
 
 	if (error.MemberBegin() != error.MemberEnd()) {
 		return error;
-	}
-
-	std::optional<std::string> outMessage = JSON::valueToStr(*messageArg);
-
-	if (!outMessage) {
-
-		response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
-		response.AddMember("message", rapidjson::StringRef(INVALID_OUTPUT_MESSAGE), response.GetAllocator());
-
-		return response;
 	}
 
 	ePtr->out(channel) << *outMessage << std::endl;

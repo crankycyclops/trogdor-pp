@@ -1365,11 +1365,81 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 		}
 
 		SUBCASE("Invalid channel (any non-string type)") {
-			// TODO: must be a string (test scalers like numerics and bools as well as non-scalars like objects and arrays)
+
+			const char *entityName = "player";
+			const char *message = "test";
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Document args(rapidjson::kObjectType);
+
+			args.AddMember("game_id", 0, request.GetAllocator());
+			args.AddMember("name", rapidjson::StringRef(entityName), request.GetAllocator());
+			args.AddMember("message", rapidjson::StringRef(message), request.GetAllocator());
+			args.AddMember("channel", 0, request.GetAllocator()); // Channel should be a string
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "entity", request.GetAllocator());
+			request.AddMember("action", "output", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = EntityController::get()->appendOutput(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(EntityController::INVALID_CHANNEL).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Invalid message (any non-string type)") {
-			// TODO: must be a string (test scalers like numerics and bools as well as non-scalars like objects and arrays)
+
+			const char *entityName = "player";
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Document args(rapidjson::kObjectType);
+			rapidjson::Value invalidMessage(rapidjson::kArrayType);
+
+			// Valid message can be any scalar but can't be an array or object
+			args.AddMember("game_id", 0, request.GetAllocator());
+			args.AddMember("name", rapidjson::StringRef(entityName), request.GetAllocator());
+			args.AddMember("message", invalidMessage, request.GetAllocator());
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "entity", request.GetAllocator());
+			request.AddMember("action", "output", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = EntityController::get()->appendOutput(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(EntityController::INVALID_OUTPUT_MESSAGE).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Stopped game, valid game id, entity name, channel, and message") {
