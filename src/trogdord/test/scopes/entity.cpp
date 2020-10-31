@@ -1443,11 +1443,157 @@ TEST_SUITE("EntityController (scopes/entity.cpp)") {
 		}
 
 		SUBCASE("Stopped game, valid game id, entity name, channel, and message") {
-			// TODO
+
+			// By using a channel not used by the core library, I can guarantee
+			// I'll only reflect back what I send via appendOutput().
+			const char *playerName = "player";
+			const char *channel = "test";
+			const char *message = "I'm a message!";
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			response = stopGame(gameId);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// Right now, players are the only ones who receive output
+			response = createPlayer(gameId, playerName);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// First, append the message
+			response = appendOutput(gameId, playerName, message, channel);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// Next, verify that we can read that message back
+			response = getOutput(gameId, playerName, channel);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("messages"));
+			CHECK(response["messages"].IsArray());
+			CHECK(1 == response["messages"].Size());
+
+			CHECK(response["messages"][0].HasMember("timestamp"));
+			CHECK(response["messages"][0]["timestamp"].IsUint());
+			CHECK(response["messages"][0]["timestamp"].GetUint() > 0);
+
+			CHECK(response["messages"][0].HasMember("order"));
+			CHECK(response["messages"][0]["order"].IsUint());
+
+			std::string expectedMessageOutput = std::string(message) + '\n';
+			CHECK(response["messages"][0].HasMember("content"));
+			CHECK(response["messages"][0]["content"].IsString());
+			CHECK(0 == expectedMessageOutput.compare(response["messages"][0]["content"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Started game, valid game id, entity name, channel, and message") {
-			// TODO
+
+			// By using a channel not used by the core library, I can guarantee
+			// I'll only reflect back what I send via appendOutput().
+			const char *playerName = "player";
+			const char *channel = "test";
+			const char *message = "I'm a message!";
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			response = startGame(gameId);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// Right now, players are the only ones who receive output
+			response = createPlayer(gameId, playerName);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// First, append the message
+			response = appendOutput(gameId, playerName, message, channel);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// Next, verify that we can read that message back
+			response = getOutput(gameId, playerName, channel);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("messages"));
+			CHECK(response["messages"].IsArray());
+			CHECK(1 == response["messages"].Size());
+
+			CHECK(response["messages"][0].HasMember("timestamp"));
+			CHECK(response["messages"][0]["timestamp"].IsUint());
+			CHECK(response["messages"][0]["timestamp"].GetUint() > 0);
+
+			CHECK(response["messages"][0].HasMember("order"));
+			CHECK(response["messages"][0]["order"].IsUint());
+
+			std::string expectedMessageOutput = std::string(message) + '\n';
+			CHECK(response["messages"][0].HasMember("content"));
+			CHECK(response["messages"][0]["content"].IsString());
+			CHECK(0 == expectedMessageOutput.compare(response["messages"][0]["content"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Stopped game, default channel, valid game id, entity name, and message") {
