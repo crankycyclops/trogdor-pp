@@ -2,6 +2,7 @@
 #define TROGDORD_TEST_HELPER_H
 
 
+#include <unordered_set>
 #include <unordered_map>
 #include <trogdor/utility.h>
 
@@ -14,6 +15,10 @@
 
 #include "../../include/scopes/game.h"
 #include "../../include/scopes/player.h"
+#include "../../include/scopes/resource.h"
+#include "../../include/scopes/object.h"
+#include "../../include/scopes/room.h"
+#include "../../include/scopes/creature.h"
 
 
 // Number of ms between clock ticks (make this value small enough to ensure
@@ -39,6 +44,55 @@ static std::unordered_map<std::string, std::string> testMeta = {
 	{"key2", "value2"}
 };
 
+// Names for each sample entity in the game created by initGameXML()
+static const char *resourceName = "gold";
+static const char *creatureName = "trogdor";
+static const char *objectName = "candle";
+static const char *roomName = "start";
+
+// List of all entities of a particular type in the game created by initGameXML()
+static const std::unordered_set<std::string> entities = {
+	creatureName,
+	objectName,
+	roomName,
+	resourceName
+};
+
+static const std::unordered_set<std::string> resources = {
+	resourceName
+};
+
+static const std::unordered_set<std::string> tangibles = {
+	creatureName,
+	objectName,
+	roomName
+};
+
+static const std::unordered_set<std::string> objects = {
+	objectName
+};
+
+static const std::unordered_set<std::string> places = {
+	roomName
+};
+
+static const std::unordered_set<std::string> rooms = {
+	roomName
+};
+
+static const std::unordered_set<std::string> things = {
+	creatureName,
+	objectName
+};
+
+static const std::unordered_set<std::string> beings = {
+	creatureName
+};
+
+static const std::unordered_set<std::string> creatures = {
+	creatureName
+};
+
 // Sets up a test game.xml file for our unit test
 inline void initGameXML() {
 
@@ -54,25 +108,25 @@ inline void initGameXML() {
 	gameXMLFile << "<game>\n" << std::endl;
 
 	gameXMLFile << "\t<creatures>\n" << std::endl;
-	gameXMLFile << "\t\t<creature name=\"trogdor\">\n" << std::endl;
+	gameXMLFile << "\t\t<creature name=\"" << creatureName << "\">\n" << std::endl;
 	gameXMLFile << "\t\t\t<description>He be cray cray.</description>\n" << std::endl;
 	gameXMLFile << "\t\t</creature>\n" << std::endl;
 	gameXMLFile << "\t</creatures>\n" << std::endl;
 
 	gameXMLFile << "\t<objects>\n" << std::endl;
-	gameXMLFile << "\t\t<object name=\"candle\">\n" << std::endl;
+	gameXMLFile << "\t\t<object name=\"" << objectName << "\">\n" << std::endl;
 	gameXMLFile << "\t\t\t<description>Test</description>\n" << std::endl;
 	gameXMLFile << "\t\t</object>\n" << std::endl;
 	gameXMLFile << "\t</objects>\n" << std::endl;
 
 	gameXMLFile << "\t<resources>\n" << std::endl;
-	gameXMLFile << "\t\t<resource name=\"gold\">\n" << std::endl;
+	gameXMLFile << "\t\t<resource name=\"" << resourceName << "\">\n" << std::endl;
 	gameXMLFile << "\t\t\t<description>It's shiny.</description>\n" << std::endl;
 	gameXMLFile << "\t\t</resource>\n" << std::endl;
 	gameXMLFile << "\t</resources>\n" << std::endl;
 
 	gameXMLFile << "\t<rooms>\n" << std::endl;
-	gameXMLFile << "\t\t<room name=\"start\">\n" << std::endl;
+	gameXMLFile << "\t\t<room name=\"" << roomName << "\">\n" << std::endl;
 	gameXMLFile << "\t\t\t<description>Test</description>\n" << std::endl;
 	gameXMLFile << "\t\t\t<contains>\n" << std::endl;
 	gameXMLFile << "\t\t\t\t<object>candle</object>\n" << std::endl;
@@ -392,7 +446,11 @@ inline rapidjson::Document destroyPlayer(size_t gameId, const char *name) {
 }
 
 // Get an entity.
-inline rapidjson::Document getEntity(size_t gameId, const char *name) {
+inline rapidjson::Document getEntity(
+	size_t gameId,
+	const char *name,
+	const char *type = "entity"
+) {
 
 	rapidjson::Document request(rapidjson::kObjectType);
 	rapidjson::Document args(rapidjson::kObjectType);
@@ -401,14 +459,58 @@ inline rapidjson::Document getEntity(size_t gameId, const char *name) {
 	args.AddMember("name", rapidjson::StringRef(name), request.GetAllocator());
 
 	request.AddMember("method", "get", request.GetAllocator());
-	request.AddMember("scope", "entity", request.GetAllocator());
+	request.AddMember("scope", rapidjson::StringRef(type), request.GetAllocator());
 	request.AddMember("args", args, request.GetAllocator());
 
-	return EntityController::get()->getEntity(request);
+	// This is kind of lame, but it works...
+	if (0 == std::string(type).compare("entity")) {
+		return EntityController::get()->getEntity(request);
+	}
+
+	else if (0 == std::string(type).compare("resource")) {
+		return ResourceController::get()->getEntity(request);
+	}
+
+	else if (0 == std::string(type).compare("tangible")) {
+		return TangibleController::get()->getEntity(request);
+	}
+
+	else if (0 == std::string(type).compare("object")) {
+		return ObjectController::get()->getEntity(request);
+	}
+
+	else if (0 == std::string(type).compare("place")) {
+		return PlaceController::get()->getEntity(request);
+	}
+
+	else if (0 == std::string(type).compare("room")) {
+		return RoomController::get()->getEntity(request);
+	}
+
+	else if (0 == std::string(type).compare("being")) {
+		return BeingController::get()->getEntity(request);
+	}
+
+	else if (0 == std::string(type).compare("creature")) {
+		return CreatureController::get()->getEntity(request);
+	}
+
+	else if (0 == std::string(type).compare("player")) {
+		return PlayerController::get()->getEntity(request);
+	}
+
+	else {
+
+		std::string errorMsg = "Helper getEntity() not defined for entity type '";
+		errorMsg += type;
+		errorMsg += "'";
+
+		throw std::runtime_error(errorMsg);
+	}
 }
 
 // Get all entities in a game.
-inline rapidjson::Document getEntityList(size_t gameId) {
+inline rapidjson::Document getEntityList(size_t gameId, const char *type = "entity") {
 
 	rapidjson::Document request(rapidjson::kObjectType);
 	rapidjson::Document args(rapidjson::kObjectType);
@@ -416,11 +518,55 @@ inline rapidjson::Document getEntityList(size_t gameId) {
 	args.AddMember("game_id", gameId, request.GetAllocator());
 
 	request.AddMember("method", "get", request.GetAllocator());
-	request.AddMember("scope", "entity", request.GetAllocator());
+	request.AddMember("scope", rapidjson::StringRef(type), request.GetAllocator());
 	request.AddMember("action", "list", request.GetAllocator());
 	request.AddMember("args", args, request.GetAllocator());
 
-	return EntityController::get()->getEntityList(request);
+	// This is kind of lame, but it works...
+	if (0 == std::string(type).compare("entity")) {
+		return EntityController::get()->getEntityList(request);
+	}
+
+	else if (0 == std::string(type).compare("resource")) {
+		return ResourceController::get()->getEntityList(request);
+	}
+
+	else if (0 == std::string(type).compare("tangible")) {
+		return TangibleController::get()->getEntityList(request);
+	}
+
+	else if (0 == std::string(type).compare("object")) {
+		return ObjectController::get()->getEntityList(request);
+	}
+
+	else if (0 == std::string(type).compare("place")) {
+		return PlaceController::get()->getEntityList(request);
+	}
+
+	else if (0 == std::string(type).compare("room")) {
+		return RoomController::get()->getEntityList(request);
+	}
+
+	else if (0 == std::string(type).compare("being")) {
+		return BeingController::get()->getEntityList(request);
+	}
+
+	else if (0 == std::string(type).compare("creature")) {
+		return CreatureController::get()->getEntityList(request);
+	}
+
+	else if (0 == std::string(type).compare("player")) {
+		return PlayerController::get()->getEntityList(request);
+	}
+
+	else {
+
+		std::string errorMsg = "Helper getEntityList() not defined for entity type '";
+		errorMsg += type;
+		errorMsg += "'";
+
+		throw std::runtime_error(errorMsg);
+	}
 }
 
 // Get all output messages for an entity on the specified channel.
