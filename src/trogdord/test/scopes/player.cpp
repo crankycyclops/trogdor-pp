@@ -109,4 +109,16 @@ TEST_SUITE("PlayerController (scopes/player.cpp)") {
 		destroyGameXML();
 		destroyConfig();
 	}
+
+	TEST_CASE("PlayerController (scopes/player.cpp): createPlayer()") {
+		// TODO
+	}
+
+	TEST_CASE("PlayerController (scopes/player.cpp): destroyPlayer()") {
+		// TODO
+	}
+
+	TEST_CASE("PlayerController (scopes/player.cpp): postInput()") {
+		// TODO
+	}
 }
