@@ -475,6 +475,10 @@ inline rapidjson::Document getEntity(
 		return TangibleController::get()->getEntity(request);
 	}
 
+	else if (0 == std::string(type).compare("thing")) {
+		return ThingController::get()->getEntity(request);
+	}
+
 	else if (0 == std::string(type).compare("object")) {
 		return ObjectController::get()->getEntity(request);
 	}
@@ -533,6 +537,10 @@ inline rapidjson::Document getEntityList(size_t gameId, const char *type = "enti
 
 	else if (0 == std::string(type).compare("tangible")) {
 		return TangibleController::get()->getEntityList(request);
+	}
+
+	else if (0 == std::string(type).compare("thing")) {
+		return ThingController::get()->getEntityList(request);
 	}
 
 	else if (0 == std::string(type).compare("object")) {

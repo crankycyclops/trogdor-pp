@@ -398,6 +398,13 @@ if (Boost_FOUND)
 		src/trogdord/test/scopes/game.cpp
 		src/trogdord/test/scopes/entity.cpp
 		src/trogdord/test/scopes/tangible.cpp
+		src/trogdord/test/scopes/place.cpp
+		src/trogdord/test/scopes/room.cpp
+		src/trogdord/test/scopes/thing.cpp
+		src/trogdord/test/scopes/object.cpp
+		src/trogdord/test/scopes/being.cpp
+		src/trogdord/test/scopes/creature.cpp
+		src/trogdord/test/scopes/player.cpp
 	)
 
 	target_include_directories(test_trogdord
