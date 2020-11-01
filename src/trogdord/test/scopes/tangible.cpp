@@ -10,9 +10,87 @@ TEST_SUITE("TangibleController (scopes/tangible.cpp)") {
 
 	TEST_CASE("TangibleController (scopes/tangible.cpp): getEntity()") {
 
-		// TODO: create a game and verify that we can retrieve tangible
-		// entities but not other entities. Should create a player so that I
-		// have at least one entity of each type in the game.
+		GameContainer::get()->reset();
+
+		initGameXML();
+		initConfig();
+
+		rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+		CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+		CHECK(response.HasMember("id"));
+		CHECK(response["id"].IsUint());
+
+		size_t gameId = response["id"].GetUint();
+
+		// Make sure we have at least one entity of each type in the game
+		response = createPlayer(gameId, playerName);
+
+		CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+		for (const auto &entity: entities) {
+
+			response = getEntity(gameId, entity.c_str(), "tangible");
+
+			if (tangibles.end() != tangibles.find(entity)) {
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+				CHECK(response.HasMember("entity"));
+				CHECK(response["entity"].IsObject());
+
+				CHECK(response["entity"].HasMember("name"));
+				CHECK(response["entity"]["name"].GetString());
+				CHECK(0 == entity.compare(response["entity"]["name"].GetString()));
+
+				CHECK(response["entity"].HasMember("type"));
+				CHECK(response["entity"]["type"].GetString());
+				CHECK(trogdor::isAscii(response["entity"]["type"].GetString()));
+			}
+
+			else {
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+				CHECK(response.HasMember("message"));
+				CHECK(response["message"].IsString());
+				CHECK(0 == std::string(EntityController::ENTITY_NOT_FOUND).compare(response["message"].GetString()));
+			}
+		}
+
+		// The player should also be a tangible
+		response = getEntity(gameId, playerName, "tangible");
+
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+		CHECK(response.HasMember("entity"));
+		CHECK(response["entity"].IsObject());
+
+		CHECK(response["entity"].HasMember("name"));
+		CHECK(response["entity"]["name"].GetString());
+		CHECK(0 == std::string(playerName).compare(response["entity"]["name"].GetString()));
+
+		CHECK(response["entity"].HasMember("type"));
+		CHECK(response["entity"]["type"].GetString());
+		CHECK(0 == std::string("player").compare(response["entity"]["name"].GetString()));
+
+		destroyGameXML();
+		destroyConfig();
 	}
 
 	TEST_CASE("TangibleController (scopes/tangible.cpp): getEntityList()") {
@@ -56,8 +134,6 @@ TEST_SUITE("TangibleController (scopes/tangible.cpp)") {
 
 		for (auto i = response["entities"].Begin(); i != response["entities"].End(); i++) {
 
-			std::cout << (*i)["name"].GetString() << std::endl;
-
 			CHECK(i->IsObject());
 
 			CHECK(i->HasMember("name"));
@@ -73,5 +149,8 @@ TEST_SUITE("TangibleController (scopes/tangible.cpp)") {
 
 			CHECK(entityValid);
 		}
+
+		destroyGameXML();
+		destroyConfig();
 	}
 }
