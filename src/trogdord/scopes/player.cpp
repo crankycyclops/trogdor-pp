@@ -130,11 +130,11 @@ rapidjson::Document PlayerController::createPlayer(const rapidjson::Document &re
 
 	try {
 
-		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 		response.AddMember("player", entityToJSONObject(
 			GameContainer::get()->createPlayer(gameId, playerName),
 			response.GetAllocator()
 		), response.GetAllocator());
+		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 
 		return response;
 	}
