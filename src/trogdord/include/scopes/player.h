@@ -15,15 +15,6 @@ class PlayerController: public BeingController {
 
 	protected:
 
-		// Actions served by the "Player" scope
-		static const char *INPUT_ACTION;
-
-		// Error messages
-		static const char *MISSING_PLAYER_NAME;
-		static const char *INVALID_PLAYER_NAME;
-		static const char *INVALID_COMMAND;
-		static const char *PLAYER_NOT_FOUND;
-
 		// Converts a player to a JSON object
 		virtual rapidjson::Value entityToJSONObject(
 			trogdor::entity::Entity *ePtr,
@@ -51,6 +42,15 @@ class PlayerController: public BeingController {
 
 		// Scope name that should be used in requests
 		static const char *SCOPE;
+
+		// Actions served by the "Player" scope
+		static const char *INPUT_ACTION;
+
+		// Error messages
+		static const char *MISSING_PLAYER_NAME;
+		static const char *INVALID_PLAYER_NAME;
+		static const char *INVALID_COMMAND;
+		static const char *PLAYER_NOT_FOUND;
 
 		// Returns singleton instance of PlayerController.
 		static std::unique_ptr<PlayerController> &get();

@@ -45,6 +45,7 @@ If you're interested in writing your own client-side connector, or just want to 
 * [CMake](https://cmake.org/) 3.10 or above
 * [Standalone ASIO library](https://think-async.com/Asio/) >=1.10 (libasio-dev package on Ubuntu)
 * [Boost Ptree](https://www.boost.org/doc/libs/1_73_0/doc/html/property_tree.html) >=1.60 (boost-system-dev package on Ubuntu)
+* [RapidJSON](https://rapidjson.org/) >= 1.1.0
 * [Hiredis](https://github.com/redis/hiredis) 0.13+ (optional, for redis Pub/Sub support in trogdord)
 * The core library, installed as a shared object or DLL in a place where CMake can find it
 

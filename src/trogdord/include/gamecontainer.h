@@ -14,7 +14,6 @@
 #include "filter/resolver.h"
 
 #include "gamewrapper.h"
-//#include "inputlistener.h"
 
 #include "exception/gamenotfound.h"
 #include "exception/entity/playernotfound.h"

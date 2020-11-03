@@ -120,6 +120,14 @@ rapidjson::Document PlayerController::createPlayer(const rapidjson::Document &re
 		return errorCopy;
 	}
 
+	if (!trogdor::entity::Entity::isNameValid(playerName)) {
+
+		response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(INVALID_PLAYER_NAME), response.GetAllocator());
+
+		return response;
+	}
+
 	try {
 
 		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());

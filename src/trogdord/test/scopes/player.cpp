@@ -111,7 +111,194 @@ TEST_SUITE("PlayerController (scopes/player.cpp)") {
 	}
 
 	TEST_CASE("PlayerController (scopes/player.cpp): createPlayer()") {
-		// TODO
+
+		SUBCASE("No arguments") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "player", request.GetAllocator());
+
+			rapidjson::Document response = PlayerController::get()->createPlayer(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
+		SUBCASE("Empty arguments") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "player", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = PlayerController::get()->createPlayer(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
+		SUBCASE("Missing required game id") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			args.AddMember("name", "player", request.GetAllocator());
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "player", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = PlayerController::get()->createPlayer(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
+		SUBCASE("Missing required player name") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			args.AddMember("game_id", 0, request.GetAllocator());
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "player", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = PlayerController::get()->createPlayer(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(PlayerController::MISSING_PLAYER_NAME).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
+		SUBCASE("Invalid player name (not a string type)") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			args.AddMember("game_id", 0, request.GetAllocator());
+			args.AddMember("name", 0, request.GetAllocator()); // only a string type is valid
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "player", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = PlayerController::get()->createPlayer(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(PlayerController::INVALID_PLAYER_NAME).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
+		SUBCASE("Invalid player name (doesn't match valid regex)") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			args.AddMember("game_id", 0, request.GetAllocator());
+			args.AddMember("name", "player!@#$%^&*()`~", request.GetAllocator()); // name contains illegal characters
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "player", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = PlayerController::get()->createPlayer(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(PlayerController::INVALID_PLAYER_NAME).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
+		SUBCASE("Valid request, non-existent game id") {
+			// TODO
+		}
+
+		SUBCASE("Valid request, stopped game") {
+			// TODO
+		}
+
+		SUBCASE("Valid request, started game") {
+			// TODO
+		}
 	}
 
 	TEST_CASE("PlayerController (scopes/player.cpp): destroyPlayer()") {
