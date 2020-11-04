@@ -430,13 +430,21 @@ inline rapidjson::Document createPlayer(size_t gameId, const char *name) {
 }
 
 // Deletes a player
-inline rapidjson::Document destroyPlayer(size_t gameId, const char *name) {
+inline rapidjson::Document destroyPlayer(
+	size_t gameId,
+	const char *name,
+	const char *message = nullptr
+) {
 
 	rapidjson::Document request(rapidjson::kObjectType);
 	rapidjson::Document args(rapidjson::kObjectType);
 
 	args.AddMember("game_id", gameId, request.GetAllocator());
 	args.AddMember("name", rapidjson::StringRef(name), request.GetAllocator());
+
+	if (message) {
+		args.AddMember("message", rapidjson::StringRef(message), request.GetAllocator());
+	}
 
 	request.AddMember("method", "delete", request.GetAllocator());
 	request.AddMember("scope", "player", request.GetAllocator());
