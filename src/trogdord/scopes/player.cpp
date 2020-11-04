@@ -257,7 +257,7 @@ rapidjson::Document PlayerController::postInput(const rapidjson::Document &reque
 		PLAYER_NOT_FOUND
 	);
 
-	if (error.Size()) {
+	if (error.MemberBegin() != error.MemberEnd()) {
 		return error;
 	}
 

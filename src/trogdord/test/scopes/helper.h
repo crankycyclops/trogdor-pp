@@ -634,5 +634,27 @@ inline rapidjson::Document appendOutput(
 	return EntityController::get()->appendOutput(request);
 }
 
+// Post input to a player's input stream
+inline rapidjson::Document postInput(
+	size_t gameId,
+	const char *entityName,
+	const char *command
+) {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+	rapidjson::Document args(rapidjson::kObjectType);
+
+	args.AddMember("game_id", gameId, request.GetAllocator());
+	args.AddMember("name", rapidjson::StringRef(entityName), request.GetAllocator());
+	args.AddMember("command", rapidjson::StringRef(command), request.GetAllocator());
+
+	request.AddMember("method", "post", request.GetAllocator());
+	request.AddMember("scope", "player", request.GetAllocator());
+	request.AddMember("action", "input", request.GetAllocator());
+	request.AddMember("args", args, request.GetAllocator());
+
+	return PlayerController::get()->postInput(request);
+}
+
 
 #endif // TROGDORD_TEST_HELPER_H
