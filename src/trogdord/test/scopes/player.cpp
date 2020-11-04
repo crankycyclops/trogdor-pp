@@ -2,9 +2,10 @@
 #include "helper.h"
 
 
-// Test game and player names
+// Test game and player names and input command
 static const char *gameName = "myGame";
 static const char *playerName = "player";
+static const char *command = "north";
 
 TEST_SUITE("PlayerController (scopes/player.cpp)") {
 
@@ -1028,11 +1029,67 @@ TEST_SUITE("PlayerController (scopes/player.cpp)") {
 		}
 
 		SUBCASE("Missing required game id") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			args.AddMember("name", rapidjson::StringRef(playerName), request.GetAllocator());
+			args.AddMember("command", rapidjson::StringRef(command), request.GetAllocator());
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "player", request.GetAllocator());
+			request.AddMember("action", "input", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = PlayerController::get()->postInput(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Missing required player name") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			args.AddMember("game_id", 0, request.GetAllocator());
+			args.AddMember("command", rapidjson::StringRef(command), request.GetAllocator());
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "player", request.GetAllocator());
+			request.AddMember("action", "input", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = PlayerController::get()->postInput(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(PlayerController::MISSING_PLAYER_NAME).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Invalid player name (not a string type)") {
@@ -1046,6 +1103,7 @@ TEST_SUITE("PlayerController (scopes/player.cpp)") {
 			rapidjson::Value args(rapidjson::kObjectType);
 
 			args.AddMember("game_id", 0, request.GetAllocator());
+			args.AddMember("command", rapidjson::StringRef(command), request.GetAllocator());
 			args.AddMember("name", 0, request.GetAllocator()); // only a string type is valid
 
 			request.AddMember("method", "post", request.GetAllocator());
