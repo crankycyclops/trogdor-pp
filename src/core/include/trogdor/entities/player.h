@@ -77,6 +77,18 @@ namespace trogdor::entity {
          }
 
          /*
+            Returns the player's last entered command.
+
+            Input:
+               (none)
+
+            Output:
+               The player's last entered command, or a nullptr if one hasn't
+               been entered yet.
+         */
+         inline const Command *getLastCommand() {return lastCommand.get();}
+
+         /*
             Takes as input a command and executes it on the player's behalf.
 
             Input:
