@@ -993,7 +993,7 @@ TEST_SUITE("PlayerController (scopes/player.cpp)") {
 
 			CHECK(response.HasMember("message"));
 			CHECK(response["message"].IsString());
-			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+			CHECK(0 == std::string(PlayerController::MISSING_COMMAND).compare(response["message"].GetString()));
 
 			destroyGameXML();
 			destroyConfig();
@@ -1022,7 +1022,7 @@ TEST_SUITE("PlayerController (scopes/player.cpp)") {
 
 			CHECK(response.HasMember("message"));
 			CHECK(response["message"].IsString());
-			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+			CHECK(0 == std::string(PlayerController::MISSING_COMMAND).compare(response["message"].GetString()));
 
 			destroyGameXML();
 			destroyConfig();
@@ -1126,19 +1126,207 @@ TEST_SUITE("PlayerController (scopes/player.cpp)") {
 		}
 
 		SUBCASE("Missing required command") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			args.AddMember("game_id", 0, request.GetAllocator());
+			args.AddMember("name", rapidjson::StringRef(playerName), request.GetAllocator());
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "player", request.GetAllocator());
+			request.AddMember("action", "input", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = PlayerController::get()->postInput(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(PlayerController::MISSING_COMMAND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Invalid command (non-string type)") {
-			// TODO
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			args.AddMember("game_id", 0, request.GetAllocator());
+			args.AddMember("name", rapidjson::StringRef(playerName), request.GetAllocator());
+			args.AddMember("command", 0, request.GetAllocator()); // valid value would be a string
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "player", request.GetAllocator());
+			request.AddMember("action", "input", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = PlayerController::get()->postInput(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(PlayerController::INVALID_COMMAND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
-		SUBCASE("Valid request, non-existent game id") {
-			// TODO
+		SUBCASE("Valid request, non-existent game id, no games running") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = postInput(0, playerName, command);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(PlayerController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
-		SUBCASE("Valid request, existing game id, non-existent player name") {
-			// TODO
+		SUBCASE("Valid request, non-existent game id, one game running") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			response = postInput(gameId + 1, playerName, command);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(PlayerController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
+		SUBCASE("Valid request, existing game id, non-existent player name, no players exist") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			response = postInput(gameId, playerName, command);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(PlayerController::PLAYER_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
+		SUBCASE("Valid request, existing game id, non-existent player name, one player exists") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			response = createPlayer(gameId, playerName);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			response = postInput(gameId, "NotAPlayer", command);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(PlayerController::PLAYER_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Valid request, stopped game") {

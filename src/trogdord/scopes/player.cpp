@@ -257,26 +257,30 @@ rapidjson::Document PlayerController::postInput(const rapidjson::Document &reque
 		PLAYER_NOT_FOUND
 	);
 
+	const rapidjson::Value *command = rapidjson::Pointer("/args/command").Get(request);
+
+	if (!command) {
+
+		response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(MISSING_COMMAND), response.GetAllocator());
+
+		return response;
+	}
+
+	else if (!command->IsString()) {
+
+		response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(INVALID_COMMAND), response.GetAllocator());
+
+		return response;
+	}
+
 	if (error.MemberBegin() != error.MemberEnd()) {
 		return error;
 	}
 
-	const rapidjson::Value *command = rapidjson::Pointer("/args/command").Get(request);
-
-	if (!command) {
-		response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
-		response.AddMember("message", rapidjson::StringRef(MISSING_COMMAND), response.GetAllocator());
-	}
-
-	else if (!command->IsString()) {
-		response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
-		response.AddMember("message", rapidjson::StringRef(INVALID_COMMAND), response.GetAllocator());
-	}
-
-	else {
-		static_cast<trogdor::entity::Player *>(ePtr)->input(command->GetString());
-		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
-	}
+	static_cast<trogdor::entity::Player *>(ePtr)->input(command->GetString());
+	response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 
 	return response;
 }
