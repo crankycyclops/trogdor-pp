@@ -8,7 +8,8 @@ make -j2 trogdord
 
 # Make sure we can generate core dumps
 ulimit -c unlimited
-echo '/tmp/core' > /proc/sys/kernel/core_pattern
+systemctl enable apport.service start
+cat /proc/sys/kernel/core_pattern
 
 # Compile and run the unit tests
 make -j2 test_trogdord
