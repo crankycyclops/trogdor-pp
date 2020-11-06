@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_REDIS=ON .
 
@@ -8,6 +8,7 @@ make -j2 trogdord
 
 # Make sure we can generate core dumps
 ulimit -c unlimited
+echo '/tmp/core' > /proc/sys/kernel/core_pattern
 
 # Compile and run the unit tests
 make -j2 test_trogdord

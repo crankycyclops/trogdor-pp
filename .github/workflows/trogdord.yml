@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 jobs:
 
-   test_core:
+   test_trogdord:
 
       runs-on: ubuntu-latest
       name: Trogdord Tests
@@ -17,4 +17,4 @@ jobs:
            if: failure()
            with:
              name: coredump
-             path: core
+             path: /tmp/core
