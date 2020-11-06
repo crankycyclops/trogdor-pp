@@ -10,7 +10,8 @@ make -j2 trogdord
 ulimit -c unlimited
 service apport start
 cat /proc/sys/kernel/core_pattern
+ls /usr/share/apport/apport
 
 # Compile and run the unit tests
 make -j2 test_trogdord
-timeout -s SIGQUIT 25 ./test_trogdord
+timeout -s SIGQUIT 5 ./test_trogdord

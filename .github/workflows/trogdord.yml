@@ -17,4 +17,4 @@ jobs:
            if: failure()
            with:
              name: coredump
-             path: /tmp/core
+             path: /usr/share/apport/apport
