@@ -302,52 +302,46 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
 			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+			size_t id = response["id"].GetUint();
 
-			// Only try to verify that the game was created if we got a
-			// success status back from the last request
-			if (response.HasMember("id")) {
+			response = getGame(id);
 
-				CHECK(response["id"].IsUint());
-				size_t id = response["id"].GetUint();
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
-				response = getGame(id);
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
-				CHECK(trogdor::isAscii(JSON::serialize(response)));
+			CHECK(response.HasMember("name"));
+			CHECK(response["name"].IsString());
+			CHECK(0 == std::string(gameName).compare(response["name"].GetString()));
 
-				CHECK(response.HasMember("status"));
-				CHECK(response["status"].IsUint());
-				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+			CHECK(response.HasMember("definition"));
+			CHECK(response["definition"].IsString());
+			CHECK(0 == std::string(gameXMLRelativeFilename).compare(response["definition"].GetString()));
 
-				CHECK(response.HasMember("name"));
-				CHECK(response["name"].IsString());
-				CHECK(0 == std::string(gameName).compare(response["name"].GetString()));
+			rapidjson::Document getMetaRequest(rapidjson::kObjectType);
+			rapidjson::Value getMetaArgs(rapidjson::kObjectType);
 
-				CHECK(response.HasMember("definition"));
-				CHECK(response["definition"].IsString());
-				CHECK(0 == std::string(gameXMLRelativeFilename).compare(response["definition"].GetString()));
+			getMetaArgs.AddMember("id", id, getMetaRequest.GetAllocator());
 
-				rapidjson::Document getMetaRequest(rapidjson::kObjectType);
-				rapidjson::Value getMetaArgs(rapidjson::kObjectType);
+			getMetaRequest.AddMember("method", "get", getMetaRequest.GetAllocator());
+			getMetaRequest.AddMember("scope", "game", getMetaRequest.GetAllocator());
+			getMetaRequest.AddMember("action", "meta", getMetaRequest.GetAllocator());
+			getMetaRequest.AddMember("args", getMetaArgs, getMetaRequest.GetAllocator());
 
-				getMetaArgs.AddMember("id", id, getMetaRequest.GetAllocator());
+			response = GameController::get()->getMeta(getMetaRequest);
 
-				getMetaRequest.AddMember("method", "get", getMetaRequest.GetAllocator());
-				getMetaRequest.AddMember("scope", "game", getMetaRequest.GetAllocator());
-				getMetaRequest.AddMember("action", "meta", getMetaRequest.GetAllocator());
-				getMetaRequest.AddMember("args", getMetaArgs, getMetaRequest.GetAllocator());
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
-				response = GameController::get()->getMeta(getMetaRequest);
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
-				CHECK(trogdor::isAscii(JSON::serialize(response)));
-
-				CHECK(response.HasMember("status"));
-				CHECK(response["status"].IsUint());
-				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
-
-				CHECK(response.HasMember("meta"));
-				CHECK(response["meta"].IsObject());
-				CHECK(response["meta"].MemberBegin() == response["meta"].MemberEnd());
-			}
+			CHECK(response.HasMember("meta"));
+			CHECK(response["meta"].IsObject());
+			CHECK(response["meta"].MemberBegin() == response["meta"].MemberEnd());
 
 			destroyGameXML();
 			destroyConfig();
@@ -393,66 +387,61 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			CHECK(response.HasMember("id"));
 
-			// Only try to verify that the game was created if we got a
-			// success status back from the last request
-			if (response.HasMember("id")) {
+			CHECK(response["id"].IsUint());
+			size_t id = response["id"].GetUint();
 
-				CHECK(response["id"].IsUint());
-				size_t id = response["id"].GetUint();
+			response = getGame(id);
 
-				response = getGame(id);
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
-				CHECK(trogdor::isAscii(JSON::serialize(response)));
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
-				CHECK(response.HasMember("status"));
-				CHECK(response["status"].IsUint());
-				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+			CHECK(response.HasMember("name"));
+			CHECK(response["name"].IsString());
+			CHECK(0 == std::string(gameName).compare(response["name"].GetString()));
 
-				CHECK(response.HasMember("name"));
-				CHECK(response["name"].IsString());
-				CHECK(0 == std::string(gameName).compare(response["name"].GetString()));
+			CHECK(response.HasMember("definition"));
+			CHECK(response["definition"].IsString());
+			CHECK(0 == std::string(gameXMLRelativeFilename).compare(response["definition"].GetString()));
 
-				CHECK(response.HasMember("definition"));
-				CHECK(response["definition"].IsString());
-				CHECK(0 == std::string(gameXMLRelativeFilename).compare(response["definition"].GetString()));
+			rapidjson::Document getMetaRequest(rapidjson::kObjectType);
+			rapidjson::Value getMetaArgs(rapidjson::kObjectType);
 
-				rapidjson::Document getMetaRequest(rapidjson::kObjectType);
-				rapidjson::Value getMetaArgs(rapidjson::kObjectType);
+			getMetaArgs.AddMember("id", id, getMetaRequest.GetAllocator());
 
-				getMetaArgs.AddMember("id", id, getMetaRequest.GetAllocator());
+			getMetaRequest.AddMember("method", "get", getMetaRequest.GetAllocator());
+			getMetaRequest.AddMember("scope", "game", getMetaRequest.GetAllocator());
+			getMetaRequest.AddMember("action", "meta", getMetaRequest.GetAllocator());
+			getMetaRequest.AddMember("args", getMetaArgs, getMetaRequest.GetAllocator());
 
-				getMetaRequest.AddMember("method", "get", getMetaRequest.GetAllocator());
-				getMetaRequest.AddMember("scope", "game", getMetaRequest.GetAllocator());
-				getMetaRequest.AddMember("action", "meta", getMetaRequest.GetAllocator());
-				getMetaRequest.AddMember("args", getMetaArgs, getMetaRequest.GetAllocator());
+			response = GameController::get()->getMeta(getMetaRequest);
 
-				response = GameController::get()->getMeta(getMetaRequest);
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
-				CHECK(trogdor::isAscii(JSON::serialize(response)));
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
-				CHECK(response.HasMember("status"));
-				CHECK(response["status"].IsUint());
-				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+			CHECK(response.HasMember("meta"));
+			CHECK(response["meta"].IsObject());
 
-				CHECK(response.HasMember("meta"));
-				CHECK(response["meta"].IsObject());
+			CHECK(response["meta"].HasMember("title"));
+			CHECK(response["meta"]["title"].IsString());
+			CHECK(0 == std::string(argTitle).compare(response["meta"]["title"].GetString()));
 
-				CHECK(response["meta"].HasMember("title"));
-				CHECK(response["meta"]["title"].IsString());
-				CHECK(0 == std::string(argTitle).compare(response["meta"]["title"].GetString()));
+			CHECK(response["meta"].HasMember("positive"));
+			CHECK(response["meta"]["positive"].IsString());
+			CHECK(0 == std::to_string(argPositiveNumber).compare(response["meta"]["positive"].GetString()));
 
-				CHECK(response["meta"].HasMember("positive"));
-				CHECK(response["meta"]["positive"].IsString());
-				CHECK(0 == std::to_string(argPositiveNumber).compare(response["meta"]["positive"].GetString()));
+			CHECK(response["meta"].HasMember("negative"));
+			CHECK(response["meta"]["negative"].IsString());
+			CHECK(0 == std::to_string(argNegativeNumber).compare(response["meta"]["negative"].GetString()));
 
-				CHECK(response["meta"].HasMember("negative"));
-				CHECK(response["meta"]["negative"].IsString());
-				CHECK(0 == std::to_string(argNegativeNumber).compare(response["meta"]["negative"].GetString()));
-
-				CHECK(response["meta"].HasMember("boolean"));
-				CHECK(response["meta"]["boolean"].IsString());
-				CHECK(0 == std::string(argBool ? "true" : "false").compare(response["meta"]["boolean"].GetString()));
-			}
+			CHECK(response["meta"].HasMember("boolean"));
+			CHECK(response["meta"]["boolean"].IsString());
+			CHECK(0 == std::string(argBool ? "true" : "false").compare(response["meta"]["boolean"].GetString()));
 
 			destroyGameXML();
 			destroyConfig();
@@ -637,55 +626,52 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			CHECK(response.HasMember("id"));
 
-			if (response.HasMember("id")) {
+			CHECK(response["id"].IsUint());
+			size_t id = response["id"].GetUint();
 
-				CHECK(response["id"].IsUint());
-				size_t id = response["id"].GetUint();
+			// Make sure getGame() can find it
+			response = getGame(id);
 
-				// Make sure getGame() can find it
-				response = getGame(id);
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
-				CHECK(trogdor::isAscii(JSON::serialize(response)));
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
-				CHECK(response.HasMember("status"));
-				CHECK(response["status"].IsUint());
-				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+			// Delete the game
+			response = destroyGame(id);
 
-				// Delete the game
-				response = destroyGame(id);
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
-				CHECK(trogdor::isAscii(JSON::serialize(response)));
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
-				CHECK(response.HasMember("status"));
-				CHECK(response["status"].IsUint());
-				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+			// Make sure getGame() can no longer find it
+			response = getGame(id);
 
-				// Make sure getGame() can no longer find it
-				response = getGame(id);
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
-				CHECK(trogdor::isAscii(JSON::serialize(response)));
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
 
-				CHECK(response.HasMember("status"));
-				CHECK(response["status"].IsUint());
-				CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK( 0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
 
-				CHECK(response.HasMember("message"));
-				CHECK(response["message"].IsString());
-				CHECK( 0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+			// Make sure destroyGame() returns 404 if we call it again with the same id
+			response = destroyGame(id);
 
-				// Make sure destroyGame() returns 404 if we call it again with the same id
-				response = destroyGame(id);
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
-				CHECK(trogdor::isAscii(JSON::serialize(response)));
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
 
-				CHECK(response.HasMember("status"));
-				CHECK(response["status"].IsUint());
-				CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
-
-				CHECK(response.HasMember("message"));
-				CHECK(response["message"].IsString());
-				CHECK( 0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
-			}
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK( 0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
 
 			destroyGameXML();
 			destroyConfig();
@@ -3220,9 +3206,14 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
+			// Sometimes, we call stopGame() just as the timer is about to
+			// advance, so we have to accept it advancing by one as a possible
+			// result.
+			bool validTick = currentTick == response["current_time"].GetUint() || currentTick == response["current_time"].GetUint() - 1;
+
 			CHECK(response.HasMember("current_time"));
 			CHECK(response["current_time"].IsUint());
-			CHECK(currentTick == response["current_time"].GetUint());
+			CHECK(validTick);
 
 			// Finally, stop the game again, and verify that we get a
 			// success status back and that the game remains stopped.
@@ -3249,9 +3240,14 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
+			// Sometimes, we call stopGame() just as the timer is about to
+			// advance, so we have to accept it advancing by one as a possible
+			// result.
+			validTick = currentTick == response["current_time"].GetUint() || currentTick == response["current_time"].GetUint() - 1;
+
 			CHECK(response.HasMember("current_time"));
 			CHECK(response["current_time"].IsUint());
-			CHECK(currentTick == response["current_time"].GetUint());
+			CHECK(validTick);
 
 			destroyGameXML();
 			destroyConfig();
@@ -3594,13 +3590,18 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			std::this_thread::sleep_for(threadSleepTime);
 			response = getTime(id);
 
+			// Sometimes, we call stopGame() just as the timer is about to
+			// advance, so we have to accept it advancing by one as a possible
+			// result.
+			bool validTime = currentTime == response["current_time"].GetUint() || currentTime == response["current_time"].GetUint() - 1;
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
 			CHECK(response.HasMember("current_time"));
 			CHECK(response["current_time"].IsUint());
-			CHECK(currentTime == response["current_time"].GetUint());
+			CHECK(validTime);
 
 			destroyGameXML();
 			destroyConfig();
@@ -3789,6 +3790,11 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			std::this_thread::sleep_for(threadSleepTime);
 			response = getStatistics(id);
 
+			// Sometimes, we call stopGame() just as the timer is about to
+			// advance, so we have to accept it advancing by one as a possible
+			// result.
+			bool validTime = currentTime == response["current_time"].GetUint() || currentTime == response["current_time"].GetUint() - 1;
+
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
@@ -3803,7 +3809,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			CHECK(response.HasMember("current_time"));
 			CHECK(response["current_time"].IsUint());
-			CHECK(currentTime == response["current_time"].GetUint());
+			CHECK(validTime);
 
 			destroyGameXML();
 			destroyConfig();
