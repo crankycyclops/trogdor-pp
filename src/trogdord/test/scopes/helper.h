@@ -2,8 +2,10 @@
 #define TROGDORD_TEST_HELPER_H
 
 
+#include <fstream>
 #include <unordered_set>
 #include <unordered_map>
+
 #include <trogdor/utility.h>
 
 #include "../../include/json.h"

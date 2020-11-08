@@ -18,10 +18,9 @@ namespace input {
 
 		rapidjson::Document listenersArr;
 
-		std::string listenersStr = Config::get()->value<std::string>(
+		std::string listenersStr = Config::get()->getString(
 			Config::CONFIG_KEY_INPUT_LISTENERS
 		);
-
 
 		listenersArr.Parse(listenersStr.c_str());
 

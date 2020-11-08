@@ -44,10 +44,10 @@ If you're interested in writing your own client-side connector, or just want to 
 * [G++](https://gcc.gnu.org/projects/cxx-status.html) 7+ or [Clang++](https://clang.llvm.org/cxx_status.html) 8+. A different compiler might work, but it hasn't been tested, so you're on your own.
 * [CMake](https://cmake.org/) 3.10 or above
 * [Standalone ASIO library](https://think-async.com/Asio/) >=1.10 (libasio-dev package on Ubuntu)
-* [Boost Ptree](https://www.boost.org/doc/libs/1_73_0/doc/html/property_tree.html) >=1.60 (boost-system-dev package on Ubuntu)
+* [INIH (INI Not Invented Here)](https://github.com/benhoyt/inih) (libinih-dev package on Ubuntu)
 * [RapidJSON](https://rapidjson.org/) >= 1.1.0
-* [Hiredis](https://github.com/redis/hiredis) 0.13+ (optional, for redis Pub/Sub support in trogdord)
-* The core library, installed as a shared object or DLL in a place where CMake can find it
+* [Hiredis](https://github.com/redis/hiredis) 0.13+ (optional, for Redis Pub/Sub support in trogdord)
+* The core library, installed as a shared object or DLL in a place where CMake can find it (corresponds to the trogdor build target)
 
 ## Installation
 
@@ -63,6 +63,14 @@ To build trogdord with redis support, add `-DENABLE_REDIS=ON` to your cmake comm
 If you need debug symbols, add the following option to your cmake command: `-DCMAKE_BUILD_TYPE=Debug`. If you've already built it using debug symbols in the past and want to switch back to a release build, use this cmake option instead: `-DCMAKE_BUILD_TYPE=Release`.
 
 If you need to install relative to a custom path, add this to your cmake command: `-DCMAKE_INSTALL_PREFIX:PATH=/your/custom/prefix`.
+
+If you're on Ubuntu 18.04 or below and install the inih library through apt-get, you'll find that files for pkg-config aren't included, and thus, CMake won't be able to find them. You can get around this by setting the environment variable `INIH_INCLUDE_DIRS` to the path where the inih header is installed (/usr/include on Ubuntu 18.04.) Ubuntu 20.04 and above include support for pkg-config, so in that case you should be able to build without this workaround.
+
+For example (this works on Ubuntu 18.04):
+
+```
+INIH_INCLUDE_DIRS="/usr/include" cmake -DCMAKE_BUILD_TYPE=Release .
+```
 
 ## Copyright and License
 

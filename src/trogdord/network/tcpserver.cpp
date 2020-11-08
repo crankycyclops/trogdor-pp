@@ -49,10 +49,10 @@ acceptor(io_service), timer(io_service, std::chrono::milliseconds(SERVE_SLEEP_TI
 	acceptor.open(endpoint.protocol());
 
 	acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(
-		config->value<bool>(Config::CONFIG_KEY_REUSE_ADDRESS)
+		config->getBool(Config::CONFIG_KEY_REUSE_ADDRESS)
 	));
 	acceptor.set_option(asio::ip::tcp::acceptor::keep_alive(
-		config->value<bool>(Config::CONFIG_KEY_SEND_TCP_KEEPALIVE)
+		config->getBool(Config::CONFIG_KEY_SEND_TCP_KEEPALIVE)
 	));
 
 	acceptor.bind(endpoint);

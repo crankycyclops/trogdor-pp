@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
 
 		// Constructor starts up a deadline_timer that checks at regular intervals
 		// on the needs of existing connections as well as accepting new ones.
-		server = std::make_unique<TCPServer>(io, config->value<int>(Config::CONFIG_KEY_PORT));
+		server = std::make_unique<TCPServer>(io, config->getUInt(Config::CONFIG_KEY_PORT));
 		io.run();
 	}
 

@@ -11,19 +11,19 @@ namespace input {
 
 	Redis::Redis() {
 
-		int ms = Config::get()->value<int>(
+		int ms = Config::get()->getInt(
 			Config::CONFIG_KEY_REDIS_CONNECTION_TIMEOUT
 		);
 
 		int seconds = ms / 1000;
 		int microseconds = (ms % 1000) * 1000;
 
-		hostname = Config::get()->value<std::string>(Config::CONFIG_KEY_REDIS_HOST);
-		port = Config::get()->value<int>(Config::CONFIG_KEY_REDIS_PORT);
-		redisChannel = Config::get()->value<std::string>(Config::CONFIG_KEY_REDIS_INPUT_CHANNEL);
+		hostname = Config::get()->getString(Config::CONFIG_KEY_REDIS_HOST);
+		port = Config::get()->getUInt(Config::CONFIG_KEY_REDIS_PORT);
+		redisChannel = Config::get()->getString(Config::CONFIG_KEY_REDIS_INPUT_CHANNEL);
 
 		connectionTimeout = {seconds, microseconds};
-		connectionRetryInterval = Config::get()->value<int>(
+		connectionRetryInterval = Config::get()->getInt(
 			Config::CONFIG_KEY_REDIS_CONNECTION_RETRY_INTERVAL
 		);
 	}

@@ -183,10 +183,18 @@ install(TARGETS standalone DESTINATION bin COMPONENT standalone OPTIONAL)
 
 ###############################################################################
 
-# Build the game server trogdord
-find_package(Boost COMPONENTS system)
+# User can either manually specify the location of the inih library or let CMake
+# invoke pkg-config to look for it (this will fail on Ubuntu 18.04 and below,
+# and likely others. The version of inih packaged for Ubuntu 20.04 and above
+# works with pkg-config, so in that case you shouldn't have an issue.)
+if(DEFINED ENV{INIH_INCLUDE_DIRS})
+	message("Manually specified include path for inih.")
+	set(INIH_INCLUDE_DIRS $ENV{INIH_INCLUDE_DIRS})
+else(DEFINED ENV{INIH_INCLUDE_DIRS})
+	pkg_search_module(INIH inih)
+endif(DEFINED ENV{INIH_INCLUDE_DIRS})
 
-if (Boost_FOUND)
+if (INIH_INCLUDE_DIRS)
 
 	CHECK_INCLUDE_FILE_CXX("asio.hpp" HAVE_ASIO)
 
@@ -226,13 +234,12 @@ if (Boost_FOUND)
 		)
 
 		set(TROGDORD_INCLUDES
-			PUBLIC ${Boost_INCLUDE_DIRS}
 			PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
 		)
 
 		set(TROGDORD_LIBRARIES_MINUS_CORE
 			PUBLIC stdc++fs
-			PUBLIC ${Boost_LIBRARIES}
+			PUBLIC inih
 		)
 
 		if (ENABLE_REDIS)
@@ -292,15 +299,16 @@ if (Boost_FOUND)
 		# it's later installed
 		unset(HAVE_ASIO)
 
-		add_custom_target(trogdord echo "Skipping trogdord because the ASIO headers are not installed in a place where CMake can find them.")
+		# If I use literal spaces, somehow cmake ends up converting this to a string that includes backslashes
+		add_custom_target(trogdord echo "\"Skipping\\040trogdord\\040because\\040the\\040ASIO\\040headers\\040are\\040not\\040installed\\040in\\040a\\040place\\040where\\040CMake\\040can\\040find\\040them.\"")
 
 	endif (HAVE_ASIO)
 
-else (Boost_FOUND)
+else (INIH_INCLUDE_DIRS)
 
-	add_custom_target(trogdord echo "Skipping trogdord because the Boost C++ libraries are not installed in a place where CMake can find them.")
+	add_custom_target(trogdord echo "\"Skipping\\040trogdord\\040because\\040the\\040inih\\040library\\040isn't\\040installed\\040in\\040a\\040place\\040where\\040CMake\\040can\\040find\\040it\\040(you\\040can\\040try\\040setting\\040the\\040INIH_INCLUDE_DIRS\\040environment\\040variable\\040manually.)\"")
 
-endif (Boost_FOUND)
+endif (INIH_INCLUDE_DIRS)
 
 ###############################################################################
 
@@ -380,7 +388,7 @@ target_link_libraries(test_core
 
 add_dependencies(test_core _trogdor_test)
 
-if (Boost_FOUND)
+if (INIH_INCLUDE_DIRS)
 
 	# Trogdord unit tests
 	add_executable(test_trogdord
@@ -428,11 +436,11 @@ if (Boost_FOUND)
 
 	endif (ENABLE_REDIS)
 
-else (Boost_FOUND)
+else (INIH_INCLUDE_DIRS)
 
-	add_custom_target(test_trogdord echo "Skipping trogdord unit tests because the Boost C++ libraries are not installed in a place where CMake can find them.")
+	add_custom_target(test_trogdord echo "\"Skipping\\040trogdord\\040unit\\040tests\\040because\\040the\\040inih\\040library\\040isn't\\040installed\\040in\\040a\\040place\\040where\\040CMake\\040can\\040find\\040it\\040(you\\040can\\040try\\040setting\\040the\\040INIH_INCLUDE_DIRS\\040environment\\040variable\\040manually.)\"")
 
-endif (Boost_FOUND)
+endif (INIH_INCLUDE_DIRS)
 
 add_custom_target(unit_test)
 add_dependencies(unit_test test_core test_trogdord)

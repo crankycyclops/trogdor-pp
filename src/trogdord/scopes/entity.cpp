@@ -255,7 +255,7 @@ rapidjson::Document EntityController::getOutput(const rapidjson::Document &reque
 	std::string channel;
 
 	std::unique_ptr<output::Driver> &outBuffer = output::Driver::get(
-		Config::get()->value<std::string>(Config::CONFIG_KEY_OUTPUT_DRIVER)
+		Config::get()->getString(Config::CONFIG_KEY_OUTPUT_DRIVER)
 	);
 
 	try {

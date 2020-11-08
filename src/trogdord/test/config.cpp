@@ -15,7 +15,7 @@ TEST_SUITE("Config (config.cpp)") {
 
 		// Make sure all config values are set to their defaults
 		for (auto const &value: Config::get()->DEFAULTS) {
-			CHECK(0 == value.second.compare(Config::get()->value<std::string>(value.first)));
+			CHECK(0 == value.second.compare(Config::get()->getString(value.first)));
 		}
 	}
 
@@ -28,7 +28,7 @@ TEST_SUITE("Config (config.cpp)") {
 			// Test to make sure that the config values are all set to their
 			// defaults
 			for (auto const &value: Config::get()->DEFAULTS) {
-				CHECK(0 == value.second.compare(Config::get()->value<std::string>(value.first)));
+				CHECK(0 == value.second.compare(Config::get()->getString(value.first)));
 			}
 		}
 
@@ -41,7 +41,7 @@ TEST_SUITE("Config (config.cpp)") {
 			// Once again, test to make sure the config values are set to
 			// their defaults
 			for (auto const &value: Config::get()->DEFAULTS) {
-				CHECK(0 == value.second.compare(Config::get()->value<std::string>(value.first)));
+				CHECK(0 == value.second.compare(Config::get()->getString(value.first)));
 			}
 		}
 	}
@@ -65,9 +65,9 @@ TEST_SUITE("Config (config.cpp)") {
 
 			for (auto const &iniValue: Config::get()->DEFAULTS) {
 				if (0 == iniValue.first.compare(value.first)) {
-					CHECK(0 == Config::get()->value<std::string>(iniValue.first).compare("aDifferentValue"));
+					CHECK(0 == Config::get()->getString(iniValue.first).compare("aDifferentValue"));
 				} else {
-					CHECK(0 == Config::get()->value<std::string>(iniValue.first).compare(iniValue.second));
+					CHECK(0 == Config::get()->getString(iniValue.first).compare(iniValue.second));
 				}
 			}
 		}

@@ -9,7 +9,7 @@ std::string Filesystem::getFullDefinitionsPath(std::string definitionPath) {
 		return definitionPath;
 	}
 
-	std::string basePath = Config::get()->value<std::string>(Config::CONFIG_KEY_DEFINITIONS_PATH);
+	std::string basePath = Config::get()->getString(Config::CONFIG_KEY_DEFINITIONS_PATH);
 
 	// Make sure, for consistency's sake, that absolute base paths always
 	// end with a directory separator

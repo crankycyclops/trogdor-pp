@@ -9,8 +9,8 @@
 #include <memory>
 #include <unordered_map>
 
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/ini_parser.hpp>
+#include <ini.h>
+#include <trogdor/utility.h>
 
 #include "io/iostream/servererr.h"
 #include "exception/configinvalidvalue.h"
@@ -33,7 +33,7 @@ class Config {
 		std::string iniPath;
 
 		// Parsed ini file
-		boost::property_tree::iptree ini;
+		std::unordered_map<std::string, std::string> ini;
 
 		// Our global error logger
 		std::unique_ptr<ServerErr> errStream;
@@ -83,17 +83,76 @@ class Config {
 		// Returns the specified config value. Throws ConfigUndefinedValue
 		// if the config value isn't set and ConfigInvalidValue if it
 		// cannot be cast to the requested type.
-		template<typename returnType> returnType value(std::string key) {
+		std::string getString(std::string key) {
 
-			try {
-				return ini.get<returnType>(key);
-			}
-
-			catch (boost::property_tree::ptree_bad_path &e) {
+			if (ini.end() == ini.find(key)) {
 				throw ConfigUndefinedValue("Config value '" + key + "' is undefined.");
 			}
 
-			catch (boost::property_tree::ptree_bad_data &e) {
+			return ini[key];
+		}
+
+		// Returns the specified config value as a boolean. Throws
+		// ConfigUndefinedValue if the config value isn't set and
+		// ConfigInvalidValue if it cannot be cast to the requested type.
+		bool getBool(std::string key) {
+
+			if (ini.end() == ini.find(key)) {
+				throw ConfigUndefinedValue("Config value '" + key + "' is undefined.");
+			}
+
+			std::string value = ini[key];
+
+			trogdor::trim(ini[key]);
+			trogdor::strToLower(ini[key]);
+
+			if (0 == value.compare("1") || 0 == value.compare("true") || 0 == value.compare("t")) {
+				return true;
+			}
+
+			else if (0 == value.compare("0") || 0 == value.compare("false") || 0 == value.compare("f")) {
+				return false;
+			}
+
+			else {
+				throw ConfigInvalidValue("Config value '" + key + "' is invalid.");
+			}
+		}
+
+		// Returns the specified config value as an int. Throws
+		// ConfigUndefinedValue if the config value isn't set and
+		// ConfigInvalidValue if it cannot be cast to the requested type.
+		int getInt(std::string key) {
+
+			if (ini.end() == ini.find(key)) {
+				throw ConfigUndefinedValue("Config value '" + key + "' is undefined.");
+			}
+
+			try {
+				return std::stoi(ini[key]);
+			}
+
+			catch (const std::exception &e) {
+				throw ConfigInvalidValue("Config value '" + key + "' is invalid.");
+			}
+		}
+
+		// Returns the specified config value as a size_t. Throws
+		// ConfigUndefinedValue if the config value isn't set and
+		// ConfigInvalidValue if it cannot be cast to the requested type.
+		size_t getUInt(std::string key) {
+
+			if (ini.end() == ini.find(key)) {
+				throw ConfigUndefinedValue("Config value '" + key + "' is undefined.");
+			}
+
+			std::stringstream sstream(ini[key]);
+			size_t retVal;
+
+			sstream >> retVal;
+			return retVal;
+
+			if (sstream.fail()) {
 				throw ConfigInvalidValue("Config value '" + key + "' is invalid.");
 			}
 		}

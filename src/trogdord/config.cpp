@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 
 #include <trogdor/utility.h>
@@ -63,7 +64,7 @@ void Config::initErrorLogger() noexcept {
 
 	logFileStream = nullptr;
 
-	std::string logto = trogdor::strToLower(ini.get<std::string>(CONFIG_KEY_LOGTO));
+	std::string logto = trogdor::strToLower(getString(CONFIG_KEY_LOGTO));
 
 	if (0 == logto.compare("stderr")) {
 		errStream = std::make_unique<ServerErr>(&std::cerr);
@@ -130,25 +131,43 @@ void Config::load(std::string newIniPath) noexcept {
 		STD_FILESYSTEM::exists(iniPath) &&
 		!STD_FILESYSTEM::is_directory(iniPath)
 	) {
-		try {
-			boost::property_tree::ini_parser::read_ini(iniPath, ini);
+		int status = ini_parse(iniPath.c_str(), [](
+			void *data,
+			const char *section,
+			const char *name,
+			const char *value
+		) -> int {
+
+			std::string key = section ? std::string(section) + '.' + name : name;
+
+			static_cast<Config *>(data)->ini[key] = value;
+			return 1;
+
+		}, this);
+
+		if (-1 == status) {
+			std::cerr << "Error: " << "Couldn't open " << iniPath
+				<< " for reading." << std::endl;
+			exit(EXIT_INI_ERROR);
 		}
 
-		// Error logging hasn't been setup yet, so I have to write to stderr.
-		catch (const boost::property_tree::ini_parser::ini_parser_error &e) {
-			std::cerr << "Error: " << e.what() << std::endl;
+		else if (-2 == status) {
+			std::cerr << "Error: " << "A memory allocation error occured when attempting to parse "
+				<< iniPath << '.' << std::endl;
 			exit(EXIT_INI_ERROR);
+		}
+
+		else if (0 != status) {
+			std::cerr << "Error: " << "An unknown error occured when attempting to parse "
+				<< iniPath << '.' << std::endl;
 		}
 	}
 
 	// Populate the ini object with defaults for any values not set in the ini
 	// file.
 	for (auto &defaultVal: DEFAULTS) {
-
-		boost::optional iniValue = ini.get_optional<std::string>(defaultVal.first);
-
-		if (!iniValue) {
-			ini.put(defaultVal.first, defaultVal.second);
+		if (ini.end() == ini.find(defaultVal.first)) {
+			ini[defaultVal.first] = defaultVal.second;
 		}
 	}
 }
