@@ -1,8 +1,7 @@
 #include <doctest.h>
-#include <fstream>
 
-#include "../include/config.h"
-#include "../include/filesystem.h"
+
+#include "config.h"
 
 
 TEST_SUITE("Config (config.cpp)") {
@@ -73,5 +72,179 @@ TEST_SUITE("Config (config.cpp)") {
 		}
 
 		STD_FILESYSTEM::remove(iniFilename);
+	}
+
+	TEST_CASE ("Config (config.cpp): getBool()") {
+
+		SUBCASE("All possible values for true") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "1"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "true"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "True"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "TRUE"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "tRue"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "trUe"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "truE"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "TRue"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "TrUe"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "TruE"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "tRUe"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "tRuE"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "trUE"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "TRUe"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "TRuE"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "tRUE"}});
+			CHECK(true == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+		}
+
+		SUBCASE("All possible values for false") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "0"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "false"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "False"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "FALSE"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "fAlse"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "faLse"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "falSe"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "falsE"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "FAlse"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "FaLse"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "FalSe"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "FalsE"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "fALse"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "fAlSe"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "fAlsE"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "faLSe"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "falSE"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "FALse"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "FAlSe"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "FAlsE"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "fALSe"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "fALsE"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, "faLSE"}});
+			CHECK(false == Config::get()->getBool(Config::CONFIG_KEY_PORT));
+			STD_FILESYSTEM::remove(iniFilename);
+		}
+
+		SUBCASE("Invalid value") {
+
+			// TODO
+		}
 	}
 }

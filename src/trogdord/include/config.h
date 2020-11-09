@@ -101,10 +101,7 @@ class Config {
 				throw ConfigUndefinedValue("Config value '" + key + "' is undefined.");
 			}
 
-			std::string value = ini[key];
-
-			trogdor::trim(ini[key]);
-			trogdor::strToLower(ini[key]);
+			std::string value = trogdor::strToLower(trogdor::trim(ini[key]));
 
 			if (0 == value.compare("1") || 0 == value.compare("true") || 0 == value.compare("t")) {
 				return true;

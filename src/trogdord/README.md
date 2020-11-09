@@ -44,7 +44,7 @@ If you're interested in writing your own client-side connector, or just want to 
 * [G++](https://gcc.gnu.org/projects/cxx-status.html) 7+ or [Clang++](https://clang.llvm.org/cxx_status.html) 8+. A different compiler might work, but it hasn't been tested, so you're on your own.
 * [CMake](https://cmake.org/) 3.10 or above
 * [Standalone ASIO library](https://think-async.com/Asio/) >=1.10 (libasio-dev package on Ubuntu)
-* [INIH (INI Not Invented Here)](https://github.com/benhoyt/inih) (libinih-dev package on Ubuntu)
+* [INIH (INI Not Invented Here)](https://github.com/benhoyt/inih) (libinih1 and libinih-dev packages on Ubuntu)
 * [RapidJSON](https://rapidjson.org/) >= 1.1.0
 * [Hiredis](https://github.com/redis/hiredis) 0.13+ (optional, for Redis Pub/Sub support in trogdord)
 * The core library, installed as a shared object or DLL in a place where CMake can find it (corresponds to the trogdor build target)
