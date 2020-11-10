@@ -15,4 +15,4 @@ service apport start
 # Compile and run the unit tests
 make -j2 test_trogdord
 timeout -s SIGQUIT 10 ./test_trogdord
-ls
+ls /var/lib/systemd/coredump
