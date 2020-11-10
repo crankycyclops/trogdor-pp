@@ -188,7 +188,7 @@ install(TARGETS standalone DESTINATION bin COMPONENT standalone OPTIONAL)
 # and likely others. The version of inih packaged for Ubuntu 20.04 and above
 # works with pkg-config, so in that case you shouldn't have an issue.)
 if(DEFINED ENV{INIH_INCLUDE_DIRS})
-	message("Manually specified include path for inih.")
+	message("Manually declared existence and include path of inih.")
 	set(INIH_INCLUDEDIR $ENV{INIH_INCLUDE_DIRS})
 else(DEFINED ENV{INIH_INCLUDE_DIRS})
 	pkg_check_modules(INIH inih)
