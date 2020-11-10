@@ -388,7 +388,7 @@ target_link_libraries(test_core
 
 add_dependencies(test_core _trogdor_test)
 
-if (INIH_INCLUDE_DIRS)
+if (INIH_INCLUDEDIR)
 
 	# Trogdord unit tests
 	add_executable(test_trogdord
@@ -436,11 +436,11 @@ if (INIH_INCLUDE_DIRS)
 
 	endif (ENABLE_REDIS)
 
-else (INIH_INCLUDE_DIRS)
+else (INIH_INCLUDEDIR)
 
 	add_custom_target(test_trogdord echo "\"Skipping\\040trogdord\\040unit\\040tests\\040because\\040the\\040inih\\040library\\040isn't\\040installed\\040in\\040a\\040place\\040where\\040CMake\\040can\\040find\\040it\\040(you\\040can\\040try\\040setting\\040the\\040INIH_INCLUDE_DIRS\\040environment\\040variable\\040manually.)\"")
 
-endif (INIH_INCLUDE_DIRS)
+endif (INIH_INCLUDEDIR)
 
 add_custom_target(unit_test)
 add_dependencies(unit_test test_core test_trogdord)
