@@ -191,7 +191,7 @@ if(DEFINED ENV{INIH_INCLUDE_DIRS})
 	message("Manually specified include path for inih.")
 	set(INIH_INCLUDE_DIRS $ENV{INIH_INCLUDE_DIRS})
 else(DEFINED ENV{INIH_INCLUDE_DIRS})
-	pkg_search_module(INIH inih)
+	pkg_check_modules(INIH inih)
 endif(DEFINED ENV{INIH_INCLUDE_DIRS})
 
 if (INIH_INCLUDE_DIRS)
@@ -244,7 +244,7 @@ if (INIH_INCLUDE_DIRS)
 
 		if (ENABLE_REDIS)
 
-			pkg_check_modules (HIREDIS REQUIRED hiredis>=0.13)
+			pkg_check_modules(HIREDIS REQUIRED hiredis>=0.13)
 
 			add_library(trogdord_redis STATIC
 				src/trogdord/io/output/redis.cpp
