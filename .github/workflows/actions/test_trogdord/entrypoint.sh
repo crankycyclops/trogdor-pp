@@ -8,9 +8,11 @@ make -j2 trogdord
 
 # Make sure we can generate core dumps
 ulimit -c unlimited
+mkdir -p .config/apport
+echo " [main] unpackaged=true" > .config/apport/settings
+service apport start
 
 # Compile and run the unit tests
 make -j2 test_trogdord
 timeout -s SIGQUIT 10 ./test_trogdord
-cat /proc/sys/kernel/core_pattern
-ls /var/lib/systemd/coredump
+ls
