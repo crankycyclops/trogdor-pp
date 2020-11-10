@@ -8,7 +8,7 @@ make -j2 trogdord
 
 # Make sure we can generate core dumps
 ulimit -c unlimited
-sudo sysctl -w kernel.core_pattern="/tmp/core"
+echo "#!/bin/bash\necho \"Replaced apport!\"" > /usr/share/apport/apport
 
 # Compile and run the unit tests
 make -j2 test_trogdord
