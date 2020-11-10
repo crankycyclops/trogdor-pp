@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_REDIS=ON .
+cmake --trace-expand -DCMAKE_BUILD_TYPE=Debug -DENABLE_REDIS=ON .
 
 # Make sure the entire build for trogdord succeeds, including main.cpp, which
 # isn't included in the unit tests
