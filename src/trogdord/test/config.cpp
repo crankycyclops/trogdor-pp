@@ -45,7 +45,7 @@ TEST_SUITE("Config (config.cpp)") {
 		}
 	}
 
-	TEST_CASE ("Config (config.cpp): Construction with valid ini file") {
+	TEST_CASE ("Config (config.cpp): Construction with valid ini file and getString()") {
 
 		std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
 
@@ -72,6 +72,84 @@ TEST_SUITE("Config (config.cpp)") {
 		}
 
 		STD_FILESYSTEM::remove(iniFilename);
+	}
+
+	TEST_CASE ("Config (config.cpp): getUInt()") {
+
+		SUBCASE("Valid unsigned integer") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::vector<std::string> values = {
+				"0", "1", "2"
+			};
+
+			for (const auto &value: values) {
+				initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, value}});
+				CHECK(std::atoi(value.c_str()) == Config::get()->getInt(Config::CONFIG_KEY_PORT));
+				STD_FILESYSTEM::remove(iniFilename);
+			}
+		}
+
+		SUBCASE("Invalid unsigned integer") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::vector<std::string> values = {
+				"blah", "true", "false", "t", "f", "1.2", "-1.2", "-1", "-2"
+			};
+
+			for (const auto &value: values) {
+
+				initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, value}});
+
+				try {
+					Config::get()->getUInt(Config::CONFIG_KEY_PORT);
+					CHECK(false);
+				} catch (const ConfigInvalidValue &e) {
+					CHECK(true);
+				}
+
+				STD_FILESYSTEM::remove(iniFilename);
+			}
+		}
+	}
+
+	TEST_CASE ("Config (config.cpp): getInt()") {
+
+		SUBCASE("Valid integer") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::vector<std::string> values = {
+				"0", "-1", "1", "5", "-5"
+			};
+
+			for (const auto &value: values) {
+				initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, value}});
+				CHECK(std::atoi(value.c_str()) == Config::get()->getInt(Config::CONFIG_KEY_PORT));
+				STD_FILESYSTEM::remove(iniFilename);
+			}
+		}
+
+		SUBCASE("Invalid integer") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::vector<std::string> values = {
+				"blah", "true", "false", "t", "f", "0.1", "1.2", "-1.2"
+			};
+
+			for (const auto &value: values) {
+
+				initIniFile(iniFilename, {{Config::CONFIG_KEY_PORT, value}});
+
+				try {
+					Config::get()->getInt(Config::CONFIG_KEY_PORT);
+					CHECK(false);
+				} catch (const ConfigInvalidValue &e) {
+					CHECK(true);
+				}
+
+				STD_FILESYSTEM::remove(iniFilename);
+			}
+		}
 	}
 
 	TEST_CASE ("Config (config.cpp): getBool()") {

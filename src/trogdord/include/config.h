@@ -125,6 +125,19 @@ class Config {
 				throw ConfigUndefinedValue("Config value '" + key + "' is undefined.");
 			}
 
+			// std::stoi() supports "true" and "false", but for what I'm
+			// doing, that doesn't make sense, so I want to consider those
+			// invalid.
+			else if (0 == ini[key].compare("true") || 0 == ini[key].compare("false")) {
+				throw ConfigInvalidValue("Config value '" + key + "' is invalid.");
+			}
+
+			// std::stoi() accepts decimal values with truncation, but I want
+			// to consider these values invalid.
+			else if (std::string::npos != ini[key].find(".")) {
+				throw ConfigInvalidValue("Config value '" + key + "' is invalid.");
+			}
+
 			try {
 				return std::stoi(ini[key]);
 			}
@@ -143,15 +156,24 @@ class Config {
 				throw ConfigUndefinedValue("Config value '" + key + "' is undefined.");
 			}
 
-			std::stringstream sstream(ini[key]);
+			// Consider it an invalid unsigned int if it has a decimal or a
+			// negative sign (without this check, I either get truncated
+			// integers or two's-compliment negatives expressed as large
+			// positive integers.)
+			else if (std::string::npos != ini[key].find(".") || std::string::npos != ini[key].find("-")) {
+				throw ConfigInvalidValue("Config value '" + key + "' is invalid.");
+			}
+
 			size_t retVal;
+			std::stringstream sstream(ini[key]);
 
 			sstream >> retVal;
-			return retVal;
 
 			if (sstream.fail()) {
 				throw ConfigInvalidValue("Config value '" + key + "' is invalid.");
 			}
+
+			return retVal;
 		}
 
 		// Used to log errors to the global error handler. Optional argument
