@@ -35,7 +35,7 @@ namespace output {
 
 		if (running) {
 			running = false;
-			msgsReady.notify_one();
+			msgsReady.notify_all();
 			redisWorker->join();
 		}
 	}
@@ -85,7 +85,7 @@ namespace output {
 					return (msgQueue.size() && (!redis || isConnected())) || !running;
 				});
 
-				if (msgQueue.size()) {
+				if (running && msgQueue.size()) {
 
 					// If we can't connect, wait for a little while and try
 					// again

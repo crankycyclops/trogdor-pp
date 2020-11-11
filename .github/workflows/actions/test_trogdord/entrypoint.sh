@@ -6,11 +6,6 @@ cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_REDIS=ON .
 # isn't included in the unit tests
 make -j2 trogdord
 
-# Make sure we can generate core dumps
-ulimit -c unlimited
-echo "#!/bin/bash\necho \"Replaced apport!\" > /tmp/test" > /usr/share/apport/apport
-
 # Compile and run the unit tests
 make -j2 test_trogdord
 timeout -s SIGQUIT 10 ./test_trogdord
-cat /tmp/test
