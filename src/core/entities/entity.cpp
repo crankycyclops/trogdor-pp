@@ -69,9 +69,20 @@ namespace trogdor::entity {
       static event::LuaEventTrigger dummyL(err(), "", nullptr);
 
       for (const auto &event: triggers->getTriggers()) {
+
          for (auto &trigger: event.second) {
-            if (typeid(dummyL) == typeid(*(trigger.get()))) {
-               dynamic_cast<event::LuaEventTrigger *>(trigger.get())->setLuaState(L);
+
+            if (trigger) {
+
+               // Using this instead of typeid(*trigger) satisfies te compiler
+               // gods and fixes the following warning: expression with side
+               // effects will be evaluated despite being used as an operand to
+               // 'typeid'
+               auto &t = *trigger.get();
+
+               if (typeid(dummyL) == typeid(t)) {
+                  dynamic_cast<event::LuaEventTrigger *>(trigger.get())->setLuaState(L);
+               }
             }
          }
       }

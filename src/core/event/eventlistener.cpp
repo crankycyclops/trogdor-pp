@@ -32,34 +32,43 @@ namespace trogdor::event {
 
          for (const auto &trigger: event.second) {
 
-            if (typeid(autoAttackDummy) == typeid(*trigger)) {
-               triggers[event.first].push_back(std::make_unique<AutoAttackEventTrigger>(
-                  *dynamic_cast<AutoAttackEventTrigger *>(trigger.get())
-               ));
-            }
+            if (trigger) {
 
-            else if (typeid(deathDropDummy) == typeid(*trigger)) {
-               triggers[event.first].push_back(std::make_unique<DeathDropEventTrigger>(
-                  *dynamic_cast<DeathDropEventTrigger *>(trigger.get())
-               ));
-            }
+               // Using this instead of typeid(*trigger) satisfies te compiler
+               // gods and fixes the following warning: expression with side
+               // effects will be evaluated despite being used as an operand to
+               // 'typeid'
+               auto &t = *trigger.get();
 
-            else if (typeid(respawnDummy) == typeid(*trigger)) {
-               triggers[event.first].push_back(std::make_unique<RespawnEventTrigger>(
-                  *dynamic_cast<RespawnEventTrigger *>(trigger.get())
-               ));
-            }
-
-            else {
-
-               try {
-                  triggers[event.first].push_back(std::make_unique<LuaEventTrigger>(
-                     *dynamic_cast<LuaEventTrigger *>(trigger.get())
+               if (typeid(autoAttackDummy) == typeid(t)) {
+                  triggers[event.first].push_back(std::make_unique<AutoAttackEventTrigger>(
+                     *dynamic_cast<AutoAttackEventTrigger *>(trigger.get())
                   ));
                }
 
-               catch (const std::bad_cast &e) {
-                  throw UndefinedException("Unknown event trigger type encountered in EventListener copy constructor");
+               else if (typeid(deathDropDummy) == typeid(t)) {
+                  triggers[event.first].push_back(std::make_unique<DeathDropEventTrigger>(
+                     *dynamic_cast<DeathDropEventTrigger *>(trigger.get())
+                  ));
+               }
+
+               else if (typeid(respawnDummy) == typeid(t)) {
+                  triggers[event.first].push_back(std::make_unique<RespawnEventTrigger>(
+                     *dynamic_cast<RespawnEventTrigger *>(trigger.get())
+                  ));
+               }
+
+               else {
+
+                  try {
+                     triggers[event.first].push_back(std::make_unique<LuaEventTrigger>(
+                        *dynamic_cast<LuaEventTrigger *>(trigger.get())
+                     ));
+                  }
+
+                  catch (const std::bad_cast &e) {
+                     throw UndefinedException("Unknown event trigger type encountered in EventListener copy constructor");
+                  }
                }
             }
          }
