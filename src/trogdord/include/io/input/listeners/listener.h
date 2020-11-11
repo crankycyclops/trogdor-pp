@@ -12,6 +12,9 @@ namespace input {
 
 		public:
 
+			// Destructor
+			virtual ~Listener();
+
 			// Returns true if the listener has been started and false if not.
 			virtual bool isStarted() = 0;
 

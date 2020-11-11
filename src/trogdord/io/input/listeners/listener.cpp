@@ -8,6 +8,10 @@
 namespace input {
 
 
+	Listener::~Listener() {}
+
+	/************************************************************************/
+
 	// Invalid input will be ignored. No notification will be sent back to the
 	// outside process.
 	void Listener::dispatch(std::string input) {
