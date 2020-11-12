@@ -755,7 +755,7 @@ namespace trogdor::entity {
       auto location = getLocation().lock();
 
       if (showMessage && location) {
-         location->out("notifications") << title << " dies." << std::endl;
+         location->out("notifications") << getTitle() << " dies." << std::endl;
       }
 
       game->event({"afterDie", {triggers.get()}, {game, this}});

@@ -48,6 +48,11 @@ namespace trogdor::entity {
 
    class Entity: public std::enable_shared_from_this<Entity> {
 
+      public:
+
+         // Valid types for a single entity property value
+         typedef std::variant<size_t, int, double, bool, std::string> PropertyValue;
+
       private:
 
          // Custom messages that should be displayed for certain events that act
@@ -75,7 +80,9 @@ namespace trogdor::entity {
          const std::string name;
          std::string className;
 
-         std::string title;
+         // Entity properties like title, description, etc.
+         std::unordered_map<std::string, PropertyValue> properties;
+
          std::string longDesc;
          std::string shortDesc;
 
@@ -471,6 +478,51 @@ namespace trogdor::entity {
          }
 
          /*
+            Returns a read-only reference to the properties container.
+
+            Input:
+               (none)
+
+            Output:
+               All properties (const std::unordered_map<std::string, PropertyValue> &)
+         */
+         inline const auto &getProperties() const {
+
+            return properties;
+         }
+
+         /*
+            Returns the value of a property if it's set or std::nullopt if it's
+            not.
+
+            Input:
+               Key (std::string)
+
+            Output:
+               Property value or std::nullopt (std::optional<PropertyValue>)
+         */
+         inline const std::optional<PropertyValue> getProperty(std::string key) const {
+
+            return properties.end() != properties.find(key) ?
+               std::optional<PropertyValue>(properties.find(key)->second) : std::nullopt;
+         }
+
+         /*
+            Sets a property.
+
+            Input:
+               Key (std::string)
+               Value (PropertyValue)
+
+            Output:
+               (none)
+         */
+         inline void setProperty(std::string key, PropertyValue value) {
+
+            properties[key] = value;
+         }
+
+         /*
             Returns the Entity's class.
 
             Input:
@@ -501,7 +553,11 @@ namespace trogdor::entity {
             Output:
                Entity's title (std::string)
          */
-         inline std::string getTitle() const {return title;}
+         inline std::string getTitle() const {
+
+            auto title = properties.find("title");
+            return properties.end() != title ? std::get<std::string>(title->second) : "";
+         }
 
          /*
             Returns the Entity's long description.
@@ -622,10 +678,10 @@ namespace trogdor::entity {
             Output:
                (none)
          */
-         inline void setTitle(std::string t) {
+         inline void setTitle(std::string title) {
 
             mutex.lock();
-            title = t;
+            setProperty("title", title);
             mutex.unlock();
          }
 

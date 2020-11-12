@@ -25,7 +25,7 @@ namespace trogdor::entity {
 
    // The title property will usually be set to something more descriptive later
    Entity::Entity(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): game(g), name(n), title(n), outStream(std::move(o)),
+   std::unique_ptr<Trogerr> e): game(g), name(n), outStream(std::move(o)),
    errStream(std::move(e)) {
 
       if (!isNameValid(n)) {
@@ -39,6 +39,9 @@ namespace trogdor::entity {
       // this should always be overridden by a top-level Entity type
       className = "entity";
 
+      // Default value for the Entity's title is its name
+      setProperty("title", n);
+
       L = std::make_shared<LuaState>(g);
       triggers = std::make_unique<event::EventListener>();
    }
@@ -46,8 +49,8 @@ namespace trogdor::entity {
    /***************************************************************************/
 
    Entity::Entity(const Entity &e, std::string n): msgs(e.msgs), tags(e.tags),
-   types(e.types), game(nullptr), name(n), className(e.className), title(e.title),
-   longDesc(e.longDesc), shortDesc(e.shortDesc) {
+   types(e.types), game(nullptr), name(n), className(e.className),
+   properties(e.properties), longDesc(e.longDesc), shortDesc(e.shortDesc) {
 
       if (!isNameValid(n)) {
          throw ValidationException(std::string("name '") + n
