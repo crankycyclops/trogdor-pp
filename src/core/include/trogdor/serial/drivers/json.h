@@ -1,27 +1,15 @@
-#ifndef SERIAL_DRIVER_H
-#define SERIAL_DRIVER_H
+#ifndef SERIAL_JSON_H
+#define SERIAL_JSON_H
 
 
-#include <any>
-#include <optional>
-#include <variant>
-#include <string>
-#include <memory>
-#include <unordered_map>
-
-#include "data.h"
+#include <trogdor/serial/driver.h>
 
 namespace trogdor::serial {
 
 
-   // Maps data from an instance of Serializer to a format defined by an
-   // implementing class.
-   class Driver {
+   class Json: public Driver {
 
       public:
-
-         // Destructor
-         virtual ~Driver();
 
          /*
             Takes as input a serializable object and outputs the
@@ -33,7 +21,7 @@ namespace trogdor::serial {
             Output:
                Serialized version (std::any)
          */
-         virtual std::any serialize(const Serializable &data) = 0;
+         virtual std::any serialize(const Serializable &data);
 
          /*
             Takes as input a serialized object and outputs a
@@ -45,9 +33,9 @@ namespace trogdor::serial {
             Output:
                Populated instance of Serializable (Serializable)
          */
-         virtual Serializable deserialize(const std::any &data) = 0;
+         virtual Serializable deserialize(const std::any &data);
    };
 }
 
 
-#endif // SERIAL_DRIVER_H
+#endif // SERIAL_JSON_H

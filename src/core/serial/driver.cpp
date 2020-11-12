@@ -3,5 +3,5 @@
 
 namespace trogdor::serial {
 
-	Driver::~Driver() {}
+   Driver::~Driver() {}
 }
