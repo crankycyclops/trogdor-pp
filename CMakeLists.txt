@@ -131,6 +131,7 @@ set(CORE_SOURCES
 	src/core/entities/player.cpp
 	src/core/entities/room.cpp
 	src/core/entities/thing.cpp
+	src/core/serial/driver.cpp
 )
 
 set(CORE_INCLUDES

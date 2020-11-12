@@ -129,4 +129,4 @@ namespace trogdor {
 }
 
 
-#endif
+#endif // COMMAND_H
