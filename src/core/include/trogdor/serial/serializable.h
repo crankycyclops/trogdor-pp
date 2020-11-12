@@ -87,6 +87,7 @@ namespace trogdor::serial {
          void set(std::string key, double value) {_set(key, value);}
          void set(std::string key, bool value) {_set(key, value);}
          void set(std::string key, std::string value) {_set(key, value);}
+         void set(std::string key, const char *value) {_set(key, std::string(value));}
          void set(std::string key, std::shared_ptr<Serializable> &value) {_set(key, value);}
 
          /*
