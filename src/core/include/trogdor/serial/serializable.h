@@ -35,7 +35,7 @@ namespace trogdor::serial {
       public:
 
          // Constructor
-         Serializable();
+         Serializable() {};
          Serializable(const Serializable &rhs) {*this = rhs;}
          Serializable(Driver &driver, std::any data) {*this = driver.deserialize(data);}
 
@@ -60,6 +60,17 @@ namespace trogdor::serial {
                (none)
          */
          void clear() {data.clear();}
+
+         /*
+            Returns the underlying container's size.
+
+            Input:
+               (none)
+
+            Output:
+               Container's size (size_t)
+         */
+         size_t size() {return data.size();}
 
          /*
             Sets a value.

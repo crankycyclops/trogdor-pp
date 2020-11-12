@@ -376,6 +376,7 @@ add_executable(test_core
 	src/core/test/timer/jobs/autoattack.cpp
 	src/core/test/timer/jobs/respawn.cpp
 	src/core/test/timer/jobs/wander.cpp
+	src/core/test/serial/serializable.cpp
 	src/core/test/mock/mockaction.cpp
 	src/core/test/mock/mocktrigger.cpp
 	src/core/test/mock/mocktimerjob.cpp
