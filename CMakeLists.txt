@@ -132,7 +132,6 @@ set(CORE_SOURCES
 	src/core/entities/room.cpp
 	src/core/entities/thing.cpp
 	src/core/serial/driver.cpp
-	src/core/serial/drivers/json.cpp
 )
 
 set(CORE_INCLUDES
