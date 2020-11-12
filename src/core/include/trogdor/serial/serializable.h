@@ -20,18 +20,6 @@ namespace trogdor::serial {
          // Maps keys to serializable values
          std::unordered_map<std::string, Value> data;
 
-         /*
-            All setters use this private method.
-
-            Input:
-               Key (std::string)
-               Value (serial::Value)
-
-            Output:
-               (none)
-         */
-         void _set(std::string key, Value value) {data[key] = value;}
-
       public:
 
          // Constructor
@@ -82,13 +70,19 @@ namespace trogdor::serial {
             Output:
                (none)
          */
-         void set(std::string key, size_t value) {_set(key, value);}
-         void set(std::string key, int value) {_set(key, value);}
-         void set(std::string key, double value) {_set(key, value);}
-         void set(std::string key, bool value) {_set(key, value);}
-         void set(std::string key, std::string value) {_set(key, value);}
-         void set(std::string key, const char *value) {_set(key, std::string(value));}
-         void set(std::string key, std::shared_ptr<Serializable> &value) {_set(key, value);}
+         void set(std::string key, Value value) {data[key] = value;}
+         void set(std::string key, const char *value) {set(key, std::string(value));}
+
+         /*
+            Unsets a value.
+
+            Input:
+               key (std::string)
+
+            Output:
+               (none)
+         */
+         void erase(std::string key) {data.erase(key);}
 
          /*
             Returns all serialized values (read-only.)

@@ -151,4 +151,18 @@ TEST_SUITE("Serializable (serializable.h)") {
 
 		CHECK(2 == numFound);
 	}
+
+	TEST_CASE("erase()") {
+
+		trogdor::serial::Serializable s;
+
+		s.set("size_t", static_cast<size_t>(1));
+
+		CHECK(std::nullopt != s.get("size_t"));
+		CHECK(1 == std::get<size_t>(*s.get("size_t")));
+
+		s.erase("size_t");
+
+		CHECK(0 == s.size());
+	}
 }
