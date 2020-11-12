@@ -59,6 +59,23 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   Being::Being(const serial::Serializable &data): Thing(data) {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   serial::Serializable Being::serialize() {
+
+      serial::Serializable data = Thing::serialize();
+
+      // TODO
+      return data;
+   }
+
+   /***************************************************************************/
+
    void Being::display(Being *observer, bool displayFull) {
 
       if (ENTITY_PLAYER == observer->getType()) {

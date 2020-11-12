@@ -17,6 +17,23 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   Tangible::Tangible(const serial::Serializable &data): Entity(data) {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   serial::Serializable Tangible::serialize() {
+
+      serial::Serializable data = Entity::serialize();
+
+      // TODO
+      return data;
+   }
+
+   /***************************************************************************/
+
    void Tangible::observe(const std::shared_ptr<Being> &observer, bool triggerEvents, bool displayFull) {
 
       if (triggerEvents && !game->event({

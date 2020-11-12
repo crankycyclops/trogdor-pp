@@ -104,6 +104,14 @@ namespace trogdor::entity {
          Tangible(const Tangible &e, std::string n);
 
          /*
+            This constructor deserializes a Tangible.
+
+            Input:
+               Raw deserialized data (const Serializable &)
+         */
+         Tangible(const serial::Serializable &data);
+
+         /*
             Returns a smart pointer representing a raw Tangible pointer. Be
             careful with this and only call it on Entities you know are managed
             by smart pointers. If, for example, you call this method on entities
@@ -159,6 +167,17 @@ namespace trogdor::entity {
 
             return true;
          }
+
+         /*
+            Serializes the Tangible.
+
+            Input:
+               (none)
+
+            Output:
+               An object containing easily serializable data (Serializable)
+         */
+         virtual serial::Serializable serialize();
 
          /*
             Gives a Being the ability to observe an Entity.  If the Being is a

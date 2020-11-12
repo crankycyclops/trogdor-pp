@@ -41,6 +41,19 @@ namespace trogdor::entity {
          std::unique_ptr<Trogerr> e);
 
          /*
+            This constructor deserializes a Player. Unlike the other Entity
+            deserialization constructors, this one still requires output and
+            error stream arguments.
+
+            Input:
+               Raw deserialized data (const Serializable &)
+               Output stream (std::unique_ptr<Trogout> o)
+               Error stream (std::unique_ptr<Trogerr> e)
+         */
+         Player(const serial::Serializable &data, std::unique_ptr<Trogout> o,
+         std::unique_ptr<Trogerr> e);
+
+         /*
             Returns a smart pointer representing a raw Player pointer. Be careful
             with this and only call it on Entities you know are managed by smart
             pointers. If, for example, you call this method on entities that are
@@ -87,6 +100,17 @@ namespace trogdor::entity {
                been entered yet.
          */
          inline const Command *getLastCommand() {return lastCommand.get();}
+
+         /*
+            Serializes the Player.
+
+            Input:
+               (none)
+
+            Output:
+               An object containing easily serializable data (Serializable)
+         */
+         virtual serial::Serializable serialize();
 
          /*
             Takes as input a command and executes it on the player's behalf.

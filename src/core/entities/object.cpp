@@ -26,6 +26,23 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   Object::Object(const serial::Serializable &data): Thing(data) {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   serial::Serializable Object::serialize() {
+
+      serial::Serializable data = Thing::serialize();
+
+      // TODO
+      return data;
+   }
+
+   /***************************************************************************/
+
    void Object::addAlias(std::string alias) {
 
       Thing::addAlias(alias);

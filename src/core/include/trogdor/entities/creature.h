@@ -99,6 +99,42 @@ namespace trogdor::entity {
          Creature(const Creature &c, std::string n);
 
          /*
+            This constructor deserializes a Creature.
+
+            Input:
+               Raw deserialized data (const Serializable &)
+         */
+         Creature(const serial::Serializable &data);
+
+         /*
+            Returns a smart pointer representing a raw Creature pointer. Be careful
+            with this and only call it on Entities you know are managed by smart
+            pointers. If, for example, you call this method on entities that are
+            managed by Lua using new and delete, you're going to have a bad time.
+
+            Input:
+               (none)
+
+            Output:
+               std::shared_ptr<Creature>
+         */
+         inline std::shared_ptr<Creature> getShared() {
+
+            return std::dynamic_pointer_cast<Creature>(Entity::getShared());
+         }
+
+         /*
+            Serializes the Creature.
+
+            Input:
+               (none)
+
+            Output:
+               An object containing easily serializable data (Serializable)
+         */
+         virtual serial::Serializable serialize();
+
+         /*
             Calls Being::insertIntoInventory and then, if necessary, updates the
             Creature's weapon cache.
 
@@ -124,23 +160,6 @@ namespace trogdor::entity {
                (none)
          */
          virtual void removeFromInventory(const std::shared_ptr<Object> &object);
-
-         /*
-            Returns a smart pointer representing a raw Creature pointer. Be careful
-            with this and only call it on Entities you know are managed by smart
-            pointers. If, for example, you call this method on entities that are
-            managed by Lua using new and delete, you're going to have a bad time.
-
-            Input:
-               (none)
-
-            Output:
-               std::shared_ptr<Creature>
-         */
-         inline std::shared_ptr<Creature> getShared() {
-
-            return std::dynamic_pointer_cast<Creature>(Entity::getShared());
-         }
 
          /*
             Returns the Creature's allegiance.

@@ -104,6 +104,14 @@ namespace trogdor::entity {
          Place(const Place &p, std::string n);
 
          /*
+            This constructor deserializes a Place.
+
+            Input:
+               Raw deserialized data (const Serializable &)
+         */
+         Place(const serial::Serializable &data);
+
+         /*
             Returns a smart pointer representing a raw Place pointer. Be careful
             with this and only call it on Entities you know are managed by smart
             pointers. If, for example, you call this method on entities that are
@@ -119,6 +127,17 @@ namespace trogdor::entity {
 
             return std::dynamic_pointer_cast<Place>(Entity::getShared());
          }
+
+         /*
+            Serializes the Place.
+
+            Input:
+               (none)
+
+            Output:
+               An object containing easily serializable data (Serializable)
+         */
+         virtual serial::Serializable serialize();
 
          /*
             Inserts a Player that resides inside the Place.

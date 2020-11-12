@@ -34,6 +34,23 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   Thing::Thing(const serial::Serializable &data): Tangible(data) {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   serial::Serializable Thing::serialize() {
+
+      serial::Serializable data = Tangible::serialize();
+
+      // TODO
+      return data;
+   }
+
+   /***************************************************************************/
+
    void Thing::display(Being *observer, bool displayFull) {
 
       observer->out("display") << "You see " << getTitle() << '.' << std::endl;

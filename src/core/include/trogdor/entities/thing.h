@@ -59,6 +59,14 @@ namespace trogdor::entity {
          Thing(const Thing &t, std::string n);
 
          /*
+            This constructor deserializes a Thing.
+
+            Input:
+               Raw deserialized data (const Serializable &)
+         */
+         Thing(const serial::Serializable &data);
+
+         /*
             Returns a smart pointer representing a raw Thing pointer. Be careful
             with this and only call it on Entities you know are managed by smart
             pointers. If, for example, you call this method on entities that are
@@ -113,6 +121,17 @@ namespace trogdor::entity {
             location = l;
             mutex.unlock();
          }
+
+         /*
+            Serializes the Thing.
+
+            Input:
+               (none)
+
+            Output:
+               An object containing easily serializable data (Serializable)
+         */
+         virtual serial::Serializable serialize();
 
          /*
             Adds an alias to the Thing, which is another name that the Thing can

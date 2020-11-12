@@ -72,6 +72,23 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   Resource::Resource(const serial::Serializable &data): Entity(data) {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   serial::Serializable Resource::serialize() {
+
+      serial::Serializable data = Entity::serialize();
+
+      // TODO
+      return data;
+   }
+
+   /***************************************************************************/
+
    std::string Resource::hydrateString(std::string templateStr, bool isPlural) {
 
       std::string result = templateStr;

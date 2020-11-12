@@ -21,6 +21,8 @@
 #include <trogdor/iostream/trogout.h>
 #include <trogdor/iostream/trogerr.h>
 
+#include <trogdor/serial/serializable.h>
+
 namespace trogdor::entity {
 
 
@@ -235,6 +237,16 @@ namespace trogdor::entity {
          Entity(const Entity &e, std::string n);
 
          /*
+            This constructor deserializes an Entity. Unlike the constructors
+            above, this one does not take a name as an argument because the name
+            is part of the serialized object.
+
+            Input:
+               Raw deserialized data (const Serializable &)
+         */
+         Entity(const serial::Serializable &data);
+
+         /*
             Returns a smart pointer representing a raw Entity pointer. Be careful
             with this and only call it on Entities you know are managed by smart
             pointers. If, for example, you call this method on entities that are
@@ -283,6 +295,19 @@ namespace trogdor::entity {
             managedByLua = flag;
             mutex.unlock();
          }
+
+         /*
+            Serializes the Entity. Each type of Entity in the hierarchy will get
+            the result of its parent's serialize() method, then add its own
+            data.
+
+            Input:
+               (none)
+
+            Output:
+               An object containing easily serializable data (Serializable)
+         */
+         virtual serial::Serializable serialize();
 
          /*
             Adds a callback that should be called when a certain operation

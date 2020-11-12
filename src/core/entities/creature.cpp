@@ -36,6 +36,23 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   Creature::Creature(const serial::Serializable &data): Being(data) {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   serial::Serializable Creature::serialize() {
+
+      serial::Serializable data = Being::serialize();
+
+      // TODO
+      return data;
+   }
+
+   /***************************************************************************/
+
    bool Creature::insertIntoInventory(
       const std::shared_ptr<Object> &object,
       bool considerWeight

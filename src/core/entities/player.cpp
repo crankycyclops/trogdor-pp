@@ -16,9 +16,12 @@ namespace trogdor::entity {
 
    /**************************************************************************/
 
-   Player::Player(const Player &p, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Being(p, n),
-   lastCommand(std::make_unique<Command>(*(p.lastCommand))) {
+   Player::Player(
+      const Player &p,
+      std::string n,
+      std::unique_ptr<Trogout> o,
+      std::unique_ptr<Trogerr> e
+   ): Being(p, n), lastCommand(std::make_unique<Command>(*(p.lastCommand))) {
 
       title = n;
 
@@ -26,6 +29,27 @@ namespace trogdor::entity {
       errStream = std::move(e);
 
       setLongDescription(name + " is a player.");
+   }
+
+   /***************************************************************************/
+
+   Player::Player(
+      const serial::Serializable &data,
+      std::unique_ptr<Trogout> o,
+      std::unique_ptr<Trogerr> e
+   ): Being(data) {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   serial::Serializable Player::serialize() {
+
+      serial::Serializable data = Being::serialize();
+
+      // TODO
+      return data;
    }
 
    /**************************************************************************/

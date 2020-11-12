@@ -21,6 +21,23 @@ namespace trogdor::entity {
       connections = r.connections;
    }
 
+   /***************************************************************************/
+
+   Room::Room(const serial::Serializable &data): Place(data) {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   serial::Serializable Room::serialize() {
+
+      serial::Serializable data = Place::serialize();
+
+      // TODO
+      return data;
+   }
+
    /**************************************************************************/
 
    std::shared_ptr<Room> Room::getConnectionByIndex(size_t i) {

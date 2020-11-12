@@ -200,6 +200,14 @@ namespace trogdor::entity {
          );
 
          /*
+            This constructor deserializes a Resource.
+
+            Input:
+               Raw deserialized data (const Serializable &)
+         */
+         Resource(const serial::Serializable &data);
+
+         /*
             Returns a smart pointer representing a raw Resource pointer. Be
             careful with this and only call it on Entities you know are managed
             by smart pointers. If, for example, you call this method on entities
@@ -270,6 +278,17 @@ namespace trogdor::entity {
 
             return 0 == plural.compare(name) ? true : false;
          }
+
+         /*
+            Serializes the Resource.
+
+            Input:
+               (none)
+
+            Output:
+               An object containing easily serializable data (Serializable)
+         */
+         virtual serial::Serializable serialize();
 
          /*
             This is similar to Tangible::observe() except that there's really

@@ -26,6 +26,23 @@ namespace trogdor::entity {
 
    Place::Place(const Place &p, std::string n): Tangible(p, n) {}
 
+   /***************************************************************************/
+
+   Place::Place(const serial::Serializable &data): Tangible(data) {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   serial::Serializable Place::serialize() {
+
+      serial::Serializable data = Tangible::serialize();
+
+      // TODO
+      return data;
+   }
+
    /****************************************************************************/
 
    void Place::insertPlayer(const std::shared_ptr<Player> &player) {

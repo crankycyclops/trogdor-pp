@@ -352,6 +352,14 @@ namespace trogdor::entity {
          Being(const Being &b, std::string n);
 
          /*
+            This constructor deserializes a Being.
+
+            Input:
+               Raw deserialized data (const Serializable &)
+         */
+         Being(const serial::Serializable &data);
+
+         /*
             Returns a smart pointer representing a raw Being pointer. Be careful
             with this and only call it on Entities you know are managed by smart
             pointers. If, for example, you call this method on entities that are
@@ -757,6 +765,17 @@ namespace trogdor::entity {
             inventory.weight = w;
             mutex.unlock();
          }
+
+         /*
+            Serializes the Being.
+
+            Input:
+               (none)
+
+            Output:
+               An object containing easily serializable data (Serializable)
+         */
+         virtual serial::Serializable serialize();
 
          /*
             Inserts the given object into the Being's inventory.  Returns true

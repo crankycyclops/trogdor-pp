@@ -94,6 +94,23 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   Entity::Entity(const serial::Serializable &data) {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   serial::Serializable Entity::serialize() {
+
+      serial::Serializable data;
+
+      // TODO
+      return data;
+   }
+
+   /***************************************************************************/
+
    void Entity::addCallback(
       std::string operation,
       std::shared_ptr<std::function<void(std::any)>> callback

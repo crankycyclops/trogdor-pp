@@ -37,6 +37,14 @@ namespace trogdor::entity {
          Room(const Room &r, std::string n);
 
          /*
+            This constructor deserializes a Room.
+
+            Input:
+               Raw deserialized data (const Serializable &)
+         */
+         Room(const serial::Serializable &data);
+
+         /*
             Returns a smart pointer representing a raw Room pointer. Be careful
             with this and only call it on Entities you know are managed by smart
             pointers. If, for example, you call this method on entities that are
@@ -93,6 +101,17 @@ namespace trogdor::entity {
                Number of connections (size_t)
          */
          inline size_t getNumConnections() const {return connections.size();}
+
+         /*
+            Serializes the Room.
+
+            Input:
+               (none)
+
+            Output:
+               An object containing easily serializable data (Serializable)
+         */
+         virtual serial::Serializable serialize();
 
          /*
             Returns a connected room by numeric index (in so far as we iterate
