@@ -124,6 +124,26 @@ namespace trogdor::entity {
          /********************************************************************/
 
          /*
+            Maps a property to a validation function. If a validation function
+            exists for a given property, setProperty() won't set the value
+            unless the validator returns PROPERTY_VALID.
+
+            Input:
+               Key (std::string)
+               Validator (std::function<int(PropertyValud)>)
+
+            Output:
+               (none)
+         */
+         inline void setPropertyValidator(
+            std::string key,
+            std::function<int(PropertyValue)> validator
+         ) {
+
+            propertyValidators[key] = validator;
+         }
+
+         /*
             Displays the short description of an Entity.  This may be
             overridden by Entity types that have a different display format.
 
@@ -562,23 +582,6 @@ namespace trogdor::entity {
 
             return properties.erase(key);
          }
-
-         /*
-            Maps a property to a validation function. If a validation function
-            exists for a given property, setProperty() won't set the value
-            unless the validator returns PROPERTY_VALID.
-
-            Input:
-               Key (std::string)
-               Validator (std::function<int(PropertyValud)>)
-
-            Output:
-               (none)
-         */
-         inline void setPropertyValidator(
-            std::string key,
-            std::function<int(PropertyValue)> validator
-         ) {propertyValidators[key] = validator;}
 
          /*
             Returns the Entity's class.
