@@ -18,12 +18,6 @@ namespace trogdor::event {
    // a bunch of unique_ptrs.
    EventListener::EventListener(const EventListener &original) {
 
-      // Dummy instances of specific event triggers used for dynamic type
-      // checking (this doesn't feel like good code, but I know no other way.)
-      static AutoAttackEventTrigger autoAttackDummy;
-      static DeathDropEventTrigger deathDropDummy;
-      static RespawnEventTrigger respawnDummy;
-
       // I have to check the type of each event trigger and insert a new copy of
       // each.
       for (const auto &event: triggers) {
@@ -40,19 +34,19 @@ namespace trogdor::event {
                // 'typeid'
                auto &t = *trigger.get();
 
-               if (typeid(autoAttackDummy) == typeid(t)) {
+               if (typeid(AutoAttackEventTrigger) == typeid(t)) {
                   triggers[event.first].push_back(std::make_unique<AutoAttackEventTrigger>(
                      *dynamic_cast<AutoAttackEventTrigger *>(trigger.get())
                   ));
                }
 
-               else if (typeid(deathDropDummy) == typeid(t)) {
+               else if (typeid(DeathDropEventTrigger) == typeid(t)) {
                   triggers[event.first].push_back(std::make_unique<DeathDropEventTrigger>(
                      *dynamic_cast<DeathDropEventTrigger *>(trigger.get())
                   ));
                }
 
-               else if (typeid(respawnDummy) == typeid(t)) {
+               else if (typeid(RespawnEventTrigger) == typeid(t)) {
                   triggers[event.first].push_back(std::make_unique<RespawnEventTrigger>(
                      *dynamic_cast<RespawnEventTrigger *>(trigger.get())
                   ));

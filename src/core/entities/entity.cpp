@@ -64,13 +64,6 @@ namespace trogdor::entity {
       L = std::make_shared<LuaState>(*e.L);
       triggers = std::make_unique<event::EventListener>(*e.triggers);
 
-      // When instances of LuaEventTrigger are copied, the Lua state associated
-      // with them doesn't change. There's no way for me to update them
-      // automatically in the event trigger's copy constructor; I have to do
-      // that here instead. This particular line is a dummy instance of
-      // LuaEventTrigger that I'm using for dynamic type checking.
-      static event::LuaEventTrigger dummyL(err(), "", nullptr);
-
       for (const auto &event: triggers->getTriggers()) {
 
          for (auto &trigger: event.second) {
@@ -83,7 +76,7 @@ namespace trogdor::entity {
                // 'typeid'
                auto &t = *trigger.get();
 
-               if (typeid(dummyL) == typeid(t)) {
+               if (typeid(event::LuaEventTrigger) == typeid(t)) {
                   dynamic_cast<event::LuaEventTrigger *>(trigger.get())->setLuaState(L);
                }
             }
