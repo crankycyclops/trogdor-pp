@@ -50,6 +50,9 @@ namespace trogdor::entity {
 
       public:
 
+         // Property validators should return this if the value being set is valid
+         static constexpr int PROPERTY_VALID = 0;
+
          // Standard Entity property keys (title is always set)
          static constexpr const char *TitleProperty = "title";
          static constexpr const char *LongDescProperty = "longDesc";
@@ -73,6 +76,12 @@ namespace trogdor::entity {
 
          // Entity properties like title, description, etc.
          std::unordered_map<std::string, PropertyValue> properties;
+
+         // Maps entity properties to their validation functions (if they exist)
+         std::unordered_map<
+            std::string,
+            std::function<int(PropertyValue)>
+         > propertyValidators;
 
       protected:
 
@@ -522,11 +531,21 @@ namespace trogdor::entity {
                Value (PropertyValue)
 
             Output:
-               (none)
+               A status code indicating success or the reason for failure (int)
          */
-         inline void setProperty(std::string key, PropertyValue value) {
+         inline int setProperty(std::string key, PropertyValue value) {
 
-            properties[key] = value;
+            int status = PROPERTY_VALID;
+
+            if (propertyValidators.end() != propertyValidators.find(key)) {
+               status = propertyValidators[key](value);
+            }
+
+            if (PROPERTY_VALID == status) {
+               properties[key] = value;
+            }
+
+            return status;
          }
 
          /*
@@ -543,6 +562,23 @@ namespace trogdor::entity {
 
             return properties.erase(key);
          }
+
+         /*
+            Maps a property to a validation function. If a validation function
+            exists for a given property, setProperty() won't set the value
+            unless the validator returns PROPERTY_VALID.
+
+            Input:
+               Key (std::string)
+               Validator (std::function<int(PropertyValud)>)
+
+            Output:
+               (none)
+         */
+         inline void setPropertyValidator(
+            std::string key,
+            std::function<int(PropertyValue)> validator
+         ) {propertyValidators[key] = validator;}
 
          /*
             Returns the Entity's class.
