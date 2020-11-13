@@ -555,7 +555,10 @@ namespace trogdor::entity {
          }
 
          // Without wrapping around const char *, we won't properly detect and
-         // set bare C-style strings.
+         // set bare C-style strings. WARNING: passing in a literal 0 to
+         // setProperty() without casting (example: setProperty("key", 0) results
+         // in the result being seen as a nullptr and triggers this wrapper
+         // method as if it were a string, which will throw an exception. Grr.)
          inline int setProperty(std::string key, const char *value) {
 
             return setProperty(key, std::string(value));

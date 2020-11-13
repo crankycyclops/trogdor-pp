@@ -9,15 +9,7 @@ namespace trogdor::entity {
 
 	class MockEntity: public Entity {
 
-		private:
-
-			// Sets test property validation rules
-			void setValidationRules();
-
 		public:
-
-			// Property validator throws this if the value wasn't a string
-			static constexpr int PROPERTY_NOT_STRING = 1;
 
 			// Constructor with nullout and nullerr streams
 			MockEntity(
@@ -35,6 +27,13 @@ namespace trogdor::entity {
 
 			// Destructor
 			virtual ~MockEntity();
+
+			// Wrapper providing a public interface to
+			// Entity::setPropertyValidator for testing
+			void setPropertyValidator(
+				std::string key,
+				std::function<int(PropertyValue)> validator
+			);
 	};
 }
 

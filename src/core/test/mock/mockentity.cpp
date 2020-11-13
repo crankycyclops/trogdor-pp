@@ -9,10 +9,7 @@ namespace trogdor::entity {
 	MockEntity::MockEntity(
 		Game *g,
 		std::string n
-	): Entity(g, n, std::make_unique<NullOut>(), std::make_unique<NullErr>()) {
-
-		setValidationRules();
-	}
+	): Entity(g, n, std::make_unique<NullOut>(), std::make_unique<NullErr>()) {}
 
 	/************************************************************************/
 
@@ -21,10 +18,7 @@ namespace trogdor::entity {
 		std::string n,
 		std::unique_ptr<Trogout> o,
 		std::unique_ptr<Trogerr> e
-	): Entity(g, n, std::move(o), std::move(e)) {
-
-		setValidationRules();
-	}
+	): Entity(g, n, std::move(o), std::move(e)) {}
 
 	/************************************************************************/
 
@@ -32,12 +26,11 @@ namespace trogdor::entity {
 
 	/************************************************************************/
 
-	void MockEntity::setValidationRules() {
+	void MockEntity::setPropertyValidator(
+		std::string key,
+		std::function<int(PropertyValue)> validator
+	) {
 
-		// The property named "forceString" must be a string; it can't be
-		// any other type.
-		setPropertyValidator("forceString", [](PropertyValue v) -> int {
-			return 4 == v.index() ? PROPERTY_VALID : PROPERTY_NOT_STRING;
-		});
+		Entity::setPropertyValidator(key, validator);
 	}
 }

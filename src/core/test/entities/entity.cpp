@@ -72,9 +72,48 @@ TEST_SUITE("Entity (entities/entity.cpp)") {
 		testEntity.unsetProperty("string2");
 		CHECK(std::nullopt == testEntity.getProperty("string2"));
 
-		// TODO: test overwriting value with same type, diff value
-		// TODO: test overwriting value with different type
+		// Test 4: Overwrite value with same type
+		testEntity.setProperty("intval", 1);
+		CHECK(1 == std::get<int>(*testEntity.getProperty("intval")));
 
-		// TODO: test with validators
+		testEntity.setProperty("intval", 2);
+		CHECK(2 == std::get<int>(*testEntity.getProperty("intval")));
+
+		// Test 4: Overwrite value with different type
+		testEntity.setProperty("mixed", 10);
+		CHECK(10 == std::get<int>(*testEntity.getProperty("mixed")));
+
+		testEntity.setProperty("mixed", "wee");
+		CHECK(0 == std::get<std::string>(*testEntity.getProperty("mixed")).compare("wee"));
+
+		// Test 5: Setting property with no validator should result in return
+		// value of PROPERTY_VALID
+		int status = testEntity.setProperty("novalidator", static_cast<int>(0));
+		CHECK(status == trogdor::entity::Entity::PROPERTY_VALID);
+
+		// Only allows an integer value to be set
+		testEntity.setPropertyValidator(
+			"intValidated",
+			[](trogdor::entity::Entity::PropertyValue v) -> int {
+				return 1 == v.index() ? trogdor::entity::MockEntity::PROPERTY_VALID : -1;
+			}
+		);
+
+		// Test 6: Setting property with passing validation should return
+		// PROPERTY_VALID and the property should be set
+		status = testEntity.setProperty("intValidated", 10);
+		CHECK(trogdor::entity::MockEntity::PROPERTY_VALID == status);
+		CHECK(std::nullopt != testEntity.getProperty("intValidated"));
+		CHECK(10 == std::get<int>(*testEntity.getProperty("intValidated")));
+
+		// Reset property to unset state before trying again to show the value
+		// doesn't get set if it's invalid
+		testEntity.unsetProperty("intValidated");
+
+		// Test 7: Setting property with failing validation should NOT return
+		// PROPERTY_VALID and should result in the property NOT being set
+		status = testEntity.setProperty("intValidated", "I'm a string");
+		CHECK(-1 == status);
+		CHECK(std::nullopt == testEntity.getProperty("intValidated"));
 	}
 }
