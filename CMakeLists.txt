@@ -364,6 +364,7 @@ add_executable(test_core
 	src/core/test/vocabulary.cpp
 	src/core/test/command.cpp
 	src/core/test/utility.cpp
+	src/core/test/entities/entity.cpp
 	src/core/test/entities/resource.cpp
 	src/core/test/entities/tangible.cpp
 	src/core/test/event/eventlistener.cpp
@@ -374,6 +375,7 @@ add_executable(test_core
 	src/core/test/timer/jobs/autoattack.cpp
 	src/core/test/timer/jobs/respawn.cpp
 	src/core/test/timer/jobs/wander.cpp
+	src/core/test/mock/mockentity.cpp
 	src/core/test/mock/mockaction.cpp
 	src/core/test/mock/mocktrigger.cpp
 	src/core/test/mock/mocktimerjob.cpp

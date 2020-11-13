@@ -514,20 +514,6 @@ namespace trogdor::entity {
          }
 
          /*
-            Returns a read-only reference to the properties container.
-
-            Input:
-               (none)
-
-            Output:
-               All properties (const std::unordered_map<std::string, PropertyValue> &)
-         */
-         inline const auto &getProperties() const {
-
-            return properties;
-         }
-
-         /*
             Returns the value of a property if it's set or std::nullopt if it's
             not.
 
@@ -566,6 +552,13 @@ namespace trogdor::entity {
             }
 
             return status;
+         }
+
+         // Without wrapping around const char *, we won't properly detect and
+         // set bare C-style strings.
+         inline int setProperty(std::string key, const char *value) {
+
+            return setProperty(key, std::string(value));
          }
 
          /*
