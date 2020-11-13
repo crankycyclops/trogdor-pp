@@ -50,6 +50,11 @@ namespace trogdor::entity {
 
       public:
 
+         // Standard Entity property keys (title is always set)
+         static constexpr const char *TitleProperty = "title";
+         static constexpr const char *LongDescProperty = "longDesc";
+         static constexpr const char *ShortDescProperty = "shortDesc";
+
          // Valid types for a single entity property value
          typedef std::variant<size_t, int, double, bool, std::string> PropertyValue;
 
@@ -66,6 +71,9 @@ namespace trogdor::entity {
          // meta data associated with the entity
          std::unordered_map<std::string, std::string> meta;
 
+         // Entity properties like title, description, etc.
+         std::unordered_map<std::string, PropertyValue> properties;
+
       protected:
 
          std::mutex mutex;
@@ -80,18 +88,11 @@ namespace trogdor::entity {
          const std::string name;
          std::string className;
 
-         // Entity properties like title, description, etc.
-         std::unordered_map<std::string, PropertyValue> properties;
-
-         std::string longDesc;
-         std::string shortDesc;
-
-         std::unique_ptr<event::EventListener> triggers;
+         // The Entity's Lua state
          std::shared_ptr<LuaState> L;
 
-         // Output streams
-         std::unique_ptr<Trogout> outStream;
-         std::unique_ptr<Trogerr> errStream;
+         // Event triggers
+         std::unique_ptr<event::EventListener> triggers;
 
          // One or more callbacks that will be executed when various operations
          // occur on the Entity.
@@ -100,12 +101,18 @@ namespace trogdor::entity {
             std::vector<std::shared_ptr<std::function<void(std::any)>>>
          > callbacks;
 
+         // Output streams
+         std::unique_ptr<Trogout> outStream;
+         std::unique_ptr<Trogerr> errStream;
+
          // Ordinarily, the lifetime of an Entity is managed by an instance of
          // Game via std::shared_ptrs. However, if an Entity is created in a Lua
          // state and is never assigned to a Game, Lua will manage it instead.
          // This boolean flag lets me know whether or not to hold Lua's garbage
          // collector responsible for a particular instance.
          bool managedByLua = false;
+
+         /********************************************************************/
 
          /*
             Displays the short description of an Entity.  This may be
@@ -523,6 +530,21 @@ namespace trogdor::entity {
          }
 
          /*
+            Unsets a property and returns the number of elements removed
+            (effectively 1 if the element existed and 0 if it didn't.)
+
+            Input:
+               Key (std::string)
+
+            Output:
+               Number of elements erased (size_t)
+         */
+         inline size_t unsetProperty(std::string key) {
+
+            return properties.erase(key);
+         }
+
+         /*
             Returns the Entity's class.
 
             Input:
@@ -543,43 +565,6 @@ namespace trogdor::entity {
                Entity's name (std::string)
          */
          inline std::string getName() const {return name;}
-
-         /*
-            Returns the Entity's title.
-
-            Input:
-               (none)
-
-            Output:
-               Entity's title (std::string)
-         */
-         inline std::string getTitle() const {
-
-            auto title = properties.find("title");
-            return properties.end() != title ? std::get<std::string>(title->second) : "";
-         }
-
-         /*
-            Returns the Entity's long description.
-
-            Input:
-               (none)
-
-            Output:
-               Entity's long description (std::string)
-         */
-         inline std::string getLongDescription() const {return longDesc;}
-
-         /*
-            Returns the Entity's short description.
-
-            Input:
-               (none)
-
-            Output:
-               Entity's short description (std::string)
-         */
-         inline std::string getShortDescription() const {return shortDesc;}
 
          /*
             Returns a reference to Entity's LuaState object. This should ONLY be
@@ -666,54 +651,6 @@ namespace trogdor::entity {
 
             mutex.lock();
             className = c;
-            mutex.unlock();
-         }
-
-         /*
-            Sets the Entity's title.
-
-            Input:
-               New title (std::string)
-
-            Output:
-               (none)
-         */
-         inline void setTitle(std::string title) {
-
-            mutex.lock();
-            setProperty("title", title);
-            mutex.unlock();
-         }
-
-         /*
-            Sets the Entity's long description.
-
-            Input:
-               New long description (std::string)
-
-            Output:
-               (none)
-         */
-         inline void setLongDescription(std::string d) {
-
-            mutex.lock();
-            longDesc = d;
-            mutex.unlock();
-         }
-
-         /*
-            Sets the Entity's short description.
-
-            Input:
-               New description (std::string)
-
-            Output:
-               (none)
-         */
-         inline void setShortDescription(std::string d) {
-
-            mutex.lock();
-            shortDesc = d;
             mutex.unlock();
          }
 

@@ -90,7 +90,8 @@ namespace trogdor::entity {
 
          if (!isAlive()) {
 
-            observer->out("display") << "You see the corpse of " << getTitle() << '.';
+            observer->out("display") << "You see the corpse of " <<
+               std::get<std::string>(*getProperty(TitleProperty)) << '.';
 
             std::string descDead = getMessage("descshort_dead");
 
@@ -187,13 +188,15 @@ namespace trogdor::entity {
 
       // I do this first, and the other message second so that the Being that's
       // leaving won't see messages about its own departure and arrival ;)
-      l->out("notifications") << getTitle() << " arrives." << std::endl;
+      l->out("notifications") << std::get<std::string>(*getProperty(TitleProperty))
+         << " arrives." << std::endl;
 
       l->insertThing(getShared());
       setLocation(l);
       l->observe(getShared());
 
-      oldLoc->out("notifications") << getTitle() << " leaves." << std::endl;
+      oldLoc->out("notifications") << std::get<std::string>(*getProperty(TitleProperty))
+         << " leaves." << std::endl;
 
       game->event({
          "afterGotoLocation",
@@ -257,8 +260,10 @@ namespace trogdor::entity {
             // EXCEPT the one who's doing the taking
             for (auto const &thing: location->getThings()) {
                if (thing.get() != this) {
-                  thing->out("notifications") << getTitle() << " takes "
-                     << object->getTitle() << "." << std::endl;
+                  thing->out("notifications") <<
+                     std::get<std::string>(*getProperty(TitleProperty)) << " takes "
+                     << std::get<std::string>(*object->getProperty(TitleProperty))
+                     << "." << std::endl;
                }
             };
 
@@ -417,7 +422,8 @@ namespace trogdor::entity {
                   // been taken EXCEPT the one who's doing the taking
                   for (auto const &thing: location->getThings()) {
                      if (thing.get() != this) {
-                        thing->out("notifications") << getTitle()
+                        thing->out("notifications")
+                           << std::get<std::string>(*getProperty(TitleProperty))
                            << " takes " << resource->amountToString(amount) << ' '
                            << resource->titleToString(amount) << '.' << std::endl;
                      }
@@ -491,8 +497,10 @@ namespace trogdor::entity {
          // the one who's doing the dropping
          for (auto const &thing: location->getThings()) {
             if (thing.get() != this) {
-               thing->out("notifications") << getTitle() << " drops "
-                  << object->getTitle() << "." << std::endl;
+               thing->out("notifications")
+                  << std::get<std::string>(*getProperty(TitleProperty)) << " drops "
+                  << std::get<std::string>(*object->getProperty(TitleProperty)) << "."
+                  << std::endl;
             }
          };
 
@@ -611,7 +619,8 @@ namespace trogdor::entity {
             return;
          }
 
-         out("combat") << defender->getTitle() << " is already dead." << std::endl;
+         out("combat") << std::get<std::string>(*defender->getProperty(TitleProperty))
+            << " is already dead." << std::endl;
          return;
       }
 
@@ -622,7 +631,7 @@ namespace trogdor::entity {
             return;
          }
 
-         out("combat") << defender->getTitle()
+         out("combat") << std::get<std::string>(*defender->getProperty(TitleProperty))
             << " is immortal and cannot die." << std::endl;
          return;
       }
@@ -634,25 +643,29 @@ namespace trogdor::entity {
             return;
          }
 
-         out("combat") << defender->getTitle()
+         out("combat") << std::get<std::string>(*defender->getProperty(TitleProperty))
             << " cannot be attacked." << std::endl;
          return;
       }
 
       // send notification to the aggressor
-      out("combat") << "You attack " << defender->getTitle();
+      out("combat") << "You attack "
+         << std::get<std::string>(*defender->getProperty(TitleProperty));
 
       if (0 != weapon) {
-         out("combat") << " with " << weapon->getTitle();
+         out("combat") << " with "
+            << std::get<std::string>(*weapon->getProperty(TitleProperty));
       }
 
       out("combat") << '.' << std::endl;
 
       // send notification to the defender
-      defender->out("combat") << "You're attacked by " << getTitle();
+      defender->out("combat") << "You're attacked by "
+         << std::get<std::string>(*getProperty(TitleProperty));
 
       if (0 != weapon) {
-         defender->out("combat") << " with " << weapon->getTitle();
+         defender->out("combat") << " with "
+            << std::get<std::string>(*weapon->getProperty(TitleProperty));
       }
 
       defender->out("combat") << '!' << std::endl;
@@ -667,11 +680,15 @@ namespace trogdor::entity {
 
          defender->removeHealth(damage);
 
-         out("combat") << "You dealt a blow to " << defender->getTitle() << "!" << std::endl;
-         defender->out("combat") << getTitle() << " dealt you a blow!" << std::endl;
-         out("combat") << defender->getTitle() << " loses " << damage <<
-            " health points." << std::endl;
-         defender->out("combat") << "You lose " << damage << " health points." << std::endl;
+         out("combat") << "You dealt a blow to "
+            << std::get<std::string>(*defender->getProperty(TitleProperty)) << "!"
+               << std::endl;
+         defender->out("combat") << std::get<std::string>(*getProperty(TitleProperty))
+            << " dealt you a blow!" << std::endl;
+         out("combat") << std::get<std::string>(*defender->getProperty(TitleProperty))
+            << " loses " << damage << " health points." << std::endl;
+         defender->out("combat") << "You lose " << damage << " health points."
+            << std::endl;
 
          if (!defender->isAlive()) {
             return;
@@ -685,7 +702,8 @@ namespace trogdor::entity {
          }
 
          out("combat") << "Your attack failed." << std::endl;
-         defender->out("combat") << getTitle() << "'s attack failed." << std::endl;
+         defender->out("combat") << std::get<std::string>(*getProperty(TitleProperty))
+            << "'s attack failed." << std::endl;
       }
 
       if (
@@ -755,7 +773,8 @@ namespace trogdor::entity {
       auto location = getLocation().lock();
 
       if (showMessage && location) {
-         location->out("notifications") << getTitle() << " dies." << std::endl;
+         location->out("notifications") << std::get<std::string>(*getProperty(TitleProperty))
+            << " dies." << std::endl;
       }
 
       game->event({"afterDie", {triggers.get()}, {game, this}});

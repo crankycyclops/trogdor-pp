@@ -11,7 +11,7 @@ namespace trogdor::entity {
       types.push_back(ENTITY_PLAYER);
       setClass("player");
 
-      setLongDescription(name + " is a player.");
+      setProperty("longDesc", name + " is a player.");
    }
 
    /**************************************************************************/
@@ -26,7 +26,7 @@ namespace trogdor::entity {
       outStream = std::move(o);
       errStream = std::move(e);
 
-      setLongDescription(name + " is a player.");
+      setProperty("longDesc", name + " is a player.");
    }
 
    /**************************************************************************/

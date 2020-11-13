@@ -142,8 +142,9 @@ namespace trogdor::entity {
                      // been dropped EXCEPT the one who's doing the dropping.
                      for (auto const &thing: location->getThings()) {
                         if (thing.get() != this) {
-                           thing->out("notifications") << getTitle() << " drops "
-                              << resource->amountToString(amount) << ' '
+                           thing->out("notifications")
+                              << std::get<std::string>(*getProperty(TitleProperty))
+                              << " drops " << resource->amountToString(amount) << ' '
                               << resource->titleToString(amount) << "." << std::endl;
                         }
                      };

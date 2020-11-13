@@ -49,8 +49,8 @@ namespace trogdor::entity {
    /***************************************************************************/
 
    Entity::Entity(const Entity &e, std::string n): msgs(e.msgs), tags(e.tags),
-   types(e.types), game(nullptr), name(n), className(e.className),
-   properties(e.properties), longDesc(e.longDesc), shortDesc(e.shortDesc) {
+   properties(e.properties), types(e.types), game(nullptr), name(n),
+   className(e.className) {
 
       if (!isNameValid(n)) {
          throw ValidationException(std::string("name '") + n
@@ -204,9 +204,11 @@ namespace trogdor::entity {
 
    void Entity::displayShort(Being *observer) {
 
+      auto shortDesc = getProperty(ShortDescProperty);
+
       if (ENTITY_PLAYER == observer->getType()
-      && getShortDescription().length() > 0) {
-         observer->out("display") << getShortDescription() << std::endl;
+      && shortDesc && std::get<std::string>(*shortDesc).length() > 0) {
+         observer->out("display") << std::get<std::string>(*shortDesc) << std::endl;
       }
    }
 }

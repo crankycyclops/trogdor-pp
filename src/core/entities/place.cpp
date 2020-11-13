@@ -244,7 +244,9 @@ namespace trogdor::entity {
             if (resourcePtr->areIntegerAllocationsRequired()) {
 
                if (1 == std::lround(resource.second)) {
-                  observer->out("display") << "You see a " << resourcePtr->getTitle() << "." << std::endl;
+                  observer->out("display") << "You see a " <<
+                     std::get<std::string>(*resourcePtr->getProperty(TitleProperty)) <<
+                     "." << std::endl;
                }
 
                else {
@@ -280,10 +282,11 @@ namespace trogdor::entity {
 
    void Place::displayPlace(Being *observer, bool displayFull) {
 
-      observer->out("location") << getTitle();
+      observer->out("location") << std::get<std::string>(*getProperty(TitleProperty));
       observer->out("location").flush();
 
-      observer->out("display") << getTitle() << std::endl << std::endl;
+      observer->out("display") << std::get<std::string>(*getProperty(TitleProperty)) <<
+         std::endl << std::endl;
       Tangible::display(observer, displayFull);
    }
 

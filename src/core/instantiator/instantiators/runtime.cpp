@@ -254,7 +254,7 @@ namespace trogdor {
 
          // for type checking
          entity->setClass(className);
-         entity->setTitle(className);
+         entity->setProperty("title", className);
 
          typeClasses[className] = std::move(entity);
       });
@@ -671,7 +671,7 @@ namespace trogdor {
       propSetters["creature"]["title"] =
       propSetters["player"]["title"] = [](Game *game, entity::Entity *entity,
       std::string value) {
-         entity->setTitle(value);
+         entity->setProperty("title", value);
       };
 
       /**********/
@@ -683,7 +683,7 @@ namespace trogdor {
       propSetters["creature"]["longDesc"] =
       propSetters["player"]["longDesc"] = [](Game *game, entity::Entity *entity,
       std::string value) {
-         entity->setLongDescription(value);
+         entity->setProperty("longDesc", value);
       };
 
       /**********/
@@ -695,7 +695,7 @@ namespace trogdor {
       propSetters["creature"]["shortDesc"] =
       propSetters["player"]["shortDesc"] = [](Game *game, entity::Entity *entity,
       std::string value) {
-         entity->setShortDescription(value);
+         entity->setProperty("shortDesc", value);
       };
 
       /**********/
