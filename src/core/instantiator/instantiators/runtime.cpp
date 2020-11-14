@@ -931,7 +931,10 @@ namespace trogdor {
       propSetters["resource"]["maxAmountPerDepositor"] = [](Game *game, entity::Entity *resource,
       std::string value) {
 
-         dynamic_cast<entity::Resource *>(resource)->setMaxAmountPerDepositor(stod(value));
+         dynamic_cast<entity::Resource *>(resource)->setProperty(
+            entity::Resource::MaxAmtPerDepositorProperty,
+            stod(value)
+         );
       };
 
       /**********/

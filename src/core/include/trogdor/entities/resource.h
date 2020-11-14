@@ -262,30 +262,6 @@ namespace trogdor::entity {
          );
 
          /*
-            Set the total amount of the resource a tangible entity can possess
-            at one given time. Setting this to std::nullopt will result in no
-            limit. If you set this to a lower value than any current allocations
-            that have already been made, the call will succeed and the tangible
-            entity will retain the allocation they already have, but will not
-            be able to allocate more and, if they ever release their amount and
-            try to allocate more, the new maximum will be enforced.
-
-            Input:
-               How much a tangible entity can possess at one time (std::optional<double>)
-
-            Output:
-               (none)
-         */
-         inline void setMaxAmountPerDepositor(std::optional<double> newMax = std::nullopt) {
-
-            if (newMax) {
-               setProperty(MaxAmtPerDepositorProperty, *newMax);
-            } else {
-               unsetProperty(MaxAmtPerDepositorProperty);
-            }
-         }
-
-         /*
             Returns the total amount of the resource currently allocated to
             various entities.
 
