@@ -49,8 +49,9 @@ namespace trogdor {
 
             if (player->getInventoryMaxWeight() > 0) {
 
-               if (obj->getWeight() > 0) {
-                  double percent = 100 * ((double)obj->getWeight() /
+               if (obj->getProperty<int>(entity::Object::WeightProperty) > 0) {
+                  double percent = 100 *
+                     ((double)obj->getProperty<int>(entity::Object::WeightProperty) /
                      (double)player->getInventoryMaxWeight());
                   totalPercent += percent;
                   player->out("display") << " (" << percent << "%)";

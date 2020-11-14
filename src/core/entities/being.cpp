@@ -117,14 +117,14 @@ namespace trogdor::entity {
 
       // make sure the Object will fit
       if (considerWeight && inventory.weight > 0 &&
-      inventory.currentWeight + object->getWeight() > inventory.weight) {
+      inventory.currentWeight + object->getProperty<int>(Object::WeightProperty) > inventory.weight) {
          return false;
       }
 
       // insert the object into the Being's inventory
       mutex.lock();
       inventory.objects.insert(object);
-      inventory.currentWeight += object->getWeight();
+      inventory.currentWeight += object->getProperty<int>(Object::WeightProperty);
       mutex.unlock();
 
       // allow referencing of inventory Objects by name and aliases
@@ -155,7 +155,7 @@ namespace trogdor::entity {
       inventory.objects.erase(object);
 
       inventory.count--;
-      inventory.currentWeight -= object->getWeight();
+      inventory.currentWeight -= object->getProperty<int>(Object::WeightProperty);
       object->setOwner(std::weak_ptr<Being>());
 
       mutex.unlock();
@@ -555,7 +555,7 @@ namespace trogdor::entity {
       damage = damage > 0 ? damage : 1;
 
       if (0 != weapon && weapon->isTagSet(Object::WeaponTag)) {
-         damage += weapon->getDamage();
+         damage += weapon->getProperty<int>(Object::DamageProperty);
       }
 
       damage *= defender->getDamageRatio();

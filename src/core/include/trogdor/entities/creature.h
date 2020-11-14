@@ -42,7 +42,7 @@ namespace trogdor::entity {
          struct DamageComparator {
 
             inline bool operator() (const Object * const &lhs, const Object * const &rhs) const {
-               return lhs->getDamage() < lhs->getDamage();
+               return lhs->getProperty<int>(Object::DamageProperty) < rhs->getProperty<int>(Object::DamageProperty);
             }
          };
 

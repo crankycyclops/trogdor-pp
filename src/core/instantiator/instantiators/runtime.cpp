@@ -888,7 +888,7 @@ namespace trogdor {
       // Set Object's weight
       propSetters["object"]["weight"] = [](Game *game, entity::Entity *object,
       std::string value) {
-         dynamic_cast<entity::Object *>(object)->setWeight(stoi(value));
+         dynamic_cast<entity::Object *>(object)->setProperty(entity::Object::WeightProperty, stoi(value));
       };
 
       /**********/
@@ -896,7 +896,7 @@ namespace trogdor {
       // Set how much damage the Object inflicts if it's a weapon
       propSetters["object"]["damage"] = [](Game *game, entity::Entity *object,
       std::string value) {
-         dynamic_cast<entity::Object *>(object)->setDamage(stoi(value));
+         dynamic_cast<entity::Object *>(object)->setProperty(entity::Object::DamageProperty, stoi(value));
       };
 
       /**********/

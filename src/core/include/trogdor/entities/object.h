@@ -14,7 +14,19 @@ namespace trogdor::entity {
 
    class Object: public Thing {
 
+      protected:
+
+         // A Being might own the object
+         std::weak_ptr<Being> owner;
+
       public:
+
+         // How much the object weighs, which affects how many
+         // and which items can be carried in a Being's inventory
+         static constexpr const char *WeightProperty = "weight";
+
+         // How much damage Object does if it's a weapon
+         static constexpr const char *DamageProperty = "damage";
 
          // Tag is set if the Object is a weapon
          static constexpr const char *WeaponTag = "weapon";
@@ -28,16 +40,6 @@ namespace trogdor::entity {
          static constexpr bool DEFAULT_IS_WEAPON = false;
          static constexpr int  DEFAULT_DAMAGE = 1;
          static constexpr int DEFAULT_WEIGHT = 0;
-
-      protected:
-
-         int weight;  // How much weight Object uses in a Being's inventory
-         int damage;  // How much damage Object does if it's a weapon
-
-         // A Being might own the object
-         std::weak_ptr<Being> owner;
-
-      public:
 
          /*
             Constructor for creating a new Object.  Requires reference to the
@@ -81,28 +83,6 @@ namespace trogdor::entity {
          inline std::weak_ptr<Being> getOwner() const {return owner;}
 
          /*
-            Returns the Object's weight.
-
-            Input:
-               (none)
-
-            Output:
-               The weight (int)
-         */
-         inline int getWeight() const {return weight;}
-
-         /*
-            Returns damage Object does if it's a weapon, measured in hit points.
-
-            Input:
-               (none)
-
-            Output:
-               Damage in hit points (int)
-         */
-         inline int getDamage() const {return damage;}
-
-         /*
             Sets the owner.
 
             Input:
@@ -115,40 +95,6 @@ namespace trogdor::entity {
 
             mutex.lock();
             owner = being;
-            mutex.unlock();
-         }
-
-         /*
-            Sets the Object's weight (how much space it uses in a Being's
-            inventory.)
-
-            Input:
-               New weight (int)
-
-            Output:
-               (none)
-         */
-         inline void setWeight(int w) {
-
-            mutex.lock();
-            weight = w;
-            mutex.unlock();
-         }
-
-         /*
-            Sets amount of damage Object does if it's a weapon (measured in hit
-            points.)
-
-            Input:
-               Damage in hit points (int)
-
-            Output:
-               (none)
-         */
-         inline void setDamage(int d) {
-
-            mutex.lock();
-            damage = d;
             mutex.unlock();
          }
 
