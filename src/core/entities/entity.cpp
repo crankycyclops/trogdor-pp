@@ -42,6 +42,10 @@ namespace trogdor::entity {
       // Default value for the Entity's title is its name
       setProperty("title", n);
 
+      setPropertyValidator(TitleProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
+      setPropertyValidator(LongDescProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
+      setPropertyValidator(ShortDescProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
+
       L = std::make_shared<LuaState>(g);
       triggers = std::make_unique<event::EventListener>();
    }
@@ -49,8 +53,8 @@ namespace trogdor::entity {
    /***************************************************************************/
 
    Entity::Entity(const Entity &e, std::string n): msgs(e.msgs), tags(e.tags),
-   properties(e.properties), types(e.types), game(nullptr), name(n),
-   className(e.className) {
+   properties(e.properties), propertyValidators(e.propertyValidators),
+   types(e.types), game(nullptr), name(n), className(e.className) {
 
       if (!isNameValid(n)) {
          throw ValidationException(std::string("name '") + n

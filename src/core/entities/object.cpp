@@ -18,6 +18,9 @@ namespace trogdor::entity {
       setProperty(WeightProperty, DEFAULT_WEIGHT);
       setProperty(DamageProperty, DEFAULT_DAMAGE);
 
+      setPropertyValidator(WeightProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+      setPropertyValidator(DamageProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+
       types.push_back(ENTITY_OBJECT);
       setClass("object");
    }

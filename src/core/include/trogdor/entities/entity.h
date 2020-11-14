@@ -133,6 +133,36 @@ namespace trogdor::entity {
          // collector responsible for a particular instance.
          bool managedByLua = false;
 
+         // Returns true if the property value is a size_t.
+         inline int isPropertyValueSizet(PropertyValue v) {
+
+            return 0 == v.index() ? PROPERTY_VALID : PROPERTY_INVALID_TYPE;
+         }
+
+         // Returns true if the property value is an int.
+         inline int isPropertyValueInt(PropertyValue v) {
+
+            return 1 == v.index() ? PROPERTY_VALID : PROPERTY_INVALID_TYPE;
+         }
+
+         // Returns true if the property value is a double.
+         inline int isPropertyValueDouble(PropertyValue v) {
+
+            return 2 == v.index() ? PROPERTY_VALID : PROPERTY_INVALID_TYPE;
+         }
+
+         // Returns true if the property value is a bool.
+         inline int isPropertyValueBool(PropertyValue v) {
+
+            return 3 == v.index() ? PROPERTY_VALID : PROPERTY_INVALID_TYPE;
+         }
+
+         // Returns true if the property value is a string.
+         inline int isPropertyValueString(PropertyValue v) {
+
+            return 4 == v.index() ? PROPERTY_VALID : PROPERTY_INVALID_TYPE;
+         }
+
          /********************************************************************/
 
          /*

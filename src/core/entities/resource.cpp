@@ -63,6 +63,11 @@ namespace trogdor::entity {
       setProperty(PluralNameProperty, pluralName ? *pluralName : language.pluralizeNoun(n));
       setProperty(PluralTitleProperty, getProperty<std::string>(PluralNameProperty));
 
+      setPropertyValidator(ReqIntAllocProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
+      setPropertyValidator(PluralNameProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
+      setPropertyValidator(PluralTitleProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
+      setPropertyValidator(MaxAmtPerDepositorProperty, [&](PropertyValue v) -> int {return isPropertyValueDouble(v);});
+
       // Add property validators after setting initial values of properties for
       // efficiency (I know the defaults are going to be valid, so there's no
       // reason to call a validator.)
@@ -71,7 +76,7 @@ namespace trogdor::entity {
          // Value must be a double (only literals with decimals or integers that
          // are explictly cast to double will pass validation when passed to
          // setProperty.)
-         if (2 != value.index()) {
+         if (PROPERTY_VALID != isPropertyValueDouble(value)) {
             return PROPERTY_INVALID_TYPE;
          }
 
