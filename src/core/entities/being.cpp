@@ -321,8 +321,8 @@ namespace trogdor::entity {
             // we should allocate extra (as long as it's less than or
             // equal to the amount already in the room.)
             if (
-               resource->isTagSet(entity::Resource::StickyTag) &&
-               !resource->getAmountAvailable()
+               resource->isTagSet(Resource::StickyTag) &&
+               !resource->getProperty(Resource::AmtAvailProperty)
             ) {
 
                if (amount > allocatedToPlace) {

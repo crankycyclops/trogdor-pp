@@ -323,25 +323,6 @@ namespace trogdor::entity {
          }
 
          /*
-            Returns the total amount of the resource available (this has no
-            bearing on how much of the resources has been allocated, but rather
-            tells the caller how much of the resource currently exists.) A
-            value of std::nullopt indicates that the resource has an infinite
-            supply.
-
-            Input:
-               (none)
-
-            Output:
-               How much of the resource exists (std::optional<double>)
-         */
-         inline std::optional<double> getAmountAvailable() const {
-
-            auto amount = getProperty(AmtAvailProperty);
-            return amount ? std::optional<double>(std::get<double>(*amount)) : std::nullopt;
-         }
-
-         /*
             Returns the total amount of the resource that can be allocated by a
             tangible entity at once. A value of std::nullopt indicates that
             entities can hold as much as they want.
