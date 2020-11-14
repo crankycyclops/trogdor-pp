@@ -251,14 +251,17 @@ namespace trogdor::entity {
 
                else {
                   observer->out("display") << "You see " << std::lround(resource.second)
-                     << " " << resourcePtr->getPluralTitle() << "." << std::endl;
+                     << " "
+                     << resourcePtr->getProperty<std::string>(Resource::PluralTitleProperty)
+                     << "." << std::endl;
                }
             }
 
             // Display quantity as a double
             else {
                observer->out("display") << "You see " << resource.second << " "
-                  << resourcePtr->getPluralTitle() << "." << std::endl;
+                  << resourcePtr->getProperty<std::string>(Resource::PluralTitleProperty)
+                  << "." << std::endl;
             }
          }
       }

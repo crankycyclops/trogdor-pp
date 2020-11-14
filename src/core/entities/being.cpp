@@ -328,7 +328,8 @@ namespace trogdor::entity {
                if (amount > allocatedToPlace) {
                   out("display") << "You can only take "
                      << resource->amountToString(allocatedToPlace)
-                     << ' ' << resource->getPluralTitle() << '.' << std::endl;
+                     << ' ' << resource->getProperty<std::string>(Resource::PluralTitleProperty)
+                     << '.' << std::endl;
                   return;
                }
 
@@ -352,7 +353,8 @@ namespace trogdor::entity {
                         << std::endl;
                   } else {
                      out("display") << "Please specify a whole number of "
-                        << resource->getPluralTitle() << '.' << std::endl;
+                        << resource->getProperty<std::string>(Resource::PluralTitleProperty)
+                        << '.' << std::endl;
                   }
 
                   break;
@@ -367,7 +369,7 @@ namespace trogdor::entity {
                   } else {
                      out("display") << "That would give you "
                         << resource->amountToString(getResources().find(resource)->second + amount)
-                        << ' ' << resource->getPluralTitle()
+                        << ' ' << resource->getProperty<std::string>(Resource::PluralTitleProperty)
                         << " and you're only allowed to possess "
                         << resource->amountToString(*resource->getMaxAmountPerDepositor())
                         << '.' << std::endl;
@@ -399,7 +401,8 @@ namespace trogdor::entity {
                   } else {
                      out("display") << "You can only take "
                         << resource->amountToString(allocatedToPlace)
-                        << ' ' << resource->getPluralTitle() << '.' << std::endl;
+                        << ' ' << resource->getProperty<std::string>(Resource::PluralTitleProperty)
+                        << '.' << std::endl;
                   }
 
                   break;
@@ -411,7 +414,8 @@ namespace trogdor::entity {
 
                   out("display") << "You can only take "
                      << resource->amountToString(allocatedToPlace)
-                     << ' ' << resource->getPluralTitle() << '.' << std::endl;
+                     << ' ' << resource->getProperty<std::string>(Resource::PluralTitleProperty)
+                     << '.' << std::endl;
 
                   break;
 

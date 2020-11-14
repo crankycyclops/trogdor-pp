@@ -115,10 +115,10 @@ namespace trogdor::entity {
          }},
 
          {true, {
-            {"{%title}", getPluralTitle()},
-            {"{%name}", getPluralName()},
-            {"{%Title}", capitalize(getPluralTitle())},
-            {"{%Name}", capitalize(getPluralName())}
+            {"{%title}", getProperty<std::string>(PluralTitleProperty)},
+            {"{%name}", getProperty<std::string>(PluralNameProperty)},
+            {"{%Title}", capitalize(getProperty<std::string>(PluralTitleProperty))},
+            {"{%Name}", capitalize(getProperty<std::string>(PluralNameProperty))}
          }}
       };
 
@@ -151,7 +151,7 @@ namespace trogdor::entity {
 
          else {
             observer->out("display") << "You see " <<
-               (isPlural ? getPluralTitle() : getProperty<std::string>(TitleProperty)) <<
+               (isPlural ? getProperty<std::string>(PluralTitleProperty) : getProperty<std::string>(TitleProperty)) <<
                '.' << std::endl;
          }
       }

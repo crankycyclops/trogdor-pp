@@ -238,28 +238,6 @@ namespace trogdor::entity {
          }
 
          /*
-            Returns the Resource's plural name.
-
-            Input:
-               (none)
-
-            Output:
-               std::string
-         */
-         inline std::string getPluralName() const {return getProperty<std::string>(PluralNameProperty);}
-
-         /*
-            Returns the Resource's plural title.
-
-            Input:
-               (none)
-
-            Output:
-               std::string
-         */
-         inline std::string getPluralTitle() const {return getProperty<std::string>(PluralTitleProperty);}
-
-         /*
             Returns true if the given name is a plural representation of the
             Resource and false if not. The existence of this method will prove
             its worth once we start having to deal with plural aliases.
@@ -394,7 +372,7 @@ namespace trogdor::entity {
          inline std::string titleToString(double amount) const {
 
             return getProperty<bool>(ReqIntAllocProperty) && 1 == std::lround(amount) ?
-               getProperty<std::string>(TitleProperty) : getPluralTitle();
+               getProperty<std::string>(TitleProperty) : getProperty<std::string>(PluralTitleProperty);
          }
 
          /*
