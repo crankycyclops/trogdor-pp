@@ -920,7 +920,10 @@ namespace trogdor {
       propSetters["resource"]["requireIntegerAllocations"] = [](Game *game, entity::Entity *resource,
       std::string value) {
 
-         dynamic_cast<entity::Resource *>(resource)->setRequireIntegerAllocations(stoi(value));
+         dynamic_cast<entity::Resource *>(resource)->setProperty(
+            Resource::ReqIntAllocProperty,
+            static_cast<bool>(stoi(value))
+         );
       };
 
       /**********/

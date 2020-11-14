@@ -298,20 +298,6 @@ namespace trogdor::entity {
          );
 
          /*
-            Set whether or not allocations must be made in integer-only amounts.
-
-            Input:
-               Whether or not integer-only allocations are required (bool)
-
-            Output:
-               (none)
-         */
-         inline void setRequireIntegerAllocations(bool required) {
-
-            setProperty(ReqIntAllocProperty, required);
-         }
-
-         /*
             Returns the total amount of the resource that can be allocated by a
             tangible entity at once. A value of std::nullopt indicates that
             entities can hold as much as they want.
