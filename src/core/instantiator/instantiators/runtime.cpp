@@ -905,7 +905,7 @@ namespace trogdor {
       std::string value) {
 
          if (Entity::PROPERTY_VALID != dynamic_cast<entity::Resource *>(resource)->setProperty(
-            Resource::AmtAvailProperty,
+            entity::Resource::AmtAvailProperty,
             stod(value)
          )) {
             throw ValidationException(
@@ -921,7 +921,7 @@ namespace trogdor {
       std::string value) {
 
          dynamic_cast<entity::Resource *>(resource)->setProperty(
-            Resource::ReqIntAllocProperty,
+            entity::Resource::ReqIntAllocProperty,
             static_cast<bool>(stoi(value))
          );
       };
@@ -939,7 +939,7 @@ namespace trogdor {
       propSetters["resource"]["pluralTitle"] = [](Game *game, entity::Entity *resource,
       std::string value) {
 
-         dynamic_cast<entity::Resource *>(resource)->setPluralTitle(value);
+         dynamic_cast<entity::Resource *>(resource)->setProperty(entity::Resource::PluralTitleProperty, value);
       };
    }
 }

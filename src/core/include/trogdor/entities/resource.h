@@ -224,20 +224,6 @@ namespace trogdor::entity {
          }
 
          /*
-            Sets the Resource's plural title.
-
-            Input:
-               New plural title (std::string)
-
-            Output:
-               (none)
-         */
-         inline void setPluralTitle(std::string pluralTitle) {
-
-            setProperty(PluralTitleProperty, pluralTitle);
-         }
-
-         /*
             Returns true if the given name is a plural representation of the
             Resource and false if not. The existence of this method will prove
             its worth once we start having to deal with plural aliases.
