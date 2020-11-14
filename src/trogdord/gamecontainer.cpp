@@ -152,7 +152,7 @@ size_t GameContainer::createGame(
 
 	// Update the running index whenever the game is started
 	games[gameId]->get()->addCallback("start",
-	std::make_shared<std::function<void(std::any)>>([&, gameId](std::any data) {
+	std::make_shared<trogdor::Game::GameCallback>([&, gameId](std::any data) -> bool {
 
 		indices.mutex.lock();
 
@@ -160,11 +160,12 @@ size_t GameContainer::createGame(
 		indices.running[true].insert(gameId);
 
 		indices.mutex.unlock();
+		return false;
 	}));
 
 	// Update the running index whenever the game is stopped
 	games[gameId]->get()->addCallback("stop",
-	std::make_shared<std::function<void(std::any)>>([&, gameId](std::any data) {
+	std::make_shared<trogdor::Game::GameCallback>([&, gameId](std::any data) -> bool {
 
 		indices.mutex.lock();
 
@@ -172,12 +173,13 @@ size_t GameContainer::createGame(
 		indices.running[false].insert(gameId);
 
 		indices.mutex.unlock();
+		return false;
 	}));
 
 	// Make sure players drop their inventory (including droppable objects)
 	// when they're removed from the game so that no items are lost
 	games[gameId]->get()->addCallback("removePlayer",
-	std::make_shared<std::function<void(std::any)>>([&](std::any player) {
+	std::make_shared<trogdor::Game::GameCallback>([&](std::any player) -> bool {
 
 		auto invObjects = std::any_cast<
 			std::shared_ptr<trogdor::entity::Player>
@@ -188,6 +190,8 @@ size_t GameContainer::createGame(
 				std::shared_ptr<trogdor::entity::Player>
 			>(player)->drop(object, false, false);
 		}
+
+		return false;
 	}));
 
 	indices.mutex.lock();

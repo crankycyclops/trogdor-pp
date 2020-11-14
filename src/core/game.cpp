@@ -124,11 +124,7 @@ namespace trogdor {
       timer->start();
       mutex.unlock();
 
-      if (callbacks.end() != callbacks.find("start")) {
-         for (const auto &callback: callbacks["start"]) {
-            (*callback)(nullptr);
-         }
-      }
+      executeCallback("start", nullptr);
    }
 
    /***************************************************************************/
@@ -140,11 +136,7 @@ namespace trogdor {
       inGame = false;
       mutex.unlock();
 
-      if (callbacks.end() != callbacks.find("stop")) {
-         for (const auto &callback: callbacks["stop"]) {
-            (*callback)(nullptr);
-         }
-      }
+      executeCallback("stop", nullptr);
    }
 
    /***************************************************************************/
@@ -348,11 +340,7 @@ namespace trogdor {
       // Player must see an initial description of where they are
       player->getLocation().lock()->observe(player, false);
 
-      if (callbacks.end() != callbacks.find("insertPlayer")) {
-         for (const auto &callback: callbacks["insertPlayer"]) {
-            (*callback)(player);
-         }
-      }
+      executeCallback("insertPlayer", player);
 
       // Make sure the player's health information is sent out when they're
       // first inserted into the game. This should be the only time we have to
@@ -369,11 +357,7 @@ namespace trogdor {
 
       if (players.find(name) != players.end()) {
 
-         if (callbacks.end() != callbacks.find("removePlayer")) {
-            for (const auto &callback: callbacks["removePlayer"]) {
-               (*callback)(players[name]);
-            }
-         }
+         executeCallback("removePlayer", players[name]);
 
          if (message.length()) {
             players[name]->out("system") << message << std::endl;
@@ -449,7 +433,28 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Game::addCallback(std::string operation, std::shared_ptr<std::function<void(std::any)>> callback) {
+   void Game::executeCallback(std::string operation, std::any data) {
+
+      std::vector<std::shared_ptr<GameCallback> *> toRemove;
+
+      if (callbacks.end() != callbacks.find(operation)) {
+         for (auto &callback: callbacks[operation]) {
+            if ((*callback)(data)) {
+               toRemove.push_back(&callback);
+            }
+         }
+      }
+
+      // If a callback flagged itself for removal, do so now
+      while (toRemove.size()) {
+         removeCallback(operation, *toRemove.back());
+         toRemove.pop_back();
+      }
+   }
+
+   /***************************************************************************/
+
+   void Game::addCallback(std::string operation, std::shared_ptr<GameCallback> callback) {
 
       callbacks[operation].push_back(callback);
    }
@@ -471,7 +476,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Game::removeCallback(std::string operation, const std::shared_ptr<std::function<void(std::any)>> &callback) {
+   void Game::removeCallback(std::string operation, const std::shared_ptr<GameCallback> &callback) {
 
       if (callbacks.end() != callbacks.find(operation)) {
 
