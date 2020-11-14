@@ -169,8 +169,8 @@ namespace trogdor::entity {
                            << std::endl;
                      } else {
                      out("display") << "This place can only hold "
-                        << resource->amountToString(*resource->getMaxAmountPerDepositor())
-                        << ' ' << resource->titleToString(*resource->getMaxAmountPerDepositor())
+                        << resource->amountToString(resource->getProperty<double>(Resource::MaxAmtPerDepositorProperty))
+                        << ' ' << resource->titleToString(resource->getProperty<double>(Resource::MaxAmtPerDepositorProperty))
                         << '.' << std::endl;
                      }
 

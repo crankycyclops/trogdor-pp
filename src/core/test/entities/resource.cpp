@@ -23,7 +23,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 
 		CHECK(!testResource.getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
 		CHECK(!testResource.isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
-		CHECK(!testResource.getMaxAmountPerDepositor());
+		CHECK(!testResource.isPropertySet(trogdor::entity::Resource::MaxAmtPerDepositorProperty));
 		CHECK(0.0 == testResource.getTotalAmountAllocated());
 		CHECK(0 == testResource.getDepositors().size());
 	}
@@ -41,7 +41,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 		CHECK(!testResource.getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
 		CHECK(testResource.isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
 		CHECK(10.5 == testResource.getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
-		CHECK(!testResource.getMaxAmountPerDepositor());
+		CHECK(!testResource.isPropertySet(trogdor::entity::Resource::MaxAmtPerDepositorProperty));
 		CHECK(0.0 == testResource.getTotalAmountAllocated());
 		CHECK(0 == testResource.getDepositors().size());
 	}
@@ -60,8 +60,8 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 		CHECK(!testResource.getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
 		CHECK(testResource.isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
 		CHECK(10.5 == testResource.getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
-		CHECK(testResource.getMaxAmountPerDepositor());
-		CHECK(1.0 == *testResource.getMaxAmountPerDepositor());
+		CHECK(testResource.isPropertySet(trogdor::entity::Resource::MaxAmtPerDepositorProperty));
+		CHECK(1.0 == testResource.getProperty<double>(trogdor::entity::Resource::MaxAmtPerDepositorProperty));
 		CHECK(0.0 == testResource.getTotalAmountAllocated());
 		CHECK(0 == testResource.getDepositors().size());
 	}
@@ -81,8 +81,8 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 		CHECK(testResource.getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
 		CHECK(testResource.isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
 		CHECK(10.0 == testResource.getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
-		CHECK(testResource.getMaxAmountPerDepositor());
-		CHECK(1.0 == *testResource.getMaxAmountPerDepositor());
+		CHECK(testResource.isPropertySet(trogdor::entity::Resource::MaxAmtPerDepositorProperty));
+		CHECK(1.0 == testResource.getProperty<double>(trogdor::entity::Resource::MaxAmtPerDepositorProperty));
 		CHECK(0.0 == testResource.getTotalAmountAllocated());
 		CHECK(0 == testResource.getDepositors().size());
 	}
@@ -111,8 +111,8 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 		CHECK(testResource->getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
 		CHECK(testResource->isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
 		CHECK(10.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
-		CHECK(testResource->getMaxAmountPerDepositor());
-		CHECK(1.0 == *testResource->getMaxAmountPerDepositor());
+		CHECK(testResource->isPropertySet(trogdor::entity::Resource::MaxAmtPerDepositorProperty));
+		CHECK(1.0 == testResource->getProperty<double>(trogdor::entity::Resource::MaxAmtPerDepositorProperty));
 
 		auto status = testResource->allocate(testRoom, 1);
 
@@ -136,8 +136,8 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 		CHECK(testResourceCopy->getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
 		CHECK(testResource->isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
 		CHECK(10.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
-		CHECK(testResourceCopy->getMaxAmountPerDepositor());
-		CHECK(1.0 == *testResourceCopy->getMaxAmountPerDepositor());
+		CHECK(testResourceCopy->isPropertySet(trogdor::entity::Resource::MaxAmtPerDepositorProperty));
+		CHECK(1.0 == testResourceCopy->getProperty<double>(trogdor::entity::Resource::MaxAmtPerDepositorProperty));
 		CHECK(0 == testResourceCopy->getDepositors().size());
 		CHECK(0 == testResourceCopy->getTotalAmountAllocated());
 	}
@@ -326,7 +326,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 
 			CHECK(testResource->getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
 			CHECK(!testResource->isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
-			CHECK(!testResource->getMaxAmountPerDepositor());
+			CHECK(!testResource->isPropertySet(trogdor::entity::Resource::MaxAmtPerDepositorProperty));
 
 			// Verify that amounts with fractional values are not allowed and
 			// don't modify any current allocations
@@ -391,7 +391,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 
 			CHECK(!testResource->getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
 			CHECK(!testResource->isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
-			CHECK(1.0 == testResource->getMaxAmountPerDepositor());
+			CHECK(1.0 == testResource->getProperty<double>(trogdor::entity::Resource::MaxAmtPerDepositorProperty));
 
 			// Verify that I can't allocate more than the maximum amount per
 			// entity
@@ -463,7 +463,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			CHECK(!testResource->getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
 			CHECK(testResource->isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
 			CHECK(5 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
-			CHECK(!testResource->getMaxAmountPerDepositor());
+			CHECK(!testResource->isPropertySet(trogdor::entity::Resource::MaxAmtPerDepositorProperty));
 
 			// Attempting to allocate more than the maximum amount available
 			// should fail

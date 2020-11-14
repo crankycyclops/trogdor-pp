@@ -371,7 +371,7 @@ namespace trogdor::entity {
                         << resource->amountToString(getResources().find(resource)->second + amount)
                         << ' ' << resource->getProperty<std::string>(Resource::PluralTitleProperty)
                         << " and you're only allowed to possess "
-                        << resource->amountToString(*resource->getMaxAmountPerDepositor())
+                        << resource->amountToString(resource->getProperty<double>(Resource::MaxAmtPerDepositorProperty))
                         << '.' << std::endl;
                   }
 
