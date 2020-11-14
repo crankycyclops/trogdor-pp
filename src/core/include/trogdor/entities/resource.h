@@ -20,6 +20,11 @@ namespace trogdor::entity {
 
       public:
 
+         // Returned by the property validator when setting AmtAvailProperty to
+         // a value that's smaller than the total amount of the resource that's
+         // currently allocated
+         static constexpr int AMOUNT_AVAILABLE_TOO_SMALL = 2;
+
          // Boolean property that determines whether or not allocations are
          // required to be made in integer amounts
          static constexpr const char *ReqIntAllocProperty = "reqIntAlloc";
@@ -30,7 +35,7 @@ namespace trogdor::entity {
          // total amount of the resource currently allocated, an exception will
          // be thrown, indicating that the value has been set too low. This can
          // be resolved either by releasing some of the resource or by setting a
-         // higher value. If a value isn't set, that indicates that there's an
+         // higher value. If the value is unset, that indicates that there's an
          // infinite amount of the resource available.
          static constexpr const char *AmtAvailProperty = "amountAvailable";
 
@@ -229,9 +234,7 @@ namespace trogdor::entity {
          */
          inline void setPluralTitle(std::string pluralTitle) {
 
-            mutex.lock();
             setProperty(PluralTitleProperty, pluralTitle);
-            mutex.unlock();
          }
 
          /*
@@ -316,9 +319,7 @@ namespace trogdor::entity {
          */
          inline void setRequireIntegerAllocations(bool required) {
 
-            mutex.lock();
             setProperty(ReqIntAllocProperty, required);
-            mutex.unlock();
          }
 
          /*
@@ -338,36 +339,6 @@ namespace trogdor::entity {
 
             auto amount = getProperty(AmtAvailProperty);
             return amount ? std::optional<double>(std::get<double>(*amount)) : std::nullopt;
-         }
-
-         /*
-            Set the total amount of the resource available. Setting this to
-            std::nullopt will result in the resource having an infinite supply.
-            If caller attempts to set a value that's below the amount currently
-            allocated, false will be returned, indicating failure.
-
-            Input:
-               The total amount of the resource available (std::optional<double>)
-
-            Output:
-               True if the call was successful and false if not (bool)
-         */
-         inline bool setAmountAvailable(std::optional<double> newAmount = std::nullopt) {
-
-            if (newAmount && *newAmount < totalAmountAllocated) {
-               return false;
-            }
-
-            mutex.lock();
-
-            if (newAmount) {
-               setProperty(AmtAvailProperty, *newAmount);
-            } else {
-               unsetProperty(AmtAvailProperty);
-            }
-
-            mutex.unlock();
-            return true;
          }
 
          /*
@@ -405,15 +376,11 @@ namespace trogdor::entity {
          */
          inline void setMaxAmountPerDepositor(std::optional<double> newMax = std::nullopt) {
 
-            mutex.lock();
-
             if (newMax) {
                setProperty(MaxAmtPerDepositorProperty, *newMax);
             } else {
                unsetProperty(MaxAmtPerDepositorProperty);
             }
-
-            mutex.unlock();
          }
 
          /*

@@ -904,7 +904,10 @@ namespace trogdor {
       propSetters["resource"]["amountAvailable"] = [](Game *game, entity::Entity *resource,
       std::string value) {
 
-         if (!dynamic_cast<entity::Resource *>(resource)->setAmountAvailable(stod(value))) {
+         if (Entity::PROPERTY_VALID != dynamic_cast<entity::Resource *>(resource)->setProperty(
+            Resource::AmtAvailProperty,
+            stod(value)
+         )) {
             throw ValidationException(
                "Some tangible entity possesses more of the '" +
                resource->getName() + "' than is allowed."

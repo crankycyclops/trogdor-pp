@@ -63,6 +63,27 @@ namespace trogdor::entity {
       setProperty(PluralNameProperty, pluralName ? *pluralName : language.pluralizeNoun(n));
       setProperty(PluralTitleProperty, std::get<std::string>(*getProperty(PluralNameProperty)));
 
+      // Add property validators after setting initial values of properties for
+      // efficiency (I know the defaults are going to be valid, so there's no
+      // reason to call a validator.)
+      setPropertyValidator(AmtAvailProperty, [&](PropertyValue value) -> int {
+
+         // Value must be a double (only literals with decimals or integers that
+         // are explictly cast to double will pass validation when passed to
+         // setProperty.)
+         if (2 != value.index()) {
+            return PROPERTY_INVALID_TYPE;
+         }
+
+         double newAmount = std::get<double>(value);
+
+         if (newAmount < totalAmountAllocated) {
+            return AMOUNT_AVAILABLE_TOO_SMALL;
+         }
+
+         return PROPERTY_VALID;
+      });
+
       types.push_back(ENTITY_RESOURCE);
       setClass("resource");
    }

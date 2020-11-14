@@ -50,8 +50,13 @@ namespace trogdor::entity {
 
       public:
 
-         // Property validators should return this if the value being set is valid
+         // Property validators should return this if the value being set is
+         // valid
          static constexpr int PROPERTY_VALID = 0;
+
+         // Property validators should return this if attempting to set a
+         // property value with an invalid type
+         static constexpr int PROPERTY_INVALID_TYPE = 1;
 
          // Standard Entity property keys (title is always set)
          static constexpr const char *TitleProperty = "title";
@@ -548,7 +553,9 @@ namespace trogdor::entity {
             }
 
             if (PROPERTY_VALID == status) {
+               mutex.lock();
                properties[key] = value;
+               mutex.unlock();
             }
 
             return status;
@@ -576,7 +583,11 @@ namespace trogdor::entity {
          */
          inline size_t unsetProperty(std::string key) {
 
-            return properties.erase(key);
+            mutex.lock();
+            size_t numErased = properties.erase(key);
+            mutex.unlock();
+
+            return numErased;
          }
 
          /*

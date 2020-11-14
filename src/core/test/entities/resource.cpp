@@ -496,4 +496,161 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			CHECK(5 == testResource->getTotalAmountAllocated());
 		}
 	}
+
+	TEST_CASE("Resource (entities/resource.cpp): Setting custom amount available after construction") {
+
+		SUBCASE("New available amount is an invalid type") {
+
+			trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+
+			// Start off with 5.0 gold available
+			std::shared_ptr<trogdor::entity::Resource> testResource =
+			std::make_shared<trogdor::entity::Resource>(
+				&mockGame,
+				"gold",
+				5.0
+			);
+
+			// int should fail unless it's explicitly cast as a double
+			int propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, 2);
+			CHECK(trogdor::entity::Entity::PROPERTY_INVALID_TYPE == propStatus);
+			CHECK(5.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+
+			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, static_cast<double>(2));
+			CHECK(trogdor::entity::Resource::PROPERTY_VALID == propStatus);
+			CHECK(2.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+
+			// literal double should be fine
+			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, 3.0);
+			CHECK(trogdor::entity::Resource::PROPERTY_VALID == propStatus);
+			CHECK(3.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+
+			// size_t, std::string, and bool should also fail
+			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, "I'm a string");
+			CHECK(trogdor::entity::Entity::PROPERTY_INVALID_TYPE == propStatus);
+			CHECK(3.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+
+			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, static_cast<size_t>(1));
+			CHECK(trogdor::entity::Entity::PROPERTY_INVALID_TYPE == propStatus);
+			CHECK(3.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+
+			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, true);
+			CHECK(trogdor::entity::Entity::PROPERTY_INVALID_TYPE == propStatus);
+			CHECK(3.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+
+			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, false);
+			CHECK(trogdor::entity::Entity::PROPERTY_INVALID_TYPE == propStatus);
+			CHECK(3.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+		}
+
+		SUBCASE("New available amount too small after previous allocation") {
+
+			trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+
+			// Start off with 5.0 gold available
+			std::shared_ptr<trogdor::entity::Resource> testResource =
+			std::make_shared<trogdor::entity::Resource>(
+				&mockGame,
+				"gold",
+				5.0
+			);
+
+			std::shared_ptr<trogdor::entity::Room> testRoom =
+			std::make_shared<trogdor::entity::Room>(
+				&mockGame,
+				"start",
+				std::make_unique<trogdor::NullOut>(),
+				std::make_unique<trogdor::NullErr>()
+			);
+
+			// Allocate all of the gold to the test room
+			auto status = testResource->allocate(testRoom, 5.0);
+			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == status);
+
+			// 2.0 is smaller than the 5.0 that's already been allocated, so
+			// it should fail
+			int propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, 2.0);
+			CHECK(trogdor::entity::Resource::AMOUNT_AVAILABLE_TOO_SMALL == propStatus);
+			CHECK(5.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+		}
+
+		SUBCASE("Setting new available amount succeeds") {
+
+			trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+
+			// Start off with 5.0 gold available
+			std::shared_ptr<trogdor::entity::Resource> testResource =
+			std::make_shared<trogdor::entity::Resource>(
+				&mockGame,
+				"gold",
+				5.0
+			);
+
+			// Case 1: none of the resource is allocated
+			int propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, 2.0);
+			CHECK(trogdor::entity::Resource::PROPERTY_VALID == propStatus);
+			CHECK(2.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+
+			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, 6.0);
+			CHECK(trogdor::entity::Resource::PROPERTY_VALID == propStatus);
+			CHECK(6.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+
+			// Case 2: some of the resource is already allocated
+			std::shared_ptr<trogdor::entity::Room> testRoom =
+			std::make_shared<trogdor::entity::Room>(
+				&mockGame,
+				"start",
+				std::make_unique<trogdor::NullOut>(),
+				std::make_unique<trogdor::NullErr>()
+			);
+
+			auto allocStatus = testResource->allocate(testRoom, 4.0);
+			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == allocStatus);
+
+			// Adjust both up and down
+			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, 5.0);
+			CHECK(trogdor::entity::Resource::PROPERTY_VALID == propStatus);
+			CHECK(5.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+
+			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, 10.0);
+			CHECK(trogdor::entity::Resource::PROPERTY_VALID == propStatus);
+			CHECK(10.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+		}
+
+		SUBCASE("Unsetting available amount to create infinite supply") {
+
+			trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+
+			// Start off with 5.0 gold available
+			std::shared_ptr<trogdor::entity::Resource> testResource =
+			std::make_shared<trogdor::entity::Resource>(
+				&mockGame,
+				"gold",
+				5.0
+			);
+
+			std::shared_ptr<trogdor::entity::Room> testRoom =
+			std::make_shared<trogdor::entity::Room>(
+				&mockGame,
+				"start",
+				std::make_unique<trogdor::NullOut>(),
+				std::make_unique<trogdor::NullErr>()
+			);
+
+			auto allocStatus = testResource->allocate(testRoom, 5.0);
+			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == allocStatus);
+
+			// Show that we've already allocated the maximum amount and can't
+			// allocate anymore
+			allocStatus = testResource->allocate(testRoom, 1.0);
+			CHECK(trogdor::entity::Resource::ALLOCATE_TOTAL_AMOUNT_EXCEEDED == allocStatus);
+
+			// Now, unset the amount available and show that we can allocate
+			// more, demonstrating that the supply is now infinite
+			testResource->unsetProperty(trogdor::entity::Resource::AmtAvailProperty);
+
+			allocStatus = testResource->allocate(testRoom, 500.0);
+			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == allocStatus);
+		}
+	}
 }
