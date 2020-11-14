@@ -298,17 +298,6 @@ namespace trogdor::entity {
          );
 
          /*
-            Returns true if integer allocations are required and false if not.
-
-            Input:
-               (none)
-
-            Output:
-               Whether or not integer allocations are required (bool)
-         */
-         inline bool areIntegerAllocationsRequired() const {return std::get<bool>(*getProperty(ReqIntAllocProperty));}
-
-         /*
             Set whether or not allocations must be made in integer-only amounts.
 
             Input:

@@ -180,7 +180,7 @@ namespace trogdor::entity {
 
       display(
          observer.get(),
-         areIntegerAllocationsRequired() && 1 == amount ? false : true
+         std::get<bool>(*getProperty(ReqIntAllocProperty)) && 1 == amount ? false : true
       );
 
       if (triggerEvents) {

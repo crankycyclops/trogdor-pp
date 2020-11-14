@@ -241,7 +241,7 @@ namespace trogdor::entity {
             observer->out("display") << std::endl;
 
             // Display quantity as an integer
-            if (resourcePtr->areIntegerAllocationsRequired()) {
+            if (std::get<bool>(*resourcePtr->getProperty(Resource::ReqIntAllocProperty))) {
 
                if (1 == std::lround(resource.second)) {
                   observer->out("display") << "You see a " <<

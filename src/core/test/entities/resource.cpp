@@ -21,7 +21,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			"gold"
 		);
 
-		CHECK(!testResource.areIntegerAllocationsRequired());
+		CHECK(!std::get<bool>(*testResource.getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
 		CHECK(!testResource.getProperty(trogdor::entity::Resource::AmtAvailProperty));
 		CHECK(!testResource.getMaxAmountPerDepositor());
 		CHECK(0.0 == testResource.getTotalAmountAllocated());
@@ -42,7 +42,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			trogdor::entity::Resource::AmtAvailProperty
 		);
 
-		CHECK(!testResource.areIntegerAllocationsRequired());
+		CHECK(!std::get<bool>(*testResource.getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
 		CHECK(amountAvailable);
 		CHECK(10.5 == std::get<double>(*amountAvailable));
 		CHECK(!testResource.getMaxAmountPerDepositor());
@@ -65,7 +65,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			trogdor::entity::Resource::AmtAvailProperty
 		);
 
-		CHECK(!testResource.areIntegerAllocationsRequired());
+		CHECK(!std::get<bool>(*testResource.getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
 		CHECK(amountAvailable);
 		CHECK(10.5 == std::get<double>(*amountAvailable));
 		CHECK(testResource.getMaxAmountPerDepositor());
@@ -90,7 +90,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			trogdor::entity::Resource::AmtAvailProperty
 		);
 
-		CHECK(testResource.areIntegerAllocationsRequired());
+		CHECK(std::get<bool>(*testResource.getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
 		CHECK(amountAvailable);
 		CHECK(10.0 == std::get<double>(*amountAvailable));
 		CHECK(testResource.getMaxAmountPerDepositor());
@@ -124,7 +124,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			trogdor::entity::Resource::AmtAvailProperty
 		);
 
-		CHECK(testResource->areIntegerAllocationsRequired());
+		CHECK(std::get<bool>(*testResource->getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
 		CHECK(amountAvailable);
 		CHECK(10.0 == std::get<double>(*amountAvailable));
 		CHECK(testResource->getMaxAmountPerDepositor());
@@ -153,7 +153,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			trogdor::entity::Resource::AmtAvailProperty
 		);
 
-		CHECK(testResourceCopy->areIntegerAllocationsRequired());
+		CHECK(std::get<bool>(*testResourceCopy->getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
 		CHECK(amountAvailable);
 		CHECK(10.0 == std::get<double>(*amountAvailable));
 		CHECK(testResourceCopy->getMaxAmountPerDepositor());
@@ -344,7 +344,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 				std::make_unique<trogdor::NullErr>()
 			);
 
-			CHECK(true == testResource->areIntegerAllocationsRequired());
+			CHECK(true == std::get<bool>(*testResource->getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
 			CHECK(!testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty));
 			CHECK(!testResource->getMaxAmountPerDepositor());
 
@@ -409,7 +409,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 				std::make_unique<trogdor::NullErr>()
 			);
 
-			CHECK(!testResource->areIntegerAllocationsRequired());
+			CHECK(!std::get<bool>(*testResource->getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
 			CHECK(!testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty));
 			CHECK(1.0 == testResource->getMaxAmountPerDepositor());
 
@@ -484,7 +484,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 				trogdor::entity::Resource::AmtAvailProperty
 			);
 
-			CHECK(!testResource->areIntegerAllocationsRequired());
+			CHECK(!std::get<bool>(*testResource->getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
 			CHECK(amountAvailable);
 			CHECK(5 == std::get<double>(*amountAvailable));
 			CHECK(!testResource->getMaxAmountPerDepositor());
