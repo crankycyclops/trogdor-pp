@@ -8,7 +8,7 @@
 
 TEST_SUITE("Entity (entities/entity.cpp)") {
 
-	TEST_CASE("Entity (entities/entity.cpp): setProperty(), getProperty(), and unsetProperty()") {
+	TEST_CASE("Entity (entities/entity.cpp): setProperty(), getProperty(), and removeProperty()") {
 
 		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
 		trogdor::entity::MockEntity testEntity(&mockGame, "test");
@@ -63,22 +63,22 @@ TEST_SUITE("Entity (entities/entity.cpp)") {
 		CHECK(0 == testEntity.getProperty<std::string>("string2").compare("I'm a C++ string"));
 
 		// Test 3: Test unsetting properties
-		testEntity.unsetProperty("size_t");
+		testEntity.removeProperty("size_t");
 		CHECK(!testEntity.isPropertySet("size_t"));
 
-		testEntity.unsetProperty("int");
+		testEntity.removeProperty("int");
 		CHECK(!testEntity.isPropertySet("int"));
 
-		testEntity.unsetProperty("double");
+		testEntity.removeProperty("double");
 		CHECK(!testEntity.isPropertySet("double"));
 
-		testEntity.unsetProperty("bool");
+		testEntity.removeProperty("bool");
 		CHECK(!testEntity.isPropertySet("bool"));
 
-		testEntity.unsetProperty("string1");
+		testEntity.removeProperty("string1");
 		CHECK(!testEntity.isPropertySet("string1"));
 
-		testEntity.unsetProperty("string2");
+		testEntity.removeProperty("string2");
 		CHECK(!testEntity.isPropertySet("string2"));
 
 		// Test 4: Overwrite value with same type
@@ -117,7 +117,7 @@ TEST_SUITE("Entity (entities/entity.cpp)") {
 
 		// Reset property to unset state before trying again to show the value
 		// doesn't get set if it's invalid
-		testEntity.unsetProperty("intValidated");
+		testEntity.removeProperty("intValidated");
 
 		// Test 7: Setting property with failing validation should NOT return
 		// PROPERTY_VALID and should result in the property NOT being set

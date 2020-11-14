@@ -48,7 +48,7 @@ namespace trogdor::entity {
          // from an Object in the Creature's inventory.
          if (!updateObjectTag) {
 
-            updateObjectTag = std::make_shared<std::function<void(std::any)>>([&](std::any data) {
+            updateObjectTag = std::make_shared<EntityCallback>([&](std::any data) -> bool {
 
                auto args = std::any_cast<std::tuple<std::string, Object *>>(data);
 
@@ -71,6 +71,8 @@ namespace trogdor::entity {
                      mutex.unlock();
                   }
                }
+
+               return false;
             });
          }
 

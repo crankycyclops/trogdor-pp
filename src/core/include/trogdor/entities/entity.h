@@ -63,6 +63,13 @@ namespace trogdor::entity {
          static constexpr const char *LongDescProperty = "longDesc";
          static constexpr const char *ShortDescProperty = "shortDesc";
 
+         // Entity callbacks are triggered by various operations and take
+         // arbitrary data as an argument. If the callback returns true, it will
+         // be removed after execution. If it returns false, the callback will
+         // persist. This can be used to implement both one-time triggers and
+         // conditional removal.
+         typedef std::function<bool(std::any)> EntityCallback;
+
          // Valid types for a single entity property value
          typedef std::variant<size_t, int, double, bool, std::string> PropertyValue;
 
@@ -112,7 +119,7 @@ namespace trogdor::entity {
          // occur on the Entity.
          std::unordered_map<
             std::string,
-            std::vector<std::shared_ptr<std::function<void(std::any)>>>
+            std::vector<std::shared_ptr<EntityCallback>>
          > callbacks;
 
          // Output streams
@@ -127,6 +134,21 @@ namespace trogdor::entity {
          bool managedByLua = false;
 
          /********************************************************************/
+
+         /*
+            Executes all callbacks for the specified operation. Callbacks take
+            as input arbitrary data (callback should know what kind of data it
+            is based on the operation performed) and return true if they should
+            be removed after execution and false if they should persist.
+
+            Input:
+               Operation (std::string)
+               Data to pass to the callback (std::any)
+
+            Output:
+               (none)
+         */
+         void executeCallback(std::string operation, std::any data);
 
          /*
             Maps a property to a validation function. If a validation function
@@ -338,14 +360,14 @@ namespace trogdor::entity {
 
             Input:
                Operation the callback should be attached to (std::string)
-               Callback (std::shared_ptr<std::function<void(std::any)>>)
+               Callback (std::shared_ptr<EntityCallback>)
 
             Output:
                (none)
          */
          void addCallback(
             std::string operation,
-            std::shared_ptr<std::function<void(std::any)>> callback
+            std::shared_ptr<EntityCallback> callback
          );
 
          /*
@@ -367,14 +389,14 @@ namespace trogdor::entity {
 
             Input:
                Operation whose callbacks should be removed (std::string)
-               The specific callback to remove (const std::shared_ptr<std::function<void(std::any)>> &)
+               The specific callback to remove (const std::shared_ptr<EntityCallback> &)
 
             Output:
                (none)
          */
          void removeCallback(
             std::string operation,
-            const std::shared_ptr<std::function<void(std::any)>> &callback
+            const std::shared_ptr<EntityCallback> &callback
          );
 
          /*
@@ -556,7 +578,15 @@ namespace trogdor::entity {
          }
 
          /*
-            Sets a property.
+            Sets a property if validation is successful and returns
+            PROPERTY_VALID. If validation fails, another integer status code is
+            returned indicating the nature of the failure (validators can use
+            their own defined constants, but should respect those that have
+            already been defined by the Entity class.)
+
+            If validation passes and the property is set, any setProperty
+            callbacks will be executed after the fact, with the Entity, property
+            key, and property value being passed in as a std::tuple.
 
             Input:
                Key (std::string)
@@ -574,9 +604,15 @@ namespace trogdor::entity {
             }
 
             if (PROPERTY_VALID == status) {
+
                mutex.lock();
                properties[key] = value;
                mutex.unlock();
+
+               executeCallback(
+                  "setProperty",
+                  std::tuple<Entity *, std::string, PropertyValue>({this, key, value})
+               );
             }
 
             return status;
@@ -593,7 +629,7 @@ namespace trogdor::entity {
          }
 
          /*
-            Unsets a property and returns the number of elements removed
+            Removes a property and returns the number of elements removed
             (effectively 1 if the element existed and 0 if it didn't.)
 
             Input:
@@ -602,7 +638,7 @@ namespace trogdor::entity {
             Output:
                Number of elements erased (size_t)
          */
-         inline size_t unsetProperty(std::string key) {
+         inline size_t removeProperty(std::string key) {
 
             mutex.lock();
             size_t numErased = properties.erase(key);

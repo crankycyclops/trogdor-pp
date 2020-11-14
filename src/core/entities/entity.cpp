@@ -90,9 +90,30 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   void Entity::executeCallback(std::string operation, std::any data) {
+
+      std::vector<std::shared_ptr<EntityCallback> *> toRemove;
+
+      if (callbacks.end() != callbacks.find(operation)) {
+         for (auto &callback: callbacks[operation]) {
+            if ((*callback)(data)) {
+               toRemove.push_back(&callback);
+            }
+         }
+      }
+
+      // If a callback flagged itself for removal, do so now
+      while (toRemove.size()) {
+         removeCallback(operation, *toRemove.back());
+         toRemove.pop_back();
+      }
+   }
+
+   /***************************************************************************/
+
    void Entity::addCallback(
       std::string operation,
-      std::shared_ptr<std::function<void(std::any)>> callback
+      std::shared_ptr<EntityCallback> callback
    ) {
 
       mutex.lock();
@@ -122,7 +143,7 @@ namespace trogdor::entity {
 
    void Entity::removeCallback(
       std::string operation,
-      const std::shared_ptr<std::function<void(std::any)>> &callback
+      const std::shared_ptr<EntityCallback> &callback
    ) {
 
       mutex.lock();
@@ -150,16 +171,8 @@ namespace trogdor::entity {
          tags.insert(tag);
       }
 
-      if (callbacks.end() != callbacks.find("setTag")) {
-
-         std::tuple<std::string, Entity *> args = {tag, this};
-
-         for (const auto &callback: callbacks["setTag"]) {
-            (*callback)(args);
-         }
-      }
-
       mutex.unlock();
+      executeCallback("setTag", std::tuple<std::string, Entity *>({tag, this}));
    }
 
    /***************************************************************************/
@@ -172,16 +185,8 @@ namespace trogdor::entity {
          tags.erase(tag);
       }
 
-      if (callbacks.end() != callbacks.find("removeTag")) {
-
-         std::tuple<std::string, Entity *> args = {tag, this};
-
-         for (const auto &callback: callbacks["removeTag"]) {
-            (*callback)(args);
-         }
-      }
-
       mutex.unlock();
+      executeCallback("removeTag", std::tuple<std::string, Entity *>({tag, this}));
    }
 
    /***************************************************************************/

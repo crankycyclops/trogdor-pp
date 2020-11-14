@@ -648,7 +648,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 
 			// Now, unset the amount available and show that we can allocate
 			// more, demonstrating that the supply is now infinite
-			testResource->unsetProperty(trogdor::entity::Resource::AmtAvailProperty);
+			testResource->removeProperty(trogdor::entity::Resource::AmtAvailProperty);
 
 			allocStatus = testResource->allocate(testRoom, 500.0);
 			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == allocStatus);
