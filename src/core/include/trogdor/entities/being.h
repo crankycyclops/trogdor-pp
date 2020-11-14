@@ -143,7 +143,7 @@ namespace trogdor::entity {
                      for (auto const &thing: location->getThings()) {
                         if (thing.get() != this) {
                            thing->out("notifications")
-                              << std::get<std::string>(*getProperty(TitleProperty))
+                              << getProperty<std::string>(TitleProperty)
                               << " drops " << resource->amountToString(amount) << ' '
                               << resource->titleToString(amount) << "." << std::endl;
                         }

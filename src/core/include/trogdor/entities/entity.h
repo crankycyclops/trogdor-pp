@@ -519,19 +519,40 @@ namespace trogdor::entity {
          }
 
          /*
-            Returns the value of a property if it's set or std::nullopt if it's
-            not.
+            Returns true if the entity property is set and false if not.
 
             Input:
                Key (std::string)
 
             Output:
-               Property value or std::nullopt (std::optional<PropertyValue>)
+               Whether or not the property is set (bool)
          */
-         inline const std::optional<PropertyValue> getProperty(std::string key) const {
+         inline bool isPropertySet(std::string key) const {
 
-            return properties.end() != properties.find(key) ?
-               std::optional<PropertyValue>(properties.find(key)->second) : std::nullopt;
+            return properties.end() != properties.find(key) ? true : false;
+         }
+
+         /*
+            Returns the value of a property. Throws std::invalid_argument if the
+            property isn't set and std::bad_variant_access if an attempt is made
+            to access a property with the incorrect type.
+
+            Template arguments:
+               The type to be returned
+
+            Input:
+               Key (std::string)
+
+            Output:
+               Property (template type)
+         */
+         template<typename T> inline const T getProperty(std::string key) const {
+
+            if (properties.end() == properties.find(key)) {
+               throw std::invalid_argument("attempted to access undefined entity property");
+            }
+
+            return std::get<T>(properties.find(key)->second);
          }
 
          /*

@@ -197,11 +197,12 @@ namespace trogdor::entity {
 
    void Entity::displayShort(Being *observer) {
 
-      auto shortDesc = getProperty(ShortDescProperty);
-
-      if (ENTITY_PLAYER == observer->getType()
-      && shortDesc && std::get<std::string>(*shortDesc).length() > 0) {
-         observer->out("display") << std::get<std::string>(*shortDesc) << std::endl;
+      if (
+         ENTITY_PLAYER == observer->getType() &&
+         isPropertySet(ShortDescProperty) &&
+         getProperty<std::string>(ShortDescProperty).length() > 0
+      ) {
+         observer->out("display") << getProperty<std::string>(ShortDescProperty) << std::endl;
       }
    }
 }

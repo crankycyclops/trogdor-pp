@@ -113,7 +113,7 @@ namespace trogdor {
 
             else if (
                resource->isPlural(name) ||
-               !std::get<bool>(*resource->getProperty(entity::Resource::ReqIntAllocProperty))
+               !resource->getProperty<bool>(entity::Resource::ReqIntAllocProperty)
             ) {
                return max;
             }
@@ -160,7 +160,7 @@ namespace trogdor {
                      << std::endl;
                }
 
-               else if (std::get<bool>(*resource->getProperty(entity::Resource::ReqIntAllocProperty)) && fracPart) {
+               else if (resource->getProperty<bool>(entity::Resource::ReqIntAllocProperty) && fracPart) {
                   player->out("display") << "Please specify a whole number of "
                      << resource->getPluralTitle() << '.' << std::endl;
                }

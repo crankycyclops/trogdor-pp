@@ -21,8 +21,8 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			"gold"
 		);
 
-		CHECK(!std::get<bool>(*testResource.getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
-		CHECK(!testResource.getProperty(trogdor::entity::Resource::AmtAvailProperty));
+		CHECK(!testResource.getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
+		CHECK(!testResource.isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
 		CHECK(!testResource.getMaxAmountPerDepositor());
 		CHECK(0.0 == testResource.getTotalAmountAllocated());
 		CHECK(0 == testResource.getDepositors().size());
@@ -38,13 +38,9 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			10.5
 		);
 
-		auto amountAvailable = testResource.getProperty(
-			trogdor::entity::Resource::AmtAvailProperty
-		);
-
-		CHECK(!std::get<bool>(*testResource.getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
-		CHECK(amountAvailable);
-		CHECK(10.5 == std::get<double>(*amountAvailable));
+		CHECK(!testResource.getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
+		CHECK(testResource.isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
+		CHECK(10.5 == testResource.getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 		CHECK(!testResource.getMaxAmountPerDepositor());
 		CHECK(0.0 == testResource.getTotalAmountAllocated());
 		CHECK(0 == testResource.getDepositors().size());
@@ -61,13 +57,9 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			1.0
 		);
 
-		auto amountAvailable = testResource.getProperty(
-			trogdor::entity::Resource::AmtAvailProperty
-		);
-
-		CHECK(!std::get<bool>(*testResource.getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
-		CHECK(amountAvailable);
-		CHECK(10.5 == std::get<double>(*amountAvailable));
+		CHECK(!testResource.getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
+		CHECK(testResource.isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
+		CHECK(10.5 == testResource.getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 		CHECK(testResource.getMaxAmountPerDepositor());
 		CHECK(1.0 == *testResource.getMaxAmountPerDepositor());
 		CHECK(0.0 == testResource.getTotalAmountAllocated());
@@ -86,13 +78,9 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			true
 		);
 
-		auto amountAvailable = testResource.getProperty(
-			trogdor::entity::Resource::AmtAvailProperty
-		);
-
-		CHECK(std::get<bool>(*testResource.getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
-		CHECK(amountAvailable);
-		CHECK(10.0 == std::get<double>(*amountAvailable));
+		CHECK(testResource.getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
+		CHECK(testResource.isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
+		CHECK(10.0 == testResource.getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 		CHECK(testResource.getMaxAmountPerDepositor());
 		CHECK(1.0 == *testResource.getMaxAmountPerDepositor());
 		CHECK(0.0 == testResource.getTotalAmountAllocated());
@@ -120,13 +108,9 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		auto amountAvailable = testResource->getProperty(
-			trogdor::entity::Resource::AmtAvailProperty
-		);
-
-		CHECK(std::get<bool>(*testResource->getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
-		CHECK(amountAvailable);
-		CHECK(10.0 == std::get<double>(*amountAvailable));
+		CHECK(testResource->getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
+		CHECK(testResource->isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
+		CHECK(10.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 		CHECK(testResource->getMaxAmountPerDepositor());
 		CHECK(1.0 == *testResource->getMaxAmountPerDepositor());
 
@@ -149,13 +133,9 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			"gold copy"
 		);
 
-		amountAvailable = testResource->getProperty(
-			trogdor::entity::Resource::AmtAvailProperty
-		);
-
-		CHECK(std::get<bool>(*testResourceCopy->getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
-		CHECK(amountAvailable);
-		CHECK(10.0 == std::get<double>(*amountAvailable));
+		CHECK(testResourceCopy->getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
+		CHECK(testResource->isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
+		CHECK(10.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 		CHECK(testResourceCopy->getMaxAmountPerDepositor());
 		CHECK(1.0 == *testResourceCopy->getMaxAmountPerDepositor());
 		CHECK(0 == testResourceCopy->getDepositors().size());
@@ -344,8 +324,8 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 				std::make_unique<trogdor::NullErr>()
 			);
 
-			CHECK(true == std::get<bool>(*testResource->getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
-			CHECK(!testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty));
+			CHECK(testResource->getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
+			CHECK(!testResource->isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
 			CHECK(!testResource->getMaxAmountPerDepositor());
 
 			// Verify that amounts with fractional values are not allowed and
@@ -409,8 +389,8 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 				std::make_unique<trogdor::NullErr>()
 			);
 
-			CHECK(!std::get<bool>(*testResource->getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
-			CHECK(!testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty));
+			CHECK(!testResource->getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
+			CHECK(!testResource->isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
 			CHECK(1.0 == testResource->getMaxAmountPerDepositor());
 
 			// Verify that I can't allocate more than the maximum amount per
@@ -480,13 +460,9 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 				std::make_unique<trogdor::NullErr>()
 			);
 
-			auto amountAvailable = testResource->getProperty(
-				trogdor::entity::Resource::AmtAvailProperty
-			);
-
-			CHECK(!std::get<bool>(*testResource->getProperty(trogdor::entity::Resource::ReqIntAllocProperty)));
-			CHECK(amountAvailable);
-			CHECK(5 == std::get<double>(*amountAvailable));
+			CHECK(!testResource->getProperty<bool>(trogdor::entity::Resource::ReqIntAllocProperty));
+			CHECK(testResource->isPropertySet(trogdor::entity::Resource::AmtAvailProperty));
+			CHECK(5 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 			CHECK(!testResource->getMaxAmountPerDepositor());
 
 			// Attempting to allocate more than the maximum amount available
@@ -539,33 +515,33 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			// int should fail unless it's explicitly cast as a double
 			int propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, 2);
 			CHECK(trogdor::entity::Entity::PROPERTY_INVALID_TYPE == propStatus);
-			CHECK(5.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+			CHECK(5.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 
 			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, static_cast<double>(2));
 			CHECK(trogdor::entity::Resource::PROPERTY_VALID == propStatus);
-			CHECK(2.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+			CHECK(2.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 
 			// literal double should be fine
 			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, 3.0);
 			CHECK(trogdor::entity::Resource::PROPERTY_VALID == propStatus);
-			CHECK(3.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+			CHECK(3.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 
 			// size_t, std::string, and bool should also fail
 			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, "I'm a string");
 			CHECK(trogdor::entity::Entity::PROPERTY_INVALID_TYPE == propStatus);
-			CHECK(3.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+			CHECK(3.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 
 			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, static_cast<size_t>(1));
 			CHECK(trogdor::entity::Entity::PROPERTY_INVALID_TYPE == propStatus);
-			CHECK(3.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+			CHECK(3.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 
 			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, true);
 			CHECK(trogdor::entity::Entity::PROPERTY_INVALID_TYPE == propStatus);
-			CHECK(3.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+			CHECK(3.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 
 			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, false);
 			CHECK(trogdor::entity::Entity::PROPERTY_INVALID_TYPE == propStatus);
-			CHECK(3.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+			CHECK(3.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 		}
 
 		SUBCASE("New available amount too small after previous allocation") {
@@ -596,7 +572,7 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			// it should fail
 			int propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, 2.0);
 			CHECK(trogdor::entity::Resource::AMOUNT_AVAILABLE_TOO_SMALL == propStatus);
-			CHECK(5.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+			CHECK(5.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 		}
 
 		SUBCASE("Setting new available amount succeeds") {
@@ -614,11 +590,11 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			// Case 1: none of the resource is allocated
 			int propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, 2.0);
 			CHECK(trogdor::entity::Resource::PROPERTY_VALID == propStatus);
-			CHECK(2.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+			CHECK(2.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 
 			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, 6.0);
 			CHECK(trogdor::entity::Resource::PROPERTY_VALID == propStatus);
-			CHECK(6.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+			CHECK(6.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 
 			// Case 2: some of the resource is already allocated
 			std::shared_ptr<trogdor::entity::Room> testRoom =
@@ -635,11 +611,11 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			// Adjust both up and down
 			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, 5.0);
 			CHECK(trogdor::entity::Resource::PROPERTY_VALID == propStatus);
-			CHECK(5.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+			CHECK(5.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 
 			propStatus = testResource->setProperty(trogdor::entity::Resource::AmtAvailProperty, 10.0);
 			CHECK(trogdor::entity::Resource::PROPERTY_VALID == propStatus);
-			CHECK(10.0 == std::get<double>(*testResource->getProperty(trogdor::entity::Resource::AmtAvailProperty)));
+			CHECK(10.0 == testResource->getProperty<double>(trogdor::entity::Resource::AmtAvailProperty));
 		}
 
 		SUBCASE("Unsetting available amount to create infinite supply") {

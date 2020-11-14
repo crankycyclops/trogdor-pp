@@ -241,11 +241,11 @@ namespace trogdor::entity {
             observer->out("display") << std::endl;
 
             // Display quantity as an integer
-            if (std::get<bool>(*resourcePtr->getProperty(Resource::ReqIntAllocProperty))) {
+            if (resourcePtr->getProperty<bool>(Resource::ReqIntAllocProperty)) {
 
                if (1 == std::lround(resource.second)) {
                   observer->out("display") << "You see a " <<
-                     std::get<std::string>(*resourcePtr->getProperty(TitleProperty)) <<
+                     resourcePtr->getProperty<std::string>(TitleProperty) <<
                      "." << std::endl;
                }
 
@@ -282,10 +282,10 @@ namespace trogdor::entity {
 
    void Place::displayPlace(Being *observer, bool displayFull) {
 
-      observer->out("location") << std::get<std::string>(*getProperty(TitleProperty));
+      observer->out("location") << getProperty<std::string>(TitleProperty);
       observer->out("location").flush();
 
-      observer->out("display") << std::get<std::string>(*getProperty(TitleProperty)) <<
+      observer->out("display") << getProperty<std::string>(TitleProperty) <<
          std::endl << std::endl;
       Tangible::display(observer, displayFull);
    }

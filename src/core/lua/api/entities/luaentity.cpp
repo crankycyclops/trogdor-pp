@@ -415,7 +415,7 @@ namespace trogdor::entity {
          return luaL_error(L, "not an Entity!");
       }
 
-      lua_pushstring(L, std::get<std::string>(*e->getProperty(Entity::TitleProperty)).c_str());
+      lua_pushstring(L, e->getProperty<std::string>(Entity::TitleProperty).c_str());
       return 1;
    }
 
@@ -459,8 +459,11 @@ namespace trogdor::entity {
          return luaL_error(L, "not an Entity!");
       }
 
-      auto longDesc = e->getProperty(Entity::LongDescProperty);
-      lua_pushstring(L, longDesc ? std::get<std::string>(*longDesc).c_str() : "");
+      lua_pushstring(
+         L,
+         e->isPropertySet(Entity::LongDescProperty) ?
+            e->getProperty<std::string>(Entity::LongDescProperty).c_str() : ""
+      );
 
       return 1;
    }
@@ -505,8 +508,11 @@ namespace trogdor::entity {
          return luaL_error(L, "not an Entity!");
       }
 
-      auto shortDesc = e->getProperty(Entity::ShortDescProperty);
-      lua_pushstring(L, shortDesc ? std::get<std::string>(*shortDesc).c_str() : "");
+      lua_pushstring(
+         L,
+         e->isPropertySet(Entity::ShortDescProperty) ?
+            e->getProperty<std::string>(Entity::ShortDescProperty).c_str() : ""
+      );
 
       return 1;
    }

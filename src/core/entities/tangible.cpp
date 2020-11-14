@@ -77,8 +77,7 @@ namespace trogdor::entity {
 
       if (!observedBy(observerShared) || displayFull) {
          if (ENTITY_PLAYER == observer->getType()) {
-            auto longDesc = getProperty(LongDescProperty);
-            observer->out("display") << (longDesc ? std::get<std::string>(*longDesc) : "")
+            observer->out("display") << (isPropertySet(LongDescProperty) ? getProperty<std::string>(LongDescProperty) : "")
                << std::endl;
          }
       }

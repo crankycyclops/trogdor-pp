@@ -246,7 +246,7 @@ namespace trogdor::entity {
             Output:
                std::string
          */
-         inline std::string getPluralName() const {return std::get<std::string>(*getProperty(PluralNameProperty));}
+         inline std::string getPluralName() const {return getProperty<std::string>(PluralNameProperty);}
 
          /*
             Returns the Resource's plural title.
@@ -257,7 +257,7 @@ namespace trogdor::entity {
             Output:
                std::string
          */
-         inline std::string getPluralTitle() const {return std::get<std::string>(*getProperty(PluralTitleProperty));}
+         inline std::string getPluralTitle() const {return getProperty<std::string>(PluralTitleProperty);}
 
          /*
             Returns true if the given name is a plural representation of the
@@ -272,7 +272,7 @@ namespace trogdor::entity {
          */
          inline bool isPlural(std::string name) const {
 
-            return 0 == std::get<std::string>(*getProperty(PluralNameProperty)).compare(name) ? true : false;
+            return 0 == getProperty<std::string>(PluralNameProperty).compare(name) ? true : false;
          }
 
          /*
@@ -311,8 +311,8 @@ namespace trogdor::entity {
          */
          inline std::optional<double> getMaxAmountPerDepositor() const {
 
-            auto maxAmt = getProperty(MaxAmtPerDepositorProperty);
-            return maxAmt ? std::optional<double>(std::get<double>(*maxAmt)) : std::nullopt;
+            return isPropertySet(MaxAmtPerDepositorProperty) ?
+               std::optional<double>(getProperty<double>(MaxAmtPerDepositorProperty)) : std::nullopt;
          }
 
          /*
@@ -376,7 +376,7 @@ namespace trogdor::entity {
          */
          inline std::string amountToString(double amount) const {
 
-            return std::get<bool>(*getProperty(ReqIntAllocProperty)) ?
+            return getProperty<bool>(ReqIntAllocProperty) ?
                std::to_string(std::lround(amount)) : std::to_string(amount);
          }
 
@@ -393,8 +393,8 @@ namespace trogdor::entity {
          */
          inline std::string titleToString(double amount) const {
 
-            return std::get<bool>(*getProperty(ReqIntAllocProperty)) && 1 == std::lround(amount) ?
-               std::get<std::string>(*getProperty(TitleProperty)) : getPluralTitle();
+            return getProperty<bool>(ReqIntAllocProperty) && 1 == std::lround(amount) ?
+               getProperty<std::string>(TitleProperty) : getPluralTitle();
          }
 
          /*

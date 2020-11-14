@@ -61,7 +61,7 @@ namespace trogdor::entity {
 
       setProperty(ReqIntAllocProperty, requireIntegerAllocations);
       setProperty(PluralNameProperty, pluralName ? *pluralName : language.pluralizeNoun(n));
-      setProperty(PluralTitleProperty, std::get<std::string>(*getProperty(PluralNameProperty)));
+      setProperty(PluralTitleProperty, getProperty<std::string>(PluralNameProperty));
 
       // Add property validators after setting initial values of properties for
       // efficiency (I know the defaults are going to be valid, so there's no
@@ -108,9 +108,9 @@ namespace trogdor::entity {
       > templateParameters = {
 
          {false, {
-            {"{%title}", std::get<std::string>(*getProperty(TitleProperty))},
+            {"{%title}", getProperty<std::string>(TitleProperty)},
             {"{%name}", getName()},
-            {"{%Title}", capitalize(std::get<std::string>(*getProperty(TitleProperty)))},
+            {"{%Title}", capitalize(getProperty<std::string>(TitleProperty))},
             {"{%Name}", capitalize(getName())}
          }},
 
@@ -139,22 +139,19 @@ namespace trogdor::entity {
 
       if (ENTITY_PLAYER == observer->getType()) {
 
-         auto longDesc = getProperty(LongDescProperty);
-         auto shortDesc = getProperty(ShortDescProperty);
-
-         if (longDesc && std::get<std::string>(*longDesc).length() > 0) {
-            observer->out("display") << hydrateString(std::get<std::string>(*longDesc), isPlural)
+         if (isPropertySet(LongDescProperty) && getProperty<std::string>(LongDescProperty).length() > 0) {
+            observer->out("display") << hydrateString(getProperty<std::string>(LongDescProperty), isPlural)
                << std::endl;
          }
 
-         else if (shortDesc && std::get<std::string>(*shortDesc).length() > 0) {
-            observer->out("display") << hydrateString(std::get<std::string>(*shortDesc), isPlural)
+         else if (isPropertySet(ShortDescProperty) && getProperty<std::string>(ShortDescProperty).length() > 0) {
+            observer->out("display") << hydrateString(getProperty<std::string>(ShortDescProperty), isPlural)
                << std::endl;
          }
 
          else {
             observer->out("display") << "You see " <<
-               (isPlural ? getPluralTitle() : std::get<std::string>(*getProperty(TitleProperty))) <<
+               (isPlural ? getPluralTitle() : getProperty<std::string>(TitleProperty)) <<
                '.' << std::endl;
          }
       }
@@ -180,7 +177,7 @@ namespace trogdor::entity {
 
       display(
          observer.get(),
-         std::get<bool>(*getProperty(ReqIntAllocProperty)) && 1 == amount ? false : true
+         getProperty<bool>(ReqIntAllocProperty) && 1 == amount ? false : true
       );
 
       if (triggerEvents) {
@@ -255,7 +252,7 @@ namespace trogdor::entity {
 
       auto shared = getShared();
 
-      if (std::get<bool>(*getProperty(ReqIntAllocProperty))) {
+      if (getProperty<bool>(ReqIntAllocProperty)) {
 
          double intPart, fracPart = modf(amount, &intPart);
 
@@ -273,9 +270,10 @@ namespace trogdor::entity {
          }
       }
 
-      auto amountAvailable = getProperty(AmtAvailProperty);
-
-      if (amountAvailable && amount + totalAmountAllocated > std::get<double>(*amountAvailable)) {
+      if (
+         isPropertySet(AmtAvailProperty) &&
+         amount + totalAmountAllocated > getProperty<double>(AmtAvailProperty)
+      ) {
 
          if (triggerEvents) {
             game->event({
@@ -296,9 +294,10 @@ namespace trogdor::entity {
          updatedBalance += depositors[entity];
       }
 
-      auto maxAmountPerDepositor = getProperty(MaxAmtPerDepositorProperty);
-
-      if (maxAmountPerDepositor && updatedBalance > std::get<double>(*maxAmountPerDepositor)) {
+      if (
+         isPropertySet(MaxAmtPerDepositorProperty) &&
+         updatedBalance > getProperty<double>(MaxAmtPerDepositorProperty)
+      ) {
 
          if (triggerEvents) {
             game->event({
@@ -353,7 +352,7 @@ namespace trogdor::entity {
          return FREE_NEGATIVE_VALUE;
       }
 
-      if (std::get<bool>(*getProperty(ReqIntAllocProperty))) {
+      if (getProperty<bool>(ReqIntAllocProperty)) {
 
          double intPart, fracPart = modf(amount, &intPart);
 

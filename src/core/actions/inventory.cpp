@@ -45,7 +45,7 @@ namespace trogdor {
          // List objects
          for (auto const &obj: player->getInventoryObjects()) {
 
-            player->out("display") << std::get<std::string>(*obj->getProperty(entity::Entity::TitleProperty));
+            player->out("display") << obj->getProperty<std::string>(entity::Entity::TitleProperty);
 
             if (player->getInventoryMaxWeight() > 0) {
 
