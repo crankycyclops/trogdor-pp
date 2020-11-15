@@ -9,8 +9,7 @@ namespace trogdor::entity {
 
 
    Creature::Creature(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Being(g, n, std::move(o), std::move(e)),
-   counterAttack(DEFAULT_COUNTER_ATTACK), allegiance(DEFAULT_ALLEGIANCE) {
+   std::unique_ptr<Trogerr> e): Being(g, n, std::move(o), std::move(e)) {
 
       types.push_back(ENTITY_CREATURE);
       setClass("creature");
@@ -22,6 +21,28 @@ namespace trogdor::entity {
       wanderSettings.enabled = DEFAULT_WANDER_ENABLE;
       wanderSettings.interval = DEFAULT_WANDER_INTERVAL;
       wanderSettings.wanderlust = DEFAULT_WANDER_LUST;
+
+      setProperty(CounterAttackProperty, DEFAULT_COUNTER_ATTACK);
+      setProperty(AllegianceProperty, DEFAULT_ALLEGIANCE);
+
+      setPropertyValidator(CounterAttackProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
+      setPropertyValidator(CounterAttackProperty, [&](PropertyValue v) -> int {
+
+         if (1 != v.index()) {
+            return PROPERTY_INVALID_TYPE;
+         }
+
+         switch (std::get<int>(v)) {
+
+            case FRIEND:
+            case ENEMY:
+            case NEUTRAL:
+               return PROPERTY_VALID;
+
+            default:
+               return PROPERTY_INVALID_TYPE;
+         }
+      });
    }
 
    /***************************************************************************/
@@ -30,8 +51,6 @@ namespace trogdor::entity {
 
       autoAttack = c.autoAttack;
       wanderSettings = c.wanderSettings;
-      counterAttack = c.counterAttack;
-      allegiance = c.allegiance;
    }
 
    /***************************************************************************/

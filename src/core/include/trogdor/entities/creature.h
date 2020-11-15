@@ -21,6 +21,12 @@ namespace trogdor::entity {
             ENEMY
          };
 
+         // Whether creature is friendly, neutral or aggressive toward others
+         static constexpr const char *AllegianceProperty = "allegiance";
+
+         // Whether or not the Creature will fight back when attacked
+         static constexpr const char *CounterAttackProperty = "counterAttack";
+
          // by default, a creature will automatically attack when attacked
          static constexpr bool DEFAULT_COUNTER_ATTACK = true;
          static constexpr enum AllegianceType DEFAULT_ALLEGIANCE = NEUTRAL;
@@ -80,12 +86,6 @@ namespace trogdor::entity {
             int    interval;
             double wanderlust;
          } wanderSettings;
-
-         // whether creature will fight back when attacked
-         bool counterAttack;
-
-         // whether creature is friendly, neutral or aggressive toward others
-         enum AllegianceType allegiance;
 
       public:
 
@@ -148,17 +148,6 @@ namespace trogdor::entity {
          }
 
          /*
-            Returns the Creature's allegiance.
-
-            Input:
-               (none)
-
-            Output:
-               enum AllegianceType
-         */
-         inline enum AllegianceType getAllegiance() const {return allegiance;}
-
-         /*
             Returns a string representation of the Creature's allegiance.
 
             Input:
@@ -169,7 +158,7 @@ namespace trogdor::entity {
          */
          inline std::string getAllegianceStr() const {
 
-            switch (allegiance) {
+            switch (getProperty<int>(AllegianceProperty)) {
 
                case FRIEND:
                   return "friend";
@@ -183,17 +172,6 @@ namespace trogdor::entity {
 
             return "undefined";
          }
-
-         /*
-            Returns whether or not counterAttack is enabled.
-
-            Input:
-               (none)
-
-            Output:
-               bool
-         */
-         inline bool getCounterAttack() {return counterAttack;}
 
          /*
             Return auto attack parameters.
@@ -224,39 +202,6 @@ namespace trogdor::entity {
          inline bool   getWanderEnabled()  const {return wanderSettings.enabled;}
          inline int    getWanderInterval() const {return wanderSettings.interval;}
          inline double getWanderLust()     const {return wanderSettings.wanderlust;}
-
-         /*
-            Sets a Creature's allegiance.
-
-            Input:
-               AllegianceType
-
-            Output:
-               (none)
-         */
-         inline void setAllegiance(enum AllegianceType a) {
-
-            mutex.lock();
-            allegiance = a;
-            mutex.unlock();
-         }
-
-         /*
-            Sets whether or not Creature should automatically fight back when
-            attacked.
-
-            Input:
-               bool
-
-            Output:
-               (none)
-         */
-         inline void setCounterAttack(bool b) {
-
-            mutex.lock();
-            counterAttack = b;
-            mutex.unlock();
-         }
 
          /*
             Sets whether or not auto-attack is enabled.

@@ -738,8 +738,8 @@ namespace trogdor::entity {
 
       if (
          ENTITY_CREATURE == defender->getType() &&
-         Creature::FRIEND != static_cast<Creature *>(defender)->getAllegiance() &&
-         static_cast<Creature *>(defender)->getCounterAttack() &&
+         Creature::FRIEND != static_cast<Creature *>(defender)->getProperty<int>(Creature::AllegianceProperty) &&
+         static_cast<Creature *>(defender)->getProperty<bool>(Creature::CounterAttackProperty) &&
          allowCounterAttack
       ) {
          defender->attack(this, static_cast<Creature *>(defender)->selectWeapon(), false);

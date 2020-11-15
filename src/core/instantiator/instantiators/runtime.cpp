@@ -800,7 +800,10 @@ namespace trogdor {
       // Whether or not a Creature will respond to an attack with one of its own
       propSetters["creature"]["counterattack"] = [](Game *game, entity::Entity *creature,
       std::string value) {
-         dynamic_cast<entity::Creature *>(creature)->setCounterAttack(stoi(value));
+         dynamic_cast<entity::Creature *>(creature)->setProperty(
+            entity::Creature::CounterAttackProperty,
+            static_cast<bool>(stoi(value))
+         );
       };
 
       /**********/
@@ -818,14 +821,22 @@ namespace trogdor {
 
          // By default, Creatures with neutral or enemy allegiances will
          // automatically retaliate when attacked
-         switch (dynamic_cast<entity::Creature *>(creature)->getAllegiance()) {
+         switch (dynamic_cast<entity::Creature *>(creature)->getProperty<int>(
+            entity::Creature::AllegianceProperty)
+         ) {
 
             case entity::Creature::FRIEND:
-               dynamic_cast<entity::Creature *>(creature)->setCounterAttack(false);
+               dynamic_cast<entity::Creature *>(creature)->setProperty(
+                  entity::Creature::CounterAttackProperty,
+                  false
+               );
                break;
 
             default:
-               dynamic_cast<entity::Creature *>(creature)->setCounterAttack(true);
+               dynamic_cast<entity::Creature *>(creature)->setProperty(
+                  entity::Creature::CounterAttackProperty,
+                  true
+               );
                break;
          }
       };
@@ -854,7 +865,10 @@ namespace trogdor {
             throw ValidationException("allegiance must be 'friend', 'neutral' or 'enemy'");
          }
 
-         dynamic_cast<entity::Creature *>(creature)->setAllegiance(allegiance);
+         dynamic_cast<entity::Creature *>(creature)->setProperty(
+            entity::Creature::AllegianceProperty,
+            static_cast<entity::Creature::AllegianceType>(allegiance)
+         );
       };
 
       /**********/
