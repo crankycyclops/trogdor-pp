@@ -783,7 +783,10 @@ namespace trogdor {
       propSetters["creature"]["inventory.weight"] =
       propSetters["player"]["inventory.weight"] = [](Game *game, entity::Entity *being,
       std::string value) {
-         dynamic_cast<entity::Being *>(being)->setInventoryWeight(stoi(value));
+         dynamic_cast<entity::Being *>(being)->setProperty(
+            entity::Being::InvMaxWeightProperty,
+            stoi(value)
+         );
       };
 
       /**********/

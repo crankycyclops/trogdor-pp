@@ -26,15 +26,16 @@ namespace trogdor::entity {
       setProperty(RespawnEnabledProperty, DEFAULT_RESPAWN_ENABLED);
       setProperty(RespawnIntervalProperty, DEFAULT_RESPAWN_INTERVAL);
       setProperty(RespawnLivesProperty, DEFAULT_RESPAWN_LIVES);
+      setProperty(InvMaxWeightProperty, DEFAULT_INVENTORY_WEIGHT);
 
       setPropertyValidator(WoundRateProperty, [&](PropertyValue v) -> int {return isPropertyValueDouble(v);});
       setPropertyValidator(DamageBareHandsProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
       setPropertyValidator(RespawnEnabledProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
       setPropertyValidator(RespawnIntervalProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
       setPropertyValidator(RespawnLivesProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+      setPropertyValidator(InvMaxWeightProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
 
       inventory.count         = 0;
-      inventory.weight        = DEFAULT_INVENTORY_WEIGHT;
       inventory.currentWeight = 0;
 
       types.push_back(ENTITY_BEING);
@@ -55,7 +56,6 @@ namespace trogdor::entity {
       attributes.initialTotal = b.attributes.initialTotal;
 
       inventory.count = 0;
-      inventory.weight = b.inventory.weight;
       inventory.currentWeight = 0;
    }
 
@@ -117,16 +117,19 @@ namespace trogdor::entity {
       bool considerWeight
    ) {
 
+      int invMaxWeight = getProperty<int>(InvMaxWeightProperty);
+      int objectWeight = object->getProperty<int>(Object::WeightProperty);
+
       // make sure the Object will fit
-      if (considerWeight && inventory.weight > 0 &&
-      inventory.currentWeight + object->getProperty<int>(Object::WeightProperty) > inventory.weight) {
+      if (considerWeight && invMaxWeight > 0 &&
+      inventory.currentWeight + objectWeight > invMaxWeight) {
          return false;
       }
 
       // insert the object into the Being's inventory
       mutex.lock();
       inventory.objects.insert(object);
-      inventory.currentWeight += object->getProperty<int>(Object::WeightProperty);
+      inventory.currentWeight += objectWeight;
       mutex.unlock();
 
       // allow referencing of inventory Objects by name and aliases

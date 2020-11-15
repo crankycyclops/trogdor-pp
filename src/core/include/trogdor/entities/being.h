@@ -46,6 +46,9 @@ namespace trogdor::entity {
          // indicates unlimited lives)
          static constexpr const char *RespawnLivesProperty = "respawn.lives";
 
+         // Represents the maximum weight a Being's inventory can contain
+         static constexpr const char *InvMaxWeightProperty = "inventory.maxWeight";
+
          // Tag is set if the Being is attackable
          static constexpr const char *AttackableTag = "attackable";
 
@@ -230,15 +233,14 @@ namespace trogdor::entity {
          int maxHealth = 0;     // maximum number of health points (0 for immortal)
 
          struct {
-            std::unordered_map<std::string, int> values;
             int initialTotal;   // total attributes that the Being started with
+            std::unordered_map<std::string, int> values;
          } attributes;
 
          struct {
 
-            int weight;         // how much weight inventory can hold
-            int currentWeight;  // how much weight is currently used
             size_t count;       // number of objects in the inventory
+            int currentWeight;  // how much weight is currently used
 
             // Inventory items
             std::set<std::shared_ptr<Object>, EntityAlphaComparator> objects;
@@ -401,17 +403,6 @@ namespace trogdor::entity {
                bool
          */
          inline bool isImmortal() const {return maxHealth == 0 ? true : false;}
-
-         /*
-            Returns the maximum weight of the Being's inventory.
-
-            Input:
-               (none)
-
-            Output:
-               max weight (int)
-         */
-         inline int const getInventoryMaxWeight() const {return inventory.weight;}
 
          /*
             Returns the current weight of the Being's inventory.
@@ -641,23 +632,6 @@ namespace trogdor::entity {
                attributes.initialTotal += attribute.second;
             }
 
-            mutex.unlock();
-         }
-
-         /*
-            Sets the inventory's weight.  0 means the Being  can carry an
-            unlimited number of items.
-
-            Input:
-               Weight (int)
-
-            Output:
-               (none)
-         */
-         inline void setInventoryWeight(int w) {
-
-            mutex.lock();
-            inventory.weight = w;
             mutex.unlock();
          }
 
