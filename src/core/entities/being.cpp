@@ -13,14 +13,15 @@ namespace trogdor::entity {
 
 
    Being::Being(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o), std::move(e)),
-   maxHealth(DEFAULT_MAX_HEALTH) {
+   std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o), std::move(e)) {
 
       setAttribute("strength", DEFAULT_ATTRIBUTE_STRENGTH);
       setAttribute("dexterity", DEFAULT_ATTRIBUTE_DEXTERITY);
       setAttribute("intelligence", DEFAULT_ATTRIBUTE_INTELLIGENCE);
       setAttributesInitialTotal();
 
+      setProperty(HealthProperty, static_cast<int>(0));
+      setProperty(MaxHealthProperty, DEFAULT_MAX_HEALTH);
       setProperty(WoundRateProperty, DEFAULT_WOUND_RATE);
       setProperty(DamageBareHandsProperty, DEFAULT_DAMAGE_BARE_HANDS);
       setProperty(RespawnEnabledProperty, DEFAULT_RESPAWN_ENABLED);
@@ -28,12 +29,33 @@ namespace trogdor::entity {
       setProperty(RespawnLivesProperty, DEFAULT_RESPAWN_LIVES);
       setProperty(InvMaxWeightProperty, DEFAULT_INVENTORY_WEIGHT);
 
+      setPropertyValidator(HealthProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+      setPropertyValidator(MaxHealthProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
       setPropertyValidator(WoundRateProperty, [&](PropertyValue v) -> int {return isPropertyValueDouble(v);});
       setPropertyValidator(DamageBareHandsProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
       setPropertyValidator(RespawnEnabledProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
       setPropertyValidator(RespawnIntervalProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
       setPropertyValidator(RespawnLivesProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
       setPropertyValidator(InvMaxWeightProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+
+      // This callback will make sure that if the Being's max health is set
+      // before its actual current health, the current health will be
+      // automatically set to its max health.
+      addCallback("setProperty", std::make_shared<EntityCallback>([&](std::any data) -> bool {
+
+         auto &args = std::any_cast<std::tuple<Entity *, std::string, PropertyValue> &>(data);
+
+         if (0 == std::get<1>(args).compare(HealthProperty)) {
+            return true;
+         }
+
+         else if (0 == std::get<1>(args).compare(MaxHealthProperty)) {
+            dynamic_cast<Being *>(std::get<0>(args))->setProperty(HealthProperty, std::get<2>(args));
+            return true;
+         }
+
+         return false;
+      }));
 
       inventory.count         = 0;
       inventory.currentWeight = 0;
@@ -48,9 +70,6 @@ namespace trogdor::entity {
    /***************************************************************************/
 
    Being::Being(const Being &b, std::string n): Thing(b, n) {
-
-      setHealth(b.health);
-      setMaxHealth(b.maxHealth);
 
       attributes.values = b.attributes.values;
       attributes.initialTotal = b.attributes.initialTotal;
@@ -733,26 +752,28 @@ namespace trogdor::entity {
 
    void Being::addHealth(int up, bool allowOverflow) {
 
-      if (!game->event({"beforeAddHealth", {triggers.get()}, {this, health, up}})) {
+      int maxHealth = getProperty<int>(MaxHealthProperty);
+
+      if (!game->event({"beforeAddHealth", {triggers.get()}, {this, getProperty<int>(HealthProperty), up}})) {
          return;
       }
 
-      int tmpHealth = health;
+      int tmpHealth = getProperty<int>(HealthProperty);
       tmpHealth += up;
 
-      setHealth(!allowOverflow && tmpHealth > maxHealth ? maxHealth : tmpHealth);
-      game->event({"afterAddHealth", {triggers.get()}, {this, health, up}});
+      setProperty(HealthProperty, !allowOverflow && tmpHealth > maxHealth ? maxHealth : tmpHealth);
+      game->event({"afterAddHealth", {triggers.get()}, {this, getProperty<int>(HealthProperty), up}});
    }
 
    /***************************************************************************/
 
    void Being::removeHealth(int down, bool allowDeath) {
 
-      if (!game->event({"beforeRemoveHealth", {triggers.get()}, {this, health, down}})) {
+      if (!game->event({"beforeRemoveHealth", {triggers.get()}, {this, getProperty<int>(HealthProperty), down}})) {
          return;
       }
 
-      int tmpHealth = health;
+      int tmpHealth = getProperty<int>(HealthProperty);
       tmpHealth -= down;
 
       if (tmpHealth <= 0) {
@@ -763,10 +784,10 @@ namespace trogdor::entity {
       }
 
       else {
-         setHealth(tmpHealth);
+         setProperty(HealthProperty, tmpHealth);
       }
 
-      game->event({"afterRemoveHealth", {triggers.get()}, {this, health, down}});
+      game->event({"afterRemoveHealth", {triggers.get()}, {this, getProperty<int>(HealthProperty), down}});
    }
 
    /***************************************************************************/
@@ -779,7 +800,7 @@ namespace trogdor::entity {
 
       // TODO: I need a way to support programmatically killing an immortal
       // player.
-      setHealth(0);
+      setProperty(HealthProperty, static_cast<int>(0));
 
       auto location = getLocation().lock();
 
@@ -824,7 +845,7 @@ namespace trogdor::entity {
          return;
       }
 
-      setHealth(maxHealth);
+      setProperty(HealthProperty, getProperty<int>(MaxHealthProperty));
       game->event({"afterRespawn", {triggers.get()}, {game, this}});
    }
 }

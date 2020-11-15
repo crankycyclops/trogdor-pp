@@ -41,8 +41,10 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 		defender.setLocation(mockRoom);
 
 		// Until we set a max health, a Being is considered immortal
-		attacker.setHealth(10), attacker.setMaxHealth(10);
-		defender.setHealth(10), defender.setMaxHealth(10);
+		attacker.setProperty(trogdor::entity::Being::HealthProperty, 10);
+		attacker.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		defender.setProperty(trogdor::entity::Being::HealthProperty, 10);
+		defender.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
 		// RIP, random attacker!
 		attacker.die();
@@ -88,8 +90,10 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 		defender.setLocation(mockRoom);
 
 		// Until we set a max health, a Being is considered immortal
-		attacker.setHealth(10), attacker.setMaxHealth(10);
-		defender.setHealth(10), defender.setMaxHealth(10);
+		attacker.setProperty(trogdor::entity::Being::HealthProperty, 10);
+		attacker.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		defender.setProperty(trogdor::entity::Being::HealthProperty, 10);
+		defender.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
 		defender.die();
 
@@ -134,8 +138,10 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 		defender.setLocation(mockRoom);
 
 		// Until we set a max health, a Being is considered immortal
-		attacker.setHealth(10), attacker.setMaxHealth(10);
-		defender.setHealth(10), defender.setMaxHealth(10);
+		attacker.setProperty(trogdor::entity::Being::HealthProperty, 10);
+		attacker.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		defender.setProperty(trogdor::entity::Being::HealthProperty, 10);
+		defender.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
 		attacker.die();
 		defender.die();
@@ -181,8 +187,10 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 		defender.setLocation(mockRoom);
 
 		// Until we set a max health, a Being is considered immortal
-		attacker.setHealth(10), attacker.setMaxHealth(10);
-		defender.setHealth(10), defender.setMaxHealth(10);
+		attacker.setProperty(trogdor::entity::Being::HealthProperty, 10);
+		attacker.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		defender.setProperty(trogdor::entity::Being::HealthProperty, 10);
+		defender.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
 		defender.removeTag(trogdor::entity::Being::AttackableTag);
 
@@ -235,8 +243,10 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 		defender.setLocation(defendersRoom);
 
 		// Until we set a max health, a Being is considered immortal
-		attacker.setHealth(10), attacker.setMaxHealth(10);
-		defender.setHealth(10), defender.setMaxHealth(10);
+		attacker.setProperty(trogdor::entity::Being::HealthProperty, 10);
+		attacker.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		defender.setProperty(trogdor::entity::Being::HealthProperty, 10);
+		defender.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
 		trogdor::Timer mockTimer(&mockGame);
 		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, &attacker, &defender);
@@ -279,8 +289,10 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 		defender.setLocation(mockRoom);
 
 		// Until we set a max health, a Being is considered immortal
-		attacker.setHealth(10), attacker.setMaxHealth(10);
-		defender.setHealth(10), defender.setMaxHealth(10);
+		attacker.setProperty(trogdor::entity::Being::HealthProperty, 10);
+		attacker.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		defender.setProperty(trogdor::entity::Being::HealthProperty, 10);
+		defender.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
 		// Make absolutely certain the defender is attackable (right now this
 		// is the default, but that might change in the future)

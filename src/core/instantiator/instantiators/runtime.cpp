@@ -704,7 +704,10 @@ namespace trogdor {
       propSetters["creature"]["health"] =
       propSetters["player"]["health"] = [](Game *game, entity::Entity *being,
       std::string value) {
-         dynamic_cast<entity::Being *>(being)->setHealth(stoi(value));
+         dynamic_cast<entity::Being *>(being)->setProperty(
+            entity::Being::HealthProperty,
+            stoi(value)
+         );
       };
 
       /**********/
@@ -713,7 +716,10 @@ namespace trogdor {
       propSetters["creature"]["maxhealth"] =
       propSetters["player"]["maxhealth"] = [](Game *game, entity::Entity *being,
       std::string value) {
-         dynamic_cast<entity::Being *>(being)->setMaxHealth(stoi(value));
+         dynamic_cast<entity::Being *>(being)->setProperty(
+            entity::Being::MaxHealthProperty,
+            stoi(value)
+         );
       };
 
       /**********/

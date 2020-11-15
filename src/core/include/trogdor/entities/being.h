@@ -27,6 +27,12 @@ namespace trogdor::entity {
 
       public:
 
+         // Number of health points the being currently has
+         static constexpr const char *HealthProperty = "health";
+
+         // Maximum number of health points possible (0 for immortal)
+         static constexpr const char *MaxHealthProperty = "maxHealth";
+
          // Max probability of being hit when attacked
          static constexpr const char *WoundRateProperty = "woundRate";
 
@@ -224,14 +230,6 @@ namespace trogdor::entity {
 
       protected:
 
-         // Once the value for health has been initialized, set this to true.
-         // This is used to determine whether setMaxHealth should also
-         // initialize the value of health.
-         bool healthInitialized = false;
-
-         int health = 0;        // number of health points the being currently has
-         int maxHealth = 0;     // maximum number of health points (0 for immortal)
-
          struct {
             int initialTotal;   // total attributes that the Being started with
             std::unordered_map<std::string, int> values;
@@ -391,7 +389,10 @@ namespace trogdor::entity {
             Output:
                bool
          */
-         inline bool isAlive() const {return health || !maxHealth ? true : false;}
+         inline bool isAlive() const {
+
+            return getProperty<int>(HealthProperty) || !getProperty<int>(MaxHealthProperty) ? true : false;
+         }
 
          /*
             Returns true if the Being is immortal and false if it's not.
@@ -402,7 +403,10 @@ namespace trogdor::entity {
             Output:
                bool
          */
-         inline bool isImmortal() const {return maxHealth == 0 ? true : false;}
+         inline bool isImmortal() const {
+
+            return 0 == getProperty<int>(MaxHealthProperty) ? true : false;
+         }
 
          /*
             Returns the current weight of the Being's inventory.
@@ -493,28 +497,6 @@ namespace trogdor::entity {
          }
 
          /*
-            Return the Being's current health.
-
-            Input:
-               (none)
-
-            Ouput:
-               Health (int)
-         */
-         inline int getHealth() {return health;}
-
-         /*
-            Return the Being's maximum health.
-
-            Input:
-               (none)
-
-            Ouput:
-               Maximum Health (int)
-         */
-         inline int getMaxHealth() {return maxHealth;}
-
-         /*
             Send out a JSON update every time the player's health is changed.
 
             Input:
@@ -525,52 +507,10 @@ namespace trogdor::entity {
          */
          inline void notifyHealth() {
 
-            out("health") << std::string("{\"health\":") + std::to_string(health) +
-               ",\"maxHealth\":" + std::to_string(maxHealth) + '}';
+            out("health") << std::string("{\"health\":") +
+               std::to_string(getProperty<int>(HealthProperty)) + ",\"maxHealth\":" +
+               std::to_string(getProperty<int>(MaxHealthProperty)) + '}';
             out("health").flush();
-         }
-
-         /*
-            Sets the Being's health.
-
-            Input:
-               Integer number of health points
-
-            Output:
-               (none)
-         */
-         inline void setHealth(int h) {
-
-            // TODO: should I intelligently handle player dying here instead of
-            // in the separate method die()? I think that makes more sense
-            mutex.lock();
-            healthInitialized = true;
-            health = h;
-            mutex.unlock();
-
-            notifyHealth();
-         }
-
-         /*
-            Sets the Being's maximum health (0 for immortal.)
-
-            Input:
-               Integer number of health points
-
-            Output:
-               (none)
-         */
-         inline void setMaxHealth(int h) {
-
-            // If we haven't already initialized the value for health, do so now
-            // (the default value is the same value as maxHealth.)
-            if (!healthInitialized) {
-               setHealth(h);
-            }
-
-            mutex.lock();
-            maxHealth = h;
-            mutex.unlock();
          }
 
          /*
