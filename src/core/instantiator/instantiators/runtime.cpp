@@ -722,7 +722,10 @@ namespace trogdor {
       propSetters["creature"]["woundrate"] =
       propSetters["player"]["woundrate"] = [](Game *game, entity::Entity *being,
       std::string value) {
-         dynamic_cast<entity::Being *>(being)->setWoundRate(stod(value));
+         dynamic_cast<entity::Being *>(being)->setProperty(
+            entity::Being::WoundRateProperty,
+            stod(value)
+         );
       };
 
       /**********/
@@ -732,7 +735,10 @@ namespace trogdor {
       propSetters["creature"]["damagebarehands"] =
       propSetters["player"]["damagebarehands"] = [](Game *game, entity::Entity *being,
       std::string value) {
-         dynamic_cast<entity::Being *>(being)->setDamageBareHands(stoi(value));
+         dynamic_cast<entity::Being *>(being)->setProperty(
+            entity::Being::DamageBareHandsProperty,
+            stoi(value)
+         );
       };
 
       /**********/
@@ -741,7 +747,10 @@ namespace trogdor {
       propSetters["creature"]["respawn.enabled"] =
       propSetters["player"]["respawn.enabled"] = [](Game *game, entity::Entity *being,
       std::string value) {
-         dynamic_cast<entity::Being *>(being)->setRespawnEnabled(stoi(value));
+         dynamic_cast<entity::Being *>(being)->setProperty(
+            entity::Being::RespawnEnabledProperty,
+            static_cast<bool>(stoi(value))
+         );
       };
 
       /**********/
@@ -750,7 +759,10 @@ namespace trogdor {
       propSetters["creature"]["respawn.interval"] =
       propSetters["player"]["respawn.interval"] = [](Game *game, entity::Entity *being,
       std::string value) {
-         dynamic_cast<entity::Being *>(being)->setRespawnInterval(stoi(value));
+         dynamic_cast<entity::Being *>(being)->setProperty(
+            entity::Being::RespawnIntervalProperty,
+            stoi(value)
+         );
       };
 
       /**********/
@@ -759,7 +771,10 @@ namespace trogdor {
       propSetters["creature"]["respawn.lives"] =
       propSetters["player"]["respawn.lives"] = [](Game *game, entity::Entity *being,
       std::string value) {
-         dynamic_cast<entity::Being *>(being)->setRespawnLives(stoi(value));
+         dynamic_cast<entity::Being *>(being)->setProperty(
+            entity::Being::RespawnLivesProperty,
+            stoi(value)
+         );
       };
 
       /**********/
@@ -888,7 +903,10 @@ namespace trogdor {
       // Set Object's weight
       propSetters["object"]["weight"] = [](Game *game, entity::Entity *object,
       std::string value) {
-         dynamic_cast<entity::Object *>(object)->setProperty(entity::Object::WeightProperty, stoi(value));
+         dynamic_cast<entity::Object *>(object)->setProperty(
+            entity::Object::WeightProperty,
+            stoi(value)
+         );
       };
 
       /**********/
@@ -896,7 +914,10 @@ namespace trogdor {
       // Set how much damage the Object inflicts if it's a weapon
       propSetters["object"]["damage"] = [](Game *game, entity::Entity *object,
       std::string value) {
-         dynamic_cast<entity::Object *>(object)->setProperty(entity::Object::DamageProperty, stoi(value));
+         dynamic_cast<entity::Object *>(object)->setProperty(
+            entity::Object::DamageProperty,
+            stoi(value)
+         );
       };
 
       /**********/
@@ -942,7 +963,10 @@ namespace trogdor {
       propSetters["resource"]["pluralTitle"] = [](Game *game, entity::Entity *resource,
       std::string value) {
 
-         dynamic_cast<entity::Resource *>(resource)->setProperty(entity::Resource::PluralTitleProperty, value);
+         dynamic_cast<entity::Resource *>(resource)->setProperty(
+            entity::Resource::PluralTitleProperty,
+            value
+         );
       };
    }
 }

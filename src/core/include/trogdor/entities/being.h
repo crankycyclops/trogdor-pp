@@ -27,6 +27,25 @@ namespace trogdor::entity {
 
       public:
 
+         // Max probability of being hit when attacked
+         static constexpr const char *WoundRateProperty = "woundRate";
+
+         // Damage done by the Being to the defender during combat without a weapon
+         static constexpr const char *DamageBareHandsProperty = "damageBareHands";
+
+         // Boolean flag that determines whether or not the Being will respawn
+         // after it dies
+         static constexpr const char *RespawnEnabledProperty = "respawn.enabled";
+
+         // If respawn is enabled, this is how many timer ticks should pass
+         // after death before the Being respawns
+         static constexpr const char *RespawnIntervalProperty = "respawn.interval";
+
+         // If respawn is enabled, this is the number of lives the Being has
+         // before they stop respawning and are dead for good (a value of -1
+         // indicates unlimited lives)
+         static constexpr const char *RespawnLivesProperty = "respawn.lives";
+
          // Tag is set if the Being is attackable
          static constexpr const char *AttackableTag = "attackable";
 
@@ -42,6 +61,7 @@ namespace trogdor::entity {
 
          static constexpr bool DEFAULT_ATTACKABLE = true;
          static constexpr int DEFAULT_DAMAGE_BARE_HANDS = 5;
+         static constexpr double DEFAULT_WOUND_RATE = 0.5;
 
          // By default, Beings are immortal (a maximum health needs to be
          // set explicitly)
@@ -209,15 +229,6 @@ namespace trogdor::entity {
          int health = 0;        // number of health points the being currently has
          int maxHealth = 0;     // maximum number of health points (0 for immortal)
 
-         double woundRate;      // max probability of being hit when attacked
-         int damageBareHands;   // damage done during combat without a weapon
-
-         struct {
-            bool enabled;
-            int  interval;
-            int  lives;
-         } respawnSettings;
-
          struct {
             std::unordered_map<std::string, int> values;
             int initialTotal;   // total attributes that the Being started with
@@ -227,7 +238,7 @@ namespace trogdor::entity {
 
             int weight;         // how much weight inventory can hold
             int currentWeight;  // how much weight is currently used
-            unsigned count;     // number of objects in the inventory
+            size_t count;       // number of objects in the inventory
 
             // Inventory items
             std::set<std::shared_ptr<Object>, EntityAlphaComparator> objects;
@@ -370,17 +381,6 @@ namespace trogdor::entity {
          }
 
          /*
-            Returns amount of damage Being does with its bare hands.
-
-            Input:
-               (none)
-
-            Output:
-               int
-         */
-         inline int getDamageBareHands() const {return damageBareHands;}
-
-         /*
             Returns whether or not the Being is alive.
 
             Input:
@@ -401,41 +401,6 @@ namespace trogdor::entity {
                bool
          */
          inline bool isImmortal() const {return maxHealth == 0 ? true : false;}
-
-         /*
-            Indicates whether or not respawning is enabled for this Being.
-
-            Input:
-               (none)
-
-            Output:
-               true or false (bool)
-         */
-         inline bool getRespawnEnabled() const {return respawnSettings.enabled;}
-
-         /*
-            Returns the number of clock ticks that should pass before Being
-            respawns after dying.
-
-            Input:
-               (none)
-
-            Output:
-               number of clock ticks (int)
-         */
-         inline int getRespawnInterval() const {return respawnSettings.interval;}
-
-         /*
-            Returns the number of times a Being can respawn before dying
-            permanently.
-
-            Input:
-               (none)
-
-            Output:
-               number of lives left; -1 indicates unlimited lives (int)
-         */
-         inline int getRespawnLives() const {return respawnSettings.lives;}
 
          /*
             Returns the maximum weight of the Being's inventory.
@@ -466,9 +431,9 @@ namespace trogdor::entity {
                (none)
 
             Output:
-               Number of items (unsigned int)
+               Number of items (size_t)
          */
-         inline unsigned const getInventoryCount() const {return inventory.count;}
+         inline size_t const getInventoryCount() const {return inventory.count;}
 
          /*
             Returns all objects in the Being's inventory.
@@ -618,69 +583,6 @@ namespace trogdor::entity {
          }
 
          /*
-            Sets Being's wound rate, which is a factor in how likely it is to be
-            hit during an attack.
-
-            Input:
-               Double
-
-            Output:
-               (none)
-         */
-         inline void setWoundRate(double rate) {
-
-            mutex.lock();
-            woundRate = rate;
-            mutex.unlock();
-         }
-
-         /*
-            Sets the amount of damage done by the Being's bare hands.
-
-            Input:
-               Int
-
-            Output:
-               (none)
-         */
-         inline void setDamageBareHands(int d) {
-
-            mutex.lock();
-            damageBareHands = d;
-            mutex.unlock();
-         }
-
-         /*
-            Setters for respawn settings.
-
-            Input:
-               values (bool or int)
-
-            Output:
-               (none)
-         */
-         inline void setRespawnEnabled(bool b) {
-
-            mutex.lock();
-            respawnSettings.enabled = b;
-            mutex.unlock();
-         }
-
-         inline void setRespawnInterval(int i) {
-
-            mutex.lock();
-            respawnSettings.interval = i;
-            mutex.unlock();
-         }
-
-         inline void setRespawnLives(int i) {
-
-            mutex.lock();
-            respawnSettings.lives = i;
-            mutex.unlock();
-         }
-
-         /*
             Increments the Being's number of lives.
 
             Input:
@@ -691,11 +593,11 @@ namespace trogdor::entity {
          */
          inline void incRespawnLives() {
 
+            int respawnLives = getProperty<int>(RespawnLivesProperty);
+
             // only increment number of lives if not unlimited
-            if (respawnSettings.lives > -1) {
-               mutex.lock();
-               respawnSettings.lives++;
-               mutex.unlock();
+            if (respawnLives > -1) {
+               setProperty(RespawnLivesProperty, respawnLives + 1);
             }
          }
 

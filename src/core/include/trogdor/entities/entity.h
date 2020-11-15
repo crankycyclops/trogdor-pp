@@ -601,7 +601,7 @@ namespace trogdor::entity {
          template<typename T> inline const T getProperty(std::string key) const {
 
             if (properties.end() == properties.find(key)) {
-               throw std::invalid_argument("attempted to access undefined entity property");
+               throw std::invalid_argument(std::string("attempted to access undefined entity property '") + key + "'");
             }
 
             return std::get<T>(properties.find(key)->second);

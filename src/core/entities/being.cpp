@@ -14,16 +14,24 @@ namespace trogdor::entity {
 
    Being::Being(Game *g, std::string n, std::unique_ptr<Trogout> o,
    std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o), std::move(e)),
-   maxHealth(DEFAULT_MAX_HEALTH), damageBareHands(DEFAULT_DAMAGE_BARE_HANDS) {
-
-      respawnSettings.enabled  = DEFAULT_RESPAWN_ENABLED;
-      respawnSettings.interval = DEFAULT_RESPAWN_INTERVAL;
-      respawnSettings.lives    = DEFAULT_RESPAWN_LIVES;
+   maxHealth(DEFAULT_MAX_HEALTH) {
 
       setAttribute("strength", DEFAULT_ATTRIBUTE_STRENGTH);
       setAttribute("dexterity", DEFAULT_ATTRIBUTE_DEXTERITY);
       setAttribute("intelligence", DEFAULT_ATTRIBUTE_INTELLIGENCE);
       setAttributesInitialTotal();
+
+      setProperty(WoundRateProperty, DEFAULT_WOUND_RATE);
+      setProperty(DamageBareHandsProperty, DEFAULT_DAMAGE_BARE_HANDS);
+      setProperty(RespawnEnabledProperty, DEFAULT_RESPAWN_ENABLED);
+      setProperty(RespawnIntervalProperty, DEFAULT_RESPAWN_INTERVAL);
+      setProperty(RespawnLivesProperty, DEFAULT_RESPAWN_LIVES);
+
+      setPropertyValidator(WoundRateProperty, [&](PropertyValue v) -> int {return isPropertyValueDouble(v);});
+      setPropertyValidator(DamageBareHandsProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+      setPropertyValidator(RespawnEnabledProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
+      setPropertyValidator(RespawnIntervalProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+      setPropertyValidator(RespawnLivesProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
 
       inventory.count         = 0;
       inventory.weight        = DEFAULT_INVENTORY_WEIGHT;
@@ -42,12 +50,6 @@ namespace trogdor::entity {
 
       setHealth(b.health);
       setMaxHealth(b.maxHealth);
-      woundRate = b.woundRate;
-      damageBareHands = b.damageBareHands;
-
-      respawnSettings.enabled = b.respawnSettings.enabled;
-      respawnSettings.interval = b.respawnSettings.interval;
-      respawnSettings.lives = b.respawnSettings.lives;
 
       attributes.values = b.attributes.values;
       attributes.initialTotal = b.attributes.initialTotal;
@@ -549,7 +551,7 @@ namespace trogdor::entity {
 
       int damage;
 
-      damage = round(damageBareHands * getAttributeFactor("strength"));
+      damage = round(getProperty<int>(DamageBareHandsProperty) * getAttributeFactor("strength"));
 
       // make sure we always do at least 1 point damage
       damage = damage > 0 ? damage : 1;
@@ -578,9 +580,11 @@ namespace trogdor::entity {
       static std::mt19937 generator(rd());
       static std::uniform_real_distribution<double> distribution(0, 1);
 
+      double defenderWoundRate = defender->getProperty<double>(WoundRateProperty);
+
       // probability that the attack will be successful
-      double p = CLAMP(getAttributeFactor("strength") * (defender->woundRate / 2) +
-         (defender->woundRate / 2), 0.0, defender->woundRate);
+      double p = CLAMP(getAttributeFactor("strength") * (defenderWoundRate / 2) +
+         (defenderWoundRate / 2), 0.0, defenderWoundRate);
 
       if (distribution(generator) < p) {
          return true;
