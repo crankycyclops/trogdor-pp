@@ -876,7 +876,10 @@ namespace trogdor {
       // Whether or not autoattack is enabled for a Creature
       propSetters["creature"]["autoattack.enabled"] = [](Game *game, entity::Entity *creature,
       std::string value) {
-         dynamic_cast<entity::Creature *>(creature)->setAutoAttackEnabled(stoi(value));
+         dynamic_cast<entity::Creature *>(creature)->setProperty(
+            entity::Creature::AutoAttackEnabledProperty,
+            static_cast<bool>(stoi(value))
+         );
       };
 
       /**********/
@@ -884,7 +887,10 @@ namespace trogdor {
       // Whether or not a Creature's automatic attack should repeat
       propSetters["creature"]["autoattack.repeat"] = [](Game *game, entity::Entity *creature,
       std::string value) {
-         dynamic_cast<entity::Creature *>(creature)->setAutoAttackRepeat(stoi(value));
+         dynamic_cast<entity::Creature *>(creature)->setProperty(
+            entity::Creature::AutoAttackRepeatProperty,
+            static_cast<bool>(stoi(value))
+         );
       };
 
       /**********/
@@ -893,7 +899,10 @@ namespace trogdor {
       // autoattack is triggered
       propSetters["creature"]["autoattack.interval"] = [](Game *game, entity::Entity *creature,
       std::string value) {
-         dynamic_cast<entity::Creature *>(creature)->setAutoAttackInterval(stoi(value));
+         dynamic_cast<entity::Creature *>(creature)->setProperty(
+            entity::Creature::AutoAttackIntervalProperty,
+            stoi(value)
+         );
       };
 
       /**********/

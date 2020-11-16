@@ -18,12 +18,12 @@ namespace trogdor::event {
       // each Creature that has auto-attack enabled should be setup to attack
       for (auto const &creature: place->getCreatures()) {
 
-         if (creature->getAutoAttackEnabled()) {
+         if (creature->getProperty<bool>(entity::Creature::AutoAttackEnabledProperty)) {
             game->insertTimerJob(std::make_shared<AutoAttackTimerJob>(
                game,
-               creature->getAutoAttackInterval(),
-               creature->getAutoAttackRepeat() ? -1 : 1,
-               creature->getAutoAttackInterval(),
+               creature->getProperty<int>(entity::Creature::AutoAttackIntervalProperty),
+               creature->getProperty<bool>(entity::Creature::AutoAttackRepeatProperty) ? -1 : 1,
+               creature->getProperty<int>(entity::Creature::AutoAttackIntervalProperty),
                creature.get(),
                being
             ));

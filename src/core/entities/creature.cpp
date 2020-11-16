@@ -14,10 +14,6 @@ namespace trogdor::entity {
       types.push_back(ENTITY_CREATURE);
       setClass("creature");
 
-      autoAttack.enabled = DEFAULT_AUTO_ATTACK_ENABLED;
-      autoAttack.interval = DEFAULT_AUTO_ATTACK_INTERVAL;
-      autoAttack.repeat = DEFAULT_AUTO_ATTACK_REPEAT;
-
       wanderSettings.enabled = DEFAULT_WANDER_ENABLE;
       wanderSettings.interval = DEFAULT_WANDER_INTERVAL;
       wanderSettings.wanderlust = DEFAULT_WANDER_LUST;
@@ -25,8 +21,17 @@ namespace trogdor::entity {
       setProperty(CounterAttackProperty, DEFAULT_COUNTER_ATTACK);
       setProperty(AllegianceProperty, DEFAULT_ALLEGIANCE);
 
+      setProperty(AutoAttackEnabledProperty, DEFAULT_AUTO_ATTACK_ENABLED);
+      setProperty(AutoAttackRepeatProperty, DEFAULT_AUTO_ATTACK_REPEAT);
+      setProperty(AutoAttackIntervalProperty, DEFAULT_AUTO_ATTACK_INTERVAL);
+
       setPropertyValidator(CounterAttackProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
-      setPropertyValidator(CounterAttackProperty, [&](PropertyValue v) -> int {
+
+      setPropertyValidator(AutoAttackEnabledProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
+      setPropertyValidator(AutoAttackRepeatProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
+      setPropertyValidator(AutoAttackIntervalProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+
+      setPropertyValidator(AllegianceProperty, [&](PropertyValue v) -> int {
 
          if (1 != v.index()) {
             return PROPERTY_INVALID_TYPE;
@@ -49,7 +54,6 @@ namespace trogdor::entity {
 
    Creature::Creature(const Creature &c, std::string n): Being(c, n) {
 
-      autoAttack = c.autoAttack;
       wanderSettings = c.wanderSettings;
    }
 

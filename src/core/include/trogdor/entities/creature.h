@@ -27,6 +27,18 @@ namespace trogdor::entity {
          // Whether or not the Creature will fight back when attacked
          static constexpr const char *CounterAttackProperty = "counterAttack";
 
+         // Whether or not the creature should automatically attack Players and
+         // other Creatures when they enter the same room
+         static constexpr const char *AutoAttackEnabledProperty = "autoattack.enabled";
+
+         // If set to true, the Creature will repeat its attack every n number
+         // of clock ticks, where n is determined by AutoAttackIntervalProperty
+         static constexpr const char *AutoAttackRepeatProperty = "autoattack.repeat";
+
+         // If autoattack is enabled, this is the number of click ticks that
+         // will pass before the Creature attacks again (if repeat is set to true)
+         static constexpr const char *AutoAttackIntervalProperty = "autoattack.interval";
+
          // by default, a creature will automatically attack when attacked
          static constexpr bool DEFAULT_COUNTER_ATTACK = true;
          static constexpr enum AllegianceType DEFAULT_ALLEGIANCE = NEUTRAL;
@@ -74,12 +86,6 @@ namespace trogdor::entity {
          void initUpdateObjectTag();
 
       protected:
-
-         struct {
-            bool enabled;
-            int  interval;
-            bool repeat;
-         } autoAttack;
 
          struct {
             bool   enabled;
@@ -174,21 +180,6 @@ namespace trogdor::entity {
          }
 
          /*
-            Return auto attack parameters.
-
-            Input:
-               (none)
-
-            Output:
-               enabled:  bool
-               repeat:   bool
-               interval: int
-         */
-         inline bool getAutoAttackEnabled()  const {return autoAttack.enabled;}
-         inline bool getAutoAttackRepeat()   const {return autoAttack.repeat;}
-         inline int  getAutoAttackInterval() const {return autoAttack.interval;}
-
-         /*
             Returns Creature wander settings.
 
             Input:
@@ -202,55 +193,6 @@ namespace trogdor::entity {
          inline bool   getWanderEnabled()  const {return wanderSettings.enabled;}
          inline int    getWanderInterval() const {return wanderSettings.interval;}
          inline double getWanderLust()     const {return wanderSettings.wanderlust;}
-
-         /*
-            Sets whether or not auto-attack is enabled.
-
-            Input:
-               bool
-
-            Output:
-               (none)
-         */
-         inline void setAutoAttackEnabled(bool b) {
-
-            mutex.lock();
-            autoAttack.enabled = b;
-            mutex.unlock();
-         }
-
-         /*
-            Sets auto-attack interval.
-
-            Input:
-               int
-
-            Output:
-               (none)
-         */
-         inline void setAutoAttackInterval(int i) {
-
-            mutex.lock();
-            autoAttack.interval = i;
-            mutex.unlock();
-         }
-
-         /*
-            Sets whether or not auto-attack should continue indefinitely (until
-            one of the Beings dies, or until one or both leave the Place.)
-
-            Input:
-               bool
-
-            Output:
-               (none)
-         */
-         inline void setAutoAttackRepeat(bool b) {
-
-            mutex.lock();
-            autoAttack.repeat = b;
-            mutex.unlock();
-         }
 
          /*
             Sets whether or not automatic wandering is enabled.
