@@ -52,8 +52,6 @@ namespace trogdor {
 
          L = std::make_shared<LuaState>(this);
          eventListener = std::make_unique<event::EventListener>();
-
-         lastCommand = nullptr;
       }
 
       catch (const Exception &e) {
@@ -66,6 +64,48 @@ namespace trogdor {
    // Empty destructor required here (if I don't include this, the compiler will
    // choke.)
    Game::~Game() {}
+
+   /***************************************************************************/
+
+   std::shared_ptr<serial::Serializable> Game::serialize() {
+
+      bool gameWasStarted = inGame;
+
+      if (gameWasStarted) {
+         stop();
+      }
+
+      std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();
+      std::shared_ptr<serial::Serializable> serializedIntro = std::make_shared<serial::Serializable>();
+      std::shared_ptr<serial::Serializable> serializedMeta = std::make_shared<serial::Serializable>();
+
+      std::vector<std::shared_ptr<serial::Serializable>> serializedEntities;
+
+      for (const auto &entity: entities) {
+         serializedEntities.push_back(entity.second->serialize());
+      }
+
+      for (const auto &metaItem: meta) {
+         serializedMeta->set(metaItem.first, metaItem.second);
+      }
+
+      serializedIntro->set("enabled", introduction.enabled);
+      serializedIntro->set("text", introduction.text);
+
+      data->set("inGame", inGame);
+      data->set("lua", L->serialize());
+      data->set("introduction", serializedIntro);
+      data->set("meta", serializedMeta);
+      data->set("defaultPlayer", defaultPlayer->serialize());
+      data->set("entities", serializedEntities);
+
+      if (gameWasStarted) {
+         start();
+      }
+
+      // TODO: serialize timer and eventListeners
+      return data;
+   }
 
    /***************************************************************************/
 

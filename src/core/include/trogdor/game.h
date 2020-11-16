@@ -18,6 +18,7 @@
 #include <trogdor/event/eventhandler.h>
 #include <trogdor/event/eventlistener.h>
 #include <trogdor/instantiator/instantiators/runtime.h>
+#include <trogdor/serial/serializable.h>
 
 #include <trogdor/iostream/trogout.h>
 #include <trogdor/iostream/trogerr.h>
@@ -96,9 +97,6 @@ namespace trogdor {
 
          // Keeps time in the game and executes scheduled jobs
          std::unique_ptr<Timer> timer;
-
-         // The last executed command
-         std::shared_ptr<Command> lastCommand;
 
          // Game meta data (like title, description, etc.)
          std::unordered_map<std::string, std::string> meta;
@@ -179,6 +177,17 @@ namespace trogdor {
             incomplete type 'trogdor::Timer'.
          */
          ~Game();
+
+         /*
+            Returns an easily serializable version of a Game instance.
+
+            Input:
+               (none)
+
+            Output:
+               A version of Game in an easily serializable format
+         */
+         std::shared_ptr<serial::Serializable> serialize();
 
          /*
             Returns an instance of the Runtime instantiator.
