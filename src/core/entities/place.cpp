@@ -38,8 +38,13 @@ namespace trogdor::entity {
    std::shared_ptr<serial::Serializable> Place::serialize() {
 
       std::shared_ptr<serial::Serializable> data = Tangible::serialize();
+      std::vector<std::string> serializedThings;
 
-      // TODO
+      for (const auto &thing: things) {
+         serializedThings.push_back(thing->getName());
+      }
+
+      data->set("things", serializedThings);
       return data;
    }
 
