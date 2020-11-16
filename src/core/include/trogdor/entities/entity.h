@@ -50,6 +50,31 @@ namespace trogdor::entity {
 
    class Entity: public std::enable_shared_from_this<Entity> {
 
+      public:
+
+         // Property validators should return this if the value being set is
+         // valid
+         static constexpr int PROPERTY_VALID = 0;
+
+         // Property validators should return this if attempting to set a
+         // property value with an invalid type
+         static constexpr int PROPERTY_INVALID_TYPE = 1;
+
+         // Standard Entity property keys (title is always set)
+         static constexpr const char *TitleProperty = "title";
+         static constexpr const char *LongDescProperty = "longDesc";
+         static constexpr const char *ShortDescProperty = "shortDesc";
+
+         // Entity callbacks are triggered by various operations and take
+         // arbitrary data as an argument. If the callback returns true, it will
+         // be removed after execution. If it returns false, the callback will
+         // persist. This can be used to implement both one-time triggers and
+         // conditional removal.
+         typedef std::function<bool(std::any)> EntityCallback;
+
+         // Valid types for a single entity property value
+         typedef std::variant<size_t, int, double, bool, std::string> PropertyValue;
+
       private:
 
          // Custom messages that should be displayed for certain events that act
@@ -62,6 +87,15 @@ namespace trogdor::entity {
 
          // meta data associated with the entity
          std::unordered_map<std::string, std::string> meta;
+
+         // Entity properties like title, description, etc.
+         std::unordered_map<std::string, PropertyValue> properties;
+
+         // Maps entity properties to their validation functions (if they exist)
+         std::unordered_map<
+            std::string,
+            std::function<int(PropertyValue)>
+         > propertyValidators;
 
       protected:
 
@@ -77,23 +111,22 @@ namespace trogdor::entity {
          const std::string name;
          std::string className;
 
-         std::string title;
-         std::string longDesc;
-         std::string shortDesc;
-
-         std::unique_ptr<event::EventListener> triggers;
+         // The Entity's Lua state
          std::shared_ptr<LuaState> L;
 
-         // Output streams
-         std::unique_ptr<Trogout> outStream;
-         std::unique_ptr<Trogerr> errStream;
+         // Event triggers
+         std::unique_ptr<event::EventListener> triggers;
 
          // One or more callbacks that will be executed when various operations
          // occur on the Entity.
          std::unordered_map<
             std::string,
-            std::vector<std::shared_ptr<std::function<void(std::any)>>>
+            std::vector<std::shared_ptr<EntityCallback>>
          > callbacks;
+
+         // Output streams
+         std::unique_ptr<Trogout> outStream;
+         std::unique_ptr<Trogerr> errStream;
 
          // Ordinarily, the lifetime of an Entity is managed by an instance of
          // Game via std::shared_ptrs. However, if an Entity is created in a Lua
@@ -101,6 +134,73 @@ namespace trogdor::entity {
          // This boolean flag lets me know whether or not to hold Lua's garbage
          // collector responsible for a particular instance.
          bool managedByLua = false;
+
+         // Returns true if the property value is a size_t.
+         inline int isPropertyValueSizet(PropertyValue v) {
+
+            return 0 == v.index() ? PROPERTY_VALID : PROPERTY_INVALID_TYPE;
+         }
+
+         // Returns true if the property value is an int.
+         inline int isPropertyValueInt(PropertyValue v) {
+
+            return 1 == v.index() ? PROPERTY_VALID : PROPERTY_INVALID_TYPE;
+         }
+
+         // Returns true if the property value is a double.
+         inline int isPropertyValueDouble(PropertyValue v) {
+
+            return 2 == v.index() ? PROPERTY_VALID : PROPERTY_INVALID_TYPE;
+         }
+
+         // Returns true if the property value is a bool.
+         inline int isPropertyValueBool(PropertyValue v) {
+
+            return 3 == v.index() ? PROPERTY_VALID : PROPERTY_INVALID_TYPE;
+         }
+
+         // Returns true if the property value is a string.
+         inline int isPropertyValueString(PropertyValue v) {
+
+            return 4 == v.index() ? PROPERTY_VALID : PROPERTY_INVALID_TYPE;
+         }
+
+         /********************************************************************/
+
+         /*
+            Executes all callbacks for the specified operation. Callbacks take
+            as input arbitrary data (callback should know what kind of data it
+            is based on the operation performed) and return true if they should
+            be removed after execution and false if they should persist.
+
+            Input:
+               Operation (std::string)
+               Data to pass to the callback (std::any)
+
+            Output:
+               (none)
+         */
+         void executeCallback(std::string operation, std::any data);
+
+         /*
+            Maps a property to a validation function. If a validation function
+            exists for a given property, setProperty() won't set the value
+            unless the validator returns PROPERTY_VALID.
+
+            Input:
+               Key (std::string)
+               Validator (std::function<int(PropertyValud)>)
+
+            Output:
+               (none)
+         */
+         inline void setPropertyValidator(
+            std::string key,
+            std::function<int(PropertyValue)> validator
+         ) {
+
+            propertyValidators[key] = validator;
+         }
 
          /*
             Displays the short description of an Entity.  This may be
@@ -315,14 +415,14 @@ namespace trogdor::entity {
 
             Input:
                Operation the callback should be attached to (std::string)
-               Callback (std::shared_ptr<std::function<void(std::any)>>)
+               Callback (std::shared_ptr<EntityCallback>)
 
             Output:
                (none)
          */
          void addCallback(
             std::string operation,
-            std::shared_ptr<std::function<void(std::any)>> callback
+            std::shared_ptr<EntityCallback> callback
          );
 
          /*
@@ -344,14 +444,14 @@ namespace trogdor::entity {
 
             Input:
                Operation whose callbacks should be removed (std::string)
-               The specific callback to remove (const std::shared_ptr<std::function<void(std::any)>> &)
+               The specific callback to remove (const std::shared_ptr<EntityCallback> &)
 
             Output:
                (none)
          */
          void removeCallback(
             std::string operation,
-            const std::shared_ptr<std::function<void(std::any)>> &callback
+            const std::shared_ptr<EntityCallback> &callback
          );
 
          /*
@@ -496,6 +596,113 @@ namespace trogdor::entity {
          }
 
          /*
+            Returns true if the entity property is set and false if not.
+
+            Input:
+               Key (std::string)
+
+            Output:
+               Whether or not the property is set (bool)
+         */
+         inline bool isPropertySet(std::string key) const {
+
+            return properties.end() != properties.find(key) ? true : false;
+         }
+
+         /*
+            Returns the value of a property. Throws std::invalid_argument if the
+            property isn't set and std::bad_variant_access if an attempt is made
+            to access a property with the incorrect type.
+
+            Template arguments:
+               The type to be returned
+
+            Input:
+               Key (std::string)
+
+            Output:
+               Property (template type)
+         */
+         template<typename T> inline const T getProperty(std::string key) const {
+
+            if (properties.end() == properties.find(key)) {
+               throw std::invalid_argument(std::string("attempted to access undefined entity property '") + key + "'");
+            }
+
+            return std::get<T>(properties.find(key)->second);
+         }
+
+         /*
+            Sets a property if validation is successful and returns
+            PROPERTY_VALID. If validation fails, another integer status code is
+            returned indicating the nature of the failure (validators can use
+            their own defined constants, but should respect those that have
+            already been defined by the Entity class.)
+
+            If validation passes and the property is set, any setProperty
+            callbacks will be executed after the fact, with the Entity, property
+            key, and property value being passed in as a std::tuple.
+
+            Input:
+               Key (std::string)
+               Value (PropertyValue)
+
+            Output:
+               A status code indicating success or the reason for failure (int)
+         */
+         inline int setProperty(std::string key, PropertyValue value) {
+
+            int status = PROPERTY_VALID;
+
+            if (propertyValidators.end() != propertyValidators.find(key)) {
+               status = propertyValidators[key](value);
+            }
+
+            if (PROPERTY_VALID == status) {
+
+               mutex.lock();
+               properties[key] = value;
+               mutex.unlock();
+
+               executeCallback(
+                  "setProperty",
+                  std::tuple<Entity *, std::string, PropertyValue>({this, key, value})
+               );
+            }
+
+            return status;
+         }
+
+         // Without wrapping around const char *, we won't properly detect and
+         // set bare C-style strings. WARNING: passing in a literal 0 to
+         // setProperty() without casting (example: setProperty("key", 0) results
+         // in the result being seen as a nullptr and triggers this wrapper
+         // method as if it were a string, which will throw an exception. Grr.)
+         inline int setProperty(std::string key, const char *value) {
+
+            return setProperty(key, std::string(value));
+         }
+
+         /*
+            Removes a property and returns the number of elements removed
+            (effectively 1 if the element existed and 0 if it didn't.)
+
+            Input:
+               Key (std::string)
+
+            Output:
+               Number of elements erased (size_t)
+         */
+         inline size_t removeProperty(std::string key) {
+
+            mutex.lock();
+            size_t numErased = properties.erase(key);
+            mutex.unlock();
+
+            return numErased;
+         }
+
+         /*
             Returns the Entity's class.
 
             Input:
@@ -516,39 +723,6 @@ namespace trogdor::entity {
                Entity's name (std::string)
          */
          inline std::string getName() const {return name;}
-
-         /*
-            Returns the Entity's title.
-
-            Input:
-               (none)
-
-            Output:
-               Entity's title (std::string)
-         */
-         inline std::string getTitle() const {return title;}
-
-         /*
-            Returns the Entity's long description.
-
-            Input:
-               (none)
-
-            Output:
-               Entity's long description (std::string)
-         */
-         inline std::string getLongDescription() const {return longDesc;}
-
-         /*
-            Returns the Entity's short description.
-
-            Input:
-               (none)
-
-            Output:
-               Entity's short description (std::string)
-         */
-         inline std::string getShortDescription() const {return shortDesc;}
 
          /*
             Returns a reference to Entity's LuaState object. This should ONLY be
@@ -635,54 +809,6 @@ namespace trogdor::entity {
 
             mutex.lock();
             className = c;
-            mutex.unlock();
-         }
-
-         /*
-            Sets the Entity's title.
-
-            Input:
-               New title (std::string)
-
-            Output:
-               (none)
-         */
-         inline void setTitle(std::string t) {
-
-            mutex.lock();
-            title = t;
-            mutex.unlock();
-         }
-
-         /*
-            Sets the Entity's long description.
-
-            Input:
-               New long description (std::string)
-
-            Output:
-               (none)
-         */
-         inline void setLongDescription(std::string d) {
-
-            mutex.lock();
-            longDesc = d;
-            mutex.unlock();
-         }
-
-         /*
-            Sets the Entity's short description.
-
-            Input:
-               New description (std::string)
-
-            Output:
-               (none)
-         */
-         inline void setShortDescription(std::string d) {
-
-            mutex.lock();
-            shortDesc = d;
             mutex.unlock();
          }
 

@@ -62,7 +62,7 @@ namespace trogdor::entity {
 
             resources[resource] = value;
             resourcesByName[resource->getName()] = resource;
-            resourcesByName[resource->getPluralName()] = resource;
+            resourcesByName[resource->getProperty<std::string>(Resource::PluralNameProperty)] = resource;
          }
 
          /*
@@ -76,7 +76,7 @@ namespace trogdor::entity {
          inline void removeResourceAllocation(const std::shared_ptr<Resource> &resource) {
 
             resourcesByName.erase(resource->getName());
-            resourcesByName.erase(resource->getPluralName());
+            resourcesByName.erase(resource->getProperty<std::string>(Resource::PluralNameProperty));
             resources.erase(resource);
          }
 

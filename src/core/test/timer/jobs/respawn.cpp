@@ -21,7 +21,8 @@ TEST_SUITE("Being Respawn Timer Job (timer/jobs/respawn.cpp)") {
 		);
 
 		// Until we set a max health, a Being is considered immortal
-		deadGuy.setHealth(10), deadGuy.setMaxHealth(10);
+		deadGuy.setProperty(trogdor::entity::Being::HealthProperty, 10);
+		deadGuy.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 		deadGuy.die();
 
 		CHECK(!deadGuy.isAlive());
@@ -46,7 +47,8 @@ TEST_SUITE("Being Respawn Timer Job (timer/jobs/respawn.cpp)") {
 		);
 
 		// Until we set a max health, a Being is considered immortal
-		deadGuy.setHealth(10), deadGuy.setMaxHealth(10);
+		deadGuy.setProperty(trogdor::entity::Being::HealthProperty, 10);
+		deadGuy.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
 		CHECK(deadGuy.isAlive());
 

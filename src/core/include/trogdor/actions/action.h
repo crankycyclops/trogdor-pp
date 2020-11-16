@@ -113,7 +113,7 @@ namespace trogdor {
 
             else if (
                resource->isPlural(name) ||
-               !resource->areIntegerAllocationsRequired()
+               !resource->getProperty<bool>(entity::Resource::ReqIntAllocProperty)
             ) {
                return max;
             }
@@ -160,9 +160,10 @@ namespace trogdor {
                      << std::endl;
                }
 
-               else if (resource->areIntegerAllocationsRequired() && fracPart) {
+               else if (resource->getProperty<bool>(entity::Resource::ReqIntAllocProperty) && fracPart) {
                   player->out("display") << "Please specify a whole number of "
-                     << resource->getPluralTitle() << '.' << std::endl;
+                     << resource->getProperty<std::string>(entity::Resource::PluralTitleProperty)
+                     << '.' << std::endl;
                }
 
                else if (amount > allocation.second) {

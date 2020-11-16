@@ -33,10 +33,11 @@ TEST_SUITE("RespawnEventTrigger (event/triggers/respawn.cpp)") {
 			);
 
 			// Disable respawn and set interval to 0
-			aliveGuy->setRespawnEnabled(false);
-			aliveGuy->setRespawnInterval(0);
+			aliveGuy->setProperty(trogdor::entity::Being::RespawnEnabledProperty, false);
+			aliveGuy->setProperty(trogdor::entity::Being::RespawnIntervalProperty, static_cast<int>(0));
 
-			aliveGuy->setHealth(8), aliveGuy->setMaxHealth(10);
+			aliveGuy->setProperty(trogdor::entity::Being::HealthProperty, 8);
+			aliveGuy->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
 			CHECK(aliveGuy->isAlive());
 
@@ -47,8 +48,8 @@ TEST_SUITE("RespawnEventTrigger (event/triggers/respawn.cpp)") {
 			CHECK(result.allowAction);
 			CHECK(result.continueExecution);
 			CHECK(aliveGuy->isAlive());
-			CHECK(8 == aliveGuy->getHealth());
-			CHECK(10 == aliveGuy->getMaxHealth());
+			CHECK(8 == aliveGuy->getProperty<int>(trogdor::entity::Being::HealthProperty));
+			CHECK(10 == aliveGuy->getProperty<int>(trogdor::entity::Being::MaxHealthProperty));
 		}
 
 		SUBCASE("Respawn interval > 0") {
@@ -64,10 +65,11 @@ TEST_SUITE("RespawnEventTrigger (event/triggers/respawn.cpp)") {
 			);
 
 			// Disable respawn and set interval to 0
-			aliveGuy->setRespawnEnabled(false);
-			aliveGuy->setRespawnInterval(1);
+			aliveGuy->setProperty(trogdor::entity::Being::RespawnEnabledProperty, false);
+			aliveGuy->setProperty(trogdor::entity::Being::RespawnIntervalProperty, 1);
 
-			aliveGuy->setHealth(8), aliveGuy->setMaxHealth(10);
+			aliveGuy->setProperty(trogdor::entity::Being::HealthProperty, 8);
+			aliveGuy->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
 			CHECK(aliveGuy->isAlive());
 
@@ -134,11 +136,12 @@ TEST_SUITE("RespawnEventTrigger (event/triggers/respawn.cpp)") {
 			);
 
 			// Disable respawn and set interval to 0
-			deadGuy->setRespawnEnabled(false);
-			deadGuy->setRespawnInterval(0);
+			deadGuy->setProperty(trogdor::entity::Being::RespawnEnabledProperty, false);
+			deadGuy->setProperty(trogdor::entity::Being::RespawnIntervalProperty, static_cast<int>(0));
 
 			// Until we set a max health, a Being is considered immortal
-			deadGuy->setHealth(10), deadGuy->setMaxHealth(10);
+			deadGuy->setProperty(trogdor::entity::Being::HealthProperty, 10);
+			deadGuy->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 			deadGuy->die();
 
 			CHECK(!deadGuy->isAlive());
@@ -165,11 +168,12 @@ TEST_SUITE("RespawnEventTrigger (event/triggers/respawn.cpp)") {
 			);
 
 			// Disable respawn and set interval to 0
-			deadGuy->setRespawnEnabled(false);
-			deadGuy->setRespawnInterval(1);
+			deadGuy->setProperty(trogdor::entity::Being::RespawnEnabledProperty, false);
+			deadGuy->setProperty(trogdor::entity::Being::RespawnIntervalProperty, 1);
 
 			// Until we set a max health, a Being is considered immortal
-			deadGuy->setHealth(10), deadGuy->setMaxHealth(10);
+			deadGuy->setProperty(trogdor::entity::Being::HealthProperty, 10);
+			deadGuy->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 			deadGuy->die();
 
 			CHECK(!deadGuy->isAlive());
@@ -236,11 +240,14 @@ TEST_SUITE("RespawnEventTrigger (event/triggers/respawn.cpp)") {
 				std::make_unique<trogdor::NullErr>()
 			);
 
-			// Enable respawn and set interval to 0
-			aliveGuy->setRespawnEnabled(true);
-			aliveGuy->setRespawnInterval(0);
+			// Enable respawn and set interval to 0 (without the static cast,
+			// Entity::setProperty() will assume it's a nullptr of type const
+			// char *)
+			aliveGuy->setProperty(trogdor::entity::Being::RespawnEnabledProperty, true);
+			aliveGuy->setProperty(trogdor::entity::Being::RespawnIntervalProperty, static_cast<int>(0));
 
-			aliveGuy->setHealth(8), aliveGuy->setMaxHealth(10);
+			aliveGuy->setProperty(trogdor::entity::Being::HealthProperty, 8);
+			aliveGuy->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
 			CHECK(aliveGuy->isAlive());
 
@@ -251,8 +258,8 @@ TEST_SUITE("RespawnEventTrigger (event/triggers/respawn.cpp)") {
 			CHECK(result.allowAction);
 			CHECK(result.continueExecution);
 			CHECK(aliveGuy->isAlive());
-			CHECK(8 == aliveGuy->getHealth());
-			CHECK(10 == aliveGuy->getMaxHealth());
+			CHECK(8 == aliveGuy->getProperty<int>(trogdor::entity::Being::HealthProperty));
+			CHECK(10 == aliveGuy->getProperty<int>(trogdor::entity::Being::MaxHealthProperty));
 		}
 
 		SUBCASE("Respawn interval > 0") {
@@ -268,10 +275,11 @@ TEST_SUITE("RespawnEventTrigger (event/triggers/respawn.cpp)") {
 			);
 
 			// Enable respawn and set interval to 0
-			aliveGuy->setRespawnEnabled(true);
-			aliveGuy->setRespawnInterval(1);
+			aliveGuy->setProperty(trogdor::entity::Being::RespawnEnabledProperty, true);
+			aliveGuy->setProperty(trogdor::entity::Being::RespawnIntervalProperty, 1);
 
-			aliveGuy->setHealth(8), aliveGuy->setMaxHealth(10);
+			aliveGuy->setProperty(trogdor::entity::Being::HealthProperty, 8);
+			aliveGuy->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
 			CHECK(aliveGuy->isAlive());
 
@@ -321,8 +329,8 @@ TEST_SUITE("RespawnEventTrigger (event/triggers/respawn.cpp)") {
 			// Make sure the Creature is still alive and has the same health
 			// values
 			CHECK(aliveGuy->isAlive());
-			CHECK(8 == aliveGuy->getHealth());
-			CHECK(10 == aliveGuy->getMaxHealth());
+			CHECK(8 == aliveGuy->getProperty<int>(trogdor::entity::Being::HealthProperty));
+			CHECK(10 == aliveGuy->getProperty<int>(trogdor::entity::Being::MaxHealthProperty));
 		}
 	}
 
@@ -341,11 +349,12 @@ TEST_SUITE("RespawnEventTrigger (event/triggers/respawn.cpp)") {
 			);
 
 			// Enable respawn and set interval to 0
-			deadGuy->setRespawnEnabled(true);
-			deadGuy->setRespawnInterval(0);
+			deadGuy->setProperty(trogdor::entity::Being::RespawnEnabledProperty, true);
+			deadGuy->setProperty(trogdor::entity::Being::RespawnIntervalProperty, static_cast<int>(0));
 
 			// Until we set a max health, a Being is considered immortal
-			deadGuy->setHealth(10), deadGuy->setMaxHealth(10);
+			deadGuy->setProperty(trogdor::entity::Being::HealthProperty, 10);
+			deadGuy->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 			deadGuy->die();
 
 			CHECK(!deadGuy->isAlive());
@@ -372,11 +381,12 @@ TEST_SUITE("RespawnEventTrigger (event/triggers/respawn.cpp)") {
 			);
 
 			// Enable respawn and set interval to 0
-			deadGuy->setRespawnEnabled(true);
-			deadGuy->setRespawnInterval(1);
+			deadGuy->setProperty(trogdor::entity::Being::RespawnEnabledProperty, true);
+			deadGuy->setProperty(trogdor::entity::Being::RespawnIntervalProperty, 1);
 
 			// Until we set a max health, a Being is considered immortal
-			deadGuy->setHealth(10), deadGuy->setMaxHealth(10);
+			deadGuy->setProperty(trogdor::entity::Being::HealthProperty, 10);
+			deadGuy->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 			deadGuy->die();
 
 			CHECK(!deadGuy->isAlive());

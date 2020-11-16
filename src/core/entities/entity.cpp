@@ -25,7 +25,7 @@ namespace trogdor::entity {
 
    // The title property will usually be set to something more descriptive later
    Entity::Entity(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): game(g), name(n), title(n), outStream(std::move(o)),
+   std::unique_ptr<Trogerr> e): game(g), name(n), outStream(std::move(o)),
    errStream(std::move(e)) {
 
       if (!isNameValid(n)) {
@@ -39,6 +39,13 @@ namespace trogdor::entity {
       // this should always be overridden by a top-level Entity type
       className = "entity";
 
+      // Default value for the Entity's title is its name
+      setProperty("title", n);
+
+      setPropertyValidator(TitleProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
+      setPropertyValidator(LongDescProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
+      setPropertyValidator(ShortDescProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
+
       L = std::make_shared<LuaState>(g);
       triggers = std::make_unique<event::EventListener>();
    }
@@ -46,8 +53,8 @@ namespace trogdor::entity {
    /***************************************************************************/
 
    Entity::Entity(const Entity &e, std::string n): msgs(e.msgs), tags(e.tags),
-   types(e.types), game(nullptr), name(n), className(e.className), title(e.title),
-   longDesc(e.longDesc), shortDesc(e.shortDesc) {
+   properties(e.properties), propertyValidators(e.propertyValidators),
+   types(e.types), game(nullptr), name(n), className(e.className) {
 
       if (!isNameValid(n)) {
          throw ValidationException(std::string("name '") + n
@@ -104,9 +111,30 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   void Entity::executeCallback(std::string operation, std::any data) {
+
+      std::vector<std::shared_ptr<EntityCallback> *> toRemove;
+
+      if (callbacks.end() != callbacks.find(operation)) {
+         for (auto &callback: callbacks[operation]) {
+            if ((*callback)(data)) {
+               toRemove.push_back(&callback);
+            }
+         }
+      }
+
+      // If a callback flagged itself for removal, do so now
+      while (toRemove.size()) {
+         removeCallback(operation, *toRemove.back());
+         toRemove.pop_back();
+      }
+   }
+
+   /***************************************************************************/
+
    void Entity::addCallback(
       std::string operation,
-      std::shared_ptr<std::function<void(std::any)>> callback
+      std::shared_ptr<EntityCallback> callback
    ) {
 
       mutex.lock();
@@ -136,7 +164,7 @@ namespace trogdor::entity {
 
    void Entity::removeCallback(
       std::string operation,
-      const std::shared_ptr<std::function<void(std::any)>> &callback
+      const std::shared_ptr<EntityCallback> &callback
    ) {
 
       mutex.lock();
@@ -164,16 +192,8 @@ namespace trogdor::entity {
          tags.insert(tag);
       }
 
-      if (callbacks.end() != callbacks.find("setTag")) {
-
-         std::tuple<std::string, Entity *> args = {tag, this};
-
-         for (const auto &callback: callbacks["setTag"]) {
-            (*callback)(args);
-         }
-      }
-
       mutex.unlock();
+      executeCallback("setTag", std::tuple<std::string, Entity *>({tag, this}));
    }
 
    /***************************************************************************/
@@ -186,16 +206,8 @@ namespace trogdor::entity {
          tags.erase(tag);
       }
 
-      if (callbacks.end() != callbacks.find("removeTag")) {
-
-         std::tuple<std::string, Entity *> args = {tag, this};
-
-         for (const auto &callback: callbacks["removeTag"]) {
-            (*callback)(args);
-         }
-      }
-
       mutex.unlock();
+      executeCallback("removeTag", std::tuple<std::string, Entity *>({tag, this}));
    }
 
    /***************************************************************************/
@@ -211,9 +223,12 @@ namespace trogdor::entity {
 
    void Entity::displayShort(Being *observer) {
 
-      if (ENTITY_PLAYER == observer->getType()
-      && getShortDescription().length() > 0) {
-         observer->out("display") << getShortDescription() << std::endl;
+      if (
+         ENTITY_PLAYER == observer->getType() &&
+         isPropertySet(ShortDescProperty) &&
+         getProperty<std::string>(ShortDescProperty).length() > 0
+      ) {
+         observer->out("display") << getProperty<std::string>(ShortDescProperty) << std::endl;
       }
    }
 }

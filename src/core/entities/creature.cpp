@@ -9,30 +9,77 @@ namespace trogdor::entity {
 
 
    Creature::Creature(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Being(g, n, std::move(o), std::move(e)),
-   counterAttack(DEFAULT_COUNTER_ATTACK), allegiance(DEFAULT_ALLEGIANCE) {
+   std::unique_ptr<Trogerr> e): Being(g, n, std::move(o), std::move(e)) {
 
       types.push_back(ENTITY_CREATURE);
       setClass("creature");
 
-      autoAttack.enabled = DEFAULT_AUTO_ATTACK_ENABLED;
-      autoAttack.interval = DEFAULT_AUTO_ATTACK_INTERVAL;
-      autoAttack.repeat = DEFAULT_AUTO_ATTACK_REPEAT;
+      setProperty(CounterAttackProperty, DEFAULT_COUNTER_ATTACK);
+      setProperty(AllegianceProperty, DEFAULT_ALLEGIANCE);
 
-      wanderSettings.enabled = DEFAULT_WANDER_ENABLE;
-      wanderSettings.interval = DEFAULT_WANDER_INTERVAL;
-      wanderSettings.wanderlust = DEFAULT_WANDER_LUST;
+      setProperty(AutoAttackEnabledProperty, DEFAULT_AUTO_ATTACK_ENABLED);
+      setProperty(AutoAttackRepeatProperty, DEFAULT_AUTO_ATTACK_REPEAT);
+      setProperty(AutoAttackIntervalProperty, DEFAULT_AUTO_ATTACK_INTERVAL);
+
+      setProperty(WanderEnabledProperty, DEFAULT_WANDER_ENABLED);
+      setProperty(WanderIntervalProperty, DEFAULT_WANDER_INTERVAL);
+      setProperty(WanderLustProperty, DEFAULT_WANDER_LUST);
+
+      setPropertyValidator(AutoAttackEnabledProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
+      setPropertyValidator(AutoAttackRepeatProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
+      setPropertyValidator(AutoAttackIntervalProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+
+      setPropertyValidator(CounterAttackProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
+      setPropertyValidator(WanderEnabledProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
+
+      setPropertyValidator(WanderIntervalProperty, [&](PropertyValue v) -> int {
+
+         if (PROPERTY_VALID != isPropertyValueInt(v)) {
+            return PROPERTY_INVALID_TYPE;
+         }
+
+         if (std::get<int>(v) < 1) {
+            return WANDER_INTERVAL_LESS_THAN_ONE;
+         }
+
+         return PROPERTY_VALID;
+      });
+
+      setPropertyValidator(WanderLustProperty, [&](PropertyValue v) -> int {
+
+         if (PROPERTY_VALID != isPropertyValueDouble(v)) {
+            return PROPERTY_INVALID_TYPE;
+         }
+
+         if (std::get<double>(v) < 0.0 || std::get<double>(v) > 1.0) {
+            return WANDER_LUST_INVALID_PROBABILITY;
+         }
+
+         return PROPERTY_VALID;
+      });
+
+      setPropertyValidator(AllegianceProperty, [&](PropertyValue v) -> int {
+
+         if (PROPERTY_VALID != isPropertyValueInt(v)) {
+            return PROPERTY_INVALID_TYPE;
+         }
+
+         switch (std::get<int>(v)) {
+
+            case FRIEND:
+            case ENEMY:
+            case NEUTRAL:
+               return PROPERTY_VALID;
+
+            default:
+               return PROPERTY_INVALID_TYPE;
+         }
+      });
    }
 
    /***************************************************************************/
 
-   Creature::Creature(const Creature &c, std::string n): Being(c, n) {
-
-      autoAttack = c.autoAttack;
-      wanderSettings = c.wanderSettings;
-      counterAttack = c.counterAttack;
-      allegiance = c.allegiance;
-   }
+   Creature::Creature(const Creature &c, std::string n): Being(c, n) {}
 
    /***************************************************************************/
 
@@ -65,7 +112,7 @@ namespace trogdor::entity {
          // from an Object in the Creature's inventory.
          if (!updateObjectTag) {
 
-            updateObjectTag = std::make_shared<std::function<void(std::any)>>([&](std::any data) {
+            updateObjectTag = std::make_shared<EntityCallback>([&](std::any data) -> bool {
 
                auto args = std::any_cast<std::tuple<std::string, Object *>>(data);
 
@@ -88,6 +135,8 @@ namespace trogdor::entity {
                      mutex.unlock();
                   }
                }
+
+               return false;
             });
          }
 
@@ -178,7 +227,7 @@ namespace trogdor::entity {
       }
 
       // make sure wandering isn't turned off
-      else if (!overrideEnable && !getWanderEnabled()) {
+      else if (!overrideEnable && !getProperty<bool>(WanderEnabledProperty)) {
          return;
       }
 
@@ -191,7 +240,7 @@ namespace trogdor::entity {
          }
 
          // creature considers moving or staying; which will he pick?
-         else if (probabilityDist(generator) > getWanderLust()) {
+         else if (probabilityDist(generator) > getProperty<double>(WanderLustProperty)) {
             return;
          }
 

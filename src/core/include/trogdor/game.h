@@ -78,6 +78,11 @@ namespace trogdor {
          static const bool DEFAULT_INTRODUCTION_ENABLED = false;
          static const bool DEFAULT_INTRODUCTION_PAUSE   = false;
 
+         // Game callbacks are executed during various operations on the Game
+         // object. Returning true will cause the callback to removed when it's
+         // done executing and false will allow it to persist.
+         typedef std::function<bool(std::any)> GameCallback;
+
       private:
 
          // Whether or not a game is in progress
@@ -124,7 +129,7 @@ namespace trogdor {
          // occur within the game.
          std::unordered_map<
             std::string,
-            std::vector<std::shared_ptr<std::function<void(std::any)>>>
+            std::vector<std::shared_ptr<GameCallback>>
          > callbacks;
 
          // Player object representing default settings for all new players
@@ -807,7 +812,7 @@ namespace trogdor {
 
             To pause and resume a game, simply stop and start it.
 
-            If one or more callbacks have been added with the key 'start', they
+            If one or more callbacks have been added with the key "start", they
             will be called after the game is started with no arguments.
 
             Input: (none)
@@ -822,7 +827,7 @@ namespace trogdor {
 
             To pause and resume a game, simply stop and start it.
 
-            If one or more callbacks have been added with the key 'stop', they
+            If one or more callbacks have been added with the key "stop", they
             will be called after the game is started with no arguments.
 
             Input: (none)
@@ -905,7 +910,7 @@ namespace trogdor {
             the user has read the introduction before they can start playing.
 
             If one or more callbacks have been set on the Game object with the
-            key 'insertPlayer', it will be called after the player has been
+            key "insertPlayer", it will be called after the player has been
             inserted with the player as the only argument.
 
             Input:
@@ -923,7 +928,7 @@ namespace trogdor {
             specified name doesn't exist.
 
             If one or more callbacks have been set on the Game object with the
-            key 'removePlayer', it will be called before the player has been
+            key "removePlayer", it will be called before the player has been
             removed with the player as the only argument.
 
             Input:
@@ -993,19 +998,35 @@ namespace trogdor {
          bool executeAction(entity::Player *player, const Command &command);
 
          /*
+            Executes all callbacks for the specified operation. Callbacks take
+            as input arbitrary data (callback should know what kind of data it
+            is based on the operation performed) and return true if they should
+            be removed after execution and false if they should persist.
+
+            Input:
+               Operation (std::string)
+               Data to pass to the callback (std::any)
+
+            Output:
+               (none)
+         */
+         void executeCallback(std::string operation, std::any data);
+
+         /*
             Adds a callback that should be called when a certain operation
-            occurs in the game.
+            occurs in the game. A callback that returns true will remove itself
+            after execution and a callback that returns false will persist.
 
             Input:
                Operation the callback should be attached to (std::string)
-               Callback (std::shared_ptr<std::function<void(std::any)>>)
+               Callback (std::shared_ptr<GameCallback>)
 
             Output:
                (none)
          */
          void addCallback(
             std::string operation,
-            std::shared_ptr<std::function<void(std::any)>> callback
+            std::shared_ptr<GameCallback> callback
          );
 
          /*
@@ -1034,7 +1055,7 @@ namespace trogdor {
          */
          void removeCallback(
             std::string operation,
-            const std::shared_ptr<std::function<void(std::any)>> &callback
+            const std::shared_ptr<GameCallback> &callback
          );
    };
 }

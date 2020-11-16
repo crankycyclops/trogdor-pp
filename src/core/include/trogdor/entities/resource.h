@@ -20,6 +20,43 @@ namespace trogdor::entity {
 
       public:
 
+         // Returned by the property validator when setting AmtAvailProperty to
+         // a value that's smaller than the total amount of the resource that's
+         // currently allocated
+         static constexpr int AMOUNT_AVAILABLE_TOO_SMALL = 2;
+
+         // Boolean property that determines whether or not allocations are
+         // required to be made in integer amounts
+         static constexpr const char *ReqIntAllocProperty = "reqIntAlloc";
+
+         // The total amount of resource that's available to be allocated. If
+         // a value is set and allocations have been made, and then this is
+         // updated to a lower value, if that lower value would drop below the
+         // total amount of the resource currently allocated, an exception will
+         // be thrown, indicating that the value has been set too low. This can
+         // be resolved either by releasing some of the resource or by setting a
+         // higher value. If the value is unset, that indicates that there's an
+         // infinite amount of the resource available.
+         static constexpr const char *AmtAvailProperty = "amountAvailable";
+
+         // The maximum amount of a resource that a depositor can hold at once.
+         // Note that if a depositor allocates a certain amount, and then the
+         // max later gets set to a lower value, this will not affect the
+         // previous allocation. However, it will prevent the depositor from
+         // allocating more, and if they ever let go of that resource and try to
+         // allocate the same amount again, the new allocation will also fail.
+         // Not setting a value indicates that they can allocate as much of
+         // the resource as they wish, subject only to the maximum amount of the
+         // resource available.
+         static constexpr const char *MaxAmtPerDepositorProperty = "maxAmtPerDepositor";
+
+         // Contains the plural version of the resource's name
+         static constexpr const char *PluralNameProperty = "pluralName";
+
+         // The plural analog to Entity::title. By default, this is equivalent
+         // to the plural name.
+         static constexpr const char *PluralTitleProperty = "pluralTitle";
+
          // If the sticky tag is set and the resource can be allocated in
          // unlimited amounts, then when a Being picks some up from a Place, the
          // Place will keep its current allocation.
@@ -86,46 +123,15 @@ namespace trogdor::entity {
          // tangible entity to another.
          std::mutex transferMutex;
 
-         // If set to true, allocations must be made in whole number values.
-         bool requireIntegerAllocations = false;
-
-         // The total amount of resource that's available to be allocated. If
-         // a value is set and allocations have been made, and then this is
-         // updated to a lower value, if that lower value would drop below the
-         // total amount of the resource currently allocated, an exception will
-         // be thrown, indicating that the value has been set too low. This can
-         // be resolved either by releasing some of the resource or by setting a
-         // higher value. If a value isn't set, that indicates that there's an
-         // infinite amount of the resource available.
-         std::optional<double> amountAvailable;
-
-         // The maximum amount of a resource that a depositor can hold at once.
-         // Note that if a depositor allocates a certain amount, and then the
-         // max later gets set to a lower value, this will not affect the
-         // previous allocation. However, it will prevent the depositor from
-         // allocating more, and if they ever let go of that resource and try to
-         // allocate the same amount again, the new allocation will also fail.
-         // Not setting a value indicates that they can allocate as much of
-         // the resource as they wish, subject only to the maximum amount of the
-         // resource available.
-         std::optional<double> maxAmountPerDepositor;
-
-         // Total amount of the resource that's currently allocated
-         double totalAmountAllocated = 0;
-
-         // Contains the plural version of the resource's name
-         const std::string plural;
-
-         // The plural analog to Entity::title. By default, this is equivalent
-         // to the plural name.
-         std::string pluralTitle;
-
          // Keeps track of who holds the resource and how much
          std::map<
             std::weak_ptr<Tangible>,
             double,
             std::owner_less<std::weak_ptr<Tangible>>
          > depositors;
+
+         // Total amount of the resource that's currently allocated
+         double totalAmountAllocated = 0;
 
          // Modify's a tangible entity's allocation without any checks. This is
          // utilized by the public methods allocate(), free(), and transfer().
@@ -226,44 +232,6 @@ namespace trogdor::entity {
          }
 
          /*
-            Sets the Resource's plural title.
-
-            Input:
-               New plural title (std::string)
-
-            Output:
-               (none)
-         */
-         inline void setPluralTitle(std::string pt) {
-
-            mutex.lock();
-            pluralTitle = pt;
-            mutex.unlock();
-         }
-
-         /*
-            Returns the Resource's plural name.
-
-            Input:
-               (none)
-
-            Output:
-               std::string
-         */
-         inline std::string getPluralName() const {return plural;}
-
-         /*
-            Returns the Resource's plural title.
-
-            Input:
-               (none)
-
-            Output:
-               std::string
-         */
-         inline std::string getPluralTitle() const {return pluralTitle;}
-
-         /*
             Returns true if the given name is a plural representation of the
             Resource and false if not. The existence of this method will prove
             its worth once we start having to deal with plural aliases.
@@ -276,7 +244,7 @@ namespace trogdor::entity {
          */
          inline bool isPlural(std::string name) const {
 
-            return 0 == plural.compare(name) ? true : false;
+            return 0 == getProperty<std::string>(PluralNameProperty).compare(name) ? true : false;
          }
 
          /*
@@ -311,109 +279,6 @@ namespace trogdor::entity {
             double amount,
             bool triggerEvents = true
          );
-
-         /*
-            Returns true if integer allocations are required and false if not.
-
-            Input:
-               (none)
-
-            Output:
-               Whether or not integer allocations are required (bool)
-         */
-         inline bool areIntegerAllocationsRequired() const {return requireIntegerAllocations;}
-
-         /*
-            Set whether or not allocations must be made in integer-only amounts.
-
-            Input:
-               Whether or not integer-only allocations are required (bool)
-
-            Output:
-               (none)
-         */
-         inline void setRequireIntegerAllocations(bool required) {
-
-            mutex.lock();
-            requireIntegerAllocations = required;
-            mutex.unlock();
-         }
-
-         /*
-            Returns the total amount of the resource available (this has no
-            bearing on how much of the resources has been allocated, but rather
-            tells the caller how much of the resource currently exists.) A
-            value of std::nullopt indicates that the resource has an infinite
-            supply.
-
-            Input:
-               (none)
-
-            Output:
-               How much of the resource exists (std::optional<double>)
-         */
-         inline std::optional<double> getAmountAvailable() const {return amountAvailable;}
-
-         /*
-            Set the total amount of the resource available. Setting this to
-            std::nullopt will result in the resource having an infinite supply.
-            If caller attempts to set a value that's below the amount currently
-            allocated, false will be returned, indicating failure.
-
-            Input:
-               The total amount of the resource available (std::optional<double>)
-
-            Output:
-               True if the call was successful and false if not (bool)
-         */
-         inline bool setAmountAvailable(std::optional<double> newAmount = std::nullopt) {
-
-            if (newAmount && *newAmount < totalAmountAllocated) {
-               return false;
-            }
-
-            mutex.lock();
-            amountAvailable = newAmount;
-            mutex.unlock();
-
-            return true;
-         }
-
-         /*
-            Returns the total amount of the resource that can be allocated by a
-            tangible entity at once. A value of std::nullopt indicates that
-            entities can hold as much as they want.
-
-            Input:
-               (none)
-
-            Output:
-               How much of the resource can be allocated to each entity at one
-                  time (std::optional<double>)
-         */
-         inline std::optional<double> getMaxAmountPerDepositor() const {return maxAmountPerDepositor;}
-
-         /*
-            Set the total amount of the resource a tangible entity can possess
-            at one given time. Setting this to std::nullopt will result in no
-            limit. If you set this to a lower value than any current allocations
-            that have already been made, the call will succeed and the tangible
-            entity will retain the allocation they already have, but will not
-            be able to allocate more and, if they ever release their amount and
-            try to allocate more, the new maximum will be enforced.
-
-            Input:
-               How much a tangible entity can possess at one time (std::optional<double>)
-
-            Output:
-               (none)
-         */
-         inline void setMaxAmountPerDepositor(std::optional<double> newMax = std::nullopt) {
-
-            mutex.lock();
-            maxAmountPerDepositor = newMax;
-            mutex.unlock();
-         }
 
          /*
             Returns the total amount of the resource currently allocated to
@@ -452,7 +317,7 @@ namespace trogdor::entity {
          */
          inline std::string amountToString(double amount) const {
 
-            return requireIntegerAllocations ?
+            return getProperty<bool>(ReqIntAllocProperty) ?
                std::to_string(std::lround(amount)) : std::to_string(amount);
          }
 
@@ -469,8 +334,8 @@ namespace trogdor::entity {
          */
          inline std::string titleToString(double amount) const {
 
-            return requireIntegerAllocations && 1 == std::lround(amount) ?
-               getTitle() : getPluralTitle();
+            return getProperty<bool>(ReqIntAllocProperty) && 1 == std::lround(amount) ?
+               getProperty<std::string>(TitleProperty) : getProperty<std::string>(PluralTitleProperty);
          }
 
          /*

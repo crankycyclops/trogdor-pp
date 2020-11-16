@@ -13,20 +13,51 @@ namespace trogdor::entity {
 
 
    Being::Being(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o), std::move(e)),
-   maxHealth(DEFAULT_MAX_HEALTH), damageBareHands(DEFAULT_DAMAGE_BARE_HANDS) {
-
-      respawnSettings.enabled  = DEFAULT_RESPAWN_ENABLED;
-      respawnSettings.interval = DEFAULT_RESPAWN_INTERVAL;
-      respawnSettings.lives    = DEFAULT_RESPAWN_LIVES;
+   std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o), std::move(e)) {
 
       setAttribute("strength", DEFAULT_ATTRIBUTE_STRENGTH);
       setAttribute("dexterity", DEFAULT_ATTRIBUTE_DEXTERITY);
       setAttribute("intelligence", DEFAULT_ATTRIBUTE_INTELLIGENCE);
       setAttributesInitialTotal();
 
+      setProperty(HealthProperty, static_cast<int>(0));
+      setProperty(MaxHealthProperty, DEFAULT_MAX_HEALTH);
+      setProperty(WoundRateProperty, DEFAULT_WOUND_RATE);
+      setProperty(DamageBareHandsProperty, DEFAULT_DAMAGE_BARE_HANDS);
+      setProperty(RespawnEnabledProperty, DEFAULT_RESPAWN_ENABLED);
+      setProperty(RespawnIntervalProperty, DEFAULT_RESPAWN_INTERVAL);
+      setProperty(RespawnLivesProperty, DEFAULT_RESPAWN_LIVES);
+      setProperty(InvMaxWeightProperty, DEFAULT_INVENTORY_WEIGHT);
+
+      setPropertyValidator(HealthProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+      setPropertyValidator(MaxHealthProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+      setPropertyValidator(WoundRateProperty, [&](PropertyValue v) -> int {return isPropertyValueDouble(v);});
+      setPropertyValidator(DamageBareHandsProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+      setPropertyValidator(RespawnEnabledProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
+      setPropertyValidator(RespawnIntervalProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+      setPropertyValidator(RespawnLivesProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+      setPropertyValidator(InvMaxWeightProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+
+      // This callback will make sure that if the Being's max health is set
+      // before its actual current health, the current health will be
+      // automatically set to its max health.
+      addCallback("setProperty", std::make_shared<EntityCallback>([&](std::any data) -> bool {
+
+         auto &args = std::any_cast<std::tuple<Entity *, std::string, PropertyValue> &>(data);
+
+         if (0 == std::get<1>(args).compare(HealthProperty)) {
+            return true;
+         }
+
+         else if (0 == std::get<1>(args).compare(MaxHealthProperty)) {
+            dynamic_cast<Being *>(std::get<0>(args))->setProperty(HealthProperty, std::get<2>(args));
+            return true;
+         }
+
+         return false;
+      }));
+
       inventory.count         = 0;
-      inventory.weight        = DEFAULT_INVENTORY_WEIGHT;
       inventory.currentWeight = 0;
 
       types.push_back(ENTITY_BEING);
@@ -40,20 +71,10 @@ namespace trogdor::entity {
 
    Being::Being(const Being &b, std::string n): Thing(b, n) {
 
-      setHealth(b.health);
-      setMaxHealth(b.maxHealth);
-      woundRate = b.woundRate;
-      damageBareHands = b.damageBareHands;
-
-      respawnSettings.enabled = b.respawnSettings.enabled;
-      respawnSettings.interval = b.respawnSettings.interval;
-      respawnSettings.lives = b.respawnSettings.lives;
-
       attributes.values = b.attributes.values;
       attributes.initialTotal = b.attributes.initialTotal;
 
       inventory.count = 0;
-      inventory.weight = b.inventory.weight;
       inventory.currentWeight = 0;
    }
 
@@ -107,7 +128,8 @@ namespace trogdor::entity {
 
          if (!isAlive()) {
 
-            observer->out("display") << "You see the corpse of " << getTitle() << '.';
+            observer->out("display") << "You see the corpse of " <<
+               getProperty<std::string>(TitleProperty) << '.';
 
             std::string descDead = getMessage("descshort_dead");
 
@@ -131,16 +153,19 @@ namespace trogdor::entity {
       bool considerWeight
    ) {
 
+      int invMaxWeight = getProperty<int>(InvMaxWeightProperty);
+      int objectWeight = object->getProperty<int>(Object::WeightProperty);
+
       // make sure the Object will fit
-      if (considerWeight && inventory.weight > 0 &&
-      inventory.currentWeight + object->getWeight() > inventory.weight) {
+      if (considerWeight && invMaxWeight > 0 &&
+      inventory.currentWeight + objectWeight > invMaxWeight) {
          return false;
       }
 
       // insert the object into the Being's inventory
       mutex.lock();
       inventory.objects.insert(object);
-      inventory.currentWeight += object->getWeight();
+      inventory.currentWeight += objectWeight;
       mutex.unlock();
 
       // allow referencing of inventory Objects by name and aliases
@@ -171,7 +196,7 @@ namespace trogdor::entity {
       inventory.objects.erase(object);
 
       inventory.count--;
-      inventory.currentWeight -= object->getWeight();
+      inventory.currentWeight -= object->getProperty<int>(Object::WeightProperty);
       object->setOwner(std::weak_ptr<Being>());
 
       mutex.unlock();
@@ -204,13 +229,15 @@ namespace trogdor::entity {
 
       // I do this first, and the other message second so that the Being that's
       // leaving won't see messages about its own departure and arrival ;)
-      l->out("notifications") << getTitle() << " arrives." << std::endl;
+      l->out("notifications") << getProperty<std::string>(TitleProperty)
+         << " arrives." << std::endl;
 
       l->insertThing(getShared());
       setLocation(l);
       l->observe(getShared());
 
-      oldLoc->out("notifications") << getTitle() << " leaves." << std::endl;
+      oldLoc->out("notifications") << getProperty<std::string>(TitleProperty)
+         << " leaves." << std::endl;
 
       game->event({
          "afterGotoLocation",
@@ -274,8 +301,10 @@ namespace trogdor::entity {
             // EXCEPT the one who's doing the taking
             for (auto const &thing: location->getThings()) {
                if (thing.get() != this) {
-                  thing->out("notifications") << getTitle() << " takes "
-                     << object->getTitle() << "." << std::endl;
+                  thing->out("notifications") <<
+                     getProperty<std::string>(TitleProperty) << " takes "
+                     << object->getProperty<std::string>(TitleProperty)
+                     << "." << std::endl;
                }
             };
 
@@ -333,14 +362,15 @@ namespace trogdor::entity {
             // we should allocate extra (as long as it's less than or
             // equal to the amount already in the room.)
             if (
-               resource->isTagSet(entity::Resource::StickyTag) &&
-               !resource->getAmountAvailable()
+               resource->isTagSet(Resource::StickyTag) &&
+               !resource->isPropertySet(Resource::AmtAvailProperty)
             ) {
 
                if (amount > allocatedToPlace) {
                   out("display") << "You can only take "
                      << resource->amountToString(allocatedToPlace)
-                     << ' ' << resource->getPluralTitle() << '.' << std::endl;
+                     << ' ' << resource->getProperty<std::string>(Resource::PluralTitleProperty)
+                     << '.' << std::endl;
                   return;
                }
 
@@ -364,7 +394,8 @@ namespace trogdor::entity {
                         << std::endl;
                   } else {
                      out("display") << "Please specify a whole number of "
-                        << resource->getPluralTitle() << '.' << std::endl;
+                        << resource->getProperty<std::string>(Resource::PluralTitleProperty)
+                        << '.' << std::endl;
                   }
 
                   break;
@@ -379,9 +410,9 @@ namespace trogdor::entity {
                   } else {
                      out("display") << "That would give you "
                         << resource->amountToString(getResources().find(resource)->second + amount)
-                        << ' ' << resource->getPluralTitle()
+                        << ' ' << resource->getProperty<std::string>(Resource::PluralTitleProperty)
                         << " and you're only allowed to possess "
-                        << resource->amountToString(*resource->getMaxAmountPerDepositor())
+                        << resource->amountToString(resource->getProperty<double>(Resource::MaxAmtPerDepositorProperty))
                         << '.' << std::endl;
                   }
 
@@ -411,7 +442,8 @@ namespace trogdor::entity {
                   } else {
                      out("display") << "You can only take "
                         << resource->amountToString(allocatedToPlace)
-                        << ' ' << resource->getPluralTitle() << '.' << std::endl;
+                        << ' ' << resource->getProperty<std::string>(Resource::PluralTitleProperty)
+                        << '.' << std::endl;
                   }
 
                   break;
@@ -423,7 +455,8 @@ namespace trogdor::entity {
 
                   out("display") << "You can only take "
                      << resource->amountToString(allocatedToPlace)
-                     << ' ' << resource->getPluralTitle() << '.' << std::endl;
+                     << ' ' << resource->getProperty<std::string>(Resource::PluralTitleProperty)
+                     << '.' << std::endl;
 
                   break;
 
@@ -434,7 +467,8 @@ namespace trogdor::entity {
                   // been taken EXCEPT the one who's doing the taking
                   for (auto const &thing: location->getThings()) {
                      if (thing.get() != this) {
-                        thing->out("notifications") << getTitle()
+                        thing->out("notifications")
+                           << getProperty<std::string>(TitleProperty)
                            << " takes " << resource->amountToString(amount) << ' '
                            << resource->titleToString(amount) << '.' << std::endl;
                      }
@@ -508,8 +542,10 @@ namespace trogdor::entity {
          // the one who's doing the dropping
          for (auto const &thing: location->getThings()) {
             if (thing.get() != this) {
-               thing->out("notifications") << getTitle() << " drops "
-                  << object->getTitle() << "." << std::endl;
+               thing->out("notifications")
+                  << getProperty<std::string>(TitleProperty) << " drops "
+                  << object->getProperty<std::string>(TitleProperty) << "."
+                  << std::endl;
             }
          };
 
@@ -554,13 +590,13 @@ namespace trogdor::entity {
 
       int damage;
 
-      damage = round(damageBareHands * getAttributeFactor("strength"));
+      damage = round(getProperty<int>(DamageBareHandsProperty) * getAttributeFactor("strength"));
 
       // make sure we always do at least 1 point damage
       damage = damage > 0 ? damage : 1;
 
       if (0 != weapon && weapon->isTagSet(Object::WeaponTag)) {
-         damage += weapon->getDamage();
+         damage += weapon->getProperty<int>(Object::DamageProperty);
       }
 
       damage *= defender->getDamageRatio();
@@ -583,9 +619,11 @@ namespace trogdor::entity {
       static std::mt19937 generator(rd());
       static std::uniform_real_distribution<double> distribution(0, 1);
 
+      double defenderWoundRate = defender->getProperty<double>(WoundRateProperty);
+
       // probability that the attack will be successful
-      double p = CLAMP(getAttributeFactor("strength") * (defender->woundRate / 2) +
-         (defender->woundRate / 2), 0.0, defender->woundRate);
+      double p = CLAMP(getAttributeFactor("strength") * (defenderWoundRate / 2) +
+         (defenderWoundRate / 2), 0.0, defenderWoundRate);
 
       if (distribution(generator) < p) {
          return true;
@@ -628,7 +666,8 @@ namespace trogdor::entity {
             return;
          }
 
-         out("combat") << defender->getTitle() << " is already dead." << std::endl;
+         out("combat") << defender->getProperty<std::string>(TitleProperty)
+            << " is already dead." << std::endl;
          return;
       }
 
@@ -639,7 +678,7 @@ namespace trogdor::entity {
             return;
          }
 
-         out("combat") << defender->getTitle()
+         out("combat") << defender->getProperty<std::string>(TitleProperty)
             << " is immortal and cannot die." << std::endl;
          return;
       }
@@ -651,25 +690,29 @@ namespace trogdor::entity {
             return;
          }
 
-         out("combat") << defender->getTitle()
+         out("combat") << defender->getProperty<std::string>(TitleProperty)
             << " cannot be attacked." << std::endl;
          return;
       }
 
       // send notification to the aggressor
-      out("combat") << "You attack " << defender->getTitle();
+      out("combat") << "You attack "
+         << defender->getProperty<std::string>(TitleProperty);
 
       if (0 != weapon) {
-         out("combat") << " with " << weapon->getTitle();
+         out("combat") << " with "
+            << weapon->getProperty<std::string>(TitleProperty);
       }
 
       out("combat") << '.' << std::endl;
 
       // send notification to the defender
-      defender->out("combat") << "You're attacked by " << getTitle();
+      defender->out("combat") << "You're attacked by "
+         << getProperty<std::string>(TitleProperty);
 
       if (0 != weapon) {
-         defender->out("combat") << " with " << weapon->getTitle();
+         defender->out("combat") << " with "
+            << weapon->getProperty<std::string>(TitleProperty);
       }
 
       defender->out("combat") << '!' << std::endl;
@@ -684,11 +727,15 @@ namespace trogdor::entity {
 
          defender->removeHealth(damage);
 
-         out("combat") << "You dealt a blow to " << defender->getTitle() << "!" << std::endl;
-         defender->out("combat") << getTitle() << " dealt you a blow!" << std::endl;
-         out("combat") << defender->getTitle() << " loses " << damage <<
-            " health points." << std::endl;
-         defender->out("combat") << "You lose " << damage << " health points." << std::endl;
+         out("combat") << "You dealt a blow to "
+            << defender->getProperty<std::string>(TitleProperty) << "!"
+               << std::endl;
+         defender->out("combat") << getProperty<std::string>(TitleProperty)
+            << " dealt you a blow!" << std::endl;
+         out("combat") << defender->getProperty<std::string>(TitleProperty)
+            << " loses " << damage << " health points." << std::endl;
+         defender->out("combat") << "You lose " << damage << " health points."
+            << std::endl;
 
          if (!defender->isAlive()) {
             return;
@@ -702,13 +749,14 @@ namespace trogdor::entity {
          }
 
          out("combat") << "Your attack failed." << std::endl;
-         defender->out("combat") << getTitle() << "'s attack failed." << std::endl;
+         defender->out("combat") << getProperty<std::string>(TitleProperty)
+            << "'s attack failed." << std::endl;
       }
 
       if (
          ENTITY_CREATURE == defender->getType() &&
-         Creature::FRIEND != static_cast<Creature *>(defender)->getAllegiance() &&
-         static_cast<Creature *>(defender)->getCounterAttack() &&
+         Creature::FRIEND != static_cast<Creature *>(defender)->getProperty<int>(Creature::AllegianceProperty) &&
+         static_cast<Creature *>(defender)->getProperty<bool>(Creature::CounterAttackProperty) &&
          allowCounterAttack
       ) {
          defender->attack(this, static_cast<Creature *>(defender)->selectWeapon(), false);
@@ -721,26 +769,28 @@ namespace trogdor::entity {
 
    void Being::addHealth(int up, bool allowOverflow) {
 
-      if (!game->event({"beforeAddHealth", {triggers.get()}, {this, health, up}})) {
+      int maxHealth = getProperty<int>(MaxHealthProperty);
+
+      if (!game->event({"beforeAddHealth", {triggers.get()}, {this, getProperty<int>(HealthProperty), up}})) {
          return;
       }
 
-      int tmpHealth = health;
+      int tmpHealth = getProperty<int>(HealthProperty);
       tmpHealth += up;
 
-      setHealth(!allowOverflow && tmpHealth > maxHealth ? maxHealth : tmpHealth);
-      game->event({"afterAddHealth", {triggers.get()}, {this, health, up}});
+      setProperty(HealthProperty, !allowOverflow && tmpHealth > maxHealth ? maxHealth : tmpHealth);
+      game->event({"afterAddHealth", {triggers.get()}, {this, getProperty<int>(HealthProperty), up}});
    }
 
    /***************************************************************************/
 
    void Being::removeHealth(int down, bool allowDeath) {
 
-      if (!game->event({"beforeRemoveHealth", {triggers.get()}, {this, health, down}})) {
+      if (!game->event({"beforeRemoveHealth", {triggers.get()}, {this, getProperty<int>(HealthProperty), down}})) {
          return;
       }
 
-      int tmpHealth = health;
+      int tmpHealth = getProperty<int>(HealthProperty);
       tmpHealth -= down;
 
       if (tmpHealth <= 0) {
@@ -751,10 +801,10 @@ namespace trogdor::entity {
       }
 
       else {
-         setHealth(tmpHealth);
+         setProperty(HealthProperty, tmpHealth);
       }
 
-      game->event({"afterRemoveHealth", {triggers.get()}, {this, health, down}});
+      game->event({"afterRemoveHealth", {triggers.get()}, {this, getProperty<int>(HealthProperty), down}});
    }
 
    /***************************************************************************/
@@ -767,12 +817,13 @@ namespace trogdor::entity {
 
       // TODO: I need a way to support programmatically killing an immortal
       // player.
-      setHealth(0);
+      setProperty(HealthProperty, static_cast<int>(0));
 
       auto location = getLocation().lock();
 
       if (showMessage && location) {
-         location->out("notifications") << title << " dies." << std::endl;
+         location->out("notifications") << getProperty<std::string>(TitleProperty)
+            << " dies." << std::endl;
       }
 
       game->event({"afterDie", {triggers.get()}, {game, this}});
@@ -811,7 +862,7 @@ namespace trogdor::entity {
          return;
       }
 
-      setHealth(maxHealth);
+      setProperty(HealthProperty, getProperty<int>(MaxHealthProperty));
       game->event({"afterRespawn", {triggers.get()}, {game, this}});
    }
 }

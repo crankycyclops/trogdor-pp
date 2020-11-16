@@ -21,6 +21,41 @@ namespace trogdor::entity {
             ENEMY
          };
 
+         // Wander interval property must be greater than or equal to 1
+         static constexpr int WANDER_INTERVAL_LESS_THAN_ONE = 2;
+
+         // Wander lust must be a valid probability (between 0 and 1)
+         static constexpr int WANDER_LUST_INVALID_PROBABILITY = 3;
+
+         // Whether creature is friendly, neutral or aggressive toward others
+         static constexpr const char *AllegianceProperty = "allegiance";
+
+         // Whether or not the Creature will fight back when attacked
+         static constexpr const char *CounterAttackProperty = "counterAttack";
+
+         // Whether or not the creature should automatically attack Players and
+         // other Creatures when they enter the same room
+         static constexpr const char *AutoAttackEnabledProperty = "autoattack.enabled";
+
+         // If set to true, the Creature will repeat its attack every n number
+         // of clock ticks, where n is determined by AutoAttackIntervalProperty
+         static constexpr const char *AutoAttackRepeatProperty = "autoattack.repeat";
+
+         // If autoattack is enabled, this is the number of click ticks that
+         // will pass before the Creature attacks again (if repeat is set to true)
+         static constexpr const char *AutoAttackIntervalProperty = "autoattack.interval";
+
+         // If set to true, the Creature will wander about through different rooms
+         static constexpr const char *WanderEnabledProperty = "wander.enabled";
+
+         // If wandering is enabled, this is the number of clock ticks that will
+         // pass before the Creature considers moving to another room
+         static constexpr const char *WanderIntervalProperty = "wander.interval";
+
+         // This represents the probability that the Creature will actually move
+         // each time it considers doing so
+         static constexpr const char *WanderLustProperty = "wander.lust";
+
          // by default, a creature will automatically attack when attacked
          static constexpr bool DEFAULT_COUNTER_ATTACK = true;
          static constexpr enum AllegianceType DEFAULT_ALLEGIANCE = NEUTRAL;
@@ -31,7 +66,7 @@ namespace trogdor::entity {
          static constexpr int  DEFAULT_AUTO_ATTACK_INTERVAL = 5;
 
          // Default wander settings
-         static constexpr bool DEFAULT_WANDER_ENABLE = false;
+         static constexpr bool DEFAULT_WANDER_ENABLED = false;
          static constexpr int DEFAULT_WANDER_INTERVAL = 10;
          static constexpr double DEFAULT_WANDER_LUST = 0.5;
 
@@ -42,7 +77,7 @@ namespace trogdor::entity {
          struct DamageComparator {
 
             inline bool operator() (const Object * const &lhs, const Object * const &rhs) const {
-               return lhs->getDamage() < lhs->getDamage();
+               return lhs->getProperty<int>(Object::DamageProperty) < rhs->getProperty<int>(Object::DamageProperty);
             }
          };
 
@@ -60,27 +95,7 @@ namespace trogdor::entity {
          // callback is added by insertIntoInventory() and removed by
          // removeFromInventory(). This doesn't actually get initialized until
          // the first time an object is added to a creature's inventory.
-         std::shared_ptr<std::function<void(std::any)>> updateObjectTag;
-
-      protected:
-
-         struct {
-            bool enabled;
-            int  interval;
-            bool repeat;
-         } autoAttack;
-
-         struct {
-            bool   enabled;
-            int    interval;
-            double wanderlust;
-         } wanderSettings;
-
-         // whether creature will fight back when attacked
-         bool counterAttack;
-
-         // whether creature is friendly, neutral or aggressive toward others
-         enum AllegianceType allegiance;
+         std::shared_ptr<std::function<bool(std::any)>> updateObjectTag;
 
       public:
 
@@ -162,17 +177,6 @@ namespace trogdor::entity {
          virtual void removeFromInventory(const std::shared_ptr<Object> &object);
 
          /*
-            Returns the Creature's allegiance.
-
-            Input:
-               (none)
-
-            Output:
-               enum AllegianceType
-         */
-         inline enum AllegianceType getAllegiance() const {return allegiance;}
-
-         /*
             Returns a string representation of the Creature's allegiance.
 
             Input:
@@ -183,7 +187,7 @@ namespace trogdor::entity {
          */
          inline std::string getAllegianceStr() const {
 
-            switch (allegiance) {
+            switch (getProperty<int>(AllegianceProperty)) {
 
                case FRIEND:
                   return "friend";
@@ -196,192 +200,6 @@ namespace trogdor::entity {
             }
 
             return "undefined";
-         }
-
-         /*
-            Returns whether or not counterAttack is enabled.
-
-            Input:
-               (none)
-
-            Output:
-               bool
-         */
-         inline bool getCounterAttack() {return counterAttack;}
-
-         /*
-            Return auto attack parameters.
-
-            Input:
-               (none)
-
-            Output:
-               enabled:  bool
-               repeat:   bool
-               interval: int
-         */
-         inline bool getAutoAttackEnabled()  const {return autoAttack.enabled;}
-         inline bool getAutoAttackRepeat()   const {return autoAttack.repeat;}
-         inline int  getAutoAttackInterval() const {return autoAttack.interval;}
-
-         /*
-            Returns Creature wander settings.
-
-            Input:
-               (none)
-
-            Output:
-               enabled:    bool
-               interval:   int
-               wanderlust: double
-         */
-         inline bool   getWanderEnabled()  const {return wanderSettings.enabled;}
-         inline int    getWanderInterval() const {return wanderSettings.interval;}
-         inline double getWanderLust()     const {return wanderSettings.wanderlust;}
-
-         /*
-            Sets a Creature's allegiance.
-
-            Input:
-               AllegianceType
-
-            Output:
-               (none)
-         */
-         inline void setAllegiance(enum AllegianceType a) {
-
-            mutex.lock();
-            allegiance = a;
-            mutex.unlock();
-         }
-
-         /*
-            Sets whether or not Creature should automatically fight back when
-            attacked.
-
-            Input:
-               bool
-
-            Output:
-               (none)
-         */
-         inline void setCounterAttack(bool b) {
-
-            mutex.lock();
-            counterAttack = b;
-            mutex.unlock();
-         }
-
-         /*
-            Sets whether or not auto-attack is enabled.
-
-            Input:
-               bool
-
-            Output:
-               (none)
-         */
-         inline void setAutoAttackEnabled(bool b) {
-
-            mutex.lock();
-            autoAttack.enabled = b;
-            mutex.unlock();
-         }
-
-         /*
-            Sets auto-attack interval.
-
-            Input:
-               int
-
-            Output:
-               (none)
-         */
-         inline void setAutoAttackInterval(int i) {
-
-            mutex.lock();
-            autoAttack.interval = i;
-            mutex.unlock();
-         }
-
-         /*
-            Sets whether or not auto-attack should continue indefinitely (until
-            one of the Beings dies, or until one or both leave the Place.)
-
-            Input:
-               bool
-
-            Output:
-               (none)
-         */
-         inline void setAutoAttackRepeat(bool b) {
-
-            mutex.lock();
-            autoAttack.repeat = b;
-            mutex.unlock();
-         }
-
-         /*
-            Sets whether or not automatic wandering is enabled.
-
-            Input:
-               bool
-
-            Output:
-               (none)
-         */
-         inline void setWanderEnabled(bool b) {
-
-            mutex.lock();
-            wanderSettings.enabled = b;
-            mutex.unlock();
-         }
-
-         /*
-            Sets how often (in clock ticks) the Creature considers wandering to
-            another location.
-
-            Input:
-               int
-
-            Output:
-               (none)
-
-            Throws exception if input is invalid (less than 1.)
-         */
-         inline void setWanderInterval(int i) {
-
-            if (i < 1) {
-               throw ValidationException(
-                  "Wander interval must be greater than or equal to 1"
-               );
-            }
-
-            mutex.lock();
-            wanderSettings.interval = i;
-            mutex.unlock();
-         }
-
-         /*
-            Sets probability that Creature will wander on each interval.
-
-            Input:
-               double
-
-            Output:
-               (none)
-
-            Throws exception if input is invalid (not a valid probability.)
-         */
-         inline void setWanderLust(double d) {
-
-            if (d < 0.0 || d  > 1.0) {
-               throw ValidationException("Probability must be between 0 and 1");
-            }
-
-            mutex.lock();
-            wanderSettings.wanderlust = d;
-            mutex.unlock();
          }
 
          /*

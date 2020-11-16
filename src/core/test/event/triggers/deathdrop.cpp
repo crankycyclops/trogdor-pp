@@ -114,7 +114,8 @@ TEST_SUITE("DeathDropEventTrigger (event/triggers/deathdrop.cpp)") {
 		);
 
 		// Until we set a max health, a Being is considered immortal
-		aGuy->setHealth(10), aGuy->setMaxHealth(10);
+		aGuy->setProperty(trogdor::entity::Being::HealthProperty, 10);
+		aGuy->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 		aGuy->die();
 
 		aGuy->insertIntoInventory(anObject);

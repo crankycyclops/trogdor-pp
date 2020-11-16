@@ -400,6 +400,7 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   // TODO: replace with generic binding to setProperty
    int LuaEntity::getTitle(lua_State *L) {
 
       int n = lua_gettop(L);
@@ -414,12 +415,13 @@ namespace trogdor::entity {
          return luaL_error(L, "not an Entity!");
       }
 
-      lua_pushstring(L, e->getTitle().c_str());
+      lua_pushstring(L, e->getProperty<std::string>(Entity::TitleProperty).c_str());
       return 1;
    }
 
    /***************************************************************************/
 
+   // TODO: replace with generic binding to setProperty
    int LuaEntity::setTitle(lua_State *L) {
 
       int n = lua_gettop(L);
@@ -435,13 +437,14 @@ namespace trogdor::entity {
       }
 
       std::string title = luaL_checkstring(L, -1);
-      e->setTitle(title);
+      e->setProperty("title", title);
 
       return 0;
    }
 
    /***************************************************************************/
 
+   // TODO: replace with generic binding to setProperty
    int LuaEntity::getLongDesc(lua_State *L) {
 
       int n = lua_gettop(L);
@@ -456,12 +459,18 @@ namespace trogdor::entity {
          return luaL_error(L, "not an Entity!");
       }
 
-      lua_pushstring(L, e->getLongDescription().c_str());
+      lua_pushstring(
+         L,
+         e->isPropertySet(Entity::LongDescProperty) ?
+            e->getProperty<std::string>(Entity::LongDescProperty).c_str() : ""
+      );
+
       return 1;
    }
 
    /***************************************************************************/
 
+   // TODO: replace with generic binding to setProperty
    int LuaEntity::setLongDesc(lua_State *L) {
 
       int n = lua_gettop(L);
@@ -477,13 +486,14 @@ namespace trogdor::entity {
       }
 
       std::string desc = luaL_checkstring(L, -1);
-      e->setLongDescription(desc);
+      e->setProperty("longDesc", desc);
 
       return 0;
    }
 
    /***************************************************************************/
 
+   // TODO: replace with generic binding to setProperty
    int LuaEntity::getShortDesc(lua_State *L) {
 
       int n = lua_gettop(L);
@@ -498,12 +508,18 @@ namespace trogdor::entity {
          return luaL_error(L, "not an Entity!");
       }
 
-      lua_pushstring(L, e->getShortDescription().c_str());
+      lua_pushstring(
+         L,
+         e->isPropertySet(Entity::ShortDescProperty) ?
+            e->getProperty<std::string>(Entity::ShortDescProperty).c_str() : ""
+      );
+
       return 1;
    }
 
    /***************************************************************************/
 
+   // TODO: replace with generic binding to setProperty
    int LuaEntity::setShortDesc(lua_State *L) {
 
       int n = lua_gettop(L);
@@ -519,7 +535,7 @@ namespace trogdor::entity {
       }
 
       std::string desc = luaL_checkstring(L, -1);
-      e->setShortDescription(desc);
+      e->setProperty("shortDesc", desc);
 
       return 0;
    }

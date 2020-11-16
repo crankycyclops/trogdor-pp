@@ -11,7 +11,7 @@ namespace trogdor::entity {
       types.push_back(ENTITY_PLAYER);
       setClass("player");
 
-      setLongDescription(name + " is a player.");
+      setProperty("longDesc", name + " is a player.");
    }
 
    /**************************************************************************/
@@ -23,12 +23,13 @@ namespace trogdor::entity {
       std::unique_ptr<Trogerr> e
    ): Being(p, n), lastCommand(std::make_unique<Command>(*(p.lastCommand))) {
 
-      title = n;
+      // TODO: Do I need this? I already do this in Entity's constructor
+      setProperty("title", n);
 
       outStream = std::move(o);
       errStream = std::move(e);
 
-      setLongDescription(name + " is a player.");
+      setProperty("longDesc", name + " is a player.");
    }
 
    /***************************************************************************/

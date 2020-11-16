@@ -53,7 +53,8 @@ namespace trogdor::entity {
 
    void Thing::display(Being *observer, bool displayFull) {
 
-      observer->out("display") << "You see " << getTitle() << '.' << std::endl;
+      observer->out("display") << "You see "
+         << getProperty<std::string>(TitleProperty) << '.' << std::endl;
       Tangible::display(observer, displayFull);
    }
 
@@ -61,12 +62,13 @@ namespace trogdor::entity {
 
    void Thing::displayShort(Being *observer) {
 
-      if (shortDesc.length()) {
+      if (isPropertySet(ShortDescProperty) && getProperty<std::string>(ShortDescProperty).length()) {
          Tangible::displayShort(observer);
       }
 
       else {
-         observer->out("display") << "You see " << getTitle() << '.' << std::endl;
+         observer->out("display") << "You see "
+            << getProperty<std::string>(TitleProperty) << '.' << std::endl;
       }
    }
 

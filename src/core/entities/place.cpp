@@ -258,22 +258,27 @@ namespace trogdor::entity {
             observer->out("display") << std::endl;
 
             // Display quantity as an integer
-            if (resourcePtr->areIntegerAllocationsRequired()) {
+            if (resourcePtr->getProperty<bool>(Resource::ReqIntAllocProperty)) {
 
                if (1 == std::lround(resource.second)) {
-                  observer->out("display") << "You see a " << resourcePtr->getTitle() << "." << std::endl;
+                  observer->out("display") << "You see a " <<
+                     resourcePtr->getProperty<std::string>(TitleProperty) <<
+                     "." << std::endl;
                }
 
                else {
                   observer->out("display") << "You see " << std::lround(resource.second)
-                     << " " << resourcePtr->getPluralTitle() << "." << std::endl;
+                     << " "
+                     << resourcePtr->getProperty<std::string>(Resource::PluralTitleProperty)
+                     << "." << std::endl;
                }
             }
 
             // Display quantity as a double
             else {
                observer->out("display") << "You see " << resource.second << " "
-                  << resourcePtr->getPluralTitle() << "." << std::endl;
+                  << resourcePtr->getProperty<std::string>(Resource::PluralTitleProperty)
+                  << "." << std::endl;
             }
          }
       }
@@ -297,10 +302,11 @@ namespace trogdor::entity {
 
    void Place::displayPlace(Being *observer, bool displayFull) {
 
-      observer->out("location") << getTitle();
+      observer->out("location") << getProperty<std::string>(TitleProperty);
       observer->out("location").flush();
 
-      observer->out("display") << getTitle() << std::endl << std::endl;
+      observer->out("display") << getProperty<std::string>(TitleProperty) <<
+         std::endl << std::endl;
       Tangible::display(observer, displayFull);
    }
 

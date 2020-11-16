@@ -13,9 +13,9 @@ namespace trogdor::event {
       Game  *game  = std::get<Game *>(e.getArguments()[0]);
       entity::Being *being = static_cast<entity::Being *>(std::get<entity::Entity *>(e.getArguments()[1]));
 
-      if (being->getRespawnEnabled()) {
+      if (being->getProperty<bool>(entity::Being::RespawnEnabledProperty)) {
 
-         int in = being->getRespawnInterval();
+         int in = being->getProperty<int>(entity::Being::RespawnIntervalProperty);
 
          // we have to wait a certain number of clock ticks
          if (in > 0) {

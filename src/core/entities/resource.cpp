@@ -49,11 +49,45 @@ namespace trogdor::entity {
          std::optional<double> maxAmountPerDepositor,
          bool requireIntegerAllocations,
          std::optional<std::string> pluralName
-   ): Entity(g, n, std::make_unique<NullOut>(), std::make_unique<NullErr>()),
-   requireIntegerAllocations(requireIntegerAllocations),
-   amountAvailable(amountAvailable), maxAmountPerDepositor(maxAmountPerDepositor),
-   plural(pluralName ? *pluralName : language.pluralizeNoun(n)),
-   pluralTitle(plural) {
+   ): Entity(g, n, std::make_unique<NullOut>(), std::make_unique<NullErr>()) {
+
+      if (amountAvailable) {
+         setProperty(AmtAvailProperty, *amountAvailable);
+      }
+
+      if (maxAmountPerDepositor) {
+         setProperty(MaxAmtPerDepositorProperty, *maxAmountPerDepositor);
+      }
+
+      setProperty(ReqIntAllocProperty, requireIntegerAllocations);
+      setProperty(PluralNameProperty, pluralName ? *pluralName : language.pluralizeNoun(n));
+      setProperty(PluralTitleProperty, getProperty<std::string>(PluralNameProperty));
+
+      setPropertyValidator(ReqIntAllocProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
+      setPropertyValidator(PluralNameProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
+      setPropertyValidator(PluralTitleProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
+      setPropertyValidator(MaxAmtPerDepositorProperty, [&](PropertyValue v) -> int {return isPropertyValueDouble(v);});
+
+      // Add property validators after setting initial values of properties for
+      // efficiency (I know the defaults are going to be valid, so there's no
+      // reason to call a validator.)
+      setPropertyValidator(AmtAvailProperty, [&](PropertyValue value) -> int {
+
+         // Value must be a double (only literals with decimals or integers that
+         // are explictly cast to double will pass validation when passed to
+         // setProperty.)
+         if (PROPERTY_VALID != isPropertyValueDouble(value)) {
+            return PROPERTY_INVALID_TYPE;
+         }
+
+         double newAmount = std::get<double>(value);
+
+         if (newAmount < totalAmountAllocated) {
+            return AMOUNT_AVAILABLE_TOO_SMALL;
+         }
+
+         return PROPERTY_VALID;
+      });
 
       types.push_back(ENTITY_RESOURCE);
       setClass("resource");
@@ -65,10 +99,7 @@ namespace trogdor::entity {
       const Resource &r,
       std::string n,
       std::optional<std::string> plural
-   ): Entity(r, n), requireIntegerAllocations(r.requireIntegerAllocations),
-   amountAvailable(r.amountAvailable), maxAmountPerDepositor(r.maxAmountPerDepositor),
-   totalAmountAllocated(0), plural(plural ? *plural : r.plural),
-   pluralTitle(r.pluralTitle) {}
+   ): Entity(r, n), totalAmountAllocated(0) {}
 
    /***************************************************************************/
 
@@ -99,17 +130,17 @@ namespace trogdor::entity {
       > templateParameters = {
 
          {false, {
-            {"{%title}", getTitle()},
+            {"{%title}", getProperty<std::string>(TitleProperty)},
             {"{%name}", getName()},
-            {"{%Title}", capitalize(getTitle())},
+            {"{%Title}", capitalize(getProperty<std::string>(TitleProperty))},
             {"{%Name}", capitalize(getName())}
          }},
 
          {true, {
-            {"{%title}", getPluralTitle()},
-            {"{%name}", getPluralName()},
-            {"{%Title}", capitalize(getPluralTitle())},
-            {"{%Name}", capitalize(getPluralName())}
+            {"{%title}", getProperty<std::string>(PluralTitleProperty)},
+            {"{%name}", getProperty<std::string>(PluralNameProperty)},
+            {"{%Title}", capitalize(getProperty<std::string>(PluralTitleProperty))},
+            {"{%Name}", capitalize(getProperty<std::string>(PluralNameProperty))}
          }}
       };
 
@@ -130,19 +161,20 @@ namespace trogdor::entity {
 
       if (ENTITY_PLAYER == observer->getType()) {
 
-         if (getLongDescription().length() > 0) {
-            observer->out("display") << hydrateString(getLongDescription(), isPlural)
+         if (isPropertySet(LongDescProperty) && getProperty<std::string>(LongDescProperty).length() > 0) {
+            observer->out("display") << hydrateString(getProperty<std::string>(LongDescProperty), isPlural)
                << std::endl;
          }
 
-         else if (getShortDescription().length() > 0) {
-            observer->out("display") << hydrateString(getShortDescription(), isPlural)
+         else if (isPropertySet(ShortDescProperty) && getProperty<std::string>(ShortDescProperty).length() > 0) {
+            observer->out("display") << hydrateString(getProperty<std::string>(ShortDescProperty), isPlural)
                << std::endl;
          }
 
          else {
-            observer->out("display") << "You see "
-               << (isPlural ? getPluralTitle() : getTitle()) << '.' << std::endl;
+            observer->out("display") << "You see " <<
+               (isPlural ? getProperty<std::string>(PluralTitleProperty) : getProperty<std::string>(TitleProperty)) <<
+               '.' << std::endl;
          }
       }
    }
@@ -167,7 +199,7 @@ namespace trogdor::entity {
 
       display(
          observer.get(),
-         areIntegerAllocationsRequired() && 1 == amount ? false : true
+         getProperty<bool>(ReqIntAllocProperty) && 1 == amount ? false : true
       );
 
       if (triggerEvents) {
@@ -242,7 +274,7 @@ namespace trogdor::entity {
 
       auto shared = getShared();
 
-      if (requireIntegerAllocations) {
+      if (getProperty<bool>(ReqIntAllocProperty)) {
 
          double intPart, fracPart = modf(amount, &intPart);
 
@@ -260,7 +292,10 @@ namespace trogdor::entity {
          }
       }
 
-      if (amountAvailable && amount + totalAmountAllocated > *amountAvailable) {
+      if (
+         isPropertySet(AmtAvailProperty) &&
+         amount + totalAmountAllocated > getProperty<double>(AmtAvailProperty)
+      ) {
 
          if (triggerEvents) {
             game->event({
@@ -281,7 +316,10 @@ namespace trogdor::entity {
          updatedBalance += depositors[entity];
       }
 
-      if (maxAmountPerDepositor && updatedBalance > *maxAmountPerDepositor) {
+      if (
+         isPropertySet(MaxAmtPerDepositorProperty) &&
+         updatedBalance > getProperty<double>(MaxAmtPerDepositorProperty)
+      ) {
 
          if (triggerEvents) {
             game->event({
@@ -336,7 +374,7 @@ namespace trogdor::entity {
          return FREE_NEGATIVE_VALUE;
       }
 
-      if (requireIntegerAllocations) {
+      if (getProperty<bool>(ReqIntAllocProperty)) {
 
          double intPart, fracPart = modf(amount, &intPart);
 

@@ -27,6 +27,34 @@ namespace trogdor::entity {
 
       public:
 
+         // Number of health points the being currently has
+         static constexpr const char *HealthProperty = "health";
+
+         // Maximum number of health points possible (0 for immortal)
+         static constexpr const char *MaxHealthProperty = "maxHealth";
+
+         // Max probability of being hit when attacked
+         static constexpr const char *WoundRateProperty = "woundRate";
+
+         // Damage done by the Being to the defender during combat without a weapon
+         static constexpr const char *DamageBareHandsProperty = "damageBareHands";
+
+         // Boolean flag that determines whether or not the Being will respawn
+         // after it dies
+         static constexpr const char *RespawnEnabledProperty = "respawn.enabled";
+
+         // If respawn is enabled, this is how many timer ticks should pass
+         // after death before the Being respawns
+         static constexpr const char *RespawnIntervalProperty = "respawn.interval";
+
+         // If respawn is enabled, this is the number of lives the Being has
+         // before they stop respawning and are dead for good (a value of -1
+         // indicates unlimited lives)
+         static constexpr const char *RespawnLivesProperty = "respawn.lives";
+
+         // Represents the maximum weight a Being's inventory can contain
+         static constexpr const char *InvMaxWeightProperty = "inventory.maxWeight";
+
          // Tag is set if the Being is attackable
          static constexpr const char *AttackableTag = "attackable";
 
@@ -42,6 +70,7 @@ namespace trogdor::entity {
 
          static constexpr bool DEFAULT_ATTACKABLE = true;
          static constexpr int DEFAULT_DAMAGE_BARE_HANDS = 5;
+         static constexpr double DEFAULT_WOUND_RATE = 0.5;
 
          // By default, Beings are immortal (a maximum health needs to be
          // set explicitly)
@@ -142,8 +171,9 @@ namespace trogdor::entity {
                      // been dropped EXCEPT the one who's doing the dropping.
                      for (auto const &thing: location->getThings()) {
                         if (thing.get() != this) {
-                           thing->out("notifications") << getTitle() << " drops "
-                              << resource->amountToString(amount) << ' '
+                           thing->out("notifications")
+                              << getProperty<std::string>(TitleProperty)
+                              << " drops " << resource->amountToString(amount) << ' '
                               << resource->titleToString(amount) << "." << std::endl;
                         }
                      };
@@ -168,8 +198,8 @@ namespace trogdor::entity {
                            << std::endl;
                      } else {
                      out("display") << "This place can only hold "
-                        << resource->amountToString(*resource->getMaxAmountPerDepositor())
-                        << ' ' << resource->titleToString(*resource->getMaxAmountPerDepositor())
+                        << resource->amountToString(resource->getProperty<double>(Resource::MaxAmtPerDepositorProperty))
+                        << ' ' << resource->titleToString(resource->getProperty<double>(Resource::MaxAmtPerDepositorProperty))
                         << '.' << std::endl;
                      }
 
@@ -200,33 +230,15 @@ namespace trogdor::entity {
 
       protected:
 
-         // Once the value for health has been initialized, set this to true.
-         // This is used to determine whether setMaxHealth should also
-         // initialize the value of health.
-         bool healthInitialized = false;
-
-         int health = 0;        // number of health points the being currently has
-         int maxHealth = 0;     // maximum number of health points (0 for immortal)
-
-         double woundRate;      // max probability of being hit when attacked
-         int damageBareHands;   // damage done during combat without a weapon
-
          struct {
-            bool enabled;
-            int  interval;
-            int  lives;
-         } respawnSettings;
-
-         struct {
-            std::unordered_map<std::string, int> values;
             int initialTotal;   // total attributes that the Being started with
+            std::unordered_map<std::string, int> values;
          } attributes;
 
          struct {
 
-            int weight;         // how much weight inventory can hold
+            size_t count;       // number of objects in the inventory
             int currentWeight;  // how much weight is currently used
-            unsigned count;     // number of objects in the inventory
 
             // Inventory items
             std::set<std::shared_ptr<Object>, EntityAlphaComparator> objects;
@@ -377,17 +389,6 @@ namespace trogdor::entity {
          }
 
          /*
-            Returns amount of damage Being does with its bare hands.
-
-            Input:
-               (none)
-
-            Output:
-               int
-         */
-         inline int getDamageBareHands() const {return damageBareHands;}
-
-         /*
             Returns whether or not the Being is alive.
 
             Input:
@@ -396,7 +397,10 @@ namespace trogdor::entity {
             Output:
                bool
          */
-         inline bool isAlive() const {return health || !maxHealth ? true : false;}
+         inline bool isAlive() const {
+
+            return getProperty<int>(HealthProperty) || !getProperty<int>(MaxHealthProperty) ? true : false;
+         }
 
          /*
             Returns true if the Being is immortal and false if it's not.
@@ -407,53 +411,10 @@ namespace trogdor::entity {
             Output:
                bool
          */
-         inline bool isImmortal() const {return maxHealth == 0 ? true : false;}
+         inline bool isImmortal() const {
 
-         /*
-            Indicates whether or not respawning is enabled for this Being.
-
-            Input:
-               (none)
-
-            Output:
-               true or false (bool)
-         */
-         inline bool getRespawnEnabled() const {return respawnSettings.enabled;}
-
-         /*
-            Returns the number of clock ticks that should pass before Being
-            respawns after dying.
-
-            Input:
-               (none)
-
-            Output:
-               number of clock ticks (int)
-         */
-         inline int getRespawnInterval() const {return respawnSettings.interval;}
-
-         /*
-            Returns the number of times a Being can respawn before dying
-            permanently.
-
-            Input:
-               (none)
-
-            Output:
-               number of lives left; -1 indicates unlimited lives (int)
-         */
-         inline int getRespawnLives() const {return respawnSettings.lives;}
-
-         /*
-            Returns the maximum weight of the Being's inventory.
-
-            Input:
-               (none)
-
-            Output:
-               max weight (int)
-         */
-         inline int const getInventoryMaxWeight() const {return inventory.weight;}
+            return 0 == getProperty<int>(MaxHealthProperty) ? true : false;
+         }
 
          /*
             Returns the current weight of the Being's inventory.
@@ -473,9 +434,9 @@ namespace trogdor::entity {
                (none)
 
             Output:
-               Number of items (unsigned int)
+               Number of items (size_t)
          */
-         inline unsigned const getInventoryCount() const {return inventory.count;}
+         inline size_t const getInventoryCount() const {return inventory.count;}
 
          /*
             Returns all objects in the Being's inventory.
@@ -544,28 +505,6 @@ namespace trogdor::entity {
          }
 
          /*
-            Return the Being's current health.
-
-            Input:
-               (none)
-
-            Ouput:
-               Health (int)
-         */
-         inline int getHealth() {return health;}
-
-         /*
-            Return the Being's maximum health.
-
-            Input:
-               (none)
-
-            Ouput:
-               Maximum Health (int)
-         */
-         inline int getMaxHealth() {return maxHealth;}
-
-         /*
             Send out a JSON update every time the player's health is changed.
 
             Input:
@@ -576,115 +515,10 @@ namespace trogdor::entity {
          */
          inline void notifyHealth() {
 
-            out("health") << std::string("{\"health\":") + std::to_string(health) +
-               ",\"maxHealth\":" + std::to_string(maxHealth) + '}';
+            out("health") << std::string("{\"health\":") +
+               std::to_string(getProperty<int>(HealthProperty)) + ",\"maxHealth\":" +
+               std::to_string(getProperty<int>(MaxHealthProperty)) + '}';
             out("health").flush();
-         }
-
-         /*
-            Sets the Being's health.
-
-            Input:
-               Integer number of health points
-
-            Output:
-               (none)
-         */
-         inline void setHealth(int h) {
-
-            // TODO: should I intelligently handle player dying here instead of
-            // in the separate method die()? I think that makes more sense
-            mutex.lock();
-            healthInitialized = true;
-            health = h;
-            mutex.unlock();
-
-            notifyHealth();
-         }
-
-         /*
-            Sets the Being's maximum health (0 for immortal.)
-
-            Input:
-               Integer number of health points
-
-            Output:
-               (none)
-         */
-         inline void setMaxHealth(int h) {
-
-            // If we haven't already initialized the value for health, do so now
-            // (the default value is the same value as maxHealth.)
-            if (!healthInitialized) {
-               setHealth(h);
-            }
-
-            mutex.lock();
-            maxHealth = h;
-            mutex.unlock();
-         }
-
-         /*
-            Sets Being's wound rate, which is a factor in how likely it is to be
-            hit during an attack.
-
-            Input:
-               Double
-
-            Output:
-               (none)
-         */
-         inline void setWoundRate(double rate) {
-
-            mutex.lock();
-            woundRate = rate;
-            mutex.unlock();
-         }
-
-         /*
-            Sets the amount of damage done by the Being's bare hands.
-
-            Input:
-               Int
-
-            Output:
-               (none)
-         */
-         inline void setDamageBareHands(int d) {
-
-            mutex.lock();
-            damageBareHands = d;
-            mutex.unlock();
-         }
-
-         /*
-            Setters for respawn settings.
-
-            Input:
-               values (bool or int)
-
-            Output:
-               (none)
-         */
-         inline void setRespawnEnabled(bool b) {
-
-            mutex.lock();
-            respawnSettings.enabled = b;
-            mutex.unlock();
-         }
-
-         inline void setRespawnInterval(int i) {
-
-            mutex.lock();
-            respawnSettings.interval = i;
-            mutex.unlock();
-         }
-
-         inline void setRespawnLives(int i) {
-
-            mutex.lock();
-            respawnSettings.lives = i;
-            mutex.unlock();
          }
 
          /*
@@ -698,11 +532,11 @@ namespace trogdor::entity {
          */
          inline void incRespawnLives() {
 
+            int respawnLives = getProperty<int>(RespawnLivesProperty);
+
             // only increment number of lives if not unlimited
-            if (respawnSettings.lives > -1) {
-               mutex.lock();
-               respawnSettings.lives++;
-               mutex.unlock();
+            if (respawnLives > -1) {
+               setProperty(RespawnLivesProperty, respawnLives + 1);
             }
          }
 
@@ -750,28 +584,9 @@ namespace trogdor::entity {
          }
 
          /*
-            Sets the inventory's weight.  0 means the Being  can carry an
-            unlimited number of items.
-
-            Input:
-               Weight (int)
-
-            Output:
-               (none)
-         */
-         inline void setInventoryWeight(int w) {
-
-            mutex.lock();
-            inventory.weight = w;
-            mutex.unlock();
-         }
-
-         /*
             Serializes the Being.
-
             Input:
                (none)
-
             Output:
                An object containing easily serializable data (Serializable)
          */

@@ -42,16 +42,22 @@ namespace trogdor {
             }
          }
 
+         int playerInvMaxWeight = player->getProperty<int>(entity::Being::InvMaxWeightProperty);
+
          // List objects
          for (auto const &obj: player->getInventoryObjects()) {
 
-            player->out("display") << obj->getTitle();
+            int objectWeight = obj->getProperty<int>(entity::Object::WeightProperty);
 
-            if (player->getInventoryMaxWeight() > 0) {
+            player->out("display") << obj->getProperty<std::string>(entity::Entity::TitleProperty);
 
-               if (obj->getWeight() > 0) {
-                  double percent = 100 * ((double)obj->getWeight() /
-                     (double)player->getInventoryMaxWeight());
+            if (playerInvMaxWeight > 0) {
+
+               if (objectWeight > 0) {
+                  double percent = 100 * (
+                     static_cast<double>(objectWeight) /
+                     static_cast<double>(playerInvMaxWeight)
+                  );
                   totalPercent += percent;
                   player->out("display") << " (" << percent << "%)";
                }
@@ -64,7 +70,7 @@ namespace trogdor {
             player->out("display") << std::endl;
          };
 
-         if (player->getInventoryMaxWeight() > 0) {
+         if (playerInvMaxWeight > 0) {
             player->out("display") << std::endl << "You are currently using "
                << totalPercent << "% of your inventory." << std::endl;
          }
