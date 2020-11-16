@@ -107,7 +107,16 @@ namespace trogdor::entity {
       serializedAttributes->set("values", serializedAttributeValues);
       data->set("attributes", serializedAttributes);
 
-      // TODO: inventory
+      serializedInventory->set("count", inventory.count);
+      serializedInventory->set("currentWeight", inventory.currentWeight);
+
+      std::vector<std::string> inventoryItems;
+
+      for (const auto &item: inventory.objects) {
+         inventoryItems.push_back(item->getName());
+      }
+
+      data->set("inventory", serializedInventory);
       return data;
    }
 
