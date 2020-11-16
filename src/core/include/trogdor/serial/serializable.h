@@ -25,7 +25,6 @@ namespace trogdor::serial {
          // Constructor
          Serializable() {};
          Serializable(const Serializable &rhs) {*this = rhs;}
-         Serializable(Driver &driver, std::any data) {*this = driver.deserialize(data);}
 
          // Assignment operator
          Serializable &operator=(const Serializable &rhs) {

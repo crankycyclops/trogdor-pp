@@ -165,6 +165,7 @@ add_executable(standalone
 	src/standalone/streamerr.cpp
 	src/standalone/actions/timeaction.cpp
 	src/standalone/actions/quitaction.cpp
+	src/standalone/serial/json.cpp
 )
 
 add_dependencies(standalone trogdor)

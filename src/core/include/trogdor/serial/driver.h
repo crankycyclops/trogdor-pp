@@ -33,7 +33,7 @@ namespace trogdor::serial {
             Output:
                Serialized version (std::any)
          */
-         virtual std::any serialize(const Serializable &data) = 0;
+         virtual std::any serialize(const std::shared_ptr<Serializable> &data) = 0;
 
          /*
             Takes as input a serialized object and outputs a
@@ -45,7 +45,7 @@ namespace trogdor::serial {
             Output:
                Populated instance of Serializable (Serializable)
          */
-         virtual Serializable deserialize(const std::any &data) = 0;
+         virtual std::shared_ptr<Serializable> deserialize(const std::any &data) = 0;
    };
 }
 
