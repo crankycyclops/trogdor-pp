@@ -49,7 +49,7 @@ namespace trogdor::entity {
 
       std::shared_ptr<serial::Serializable> data = Being::serialize();
 
-      // TODO
+      data->set("lastCommand", lastCommand->serialize());
       return data;
    }
 

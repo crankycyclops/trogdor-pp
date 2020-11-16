@@ -93,8 +93,6 @@ namespace trogdor::entity {
    std::shared_ptr<serial::Serializable> Creature::serialize() {
 
       std::shared_ptr<serial::Serializable> data = Being::serialize();
-
-      // TODO
       return data;
    }
 

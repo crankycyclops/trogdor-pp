@@ -8,6 +8,7 @@
 
 #include <trogdor/tokenizer.h>
 #include <trogdor/vocabulary.h>
+#include <trogdor/serial/serializable.h>
 
 namespace trogdor {
 
@@ -89,6 +90,34 @@ namespace trogdor {
             preposition(c.preposition),
             directObjectQty(c.directObjectQty),
             indirectObjectQty(c.indirectObjectQty) {}
+
+         /*
+            Returns a serialized version of an instance of Command.
+
+            Input: (none)
+            Output: An easily serializable object (std::shared_ptr<serial::Serializable>)
+         */
+         inline std::shared_ptr<serial::Serializable> serialize() {
+
+            std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();
+
+            data->set("nullCommand", nullCommand);
+            data->set("invalid", invalid);
+            data->set("verb", verb);
+            data->set("directObject", directObject);
+            data->set("indirectObject", indirectObject);
+            data->set("preposition", preposition);
+
+            if (directObjectQty) {
+               data->set("directObjectQty", *directObjectQty);
+            }
+
+            if (indirectObjectQty) {
+               data->set("indirectObjectQty", *indirectObjectQty);
+            }
+
+            return data;
+         }
 
          /*
             Returns true if the command is invalid.
