@@ -20,7 +20,7 @@ TEST_SUITE("Creature Wander Timer Job (timer/jobs/wander.cpp)") {
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		wanderer.setWanderEnabled(false);
+		wanderer.setProperty(trogdor::entity::Creature::WanderEnabledProperty, false);
 
 		trogdor::Timer mockTimer(&mockGame);
 		trogdor::WanderTimerJob job(&mockGame, 1, -1, 1, &wanderer);
@@ -43,7 +43,7 @@ TEST_SUITE("Creature Wander Timer Job (timer/jobs/wander.cpp)") {
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		wanderer.setWanderEnabled(true);
+		wanderer.setProperty(trogdor::entity::Creature::WanderEnabledProperty, true);
 
 		trogdor::Timer mockTimer(&mockGame);
 		trogdor::WanderTimerJob job(&mockGame, 1, -1, 1, &wanderer);
@@ -63,8 +63,8 @@ TEST_SUITE("Creature Wander Timer Job (timer/jobs/wander.cpp)") {
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		wanderer.setWanderEnabled(true);
-		wanderer.setWanderInterval(5);
+		wanderer.setProperty(trogdor::entity::Creature::WanderEnabledProperty, true);
+		wanderer.setProperty(trogdor::entity::Creature::WanderIntervalProperty, 5);
 
 		trogdor::Timer mockTimer(&mockGame);
 		trogdor::WanderTimerJob job(&mockGame, 1, -1, 1, &wanderer);

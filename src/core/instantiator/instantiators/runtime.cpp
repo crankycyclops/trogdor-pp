@@ -42,9 +42,14 @@ namespace trogdor {
       // timer job for it
       for (auto &creature: game->getCreatures()) {
 
-         if (creature.second->getWanderEnabled()) {
-            game->insertTimerJob(std::make_shared<WanderTimerJob>(game, creature.second->getWanderInterval(),
-               -1, creature.second->getWanderInterval(), creature.second.get()));
+         if (creature.second->getProperty<bool>(entity::Creature::WanderEnabledProperty)) {
+            game->insertTimerJob(std::make_shared<WanderTimerJob>(
+               game,
+               creature.second->getProperty<int>(entity::Creature::WanderIntervalProperty),
+               -1,
+               creature.second->getProperty<int>(entity::Creature::WanderIntervalProperty),
+               creature.second.get())
+            );
          }
       }
    }
@@ -910,7 +915,10 @@ namespace trogdor {
       // Whether or not a Creature will wander throughout the game
       propSetters["creature"]["wandering.enabled"] = [](Game *game, entity::Entity *creature,
       std::string value) {
-         dynamic_cast<entity::Creature *>(creature)->setWanderEnabled(stoi(value));
+         dynamic_cast<entity::Creature *>(creature)->setProperty(
+            entity::Creature::WanderEnabledProperty,
+            static_cast<bool>(stoi(value))
+         );
       };
 
       /**********/
@@ -918,7 +926,19 @@ namespace trogdor {
       // How many clock ticks pass before the Creature considers wanders again
       propSetters["creature"]["wandering.interval"] = [](Game *game, entity::Entity *creature,
       std::string value) {
-         dynamic_cast<entity::Creature *>(creature)->setWanderInterval(stoi(value));
+
+         int status = dynamic_cast<entity::Creature *>(creature)->setProperty(
+            entity::Creature::WanderIntervalProperty,
+            stoi(value)
+         );
+
+         if (entity::Entity::PROPERTY_VALID != status) {
+            throw ValidationException(
+               status == entity::Creature::WANDER_INTERVAL_LESS_THAN_ONE ?
+                  "Wander interval must be greater than or equal to 1" :
+                  "An unknown error occurred when attempting to set wander interval"
+            );
+         }
       };
 
       /**********/
@@ -927,7 +947,19 @@ namespace trogdor {
       // considers moving
       propSetters["creature"]["wandering.wanderlust"] = [](Game *game, entity::Entity *creature,
       std::string value) {
-         dynamic_cast<entity::Creature *>(creature)->setWanderLust(stod(value));
+
+         int status = dynamic_cast<entity::Creature *>(creature)->setProperty(
+            entity::Creature::WanderLustProperty,
+            stod(value)
+         );
+
+         if (entity::Entity::PROPERTY_VALID != status) {
+            throw ValidationException(
+               status == entity::Creature::WANDER_LUST_INVALID_PROBABILITY ?
+                  "Wander lust must be a valid probability (between 0 and 1)" :
+                  "An unknown error occurred when attempting to set wander lust"
+            );
+         }
       };
 
       /**********/

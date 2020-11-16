@@ -10,7 +10,7 @@ namespace trogdor {
 
    void WanderTimerJob::execute() {
 
-      if (!wanderer->getWanderEnabled()) {
+      if (!wanderer->getProperty<bool>(Creature::WanderEnabledProperty)) {
          setExecutions(0);
          return;
       }
@@ -20,6 +20,6 @@ namespace trogdor {
       }
 
       // if wander interval ever changes, we should make sure it's updated
-      setInterval(wanderer->getWanderInterval());
+      setInterval(wanderer->getProperty<int>(Creature::WanderIntervalProperty));
    }
 }

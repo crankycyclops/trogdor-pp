@@ -21,6 +21,12 @@ namespace trogdor::entity {
             ENEMY
          };
 
+         // Wander interval property must be greater than or equal to 1
+         static constexpr int WANDER_INTERVAL_LESS_THAN_ONE = 2;
+
+         // Wander lust must be a valid probability (between 0 and 1)
+         static constexpr int WANDER_LUST_INVALID_PROBABILITY = 3;
+
          // Whether creature is friendly, neutral or aggressive toward others
          static constexpr const char *AllegianceProperty = "allegiance";
 
@@ -39,6 +45,17 @@ namespace trogdor::entity {
          // will pass before the Creature attacks again (if repeat is set to true)
          static constexpr const char *AutoAttackIntervalProperty = "autoattack.interval";
 
+         // If set to true, the Creature will wander about through different rooms
+         static constexpr const char *WanderEnabledProperty = "wander.enabled";
+
+         // If wandering is enabled, this is the number of clock ticks that will
+         // pass before the Creature considers moving to another room
+         static constexpr const char *WanderIntervalProperty = "wander.interval";
+
+         // This represents the probability that the Creature will actually move
+         // each time it considers doing so
+         static constexpr const char *WanderLustProperty = "wander.lust";
+
          // by default, a creature will automatically attack when attacked
          static constexpr bool DEFAULT_COUNTER_ATTACK = true;
          static constexpr enum AllegianceType DEFAULT_ALLEGIANCE = NEUTRAL;
@@ -49,7 +66,7 @@ namespace trogdor::entity {
          static constexpr int  DEFAULT_AUTO_ATTACK_INTERVAL = 5;
 
          // Default wander settings
-         static constexpr bool DEFAULT_WANDER_ENABLE = false;
+         static constexpr bool DEFAULT_WANDER_ENABLED = false;
          static constexpr int DEFAULT_WANDER_INTERVAL = 10;
          static constexpr double DEFAULT_WANDER_LUST = 0.5;
 
@@ -84,14 +101,6 @@ namespace trogdor::entity {
          // added or removed from an inventory object. Should only be called
          // once by the constructor.
          void initUpdateObjectTag();
-
-      protected:
-
-         struct {
-            bool   enabled;
-            int    interval;
-            double wanderlust;
-         } wanderSettings;
 
       public:
 
@@ -177,84 +186,6 @@ namespace trogdor::entity {
             }
 
             return "undefined";
-         }
-
-         /*
-            Returns Creature wander settings.
-
-            Input:
-               (none)
-
-            Output:
-               enabled:    bool
-               interval:   int
-               wanderlust: double
-         */
-         inline bool   getWanderEnabled()  const {return wanderSettings.enabled;}
-         inline int    getWanderInterval() const {return wanderSettings.interval;}
-         inline double getWanderLust()     const {return wanderSettings.wanderlust;}
-
-         /*
-            Sets whether or not automatic wandering is enabled.
-
-            Input:
-               bool
-
-            Output:
-               (none)
-         */
-         inline void setWanderEnabled(bool b) {
-
-            mutex.lock();
-            wanderSettings.enabled = b;
-            mutex.unlock();
-         }
-
-         /*
-            Sets how often (in clock ticks) the Creature considers wandering to
-            another location.
-
-            Input:
-               int
-
-            Output:
-               (none)
-
-            Throws exception if input is invalid (less than 1.)
-         */
-         inline void setWanderInterval(int i) {
-
-            if (i < 1) {
-               throw ValidationException(
-                  "Wander interval must be greater than or equal to 1"
-               );
-            }
-
-            mutex.lock();
-            wanderSettings.interval = i;
-            mutex.unlock();
-         }
-
-         /*
-            Sets probability that Creature will wander on each interval.
-
-            Input:
-               double
-
-            Output:
-               (none)
-
-            Throws exception if input is invalid (not a valid probability.)
-         */
-         inline void setWanderLust(double d) {
-
-            if (d < 0.0 || d  > 1.0) {
-               throw ValidationException("Probability must be between 0 and 1");
-            }
-
-            mutex.lock();
-            wanderSettings.wanderlust = d;
-            mutex.unlock();
          }
 
          /*
