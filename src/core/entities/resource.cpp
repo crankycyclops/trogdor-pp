@@ -110,9 +110,9 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   serial::Serializable Resource::serialize() {
+   std::shared_ptr<serial::Serializable> Resource::serialize() {
 
-      serial::Serializable data = Entity::serialize();
+      std::shared_ptr<serial::Serializable> data = Entity::serialize();
 
       // TODO
       return data;

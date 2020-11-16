@@ -97,15 +97,63 @@ namespace trogdor::entity {
    Entity::Entity(const serial::Serializable &data) {
 
       // TODO
+      // Will have to also install property validators here, so I'll have to
+      // shunt those off to a private method that gets called here and in the
+      // default constructor. Do this for all entities that implement property
+      // validators.
    }
 
    /***************************************************************************/
 
-   serial::Serializable Entity::serialize() {
+   std::shared_ptr<serial::Serializable> Entity::serialize() {
 
-      serial::Serializable data;
+      std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();
+      std::shared_ptr<serial::Serializable> serializedMsgs = std::make_shared<serial::Serializable>();
+      std::shared_ptr<serial::Serializable> serializedMeta = std::make_shared<serial::Serializable>();
+      std::shared_ptr<serial::Serializable> serializedProperties = std::make_shared<serial::Serializable>();
 
-      // TODO
+      data->set("name", name);
+      data->set("class", className);
+
+      std::vector<std::string> typeStrs;
+
+      for (const auto &type: types) {
+         typeStrs.push_back(typeToStr(type));
+      }
+
+      data->set("types", typeStrs);
+
+      std::vector<std::string> tagsArray;
+
+      for (auto it = msgs.cbegin(); it != msgs.cend(); it++) {
+         serializedMsgs->set(it->first, it->second);
+      }
+
+      data->set("messages", serializedMsgs);
+
+      for (const auto &tag: tags) {
+         tagsArray.push_back(tag);
+      }
+
+      data->set("tags", tagsArray);
+
+      for (const auto &metaItem: meta) {
+         serializedMeta->set(metaItem.first, metaItem.second);
+      }
+
+      data->set("meta", serializedMeta);
+
+      for (const auto &property: properties) {
+         std::visit([&](auto &&value) {serializedProperties->set(property.first, value);}, property.second);
+      }
+
+      data->set("properties", serializedProperties);
+      data->set("lua", L->serialize());
+
+      // TODO: I still need to figure out how to serialize event triggers (I
+      // think each trigger will also have a serialize() method.) In that case,
+      // EventTrigger will also have to have a pure virtual method that each
+      // kind of trigger implements, just like we do with the Entity hierarchy.
       return data;
    }
 

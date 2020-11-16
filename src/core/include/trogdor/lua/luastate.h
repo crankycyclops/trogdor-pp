@@ -28,6 +28,7 @@ extern "C" {
 #include <trogdor/lua/api/entities/luaplayer.h>
 
 #include <trogdor/exception/luaexception.h>
+#include <trogdor/serial/serializable.h>
 
 
 namespace trogdor {
@@ -186,6 +187,23 @@ namespace trogdor {
          */
          inline void lock() {mutex.lock();}
          inline void unlock() {mutex.unlock();}
+
+         /*
+            Serializes the Lua state.
+
+            Input:
+               (none)
+
+            Output:
+               Serialized Lua state (std::shared_ptr<Serializable>)
+         */
+         inline std::shared_ptr<serial::Serializable> serialize() {
+
+            std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();
+
+            data->set("scripts", parsedScriptData);
+            return data;
+         }
 
          /*
             Wraps around luaL_register and provides equivalent functionality

@@ -111,9 +111,9 @@ namespace trogdor::entity {
             Input:
                (none)
             Output:
-               An object containing easily serializable data (Serializable)
+               An object containing easily serializable data (std::shared_ptr<Serializable>)
          */
-         virtual serial::Serializable serialize();
+         virtual std::shared_ptr<serial::Serializable> serialize();
 
          /*
             Extends Thing::addAlias(), and ensures that if the Object is owned,

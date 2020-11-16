@@ -87,9 +87,9 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   serial::Serializable Being::serialize() {
+   std::shared_ptr<serial::Serializable> Being::serialize() {
 
-      serial::Serializable data = Thing::serialize();
+      std::shared_ptr<serial::Serializable> data = Thing::serialize();
 
       // TODO
       return data;

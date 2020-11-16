@@ -135,9 +135,9 @@ namespace trogdor::entity {
                (none)
 
             Output:
-               An object containing easily serializable data (Serializable)
+               An object containing easily serializable data (std::shared_ptr<Serializable>)
          */
-         virtual serial::Serializable serialize();
+         virtual std::shared_ptr<serial::Serializable> serialize();
 
          /*
             Inserts a Player that resides inside the Place.

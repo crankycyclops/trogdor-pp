@@ -38,6 +38,16 @@ namespace trogdor {
          }
 
          /*
+            Returns constant iterators to the internal message table (this
+            won't work with for-range loops.)
+
+            Input: (none)
+            Output: Constant iterator
+         */
+         inline auto cbegin() {return messageTable.cbegin();}
+         inline auto cend() {return messageTable.cend();}
+
+         /*
             Clears all messages.
 
             Input: (none)

@@ -35,9 +35,9 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   serial::Serializable Place::serialize() {
+   std::shared_ptr<serial::Serializable> Place::serialize() {
 
-      serial::Serializable data = Tangible::serialize();
+      std::shared_ptr<serial::Serializable> data = Tangible::serialize();
 
       // TODO
       return data;

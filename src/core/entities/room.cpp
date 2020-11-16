@@ -30,9 +30,9 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   serial::Serializable Room::serialize() {
+   std::shared_ptr<serial::Serializable> Room::serialize() {
 
-      serial::Serializable data = Place::serialize();
+      std::shared_ptr<serial::Serializable> data = Place::serialize();
 
       // TODO
       return data;

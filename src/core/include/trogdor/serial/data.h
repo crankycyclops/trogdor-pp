@@ -3,6 +3,7 @@
 
 
 #include <variant>
+#include <vector>
 #include <string>
 #include <memory>
 
@@ -24,6 +25,7 @@ namespace trogdor::serial {
       double,
       bool,
       std::string,
+      std::vector<std::string>,
       std::shared_ptr<Serializable>
    > Value;
 }
