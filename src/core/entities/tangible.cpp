@@ -27,8 +27,42 @@ namespace trogdor::entity {
    std::shared_ptr<serial::Serializable> Tangible::serialize() {
 
       std::shared_ptr<serial::Serializable> data = Entity::serialize();
+      std::vector<std::string> serializedGlancedBy;
 
-      // TODO
+      for (const auto &glancedBy: glancedByMap) {
+         if (auto observer = glancedBy.lock()) {
+            serializedGlancedBy.push_back(observer->getName());
+         }
+      }
+
+      data->set("glancedBy", serializedGlancedBy);
+
+      std::vector<std::string> serializedObservedBy;
+
+      for (const auto &observedBy: observedByMap) {
+         if (auto observer = observedBy.lock()) {
+            serializedObservedBy.push_back(observer->getName());
+         }
+      }
+
+      data->set("observedBy", serializedObservedBy);
+
+      std::vector<std::shared_ptr<serial::Serializable>> serializedResources;
+
+      for (const auto &resource: resources) {
+
+         if (auto resourcePtr = resource.first.lock()) {
+
+            std::shared_ptr<serial::Serializable> serializedResource = std::make_shared<serial::Serializable>();
+
+            serializedResource->set("resource", resourcePtr->getName());
+            serializedResource->set("amount", resource.second);
+
+            serializedResources.push_back(serializedResource);
+         }
+      }
+
+      data->set("resources", serializedResources);
       return data;
    }
 
