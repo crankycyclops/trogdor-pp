@@ -45,7 +45,11 @@ namespace trogdor::entity {
 
       std::shared_ptr<serial::Serializable> data = Tangible::serialize();
 
-      // TODO
+      if (auto locationPtr = location.lock()) {
+         data->set("location", locationPtr->getName());
+      }
+
+      data->set("aliases", aliases);
       return data;
    }
 
