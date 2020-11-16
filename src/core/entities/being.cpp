@@ -90,8 +90,24 @@ namespace trogdor::entity {
    std::shared_ptr<serial::Serializable> Being::serialize() {
 
       std::shared_ptr<serial::Serializable> data = Thing::serialize();
+      std::shared_ptr<serial::Serializable> serializedAttributes = std::make_shared<serial::Serializable>();
+      std::shared_ptr<serial::Serializable> serializedInventory = std::make_shared<serial::Serializable>();
+      std::vector<std::shared_ptr<serial::Serializable>> serializedAttributeValues;
 
-      // TODO
+      serializedAttributes->set("initialTotal", attributes.initialTotal);
+
+      for (const auto &attribute: attributes.values) {
+
+         std::shared_ptr<serial::Serializable> value = std::make_shared<serial::Serializable>();
+
+         value->set(attribute.first, attribute.second);
+         serializedAttributeValues.push_back(value);
+      }
+
+      serializedAttributes->set("values", serializedAttributeValues);
+      data->set("attributes", serializedAttributes);
+
+      // TODO: inventory
       return data;
    }
 
