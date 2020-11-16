@@ -43,7 +43,10 @@ namespace trogdor::entity {
 
       std::shared_ptr<serial::Serializable> data = Thing::serialize();
 
-      // TODO
+      if (auto ownerPtr = owner.lock()) {
+         data->set("owner", ownerPtr->getName());
+      }
+
       return data;
    }
 
