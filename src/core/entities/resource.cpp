@@ -113,8 +113,22 @@ namespace trogdor::entity {
    std::shared_ptr<serial::Serializable> Resource::serialize() {
 
       std::shared_ptr<serial::Serializable> data = Entity::serialize();
+      std::vector<std::shared_ptr<serial::Serializable>> serializedDepositors;
 
-      // TODO
+      for (const auto &depositor: depositors) {
+
+         if (const auto owner = depositor.first.lock()) {
+
+            std::shared_ptr<serial::Serializable> serializedDepositor = std::make_shared<serial::Serializable>();
+
+            serializedDepositor->set("depositor", owner->getName());
+            serializedDepositor->set("amount", depositor.second);
+            serializedDepositors.push_back(serializedDepositor);
+         }
+      }
+
+      data->set("depositors", serializedDepositors);
+      data->set("totalAmountAllocated", totalAmountAllocated);
       return data;
    }
 

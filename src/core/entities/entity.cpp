@@ -108,9 +108,6 @@ namespace trogdor::entity {
    std::shared_ptr<serial::Serializable> Entity::serialize() {
 
       std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();
-      std::shared_ptr<serial::Serializable> serializedMsgs = std::make_shared<serial::Serializable>();
-      std::shared_ptr<serial::Serializable> serializedMeta = std::make_shared<serial::Serializable>();
-      std::shared_ptr<serial::Serializable> serializedProperties = std::make_shared<serial::Serializable>();
 
       data->set("name", name);
       data->set("class", className);
@@ -123,17 +120,21 @@ namespace trogdor::entity {
 
       data->set("types", typeStrs);
 
-      std::vector<std::string> tagsArray;
+      std::shared_ptr<serial::Serializable> serializedMsgs = std::make_shared<serial::Serializable>();
 
       for (auto it = msgs.cbegin(); it != msgs.cend(); it++) {
          serializedMsgs->set(it->first, it->second);
       }
+
+      std::vector<std::string> tagsArray;
 
       data->set("messages", serializedMsgs);
 
       for (const auto &tag: tags) {
          tagsArray.push_back(tag);
       }
+
+      std::shared_ptr<serial::Serializable> serializedMeta = std::make_shared<serial::Serializable>();
 
       data->set("tags", tagsArray);
 
@@ -143,8 +144,12 @@ namespace trogdor::entity {
 
       data->set("meta", serializedMeta);
 
+      std::shared_ptr<serial::Serializable> serializedProperties = std::make_shared<serial::Serializable>();
+
       for (const auto &property: properties) {
-         std::visit([&](auto &&value) {serializedProperties->set(property.first, value);}, property.second);
+         std::visit([&](auto &&value) {
+            serializedProperties->set(property.first, value);
+         }, property.second);
       }
 
       data->set("properties", serializedProperties);

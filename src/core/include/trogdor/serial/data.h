@@ -25,8 +25,9 @@ namespace trogdor::serial {
       double,
       bool,
       std::string,
+      std::shared_ptr<Serializable>,
       std::vector<std::string>,
-      std::shared_ptr<Serializable>
+      std::vector<std::shared_ptr<Serializable>>
    > Value;
 }
 
