@@ -97,11 +97,6 @@ namespace trogdor::entity {
          // the first time an object is added to a creature's inventory.
          std::shared_ptr<std::function<bool(std::any)>> updateObjectTag;
 
-         // Creates the updateObjectTag callback, which fires whenever a tag is
-         // added or removed from an inventory object. Should only be called
-         // once by the constructor.
-         void initUpdateObjectTag();
-
       public:
 
          /*
