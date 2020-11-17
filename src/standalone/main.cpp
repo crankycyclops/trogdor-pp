@@ -18,6 +18,7 @@
 #include "include/streamerr.h"
 #include "include/actions/timeaction.h"
 #include "include/actions/quitaction.h"
+#include "include/actions/saveaction.h"
 
 
 int main(int argc, char **argv) {
@@ -74,6 +75,7 @@ int main(int argc, char **argv) {
    // The client can also implement its own custom game actions
    currentGame->insertVerbAction("time", std::make_unique<TimeAction>());
    currentGame->insertVerbAction("quit", std::make_unique<QuitAction>());
+   currentGame->insertVerbAction("save", std::make_unique<SaveAction>());
 
    // The client can add its own synonyms for built-in verbs
    currentGame->insertVerbSynonym("escape", "quit");

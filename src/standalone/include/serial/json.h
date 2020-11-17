@@ -48,7 +48,8 @@ namespace trogdor::serial {
             const std::shared_ptr<Serializable> &data
          ) {
 
-            std::shared_ptr<rapidjson::Document> object;
+            std::shared_ptr<rapidjson::Document> object =
+               std::make_shared<rapidjson::Document>(rapidjson::kObjectType);
             return doSerialize(object->GetAllocator(), data, object);
          }
 

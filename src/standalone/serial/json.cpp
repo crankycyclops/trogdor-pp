@@ -13,7 +13,7 @@ namespace trogdor::serial {
 	) {
 
 		if (!document) {
-			document = std::make_shared<rapidjson::Document>();
+			document = std::make_shared<rapidjson::Document>(rapidjson::kObjectType);
 		}
 
 		for (const auto &value: data->getAll()) {
@@ -98,7 +98,12 @@ namespace trogdor::serial {
 
 	std::any Json::serialize(const std::shared_ptr<Serializable> &data) {
 
-		return doSerialize(data);
+		rapidjson::StringBuffer buffer;
+		rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+		std::shared_ptr<rapidjson::Document> obj = doSerialize(data);
+
+		obj->Accept(writer);
+		return std::string(buffer.GetString());
 	}
 
 	/************************************************************************/
