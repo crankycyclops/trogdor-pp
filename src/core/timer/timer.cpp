@@ -47,6 +47,22 @@ namespace trogdor {
 
 /******************************************************************************/
 
+   std::shared_ptr<serial::Serializable> Timer::serialize() {
+
+      // TODO: find some way to serialize/deserialize timer jobs
+      std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();
+
+      data->set("active", active);
+      data->set("time", time);
+      data->set("tickInterval", static_cast<size_t>(tickInterval.count()));
+      data->set("lastTickTime", static_cast<size_t>(lastTickTime.count()));
+      data->set("jobThreadSleepTime", static_cast<size_t>(jobThreadSleepTime.count()));
+
+      return data;
+   }
+
+/******************************************************************************/
+
    void Timer::tick() {
 
       // increment the current game time

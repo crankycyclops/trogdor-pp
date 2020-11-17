@@ -33,16 +33,11 @@ namespace trogdor::entity {
    std::shared_ptr<serial::Serializable> Room::serialize() {
 
       std::shared_ptr<serial::Serializable> data = Place::serialize();
-      std::vector<std::shared_ptr<serial::Serializable>> serializedConnections;
+      std::shared_ptr<serial::Serializable> serializedConnections  = std::make_shared<serial::Serializable>();
 
       for (const auto &connection: connections) {
-
          if (const auto &connectedRoom = connection.second.lock()) {
-
-            std::shared_ptr<serial::Serializable> serializedConnection = std::make_shared<serial::Serializable>();
-
-            serializedConnection->set(connection.first, connectedRoom->getName());
-            serializedConnections.push_back(serializedConnection);
+            serializedConnections->set(connection.first, connectedRoom->getName());
          }
       }
 

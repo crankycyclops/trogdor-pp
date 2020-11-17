@@ -94,6 +94,7 @@ namespace trogdor {
 
       data->set("inGame", inGame);
       data->set("lua", L->serialize());
+      data->set("timer", timer->serialize());
       data->set("introduction", serializedIntro);
       data->set("meta", serializedMeta);
       data->set("defaultPlayer", defaultPlayer->serialize());
@@ -103,7 +104,7 @@ namespace trogdor {
          start();
       }
 
-      // TODO: serialize timer and eventListeners
+      // TODO: serialize eventListeners
       return data;
    }
 

@@ -41,9 +41,9 @@ namespace trogdor {
          // then we use that instead.
          const size_t THREAD_SLEEP_MILLISECONDS = 100;
 
-         Game *game;                    // The game in which the timer is running
-         bool active;                   // Whether or not the timer is active
-         unsigned long time;            // Current time
+         Game *game;                // The game in which the timer is running
+         bool active;               // Whether or not the timer is active
+         size_t time;               // Current time
 
          // Synchronize access to Timer
          std::mutex mutex;
@@ -102,12 +102,20 @@ namespace trogdor {
          ~Timer();
 
          /*
+            Serializes the Timer.
+
+            Input: (none)
+            Output: Timer instance's data (std::shared_ptr<serial::Serializable>)
+         */
+         std::shared_ptr<serial::Serializable> serialize();
+
+         /*
             Returns the current time.
 
             Input: (none)
-            Output: Current time (unsigned long)
+            Output: Current time (size_t)
          */
-         inline unsigned long getTime() const {return time;}
+         inline size_t getTime() const {return time;}
 
          /*
             Returns bool to determine whether or not the timer is ticking.
