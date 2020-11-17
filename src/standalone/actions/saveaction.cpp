@@ -1,4 +1,5 @@
 #include <memory>
+#include <fstream>
 #include <trogdor/entities/player.h>
 
 #include "../include/serial/json.h"
@@ -35,6 +36,13 @@ void SaveAction::execute(
    trogdor::serial::Json driver;
    std::shared_ptr<trogdor::serial::Serializable> data = game->serialize();
 
-   // TODO
-   std::cout << std::any_cast<std::string>(driver.serialize(data)) << std::endl;
+   ofstream outputFile(filename);
+
+   if (outputFile.is_open()) {
+      outputFile << std::any_cast<std::string>(driver.serialize(data));
+      outputFile.close();
+      player->out() << "Game state saved to " << filename << '.' << std::endl;
+   } else {
+      player->out() << "Failed to save game state to " << filename << '.' << std::endl;
+   }
 }
