@@ -90,11 +90,11 @@ namespace trogdor::entity {
    std::shared_ptr<serial::Serializable> Being::serialize() {
 
       std::shared_ptr<serial::Serializable> data = Thing::serialize();
+
+      std::vector<std::string> inventoryItems;
       std::shared_ptr<serial::Serializable> serializedAttributes = std::make_shared<serial::Serializable>();
       std::shared_ptr<serial::Serializable> serializedInventory = std::make_shared<serial::Serializable>();
       std::vector<std::shared_ptr<serial::Serializable>> serializedAttributeValues;
-
-      serializedAttributes->set("initialTotal", attributes.initialTotal);
 
       for (const auto &attribute: attributes.values) {
 
@@ -104,19 +104,19 @@ namespace trogdor::entity {
          serializedAttributeValues.push_back(value);
       }
 
+      for (const auto &item: inventory.objects) {
+         inventoryItems.push_back(item->getName());
+      }
+
+      serializedAttributes->set("initialTotal", attributes.initialTotal);
       serializedAttributes->set("values", serializedAttributeValues);
       data->set("attributes", serializedAttributes);
 
       serializedInventory->set("count", inventory.count);
       serializedInventory->set("currentWeight", inventory.currentWeight);
-
-      std::vector<std::string> inventoryItems;
-
-      for (const auto &item: inventory.objects) {
-         inventoryItems.push_back(item->getName());
-      }
-
+      serializedInventory->set("objects", inventoryItems);
       data->set("inventory", serializedInventory);
+
       return data;
    }
 
