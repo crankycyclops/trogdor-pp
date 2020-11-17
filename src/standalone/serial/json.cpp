@@ -77,6 +77,12 @@ namespace trogdor::serial {
 						std::shared_ptr<rapidjson::Document> serializedObj = doSerialize(allocator, obj);
 						objArray.PushBack(*serializedObj, allocator);
 					}
+
+					document->AddMember(
+						rapidjson::StringRef(value.first.c_str()),
+						objArray,
+						allocator
+					);
 				}
 
 				else {
