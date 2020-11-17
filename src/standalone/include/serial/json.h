@@ -2,6 +2,10 @@
 #define SERIAL_DRIVER_JSON_H
 
 
+#include <rapidjson/document.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
+
 #include <trogdor/serial/driver.h>
 
 namespace trogdor::serial {
@@ -9,6 +13,44 @@ namespace trogdor::serial {
 
    // Maps data from an instance of Serializer to JSON.
    class Json: public Driver {
+
+      private:
+
+         /*
+            A recursive method that does the actual work of serializing an
+            instance of Serializable.
+
+            Input:
+               Allocator belonging to the root RapidJSON Document
+               Serializable data
+               The root document, or nullptr if creating a subdocument
+
+            Output:
+               A RapidJSON Document
+         */
+         std::shared_ptr<rapidjson::Document> doSerialize(
+            rapidjson::MemoryPoolAllocator<> &allocator,
+            const std::shared_ptr<Serializable> &data,
+            std::shared_ptr<rapidjson::Document> document = nullptr
+         );
+
+         /*
+            Our entrypoint into the actual doSerialize() method that first
+            initializes the root RapidJSON document.
+
+            Input:
+               Serializable data
+
+            Output:
+               A RapidJSON Document
+         */
+         inline std::shared_ptr<rapidjson::Document> doSerialize(
+            const std::shared_ptr<Serializable> &data
+         ) {
+
+            std::shared_ptr<rapidjson::Document> object;
+            return doSerialize(object->GetAllocator(), data, object);
+         }
 
       public:
 

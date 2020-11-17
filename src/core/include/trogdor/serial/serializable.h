@@ -57,7 +57,7 @@ namespace trogdor::serial {
             Output:
                Container's size (size_t)
          */
-         size_t size() {return data.size();}
+         size_t size() const {return data.size();}
 
          /*
             Sets a value.
@@ -92,7 +92,7 @@ namespace trogdor::serial {
             Output:
                const std::unordered_map<std::string, Value> &
          */
-         const std::unordered_map<std::string, Value> &getAll() {return data;}
+         const std::unordered_map<std::string, Value> &getAll() const {return data;}
 
          /*
             Returns the specified value if it exists or std::nullopt if
@@ -104,9 +104,10 @@ namespace trogdor::serial {
             Output:
                std::optional<Value>
          */
-         std::optional<Value> get(std::string key) {
+         std::optional<Value> get(std::string key) const {
 
-            return data.find(key) != data.end() ? std::optional<Value>(data[key]) : std::nullopt;
+            return data.find(key) != data.end() ?
+               std::optional<Value>(data.find(key)->second) : std::nullopt;
          }
    };
 }
