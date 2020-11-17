@@ -28,7 +28,11 @@ namespace trogdor::serial {
 					std::is_same_v<T, double> ||
 					std::is_same_v<T, bool>
 				) {
-					document->AddMember(rapidjson::StringRef(value.first.c_str()), arg, allocator);
+					document->AddMember(
+						rapidjson::StringRef(value.first.c_str()),
+						arg,
+						allocator
+					);
 				}
 
 				else if constexpr (std::is_same_v<T, std::string>){
@@ -40,18 +44,38 @@ namespace trogdor::serial {
 				}
 
 				else if constexpr (std::is_same_v<T, std::shared_ptr<Serializable>>) {
-					// TODO
+
+					std::shared_ptr<rapidjson::Document> obj = doSerialize(allocator, arg);
+
+					document->AddMember(
+						rapidjson::StringRef(value.first.c_str()),
+						*obj,
+						allocator
+					);
 				}
 
 				else if constexpr (std::is_same_v<T, std::vector<std::string>>) {
+
+					rapidjson::Value stringArr(rapidjson::kArrayType);
+
 					for (const auto &strVal: arg) {
-						// TODO
+						stringArr.PushBack(rapidjson::StringRef(strVal.c_str()), allocator);
 					}
+
+					document->AddMember(
+						rapidjson::StringRef(value.first.c_str()),
+						stringArr,
+						allocator
+					);
 				}
 
 				else if constexpr (std::is_same_v<T, std::vector<std::shared_ptr<Serializable>>>) {
-					for (const auto &strVal: arg) {
-						// TODO
+
+					rapidjson::Value objArray(rapidjson::kArrayType);
+
+					for (const auto &obj: arg) {
+						std::shared_ptr<rapidjson::Document> serializedObj = doSerialize(allocator, obj);
+						objArray.PushBack(*serializedObj, allocator);
 					}
 				}
 
