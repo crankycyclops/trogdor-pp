@@ -100,6 +100,10 @@ namespace trogdor {
       data->set("defaultPlayer", defaultPlayer->serialize());
       data->set("entities", serializedEntities);
 
+      // TODO: if I'm stopping game and timer to ensure consistency while
+      // serializing, how do I want to signal to deserialization later that it
+      // should be started again? Should that be automatic? Should serialization
+      // include extra setting to specify? Will need to think about this.
       if (gameWasStarted) {
          start();
       }

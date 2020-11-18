@@ -35,6 +35,18 @@ namespace trogdor::serial {
          );
 
          /*
+            Takes a RapidJSON Value (or Document) and returns a Serializable
+            object constructed from it.
+
+            Input:
+               RapidJSON value (const rapidjson::Value &)
+
+            Output:
+               An instance of Serializable
+         */
+         std::shared_ptr<Serializable> doDeserialize(const rapidjson::Value &jsonObj);
+
+         /*
             Our entrypoint into the actual doSerialize() method that first
             initializes the root RapidJSON document.
 

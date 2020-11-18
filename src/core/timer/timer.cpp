@@ -54,6 +54,9 @@ namespace trogdor {
 
       data->set("active", active);
       data->set("time", time);
+
+      // Casting int64_t -> size_t is *probably* safe, but could fail on a
+      // 32-bit system
       data->set("tickInterval", static_cast<size_t>(tickInterval.count()));
       data->set("lastTickTime", static_cast<size_t>(lastTickTime.count()));
       data->set("jobThreadSleepTime", static_cast<size_t>(jobThreadSleepTime.count()));
