@@ -157,10 +157,18 @@ namespace trogdor {
 
          /*
             Constructor for the Game class (require the error stream as an
-            argument.)
+            argument.) The second constuctor creates an instance of Game from
+            serialized data (for an explanation of the arguments, see the
+            definition of Game::deserialize.)
          */
          Game() = delete;
          Game(std::unique_ptr<Trogerr> e);
+         Game(
+            std::shared_ptr<serial::Serializable> data,
+            std::unique_ptr<Trogerr> gameErrStream,
+            std::function<std::unique_ptr<Trogout>(Game *)> makeOutStream,
+            std::function<std::unique_ptr<Trogerr>(Game *)> makeErrStream = {}
+         );
 
          /*
             Don't allow copying since I don't currently have a good reason to
@@ -188,6 +196,27 @@ namespace trogdor {
                A version of Game in an easily serializable format
          */
          std::shared_ptr<serial::Serializable> serialize();
+
+         /*
+            Replaces the current game state with a previously serialized object.
+            Takes as input callbacks that create output and error streams for
+            each deserialized player. The error stream callback is optional, and
+            if the argument isn't provided, the Game object's own error stream
+            will be used.
+
+            Input:
+               Serialized data (std::shared_ptr<serial::Serializable>)
+               Callback that generates each player's output stream
+               Callback that generates each player's error stream (optional)
+
+            Output:
+               (none)
+         */
+         void deserialize(
+            std::shared_ptr<serial::Serializable> data,
+            std::function<std::unique_ptr<Trogout>(Game *)> makeOutStream,
+            std::function<std::unique_ptr<Trogerr>(Game *)> makeErrStream = {}
+         );
 
          /*
             Returns an instance of the Runtime instantiator.

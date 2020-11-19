@@ -61,6 +61,19 @@ namespace trogdor {
 
    /***************************************************************************/
 
+   Game::Game(
+      std::shared_ptr<serial::Serializable> data,
+      std::unique_ptr<Trogerr> gErrStream,
+      std::function<std::unique_ptr<Trogout>(Game *)> makeOutStream,
+      std::function<std::unique_ptr<Trogerr>(Game *)> makeErrStream
+   ) {
+
+         errStream = std::move(gErrStream);
+         deserialize(data, makeOutStream, makeErrStream);
+   }
+
+   /***************************************************************************/
+
    // Empty destructor required here (if I don't include this, the compiler will
    // choke.)
    Game::~Game() {}
@@ -110,6 +123,17 @@ namespace trogdor {
 
       // TODO: serialize eventListeners
       return data;
+   }
+
+   /***************************************************************************/
+
+   void Game::deserialize(
+      std::shared_ptr<serial::Serializable> data,
+      std::function<std::unique_ptr<Trogout>(Game *)> makeOutStream,
+      std::function<std::unique_ptr<Trogerr>(Game *)> makeErrStream
+   ) {
+
+      // TODO
    }
 
    /***************************************************************************/

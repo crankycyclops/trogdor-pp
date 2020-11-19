@@ -19,6 +19,7 @@
 #include "include/actions/timeaction.h"
 #include "include/actions/quitaction.h"
 #include "include/actions/saveaction.h"
+#include "include/actions/loadaction.h"
 
 
 int main(int argc, char **argv) {
@@ -76,6 +77,7 @@ int main(int argc, char **argv) {
    currentGame->insertVerbAction("time", std::make_unique<TimeAction>());
    currentGame->insertVerbAction("quit", std::make_unique<QuitAction>());
    currentGame->insertVerbAction("save", std::make_unique<SaveAction>());
+   currentGame->insertVerbAction("load", std::make_unique<LoadAction>());
 
    // The client can add its own synonyms for built-in verbs
    currentGame->insertVerbSynonym("escape", "quit");

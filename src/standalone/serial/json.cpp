@@ -112,12 +112,16 @@ namespace trogdor::serial {
 
 				case rapidjson::kNumberType:
 
+					// TODO: this will work ok for 64-bit machines, but
+					// will cause problems on 32-bit machines
 					if (it->value.IsDouble()) {
 						obj->set(it->name.GetString(), it->value.GetDouble());
 					} else if (it->value.IsUint()) {
 						obj->set(it->name.GetString(), static_cast<size_t>(it->value.GetUint()));
+					} else if (it->value.IsUint64()) {
+						obj->set(it->name.GetString(), static_cast<size_t>(it->value.GetUint64()));
 					} else {
-						obj->set(it->name.GetString(), it->value.GetInt());
+						obj->set(it->name.GetString(), static_cast<int>(it->value.GetInt()));
 					}
 
 					break;
