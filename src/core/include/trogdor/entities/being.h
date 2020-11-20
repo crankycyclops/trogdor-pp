@@ -228,6 +228,28 @@ namespace trogdor::entity {
             }
          }
 
+         /*
+            Sets property validators for all properties settable by Being.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void setPropertyValiators();
+
+         /*
+            Sets property setting callbacks for Being.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void setPropertyCallbacks();
+
       protected:
 
          struct {
@@ -367,9 +389,10 @@ namespace trogdor::entity {
             This constructor deserializes a Being.
 
             Input:
+               Game the Being belongs to (Game *)
                Raw deserialized data (const Serializable &)
          */
-         Being(const serial::Serializable &data);
+         Being(Game *g, const serial::Serializable &data);
 
          /*
             Returns a smart pointer representing a raw Being pointer. Be careful

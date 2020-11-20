@@ -46,12 +46,17 @@ namespace trogdor::entity {
             error stream arguments.
 
             Input:
+               Game the entity belongs to (Game *)
                Raw deserialized data (const Serializable &)
                Output stream (std::unique_ptr<Trogout> o)
                Error stream (std::unique_ptr<Trogerr> e)
          */
-         Player(const serial::Serializable &data, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogerr> e);
+         Player(
+            Game *g,
+            const serial::Serializable &data,
+            std::unique_ptr<Trogout> o,
+            std::unique_ptr<Trogerr> e
+         );
 
          /*
             Returns a smart pointer representing a raw Player pointer. Be careful

@@ -23,7 +23,7 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Room::Room(const serial::Serializable &data): Place(data) {
+   Room::Room(Game *g, const serial::Serializable &data): Place(g, data) {
 
       // TODO
    }

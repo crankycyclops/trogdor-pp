@@ -14,6 +14,19 @@ namespace trogdor::entity {
 
    class Object: public Thing {
 
+      private:
+
+         /*
+            Sets property validators for all properties settable by Object.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void setPropertyValidators();
+
       protected:
 
          // A Being might own the object
@@ -57,9 +70,10 @@ namespace trogdor::entity {
             This constructor deserializes an Object.
 
             Input:
+               Game the Object belongs to (Game *)
                Raw deserialized data (const Serializable &)
          */
-         Object(const serial::Serializable &data);
+         Object(Game *g, const serial::Serializable &data);
 
          /*
             Returns a smart pointer representing a raw Object pointer. Be careful

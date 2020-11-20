@@ -35,10 +35,11 @@ namespace trogdor::entity {
    /***************************************************************************/
 
    Player::Player(
+      Game *g,
       const serial::Serializable &data,
       std::unique_ptr<Trogout> o,
       std::unique_ptr<Trogerr> e
-   ): Being(data) {
+   ): Being(g, data) {
 
       // TODO
    }

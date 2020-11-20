@@ -40,9 +40,10 @@ namespace trogdor::entity {
             This constructor deserializes a Room.
 
             Input:
+               Game the Room belongs to (Game *)
                Raw deserialized data (const Serializable &)
          */
-         Room(const serial::Serializable &data);
+         Room(Game *g, const serial::Serializable &data);
 
          /*
             Returns a smart pointer representing a raw Room pointer. Be careful

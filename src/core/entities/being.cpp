@@ -12,22 +12,7 @@
 namespace trogdor::entity {
 
 
-   Being::Being(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o), std::move(e)) {
-
-      setAttribute("strength", DEFAULT_ATTRIBUTE_STRENGTH);
-      setAttribute("dexterity", DEFAULT_ATTRIBUTE_DEXTERITY);
-      setAttribute("intelligence", DEFAULT_ATTRIBUTE_INTELLIGENCE);
-      setAttributesInitialTotal();
-
-      setProperty(HealthProperty, static_cast<int>(0));
-      setProperty(MaxHealthProperty, DEFAULT_MAX_HEALTH);
-      setProperty(WoundRateProperty, DEFAULT_WOUND_RATE);
-      setProperty(DamageBareHandsProperty, DEFAULT_DAMAGE_BARE_HANDS);
-      setProperty(RespawnEnabledProperty, DEFAULT_RESPAWN_ENABLED);
-      setProperty(RespawnIntervalProperty, DEFAULT_RESPAWN_INTERVAL);
-      setProperty(RespawnLivesProperty, DEFAULT_RESPAWN_LIVES);
-      setProperty(InvMaxWeightProperty, DEFAULT_INVENTORY_WEIGHT);
+   void Being::setPropertyValiators() {
 
       setPropertyValidator(HealthProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
       setPropertyValidator(MaxHealthProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
@@ -37,6 +22,11 @@ namespace trogdor::entity {
       setPropertyValidator(RespawnIntervalProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
       setPropertyValidator(RespawnLivesProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
       setPropertyValidator(InvMaxWeightProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+   }
+
+   /***************************************************************************/
+
+   void Being::setPropertyCallbacks() {
 
       // This callback will make sure that if the Being's max health is set
       // before its actual current health, the current health will be
@@ -56,6 +46,29 @@ namespace trogdor::entity {
 
          return false;
       }));
+   }
+
+   /**************************************************************************/
+
+   Being::Being(Game *g, std::string n, std::unique_ptr<Trogout> o,
+   std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o), std::move(e)) {
+
+      setAttribute("strength", DEFAULT_ATTRIBUTE_STRENGTH);
+      setAttribute("dexterity", DEFAULT_ATTRIBUTE_DEXTERITY);
+      setAttribute("intelligence", DEFAULT_ATTRIBUTE_INTELLIGENCE);
+      setAttributesInitialTotal();
+
+      setProperty(HealthProperty, static_cast<int>(0));
+      setProperty(MaxHealthProperty, DEFAULT_MAX_HEALTH);
+      setProperty(WoundRateProperty, DEFAULT_WOUND_RATE);
+      setProperty(DamageBareHandsProperty, DEFAULT_DAMAGE_BARE_HANDS);
+      setProperty(RespawnEnabledProperty, DEFAULT_RESPAWN_ENABLED);
+      setProperty(RespawnIntervalProperty, DEFAULT_RESPAWN_INTERVAL);
+      setProperty(RespawnLivesProperty, DEFAULT_RESPAWN_LIVES);
+      setProperty(InvMaxWeightProperty, DEFAULT_INVENTORY_WEIGHT);
+
+      setPropertyValiators();
+      setPropertyCallbacks();
 
       inventory.count         = 0;
       inventory.currentWeight = 0;
@@ -76,13 +89,17 @@ namespace trogdor::entity {
 
       inventory.count = 0;
       inventory.currentWeight = 0;
+
+      setPropertyCallbacks();
    }
 
    /***************************************************************************/
 
-   Being::Being(const serial::Serializable &data): Thing(data) {
+   Being::Being(Game *g, const serial::Serializable &data): Thing(g, data) {
 
-      // TODO
+      // TODO: deserialize here
+      setPropertyValiators();
+      setPropertyCallbacks();
    }
 
    /***************************************************************************/

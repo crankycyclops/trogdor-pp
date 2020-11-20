@@ -62,9 +62,10 @@ namespace trogdor::entity {
             This constructor deserializes a Thing.
 
             Input:
+               Game the Thing belongs to (Game *)
                Raw deserialized data (const Serializable &)
          */
-         Thing(const serial::Serializable &data);
+         Thing(Game *g, const serial::Serializable &data);
 
          /*
             Returns a smart pointer representing a raw Thing pointer. Be careful

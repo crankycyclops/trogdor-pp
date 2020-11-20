@@ -107,9 +107,10 @@ namespace trogdor::entity {
             This constructor deserializes a Place.
 
             Input:
+               Game the entity belongs to (Game *)
                Raw deserialized data (const Serializable &)
          */
-         Place(const serial::Serializable &data);
+         Place(Game *g, const serial::Serializable &data);
 
          /*
             Returns a smart pointer representing a raw Place pointer. Be careful

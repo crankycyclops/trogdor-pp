@@ -133,7 +133,30 @@ namespace trogdor {
       std::function<std::unique_ptr<Trogerr>(Game *)> makeErrStream
    ) {
 
-      // TODO
+      stop();
+
+      inGame = std::get<bool>(*data->get("inGame"));
+
+      const std::shared_ptr<serial::Serializable> intro =
+         std::get<std::shared_ptr<serial::Serializable>>(*data->get("introduction"));
+
+      introduction.enabled = std::get<bool>(*intro->get("enabled"));
+      introduction.text = std::get<std::string>(*intro->get("text"));
+
+      meta.clear();
+
+      for (const auto &metaVal: std::get<std::shared_ptr<serial::Serializable>>(*data->get("meta"))->getAll()) {
+         meta[metaVal.first] = std::get<std::string>(metaVal.second);
+      }
+
+      defaultPlayer = std::make_unique<entity::Player>(
+         this,
+         *std::get<std::shared_ptr<serial::Serializable>>(*data->get("defaultPlayer")),
+         std::make_unique<NullOut>(),
+         std::make_unique<NullErr>()
+      );
+
+      // TODO: Lua, timer, entities
    }
 
    /***************************************************************************/

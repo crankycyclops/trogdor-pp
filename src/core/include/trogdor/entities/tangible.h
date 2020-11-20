@@ -107,9 +107,10 @@ namespace trogdor::entity {
             This constructor deserializes a Tangible.
 
             Input:
+               Game the Tangible belongs to (Game *)
                Raw deserialized data (const Serializable &)
          */
-         Tangible(const serial::Serializable &data);
+         Tangible(Game *g, const serial::Serializable &data);
 
          /*
             Returns a smart pointer representing a raw Tangible pointer. Be

@@ -28,7 +28,7 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Place::Place(const serial::Serializable &data): Tangible(data) {
+   Place::Place(Game *g, const serial::Serializable &data): Tangible(g, data) {
 
       // TODO
    }

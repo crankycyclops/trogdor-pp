@@ -8,22 +8,7 @@
 namespace trogdor::entity {
 
 
-   Creature::Creature(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Being(g, n, std::move(o), std::move(e)) {
-
-      types.push_back(ENTITY_CREATURE);
-      setClass("creature");
-
-      setProperty(CounterAttackProperty, DEFAULT_COUNTER_ATTACK);
-      setProperty(AllegianceProperty, DEFAULT_ALLEGIANCE);
-
-      setProperty(AutoAttackEnabledProperty, DEFAULT_AUTO_ATTACK_ENABLED);
-      setProperty(AutoAttackRepeatProperty, DEFAULT_AUTO_ATTACK_REPEAT);
-      setProperty(AutoAttackIntervalProperty, DEFAULT_AUTO_ATTACK_INTERVAL);
-
-      setProperty(WanderEnabledProperty, DEFAULT_WANDER_ENABLED);
-      setProperty(WanderIntervalProperty, DEFAULT_WANDER_INTERVAL);
-      setProperty(WanderLustProperty, DEFAULT_WANDER_LUST);
+   void Creature::setPropertyValidators() {
 
       setPropertyValidator(AutoAttackEnabledProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
       setPropertyValidator(AutoAttackRepeatProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
@@ -77,15 +62,38 @@ namespace trogdor::entity {
       });
    }
 
+   /**************************************************************************/
+
+   Creature::Creature(Game *g, std::string n, std::unique_ptr<Trogout> o,
+   std::unique_ptr<Trogerr> e): Being(g, n, std::move(o), std::move(e)) {
+
+      types.push_back(ENTITY_CREATURE);
+      setClass("creature");
+
+      setProperty(CounterAttackProperty, DEFAULT_COUNTER_ATTACK);
+      setProperty(AllegianceProperty, DEFAULT_ALLEGIANCE);
+
+      setProperty(AutoAttackEnabledProperty, DEFAULT_AUTO_ATTACK_ENABLED);
+      setProperty(AutoAttackRepeatProperty, DEFAULT_AUTO_ATTACK_REPEAT);
+      setProperty(AutoAttackIntervalProperty, DEFAULT_AUTO_ATTACK_INTERVAL);
+
+      setProperty(WanderEnabledProperty, DEFAULT_WANDER_ENABLED);
+      setProperty(WanderIntervalProperty, DEFAULT_WANDER_INTERVAL);
+      setProperty(WanderLustProperty, DEFAULT_WANDER_LUST);
+
+      setPropertyValidators();
+   }
+
    /***************************************************************************/
 
    Creature::Creature(const Creature &c, std::string n): Being(c, n) {}
 
    /***************************************************************************/
 
-   Creature::Creature(const serial::Serializable &data): Being(data) {
+   Creature::Creature(Game *g, const serial::Serializable &data): Being(g, data) {
 
-      // TODO
+      // TODO: deserialize here
+      setPropertyValidators();
    }
 
    /***************************************************************************/

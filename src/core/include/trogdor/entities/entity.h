@@ -218,6 +218,17 @@ namespace trogdor::entity {
             displayShort(being.get());
          }
 
+         /*
+            Sets property validators for all properties settable by Entity.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void setPropertyValidators();
+
       public:
 
          // If no output channel is specified when output is sent to the
@@ -342,9 +353,10 @@ namespace trogdor::entity {
             is part of the serialized object.
 
             Input:
+               Game the Entity belongs to (Game *)
                Raw deserialized data (const Serializable &)
          */
-         Entity(const serial::Serializable &data);
+         Entity(Game *g, const serial::Serializable &data);
 
          /*
             Returns a smart pointer representing a raw Entity pointer. Be careful

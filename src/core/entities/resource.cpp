@@ -42,26 +42,7 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Resource::Resource(
-         Game *g,
-         std::string n,
-         std::optional<double> amountAvailable,
-         std::optional<double> maxAmountPerDepositor,
-         bool requireIntegerAllocations,
-         std::optional<std::string> pluralName
-   ): Entity(g, n, std::make_unique<NullOut>(), std::make_unique<NullErr>()) {
-
-      if (amountAvailable) {
-         setProperty(AmtAvailProperty, *amountAvailable);
-      }
-
-      if (maxAmountPerDepositor) {
-         setProperty(MaxAmtPerDepositorProperty, *maxAmountPerDepositor);
-      }
-
-      setProperty(ReqIntAllocProperty, requireIntegerAllocations);
-      setProperty(PluralNameProperty, pluralName ? *pluralName : language.pluralizeNoun(n));
-      setProperty(PluralTitleProperty, getProperty<std::string>(PluralNameProperty));
+   void Resource::setPropertyValidators() {
 
       setPropertyValidator(ReqIntAllocProperty, [&](PropertyValue v) -> int {return isPropertyValueBool(v);});
       setPropertyValidator(PluralNameProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
@@ -88,7 +69,32 @@ namespace trogdor::entity {
 
          return PROPERTY_VALID;
       });
+   }
 
+   /***************************************************************************/
+
+   Resource::Resource(
+         Game *g,
+         std::string n,
+         std::optional<double> amountAvailable,
+         std::optional<double> maxAmountPerDepositor,
+         bool requireIntegerAllocations,
+         std::optional<std::string> pluralName
+   ): Entity(g, n, std::make_unique<NullOut>(), std::make_unique<NullErr>()) {
+
+      if (amountAvailable) {
+         setProperty(AmtAvailProperty, *amountAvailable);
+      }
+
+      if (maxAmountPerDepositor) {
+         setProperty(MaxAmtPerDepositorProperty, *maxAmountPerDepositor);
+      }
+
+      setProperty(ReqIntAllocProperty, requireIntegerAllocations);
+      setProperty(PluralNameProperty, pluralName ? *pluralName : language.pluralizeNoun(n));
+      setProperty(PluralTitleProperty, getProperty<std::string>(PluralNameProperty));
+
+      setPropertyValidators();
       types.push_back(ENTITY_RESOURCE);
       setClass("resource");
    }
@@ -103,9 +109,10 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Resource::Resource(const serial::Serializable &data): Entity(data) {
+   Resource::Resource(Game *g, const serial::Serializable &data): Entity(g, data) {
 
-      // TODO
+      // TODO: deserialize here
+      setPropertyValidators();
    }
 
    /***************************************************************************/

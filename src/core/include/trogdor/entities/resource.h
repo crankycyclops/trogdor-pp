@@ -167,6 +167,17 @@ namespace trogdor::entity {
          */
          void display(Being *observer, bool plural);
 
+         /*
+            Sets property validators for all properties settable by Resource.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void setPropertyValidators();
+
       public:
 
          /*
@@ -209,9 +220,10 @@ namespace trogdor::entity {
             This constructor deserializes a Resource.
 
             Input:
+               Game the Resource belongs to (Game *)
                Raw deserialized data (const Serializable &)
          */
-         Resource(const serial::Serializable &data);
+         Resource(Game *g, const serial::Serializable &data);
 
          /*
             Returns a smart pointer representing a raw Resource pointer. Be

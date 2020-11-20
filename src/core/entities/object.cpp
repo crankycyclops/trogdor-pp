@@ -7,6 +7,14 @@
 namespace trogdor::entity {
 
 
+   void Object::setPropertyValidators() {
+
+      setPropertyValidator(WeightProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+      setPropertyValidator(DamageProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
+   }
+
+   /***************************************************************************/
+
    Object::Object(Game *g, std::string n, std::unique_ptr<Trogout> o,
    std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o),  std::move(e)),
    owner(std::weak_ptr<Being>()) {
@@ -18,9 +26,7 @@ namespace trogdor::entity {
       setProperty(WeightProperty, DEFAULT_WEIGHT);
       setProperty(DamageProperty, DEFAULT_DAMAGE);
 
-      setPropertyValidator(WeightProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
-      setPropertyValidator(DamageProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
-
+      setPropertyValidators();
       types.push_back(ENTITY_OBJECT);
       setClass("object");
    }
@@ -32,9 +38,10 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Object::Object(const serial::Serializable &data): Thing(data) {
+   Object::Object(Game *g, const serial::Serializable &data): Thing(g, data) {
 
-      // TODO
+      // TODO: deserialize here
+      setPropertyValidators();
    }
 
    /***************************************************************************/

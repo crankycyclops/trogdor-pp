@@ -97,6 +97,17 @@ namespace trogdor::entity {
          // the first time an object is added to a creature's inventory.
          std::shared_ptr<std::function<bool(std::any)>> updateObjectTag;
 
+         /*
+            Sets property validators for all properties settable by Creature.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void setPropertyValidators();
+
       public:
 
          /*
@@ -117,9 +128,10 @@ namespace trogdor::entity {
             This constructor deserializes a Creature.
 
             Input:
+               Game the Creature belongs to (Game *)
                Raw deserialized data (const Serializable &)
          */
-         Creature(const serial::Serializable &data);
+         Creature(Game *g, const serial::Serializable &data);
 
          /*
             Returns a smart pointer representing a raw Creature pointer. Be careful

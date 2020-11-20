@@ -23,6 +23,15 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
+   void Entity::setPropertyValidators() {
+
+      setPropertyValidator(TitleProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
+      setPropertyValidator(LongDescProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
+      setPropertyValidator(ShortDescProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
+   }
+
+   /***************************************************************************/
+
    // The title property will usually be set to something more descriptive later
    Entity::Entity(Game *g, std::string n, std::unique_ptr<Trogout> o,
    std::unique_ptr<Trogerr> e): game(g), name(n), outStream(std::move(o)),
@@ -42,10 +51,7 @@ namespace trogdor::entity {
       // Default value for the Entity's title is its name
       setProperty("title", n);
 
-      setPropertyValidator(TitleProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
-      setPropertyValidator(LongDescProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
-      setPropertyValidator(ShortDescProperty, [&](PropertyValue v) -> int {return isPropertyValueString(v);});
-
+      setPropertyValidators();
       L = std::make_shared<LuaState>(g);
       triggers = std::make_unique<event::EventListener>();
    }
@@ -90,18 +96,18 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Entity::~Entity() {}
+   Entity::Entity(Game *g, const serial::Serializable &data): game(g) {
+
+      // TODO: deserialize here
+
+      setPropertyValidators();
+      L = std::make_shared<LuaState>(g); // TODO: after this, set lua scripts from serialized data
+      triggers = std::make_unique<event::EventListener>(); // TODO: deserialize these, too
+   }
 
    /***************************************************************************/
 
-   Entity::Entity(const serial::Serializable &data) {
-
-      // TODO
-      // Will have to also install property validators here, so I'll have to
-      // shunt those off to a private method that gets called here and in the
-      // default constructor. Do this for all entities that implement property
-      // validators.
-   }
+   Entity::~Entity() {}
 
    /***************************************************************************/
 
