@@ -101,7 +101,12 @@ namespace trogdor::entity {
       // TODO: deserialize here
 
       setPropertyValidators();
-      L = std::make_shared<LuaState>(g); // TODO: after this, set lua scripts from serialized data
+
+      L = std::make_shared<LuaState>(
+         g,
+         *std::get<std::shared_ptr<serial::Serializable>>(*data.get("lua"))
+      );
+
       triggers = std::make_unique<event::EventListener>(); // TODO: deserialize these, too
    }
 

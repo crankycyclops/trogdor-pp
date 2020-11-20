@@ -33,7 +33,15 @@ namespace trogdor {
 
    Timer::Timer(Game *gameRef, const serial::Serializable &data): game(gameRef) {
 
-      // TODO
+      // TODO: deserialize timer jobs
+      time = std::get<size_t>(*data.get("time"));
+      tickInterval = std::chrono::milliseconds(std::get<size_t>(*data.get("tickInterval")));
+      lastTickTime = std::chrono::milliseconds(std::get<size_t>(*data.get("lastTickTime")));
+      jobThreadSleepTime = std::chrono::milliseconds(std::get<size_t>(*data.get("jobThreadSleepTime")));
+
+      if (std::get<bool>(*data.get("active"))) {
+         start();
+      }
    }
 
 /******************************************************************************/

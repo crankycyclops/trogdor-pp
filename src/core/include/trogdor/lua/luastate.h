@@ -379,9 +379,7 @@ namespace trogdor {
          */
          LuaState() = delete;
 
-         inline LuaState(Game *g) {
-
-            game = g;
+         inline LuaState(Game *g): game(g) {
 
             initState();
             initLibs();
@@ -390,9 +388,7 @@ namespace trogdor {
          /*
             Copy Constructor for the LuaState object.
          */
-         inline LuaState(const LuaState &LSrc) {
-
-            game = LSrc.game;
+         inline LuaState(const LuaState &LSrc): game(LSrc.game) {
 
             initState();
             initLibs();
@@ -406,9 +402,12 @@ namespace trogdor {
             Deserialization constructor.
          */
 
-         inline LuaState(Game *g, const serial::Serializable &data) {
+         inline LuaState(Game *g, const serial::Serializable &data): game(g) {
 
-            // TODO
+            initState();
+            initLibs();
+
+            loadScriptFromString(std::get<std::string>(*data.get("scripts")));
          }
 
          /*
