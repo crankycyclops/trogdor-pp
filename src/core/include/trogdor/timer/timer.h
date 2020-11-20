@@ -95,6 +95,7 @@ namespace trogdor {
          Timer(const Timer &) = delete;
          Timer &operator=(const Timer &) = delete;
          Timer(Game *game, size_t interval = TIMER_DEFAULT_TICK_MILLISECONDS);
+         Timer(Game *game, const serial::Serializable &data);
 
          /*
             Destructor

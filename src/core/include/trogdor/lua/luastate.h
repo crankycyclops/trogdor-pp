@@ -403,6 +403,15 @@ namespace trogdor {
          }
 
          /*
+            Deserialization constructor.
+         */
+
+         inline LuaState(Game *g, const serial::Serializable &data) {
+
+            // TODO
+         }
+
+         /*
             Destructor for LuaState.
          */
          inline ~LuaState() {lua_close(L);}

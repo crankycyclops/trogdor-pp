@@ -216,7 +216,8 @@ namespace trogdor {
          }
       }
 
-      // TODO: Lua, timer
+      timer = std::make_unique<Timer>(this, *std::get<std::shared_ptr<serial::Serializable>>(*data->get("timer")));
+      L = std::make_unique<LuaState>(this, *std::get<std::shared_ptr<serial::Serializable>>(*data->get("lua")));
    }
 
    /***************************************************************************/

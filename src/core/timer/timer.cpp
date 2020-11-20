@@ -31,6 +31,13 @@ namespace trogdor {
 
 /******************************************************************************/
 
+   Timer::Timer(Game *gameRef, const serial::Serializable &data): game(gameRef) {
+
+      // TODO
+   }
+
+/******************************************************************************/
+
    Timer::~Timer() {
 
       stop();
