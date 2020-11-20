@@ -831,6 +831,29 @@ namespace trogdor {
          bool removeEntity(std::string name);
 
          /*
+            Removes all entities from the game.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline void clearEntities() {
+
+            entities.clear();
+            resources.clear();
+            tangibles.clear();
+            places.clear();
+            rooms.clear();
+            things.clear();
+            objects.clear();
+            beings.clear();
+            creatures.clear();
+            players.clear();
+         }
+
+         /*
             Initializes the game, including the event handler, timer and all game
             entities.
 

@@ -135,6 +135,9 @@ namespace trogdor {
 
       stop();
 
+      meta.clear();
+      clearEntities();
+
       inGame = std::get<bool>(*data->get("inGame"));
 
       const std::shared_ptr<serial::Serializable> intro =
@@ -143,9 +146,8 @@ namespace trogdor {
       introduction.enabled = std::get<bool>(*intro->get("enabled"));
       introduction.text = std::get<std::string>(*intro->get("text"));
 
-      meta.clear();
-
-      for (const auto &metaVal: std::get<std::shared_ptr<serial::Serializable>>(*data->get("meta"))->getAll()) {
+      for (const auto &metaVal:
+      std::get<std::shared_ptr<serial::Serializable>>(*data->get("meta"))->getAll()) {
          meta[metaVal.first] = std::get<std::string>(metaVal.second);
       }
 
@@ -156,7 +158,65 @@ namespace trogdor {
          std::make_unique<NullErr>()
       );
 
-      // TODO: Lua, timer, entities
+      const serial::Value entityArr = *data->get("entities");
+
+      for (const auto &entity:
+      std::get<std::vector<std::shared_ptr<serial::Serializable>>>(entityArr)) {
+
+         switch (entity::Entity::strToType(
+            std::get<std::vector<std::string>>(*entity->get("types")).back()
+         )) {
+
+            case entity::ENTITY_RESOURCE:
+
+               insertEntity(
+                  std::get<std::string>(*entity->get("name")),
+                  std::make_shared<entity::Resource>(this, *entity)
+               );
+
+               break;
+
+            case entity::ENTITY_ROOM:
+
+               insertEntity(
+                  std::get<std::string>(*entity->get("name")),
+                  std::make_shared<entity::Room>(this, *entity)
+               );
+
+               break;
+
+            case entity::ENTITY_OBJECT:
+
+               insertEntity(
+                  std::get<std::string>(*entity->get("name")),
+                  std::make_shared<entity::Object>(this, *entity)
+               );
+
+            case entity::ENTITY_CREATURE:
+
+               insertEntity(
+                  std::get<std::string>(*entity->get("name")),
+                  std::make_shared<entity::Creature>(this, *entity)
+               );
+
+            case entity::ENTITY_PLAYER:
+
+               insertEntity(
+                  std::get<std::string>(*entity->get("name")),
+                  std::make_shared<entity::Player>(
+                     this,
+                     *entity,
+                     makeOutStream(this),
+                     makeErrStream(this)
+                  )
+               );
+
+            default:
+               break;
+         }
+      }
+
+      // TODO: Lua, timer
    }
 
    /***************************************************************************/
