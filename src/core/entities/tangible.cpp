@@ -19,7 +19,36 @@ namespace trogdor::entity {
 
    Tangible::Tangible(Game *g, const serial::Serializable &data): Entity(g, data) {
 
-      // TODO
+      g->addCallback("afterDeserialize",
+      std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {
+
+         std::vector<std::string> serializedGlancedBy =
+            std::get<std::vector<std::string>>(*data.get("glancedBy"));
+
+         for (const auto &glancedBy: serializedGlancedBy) {
+
+            std::shared_ptr<Being> being = g->getBeing(glancedBy);
+
+            if (being) {
+               glancedByMap.insert(being);
+            }
+         }
+
+         std::vector<std::string> serializedObservedBy =
+            std::get<std::vector<std::string>>(*data.get("observedBy"));
+
+         for (const auto &observedBy: serializedObservedBy) {
+
+            std::shared_ptr<Being> being = g->getBeing(observedBy);
+
+            if (being) {
+               observedByMap.insert(being);
+            }
+         }
+
+         return true;
+      }));
+
       types.push_back(ENTITY_TANGIBLE);
    }
 
@@ -48,22 +77,9 @@ namespace trogdor::entity {
 
       data->set("observedBy", serializedObservedBy);
 
-      std::vector<std::shared_ptr<serial::Serializable>> serializedResources;
-
-      for (const auto &resource: resources) {
-
-         if (auto resourcePtr = resource.first.lock()) {
-
-            std::shared_ptr<serial::Serializable> serializedResource = std::make_shared<serial::Serializable>();
-
-            serializedResource->set("resource", resourcePtr->getName());
-            serializedResource->set("amount", resource.second);
-
-            serializedResources.push_back(serializedResource);
-         }
-      }
-
-      data->set("resources", serializedResources);
+      // Serialized resource already keeps track of allocations, so including
+      // that data again in a serialized instance of Tangible would be
+      // superfluous
       return data;
    }
 

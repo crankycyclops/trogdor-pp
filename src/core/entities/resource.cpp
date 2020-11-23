@@ -122,8 +122,12 @@ namespace trogdor::entity {
             std::shared_ptr<Tangible> owner = g->getTangible(std::get<std::string>(*depositor->get("depositor")));
 
             if (owner) {
-               depositors[owner] = std::get<double>(*depositor->get("amount"));
-               totalAmountAllocated += std::get<double>(*depositor->get("amount"));
+
+               double amount = std::get<double>(*depositor->get("amount"));
+
+               depositors[owner] = amount;
+               owner->recordResourceAllocation(getShared(), amount);
+               totalAmountAllocated += amount;
             }
          }
 
