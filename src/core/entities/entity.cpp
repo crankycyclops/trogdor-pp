@@ -100,9 +100,22 @@ namespace trogdor::entity {
       game(g),
       name(std::get<std::string>(*data.get("name"))) {
 
-      // TODO: deserialize meta and tags
       types.push_back(ENTITY_ENTITY);
       className = std::get<std::string>(*data.get("class"));
+
+      std::vector<std::string> serializedTags =
+         std::get<std::vector<std::string>>(*data.get("tags"));
+
+      for (const auto &tag: serializedTags) {
+         tags.insert(tag);
+      }
+
+      std::vector<std::shared_ptr<serial::Serializable>> serializedMeta =
+         std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("meta"));
+
+      for (const auto &val: serializedMeta) {
+         meta[(*val->getAll().cbegin()).first] = std::get<std::string>((*val->getAll().cbegin()).second);
+      }
 
       std::vector<std::shared_ptr<serial::Serializable>> serializedMsgs =
          std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("messages"));
@@ -141,7 +154,9 @@ namespace trogdor::entity {
          *std::get<std::shared_ptr<serial::Serializable>>(*data.get("lua"))
       );
 
-      triggers = std::make_unique<event::EventListener>(); // TODO: deserialize these, too
+      // TODO: deserialize event triggers once serialization of those is
+      // supported
+      triggers = std::make_unique<event::EventListener>();
       setPropertyValidators();
    }
 
