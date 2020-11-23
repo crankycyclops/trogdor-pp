@@ -31,6 +31,7 @@ namespace trogdor::entity {
    Place::Place(Game *g, const serial::Serializable &data): Tangible(g, data) {
 
       // TODO
+      types.push_back(ENTITY_PLACE);
    }
 
    /***************************************************************************/

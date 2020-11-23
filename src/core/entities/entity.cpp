@@ -96,11 +96,45 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Entity::Entity(Game *g, const serial::Serializable &data): game(g) {
+   Entity::Entity(Game *g, const serial::Serializable &data):
+      game(g),
+      name(std::get<std::string>(*data.get("name"))) {
 
-      // TODO: deserialize here
+      // TODO: deserialize meta and tags
+      types.push_back(ENTITY_ENTITY);
+      className = std::get<std::string>(*data.get("class"));
 
-      setPropertyValidators();
+      std::vector<std::shared_ptr<serial::Serializable>> serializedMsgs =
+         std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("messages"));
+
+      for (const auto &msg: serializedMsgs) {
+         msgs.set((*msg->getAll().cbegin()).first, std::get<std::string>((*msg->getAll().cbegin()).second));
+      }
+
+      std::vector<std::shared_ptr<serial::Serializable>> serializedProperties =
+         std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("properties"));
+
+      for (const auto &property: serializedProperties) {
+
+         std::visit([&](auto &&value) {
+
+				using T = std::decay_t<decltype(value)>;
+
+				if constexpr (
+					std::is_same_v<T, size_t> ||
+					std::is_same_v<T, int> ||
+					std::is_same_v<T, double> ||
+					std::is_same_v<T, bool> ||
+					std::is_same_v<T, std::string>
+				) {
+               properties[(*property->getAll().cbegin()).first] = value;
+            }
+
+            else {
+               throw UndefinedException("Invalid property type encountered in Entity deserialization constructor");
+            }
+         }, (*property->getAll().cbegin()).second);
+      }
 
       L = std::make_shared<LuaState>(
          g,
@@ -108,6 +142,7 @@ namespace trogdor::entity {
       );
 
       triggers = std::make_unique<event::EventListener>(); // TODO: deserialize these, too
+      setPropertyValidators();
    }
 
    /***************************************************************************/

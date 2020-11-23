@@ -93,6 +93,7 @@ namespace trogdor::entity {
    Creature::Creature(Game *g, const serial::Serializable &data): Being(g, data) {
 
       // TODO: deserialize here
+      types.push_back(ENTITY_CREATURE);
       setPropertyValidators();
    }
 

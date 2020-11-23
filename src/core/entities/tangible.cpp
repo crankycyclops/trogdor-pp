@@ -20,6 +20,7 @@ namespace trogdor::entity {
    Tangible::Tangible(Game *g, const serial::Serializable &data): Entity(g, data) {
 
       // TODO
+      types.push_back(ENTITY_TANGIBLE);
    }
 
    /***************************************************************************/

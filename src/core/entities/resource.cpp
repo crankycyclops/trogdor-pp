@@ -112,6 +112,7 @@ namespace trogdor::entity {
    Resource::Resource(Game *g, const serial::Serializable &data): Entity(g, data) {
 
       // TODO: deserialize here
+      types.push_back(ENTITY_RESOURCE);
       setPropertyValidators();
    }
 

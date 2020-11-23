@@ -42,6 +42,7 @@ namespace trogdor::entity {
    ): Being(g, data) {
 
       // TODO
+      types.push_back(ENTITY_PLAYER);
    }
 
    /***************************************************************************/

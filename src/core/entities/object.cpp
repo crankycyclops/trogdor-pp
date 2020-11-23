@@ -41,6 +41,7 @@ namespace trogdor::entity {
    Object::Object(Game *g, const serial::Serializable &data): Thing(g, data) {
 
       // TODO: deserialize here
+      types.push_back(ENTITY_OBJECT);
       setPropertyValidators();
    }
 

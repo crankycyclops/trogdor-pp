@@ -26,6 +26,7 @@ namespace trogdor::entity {
    Room::Room(Game *g, const serial::Serializable &data): Place(g, data) {
 
       // TODO
+      types.push_back(ENTITY_ROOM);
    }
 
    /***************************************************************************/
