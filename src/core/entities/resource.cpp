@@ -111,7 +111,25 @@ namespace trogdor::entity {
 
    Resource::Resource(Game *g, const serial::Serializable &data): Entity(g, data) {
 
-      // TODO: deserialize here
+      g->addCallback("afterDeserialize",
+      std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {
+
+         std::vector<std::shared_ptr<serial::Serializable>> serializedDepositors =
+            std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("depositors"));
+
+         for (auto const &depositor: serializedDepositors) {
+
+            std::shared_ptr<Tangible> owner = g->getTangible(std::get<std::string>(*depositor->get("depositor")));
+
+            if (owner) {
+               depositors[owner] = std::get<double>(*depositor->get("amount"));
+               totalAmountAllocated += std::get<double>(*depositor->get("amount"));
+            }
+         }
+
+         return true;
+      }));
+
       types.push_back(ENTITY_RESOURCE);
       setPropertyValidators();
    }
@@ -135,8 +153,9 @@ namespace trogdor::entity {
          }
       }
 
+      // totalAmountAllocated will be reconstructed during deserialization of
+      // depositors and doesn't need to be saved
       data->set("depositors", serializedDepositors);
-      data->set("totalAmountAllocated", totalAmountAllocated);
       return data;
    }
 

@@ -225,6 +225,8 @@ namespace trogdor {
          this,
          *std::get<std::shared_ptr<serial::Serializable>>(*data->get("lua"))
       );
+
+      executeCallback("afterDeserialize", nullptr);
    }
 
    /***************************************************************************/
