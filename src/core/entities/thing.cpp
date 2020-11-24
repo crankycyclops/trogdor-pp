@@ -46,7 +46,7 @@ namespace trogdor::entity {
       if (std::optional<serial::Value> locationData = data.get("location")) {
 
          g->addCallback("afterDeserialize",
-         std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {
+         std::make_shared<Entity::EntityCallback>([locationData, this](std::any) -> bool {
 
             if (const std::shared_ptr<Place> &locationPtr =
             game->getPlace(std::get<std::string>(*locationData))) {

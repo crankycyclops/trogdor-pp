@@ -28,14 +28,14 @@ namespace trogdor::entity {
       g->addCallback("afterDeserialize",
       std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {
 
-         std::vector<std::shared_ptr<serial::Serializable>> serializedConnections =
-            std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("connections"));
+         std::shared_ptr<serial::Serializable> serializedConnections =
+            std::get<std::shared_ptr<serial::Serializable>>(*data.get("connections"));
 
-         for (const auto &connection: serializedConnections) {
+         for (const auto &connection: serializedConnections->getAll()) {
 
             if (const std::shared_ptr<Room> &roomPtr =
-            game->getRoom(std::get<std::string>((*connection->getAll().cbegin()).second))) {
-               connections[(*connection->getAll().cbegin()).first] = roomPtr;
+            game->getRoom(std::get<std::string>((connection.second)))) {
+               connections[connection.first] = roomPtr;
             }
          }
 
