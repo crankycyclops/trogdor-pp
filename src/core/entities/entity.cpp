@@ -110,24 +110,24 @@ namespace trogdor::entity {
          tags.insert(tag);
       }
 
-      std::vector<std::shared_ptr<serial::Serializable>> serializedMeta =
-         std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("meta"));
+      std::shared_ptr<serial::Serializable> serializedMeta =
+         std::get<std::shared_ptr<serial::Serializable>>(*data.get("meta"));
 
-      for (const auto &val: serializedMeta) {
-         meta[(*val->getAll().cbegin()).first] = std::get<std::string>((*val->getAll().cbegin()).second);
+      for (const auto &val: serializedMeta->getAll()) {
+         meta[val.first] = std::get<std::string>(val.second);
       }
 
-      std::vector<std::shared_ptr<serial::Serializable>> serializedMsgs =
-         std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("messages"));
+      std::shared_ptr<serial::Serializable> serializedMsgs =
+         std::get<std::shared_ptr<serial::Serializable>>(*data.get("messages"));
 
-      for (const auto &msg: serializedMsgs) {
-         msgs.set((*msg->getAll().cbegin()).first, std::get<std::string>((*msg->getAll().cbegin()).second));
+      for (const auto &msg: serializedMsgs->getAll()) {
+         msgs.set(msg.first, std::get<std::string>(msg.second));
       }
 
-      std::vector<std::shared_ptr<serial::Serializable>> serializedProperties =
-         std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("properties"));
+      std::shared_ptr<serial::Serializable> serializedProperties =
+         std::get<std::shared_ptr<serial::Serializable>>(*data.get("properties"));
 
-      for (const auto &property: serializedProperties) {
+      for (const auto &property: serializedProperties->getAll()) {
 
          std::visit([&](auto &&value) {
 
@@ -140,13 +140,13 @@ namespace trogdor::entity {
 					std::is_same_v<T, bool> ||
 					std::is_same_v<T, std::string>
 				) {
-               properties[(*property->getAll().cbegin()).first] = value;
+               properties[property.first] = value;
             }
 
             else {
                throw UndefinedException("Invalid property type encountered in Entity deserialization constructor");
             }
-         }, (*property->getAll().cbegin()).second);
+         }, property.second);
       }
 
       L = std::make_shared<LuaState>(

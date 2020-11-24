@@ -97,11 +97,11 @@ namespace trogdor::entity {
       std::shared_ptr<serial::Serializable> serializedAttributes =
             std::get<std::shared_ptr<serial::Serializable>>(*data.get("attributes"));
 
-      std::vector<std::shared_ptr<serial::Serializable>> serializedAttrValues =
-         std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*serializedAttributes->get("values"));
+      std::shared_ptr<serial::Serializable> serializedAttrValues =
+         std::get<std::shared_ptr<serial::Serializable>>(*serializedAttributes->get("values"));
 
-      for (const auto &attr: serializedAttrValues) {
-         attributes.values[attr->getAll().cbegin()->first] = std::get<int>(attr->getAll().cbegin()->second);
+      for (const auto &attr: serializedAttrValues->getAll()) {
+         attributes.values[attr.first] = std::get<int>(attr.second);
       }
 
       attributes.initialTotal = std::get<int>(*serializedAttributes->get("initialTotal"));

@@ -3,6 +3,8 @@
 #include <trogdor/entities/player.h>
 
 #include "../include/serial/json.h"
+#include "../include/streamout.h"
+#include "../include/streamerr.h"
 #include "../include/actions/loadaction.h"
 
 
@@ -49,6 +51,14 @@ void LoadAction::execute(
    trogdor::serial::Json driver;
    std::shared_ptr<trogdor::serial::Serializable> data = driver.deserialize(buffer);
 
-   // TODO: pass data to Game::deserialize()
-   player->out() << "Game state loaded from " << filename << '.' << std::endl;
+   game->deserialize(
+      data,
+      [](trogdor::Game *game) -> std::unique_ptr<trogdor::Trogout> {
+         return std::make_unique<StreamOut>(&std::cout);
+      }, [](trogdor::Game *game) -> std::unique_ptr<trogdor::Trogerr> {
+         return std::make_unique<StreamErr>(&std::cerr);
+      }
+   );
+
+   game->getPlayer("player")->out() << "Game state loaded from " << filename << '.' << std::endl;
 }

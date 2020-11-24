@@ -98,7 +98,6 @@ int main(int argc, char **argv) {
 	     std::cout << "Author: " << author << std::endl << std::endl;
 	  }
 
-      
 	  std::shared_ptr<trogdor::entity::Player> player = currentGame->createPlayer(
          "player",
          std::make_unique<StreamOut>(&std::cout),
