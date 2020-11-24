@@ -51,7 +51,8 @@ namespace trogdor::entity {
    /**************************************************************************/
 
    Being::Being(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o), std::move(e)) {
+   std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o), std::move(e)),
+   inventory({0, 0, {}, {}}) {
 
       setAttribute("strength", DEFAULT_ATTRIBUTE_STRENGTH);
       setAttribute("dexterity", DEFAULT_ATTRIBUTE_DEXTERITY);
@@ -70,9 +71,6 @@ namespace trogdor::entity {
       setPropertyValiators();
       setPropertyCallbacks();
 
-      inventory.count         = 0;
-      inventory.currentWeight = 0;
-
       types.push_back(ENTITY_BEING);
 
       if (DEFAULT_ATTACKABLE) {
@@ -82,26 +80,54 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Being::Being(const Being &b, std::string n): Thing(b, n) {
+   Being::Being(const Being &b, std::string n): Thing(b, n),
+   inventory({0, 0, {}, {}}) {
 
       attributes.values = b.attributes.values;
       attributes.initialTotal = b.attributes.initialTotal;
-
-      inventory.count = 0;
-      inventory.currentWeight = 0;
 
       setPropertyCallbacks();
    }
 
    /***************************************************************************/
 
-   Being::Being(Game *g, const serial::Serializable &data): Thing(g, data) {
+   Being::Being(Game *g, const serial::Serializable &data): Thing(g, data),
+   inventory({0, 0, {}, {}}) {
 
-      // TODO: deserialize here
-      types.push_back(ENTITY_BEING);
+      std::shared_ptr<serial::Serializable> serializedAttributes =
+            std::get<std::shared_ptr<serial::Serializable>>(*data.get("attributes"));
+
+      std::vector<std::shared_ptr<serial::Serializable>> serializedAttrValues =
+         std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*serializedAttributes->get("values"));
+
+      for (const auto &attr: serializedAttrValues) {
+         attributes.values[attr->getAll().cbegin()->first] = std::get<int>(attr->getAll().cbegin()->second);
+      }
+
+      attributes.initialTotal = std::get<int>(*serializedAttributes->get("initialTotal"));
+
+      g->addCallback("afterDeserialize",
+      std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {
+
+         std::shared_ptr<serial::Serializable> serializedInventory =
+            std::get<std::shared_ptr<serial::Serializable>>(*data.get("inventory"));
+
+         std::vector<std::string> inventoryItems =
+            std::get<std::vector<std::string>>(*serializedInventory->get("objects"));
+
+         for (const auto &objName: inventoryItems) {
+            if (const std::shared_ptr<Object> &object = g->getObject(objName)) {
+               insertIntoInventory(object, false);
+            }
+         }
+
+         return true;
+      }));
 
       setPropertyValiators();
       setPropertyCallbacks();
+
+      types.push_back(ENTITY_BEING);
    }
 
    /***************************************************************************/
@@ -131,8 +157,9 @@ namespace trogdor::entity {
       serializedAttributes->set("values", serializedAttributeValues);
       data->set("attributes", serializedAttributes);
 
-      serializedInventory->set("count", inventory.count);
-      serializedInventory->set("currentWeight", inventory.currentWeight);
+      // inventory.count and inventory.currentWeight will be inferred from
+      // the contents of the inventory during deserialization, and therefore
+      // don't need to be included in the serialized output.
       serializedInventory->set("objects", inventoryItems);
       data->set("inventory", serializedInventory);
 

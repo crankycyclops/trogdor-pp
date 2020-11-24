@@ -27,7 +27,7 @@ namespace trogdor::entity {
 
          for (const auto &glancedBy: serializedGlancedBy) {
 
-            std::shared_ptr<Being> being = g->getBeing(glancedBy);
+            const std::shared_ptr<Being> &being = g->getBeing(glancedBy);
 
             if (being) {
                glancedByMap.insert(being);
@@ -39,7 +39,7 @@ namespace trogdor::entity {
 
          for (const auto &observedBy: serializedObservedBy) {
 
-            std::shared_ptr<Being> being = g->getBeing(observedBy);
+            const std::shared_ptr<Being> &being = g->getBeing(observedBy);
 
             if (being) {
                observedByMap.insert(being);

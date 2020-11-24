@@ -30,7 +30,21 @@ namespace trogdor::entity {
 
    Place::Place(Game *g, const serial::Serializable &data): Tangible(g, data) {
 
-      // TODO
+      g->addCallback("afterDeserialize",
+      std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {
+
+         std::vector<std::string> serializedThings =
+            std::get<std::vector<std::string>>(*data.get("things"));
+
+         for (const auto &thing: serializedThings) {
+            if (const std::shared_ptr<Thing> &t = g->getThing(thing)) {
+               insertThing(t);
+            }
+         }
+
+         return true;
+      }));
+
       types.push_back(ENTITY_PLACE);
    }
 

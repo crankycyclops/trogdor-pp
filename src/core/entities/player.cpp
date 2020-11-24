@@ -41,7 +41,14 @@ namespace trogdor::entity {
       std::unique_ptr<Trogerr> e
    ): Being(g, data) {
 
-      // TODO
+      lastCommand = std::make_unique<Command>(
+         game->getVocabulary(),
+         *std::get<std::shared_ptr<serial::Serializable>>(*data.get("lastCommand"))
+      );
+
+      outStream = std::move(o);
+      errStream = std::move(e);
+
       types.push_back(ENTITY_PLAYER);
    }
 

@@ -25,7 +25,23 @@ namespace trogdor::entity {
 
    Room::Room(Game *g, const serial::Serializable &data): Place(g, data) {
 
-      // TODO
+      g->addCallback("afterDeserialize",
+      std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {
+
+         std::vector<std::shared_ptr<serial::Serializable>> serializedConnections =
+            std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("connections"));
+
+         for (const auto &connection: serializedConnections) {
+
+            if (const std::shared_ptr<Room> &roomPtr =
+            g->getRoom(std::get<std::string>((*connection->getAll().cbegin()).second))) {
+               connections[(*connection->getAll().cbegin()).first] = roomPtr;
+            }
+         }
+
+         return true;
+      }));
+
       types.push_back(ENTITY_ROOM);
    }
 
@@ -34,7 +50,7 @@ namespace trogdor::entity {
    std::shared_ptr<serial::Serializable> Room::serialize() {
 
       std::shared_ptr<serial::Serializable> data = Place::serialize();
-      std::shared_ptr<serial::Serializable> serializedConnections  = std::make_shared<serial::Serializable>();
+      std::shared_ptr<serial::Serializable> serializedConnections = std::make_shared<serial::Serializable>();
 
       for (const auto &connection: connections) {
          if (const auto &connectedRoom = connection.second.lock()) {

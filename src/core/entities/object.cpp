@@ -40,9 +40,8 @@ namespace trogdor::entity {
 
    Object::Object(Game *g, const serial::Serializable &data): Thing(g, data) {
 
-      // TODO: deserialize here
-      types.push_back(ENTITY_OBJECT);
       setPropertyValidators();
+      types.push_back(ENTITY_OBJECT);
    }
 
    /***************************************************************************/
@@ -51,10 +50,8 @@ namespace trogdor::entity {
 
       std::shared_ptr<serial::Serializable> data = Thing::serialize();
 
-      if (auto ownerPtr = owner.lock()) {
-         data->set("owner", ownerPtr->getName());
-      }
-
+      // I don't have to serialize the Object's owner because it will already be
+      // taken into account by a Being's serialization of its inventory
       return data;
    }
 

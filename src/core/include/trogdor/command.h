@@ -80,6 +80,7 @@ namespace trogdor {
             invalid = false;
          }
 
+         // Copy constructor
          inline Command(const Command &c):
             vocabulary(c.vocabulary),
             nullCommand(c.nullCommand),
@@ -90,6 +91,28 @@ namespace trogdor {
             preposition(c.preposition),
             directObjectQty(c.directObjectQty),
             indirectObjectQty(c.indirectObjectQty) {}
+
+         // Deserialization constructor
+         inline Command(
+            const Vocabulary &vocabulary,
+            const serial::Serializable &data
+         ): vocabulary(vocabulary) {
+
+            nullCommand = std::get<bool>(*data.get("nullCommand"));
+            invalid = std::get<bool>(*data.get("invalid"));
+            verb = std::get<std::string>(*data.get("verb"));
+            directObject = std::get<std::string>(*data.get("directObject"));
+            indirectObject = std::get<std::string>(*data.get("indirectObject"));
+            preposition = std::get<std::string>(*data.get("preposition"));
+
+            if (auto serializedDirObjQty = data.get("directObjectQty")) {
+               directObjectQty = std::get<double>(*serializedDirObjQty);
+            }
+
+            if (auto serializedIndirObjQty = data.get("indirectObjectQty")) {
+               indirectObjectQty = std::get<double>(*serializedIndirObjQty);
+            }
+         }
 
          /*
             Returns a serialized version of an instance of Command.
