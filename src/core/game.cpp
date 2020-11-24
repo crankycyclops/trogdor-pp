@@ -192,6 +192,8 @@ namespace trogdor {
                   std::make_shared<entity::Object>(this, *entity)
                );
 
+               break;
+
             case entity::ENTITY_CREATURE:
 
                insertEntity(
@@ -199,10 +201,11 @@ namespace trogdor {
                   std::make_shared<entity::Creature>(this, *entity)
                );
 
+               break;
+
             case entity::ENTITY_PLAYER:
 
-               insertEntity(
-                  std::get<std::string>(*entity->get("name")),
+               insertPlayer(
                   std::make_shared<entity::Player>(
                      this,
                      *entity,
@@ -210,6 +213,8 @@ namespace trogdor {
                      makeErrStream(this)
                   )
                );
+
+               break;
 
             default:
                break;

@@ -41,10 +41,18 @@ namespace trogdor::entity {
       std::unique_ptr<Trogerr> e
    ): Being(g, data) {
 
-      lastCommand = std::make_unique<Command>(
-         game->getVocabulary(),
-         *std::get<std::shared_ptr<serial::Serializable>>(*data.get("lastCommand"))
-      );
+      if (auto serializedLastCommand = data.get("lastCommand")) {
+         lastCommand = std::make_unique<Command>(
+            game->getVocabulary(),
+            *std::get<std::shared_ptr<serial::Serializable>>(*serializedLastCommand)
+         );
+      }
+
+      // We reach this block of code when we're deserializing the default player
+      // template instance
+      else {
+         lastCommand = std::make_unique<Command>(game->getVocabulary(), "");
+      }
 
       outStream = std::move(o);
       errStream = std::move(e);

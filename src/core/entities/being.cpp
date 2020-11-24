@@ -101,10 +101,29 @@ namespace trogdor::entity {
          std::get<std::shared_ptr<serial::Serializable>>(*serializedAttributes->get("values"));
 
       for (const auto &attr: serializedAttrValues->getAll()) {
-         attributes.values[attr.first] = std::get<int>(attr.second);
+
+         std::visit([&](auto &&value) {
+
+				using T = std::decay_t<decltype(value)>;
+
+				if constexpr (std::is_same_v<T, size_t> || std::is_same_v<T, int>) {
+               attributes.values[attr.first] = value;
+            } else {
+               throw UndefinedException("Invalid type for attribute value encountered during Being deserialization");
+            }
+         }, attr.second);
       }
 
-      attributes.initialTotal = std::get<int>(*serializedAttributes->get("initialTotal"));
+      std::visit([&](auto &&value) {
+
+         using T = std::decay_t<decltype(value)>;
+
+         if constexpr (std::is_same_v<T, size_t> || std::is_same_v<T, int>) {
+            attributes.initialTotal = value;
+         } else {
+            throw UndefinedException("Invalid type for attributes.initialTotal encountered during Being deserialization");
+         }
+      }, *serializedAttributes->get("initialTotal"));
 
       g->addCallback("afterDeserialize",
       std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {
@@ -137,16 +156,13 @@ namespace trogdor::entity {
       std::shared_ptr<serial::Serializable> data = Thing::serialize();
 
       std::vector<std::string> inventoryItems;
+
       std::shared_ptr<serial::Serializable> serializedAttributes = std::make_shared<serial::Serializable>();
       std::shared_ptr<serial::Serializable> serializedInventory = std::make_shared<serial::Serializable>();
-      std::vector<std::shared_ptr<serial::Serializable>> serializedAttributeValues;
+      std::shared_ptr<serial::Serializable> serializedAttributeValues = std::make_shared<serial::Serializable>();
 
       for (const auto &attribute: attributes.values) {
-
-         std::shared_ptr<serial::Serializable> value = std::make_shared<serial::Serializable>();
-
-         value->set(attribute.first, attribute.second);
-         serializedAttributeValues.push_back(value);
+         serializedAttributeValues->set(attribute.first, attribute.second);
       }
 
       for (const auto &item: inventory.objects) {
