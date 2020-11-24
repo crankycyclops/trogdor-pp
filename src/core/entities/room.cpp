@@ -34,7 +34,7 @@ namespace trogdor::entity {
          for (const auto &connection: serializedConnections) {
 
             if (const std::shared_ptr<Room> &roomPtr =
-            g->getRoom(std::get<std::string>((*connection->getAll().cbegin()).second))) {
+            game->getRoom(std::get<std::string>((*connection->getAll().cbegin()).second))) {
                connections[(*connection->getAll().cbegin()).first] = roomPtr;
             }
          }

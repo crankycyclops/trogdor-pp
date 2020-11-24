@@ -641,7 +641,50 @@ namespace trogdor::entity {
                throw std::invalid_argument(std::string("attempted to access undefined entity property '") + key + "'");
             }
 
-            return std::get<T>(properties.find(key)->second);
+            // The rules should be a little more flexible for numeric types,
+            // which can in some cases be promoted to other types
+            switch (properties.find(key)->second.index()) {
+
+               case 0: // size_t
+
+      				if constexpr (std::is_same_v<T, int>) {
+                     return static_cast<int>(std::get<size_t>(properties.find(key)->second));
+                  }
+
+      				if constexpr (std::is_same_v<T, double>) {
+                     return static_cast<double>(std::get<size_t>(properties.find(key)->second));
+                  }
+
+                  // Will fail as expected if type isn't size_t
+                  else {
+                     return std::get<T>(properties.find(key)->second);
+                  }
+
+               case 1: // int
+
+      				if constexpr (std::is_same_v<T, double>) {
+                     return static_cast<double>(std::get<int>(properties.find(key)->second));
+                  }
+
+                  else {
+                     return std::get<T>(properties.find(key)->second);
+                  }
+
+               case 2: // double
+
+                  // I'll allow the loss of precision if we want to get a double
+                  // as an int
+      				if constexpr (std::is_same_v<T, int>) {
+                     return static_cast<int>(std::get<double>(properties.find(key)->second));
+                  }
+
+                  else {
+                     return std::get<T>(properties.find(key)->second);
+                  }
+
+               default:
+                  return std::get<T>(properties.find(key)->second);
+            }
          }
 
          /*

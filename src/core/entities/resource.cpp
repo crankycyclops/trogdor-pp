@@ -120,7 +120,7 @@ namespace trogdor::entity {
          for (auto const &depositor: serializedDepositors) {
 
             const std::shared_ptr<Tangible> &owner =
-               g->getTangible(std::get<std::string>(*depositor->get("depositor")));
+               game->getTangible(std::get<std::string>(*depositor->get("depositor")));
 
             if (owner) {
 

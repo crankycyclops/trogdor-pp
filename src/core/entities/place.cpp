@@ -37,7 +37,7 @@ namespace trogdor::entity {
             std::get<std::vector<std::string>>(*data.get("things"));
 
          for (const auto &thing: serializedThings) {
-            if (const std::shared_ptr<Thing> &t = g->getThing(thing)) {
+            if (const std::shared_ptr<Thing> &t = game->getThing(thing)) {
                insertThing(t);
             }
          }

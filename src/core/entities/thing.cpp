@@ -49,7 +49,7 @@ namespace trogdor::entity {
          std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {
 
             if (const std::shared_ptr<Place> &locationPtr =
-            g->getPlace(std::get<std::string>(*locationData))) {
+            game->getPlace(std::get<std::string>(*locationData))) {
                location = locationPtr;
             }
 
