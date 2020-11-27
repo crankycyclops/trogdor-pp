@@ -93,7 +93,12 @@ namespace trogdor::entity {
             Constructor for creating a new Place.  Requires reference to the
             containing Game object and a name.
          */
-         Place(Game *g, std::string n, std::unique_ptr<Trogout> o, std::unique_ptr<Trogerr> e);
+         Place(
+            Game *g,
+            std::string n,
+            std::unique_ptr<Trogout> o,
+            std::unique_ptr<Trogerr> e
+         );
 
          /*
             Constructor for cloning an existing Place.  Requires a unique name.
@@ -109,8 +114,15 @@ namespace trogdor::entity {
             Input:
                Game the entity belongs to (Game *)
                Raw deserialized data (const Serializable &)
+               Pointer to output stream object (std::unique_ptr<Trogout>)
+               Pointer to error stream object (std::unique_ptr<Trogerr>)
          */
-         Place(Game *g, const serial::Serializable &data);
+         Place(
+            Game *g,
+            const serial::Serializable &data,
+            std::unique_ptr<Trogout> o,
+            std::unique_ptr<Trogerr> e
+         );
 
          /*
             Returns a smart pointer representing a raw Place pointer. Be careful

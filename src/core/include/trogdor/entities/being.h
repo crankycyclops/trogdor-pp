@@ -371,8 +371,12 @@ namespace trogdor::entity {
             Constructor for creating a new Being.  Requires reference to the
             containing Game object and a name.
          */
-         Being(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogerr> e);
+         Being(
+            Game *g,
+            std::string n,
+            std::unique_ptr<Trogout> o,
+            std::unique_ptr<Trogerr> e
+         );
 
          /*
             Constructor that clones a Being into another separate and unique
@@ -391,8 +395,15 @@ namespace trogdor::entity {
             Input:
                Game the Being belongs to (Game *)
                Raw deserialized data (const Serializable &)
+               Pointer to output stream object (std::unique_ptr<Trogout>)
+               Pointer to error stream object (std::unique_ptr<Trogerr>)
          */
-         Being(Game *g, const serial::Serializable &data);
+         Being(
+            Game *g,
+            const serial::Serializable &data,
+            std::unique_ptr<Trogout> o,
+            std::unique_ptr<Trogerr> e
+         );
 
          /*
             Returns a smart pointer representing a raw Being pointer. Be careful

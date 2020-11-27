@@ -109,7 +109,8 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Resource::Resource(Game *g, const serial::Serializable &data): Entity(g, data) {
+   Resource::Resource(Game *g, const serial::Serializable &data):
+   Entity(g, data, std::make_unique<NullOut>(), std::make_unique<NullErr>()) {
 
       g->addCallback("afterDeserialize",
       std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {

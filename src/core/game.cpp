@@ -20,6 +20,7 @@
 #include <trogdor/event/triggers/deathdrop.h>
 #include <trogdor/event/triggers/respawn.h>
 
+#include <trogdor/iostream/placeout.h>
 #include <trogdor/iostream/nullout.h>
 #include <trogdor/iostream/nullerr.h>
 #include <trogdor/iostream/trogout.h>
@@ -180,7 +181,12 @@ namespace trogdor {
 
                insertEntity(
                   std::get<std::string>(*entity->get("name")),
-                  std::make_shared<entity::Room>(this, *entity)
+                  std::make_shared<entity::Room>(
+                     this,
+                     *entity,
+                     std::make_unique<PlaceOut>(),
+                     err().copy()
+                  )
                );
 
                break;
@@ -189,7 +195,12 @@ namespace trogdor {
 
                insertEntity(
                   std::get<std::string>(*entity->get("name")),
-                  std::make_shared<entity::Object>(this, *entity)
+                  std::make_shared<entity::Object>(
+                     this,
+                     *entity,
+                     std::make_unique<NullOut>(),
+                     err().copy()
+                  )
                );
 
                break;
@@ -198,7 +209,12 @@ namespace trogdor {
 
                insertEntity(
                   std::get<std::string>(*entity->get("name")),
-                  std::make_shared<entity::Creature>(this, *entity)
+                  std::make_shared<entity::Creature>(
+                     this,
+                     *entity,
+                     std::make_unique<NullOut>(),
+                     err().copy()
+                  )
                );
 
                break;

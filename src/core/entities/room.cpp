@@ -6,8 +6,12 @@
 namespace trogdor::entity {
 
 
-   Room::Room(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Place(g, n, std::move(o), std::move(e)) {
+   Room::Room(
+      Game *g,
+      std::string n,
+      std::unique_ptr<Trogout> o,
+      std::unique_ptr<Trogerr> e
+   ): Place(g, n, std::move(o), std::move(e)) {
 
       types.push_back(ENTITY_ROOM);
       setClass("room");
@@ -23,7 +27,12 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Room::Room(Game *g, const serial::Serializable &data): Place(g, data) {
+   Room::Room(
+      Game *g,
+      const serial::Serializable &data,
+      std::unique_ptr<Trogout> o,
+      std::unique_ptr<Trogerr> e
+   ): Place(g, data, std::move(o), std::move(e)) {
 
       g->addCallback("afterDeserialize",
       std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {

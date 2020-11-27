@@ -64,8 +64,12 @@ namespace trogdor::entity {
 
    /**************************************************************************/
 
-   Creature::Creature(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Being(g, n, std::move(o), std::move(e)) {
+   Creature::Creature(
+      Game *g,
+      std::string n,
+      std::unique_ptr<Trogout> o,
+      std::unique_ptr<Trogerr> e
+   ): Being(g, n, std::move(o), std::move(e)) {
 
       types.push_back(ENTITY_CREATURE);
       setClass("creature");
@@ -90,7 +94,11 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Creature::Creature(Game *g, const serial::Serializable &data): Being(g, data) {
+   Creature::Creature(
+      Game *g, const serial::Serializable &data,
+      std::unique_ptr<Trogout> o,
+      std::unique_ptr<Trogerr> e
+   ): Being(g, data, std::move(o), std::move(e)) {
 
       setPropertyValidators();
       types.push_back(ENTITY_CREATURE);

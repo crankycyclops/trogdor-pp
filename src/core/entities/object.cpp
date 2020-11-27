@@ -15,9 +15,12 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Object::Object(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o),  std::move(e)),
-   owner(std::weak_ptr<Being>()) {
+   Object::Object(
+      Game *g,
+      std::string n,
+      std::unique_ptr<Trogout> o,
+      std::unique_ptr<Trogerr> e
+   ): Thing(g, n, std::move(o), std::move(e)), owner(std::weak_ptr<Being>()) {
 
       if (DEFAULT_IS_WEAPON) {
          setTag(WeaponTag);
@@ -38,7 +41,12 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Object::Object(Game *g, const serial::Serializable &data): Thing(g, data) {
+   Object::Object(
+      Game *g,
+      const serial::Serializable &data,
+      std::unique_ptr<Trogout> o,
+      std::unique_ptr<Trogerr> e
+   ): Thing(g, data, std::move(o), std::move(e)) {
 
       setPropertyValidators();
       types.push_back(ENTITY_OBJECT);

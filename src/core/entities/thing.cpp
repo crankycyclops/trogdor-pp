@@ -9,9 +9,12 @@
 namespace trogdor::entity {
 
 
-   Thing::Thing(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Tangible(g, n, std::move(o), std::move(e)),
-   location(std::weak_ptr<Place>()) {
+   Thing::Thing(
+      Game *g,
+      std::string n,
+      std::unique_ptr<Trogout> o,
+      std::unique_ptr<Trogerr> e
+   ): Tangible(g, n, std::move(o), std::move(e)), location(std::weak_ptr<Place>()) {
 
       types.push_back(ENTITY_THING);
 
@@ -34,7 +37,12 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Thing::Thing(Game *g, const serial::Serializable &data): Tangible(g, data) {
+   Thing::Thing(
+      Game *g,
+      const serial::Serializable &data,
+      std::unique_ptr<Trogout> o,
+      std::unique_ptr<Trogerr> e
+   ): Tangible(g, data, std::move(o), std::move(e)) {
 
       std::vector<std::string> serializedAliases =
          std::get<std::vector<std::string>>(*data.get("aliases"));

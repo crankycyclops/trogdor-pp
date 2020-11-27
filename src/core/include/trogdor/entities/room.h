@@ -28,8 +28,12 @@ namespace trogdor::entity {
             Constructor for creating a new Room.  Requires reference to the
             containing Game object and a name.
          */
-         Room(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogerr> e);
+         Room(
+            Game *g,
+            std::string n,
+            std::unique_ptr<Trogout> o,
+            std::unique_ptr<Trogerr> e
+         );
 
          /*
             Constructor for cloning an existing Room.  Requires a unique name.
@@ -42,8 +46,15 @@ namespace trogdor::entity {
             Input:
                Game the Room belongs to (Game *)
                Raw deserialized data (const Serializable &)
+               Pointer to output stream object (std::unique_ptr<Trogout>)
+               Pointer to error stream object (std::unique_ptr<Trogerr>)
          */
-         Room(Game *g, const serial::Serializable &data);
+         Room(
+            Game *g,
+            const serial::Serializable &data,
+            std::unique_ptr<Trogout> o,
+            std::unique_ptr<Trogerr> e
+         );
 
          /*
             Returns a smart pointer representing a raw Room pointer. Be careful

@@ -50,8 +50,12 @@ namespace trogdor::entity {
             Constructor for creating a new Thing.  Requires reference to the
             containing Game object and a name.
          */
-         Thing(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogerr> e);
+         Thing(
+            Game *g,
+            std::string n,
+            std::unique_ptr<Trogout> o,
+            std::unique_ptr<Trogerr> e
+         );
 
          /*
             Constructor for cloning a Thing.  Requires a unique name.
@@ -64,8 +68,15 @@ namespace trogdor::entity {
             Input:
                Game the Thing belongs to (Game *)
                Raw deserialized data (const Serializable &)
+               Pointer to output stream object (std::unique_ptr<Trogout>)
+               Pointer to error stream object (std::unique_ptr<Trogerr>)
          */
-         Thing(Game *g, const serial::Serializable &data);
+         Thing(
+            Game *g,
+            const serial::Serializable &data,
+            std::unique_ptr<Trogout> o,
+            std::unique_ptr<Trogerr> e
+         );
 
          /*
             Returns a smart pointer representing a raw Thing pointer. Be careful

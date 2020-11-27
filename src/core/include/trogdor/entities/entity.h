@@ -329,11 +329,15 @@ namespace trogdor::entity {
             Input:
                Reference to containing Game (Game *)
                Name (std::string)
-               Pointer to output stream object (Trogout *)
-               Pointer to error stream object (Trogerr *)
+               Pointer to output stream object (std::unique_ptr<Trogout>)
+               Pointer to error stream object (std::unique_ptr<Trogerr>)
          */
-         Entity(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogerr> e);
+         Entity(
+            Game *g,
+            std::string n,
+            std::unique_ptr<Trogout> o,
+            std::unique_ptr<Trogerr> e
+         );
 
          /*
             Constructor for cloning an Entity into another. IMPORTANT: this does
@@ -355,8 +359,15 @@ namespace trogdor::entity {
             Input:
                Game the Entity belongs to (Game *)
                Raw deserialized data (const Serializable &)
+               Pointer to output stream object (std::unique_ptr<Trogout>)
+               Pointer to error stream object (std::unique_ptr<Trogerr>)
          */
-         Entity(Game *g, const serial::Serializable &data);
+         Entity(
+            Game *g,
+            const serial::Serializable &data,
+            std::unique_ptr<Trogout> o,
+            std::unique_ptr<Trogerr> e
+         );
 
          /*
             Returns a smart pointer representing a raw Entity pointer. Be careful

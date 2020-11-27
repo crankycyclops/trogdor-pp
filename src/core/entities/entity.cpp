@@ -96,9 +96,13 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Entity::Entity(Game *g, const serial::Serializable &data):
-      game(g),
-      name(std::get<std::string>(*data.get("name"))) {
+   Entity::Entity(
+      Game *g,
+      const serial::Serializable &data,
+      std::unique_ptr<Trogout> o,
+      std::unique_ptr<Trogerr> e
+   ): game(g), name(std::get<std::string>(*data.get("name"))),
+   outStream(std::move(o)), errStream(std::move(e)) {
 
       types.push_back(ENTITY_ENTITY);
       className = std::get<std::string>(*data.get("class"));

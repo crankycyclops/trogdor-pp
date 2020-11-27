@@ -39,7 +39,7 @@ namespace trogdor::entity {
       const serial::Serializable &data,
       std::unique_ptr<Trogout> o,
       std::unique_ptr<Trogerr> e
-   ): Being(g, data) {
+   ): Being(g, data, std::move(o), std::move(e)) {
 
       if (auto serializedLastCommand = data.get("lastCommand")) {
          lastCommand = std::make_unique<Command>(
@@ -53,9 +53,6 @@ namespace trogdor::entity {
       else {
          lastCommand = std::make_unique<Command>(game->getVocabulary(), "");
       }
-
-      outStream = std::move(o);
-      errStream = std::move(e);
 
       types.push_back(ENTITY_PLAYER);
    }

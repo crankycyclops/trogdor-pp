@@ -50,9 +50,12 @@ namespace trogdor::entity {
 
    /**************************************************************************/
 
-   Being::Being(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Thing(g, n, std::move(o), std::move(e)),
-   inventory({0, 0, {}, {}}) {
+   Being::Being(
+      Game *g,
+      std::string n,
+      std::unique_ptr<Trogout> o,
+      std::unique_ptr<Trogerr> e
+   ): Thing(g, n, std::move(o), std::move(e)), inventory({0, 0, {}, {}}) {
 
       setAttribute("strength", DEFAULT_ATTRIBUTE_STRENGTH);
       setAttribute("dexterity", DEFAULT_ATTRIBUTE_DEXTERITY);
@@ -91,8 +94,12 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Being::Being(Game *g, const serial::Serializable &data): Thing(g, data),
-   inventory({0, 0, {}, {}}) {
+   Being::Being(
+      Game *g,
+      const serial::Serializable &data,
+      std::unique_ptr<Trogout> o,
+      std::unique_ptr<Trogerr> e
+   ): Thing(g, data, std::move(o), std::move(e)), inventory({0, 0, {}, {}}) {
 
       std::shared_ptr<serial::Serializable> serializedAttributes =
             std::get<std::shared_ptr<serial::Serializable>>(*data.get("attributes"));

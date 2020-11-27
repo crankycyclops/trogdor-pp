@@ -5,8 +5,12 @@
 namespace trogdor::entity {
 
 
-   Tangible::Tangible(Game *g, std::string n, std::unique_ptr<Trogout> o,
-   std::unique_ptr<Trogerr> e): Entity(g, n, std::move(o), std::move(e)) {
+   Tangible::Tangible(
+      Game *g,
+      std::string n,
+      std::unique_ptr<Trogout> o,
+      std::unique_ptr<Trogerr> e
+   ): Entity(g, n, std::move(o), std::move(e)) {
 
       types.push_back(ENTITY_TANGIBLE);
    }
@@ -17,7 +21,12 @@ namespace trogdor::entity {
 
    /***************************************************************************/
 
-   Tangible::Tangible(Game *g, const serial::Serializable &data): Entity(g, data) {
+   Tangible::Tangible(
+      Game *g,
+      const serial::Serializable &data,
+      std::unique_ptr<Trogout> o,
+      std::unique_ptr<Trogerr> e
+   ): Entity(g, data, std::move(o), std::move(e)) {
 
       g->addCallback("afterDeserialize",
       std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {

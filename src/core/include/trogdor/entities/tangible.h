@@ -88,11 +88,15 @@ namespace trogdor::entity {
             Input:
                Reference to containing Game (Game *)
                Name (std::string)
-               Pointer to output stream object (Trogout *)
-               Pointer to error stream object (Trogerr *)
+               Pointer to output stream object (std::unique_ptr<Trogout>)
+               Pointer to error stream object (std::unique_ptr<Trogerr>)
          */
-         Tangible(Game *g, std::string n, std::unique_ptr<Trogout> o,
-         std::unique_ptr<Trogerr> e);
+         Tangible(
+            Game *g,
+            std::string n,
+            std::unique_ptr<Trogout> o,
+            std::unique_ptr<Trogerr> e
+         );
 
          /*
             Constructor for cloning one Tangible into another.
@@ -109,8 +113,15 @@ namespace trogdor::entity {
             Input:
                Game the Tangible belongs to (Game *)
                Raw deserialized data (const Serializable &)
+               Pointer to output stream object (std::unique_ptr<Trogout>)
+               Pointer to error stream object (std::unique_ptr<Trogerr>)
          */
-         Tangible(Game *g, const serial::Serializable &data);
+         Tangible(
+            Game *g,
+            const serial::Serializable &data,
+            std::unique_ptr<Trogout> o,
+            std::unique_ptr<Trogerr> e
+         );
 
          /*
             Returns a smart pointer representing a raw Tangible pointer. Be
