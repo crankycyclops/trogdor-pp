@@ -32,13 +32,13 @@ int main(int argc, char **argv) {
    #endif
 
    if (argc > 2) {
-	  std::cerr << "Usage: trogdor [game_file]\n" << std::endl;
-	  return EXIT_FAILURE;
+      std::cerr << "Usage: trogdor [game_file]\n" << std::endl;
+      return EXIT_FAILURE;
    }
 
    // user passed in a custom game filename
    if (argc > 1) {
-	  gameXML = argv[1];
+	   gameXML = argv[1];
    }
 
    std::unique_ptr<trogdor::Game> currentGame = std::make_unique<trogdor::Game>(
@@ -85,54 +85,54 @@ int main(int argc, char **argv) {
    if (currentGame->initialize(parser.get(), gameXML, true)) {
 
       // Demonstrates the retrieval of Game metadata
-	  std::string title = currentGame->getMeta("title");
-	  std::string author = currentGame->getMeta("author");
+      std::string title = currentGame->getMeta("title");
+      std::string author = currentGame->getMeta("author");
 
-	  std::cout << std::endl;
+      std::cout << std::endl;
 
-	  if (title.length() > 0) {
-	     std::cout << std::endl << "Title: " << title << std::endl;
-	  }
+      if (title.length() > 0) {
+         std::cout << std::endl << "Title: " << title << std::endl;
+      }
 
-	  if (author.length() > 0) {
-	     std::cout << "Author: " << author << std::endl << std::endl;
-	  }
+      if (author.length() > 0) {
+         std::cout << "Author: " << author << std::endl << std::endl;
+      }
 
-	  std::shared_ptr<trogdor::entity::Player> player = currentGame->createPlayer(
+      std::shared_ptr<trogdor::entity::Player> player = currentGame->createPlayer(
          "player",
          std::make_unique<StreamOut>(&std::cout),
          std::make_unique<StreamErr>(&std::cerr)
-	  );
+      );
 
-	  // The optional callback forces the user to acknowledge they've read the
-     // introduction before they can start playing.
-	  currentGame->insertPlayer(player, [&player]() {
+      // The optional callback forces the user to acknowledge they've read the
+      // introduction before they can start playing.
+      currentGame->insertPlayer(player, [&player]() {
 
          std::string blah;
 
          player->out() << "\nPress enter to start." << std::endl;
          getline(std::cin, blah);
          player->out() << std::endl;
-     });
+      });
 
-	  currentGame->start();
+      currentGame->start();
 
-	  while (currentGame->inProgress() && currentGame->playerIsInGame("player")) {
+      while (currentGame->inProgress() && currentGame->playerIsInGame("player")) {
 
-	     std::string command;
+         std::string command;
 
-	     // Prompt the user for input
-	     player->out("prompt") << "\n> ";
-	     player->out("prompt").flush();
+         // Prompt the user for input
+         player->out("prompt") << "\n> ";
+         player->out("prompt").flush();
 
-	     getline(std::cin, command);
-	     player->input(command);
-	  }
+         getline(std::cin, command);
+         player->input(command);
+      }
 
-	  currentGame->stop();
+      currentGame->stop();
 
-	  std::cout << "Game lasted for " << currentGame->getTime() + 1
-	     << " seconds.  Goodbye!\n" << std::endl;
+      std::cout << "Game lasted for " << currentGame->getTime() + 1
+         << " seconds.  Goodbye!\n" << std::endl;
    }
 
    return EXIT_SUCCESS;
