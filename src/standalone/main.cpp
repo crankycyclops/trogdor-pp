@@ -122,11 +122,11 @@ int main(int argc, char **argv) {
          std::string command;
 
          // Prompt the user for input
-         player->out("prompt") << "\n> ";
-         player->out("prompt").flush();
+         currentGame->getPlayer("player")->out("prompt") << "\n> ";
+         currentGame->getPlayer("player")->out("prompt").flush();
 
          getline(std::cin, command);
-         player->input(command);
+         currentGame->getPlayer("player")->input(command);
       }
 
       currentGame->stop();
