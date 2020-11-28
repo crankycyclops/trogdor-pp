@@ -974,15 +974,23 @@ namespace trogdor {
             key "insertPlayer", it will be called after the player has been
             inserted with the player as the only argument.
 
+            If we're deserializing a pre-existing game, the introduction will
+            not be shown to the user, the callback will be ignored, and the
+            player's starting location will not be set to "start."
+
             Input:
                Player name (std::string)
                Callback to execute after player has been inserted (std::function, optional)
+               Whether or not we're inserting the player as part of Game::deserialize (bool)
 
             Output:
                Player *
          */
-         void insertPlayer(std::shared_ptr<entity::Player> player,
-         std::function<void()> confirmationCallback = nullptr);
+         void insertPlayer(
+            std::shared_ptr<entity::Player> player,
+            std::function<void()> confirmationCallback = nullptr,
+            bool deserialize = false
+         );
 
          /*
             Removes a player from the game.  Does nothing if the player with the

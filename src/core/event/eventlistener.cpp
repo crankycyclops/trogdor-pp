@@ -71,6 +71,23 @@ namespace trogdor::event {
 
    /***************************************************************************/
 
+   EventListener::EventListener(const serial::Serializable &data) {
+
+      // TODO
+   }
+
+   /***************************************************************************/
+
+   std::shared_ptr<serial::Serializable> EventListener::serialize() {
+
+      std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();
+
+      // TODO
+      return data;
+   }
+
+   /***************************************************************************/
+
    void EventListener::addTrigger(std::string eventName, std::unique_ptr<EventTrigger> trigger) {
 
       mutex.lock();

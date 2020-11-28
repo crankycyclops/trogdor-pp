@@ -7,6 +7,7 @@
 #include <mutex>
 
 #include <trogdor/event/eventtrigger.h>
+#include <trogdor/serial/serializable.h>
 
 namespace trogdor::event {
 
@@ -28,7 +29,19 @@ namespace trogdor::event {
          */
          EventListener();
          EventListener(const EventListener &original);
+         EventListener(const serial::Serializable &data);
          // TODO: assignment operator that does same thing as copy constructor
+
+         /*
+            Returns an easily serializable version of an instance of EventListener.
+
+            Input:
+               (none)
+
+            Output:
+               A version of an EventListener object in an easily serializable format
+         */
+         std::shared_ptr<serial::Serializable> serialize();
 
          /*
             Adds an EventTrigger to the listener that will be executed whenever

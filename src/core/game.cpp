@@ -112,6 +112,7 @@ namespace trogdor {
       data->set("introduction", serializedIntro);
       data->set("meta", serializedMeta);
       data->set("defaultPlayer", defaultPlayer->serialize());
+      data->set("eventListener", eventListener->serialize());
       data->set("entities", serializedEntities);
 
       // TODO: if I'm stopping game and timer to ensure consistency while
@@ -122,7 +123,6 @@ namespace trogdor {
          start();
       }
 
-      // TODO: serialize eventListeners
       return data;
    }
 
@@ -227,7 +227,9 @@ namespace trogdor {
                      *entity,
                      makeOutStream(this),
                      makeErrStream(this)
-                  )
+                  ),
+                  nullptr,
+                  true
                );
 
                break;
@@ -245,6 +247,10 @@ namespace trogdor {
       L = std::make_unique<LuaState>(
          this,
          *std::get<std::shared_ptr<serial::Serializable>>(*data->get("lua"))
+      );
+
+      eventListener = std::make_unique<event::EventListener>(
+         *std::get<std::shared_ptr<serial::Serializable>>(*data->get("eventListener"))
       );
 
       executeCallback("afterDeserialize", nullptr);
@@ -483,8 +489,11 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void Game::insertPlayer(std::shared_ptr<entity::Player> player,
-   std::function<void()> confirmationCallback) {
+   void Game::insertPlayer(
+      std::shared_ptr<entity::Player> player,
+      std::function<void()> confirmationCallback,
+      bool deserialize
+   ) {
 
       // Make sure there are no name conflicts before inserting the new player
       if (entities.find(player->getName()) != entities.end()) {
@@ -493,9 +502,9 @@ namespace trogdor {
          );
       }
 
-      // if new player introduction is enabled, show it before inserting
-      // the new player into the game
-      if (introduction.enabled && introduction.text.length() > 0) {
+      // if new player introduction is enabled and we're not deserializing a
+      // previously existing game, show it before inserting the new player
+      if (!deserialize && introduction.enabled && introduction.text.length() > 0) {
 
          player->out() << introduction.text << std::endl;
 
@@ -515,13 +524,17 @@ namespace trogdor {
       player->setGame(this);
 
       // set Player's initial location
-      player->setLocation(places["start"]);
-      places["start"]->insertThing(player);
+      if (!deserialize) {
+         player->setLocation(places["start"]);
+         places["start"]->insertThing(player);
+      }
 
       mutex.unlock();
 
       // Player must see an initial description of where they are
-      player->getLocation().lock()->observe(player, false);
+      if (!deserialize) {
+         player->getLocation().lock()->observe(player, false);
+      }
 
       executeCallback("insertPlayer", player);
 
