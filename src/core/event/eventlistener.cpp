@@ -81,8 +81,20 @@ namespace trogdor::event {
    std::shared_ptr<serial::Serializable> EventListener::serialize() {
 
       std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();
+      std::shared_ptr<serial::Serializable> serializedTriggers = std::make_shared<serial::Serializable>();
 
-      // TODO
+      for (auto const &event: triggers) {
+
+         std::vector<std::shared_ptr<serial::Serializable>> eventTriggers;
+
+         for (auto const &trigger: triggers[event.first]) {
+            eventTriggers.push_back(trigger->serialize());
+         }
+
+         serializedTriggers->set(event.first, eventTriggers);
+      }
+
+      data->set("triggers", serializedTriggers);
       return data;
    }
 

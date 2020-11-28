@@ -65,6 +65,17 @@ namespace trogdor::event {
                allowed to continue or be suppressed (EventReturn)
          */
          virtual EventReturn operator()(Event e);
+
+         /*
+            Returns a serialized version of the EventTrigger instance.
+
+            Input:
+               (none)
+
+            Output:
+               Serialized instance of EventTrigger (std::shared_ptr<serial::Serializable>)
+         */
+         virtual std::shared_ptr<serial::Serializable> serialize();
    };
 }
 

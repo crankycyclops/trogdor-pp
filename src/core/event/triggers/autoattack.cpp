@@ -32,4 +32,14 @@ namespace trogdor::event {
 
       return {true, true};
    }
+
+   /**************************************************************************/
+
+   std::shared_ptr<serial::Serializable> AutoAttackEventTrigger::serialize() {
+
+      std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();
+
+      // TODO
+      return data;
+   }
 }
