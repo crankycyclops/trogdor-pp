@@ -26,6 +26,9 @@ namespace trogdor::event {
 
       public:
 
+         // The event trigger's name. Used for type comparison.
+         static constexpr const char *CLASS_NAME = "LuaEventTrigger";
+
          /*
             Constructor for the LuaEventTrigger class. Takes as input an error
             stream, the name of the Lua function to execute, and a LuaState
@@ -36,6 +39,17 @@ namespace trogdor::event {
             std::string newfunc,
             std::shared_ptr<LuaState> newL
          ): EventTrigger(), errStream(e), function(newfunc), L(newL) {}
+
+         /*
+            Returns the class's name.
+
+            Input:
+               (none)
+
+            Output:
+               Class name (const char *)
+         */
+         virtual const char *getClassName();
 
          /*
             Sets a new Lua state for the event trigger. This is necessary when

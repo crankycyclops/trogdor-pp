@@ -12,6 +12,20 @@ namespace trogdor::event {
 
       public:
 
+         // The event trigger's name. Used for type comparison.
+         static constexpr const char *CLASS_NAME = "AutoAttackEventTrigger";
+
+         /*
+            Returns the class's name.
+
+            Input:
+               (none)
+
+            Output:
+               Class name (const char *)
+         */
+         virtual const char *getClassName();
+
          /*
             Scans the room entered by a Being for hostile creatures and
             initiates auto-attack for any creatures that have that feature

@@ -12,6 +12,20 @@ namespace trogdor::event {
 
       public:
 
+         // The event trigger's name. Used for type comparison.
+         static constexpr const char *CLASS_NAME = "DeathDropEventTrigger";
+
+         /*
+            Returns the class's name.
+
+            Input:
+               (none)
+
+            Output:
+               Class name (const char *)
+         */
+         virtual const char *getClassName();
+
          /*
             Drops items from a Being's inventory when the Being dies.
 

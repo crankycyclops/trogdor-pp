@@ -3,6 +3,13 @@
 namespace trogdor::event {
 
 
+   const char *LuaEventTrigger::getClassName() {
+
+      return CLASS_NAME;
+   }
+
+   /**************************************************************************/
+
    EventReturn LuaEventTrigger::operator()(Event e) {
 
       try {
@@ -69,9 +76,8 @@ namespace trogdor::event {
 
    std::shared_ptr<serial::Serializable> LuaEventTrigger::serialize() {
 
-      std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();
+      std::shared_ptr<serial::Serializable> data = EventTrigger::serialize();
 
-      data->set("type", "LuaEventTrigger");
       data->set("function", function);
       data->set("lua", L->serialize());
 

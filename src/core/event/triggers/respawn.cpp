@@ -8,6 +8,13 @@
 namespace trogdor::event {
 
 
+   const char *RespawnEventTrigger::getClassName() {
+
+      return CLASS_NAME;
+   }
+
+   /**************************************************************************/
+
    EventReturn RespawnEventTrigger::operator()(Event e) {
 
       Game  *game  = std::get<Game *>(e.getArguments()[0]);
@@ -37,9 +44,6 @@ namespace trogdor::event {
 
    std::shared_ptr<serial::Serializable> RespawnEventTrigger::serialize() {
 
-      std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();
-
-      data->set("type", "RespawnEventTrigger");
-      return data;
+      return EventTrigger::serialize();
    }
 }

@@ -4,6 +4,13 @@
 namespace trogdor::event {
 
 
+   const char *DeathDropEventTrigger::getClassName() {
+
+      return CLASS_NAME;
+   }
+
+   /**************************************************************************/
+
    EventReturn DeathDropEventTrigger::operator()(Event e) {
 
       entity::ObjectList drops;
@@ -29,9 +36,6 @@ namespace trogdor::event {
 
    std::shared_ptr<serial::Serializable> DeathDropEventTrigger::serialize() {
 
-      std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();
-
-      data->set("type", "DeathDropEventTrigger");
-      return data;
+      return EventTrigger::serialize();
    }
 }

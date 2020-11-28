@@ -9,6 +9,13 @@
 namespace trogdor::event {
 
 
+   const char *AutoAttackEventTrigger::getClassName() {
+
+      return CLASS_NAME;
+   }
+
+   /**************************************************************************/
+
    EventReturn AutoAttackEventTrigger::operator()(Event e) {
 
       Game  *game  = std::get<Game *>(e.getArguments()[0]);
@@ -37,9 +44,6 @@ namespace trogdor::event {
 
    std::shared_ptr<serial::Serializable> AutoAttackEventTrigger::serialize() {
 
-      std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();
-
-      data->set("type", "AutoAttackEventTrigger");
-      return data;
+      return EventTrigger::serialize();
    }
 }
