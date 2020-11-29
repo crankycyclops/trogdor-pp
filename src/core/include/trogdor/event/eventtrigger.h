@@ -63,20 +63,6 @@ namespace trogdor::event {
          virtual const char *getClassName() = 0;
 
          /*
-            Returns the event trigger's type id.
-
-            Input:
-               (none)
-
-            Output:
-               Class's type id (std::optional<std::type_info>)
-         */
-         inline std::type_info * getType() {
-
-            return *getType(getClassName());
-         }
-
-         /*
             Executes the EventTrigger.
 
             Input:
