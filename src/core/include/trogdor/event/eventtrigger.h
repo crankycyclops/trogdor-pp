@@ -32,7 +32,7 @@ namespace trogdor::event {
          > instantiators;
 
          // Registers built-in event trigger types
-   		static void initBuiltinTypes();
+   		static void registerBuiltinTypes();
 
       protected:
 
@@ -58,26 +58,6 @@ namespace trogdor::event {
          }
 
       public:
-
-         /*
-            Returns the type id for the given class name if it exists. If not,
-            returns std::nullopt.
-
-            Input:
-               Class's name (const char *)
-
-            Output:
-               Class's type id (std::optional<std::type_info>)
-         */
-         static inline std::optional<std::type_info *> getType(const char *typeName) {
-
-            if (!types.size()) {
-               initBuiltinTypes();
-            }
-
-            return types.find(typeName) != types.end() ?
-               std::optional<std::type_info *>(types.find(typeName)->second) : std::nullopt;
-         }
 
          /*
             When a class has one or more virtual functions, it should also have

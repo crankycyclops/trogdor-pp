@@ -52,6 +52,10 @@ namespace trogdor::event {
             std::shared_ptr<LuaState> newL
          ): EventTrigger(), errStream(e), function(newfunc), L(newL) {}
 
+         // Copy and deserialization constructors
+         LuaEventTrigger(const LuaEventTrigger &t) = default;
+         LuaEventTrigger(const serial::Serializable &data, Trogerr &e);
+
          /*
             Returns the class's name.
 

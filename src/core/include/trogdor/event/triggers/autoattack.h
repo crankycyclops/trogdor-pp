@@ -27,6 +27,11 @@ namespace trogdor::event {
          */
          static void init();
 
+         // Default, Copy, and deserialization constructors
+         AutoAttackEventTrigger() = default;
+         AutoAttackEventTrigger(const AutoAttackEventTrigger &t) = default;
+         AutoAttackEventTrigger(const serial::Serializable &data);
+
          /*
             Returns the class's name.
 

@@ -27,6 +27,11 @@ namespace trogdor::event {
          */
          static void init();
 
+         // Default, Copy, and deserialization constructors
+         RespawnEventTrigger() = default;
+         RespawnEventTrigger(const RespawnEventTrigger &t) = default;
+         RespawnEventTrigger(const serial::Serializable &data);
+
          /*
             Returns the class's name.
 

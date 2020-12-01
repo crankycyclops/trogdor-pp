@@ -9,6 +9,13 @@
 namespace trogdor::event {
 
 
+   AutoAttackEventTrigger::AutoAttackEventTrigger(const serial::Serializable &data) {
+
+      // TODO
+   }
+
+   /**************************************************************************/
+
    const char *AutoAttackEventTrigger::getClassName() {
 
       return CLASS_NAME;
@@ -21,9 +28,21 @@ namespace trogdor::event {
       registerType(
          CLASS_NAME,
          const_cast<std::type_info *>(&typeid(AutoAttackEventTrigger)),
-         [] (std::any args) -> std::unique_ptr<EventTrigger> {
+         [] (std::any arg) -> std::unique_ptr<EventTrigger> {
 
-            // TODO
+            // Invoke the copy constructor
+            if (typeid(AutoAttackEventTrigger) == arg.type()) {
+               return std::make_unique<AutoAttackEventTrigger>(std::any_cast<AutoAttackEventTrigger &>(arg));
+            }
+
+            // Invoke the deserialization constructor
+            else if (typeid(serial::Serializable) == arg.type()) {
+               return std::make_unique<AutoAttackEventTrigger>(std::any_cast<serial::Serializable &>(arg));
+            }
+
+            else {
+               throw UndefinedException("Unsupported argument type in AutoAttackEventTrigger instantiator");
+            }
          }
       );
    }

@@ -23,7 +23,7 @@ namespace trogdor::event {
 
    /**************************************************************************/
 
-   void EventTrigger::initBuiltinTypes() {
+   void EventTrigger::registerBuiltinTypes() {
 
       AutoAttackEventTrigger::init();
       DeathDropEventTrigger::init();

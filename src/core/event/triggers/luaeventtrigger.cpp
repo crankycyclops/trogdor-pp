@@ -1,7 +1,16 @@
 #include <trogdor/event/triggers/luaeventtrigger.h>
+#include <trogdor/exception/undefinedexception.h>
 
 namespace trogdor::event {
 
+
+   LuaEventTrigger::LuaEventTrigger(const serial::Serializable &data, Trogerr &e):
+   errStream(e) {
+
+      // TODO
+   }
+
+   /**************************************************************************/
 
    const char *LuaEventTrigger::getClassName() {
 
@@ -15,9 +24,22 @@ namespace trogdor::event {
       registerType(
          CLASS_NAME,
          const_cast<std::type_info *>(&typeid(LuaEventTrigger)),
-         [] (std::any args) -> std::unique_ptr<EventTrigger> {
+         [] (std::any arg) -> std::unique_ptr<EventTrigger> {
 
-            // TODO
+            // Invoke the copy constructor
+            if (typeid(LuaEventTrigger) == arg.type()) {
+               return std::make_unique<LuaEventTrigger>(std::any_cast<LuaEventTrigger &>(arg));
+            }
+
+            // Invoke the deserialization constructor
+            else if (typeid(std::tuple<serial::Serializable, Trogerr *>) == arg.type()) {
+               auto args = std::any_cast<std::tuple<serial::Serializable, Trogerr *> &>(arg);
+               return std::make_unique<LuaEventTrigger>(std::get<0>(args), *std::get<1>(args));
+            }
+
+            else {
+               throw UndefinedException("Unsupported argument type in LuaEventTrigger instantiator");
+            }
          }
       );
    }
