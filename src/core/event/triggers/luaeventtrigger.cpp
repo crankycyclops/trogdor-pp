@@ -27,8 +27,8 @@ namespace trogdor::event {
          [] (std::any arg) -> std::unique_ptr<EventTrigger> {
 
             // Invoke the copy constructor
-            if (typeid(LuaEventTrigger) == arg.type()) {
-               return std::make_unique<LuaEventTrigger>(std::any_cast<LuaEventTrigger &>(arg));
+            if (typeid(LuaEventTrigger *) == arg.type()) {
+               return std::make_unique<LuaEventTrigger>(*std::any_cast<LuaEventTrigger *>(arg));
             }
 
             // Invoke the deserialization constructor

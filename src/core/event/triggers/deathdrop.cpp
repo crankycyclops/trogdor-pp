@@ -26,8 +26,8 @@ namespace trogdor::event {
          [] (std::any arg) -> std::unique_ptr<EventTrigger> {
 
             // Invoke the copy constructor
-            if (typeid(DeathDropEventTrigger) == arg.type()) {
-               return std::make_unique<DeathDropEventTrigger>(std::any_cast<DeathDropEventTrigger &>(arg));
+            if (typeid(DeathDropEventTrigger *) == arg.type()) {
+               return std::make_unique<DeathDropEventTrigger>(*std::any_cast<DeathDropEventTrigger *>(arg));
             }
 
             // Invoke the deserialization constructor

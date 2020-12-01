@@ -60,6 +60,24 @@ namespace trogdor::event {
       public:
 
          /*
+            Instantiates a copy constructed or deserialized child of EventTrigger.
+
+            Input:
+               Type name (const char *)
+               Arguments to pass to instantiator callback (std::any)
+
+            Output:
+               Copied or deserialized instance of EventTrigger (std::unique_ptr<EventTrigger>)
+         */
+         inline static std::unique_ptr<EventTrigger> instantiate(
+            const char *type,
+            std::any args
+         ) {
+
+            return instantiators[std::type_index(*types[type])](args);
+         }
+
+         /*
             When a class has one or more virtual functions, it should also have
             a virtual destructor.
          */

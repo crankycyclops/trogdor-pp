@@ -18,53 +18,14 @@ namespace trogdor::event {
    // a bunch of unique_ptrs.
    EventListener::EventListener(const EventListener &original) {
 
-      // I have to check the type of each event trigger and insert a new copy of
-      // each.
       for (const auto &event: triggers) {
 
          triggers[event.first] = std::vector<std::unique_ptr<EventTrigger>>();
 
          for (const auto &trigger: event.second) {
-
-            if (trigger) {
-
-               // Using this instead of typeid(*trigger) satisfies te compiler
-               // gods and fixes the following warning: expression with side
-               // effects will be evaluated despite being used as an operand to
-               // 'typeid'
-               auto &t = *trigger.get();
-
-               if (typeid(AutoAttackEventTrigger) == typeid(t)) {
-                  triggers[event.first].push_back(std::make_unique<AutoAttackEventTrigger>(
-                     *dynamic_cast<AutoAttackEventTrigger *>(trigger.get())
-                  ));
-               }
-
-               else if (typeid(DeathDropEventTrigger) == typeid(t)) {
-                  triggers[event.first].push_back(std::make_unique<DeathDropEventTrigger>(
-                     *dynamic_cast<DeathDropEventTrigger *>(trigger.get())
-                  ));
-               }
-
-               else if (typeid(RespawnEventTrigger) == typeid(t)) {
-                  triggers[event.first].push_back(std::make_unique<RespawnEventTrigger>(
-                     *dynamic_cast<RespawnEventTrigger *>(trigger.get())
-                  ));
-               }
-
-               else {
-
-                  try {
-                     triggers[event.first].push_back(std::make_unique<LuaEventTrigger>(
-                        *dynamic_cast<LuaEventTrigger *>(trigger.get())
-                     ));
-                  }
-
-                  catch (const std::bad_cast &e) {
-                     throw UndefinedException("Unknown event trigger type encountered in EventListener copy constructor");
-                  }
-               }
-            }
+            triggers[event.first].push_back(
+               EventTrigger::instantiate(trigger->getClassName(), trigger.get())
+            );
          }
       }
    }

@@ -31,8 +31,8 @@ namespace trogdor::event {
          [] (std::any arg) -> std::unique_ptr<EventTrigger> {
 
             // Invoke the copy constructor
-            if (typeid(AutoAttackEventTrigger) == arg.type()) {
-               return std::make_unique<AutoAttackEventTrigger>(std::any_cast<AutoAttackEventTrigger &>(arg));
+            if (typeid(AutoAttackEventTrigger *) == arg.type()) {
+               return std::make_unique<AutoAttackEventTrigger>(*std::any_cast<AutoAttackEventTrigger *>(arg));
             }
 
             // Invoke the deserialization constructor
