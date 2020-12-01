@@ -30,6 +30,18 @@ namespace trogdor::event {
          static constexpr const char *CLASS_NAME = "LuaEventTrigger";
 
          /*
+            Registers the event trigger type so that EventTrigger knows how to
+            copy and deserialize it later.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         static void init();
+
+         /*
             Constructor for the LuaEventTrigger class. Takes as input an error
             stream, the name of the Lua function to execute, and a LuaState
             object which should contain the function.

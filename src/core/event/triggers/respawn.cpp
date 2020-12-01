@@ -15,6 +15,20 @@ namespace trogdor::event {
 
    /**************************************************************************/
 
+   void RespawnEventTrigger::init() {
+
+      registerType(
+         CLASS_NAME,
+         const_cast<std::type_info *>(&typeid(RespawnEventTrigger)),
+         [] (std::any args) -> std::unique_ptr<EventTrigger> {
+
+            // TODO
+         }
+      );
+   }
+
+   /**************************************************************************/
+
    EventReturn RespawnEventTrigger::operator()(Event e) {
 
       Game  *game  = std::get<Game *>(e.getArguments()[0]);

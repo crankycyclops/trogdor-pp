@@ -10,6 +10,20 @@ namespace trogdor::event {
 
    /**************************************************************************/
 
+   void LuaEventTrigger::init() {
+
+      registerType(
+         CLASS_NAME,
+         const_cast<std::type_info *>(&typeid(LuaEventTrigger)),
+         [] (std::any args) -> std::unique_ptr<EventTrigger> {
+
+            // TODO
+         }
+      );
+   }
+
+   /**************************************************************************/
+
    EventReturn LuaEventTrigger::operator()(Event e) {
 
       try {

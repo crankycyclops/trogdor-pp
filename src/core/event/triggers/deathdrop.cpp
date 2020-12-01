@@ -11,6 +11,20 @@ namespace trogdor::event {
 
    /**************************************************************************/
 
+   void DeathDropEventTrigger::init() {
+
+      registerType(
+         CLASS_NAME,
+         const_cast<std::type_info *>(&typeid(DeathDropEventTrigger)),
+         [] (std::any args) -> std::unique_ptr<EventTrigger> {
+
+            // TODO
+         }
+      );
+   }
+
+   /**************************************************************************/
+
    EventReturn DeathDropEventTrigger::operator()(Event e) {
 
       entity::ObjectList drops;

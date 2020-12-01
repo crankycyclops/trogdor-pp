@@ -16,6 +16,20 @@ namespace trogdor::event {
 
    /**************************************************************************/
 
+   void AutoAttackEventTrigger::init() {
+
+      registerType(
+         CLASS_NAME,
+         const_cast<std::type_info *>(&typeid(AutoAttackEventTrigger)),
+         [] (std::any args) -> std::unique_ptr<EventTrigger> {
+
+            // TODO
+         }
+      );
+   }
+
+   /**************************************************************************/
+
    EventReturn AutoAttackEventTrigger::operator()(Event e) {
 
       Game  *game  = std::get<Game *>(e.getArguments()[0]);

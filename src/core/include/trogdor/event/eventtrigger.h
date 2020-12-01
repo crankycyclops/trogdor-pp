@@ -4,7 +4,9 @@
 
 #include <mutex>
 #include <optional>
+#include <functional>
 #include <typeinfo>
+#include <typeindex>
 #include <string_view>
 #include <trogdor/event/event.h>
 #include <trogdor/serial/serializable.h>
@@ -20,8 +22,40 @@ namespace trogdor::event {
          // Maps class names to type ids for all registered event triggers
          static std::unordered_map<std::string_view, std::type_info *> types;
 
+         // Maps type ids to callbacks that can create instances of EventTrigger
+         // that are the appropriate type. Depending on the data that's passed
+         // in, callbacks should either handle copy construction or
+         // deserialization.
+         static std::unordered_map<
+            std::type_index,
+            std::function<std::unique_ptr<EventTrigger>(std::any)>
+         > instantiators;
+
          // Registers built-in event trigger types
    		static void initBuiltinTypes();
+
+      protected:
+
+         /*
+            Registers a new event trigger type so that we know how to copy and
+            deserialize it later.
+
+            Input:
+               Name of derived class (const char *)
+               The class's type id (std::type_info *)
+               A callback that can handle copy construction and deserialization
+
+            Output:
+               (none)
+         */
+         inline static void registerType(
+            const char *name,
+            std::type_info *type,
+            std::function<std::unique_ptr<EventTrigger>(std::any)> instantiator
+         ) {
+            types[name] = type;
+            instantiators[std::type_index(*type)] = instantiator;
+         }
 
       public:
 

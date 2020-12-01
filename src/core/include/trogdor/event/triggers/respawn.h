@@ -16,6 +16,18 @@ namespace trogdor::event {
          static constexpr const char *CLASS_NAME = "RespawnEventTrigger";
 
          /*
+            Registers the event trigger type so that EventTrigger knows how to
+            copy and deserialize it later.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         static void init();
+
+         /*
             Returns the class's name.
 
             Input:

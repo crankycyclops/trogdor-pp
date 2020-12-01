@@ -10,6 +10,11 @@ namespace trogdor::event {
 
    std::unordered_map<std::string_view, std::type_info *> EventTrigger::types;
 
+   std::unordered_map<
+      std::type_index,
+      std::function<std::unique_ptr<EventTrigger>(std::any)>
+   > EventTrigger::instantiators;
+
    /**************************************************************************/
 
    // See note in the comment above the destructor definition in
@@ -20,10 +25,10 @@ namespace trogdor::event {
 
    void EventTrigger::initBuiltinTypes() {
 
-      types[AutoAttackEventTrigger::CLASS_NAME] = const_cast<std::type_info *>(&typeid(AutoAttackEventTrigger));
-      types[RespawnEventTrigger::CLASS_NAME] = const_cast<std::type_info *>(&typeid(RespawnEventTrigger));
-      types[DeathDropEventTrigger::CLASS_NAME] = const_cast<std::type_info *>(&typeid(DeathDropEventTrigger));
-      types[LuaEventTrigger::CLASS_NAME] = const_cast<std::type_info *>(&typeid(LuaEventTrigger));
+      AutoAttackEventTrigger::init();
+      DeathDropEventTrigger::init();
+      RespawnEventTrigger::init();
+      LuaEventTrigger::init();
    }
 
    /**************************************************************************/
