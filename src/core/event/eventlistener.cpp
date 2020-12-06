@@ -34,9 +34,9 @@ namespace trogdor::event {
 
    EventListener::EventListener(const serial::Serializable &data, const std::shared_ptr<LuaState> &L) {
 
-      // TODO: for each trigger, use ternary operator to pass in either lua state
-      // or nullptr as second argument in tuple depending on whether or not it's
-      // a LuaEventTrigger type.
+      // TODO: for each listener, if lua, pass in the lua data. Else, pass in
+      // serializable directly as the data. The lua state we pass into the
+      // second tuple argument for LuaEventTrigger will be L.
    }
 
    /***************************************************************************/
