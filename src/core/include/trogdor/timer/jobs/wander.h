@@ -32,6 +32,9 @@ namespace trogdor {
                (none)
          */
          virtual void execute();
+
+         // Returns an easily serializable version of a TimerJob instance.
+         virtual std::shared_ptr<serial::Serializable> serialize();
    };
 }
 

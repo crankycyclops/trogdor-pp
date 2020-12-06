@@ -22,4 +22,16 @@ namespace trogdor {
       // if wander interval ever changes, we should make sure it's updated
       setInterval(wanderer->getProperty<int>(Creature::WanderIntervalProperty));
    }
+
+   /**************************************************************************/
+
+   std::shared_ptr<serial::Serializable> WanderTimerJob::serialize() {
+
+      std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>() = TimerJob::serialize();
+
+      data->set("type", "WanderTimerJob");
+      data->set("wanderer", wanderer->getName());
+
+      return data;
+   }
 }

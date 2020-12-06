@@ -107,6 +107,9 @@ namespace trogdor {
          // decrement executions
          inline void decExecutions() {executions--;}
 
+         // Returns an easily serializable version of a TimerJob instance.
+         virtual std::shared_ptr<serial::Serializable> serialize();
+
          // allows Timer to interact with the TimerJob object
          friend void Timer::insertJob(std::shared_ptr<TimerJob> job);
    };

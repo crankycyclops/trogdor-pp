@@ -24,4 +24,17 @@ namespace trogdor {
 
       aggressor->attack(defender, aggressor->selectWeapon());
    }
+
+   /**************************************************************************/
+
+   std::shared_ptr<serial::Serializable> AutoAttackTimerJob::serialize() {
+
+      std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>() = TimerJob::serialize();
+
+      data->set("type", "AutoAttackTimerJob");
+      data->set("aggressor", aggressor->getName());
+      data->set("defender", defender->getName());
+
+      return data;
+   }
 }
