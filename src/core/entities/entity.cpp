@@ -158,9 +158,10 @@ namespace trogdor::entity {
          *std::get<std::shared_ptr<serial::Serializable>>(*data.get("lua"))
       );
 
-      // TODO: deserialize event triggers once serialization of those is
-      // supported
-      triggers = std::make_unique<event::EventListener>();
+      triggers = std::make_unique<event::EventListener>(
+         *std::get<std::shared_ptr<serial::Serializable>>(*data.get("eventListener")), L
+      );
+
       setPropertyValidators();
    }
 
@@ -219,11 +220,8 @@ namespace trogdor::entity {
 
       data->set("properties", serializedProperties);
       data->set("lua", L->serialize());
+      data->set("eventListener", triggers->serialize());
 
-      // TODO: I still need to figure out how to serialize event triggers (I
-      // think each trigger will also have a serialize() method.) In that case,
-      // EventTrigger will also have to have a pure virtual method that each
-      // kind of trigger implements, just like we do with the Entity hierarchy.
       return data;
    }
 

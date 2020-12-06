@@ -250,7 +250,7 @@ namespace trogdor {
       );
 
       eventListener = std::make_unique<event::EventListener>(
-         *std::get<std::shared_ptr<serial::Serializable>>(*data->get("eventListener"))
+         *std::get<std::shared_ptr<serial::Serializable>>(*data->get("eventListener")), L
       );
 
       executeCallback("afterDeserialize", nullptr);

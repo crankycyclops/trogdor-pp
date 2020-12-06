@@ -4,10 +4,7 @@
 namespace trogdor::event {
 
 
-   DeathDropEventTrigger::DeathDropEventTrigger(const serial::Serializable &data) {
-
-      // TODO
-   }
+   DeathDropEventTrigger::DeathDropEventTrigger(const serial::Serializable &data) {}
 
    /**************************************************************************/
 

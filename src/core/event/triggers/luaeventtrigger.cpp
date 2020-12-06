@@ -1,13 +1,17 @@
+#include <trogdor/game.h>
 #include <trogdor/event/triggers/luaeventtrigger.h>
 #include <trogdor/exception/undefinedexception.h>
 
 namespace trogdor::event {
 
 
-   LuaEventTrigger::LuaEventTrigger(const serial::Serializable &data, Trogerr &e):
-   errStream(e) {
+   LuaEventTrigger::LuaEventTrigger(
+      const serial::Serializable &data,
+      const std::shared_ptr<LuaState> &newL
+   ) {
 
-      // TODO
+      L = newL;
+      function = std::get<std::string>(*data.get("function"));
    }
 
    /**************************************************************************/
@@ -32,9 +36,9 @@ namespace trogdor::event {
             }
 
             // Invoke the deserialization constructor
-            else if (typeid(std::tuple<serial::Serializable, Trogerr *>) == arg.type()) {
-               auto args = std::any_cast<std::tuple<serial::Serializable, Trogerr *> &>(arg);
-               return std::make_unique<LuaEventTrigger>(std::get<0>(args), *std::get<1>(args));
+            else if (typeid(std::tuple<serial::Serializable, std::any>) == arg.type()) {
+               auto args = std::any_cast<std::tuple<serial::Serializable, const std::shared_ptr<LuaState> &> &>(arg);
+               return std::make_unique<LuaEventTrigger>(std::get<0>(args), std::get<1>(args));
             }
 
             else {
@@ -103,7 +107,7 @@ namespace trogdor::event {
       catch (const LuaException &e) {
 
          L->unlock();
-         errStream << e.what() << std::endl;
+         L->getGame()->err() << e.what() << std::endl;
          return {true, true};
       }
    }
@@ -115,8 +119,6 @@ namespace trogdor::event {
       std::shared_ptr<serial::Serializable> data = EventTrigger::serialize();
 
       data->set("function", function);
-      data->set("lua", L->serialize());
-
       return data;
    }
 }

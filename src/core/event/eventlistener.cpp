@@ -32,9 +32,11 @@ namespace trogdor::event {
 
    /***************************************************************************/
 
-   EventListener::EventListener(const serial::Serializable &data) {
+   EventListener::EventListener(const serial::Serializable &data, const std::shared_ptr<LuaState> &L) {
 
-      // TODO
+      // TODO: for each trigger, use ternary operator to pass in either lua state
+      // or nullptr as second argument in tuple depending on whether or not it's
+      // a LuaEventTrigger type.
    }
 
    /***************************************************************************/

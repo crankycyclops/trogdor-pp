@@ -7,6 +7,7 @@
 #include <mutex>
 
 #include <trogdor/event/eventtrigger.h>
+#include <trogdor/lua/luastate.h>
 #include <trogdor/serial/serializable.h>
 
 namespace trogdor::event {
@@ -25,11 +26,13 @@ namespace trogdor::event {
       public:
 
          /*
-            Constructors for the EventListener class.
+            Constructors for the EventListener class. In the deserialization
+            constructor, the Lua state passed is the Lua state we set for any
+            serialized instances of LuaEventTrigger.
          */
          EventListener();
          EventListener(const EventListener &original);
-         EventListener(const serial::Serializable &data);
+         EventListener(const serial::Serializable &data, const std::shared_ptr<LuaState> &L);
          // TODO: assignment operator that does same thing as copy constructor
 
          /*

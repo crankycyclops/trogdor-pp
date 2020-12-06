@@ -391,7 +391,7 @@ namespace trogdor {
 
             entity->getEventListener()->addTrigger(
                event, std::make_unique<event::LuaEventTrigger>(
-                  game->err(), function, entity->getLuaState()
+                  function, entity->getLuaState()
                )
             );
          }
@@ -400,9 +400,17 @@ namespace trogdor {
 
             entity::Entity *entityClass = typeClasses[operation->getChildren()[3]->getValue()].get();
 
+            // TODO: the problem here is that, once we instantiate an entity
+            // based on the class, we have to update the lua state so that the
+            // event trigger references that of the entity instead of the class
+            // object. A solution to this would be to make a special copy
+            // constructor that takes an external lua state as an argument, and
+            // then when we instantiate an entity from an entity class, we can
+            // then copy the trigger while assigning the lua state to that of
+            // the freeshly minted entity.
             entityClass->getEventListener()->addTrigger(
                event, std::make_unique<event::LuaEventTrigger>(
-                  game->err(), function, entityClass->getLuaState()
+                  function, entityClass->getLuaState()
                )
             );
          }
@@ -410,7 +418,7 @@ namespace trogdor {
          else {
             game->getEventListener()->addTrigger(
                event, std::make_unique<event::LuaEventTrigger>(
-                  game->err(), function, game->getLuaState()
+                  function, game->getLuaState()
                )
             );
          }

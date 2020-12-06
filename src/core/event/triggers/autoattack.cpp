@@ -9,10 +9,7 @@
 namespace trogdor::event {
 
 
-   AutoAttackEventTrigger::AutoAttackEventTrigger(const serial::Serializable &data) {
-
-      // TODO
-   }
+   AutoAttackEventTrigger::AutoAttackEventTrigger(const serial::Serializable &data) {}
 
    /**************************************************************************/
 

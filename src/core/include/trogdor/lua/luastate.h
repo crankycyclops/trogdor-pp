@@ -189,6 +189,17 @@ namespace trogdor {
          inline void unlock() {mutex.unlock();}
 
          /*
+            Returns the Game that the Lua state operates on.
+
+            Input:
+               (none)
+
+            Output:
+               Game *
+         */
+         inline Game *getGame() {return game;}
+
+         /*
             Serializes the Lua state.
 
             Input:

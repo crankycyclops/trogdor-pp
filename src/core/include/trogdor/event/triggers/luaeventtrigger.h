@@ -18,9 +18,6 @@ namespace trogdor::event {
 
       private:
 
-         // Any Lua errors that occur should be written to this error stream
-         Trogerr &errStream;
-
          std::string function;         // name of the function to execute
          std::shared_ptr<LuaState> L;  // lua state in which we'll execute the function
 
@@ -41,20 +38,22 @@ namespace trogdor::event {
          */
          static void init();
 
-         /*
-            Constructor for the LuaEventTrigger class. Takes as input an error
-            stream, the name of the Lua function to execute, and a LuaState
-            object which should contain the function.
-         */
+         // Default Constructor
          inline LuaEventTrigger(
-            Trogerr &e,
             std::string newfunc,
-            std::shared_ptr<LuaState> newL
-         ): EventTrigger(), errStream(e), function(newfunc), L(newL) {}
+            const std::shared_ptr<LuaState> &newL
+         ): EventTrigger(), function(newfunc), L(newL) {}
 
-         // Copy and deserialization constructors
+         // Copy Constructor
          LuaEventTrigger(const LuaEventTrigger &t) = default;
-         LuaEventTrigger(const serial::Serializable &data, Trogerr &e);
+
+         // Deserialization Constructor. Takes as input an error stream, the
+         // name of the Lua function to execute, and a LuaState object which
+         // should contain the function.
+         LuaEventTrigger(
+            const serial::Serializable &data,
+            const std::shared_ptr<LuaState> &newL
+         );
 
          /*
             Returns the class's name.

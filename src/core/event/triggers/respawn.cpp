@@ -8,10 +8,7 @@
 namespace trogdor::event {
 
 
-   RespawnEventTrigger::RespawnEventTrigger(const serial::Serializable &data) {
-
-      // TODO
-   }
+   RespawnEventTrigger::RespawnEventTrigger(const serial::Serializable &data) {}
 
    /**************************************************************************/
 
