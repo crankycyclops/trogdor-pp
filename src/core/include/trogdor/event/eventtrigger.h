@@ -10,6 +10,7 @@
 #include <string_view>
 #include <trogdor/event/event.h>
 #include <trogdor/serial/serializable.h>
+#include <trogdor/exception/undefinedexception.h>
 
 
 namespace trogdor::event {
@@ -58,6 +59,34 @@ namespace trogdor::event {
          }
 
       public:
+
+         /*
+            Returns the type_info of the given trigger name.
+
+            Input:
+               Type name (const char *)
+               Arguments to pass to instantiator callback (std::any)
+
+            Output:
+               const std::type_info &
+
+            Throws an instance of UndefinedException if the type hasn't been
+            registered.
+         */
+         inline static const std::type_info &getType(const char *name) {
+
+            if (!types.size()) {
+               registerBuiltinTypes();
+            }
+
+            if (auto type = types.find(name); type != types.end()) {
+               return *type->second;
+            } else {
+               throw UndefinedException(
+                  std::string("EventTrigger type '") + name + "' has not been registered"
+               );
+            }
+         }
 
          /*
             Instantiates a copy constructed or deserialized child of EventTrigger.

@@ -22,6 +22,12 @@ namespace trogdor::event {
 
          triggers[event.first] = std::vector<std::unique_ptr<EventTrigger>>();
 
+         // Need to modify this to be like the deserialization constructor,
+         // which takes as input a new LuaState for any instance of
+         // LuaEventTrigger. I'll also have to accept as input to this copy
+         // constructor that argument (so it'll no longer be a normal copy
+         // constructor), and I'll have to update the copy constructor of Entity
+         // to take this into account.
          for (const auto &trigger: event.second) {
             triggers[event.first].push_back(
                EventTrigger::instantiate(trigger->getClassName(), trigger.get())
@@ -34,9 +40,30 @@ namespace trogdor::event {
 
    EventListener::EventListener(const serial::Serializable &data, const std::shared_ptr<LuaState> &L) {
 
-      // TODO: for each listener, if lua, pass in the lua data. Else, pass in
-      // serializable directly as the data. The lua state we pass into the
-      // second tuple argument for LuaEventTrigger will be L.
+      const auto deserializedEvents =
+         std::get<std::shared_ptr<serial::Serializable>>(*data.get("triggers"));
+
+      for (const auto &event: deserializedEvents->getAll()) {
+
+         const auto deserializedTriggers =
+            std::get<std::vector<std::shared_ptr<serial::Serializable>>>(event.second);
+
+         for (const auto &trigger: deserializedTriggers) {
+
+            std::any arg;
+            std::string typeName = std::get<std::string>(*trigger->get("type"));
+
+            if (typeid(LuaEventTrigger) == EventTrigger::getType(typeName.c_str())) {
+               arg = std::tuple<serial::Serializable, const std::shared_ptr<LuaState> &>({*trigger, L});
+            } else {
+               arg = *trigger;
+            }
+
+            triggers[event.first].push_back(
+               EventTrigger::instantiate(typeName.c_str(), arg)
+            );
+         }
+      }
    }
 
    /***************************************************************************/

@@ -36,7 +36,7 @@ namespace trogdor::event {
             }
 
             // Invoke the deserialization constructor
-            else if (typeid(std::tuple<serial::Serializable, std::any>) == arg.type()) {
+            else if (typeid(std::tuple<serial::Serializable, const std::shared_ptr<LuaState> &>) == arg.type()) {
                auto args = std::any_cast<std::tuple<serial::Serializable, const std::shared_ptr<LuaState> &> &>(arg);
                return std::make_unique<LuaEventTrigger>(std::get<0>(args), std::get<1>(args));
             }
