@@ -14,23 +14,37 @@ class MockTimerJob: public trogdor::TimerJob {
 
 	public:
 
-	/*
-		Constructor for the MockTimerJob class.
-	*/
-	inline MockTimerJob(trogdor::Game *g, int i, int e, int s,
-	std::function<void()> callback): TimerJob(g, i, e, s),
-	executeCallback(callback) {}
+		// The timer job's name. Used for type comparison.
+		static constexpr const char *CLASS_NAME = "MockTimerJob";
 
-	/*
-		Execute the timer job (calls executeCallback)
+		/*
+			Constructor for the MockTimerJob class.
+		*/
+		inline MockTimerJob(trogdor::Game *g, int i, int e, int s,
+		std::function<void()> callback): TimerJob(g, i, e, s),
+		executeCallback(callback) {}
 
-		Input:
-		(none)
+		/*
+			Returns the class's name.
 
-		Output:
-		(none)
-	*/
-	virtual void execute();
+			Input:
+			(none)
+
+			Output:
+			Class name (const char *)
+		*/
+		virtual const char *getClassName();
+
+		/*
+			Execute the timer job (calls executeCallback)
+
+			Input:
+			(none)
+
+			Output:
+			(none)
+		*/
+		virtual void execute();
 };
 
 
