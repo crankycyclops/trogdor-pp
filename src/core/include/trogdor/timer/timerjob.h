@@ -132,6 +132,10 @@ namespace trogdor {
             std::any args
          ) {
 
+            if (!types.size()) {
+               registerBuiltinTypes();
+            }
+
             return instantiators[std::type_index(*types[type])](args);
          }
 
