@@ -5,6 +5,27 @@
 namespace trogdor {
 
 
+   const char *AutoAttackTimerJob::getClassName() {
+
+      return CLASS_NAME;
+   }
+
+   /**************************************************************************/
+
+   void AutoAttackTimerJob::init() {
+
+      registerType(
+         CLASS_NAME,
+         const_cast<std::type_info *>(&typeid(AutoAttackTimerJob)),
+         [] (std::any arg) -> std::shared_ptr<TimerJob> {
+
+            // TODO
+         }
+      );
+   }
+
+   /**************************************************************************/
+
    void AutoAttackTimerJob::execute() {
 
       if (!aggressor->isAlive() || !defender->isAlive()) {
@@ -31,7 +52,6 @@ namespace trogdor {
 
       std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>() = TimerJob::serialize();
 
-      data->set("type", "AutoAttackTimerJob");
       data->set("aggressor", aggressor->getName());
       data->set("defender", defender->getName());
 

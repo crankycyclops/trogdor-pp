@@ -8,6 +8,27 @@ using namespace trogdor::entity;
 namespace trogdor {
 
 
+   const char *WanderTimerJob::getClassName() {
+
+      return CLASS_NAME;
+   }
+
+   /**************************************************************************/
+
+   void WanderTimerJob::init() {
+
+      registerType(
+         CLASS_NAME,
+         const_cast<std::type_info *>(&typeid(WanderTimerJob)),
+         [] (std::any arg) -> std::shared_ptr<TimerJob> {
+
+            // TODO
+         }
+      );
+   }
+
+   /**************************************************************************/
+
    void WanderTimerJob::execute() {
 
       if (!wanderer->getProperty<bool>(Creature::WanderEnabledProperty)) {
@@ -29,9 +50,7 @@ namespace trogdor {
 
       std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>() = TimerJob::serialize();
 
-      data->set("type", "WanderTimerJob");
       data->set("wanderer", wanderer->getName());
-
       return data;
    }
 }

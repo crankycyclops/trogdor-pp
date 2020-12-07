@@ -17,6 +17,21 @@ namespace trogdor {
 
       public:
 
+         // The timer job's name. Used for type comparison.
+         static constexpr const char *CLASS_NAME = "RespawnTimerJob";
+
+         /*
+            Registers the timer job's type so that TimerJob knows how to copy
+            and deserialize it later.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         static void init();
+
          /*
             Constructor for the RespawnTimerJob class.
          */
@@ -33,6 +48,17 @@ namespace trogdor {
                (none)
          */
          inline void setDeadGuy(entity::Being *b) {deadGuy = b;}
+
+         /*
+            Returns the instance's class name.
+
+            Input:
+               (none)
+
+            Output:
+               Class name (const char *)
+         */
+         virtual const char *getClassName();
 
          /*
             Executes Being's respawning.

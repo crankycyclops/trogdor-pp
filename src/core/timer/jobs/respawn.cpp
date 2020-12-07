@@ -5,6 +5,27 @@
 namespace trogdor {
 
 
+   const char *RespawnTimerJob::getClassName() {
+
+      return CLASS_NAME;
+   }
+
+   /**************************************************************************/
+
+   void RespawnTimerJob::init() {
+
+      registerType(
+         CLASS_NAME,
+         const_cast<std::type_info *>(&typeid(RespawnTimerJob)),
+         [] (std::any arg) -> std::shared_ptr<TimerJob> {
+
+            // TODO
+         }
+      );
+   }
+
+   /**************************************************************************/
+
    void RespawnTimerJob::execute() {
 
       deadGuy->doRespawn();
@@ -16,9 +37,7 @@ namespace trogdor {
 
       std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>() = TimerJob::serialize();
 
-      data->set("type", "RespawnTimerJob");
       data->set("deadGuy", deadGuy->getName());
-
       return data;
    }
 }

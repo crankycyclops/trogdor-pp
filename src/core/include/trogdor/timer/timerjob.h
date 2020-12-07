@@ -36,6 +36,21 @@ namespace trogdor {
       */
       private:
 
+         // Maps class names to type ids for all registered timer jobs
+         static std::unordered_map<std::string_view, std::type_info *> types;
+
+         // Maps type ids to callbacks that can create instances of TimerJob
+         // that are the appropriate type. Depending on the data that's passed
+         // in, callbacks should either handle copy construction or
+         // deserialization.
+         static std::unordered_map<
+            std::type_index,
+            std::function<std::shared_ptr<TimerJob>(std::any)>
+         > instantiators;
+
+         // Registers built-in timer job types
+   		static void registerBuiltinTypes();
+
          unsigned long initTime;   // time when the job was registered in the queue
          unsigned long startTime;  // how long to wait before job's first execution
          unsigned long interval;   // timer ticks between each job execution
@@ -48,9 +63,77 @@ namespace trogdor {
 
       protected:
 
-         Game *game; // pointer to the game in which the timer resides
+         /*
+            Registers a new timer job type so that we know how to copy and
+            deserialize it later.
+
+            Input:
+               Name of derived class (const char *)
+               The class's type id (std::type_info *)
+               A callback that can handle copy construction and deserialization
+
+            Output:
+               (none)
+         */
+         inline static void registerType(
+            const char *name,
+            std::type_info *type,
+            std::function<std::shared_ptr<TimerJob>(std::any)> instantiator
+         ) {
+            types[name] = type;
+            instantiators[std::type_index(*type)] = instantiator;
+         }
+
+         // Pointer to the game in which the timer resides
+         Game *game;
 
       public:
+
+         /*
+            Returns the type_info of the given job name.
+
+            Input:
+               Type name (const char *)
+               Arguments to pass to instantiator callback (std::any)
+
+            Output:
+               const std::type_info &
+
+            Throws an instance of UndefinedException if the type hasn't been
+            registered.
+         */
+         inline static const std::type_info &getType(const char *name) {
+
+            if (!types.size()) {
+               registerBuiltinTypes();
+            }
+
+            if (auto type = types.find(name); type != types.end()) {
+               return *type->second;
+            } else {
+               throw UndefinedException(
+                  std::string("TimerJob type '") + name + "' has not been registered"
+               );
+            }
+         }
+
+         /*
+            Instantiates a copy constructed or deserialized child of TimerJob.
+
+            Input:
+               Type name (const char *)
+               Arguments to pass to instantiator callback (std::any)
+
+            Output:
+               Copied or deserialized instance of TimerJob (std::shared_ptr<TimerJob>)
+         */
+         inline static std::shared_ptr<TimerJob> instantiate(
+            const char *type,
+            std::any args
+         ) {
+
+            return instantiators[std::type_index(*types[type])](args);
+         }
 
          /*
             Constructor for the TimerJob abstract class.
@@ -87,6 +170,17 @@ namespace trogdor {
             from GCC -Wall.
          */
          virtual ~TimerJob() = 0;
+
+         /*
+            Returns the class name of a TimerJob instance.
+
+            Input:
+               (none)
+
+            Output:
+               Class name (const char *)
+         */
+         virtual const char *getClassName() = 0;
 
          /*
             This is the function that will be executed every time the job runs.

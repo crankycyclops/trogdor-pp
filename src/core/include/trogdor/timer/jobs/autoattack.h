@@ -17,6 +17,21 @@ namespace trogdor {
 
       public:
 
+         // The timer job's name. Used for type comparison.
+         static constexpr const char *CLASS_NAME = "AutoAttackTimerJob";
+
+         /*
+            Registers the timer job's type so that TimerJob knows how to copy
+            and deserialize it later.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         static void init();
+
          /*
             Constructor for the AutoAttackTimerJob class.
          */
@@ -45,6 +60,17 @@ namespace trogdor {
                (none)
          */
          inline void setDefender(entity::Being *d) {defender = d;}
+
+         /*
+            Returns the instance's class name.
+
+            Input:
+               (none)
+
+            Output:
+               Class name (const char *)
+         */
+         virtual const char *getClassName();
 
          /*
             Automatically executes an attack against a Being
