@@ -12,6 +12,14 @@ namespace trogdor {
 
    /**************************************************************************/
 
+   AutoAttackTimerJob::AutoAttackTimerJob(const serial::Serializable &data, Game *g): TimerJob(data, g) {
+
+      aggressor = g->getCreature(std::get<std::string>(*data.get("aggressor"))).get();
+      defender = g->getBeing(std::get<std::string>(*data.get("defender"))).get();
+   }
+
+   /**************************************************************************/
+
    void AutoAttackTimerJob::init() {
 
       registerType(
@@ -19,7 +27,15 @@ namespace trogdor {
          const_cast<std::type_info *>(&typeid(AutoAttackTimerJob)),
          [] (std::any arg) -> std::shared_ptr<TimerJob> {
 
-            // TODO
+            // Invoke the deserialization constructor
+            if (typeid(std::tuple<serial::Serializable, Game *>) == arg.type()) {
+               auto args = std::any_cast<std::tuple<serial::Serializable, Game *> &>(arg);
+               return std::make_shared<AutoAttackTimerJob>(std::get<0>(args), std::get<1>(args));
+            }
+
+            else {
+               throw UndefinedException("Unsupported argument type in AutoAttackTimerJob instantiator");
+            }
          }
       );
    }

@@ -40,6 +40,11 @@ namespace trogdor {
          aggressor(a), defender(d) {}
 
          /*
+            Deserialization Constructor
+         */
+         AutoAttackTimerJob(const serial::Serializable &data, Game *g);
+
+         /*
             Specifies who's doing the attacking (always a Creature.)
 
             Input:

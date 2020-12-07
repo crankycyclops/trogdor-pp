@@ -15,6 +15,13 @@ namespace trogdor {
 
    /**************************************************************************/
 
+   WanderTimerJob::WanderTimerJob(const serial::Serializable &data, Game *g): TimerJob(data, g) {
+
+      wanderer = g->getCreature(std::get<std::string>(*data.get("wanderer"))).get();
+   }
+
+   /**************************************************************************/
+
    void WanderTimerJob::init() {
 
       registerType(
@@ -22,7 +29,15 @@ namespace trogdor {
          const_cast<std::type_info *>(&typeid(WanderTimerJob)),
          [] (std::any arg) -> std::shared_ptr<TimerJob> {
 
-            // TODO
+            // Invoke the deserialization constructor
+            if (typeid(std::tuple<serial::Serializable, Game *>) == arg.type()) {
+               auto args = std::any_cast<std::tuple<serial::Serializable, Game *> &>(arg);
+               return std::make_shared<WanderTimerJob>(std::get<0>(args), std::get<1>(args));
+            }
+
+            else {
+               throw UndefinedException("Unsupported argument type in WanderTimerJob instantiator");
+            }
          }
       );
    }

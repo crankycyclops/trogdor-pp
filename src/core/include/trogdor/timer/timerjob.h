@@ -158,6 +158,11 @@ namespace trogdor {
          }
 
          /*
+            Deserialization Constructor
+         */
+         TimerJob(const serial::Serializable &data, Game *g);
+
+         /*
             Apparently, when a class is polymorphic, you need to make the base
             class destructor virtual. Otherwise, if delete is called on an object
             pointed to by a pointer of the base class's type and the derived class

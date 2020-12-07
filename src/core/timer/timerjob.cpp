@@ -28,6 +28,23 @@ namespace trogdor {
 
    /**************************************************************************/
 
+   TimerJob::TimerJob(const serial::Serializable &data, Game *g): game(g) {
+
+      initTime = std::get<size_t>(*data.get("initTime"));
+      startTime = std::get<size_t>(*data.get("startTime"));
+      interval = std::get<size_t>(*data.get("interval"));
+
+      auto e = *data.get("executions");
+
+      if (e.index() == 0) {
+         executions = std::get<size_t>(e);
+      } else {
+         executions = std::get<int>(e);
+      }
+   }
+
+   /**************************************************************************/
+
    std::shared_ptr<serial::Serializable> TimerJob::serialize() {
 
       std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();

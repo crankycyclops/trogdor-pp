@@ -239,11 +239,6 @@ namespace trogdor {
          }
       }
 
-      timer = std::make_unique<Timer>(
-         this,
-         *std::get<std::shared_ptr<serial::Serializable>>(*data->get("timer"))
-      );
-
       L = std::make_unique<LuaState>(
          this,
          *std::get<std::shared_ptr<serial::Serializable>>(*data->get("lua"))
@@ -251,6 +246,11 @@ namespace trogdor {
 
       eventListener = std::make_unique<event::EventListener>(
          *std::get<std::shared_ptr<serial::Serializable>>(*data->get("eventListener")), L
+      );
+
+      timer = std::make_unique<Timer>(
+         this,
+         *std::get<std::shared_ptr<serial::Serializable>>(*data->get("timer"))
       );
 
       executeCallback("afterDeserialize", nullptr);

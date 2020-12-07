@@ -38,6 +38,11 @@ namespace trogdor {
          TimerJob(g, i, e, s), wanderer(c) {}
 
          /*
+            Deserialization Constructor
+         */
+         WanderTimerJob(const serial::Serializable &data, Game *g);
+
+         /*
             Returns the instance's class name.
 
             Input:

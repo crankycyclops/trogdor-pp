@@ -39,6 +39,11 @@ namespace trogdor {
          TimerJob(g, i, e, s), deadGuy(b) {}
 
          /*
+            Deserialization Constructor
+         */
+         RespawnTimerJob(const serial::Serializable &data, Game *g);
+
+         /*
             Specifies who's doing the attacking (always a Creature.)
 
             Input:
