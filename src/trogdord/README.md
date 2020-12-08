@@ -59,6 +59,7 @@ make trogdord && make install
 ```
 
 To build trogdord with redis support, add `-DENABLE_REDIS=ON` to your cmake command above.
+To build trogdord with support for the JSON serialization format, add `-DENABLE_SERIALIZE_JSON=ON` to your cmake command above.
 
 If you need debug symbols, add the following option to your cmake command: `-DCMAKE_BUILD_TYPE=Debug`. If you've already built it using debug symbols in the past and want to switch back to a release build, use this cmake option instead: `-DCMAKE_BUILD_TYPE=Release`.
 

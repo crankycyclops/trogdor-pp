@@ -21,6 +21,8 @@ Note that you don't have to explicitly build the library first. Building the cli
 
 The client will be installed to `/usr/bin/standalone` and will, by default, use the sample game data intalled to `/usr/share/trogdor` by the core library target.
 
+To build the standalone client with support for saving and loading games, enable the built-in JSON serialization format by adding `-DENABLE_SERIALIZE_JSON=ON` to your cmake command above (requires the RapidJSON header-only library in your include path to build successfully.)
+
 If you need debug symbols, add the following option to your cmake command: `-DCMAKE_BUILD_TYPE=Debug`. If you've already built it using debug symbols in the past and want to switch back to a release build, use this cmake option instead: `-DCMAKE_BUILD_TYPE=Release`.
 
 If you need to install relative to a custom path, add this to your cmake command: `-DCMAKE_INSTALL_PREFIX:PATH=/your/custom/prefix`.
