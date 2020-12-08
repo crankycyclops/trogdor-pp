@@ -1,7 +1,6 @@
+#include <trogdor/serial/drivers/json.h>
 #include <trogdor/serial/serializable.h>
 #include <trogdor/exception/undefinedexception.h>
-
-#include "../include/serial/json.h"
 
 namespace trogdor::serial {
 

@@ -31,6 +31,10 @@ set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY True)
 # If we're building trogdord, this indicates that we should build it with redis support
 option(ENABLE_REDIS "Enable Redis support" OFF)
 
+# If this is turned on, we'll build support for JSON as a serialization format
+# into core
+option(ENABLE_SERIALIZE_JSON "Enable JSON Serialization Format" OFF)
+
 # I'm trying to cut my reliance on the Boost libraries. This ensures that we'll
 # build using the standalone header-only ASIO library.
 add_definitions(-DASIO_STANDALONE)
@@ -134,6 +138,18 @@ set(CORE_SOURCES
 	src/core/serial/driver.cpp
 )
 
+if (ENABLE_SERIALIZE_JSON)
+
+	add_library(trogdor_serialize_json STATIC
+		src/core/serial/drivers/json.cpp
+	)
+
+	target_include_directories(trogdor_serialize_json
+		PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
+	)
+
+endif (ENABLE_SERIALIZE_JSON)
+
 set(CORE_INCLUDES
 	PUBLIC ${LIBXML_INCLUDE_DIRS}
 	PUBLIC ${LUA_INCLUDE_DIRS}
@@ -147,6 +163,18 @@ set(CORE_LIBRARIES
 )
 
 add_library(trogdor SHARED ${CORE_SOURCES})
+
+# Link in the JSON serialization driver if that feature was enabled
+if (ENABLE_SERIALIZE_JSON)
+
+	target_link_libraries(trogdor
+		PUBLIC trogdor_serialize_json
+	)
+
+	add_definitions(-DENABLE_SERIALIZE_JSON)
+
+endif (ENABLE_SERIALIZE_JSON)
+
 target_include_directories(trogdor ${CORE_INCLUDES})
 target_link_libraries(trogdor ${CORE_LIBRARIES})
 
@@ -157,6 +185,25 @@ install(TARGETS trogdor DESTINATION lib COMPONENT trogdor OPTIONAL)
 
 ###############################################################################
 
+if (ENABLE_SERIALIZE_JSON)
+
+	add_library(standalone_save_load STATIC
+		src/standalone/actions/saveaction.cpp
+		src/standalone/actions/loadaction.cpp
+	)
+
+	target_include_directories(standalone_save_load
+		PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
+	)
+
+	add_dependencies(standalone_save_load trogdor)
+
+	target_link_libraries(standalone_save_load
+		PUBLIC trogdor
+	)
+
+endif (ENABLE_SERIALIZE_JSON)
+
 # Build the example standalone game, which illustrates what a single player
 # client might look like
 add_executable(standalone
@@ -165,12 +212,20 @@ add_executable(standalone
 	src/standalone/streamerr.cpp
 	src/standalone/actions/timeaction.cpp
 	src/standalone/actions/quitaction.cpp
-	src/standalone/actions/saveaction.cpp
-	src/standalone/actions/loadaction.cpp
-	src/standalone/serial/json.cpp
 )
 
 add_dependencies(standalone trogdor)
+
+# Link in the JSON serialization driver if that feature was enabled
+if (ENABLE_SERIALIZE_JSON)
+
+	target_link_libraries(standalone
+		PRIVATE standalone_save_load
+	)
+
+	add_dependencies(standalone standalone_save_load)
+
+endif (ENABLE_SERIALIZE_JSON)
 
 target_link_libraries(standalone
 	PUBLIC trogdor

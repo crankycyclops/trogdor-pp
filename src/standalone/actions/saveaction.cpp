@@ -1,8 +1,8 @@
 #include <memory>
 #include <fstream>
 #include <trogdor/entities/player.h>
+#include <trogdor/serial/drivers/json.h>
 
-#include "../include/serial/json.h"
 #include "../include/actions/saveaction.h"
 
 
