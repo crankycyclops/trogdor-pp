@@ -288,6 +288,7 @@ if (INIH_INCLUDEDIR)
 			src/trogdord/io/input/listenercontainer.cpp
 			src/trogdord/io/output/driver.cpp
 			src/trogdord/io/output/local.cpp
+			src/trogdord/serial/drivermap.cpp
 			src/trogdord/io/iostream/serverout.cpp
 			src/trogdord/io/iostream/servererr.cpp
 		)

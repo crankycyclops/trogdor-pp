@@ -67,6 +67,9 @@ namespace trogdor::serial {
 
       public:
 
+         // The driver's name
+         static constexpr const char *CLASS_NAME = "json";
+
          /*
             Takes as input a serializable object and outputs the
             serialized representation defined by the implementing class.
