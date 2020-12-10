@@ -42,6 +42,7 @@ const std::unordered_map<std::string, std::string> Config::DEFAULTS = {
 // Singleton instance of Config
 std::unique_ptr<Config> Config::instance = nullptr;
 
+
 /*****************************************************************************/
 
 Config::Config(std::string newIniPath) noexcept {
@@ -49,8 +50,20 @@ Config::Config(std::string newIniPath) noexcept {
 	// Load the ini file's values
 	load(newIniPath);
 
-	// Setup the global error logger
+	// Setup global error logger and state management
 	initErrorLogger();
+	initState();
+}
+
+/*****************************************************************************/
+
+std::unique_ptr<Config> &Config::get() noexcept {
+
+	if (!instance) {
+		instance = std::unique_ptr<Config>(new Config(TROGDORD_INI_PATH));
+	}
+
+	return instance;
 }
 
 /*****************************************************************************/
@@ -105,13 +118,12 @@ void Config::initErrorLogger() noexcept {
 
 /*****************************************************************************/
 
-std::unique_ptr<Config> &Config::get() noexcept {
+void Config::initState() noexcept {
 
-	if (!instance) {
-		instance = std::unique_ptr<Config>(new Config(TROGDORD_INI_PATH));
+	// TODO: create directory if it doesn't exist
+	if (getBool(CONFIG_KEY_STATE_ENABLED)) {
+		err(trogdor::Trogerr::INFO) << "TODO: setup state management" << std::endl;
 	}
-
-	return instance;
 }
 
 /*****************************************************************************/
