@@ -56,20 +56,23 @@ class Config {
 		// Default values
 		static const std::unordered_map<std::string, std::string> DEFAULTS;
 
-		// Setting keys
-		static const char *CONFIG_KEY_PORT;
-		static const char *CONFIG_KEY_REUSE_ADDRESS;
-		static const char *CONFIG_KEY_SEND_TCP_KEEPALIVE;
-		static const char *CONFIG_KEY_LOGTO;
-		static const char *CONFIG_KEY_DEFINITIONS_PATH;
-		static const char *CONFIG_KEY_INPUT_LISTENERS;
-		static const char *CONFIG_KEY_OUTPUT_DRIVER;
-		static const char *CONFIG_KEY_REDIS_HOST;
-		static const char *CONFIG_KEY_REDIS_PORT;
-		static const char *CONFIG_KEY_REDIS_CONNECTION_TIMEOUT;
-		static const char *CONFIG_KEY_REDIS_CONNECTION_RETRY_INTERVAL;
-		static const char *CONFIG_KEY_REDIS_OUTPUT_CHANNEL;
-		static const char *CONFIG_KEY_REDIS_INPUT_CHANNEL;
+		// Ini file keys
+		static constexpr const char *CONFIG_KEY_PORT = "network.port";
+		static constexpr const char *CONFIG_KEY_REUSE_ADDRESS = "network.reuse_address";
+		static constexpr const char *CONFIG_KEY_SEND_TCP_KEEPALIVE = "network.send_keepalive";
+		static constexpr const char *CONFIG_KEY_LOGTO = "logging.logto";
+		static constexpr const char *CONFIG_KEY_INPUT_LISTENERS = "input.listeners";
+		static constexpr const char *CONFIG_KEY_OUTPUT_DRIVER = "output.driver";
+		static constexpr const char *CONFIG_KEY_REDIS_HOST = "redis.host";
+		static constexpr const char *CONFIG_KEY_REDIS_PORT = "redis.port";
+		static constexpr const char *CONFIG_KEY_REDIS_CONNECTION_TIMEOUT = "redis.connection_timeout";
+		static constexpr const char *CONFIG_KEY_REDIS_CONNECTION_RETRY_INTERVAL = "redis.connection_retry_interval";
+		static constexpr const char *CONFIG_KEY_REDIS_OUTPUT_CHANNEL = "redis.output_channel";
+		static constexpr const char *CONFIG_KEY_REDIS_INPUT_CHANNEL = "redis.input_channel";
+		static constexpr const char *CONFIG_KEY_DEFINITIONS_PATH = "resources.definitions_path";
+		static constexpr const char *CONFIG_KEY_STATE_ENABLED = "state.enabled";
+		static constexpr const char *CONFIG_KEY_STATE_FORMAT = "state.format";
+		static constexpr const char *CONFIG_KEY_STATE_PATH = "state.save_path";
 
 		// Returns singleton instance of Config.
 		static std::unique_ptr<Config> &get() noexcept;

@@ -12,28 +12,13 @@
 #endif
 
 
-// Ini file keys
-const char *Config::CONFIG_KEY_PORT = "network.port";
-const char *Config::CONFIG_KEY_DEFINITIONS_PATH = "resources.definitions_path";
-const char *Config::CONFIG_KEY_REUSE_ADDRESS = "network.reuse_address";
-const char *Config::CONFIG_KEY_SEND_TCP_KEEPALIVE = "network.send_keepalive";
-const char *Config::CONFIG_KEY_LOGTO = "logging.logto";
-const char *Config::CONFIG_KEY_INPUT_LISTENERS = "input.listeners";
-const char *Config::CONFIG_KEY_OUTPUT_DRIVER = "output.driver";
-const char *Config::CONFIG_KEY_REDIS_HOST = "redis.host";
-const char *Config::CONFIG_KEY_REDIS_PORT = "redis.port";
-const char *Config::CONFIG_KEY_REDIS_CONNECTION_TIMEOUT = "redis.connection_timeout";
-const char *Config::CONFIG_KEY_REDIS_CONNECTION_RETRY_INTERVAL = "redis.connection_retry_interval";
-const char *Config::CONFIG_KEY_REDIS_OUTPUT_CHANNEL = "redis.output_channel";
-const char *Config::CONFIG_KEY_REDIS_INPUT_CHANNEL = "redis.input_channel";
-
 // Default ini values
 const std::unordered_map<std::string, std::string> Config::DEFAULTS = {
+
 	{CONFIG_KEY_PORT,                             "1040"},
 	{CONFIG_KEY_REUSE_ADDRESS,                    "true"},
 	{CONFIG_KEY_SEND_TCP_KEEPALIVE,               "true"},
 	{CONFIG_KEY_LOGTO,                            "stderr"},
-	{CONFIG_KEY_DEFINITIONS_PATH,                 "share/trogdor"},
 	{CONFIG_KEY_INPUT_LISTENERS,                  "[]"},
 	{CONFIG_KEY_OUTPUT_DRIVER,                    "local"},
 	{CONFIG_KEY_REDIS_HOST,                       "localhost"},
@@ -41,7 +26,17 @@ const std::unordered_map<std::string, std::string> Config::DEFAULTS = {
 	{CONFIG_KEY_REDIS_CONNECTION_TIMEOUT,         "5000"},
 	{CONFIG_KEY_REDIS_CONNECTION_RETRY_INTERVAL,  "5000"},
 	{CONFIG_KEY_REDIS_OUTPUT_CHANNEL,             "trogdord:out"},
-	{CONFIG_KEY_REDIS_INPUT_CHANNEL,              "trogdord:in"}
+	{CONFIG_KEY_REDIS_INPUT_CHANNEL,              "trogdord:in"},
+	{CONFIG_KEY_DEFINITIONS_PATH,                 "share/trogdor"},
+
+	#ifdef ENABLE_SERIALIZE_JSON
+		{CONFIG_KEY_STATE_ENABLED,               "true"},
+	#else
+		{CONFIG_KEY_STATE_ENABLED,               "false"},
+	#endif
+
+	{CONFIG_KEY_STATE_FORMAT,                     "json"},
+	{CONFIG_KEY_STATE_PATH,                       "var/trogdor/state"}
 };
 
 // Singleton instance of Config
