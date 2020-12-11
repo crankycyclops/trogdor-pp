@@ -353,6 +353,7 @@ if (INIH_INCLUDEDIR)
 		add_definitions(-DTROGDORD_INI_PATH=\"${CMAKE_INSTALL_PREFIX}/etc/trogdord/trogdord.ini\")
 
 		install(TARGETS trogdord DESTINATION bin COMPONENT trogdord OPTIONAL)
+		install(DIRECTORY DESTINATION var/trogdord/state COMPONENT trogdord OPTIONAL)
 
 	else (HAVE_ASIO)
 

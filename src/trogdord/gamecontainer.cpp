@@ -15,11 +15,44 @@ std::unique_ptr<GameContainer> GameContainer::instance = nullptr;
 
 void GameContainer::initState() {
 
-	// TODO: create directory if it doesn't exist and validate
-	// TODO: if auto restore is enabled, auto restore the game's state before
-	// returning.
 	if (Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
-		Config::get()->err(trogdor::Trogerr::INFO) << "TODO: setup state management" << std::endl;
+
+		// Make sure we've got a valid location for storing state
+		std::string statePath = Config::get()->getString(Config::CONFIG_KEY_STATE_PATH);
+		statePath = trogdor::trim(statePath);
+
+		if (0 == statePath.compare("")) {
+			throw ServerException(
+				std::string("If ") + Config::CONFIG_KEY_STATE_ENABLED +
+				" in trogdord.ini is enabled, " + Config::CONFIG_KEY_STATE_PATH +
+				" must be set to a non-empty value."
+			);
+		}
+
+		statePath = Filesystem::getAbsolutePath(statePath);
+
+		if (STD_FILESYSTEM::exists(statePath)) {
+
+			if (!STD_FILESYSTEM::is_directory(statePath)) {
+				throw ServerException(
+					std::string(Config::CONFIG_KEY_STATE_PATH) +
+					" was set in trogdord.ini to " + statePath + ", but " + statePath +
+					" is a file, not a directory."
+				);
+			}
+		}
+
+		else {
+			throw ServerException(
+				std::string(Config::CONFIG_KEY_STATE_PATH) +
+				" was set in trogdord.ini to " + statePath + ", but " + statePath +
+				" doesn't exist."
+			);
+		}
+
+		// TODO: at this point, we know the directory exists and we can attempt
+		// to iterate over it (will have to catch errors -- ex: permissions)
+		Config::get()->err(trogdor::Trogerr::INFO) << "TODO: finish setting up state management" << std::endl;
 		// TODO: if auto-restore is enabled, call restore()
 	}
 }

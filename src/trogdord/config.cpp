@@ -29,13 +29,7 @@ const std::unordered_map<std::string, std::string> Config::DEFAULTS = {
 	{CONFIG_KEY_REDIS_OUTPUT_CHANNEL,             "trogdord:out"},
 	{CONFIG_KEY_REDIS_INPUT_CHANNEL,              "trogdord:in"},
 	{CONFIG_KEY_DEFINITIONS_PATH,                 "share/trogdor"},
-
-	#ifdef ENABLE_SERIALIZE_JSON
-		{CONFIG_KEY_STATE_ENABLED,               "true"},
-	#else
-		{CONFIG_KEY_STATE_ENABLED,               "false"},
-	#endif
-
+	{CONFIG_KEY_STATE_ENABLED,                    "false"},
 	{CONFIG_KEY_STATE_FORMAT,                     "json"},
 	{CONFIG_KEY_STATE_PATH,                       "var/trogdord/state"}
 };
@@ -109,7 +103,7 @@ void Config::initErrorLogger() noexcept {
 
 void Config::load(std::string newIniPath) noexcept {
 
-	iniPath = newIniPath;
+	iniPath = trogdor::trim(newIniPath);
 	ini.clear();
 
 	if (
