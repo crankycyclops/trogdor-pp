@@ -413,6 +413,14 @@ add_library(_trogdor_test STATIC ${CORE_SOURCES})
 target_include_directories(_trogdor_test ${CORE_INCLUDES})
 target_link_libraries(_trogdor_test ${CORE_LIBRARIES})
 
+if (ENABLE_SERIALIZE_JSON)
+
+	target_link_libraries(_trogdor_test
+		PUBLIC trogdor_serialize_json
+	)
+
+endif (ENABLE_SERIALIZE_JSON)
+
 # The default interval between timer ticks should be much shorter for unit tests
 target_compile_definitions(_trogdor_test PRIVATE TIMER_CUSTOM_INTERVAL=5)
 

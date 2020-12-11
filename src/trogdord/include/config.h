@@ -51,9 +51,6 @@ class Config {
 		// Initialize the global error logger.
 		void initErrorLogger() noexcept;
 
-		// Initialize load/save state management (if enabled)
-		void initState() noexcept;
-
 	public:
 
 		// Default values

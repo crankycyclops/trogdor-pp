@@ -5,6 +5,7 @@
 #include <asio.hpp>
 
 #include "include/config.h"
+#include "include/gamecontainer.h"
 #include "include/io/input/listenercontainer.h"
 
 #include "include/network/tcpcommon.h"
@@ -37,6 +38,10 @@ static void shutdownHandler(const asio::error_code &error, int signal_number) {
 int main(int argc, char **argv) {
 
 	std::unique_ptr<Config> &config = Config::get();
+
+	// Calling GameContainer::get() invokes the constructor, which then sets up
+	// state management for the server.
+	GameContainer::get();
 	config->err(trogdor::Trogerr::INFO) << STARTUP_MESSAGE << std::endl;
 
 	try {

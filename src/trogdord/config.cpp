@@ -50,9 +50,8 @@ Config::Config(std::string newIniPath) noexcept {
 	// Load the ini file's values
 	load(newIniPath);
 
-	// Setup global error logger and state management
+	// Setup global error logger
 	initErrorLogger();
-	initState();
 }
 
 /*****************************************************************************/
@@ -113,16 +112,6 @@ void Config::initErrorLogger() noexcept {
 			logFileStream = nullptr;
 			errStream = std::make_unique<ServerErr>(&std::cerr);
 		}
-	}
-}
-
-/*****************************************************************************/
-
-void Config::initState() noexcept {
-
-	// TODO: create directory if it doesn't exist
-	if (getBool(CONFIG_KEY_STATE_ENABLED)) {
-		err(trogdor::Trogerr::INFO) << "TODO: setup state management" << std::endl;
 	}
 }
 

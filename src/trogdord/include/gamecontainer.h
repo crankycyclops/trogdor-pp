@@ -21,6 +21,11 @@
 
 class GameContainer {
 
+	private:
+
+		// Sets up state management so that we can save and restore games.
+		void initState();
+
 	protected:
 
 		// Singleton instance of GameContainer.
@@ -34,10 +39,7 @@ class GameContainer {
 
 		// All currently existing games reside here.
 		std::vector<std::unique_ptr<GameWrapper>> games;
-/*
-		// Each game gets its own worker thread to process player input
-		std::unordered_map<size_t, std::unique_ptr<InputListener>> playerListeners;
-*/
+
 		// Indices are used by filters to quickly return a set of games based
 		// on various search criteria.
 		struct {
@@ -133,6 +135,9 @@ class GameContainer {
 		// set to a non-empty string, that message will be sent to the player's
 		// notifications channel before they're removed.
 		void removePlayer(size_t gameId, std::string playerName, std::string message = "");
+
+		// Restores the server's state, including all saved games.
+		void restore();
 };
 
 

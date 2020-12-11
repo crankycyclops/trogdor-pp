@@ -13,6 +13,19 @@ std::unique_ptr<GameContainer> GameContainer::instance = nullptr;
 
 /*****************************************************************************/
 
+void GameContainer::initState() {
+
+	// TODO: create directory if it doesn't exist and validate
+	// TODO: if auto restore is enabled, auto restore the game's state before
+	// returning.
+	if (Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+		Config::get()->err(trogdor::Trogerr::INFO) << "TODO: setup state management" << std::endl;
+		// TODO: if auto-restore is enabled, call restore()
+	}
+}
+
+/*****************************************************************************/
+
 GameContainer::GameContainer() {
 
 	indices.running[true] = {};
@@ -60,6 +73,8 @@ GameContainer::GameContainer() {
 
 		return matches;
 	});
+
+	initState();
 }
 
 /*****************************************************************************/
@@ -334,4 +349,11 @@ void GameContainer::removePlayer(size_t gameId, std::string playerName, std::str
 
 	game->get()->removePlayer(playerName, message);
 	numPlayers--;
+}
+
+/*****************************************************************************/
+
+void GameContainer::restore() {
+
+	// TODO: recover all games
 }
