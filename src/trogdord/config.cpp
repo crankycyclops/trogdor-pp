@@ -36,7 +36,7 @@ const std::unordered_map<std::string, std::string> Config::DEFAULTS = {
 	#endif
 
 	{CONFIG_KEY_STATE_FORMAT,                     "json"},
-	{CONFIG_KEY_STATE_PATH,                       "var/trogdor/state"}
+	{CONFIG_KEY_STATE_PATH,                       "var/trogdord/state"}
 };
 
 // Singleton instance of Config

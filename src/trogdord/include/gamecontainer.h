@@ -21,11 +21,6 @@
 
 class GameContainer {
 
-	private:
-
-		// Sets up state management so that we can save and restore games.
-		void initState();
-
 	protected:
 
 		// Singleton instance of GameContainer.
@@ -64,6 +59,42 @@ class GameContainer {
 		// instance.
 		GameContainer();
 		GameContainer(const GameContainer &) = delete;
+
+		// Sets up state management so that we can save and restore games.
+		void initState();
+
+		// Indexes a game id according to whether or not it's started
+		inline void indexStarted(size_t gameId, bool started, bool lock = true) {
+
+			if (lock) {
+				indices.mutex.lock();
+			}
+
+			indices.running[!started].erase(gameId);
+			indices.running[started].insert(gameId);
+
+			if (lock) {
+				indices.mutex.unlock();
+			}
+		}
+
+		// Removes all indices for the given game.
+		inline void clearIndices(size_t gameId) {
+
+			indices.mutex.lock();
+
+			indices.running[true].erase(gameId);
+			indices.running[false].erase(gameId);
+			indices.all.erase(gameId);
+
+			indices.name[games[gameId]->getName()].erase(gameId);
+
+			if (!indices.name[games[gameId]->getName()].size()) {
+				indices.name.erase(games[gameId]->getName());
+			}
+
+			indices.mutex.unlock();
+		}
 
 	public:
 

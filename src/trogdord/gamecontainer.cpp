@@ -169,12 +169,7 @@ size_t GameContainer::createGame(
 	games[gameId]->get()->addCallback("start",
 	std::make_shared<trogdor::Game::GameCallback>([&, gameId](std::any data) -> bool {
 
-		indices.mutex.lock();
-
-		indices.running[false].erase(gameId);
-		indices.running[true].insert(gameId);
-
-		indices.mutex.unlock();
+		indexStarted(gameId, true);
 		return false;
 	}));
 
@@ -182,12 +177,7 @@ size_t GameContainer::createGame(
 	games[gameId]->get()->addCallback("stop",
 	std::make_shared<trogdor::Game::GameCallback>([&, gameId](std::any data) -> bool {
 
-		indices.mutex.lock();
-
-		indices.running[true].erase(gameId);
-		indices.running[false].insert(gameId);
-
-		indices.mutex.unlock();
+		indexStarted(gameId, false);
 		return false;
 	}));
 
@@ -212,7 +202,7 @@ size_t GameContainer::createGame(
 	indices.mutex.lock();
 
 	// Note that the game is always initialized in a stopped state.
-	indices.running[false].insert(gameId);
+	indexStarted(gameId, false, false);
 	indices.all.insert(gameId);
 
 	if (indices.name.end() == indices.name.find(name)) {
@@ -230,23 +220,8 @@ size_t GameContainer::createGame(
 void GameContainer::destroyGame(size_t id) {
 
 	if (games.size() > id && nullptr != games[id]) {
-
 		numPlayers -= games[id]->getNumPlayers();
-
-		indices.mutex.lock();
-
-		indices.running[true].erase(id);
-		indices.running[false].erase(id);
-		indices.all.erase(id);
-
-		indices.name[games[id]->getName()].erase(id);
-
-		if (!indices.name[games[id]->getName()].size()) {
-			indices.name.erase(games[id]->getName());
-		}
-
-		indices.mutex.unlock();
-
+		clearIndices(id);
 		games[id] = nullptr;
 	}
 }
