@@ -50,6 +50,13 @@ void GameContainer::initState() {
 			);
 		}
 
+		if (!Filesystem::isDirWritable(statePath)) {
+			throw ServerException(
+				std::string(Config::CONFIG_KEY_STATE_PATH) +
+				" must be writable in order to save state."
+			);
+		}
+
 		// TODO: at this point, we know the directory exists and we can attempt
 		// to iterate over it (will have to catch errors -- ex: permissions)
 		Config::get()->err(trogdor::Trogerr::INFO) << "TODO: finish setting up state management" << std::endl;

@@ -1,5 +1,25 @@
+#include <cstdio>
 #include "include/filesystem.h"
 
+
+// Our quick and dirty method of determining whether or not a trogdord process
+// can write to a directory is to determine if we can create and remove a test
+// file inside of it.
+bool Filesystem::isDirWritable(std::string path) {
+
+	std::string filename = path + "/.trogtest";
+
+	FILE *fp = std::fopen(filename.c_str(), "w");
+	bool isWritable = fp == NULL ? false : true;
+
+	if (isWritable) {
+		std::remove(filename.c_str());
+	}
+
+	return isWritable;
+}
+
+/*****************************************************************************/
 
 std::string Filesystem::getAbsolutePath(std::string path) {
 
