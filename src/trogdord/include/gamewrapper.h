@@ -9,6 +9,14 @@ class GameWrapper {
 
 	private:
 
+		// Lock on this whenever we modify GameWrapper, the contained game, or
+		// need to do any atomic operation that requires the state of the
+		// GameWrapper instance to remain unchanged until it's complete.
+		std::mutex gameMutex;
+
+		// The game's id
+		size_t id;
+
 		// The game's name
 		std::string name;
 
@@ -21,6 +29,10 @@ class GameWrapper {
 		// The actual underlying game object
 		std::unique_ptr<trogdor::Game> gamePtr;
 
+		// Returns a serialized version of all meta data associate with the
+		// GameWrapper instance.
+		std::shared_ptr<trogdor::serial::Serializable> serializeMeta();
+
 	public:
 
 		GameWrapper() = delete;
@@ -30,6 +42,7 @@ class GameWrapper {
 		// meta data that the game should be initialized with and creates an
 		// internal instance of trogdor::Game.
 		GameWrapper(
+			size_t gid,
 			std::string &definitionPath,
 			std::string &name,
 			std::unordered_map<std::string, std::string> meta = {}

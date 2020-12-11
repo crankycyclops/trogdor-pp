@@ -7,7 +7,7 @@
 // file inside of it.
 bool Filesystem::isDirWritable(std::string path) {
 
-	std::string filename = path + "/.trogtest";
+	std::string filename = path + STD_FILESYSTEM::path::preferred_separator + ".trogtest";
 
 	FILE *fp = std::fopen(filename.c_str(), "w");
 	bool isWritable = fp == NULL ? false : true;

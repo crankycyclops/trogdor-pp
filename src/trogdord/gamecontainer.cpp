@@ -201,9 +201,8 @@ size_t GameContainer::createGame(
 	std::unordered_map<std::string, std::string> meta
 ) {
 
-	games.push_back(std::make_unique<GameWrapper>(definitionPath, name, meta));
-
-	size_t gameId = games.size() - 1;
+	size_t gameId = games.size();
+	games.push_back(std::make_unique<GameWrapper>(gameId, definitionPath, name, meta));
 
 	// Update the running index whenever the game is started
 	games[gameId]->get()->addCallback("start",

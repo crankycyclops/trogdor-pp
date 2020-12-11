@@ -19,7 +19,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 		// Try without metadata
 		try {
-			GameWrapper test(definition, name);
+			GameWrapper test(0, definition, name);
 			FAIL("Construction of GameWrapper should not succeed with an invalid definition path");
 		}
 
@@ -29,7 +29,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 		// Try with metadata
 		try {
-			GameWrapper test(definition, name, {{"key", "value"}});
+			GameWrapper test(0, definition, name, {{"key", "value"}});
 			FAIL("Construction of GameWrapper should not succeed with an invalid definition path");
 		}
 
@@ -50,7 +50,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
 
 			try {
-				GameWrapper test(definition, name);
+				GameWrapper test(0, definition, name);
 				CHECK(test.get() != nullptr);
 			}
 
@@ -73,7 +73,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
 
 			try {
-				GameWrapper test(definition, name, {{"key", "value"}});
+				GameWrapper test(0, definition, name, {{"key", "value"}});
 				CHECK(test.get() != nullptr);
 				CHECK(0 == test.get()->getMeta("key").compare("value"));
 			}
@@ -98,7 +98,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 			try {
 
-				GameWrapper test(definition, name);
+				GameWrapper test(0, definition, name);
 
 				CHECK(test.get() != nullptr);
 				CHECK(0 == test.getName().compare(name));
@@ -129,7 +129,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 			try {
 
-				GameWrapper test(definition, name);
+				GameWrapper test(0, definition, name);
 
 				// Check number of players before and after adding one to
 				// the game

@@ -1,4 +1,5 @@
 #include <trogdor/parser/parsers/xmlparser.h>
+#include <trogdor/serial/serializable.h>
 
 #include "include/config.h"
 #include "include/filesystem.h"
@@ -8,10 +9,11 @@
 
 
 GameWrapper::GameWrapper(
+	size_t gid,
 	std::string &definitionPath,
 	std::string &name,
 	std::unordered_map<std::string, std::string> meta
-): name(name), definition(STD_FILESYSTEM::path(definitionPath).filename()) {
+): id(gid), name(name), definition(STD_FILESYSTEM::path(definitionPath).filename()) {
 
 	definitionPath = Filesystem::getFullDefinitionsPath(definitionPath);
 
@@ -42,11 +44,39 @@ GameWrapper::GameWrapper(
 
 /*****************************************************************************/
 
+std::shared_ptr<trogdor::serial::Serializable> GameWrapper::serializeMeta() {
+
+	std::shared_ptr<trogdor::serial::Serializable> meta =
+		std::make_shared<trogdor::serial::Serializable>();
+
+	meta->set("id", id);
+	meta->set("name", name);
+	meta->set("definition", definition);
+	meta->set("created", static_cast<size_t>(created));
+
+	return meta;
+}
+
+/*****************************************************************************/
+
 void GameWrapper::dump() {
+
+	gameMutex.lock();
 
 	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
 		return;
 	}
 
-	// TODO: dump game and meta
+	std::string gameStatePath = Config::get()->getStatePath() +
+		STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+	std::shared_ptr<trogdor::serial::Serializable> meta = serializeMeta();
+	std::shared_ptr<trogdor::serial::Serializable> game = gamePtr->serialize();
+
+	if (STD_FILESYSTEM::exists(gameStatePath)) {
+
+	}
+
+	// TODO: write data to file
+	gameMutex.unlock();
 }
