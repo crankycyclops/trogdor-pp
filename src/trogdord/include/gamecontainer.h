@@ -167,8 +167,15 @@ class GameContainer {
 		// notifications channel before they're removed.
 		void removePlayer(size_t gameId, std::string playerName, std::string message = "");
 
-		// Restores the server's state, including all saved games.
-		void restore();
+		// Dumps the server's current state, including all existing games.
+		// Returns true if the operation could be performed successfully and
+		// false if not.
+		bool dump();
+
+		// Restores the server's state, including all saved games. Returns
+		// true if the operation could be performed successfully and false if
+		// not.
+		bool restore();
 };
 
 

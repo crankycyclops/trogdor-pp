@@ -368,11 +368,29 @@ void GameContainer::removePlayer(size_t gameId, std::string playerName, std::str
 
 /*****************************************************************************/
 
-void GameContainer::restore() {
+bool GameContainer::dump() {
 
-	// I don't have to check this, because it was already checked in
-	// initStatePath().
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+		return false;
+	}
+
+	// TODO: save everything
+}
+
+/*****************************************************************************/
+
+bool GameContainer::restore() {
+
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+		return false;
+	}
+
+	// I don't have to check this because it was already checked in
+	// initStatePath() on startup.
 	std::string statePath = Config::get()->getStatePath();
 
-	// TODO: recover all games
+	// TODO: recover all games (should remove any currently existing games and
+	// replace them with whatever was saved. Restore is a complete reset to the
+	// last known state.)
+	return true;
 }

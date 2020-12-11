@@ -49,6 +49,10 @@ class GameWrapper {
 
 		// Returns the current number of players in the game
 		inline const size_t getNumPlayers() const {return gamePtr->getPlayers().size();}
+
+		// Serializes and saves the state of the game, along with any
+		// associated meta data.
+		void dump();
 };
 
 #endif

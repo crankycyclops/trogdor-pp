@@ -39,3 +39,14 @@ GameWrapper::GameWrapper(
 		gamePtr->setMeta(pair.first, pair.second);
 	}
 }
+
+/*****************************************************************************/
+
+void GameWrapper::dump() {
+
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+		return;
+	}
+
+	// TODO: dump game and meta
+}
