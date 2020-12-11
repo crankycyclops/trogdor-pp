@@ -1,6 +1,26 @@
 #include "include/filesystem.h"
 
 
+std::string Filesystem::getAbsolutePath(std::string path) {
+
+	// If the configured path is relative, compute an absolute path based
+	// on the installation prefix.
+	if (STD_FILESYSTEM::path(path).is_relative()) {
+
+		std::string prefix = TROGDORD_INSTALL_PREFIX;
+
+		if (prefix[prefix.length() - 1] != STD_FILESYSTEM::path::preferred_separator) {
+			prefix += STD_FILESYSTEM::path::preferred_separator;
+		}
+
+		path = prefix + path;
+	}
+
+	return path;
+}
+
+/*****************************************************************************/
+
 std::string Filesystem::getFullDefinitionsPath(std::string definitionPath) {
 
 	// If the game definition path we've passed in is already an absolute path,

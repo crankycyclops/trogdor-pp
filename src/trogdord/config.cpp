@@ -6,6 +6,7 @@
 #include <trogdor/filesystem.h>
 
 #include "include/config.h"
+#include "include/filesystem.h"
 
 #ifndef TROGDORD_INI_PATH
 	#define TROGDORD_INI_PATH ""
@@ -83,18 +84,7 @@ void Config::initErrorLogger() noexcept {
 
 	else {
 
-		// If the configured path is relative, compute an absolute path based
-		// on the installation prefix.
-		if (STD_FILESYSTEM::path(logto).is_relative()) {
-
-			std::string prefix = TROGDORD_INSTALL_PREFIX;
-
-			if (prefix[prefix.length() - 1] != STD_FILESYSTEM::path::preferred_separator) {
-				prefix += STD_FILESYSTEM::path::preferred_separator;
-			}
-
-			logto = prefix + logto;
-		}
+		logto = Filesystem::getAbsolutePath(logto);
 
 		try {
 			logFileStream = std::make_unique<std::ofstream>(logto, std::ofstream::app);
