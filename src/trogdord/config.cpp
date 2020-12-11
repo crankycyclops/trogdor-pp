@@ -30,13 +30,13 @@ const std::unordered_map<std::string, std::string> Config::DEFAULTS = {
 	{CONFIG_KEY_REDIS_INPUT_CHANNEL,              "trogdord:in"},
 	{CONFIG_KEY_DEFINITIONS_PATH,                 "share/trogdor"},
 	{CONFIG_KEY_STATE_ENABLED,                    "false"},
+	{CONFIG_KEY_STATE_AUTORESTORE_ENABLED,        "false"},
 	{CONFIG_KEY_STATE_FORMAT,                     "json"},
 	{CONFIG_KEY_STATE_PATH,                       "var/trogdord/state"}
 };
 
 // Singleton instance of Config
 std::unique_ptr<Config> Config::instance = nullptr;
-
 
 /*****************************************************************************/
 
@@ -150,4 +150,18 @@ void Config::load(std::string newIniPath) noexcept {
 			ini[defaultVal.first] = defaultVal.second;
 		}
 	}
+}
+
+/*****************************************************************************/
+
+std::string Config::getStatePath() {
+
+	std::string statePath = getString(CONFIG_KEY_STATE_PATH);
+	statePath = trogdor::trim(statePath);
+
+	if (0 != statePath.compare("")) {
+		statePath = Filesystem::getAbsolutePath(statePath);
+	}
+
+	return statePath;
 }

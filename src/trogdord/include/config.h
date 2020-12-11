@@ -71,6 +71,7 @@ class Config {
 		static constexpr const char *CONFIG_KEY_REDIS_INPUT_CHANNEL = "redis.input_channel";
 		static constexpr const char *CONFIG_KEY_DEFINITIONS_PATH = "resources.definitions_path";
 		static constexpr const char *CONFIG_KEY_STATE_ENABLED = "state.enabled";
+		static constexpr const char *CONFIG_KEY_STATE_AUTORESTORE_ENABLED = "state.auto_restore";
 		static constexpr const char *CONFIG_KEY_STATE_FORMAT = "state.format";
 		static constexpr const char *CONFIG_KEY_STATE_PATH = "state.save_path";
 
@@ -82,6 +83,10 @@ class Config {
 		// will be set to their defaults. Calling this method with no argument
 		// can be used to reset the Config object.
 		void load(std::string newIniPath = "") noexcept;
+
+		// Special helper function that returns the absolute path pointed to
+		// by CONFIG_KEY_STATE_PATH or a blank string if no path was set.
+		std::string getStatePath();
 
 		// Returns the specified config value. Throws ConfigUndefinedValue
 		// if the config value isn't set and ConfigInvalidValue if it

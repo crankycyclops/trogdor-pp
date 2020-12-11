@@ -18,8 +18,7 @@ void GameContainer::initState() {
 	if (Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
 
 		// Make sure we've got a valid location for storing state
-		std::string statePath = Config::get()->getString(Config::CONFIG_KEY_STATE_PATH);
-		statePath = trogdor::trim(statePath);
+		std::string statePath = Config::get()->getStatePath();
 
 		if (0 == statePath.compare("")) {
 			throw ServerException(
@@ -28,8 +27,6 @@ void GameContainer::initState() {
 				" must be set to a non-empty value."
 			);
 		}
-
-		statePath = Filesystem::getAbsolutePath(statePath);
 
 		if (STD_FILESYSTEM::exists(statePath)) {
 
@@ -57,10 +54,13 @@ void GameContainer::initState() {
 			);
 		}
 
-		// TODO: at this point, we know the directory exists and we can attempt
-		// to iterate over it (will have to catch errors -- ex: permissions)
-		Config::get()->err(trogdor::Trogerr::INFO) << "TODO: finish setting up state management" << std::endl;
-		// TODO: if auto-restore is enabled, call restore()
+		// This will throw an exception if the configured directory isn't
+		// readable by the process.
+		auto d = STD_FILESYSTEM::recursive_directory_iterator(statePath);
+
+		if (Config::get()->getBool(Config::CONFIG_KEY_STATE_AUTORESTORE_ENABLED)) {
+			restore();
+		}
 	}
 }
 
@@ -369,6 +369,10 @@ void GameContainer::removePlayer(size_t gameId, std::string playerName, std::str
 /*****************************************************************************/
 
 void GameContainer::restore() {
+
+	// I don't have to check this, because it was already checked in
+	// initStatePath().
+	std::string statePath = Config::get()->getStatePath();
 
 	// TODO: recover all games
 }
