@@ -1,8 +1,12 @@
+#include <chrono>
+#include <fstream>
+
 #include <trogdor/parser/parsers/xmlparser.h>
 #include <trogdor/serial/serializable.h>
 
 #include "include/config.h"
 #include "include/filesystem.h"
+#include "include/serial/drivermap.h"
 #include "include/exception/serverexception.h"
 
 #include "include/gamewrapper.h"
@@ -70,13 +74,41 @@ void GameWrapper::dump() {
 	std::string gameStatePath = Config::get()->getStatePath() +
 		STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
 
+	if (!STD_FILESYSTEM::exists(gameStatePath)) {
+		STD_FILESYSTEM::create_directory(gameStatePath);
+	}
+
+	gameStatePath += STD_FILESYSTEM::path::preferred_separator + std::to_string(
+		std::chrono::duration_cast<std::chrono::seconds>(
+			std::chrono::system_clock::now().time_since_epoch()
+		).count()
+	);
+
+	STD_FILESYSTEM::create_directory(gameStatePath);
+
 	std::shared_ptr<trogdor::serial::Serializable> meta = serializeMeta();
 	std::shared_ptr<trogdor::serial::Serializable> game = gamePtr->serialize();
 
-	if (STD_FILESYSTEM::exists(gameStatePath)) {
+	auto &driver = serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
 
-	}
+	fstream metaFile(
+		gameStatePath + STD_FILESYSTEM::path::preferred_separator + "meta",
+		std::fstream::out
+	);
 
-	// TODO: write data to file
+	fstream gameFile(
+		gameStatePath + STD_FILESYSTEM::path::preferred_separator + "game",
+		std::fstream::out
+	);
+
+	metaFile << std::any_cast<std::string>(driver->serialize(meta));
+	metaFile.close();
+
+	gameFile << std::any_cast<std::string>(driver->serialize(game));
+	gameFile.close();
+
+	// TODO: if configured to keep n number of snapshots, only delete oldest
+	// dirs until we reach that number. Otherwise, delete all previous timestamp
+	// directories.
 	gameMutex.unlock();
 }
