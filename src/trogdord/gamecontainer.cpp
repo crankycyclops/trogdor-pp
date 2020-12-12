@@ -76,7 +76,9 @@ void GameContainer::initState() {
 				continue;
 			}
 
-			// TODO: insert id into games as nullptr
+			// Reserve the game id now so that the dumped game can be
+			// restored later
+			games[std::stoi(idStr)] = nullptr;
 		}
 
 		if (Config::get()->getBool(Config::CONFIG_KEY_STATE_AUTORESTORE_ENABLED)) {
@@ -146,22 +148,19 @@ GameContainer::~GameContainer() {
 	// game->shutdown() in the next loop instead of game->stop(), reduces
 	// shutdown time from many seconds (in the case where there are hundreds
 	// or thousands of persisted games) to almost nothing.
-	for (auto &game: games) {
-		if (nullptr != game) {
-			game->get()->deactivate();
+	for (auto &i: games) {
+		if (nullptr != i.second) {
+			i.second->get()->deactivate();
 		}
 	}
 
-	// Destructor for trogdor::Game will be called once the unique_ptr falls
-	// out of scope.
-	while (!games.empty()) {
-
-		if (nullptr != games.back()) {
-			games.back()->get()->shutdown();
+	for (auto &i: games) {
+		if (nullptr != i.second) {
+			i.second->get()->shutdown();
 		}
-
-		games.pop_back();
 	}
+
+	games.clear();
 }
 
 /*****************************************************************************/
@@ -211,7 +210,8 @@ std::unique_ptr<GameWrapper> &GameContainer::getGame(size_t id) {
 	// of the specified id doesn't exist.
 	static std::unique_ptr<GameWrapper> nullGame = nullptr;
 
-	return id < games.size() ? games[id] : nullGame;
+	const auto &game = games.find(id);
+	return games.end() != game ? game->second : nullGame;
 }
 
 /*****************************************************************************/
@@ -222,8 +222,8 @@ size_t GameContainer::createGame(
 	std::unordered_map<std::string, std::string> meta
 ) {
 
-	size_t gameId = games.size();
-	games.push_back(std::make_unique<GameWrapper>(gameId, definitionPath, name, meta));
+	size_t gameId = !games.size() ? 0 : games.rbegin()->first + 1;
+	games[gameId] = std::make_unique<GameWrapper>(gameId, definitionPath, name, meta);
 
 	// Update the running index whenever the game is started
 	games[gameId]->get()->addCallback("start",
@@ -279,7 +279,9 @@ size_t GameContainer::createGame(
 
 void GameContainer::destroyGame(size_t id) {
 
-	if (games.size() > id && nullptr != games[id]) {
+	auto game = games.find(id);
+
+	if (games.end() != game && nullptr != game->second) {
 		numPlayers -= games[id]->getNumPlayers();
 		clearIndices(id);
 		games[id] = nullptr;
@@ -290,7 +292,9 @@ void GameContainer::destroyGame(size_t id) {
 
 void GameContainer::startGame(size_t id) {
 
-	if (games.size() > id && nullptr != games[id]) {
+	auto game = games.find(id);
+
+	if (games.end() != game && nullptr != game->second) {
 		games[id]->get()->start();
 	}
 }
@@ -299,7 +303,9 @@ void GameContainer::startGame(size_t id) {
 
 void GameContainer::stopGame(size_t id) {
 
-	if (games.size() > id && nullptr != games[id]) {
+	auto game = games.find(id);
+
+	if (games.end() != game && nullptr != game->second) {
 		games[id]->get()->stop();
 	}
 }
@@ -394,9 +400,9 @@ bool GameContainer::dump() {
 		return false;
 	}
 
-	for (const auto &game: games) {
-		if (game) {
-			game->dump();
+	for (auto &game: games) {
+		if (game.second) {
+			game.second->dump();
 		}
 	}
 

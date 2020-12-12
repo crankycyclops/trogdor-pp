@@ -48,6 +48,10 @@ class GameWrapper {
 			std::unordered_map<std::string, std::string> meta = {}
 		);
 
+		// Serializes and saves the state of the game, along with any
+		// associated meta data.
+		void dump();
+
 		// Returns a reference to the underlying game
 		inline std::unique_ptr<trogdor::Game> &get() {return gamePtr;}
 
@@ -62,10 +66,6 @@ class GameWrapper {
 
 		// Returns the current number of players in the game
 		inline const size_t getNumPlayers() const {return gamePtr->getPlayers().size();}
-
-		// Serializes and saves the state of the game, along with any
-		// associated meta data.
-		void dump();
 };
 
 #endif
