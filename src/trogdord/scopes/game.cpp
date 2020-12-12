@@ -10,29 +10,6 @@
 
 #include "../include/scopes/game.h"
 
-// Scope name that should be used in requests
-const char *GameController::SCOPE = "game";
-
-// Actions served by the "game" scope
-const char *GameController::STATISTICS_ACTION = "statistics";
-const char *GameController::LIST_ACTION = "list";
-const char *GameController::META_ACTION = "meta";
-const char *GameController::DEFINITIONS_ACTION = "definitions";
-const char *GameController::START_ACTION = "start";
-const char *GameController::STOP_ACTION = "stop";
-const char *GameController::TIME_ACTION = "time";
-const char *GameController::IS_RUNNING_ACTION = "is_running";
-
-// Error messages
-const char *GameController::INVALID_NAME = "game name must be a string";
-const char *GameController::MISSING_REQUIRED_NAME = "missing required name";
-const char *GameController::INVALID_DEFINITION = "game definition filename must be a string";
-const char *GameController::MISSING_REQUIRED_DEFINITION = "missing required definition path";
-const char *GameController::DEFINITION_NOT_RELATIVE = "definition path must be relative";
-const char *GameController::MISSING_META = "missing required meta key, value pairs";
-const char *GameController::INVALID_META = "meta values cannot be objects or arrays";
-const char *GameController::INVALID_META_KEYS = "invalid meta keys";
-const char *GameController::INVALID_FILTER_ARG = "filters must be expressed as a JSON object or array";
 
 // Singleton instance of GameController
 std::unique_ptr<GameController> GameController::instance;

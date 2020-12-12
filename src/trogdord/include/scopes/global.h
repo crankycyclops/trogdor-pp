@@ -16,15 +16,15 @@ class GlobalController: public ScopeController {
 		static constexpr const char *STATISTICS_ACTION = "statistics";
 		static constexpr const char *DUMP_ACTION = "dump";
 
-		// Error messages
-		static constexpr const char *STATE_DISABLED = "operation requires state.enabled to be set to true in trogdord.ini.";
-
 		// Constructor should only be called internally by get(), which will
 		// ensure we only ever have a single instance of the class.
 		GlobalController();
 		GlobalController(const GlobalController &) = delete;
 
 	public:
+
+		// Error messages
+		static constexpr const char *STATE_DISABLED = "operation requires state.enabled to be set to true in trogdord.ini.";
 
 		// Scope name that should be used in requests
 		static constexpr const char *SCOPE = "global";

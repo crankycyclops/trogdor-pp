@@ -14,14 +14,14 @@ class GameController: public ScopeController {
 		static std::unique_ptr<GameController> instance;
 
 		// Actions served by the "game" scope
-		static const char *STATISTICS_ACTION;
-		static const char *LIST_ACTION;
-		static const char *META_ACTION;
-		static const char *DEFINITIONS_ACTION;
-		static const char *START_ACTION;
-		static const char *STOP_ACTION;
-		static const char *TIME_ACTION;
-		static const char *IS_RUNNING_ACTION;
+		static constexpr const char *STATISTICS_ACTION = "statistics";
+		static constexpr const char *LIST_ACTION = "list";
+		static constexpr const char *META_ACTION = "meta";
+		static constexpr const char *DEFINITIONS_ACTION = "definitions";
+		static constexpr const char *START_ACTION = "start";
+		static constexpr const char *STOP_ACTION = "stop";
+		static constexpr const char *TIME_ACTION = "time";
+		static constexpr const char *IS_RUNNING_ACTION = "is_running";
 
 		// Constructor should only be called internally by get(), which will
 		// ensure we only ever have a single instance of the class.
@@ -31,19 +31,18 @@ class GameController: public ScopeController {
 	public:
 
 		// Error messages
-		static const char *INVALID_ARGUMENTS;
-		static const char *INVALID_NAME;
-		static const char *MISSING_REQUIRED_NAME;
-		static const char *INVALID_DEFINITION;
-		static const char *MISSING_REQUIRED_DEFINITION;
-		static const char *DEFINITION_NOT_RELATIVE;
-		static const char *MISSING_META;
-		static const char *INVALID_META;
-		static const char *INVALID_META_KEYS;
-		static const char *INVALID_FILTER_ARG;
+		static constexpr const char *INVALID_NAME = "game name must be a string";
+		static constexpr const char *MISSING_REQUIRED_NAME = "missing required name";
+		static constexpr const char *INVALID_DEFINITION = "game definition filename must be a string";
+		static constexpr const char *MISSING_REQUIRED_DEFINITION = "missing required definition path";
+		static constexpr const char *DEFINITION_NOT_RELATIVE = "definition path must be relative";
+		static constexpr const char *MISSING_META = "missing required meta key, value pairs";
+		static constexpr const char *INVALID_META = "meta values cannot be objects or arrays";
+		static constexpr const char *INVALID_META_KEYS = "invalid meta keys";
+		static constexpr const char *INVALID_FILTER_ARG = "filters must be expressed as a JSON object or array";
 
 		// Scope name that should be used in requests
-		static const char *SCOPE;
+		static constexpr const char *SCOPE = "game";
 
 		// Returns singleton instance of GameController.
 		static std::unique_ptr<GameController> &get();
