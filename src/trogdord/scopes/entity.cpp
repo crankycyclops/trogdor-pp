@@ -10,23 +10,6 @@
 #include "../include/exception/entity/entitynotfound.h"
 
 
-// Scope name that should be used in requests
-const char *EntityController::SCOPE = "entity";
-
-// Actions served by the "entity" scope
-const char *EntityController::LIST_ACTION = "list";
-const char *EntityController::OUTPUT_ACTION = "output";
-
-// Error messages
-const char *EntityController::MISSING_OUTPUT_MESSAGE = "missing required message";
-const char *EntityController::INVALID_OUTPUT_MESSAGE = "message must be a string or other scalar value that can be trivially converted to a string (numeric, boolean, or null)";
-const char *EntityController::MISSING_COMMAND = "missing required command";
-const char *EntityController::MISSING_CHANNEL = "missing required channel";
-const char *EntityController::INVALID_CHANNEL = "invalid channel";
-const char *EntityController::MISSING_ENTITY_NAME = "missing required entity name";
-const char *EntityController::INVALID_ENTITY_NAME = "invalid entity name";
-const char *EntityController::ENTITY_NOT_FOUND = "entity not found";
-
 // Singleton instance of EntityController
 std::unique_ptr<EntityController> EntityController::instance;
 

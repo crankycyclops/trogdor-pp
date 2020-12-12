@@ -16,8 +16,8 @@ class EntityController: public ScopeController {
 	protected:
 
 		// Actions served by the "entity" scope
-		static const char *LIST_ACTION;
-		static const char *OUTPUT_ACTION;
+		static constexpr const char *LIST_ACTION = "list";
+		static constexpr const char *OUTPUT_ACTION = "output";
 
 		// Constructor should only be called internally by get(), which will
 		// ensure we only ever have a single instance of the class.
@@ -68,17 +68,17 @@ class EntityController: public ScopeController {
 	public:
 
 		// Error messages
-		static const char *MISSING_OUTPUT_MESSAGE;
-		static const char *INVALID_OUTPUT_MESSAGE;
-		static const char *MISSING_COMMAND;
-		static const char *MISSING_CHANNEL;
-		static const char *INVALID_CHANNEL;
-		static const char *MISSING_ENTITY_NAME;
-		static const char *INVALID_ENTITY_NAME;
-		static const char *ENTITY_NOT_FOUND;
+		static constexpr const char *MISSING_OUTPUT_MESSAGE = "missing required message";
+		static constexpr const char *INVALID_OUTPUT_MESSAGE = "message must be a string or other scalar type";
+		static constexpr const char *MISSING_COMMAND = "missing required command";
+		static constexpr const char *MISSING_CHANNEL = "missing required channel";
+		static constexpr const char *INVALID_CHANNEL = "invalid channel";
+		static constexpr const char *MISSING_ENTITY_NAME = "missing required entity name";
+		static constexpr const char *INVALID_ENTITY_NAME = "invalid entity name";
+		static constexpr const char *ENTITY_NOT_FOUND = "entity not found";
 
 		// Scope name that should be used in requests
-		static const char *SCOPE;
+		static constexpr const char *SCOPE = "entity";
 
 		// Destructor
 		virtual ~EntityController();
