@@ -394,8 +394,7 @@ bool GameContainer::restore() {
 	// initStatePath() on startup.
 	std::string statePath = Config::get()->getStatePath();
 
-	// TODO: recover all games (should remove any currently existing games and
-	// replace them with whatever was saved. Restore is a complete reset to the
-	// last known state.)
+	// TODO: recover all games (keep existing games, since tracking reserved ids
+	// should ensure ids remain unique and there are no collisions.)
 	return true;
 }

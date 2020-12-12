@@ -33,6 +33,13 @@ class GameContainer {
 		size_t numPlayers = 0;
 
 		// All currently existing games reside here.
+		// TODO: std::map will get me an ordered set, which will make it easier
+		// for me to get the next largest unused id when I can't use a vector
+		// anymore (map.rbegin()->first or std::prev(map.end())->first will
+		// get me this value, as long as the STL container isn't empty, in
+		// which case 0 == map.size() and map.rbegin() == map.rend()). Can
+		// store nullptr here instead, and std::nullopt will correspond
+		// to a reserved id that hasn't actually been instantiated.
 		std::vector<std::unique_ptr<GameWrapper>> games;
 
 		// Indices are used by filters to quickly return a set of games based

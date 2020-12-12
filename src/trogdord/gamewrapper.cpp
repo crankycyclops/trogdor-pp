@@ -65,11 +65,13 @@ std::shared_ptr<trogdor::serial::Serializable> GameWrapper::serializeMeta() {
 
 void GameWrapper::dump() {
 
-	gameMutex.lock();
-
 	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
 		return;
 	}
+
+	auto &driver = serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
+
+	gameMutex.lock();
 
 	std::string gameStatePath = Config::get()->getStatePath() +
 		STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
@@ -86,25 +88,20 @@ void GameWrapper::dump() {
 
 	STD_FILESYSTEM::create_directory(gameStatePath);
 
-	std::shared_ptr<trogdor::serial::Serializable> meta = serializeMeta();
-	std::shared_ptr<trogdor::serial::Serializable> game = gamePtr->serialize();
-
-	auto &driver = serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
-
 	fstream metaFile(
 		gameStatePath + STD_FILESYSTEM::path::preferred_separator + "meta",
 		std::fstream::out
 	);
+
+	metaFile << std::any_cast<std::string>(driver->serialize(serializeMeta()));
+	metaFile.close();
 
 	fstream gameFile(
 		gameStatePath + STD_FILESYSTEM::path::preferred_separator + "game",
 		std::fstream::out
 	);
 
-	metaFile << std::any_cast<std::string>(driver->serialize(meta));
-	metaFile.close();
-
-	gameFile << std::any_cast<std::string>(driver->serialize(game));
+	gameFile << std::any_cast<std::string>(driver->serialize(gamePtr->serialize()));
 	gameFile.close();
 
 	// TODO: if configured to keep n number of snapshots, only delete oldest

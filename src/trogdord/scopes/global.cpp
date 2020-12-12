@@ -6,12 +6,6 @@
 #include "../include/scopes/global.h"
 
 
-// Scope name that should be used in requests
-const char *GlobalController::SCOPE = "global";
-
-// Action names that get mapped to methods in GlobalController
-const char *GlobalController::STATISTICS_ACTION = "statistics";
-
 // Singleton instance of GlobalController
 std::unique_ptr<GlobalController> GlobalController::instance;
 
@@ -21,6 +15,10 @@ GlobalController::GlobalController() {
 
 	registerAction(Request::GET, STATISTICS_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->statistics(request);
+	});
+
+	registerAction(Request::POST, DUMP_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
+		return this->dump(request);
 	});
 }
 
@@ -57,6 +55,33 @@ rapidjson::Document GlobalController::statistics(const rapidjson::Document &requ
 	response.AddMember("players", GameContainer::get()->getNumPlayers(), response.GetAllocator());
 	response.AddMember("version", version, response.GetAllocator());
 	response.AddMember("lib_version", libVersion, response.GetAllocator());
+
+	return response;
+}
+
+/*****************************************************************************/
+
+rapidjson::Document GlobalController::dump(const rapidjson::Document &request) {
+
+	rapidjson::Document response(rapidjson::kObjectType);
+
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+		response.AddMember("status", Response::STATUS_UNSUPPORTED, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(STATE_DISABLED), response.GetAllocator());
+	}
+
+	else {
+
+		try {
+			GameContainer::get()->dump();
+			response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+		}
+
+		catch (const std::exception &e) {
+			response.AddMember("status", Response::STATUS_INTERNAL_ERROR, response.GetAllocator());
+			response.AddMember("message", rapidjson::StringRef(e.what()), response.GetAllocator());
+		}
+	}
 
 	return response;
 }

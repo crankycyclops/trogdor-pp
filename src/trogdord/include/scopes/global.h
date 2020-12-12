@@ -13,7 +13,11 @@ class GlobalController: public ScopeController {
 		static std::unique_ptr<GlobalController> instance;
 
 		// Action names that get mapped to methods in GlobalController
-		static const char *STATISTICS_ACTION;
+		static constexpr const char *STATISTICS_ACTION = "statistics";
+		static constexpr const char *DUMP_ACTION = "dump";
+
+		// Error messages
+		static constexpr const char *STATE_DISABLED = "operation requires state.enabled to be set to true in trogdord.ini.";
 
 		// Constructor should only be called internally by get(), which will
 		// ensure we only ever have a single instance of the class.
@@ -23,13 +27,16 @@ class GlobalController: public ScopeController {
 	public:
 
 		// Scope name that should be used in requests
-		static const char *SCOPE;
+		static constexpr const char *SCOPE = "global";
 
 		// Returns singleton instance of GlobalController.
 		static std::unique_ptr<GlobalController> &get();
 
 		// Action that returns statistical information about the server
 		rapidjson::Document statistics(const rapidjson::Document &request);
+
+		// Action that dumps the server's current state (games and all) to disk
+		rapidjson::Document dump(const rapidjson::Document &request);
 };
 
 
