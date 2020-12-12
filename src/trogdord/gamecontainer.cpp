@@ -373,7 +373,13 @@ bool GameContainer::dump() {
 		return false;
 	}
 
-	// TODO: save everything (iterate through each game and call gamewrapper->dump())
+	for (const auto &game: games) {
+		if (game) {
+			game->dump();
+		}
+	}
+
+	return true;
 }
 
 /*****************************************************************************/
