@@ -4,9 +4,6 @@
 #include "../include/exception/entity/thingnotfound.h"
 
 
-// Scope name that should be used in requests
-const char *ThingController::SCOPE = "thing";
-
 // Singleton instance of ThingController
 std::unique_ptr<ThingController> ThingController::instance;
 

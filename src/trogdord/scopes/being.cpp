@@ -4,9 +4,6 @@
 #include "../include/exception/entity/beingnotfound.h"
 
 
-// Scope name that should be used in requests
-const char *BeingController::SCOPE = "being";
-
 // Singleton instance of BeingController
 std::unique_ptr<BeingController> BeingController::instance;
 

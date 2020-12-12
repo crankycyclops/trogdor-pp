@@ -8,18 +8,6 @@
 #include "../include/exception/entity/playernotfound.h"
 
 
-// Scope name that should be used in requests
-const char *PlayerController::SCOPE = "player";
-
-// Actions served by the "Player" scope
-const char *PlayerController::INPUT_ACTION = "input";
-
-// Error messages
-const char *PlayerController::MISSING_PLAYER_NAME = "missing required player name";
-const char *PlayerController::INVALID_PLAYER_NAME = "invalid player name";
-const char *PlayerController::INVALID_COMMAND = "command must be a string";
-const char *PlayerController::PLAYER_NOT_FOUND = "player not found";
-
 // Singleton instance of PlayerController
 std::unique_ptr<PlayerController> PlayerController::instance;
 

@@ -41,7 +41,7 @@ class PlaceController: public TangibleController {
 	public:
 
 		// Scope name that should be used in requests
-		static const char *SCOPE;
+		static constexpr const char *SCOPE = "place";
 
 		// Returns singleton instance of PlaceController.
 		static std::unique_ptr<PlaceController> &get();

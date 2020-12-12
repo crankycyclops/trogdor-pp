@@ -38,16 +38,16 @@ class ScopeController {
 	public:
 
 		// Error messages for malformatted requests.
-		static const char *METHOD_NOT_FOUND;
-		static const char *ACTION_NOT_FOUND;
-		static const char *INVALID_ARGUMENTS;
+		static constexpr const char *METHOD_NOT_FOUND = "method not found";
+		static constexpr const char *ACTION_NOT_FOUND = "action not found";
+		static constexpr const char *INVALID_ARGUMENTS = "args must be a valid JSON object";
 
 		// Error messages that are common to more than one scope controller.
-		static const char *GAME_NOT_FOUND;
+		static constexpr const char *GAME_NOT_FOUND = "game not found";
 
 		// If an action isn't specified in the request, we try to resolve this
 		// one instead.
-		static const char *DEFAULT_ACTION;
+		static constexpr const char *DEFAULT_ACTION = "default";
 
 		// Resolves a request and returns a JSON response.
 		rapidjson::Document resolve(

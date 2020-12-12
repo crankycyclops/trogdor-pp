@@ -9,16 +9,16 @@ class Response {
 	public:
 
 		// These are all the possible status codes that can be returned.
-		const static int STATUS_SUCCESS = 200;
-		const static int STATUS_INVALID = 400;
-		const static int STATUS_NOT_FOUND = 404;
-		const static int STATUS_CONFLICT = 409;
-		const static int STATUS_INTERNAL_ERROR = 500;
-		const static int STATUS_UNSUPPORTED = 501;
+		static constexpr int STATUS_SUCCESS = 200;
+		static constexpr int STATUS_INVALID = 400;
+		static constexpr int STATUS_NOT_FOUND = 404;
+		static constexpr int STATUS_CONFLICT = 409;
+		static constexpr int STATUS_INTERNAL_ERROR = 500;
+		static constexpr int STATUS_UNSUPPORTED = 501;
 
 		// Default generic message that should be returned when an internal
 		// error occurs
-		const static char *INTERNAL_ERROR_MSG;
+		static constexpr const char *INTERNAL_ERROR_MSG = "An internal error occurred";
 
 		// Crafts a simple JSON response that looks like this:
 		// {"status":<statusCode>,"message":<message>}. This method is

@@ -41,7 +41,7 @@ class ResourceController: public EntityController {
 	public:
 
 		// Scope name that should be used in requests
-		static const char *SCOPE;
+		static constexpr const char *SCOPE = "resource";
 
 		// Returns singleton instance of ResourceController.
 		static std::unique_ptr<ResourceController> &get();

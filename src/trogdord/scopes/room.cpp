@@ -4,9 +4,6 @@
 #include "../include/exception/entity/roomnotfound.h"
 
 
-// Scope name that should be used in requests
-const char *RoomController::SCOPE = "room";
-
 // Singleton instance of RoomController
 std::unique_ptr<RoomController> RoomController::instance;
 

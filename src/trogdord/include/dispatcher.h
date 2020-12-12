@@ -79,14 +79,14 @@ class Dispatcher {
 	protected:
 
 		// Error messages for malformatted requests
-		static const char *INVALID_JSON;
-		static const char *MISSING_METHOD;
-		static const char *INVALID_METHOD;
-		static const char *MISSING_SCOPE;
-		static const char *INVALID_SCOPE;
-		static const char *SCOPE_NOT_FOUND;
-		static const char *MISSING_ACTION;
-		static const char *INVALID_ACTION;
+		static constexpr const char *INVALID_JSON = "request must be valid JSON";
+		static constexpr const char *MISSING_METHOD = "missing required method";
+		static constexpr const char *INVALID_METHOD = "invalid method";
+		static constexpr const char *MISSING_SCOPE = "missing required scope";
+		static constexpr const char *INVALID_SCOPE = "invalid scope";
+		static constexpr const char *SCOPE_NOT_FOUND = "scope not found";
+		static constexpr const char *MISSING_ACTION = "missing required action";
+		static constexpr const char *INVALID_ACTION = "invalid action";
 
 		// Singleton instance of Dispatcher
 		static std::unique_ptr<Dispatcher> instance;
@@ -119,10 +119,10 @@ class Dispatcher {
 	public:
 
 		// The four possible components of a request.
-		static const char *METHOD;
-		static const char *SCOPE;
-		static const char *ACTION;
-		static const char *ARGS;
+		static constexpr const char *METHOD = "method";
+		static constexpr const char *SCOPE = "scope";
+		static constexpr const char *ACTION = "action";
+		static constexpr const char *ARGS = "args";
 
 		// Returns singleton instance of Dispatcher.
 		static std::unique_ptr<Dispatcher> &get();

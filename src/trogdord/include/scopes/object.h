@@ -41,7 +41,7 @@ class ObjectController: public ThingController {
 	public:
 
 		// Scope name that should be used in requests
-		static const char *SCOPE;
+		static constexpr const char *SCOPE = "object";
 
 		// Returns singleton instance of ObjectController.
 		static std::unique_ptr<ObjectController> &get();

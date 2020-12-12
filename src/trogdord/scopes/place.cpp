@@ -4,9 +4,6 @@
 #include "../include/exception/entity/placenotfound.h"
 
 
-// Scope name that should be used in requests
-const char *PlaceController::SCOPE = "place";
-
 // Singleton instance of PlaceController
 std::unique_ptr<PlaceController> PlaceController::instance;
 

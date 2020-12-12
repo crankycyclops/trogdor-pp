@@ -41,16 +41,16 @@ class PlayerController: public BeingController {
 	public:
 
 		// Scope name that should be used in requests
-		static const char *SCOPE;
+		static constexpr const char *SCOPE = "player";
 
 		// Actions served by the "Player" scope
-		static const char *INPUT_ACTION;
+		static constexpr const char *INPUT_ACTION = "input";
 
 		// Error messages
-		static const char *MISSING_PLAYER_NAME;
-		static const char *INVALID_PLAYER_NAME;
-		static const char *INVALID_COMMAND;
-		static const char *PLAYER_NOT_FOUND;
+		static constexpr const char *MISSING_PLAYER_NAME = "missing required player name";
+		static constexpr const char *INVALID_PLAYER_NAME = "invalid player name";
+		static constexpr const char *INVALID_COMMAND = "command must be a string";
+		static constexpr const char *PLAYER_NOT_FOUND = "player not found";
 
 		// Returns singleton instance of PlayerController.
 		static std::unique_ptr<PlayerController> &get();

@@ -34,15 +34,15 @@ class Request {
 	public:
 
 		// String representations of the five request methods
-		static const char *GET;
-		static const char *POST;
-		static const char *PUT;
-		static const char *SET;
-		static const char *DELETE;
+		static constexpr const char *GET = "get";
+		static constexpr const char *POST = "post";
+		static constexpr const char *PUT = "put";
+		static constexpr const char *SET = "set";
+		static constexpr const char *DELETE = "delete";
 
 		// Error messages for missing or invalid arguments
-		static const char *MISSING_GAME_ID;
-		static const char *INVALID_GAME_ID;
+		static constexpr const char *MISSING_GAME_ID = "missing required game id";
+		static constexpr const char *INVALID_GAME_ID = "invalid game id";
 
 		// Parses an integer argument.
 		static int parseArgumentInt(

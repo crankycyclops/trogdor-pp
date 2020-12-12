@@ -4,9 +4,6 @@
 #include "../include/exception/entity/resourcenotfound.h"
 
 
-// Scope name that should be used in requests
-const char *ResourceController::SCOPE = "resource";
-
 // Singleton instance of ResourceController
 std::unique_ptr<ResourceController> ResourceController::instance;
 

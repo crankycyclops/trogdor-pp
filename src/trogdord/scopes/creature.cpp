@@ -4,9 +4,6 @@
 #include "../include/exception/entity/creaturenotfound.h"
 
 
-// Scope name that should be used in requests
-const char *CreatureController::SCOPE = "creature";
-
 // Singleton instance of CreatureController
 std::unique_ptr<CreatureController> CreatureController::instance;
 

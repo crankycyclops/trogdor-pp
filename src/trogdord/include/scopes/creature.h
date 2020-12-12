@@ -41,7 +41,7 @@ class CreatureController: public BeingController {
 	public:
 
 		// Scope name that should be used in requests
-		static const char *SCOPE;
+		static constexpr const char *SCOPE = "creature";
 
 		// Returns singleton instance of CreatureController.
 		static std::unique_ptr<CreatureController> &get();

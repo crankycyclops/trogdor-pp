@@ -5,15 +5,6 @@
 #include "../include/scopes/controller.h"
 
 
-const char *ScopeController::DEFAULT_ACTION = "default";
-
-const char *ScopeController::METHOD_NOT_FOUND = "method not found";
-const char *ScopeController::ACTION_NOT_FOUND = "action not found";
-const char *ScopeController::INVALID_ARGUMENTS = "args must be a valid JSON object";
-const char *ScopeController::GAME_NOT_FOUND = "game not found";
-
-/*****************************************************************************/
-
 void ScopeController::registerAction(
 	const std::string &method,
 	const std::string &action,

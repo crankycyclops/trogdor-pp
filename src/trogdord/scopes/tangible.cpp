@@ -4,9 +4,6 @@
 #include "../include/exception/entity/tangiblenotfound.h"
 
 
-// Scope name that should be used in requests
-const char *TangibleController::SCOPE = "tangible";
-
 // Singleton instance of TangibleController
 std::unique_ptr<TangibleController> TangibleController::instance;
 

@@ -262,8 +262,6 @@ if (INIH_INCLUDEDIR)
 		set(TROGDORD_SOURCES
 			src/trogdord/config.cpp
 			src/trogdord/filesystem.cpp
-			src/trogdord/request.cpp
-			src/trogdord/response.cpp
 			src/trogdord/dispatcher.cpp
 			src/trogdord/gamewrapper.cpp
 			src/trogdord/gamecontainer.cpp

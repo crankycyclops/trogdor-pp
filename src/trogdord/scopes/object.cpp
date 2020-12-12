@@ -4,9 +4,6 @@
 #include "../include/exception/entity/objectnotfound.h"
 
 
-// Scope name that should be used in requests
-const char *ObjectController::SCOPE = "object";
-
 // Singleton instance of ObjectController
 std::unique_ptr<ObjectController> ObjectController::instance;
 

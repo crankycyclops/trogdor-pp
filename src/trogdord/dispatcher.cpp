@@ -16,22 +16,6 @@
 #include "include/scopes/player.h"
 
 
-// String representations of each request component
-const char *Dispatcher::METHOD = "method";
-const char *Dispatcher::SCOPE = "scope";
-const char *Dispatcher::ACTION = "action";
-const char *Dispatcher::ARGS = "args";
-
-// Error messages for malformatted requests
-const char *Dispatcher::INVALID_JSON = "request must be valid JSON";
-const char *Dispatcher::MISSING_METHOD = "missing required method";
-const char *Dispatcher::INVALID_METHOD = "invalid method";
-const char *Dispatcher::MISSING_SCOPE = "missing required scope";
-const char *Dispatcher::INVALID_SCOPE = "invalid scope";
-const char *Dispatcher::SCOPE_NOT_FOUND = "scope not found";
-const char *Dispatcher::MISSING_ACTION = "missing required action";
-const char *Dispatcher::INVALID_ACTION = "invalid action";
-
 // Singleton instance of Dispatcher
 std::unique_ptr<Dispatcher> Dispatcher::instance = nullptr;
 
