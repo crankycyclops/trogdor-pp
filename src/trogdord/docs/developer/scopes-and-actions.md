@@ -92,6 +92,45 @@ Returns a status code, the number of players, and the version of both the core l
 
 ---
 
+#### 2. post:global:dump
+
+Dumps the server's current state (including all games) to disk. This state can
+later be restored.
+
+**JSON Request Format:**
+
+```
+{
+	"method": "post",
+	"scope": "global",
+	"action": "dump"
+}
+```
+
+**Arguments:**
+
+(none)
+
+**Successful JSON Response:**
+
+Returns a status code.
+
+```
+{
+	"status": 200
+}
+```
+
+**Possible Status Codes:**
+
+| Status | Meaning |
+|-|-|
+| 200 | Success |
+| 500 | An error occurred |
+| 501 | State feature was disabled in trogdord.ini |
+
+---
+
 ### Game Scope
 
 #### 1. get:game
