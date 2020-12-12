@@ -54,9 +54,30 @@ void GameContainer::initState() {
 			);
 		}
 
-		// This will throw an exception if the configured directory isn't
-		// readable by the process.
-		auto d = STD_FILESYSTEM::recursive_directory_iterator(statePath);
+		// Any game ids that have been dumped should be reserved so that they
+		// aren't assigned to newly created games, leading to possible
+		// collisions when one or more dumped games are restored. This will
+		// throw an exception if the directory can't be accessed.
+		for (const auto &subdir: STD_FILESYSTEM::directory_iterator(statePath)) {
+
+			std::string idStr = subdir.path().filename();
+
+			if (!trogdor::isValidInteger(idStr)) {
+				Config::get()->err(trogdor::Trogerr::WARNING) << idStr
+					<< " in " << statePath
+					<< " is not a valid game id. Skipping." << std::endl;
+				continue;
+			}
+
+			else if (!STD_FILESYSTEM::is_directory(subdir.path())) {
+				Config::get()->err(trogdor::Trogerr::WARNING) << idStr
+					<< " in " << statePath
+					<< " does not contain a dumped game. Skipping." << std::endl;
+				continue;
+			}
+
+			// TODO: insert id into games as nullptr
+		}
 
 		if (Config::get()->getBool(Config::CONFIG_KEY_STATE_AUTORESTORE_ENABLED)) {
 			restore();

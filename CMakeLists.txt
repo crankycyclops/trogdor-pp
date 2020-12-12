@@ -282,11 +282,11 @@ if (INIH_INCLUDEDIR)
 			src/trogdord/scopes/being.cpp
 			src/trogdord/scopes/creature.cpp
 			src/trogdord/scopes/player.cpp
+			src/trogdord/serial/drivermap.cpp
 			src/trogdord/io/input/listeners/listener.cpp
 			src/trogdord/io/input/listenercontainer.cpp
 			src/trogdord/io/output/driver.cpp
 			src/trogdord/io/output/local.cpp
-			src/trogdord/serial/drivermap.cpp
 			src/trogdord/io/iostream/serverout.cpp
 			src/trogdord/io/iostream/servererr.cpp
 		)
