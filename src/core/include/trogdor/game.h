@@ -153,6 +153,24 @@ namespace trogdor {
          */
          void initEvents();
 
+         /*
+            Does the actual work of deserialization. Called by both deserialize()
+            and the deserialization constructor.
+
+            Input:
+               Serialized data (std::shared_ptr<serial::Serializable>)
+               Callback that generates each player's output stream
+               Callback that generates each player's error stream (optional)
+
+            Output:
+               (none)
+         */
+         void _deserialize(
+            std::shared_ptr<serial::Serializable> data,
+            std::function<std::unique_ptr<Trogout>(Game *)> makeOutStream,
+            std::function<std::unique_ptr<Trogerr>(Game *)> makeErrStream = {}
+         );
+
       public:
 
          /*

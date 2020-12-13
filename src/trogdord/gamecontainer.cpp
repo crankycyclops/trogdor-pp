@@ -442,6 +442,8 @@ void GameContainer::restore() {
 
 		try {
 			games[std::stoi(idStr)] = std::make_unique<GameWrapper>(p);
+			Config::get()->err(trogdor::Trogerr::INFO) << "Restored game id "
+				<< idStr << std::endl;
 		} catch (const std::exception &e) {
 			Config::get()->err(trogdor::Trogerr::ERROR) << "Failed to deserialize game id "
 				<< idStr << ": " << e.what() << std::endl;

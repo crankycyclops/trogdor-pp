@@ -70,7 +70,7 @@ namespace trogdor {
    ) {
 
          errStream = std::move(gErrStream);
-         deserialize(data, makeOutStream, makeErrStream);
+         _deserialize(data, makeOutStream, makeErrStream);
    }
 
    /***************************************************************************/
@@ -81,63 +81,11 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   std::shared_ptr<serial::Serializable> Game::serialize() {
-
-      bool gameWasStarted = inGame;
-
-      if (gameWasStarted) {
-         stop();
-      }
-
-      std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();
-      std::shared_ptr<serial::Serializable> serializedIntro = std::make_shared<serial::Serializable>();
-      std::shared_ptr<serial::Serializable> serializedMeta = std::make_shared<serial::Serializable>();
-
-      std::vector<std::shared_ptr<serial::Serializable>> serializedEntities;
-
-      for (const auto &entity: entities) {
-         serializedEntities.push_back(entity.second->serialize());
-      }
-
-      for (const auto &metaItem: meta) {
-         serializedMeta->set(metaItem.first, metaItem.second);
-      }
-
-      serializedIntro->set("enabled", introduction.enabled);
-      serializedIntro->set("text", introduction.text);
-
-      data->set("inGame", inGame);
-      data->set("lua", L->serialize());
-      data->set("timer", timer->serialize());
-      data->set("introduction", serializedIntro);
-      data->set("meta", serializedMeta);
-      data->set("defaultPlayer", defaultPlayer->serialize());
-      data->set("eventListener", eventListener->serialize());
-      data->set("entities", serializedEntities);
-
-      // TODO: if I'm stopping game and timer to ensure consistency while
-      // serializing, how do I want to signal to deserialization later that it
-      // should be started again? Should that be automatic? Should serialization
-      // include extra setting to specify? Will need to think about this.
-      if (gameWasStarted) {
-         start();
-      }
-
-      return data;
-   }
-
-   /***************************************************************************/
-
-   void Game::deserialize(
+   void Game::_deserialize(
       std::shared_ptr<serial::Serializable> data,
       std::function<std::unique_ptr<Trogout>(Game *)> makeOutStream,
       std::function<std::unique_ptr<Trogerr>(Game *)> makeErrStream
    ) {
-
-      stop();
-
-      meta.clear();
-      clearEntities();
 
       inGame = std::get<bool>(*data->get("inGame"));
 
@@ -254,6 +202,69 @@ namespace trogdor {
       );
 
       executeCallback("afterDeserialize", nullptr);
+      // TODO: should I do something like if (inGame) {start()}?
+   }
+
+   /***************************************************************************/
+
+   std::shared_ptr<serial::Serializable> Game::serialize() {
+
+      bool gameWasStarted = inGame;
+
+      if (gameWasStarted) {
+         stop();
+      }
+
+      std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>();
+      std::shared_ptr<serial::Serializable> serializedIntro = std::make_shared<serial::Serializable>();
+      std::shared_ptr<serial::Serializable> serializedMeta = std::make_shared<serial::Serializable>();
+
+      std::vector<std::shared_ptr<serial::Serializable>> serializedEntities;
+
+      for (const auto &entity: entities) {
+         serializedEntities.push_back(entity.second->serialize());
+      }
+
+      for (const auto &metaItem: meta) {
+         serializedMeta->set(metaItem.first, metaItem.second);
+      }
+
+      serializedIntro->set("enabled", introduction.enabled);
+      serializedIntro->set("text", introduction.text);
+
+      data->set("inGame", inGame);
+      data->set("lua", L->serialize());
+      data->set("timer", timer->serialize());
+      data->set("introduction", serializedIntro);
+      data->set("meta", serializedMeta);
+      data->set("defaultPlayer", defaultPlayer->serialize());
+      data->set("eventListener", eventListener->serialize());
+      data->set("entities", serializedEntities);
+
+      // TODO: if I'm stopping game and timer to ensure consistency while
+      // serializing, how do I want to signal to deserialization later that it
+      // should be started again? Should that be automatic? Should serialization
+      // include extra setting to specify? Will need to think about this.
+      if (gameWasStarted) {
+         start();
+      }
+
+      return data;
+   }
+
+   /***************************************************************************/
+
+   void Game::deserialize(
+      std::shared_ptr<serial::Serializable> data,
+      std::function<std::unique_ptr<Trogout>(Game *)> makeOutStream,
+      std::function<std::unique_ptr<Trogerr>(Game *)> makeErrStream
+   ) {
+
+      stop();
+      meta.clear();
+      clearEntities();
+
+      _deserialize(data, makeOutStream, makeErrStream);
    }
 
    /***************************************************************************/
