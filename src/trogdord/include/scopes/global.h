@@ -15,6 +15,7 @@ class GlobalController: public ScopeController {
 		// Action names that get mapped to methods in GlobalController
 		static constexpr const char *STATISTICS_ACTION = "statistics";
 		static constexpr const char *DUMP_ACTION = "dump";
+		static constexpr const char *RESTORE_ACTION = "restore";
 
 		// Constructor should only be called internally by get(), which will
 		// ensure we only ever have a single instance of the class.
@@ -37,6 +38,9 @@ class GlobalController: public ScopeController {
 
 		// Action that dumps the server's current state (games and all) to disk
 		rapidjson::Document dump(const rapidjson::Document &request);
+
+		// Action that restores the server's current state (games and all) from disk
+		rapidjson::Document restore(const rapidjson::Document &request);
 };
 
 

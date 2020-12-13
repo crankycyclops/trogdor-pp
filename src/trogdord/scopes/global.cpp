@@ -20,6 +20,10 @@ GlobalController::GlobalController() {
 	registerAction(Request::POST, DUMP_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->dump(request);
 	});
+
+	registerAction(Request::POST, RESTORE_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
+		return this->restore(request);
+	});
 }
 
 /*****************************************************************************/
@@ -74,6 +78,33 @@ rapidjson::Document GlobalController::dump(const rapidjson::Document &request) {
 
 		try {
 			GameContainer::get()->dump();
+			response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+		}
+
+		catch (const std::exception &e) {
+			response.AddMember("status", Response::STATUS_INTERNAL_ERROR, response.GetAllocator());
+			response.AddMember("message", rapidjson::StringRef(e.what()), response.GetAllocator());
+		}
+	}
+
+	return response;
+}
+
+/*****************************************************************************/
+
+rapidjson::Document GlobalController::restore(const rapidjson::Document &request) {
+
+	rapidjson::Document response(rapidjson::kObjectType);
+
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+		response.AddMember("status", Response::STATUS_UNSUPPORTED, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(STATE_DISABLED), response.GetAllocator());
+	}
+
+	else {
+
+		try {
+			GameContainer::get()->restore();
 			response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 		}
 

@@ -1,5 +1,6 @@
 #include <chrono>
 #include <fstream>
+#include <cstdint>
 
 #include <trogdor/parser/parsers/xmlparser.h>
 #include <trogdor/serial/serializable.h>
@@ -50,7 +51,59 @@ GameWrapper::GameWrapper(
 
 GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p) {
 
-	// TODO
+	std::string idPath = p;
+	std::string idStr = p.filename();
+	std::set<size_t> timestamps;
+
+	// Find the latest timestamp and restore that version of the game
+	for (const auto &subdir: STD_FILESYSTEM::directory_iterator(idPath)) {
+
+		std::string timestamp = subdir.path().filename();
+		std::cout << timestamp << std::endl;
+
+		// Skip over obviously invalid files and directories
+		if (!trogdor::isValidInteger(timestamp)) {
+			continue;
+		}
+
+		else if (!STD_FILESYSTEM::is_directory(subdir.path())) {
+			continue;
+		}
+
+		#if SIZE_MAX == UINT64_MAX
+			timestamps.insert(std::stoull(timestamp));
+		#else
+			timestamps.insert(std::stoul(timestamp));
+		#endif
+	}
+
+std::cout << timestamps.size() << std::endl;
+
+	std::string timestampStr = std::to_string(*timestamps.rbegin());
+	std::string metaPath = idPath + STD_FILESYSTEM::path::preferred_separator +
+		timestampStr + STD_FILESYSTEM::path::preferred_separator + "meta";
+	std::string gamePath = idPath + STD_FILESYSTEM::path::preferred_separator +
+		timestampStr + STD_FILESYSTEM::path::preferred_separator + "game";
+
+	if (
+		!STD_FILESYSTEM::exists(metaPath) ||
+		STD_FILESYSTEM::is_directory(metaPath) ||
+		!STD_FILESYSTEM::exists(gamePath) ||
+		STD_FILESYSTEM::is_directory(gamePath)
+	) {
+		throw ServerException(
+			std::string("Attempted to restore an invalidly dumped game with id ") + idStr
+		);
+	}
+
+	auto &driver = serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
+
+	gameMutex.lock();
+
+	// TODO: deserialize meta and game files and initialize accordingly
+	std::cout << "Stub GameWrapper::restore(): " << p << std::endl;
+
+	gameMutex.unlock();
 }
 
 /*****************************************************************************/
