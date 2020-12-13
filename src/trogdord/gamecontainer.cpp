@@ -2,14 +2,51 @@
 
 #include <trogdor/entities/player.h>
 
-#include "include/filesystem.h"
 #include "include/gamecontainer.h"
-
 #include "include/io/iostream/serverout.h"
 
 
 // Singleton instance of GameContainer
 std::unique_ptr<GameContainer> GameContainer::instance = nullptr;
+
+/*****************************************************************************/
+
+void GameContainer::iterateDumpedGames(
+	std::string statePath,
+	std::function<void(const STD_FILESYSTEM::path &)> callback,
+	bool warnOnInvalid
+) {
+
+	for (const auto &subdir: STD_FILESYSTEM::directory_iterator(statePath)) {
+
+		std::string idStr = subdir.path().filename();
+
+		// Skip over obviously invalid files and directories
+		if (!trogdor::isValidInteger(idStr)) {
+
+			if (warnOnInvalid) {
+				Config::get()->err(trogdor::Trogerr::WARNING) << idStr
+					<< " in " << statePath
+					<< " is not a valid game id. Skipping." << std::endl;
+			}
+
+			continue;
+		}
+
+		else if (!STD_FILESYSTEM::is_directory(subdir.path())) {
+
+			if (warnOnInvalid) {
+				Config::get()->err(trogdor::Trogerr::WARNING) << idStr
+					<< " in " << statePath
+					<< " does not contain a dumped game. Skipping." << std::endl;
+			}
+
+			continue;
+		}
+
+		callback(subdir.path());
+	}
+}
 
 /*****************************************************************************/
 
@@ -58,28 +95,9 @@ void GameContainer::initState() {
 		// aren't assigned to newly created games, leading to possible
 		// collisions when one or more dumped games are restored. This will
 		// throw an exception if the directory can't be accessed.
-		for (const auto &subdir: STD_FILESYSTEM::directory_iterator(statePath)) {
-
-			std::string idStr = subdir.path().filename();
-
-			if (!trogdor::isValidInteger(idStr)) {
-				Config::get()->err(trogdor::Trogerr::WARNING) << idStr
-					<< " in " << statePath
-					<< " is not a valid game id. Skipping." << std::endl;
-				continue;
-			}
-
-			else if (!STD_FILESYSTEM::is_directory(subdir.path())) {
-				Config::get()->err(trogdor::Trogerr::WARNING) << idStr
-					<< " in " << statePath
-					<< " does not contain a dumped game. Skipping." << std::endl;
-				continue;
-			}
-
-			// Reserve the game id now so that the dumped game can be
-			// restored later
-			games[std::stoi(idStr)] = nullptr;
-		}
+		iterateDumpedGames(statePath, [&](const STD_FILESYSTEM::path &p) {
+			games[std::stoi(p.filename())] = nullptr;
+		}, true);
 
 		if (Config::get()->getBool(Config::CONFIG_KEY_STATE_AUTORESTORE_ENABLED)) {
 			restore();
@@ -394,10 +412,10 @@ void GameContainer::removePlayer(size_t gameId, std::string playerName, std::str
 
 /*****************************************************************************/
 
-bool GameContainer::dump() {
+void GameContainer::dump() {
 
 	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
-		return false;
+		return;
 	}
 
 	for (auto &game: games) {
@@ -405,23 +423,22 @@ bool GameContainer::dump() {
 			game.second->dump();
 		}
 	}
-
-	return true;
 }
 
 /*****************************************************************************/
 
-bool GameContainer::restore() {
+void GameContainer::restore() {
 
 	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
-		return false;
+		return;
 	}
 
 	// I don't have to check this because it was already checked in
 	// initStatePath() on startup.
 	std::string statePath = Config::get()->getStatePath();
 
-	// TODO: recover all games (keep existing games, since tracking reserved ids
-	// should ensure ids remain unique and there are no collisions.)
-	return true;
+	iterateDumpedGames(statePath, [&](const STD_FILESYSTEM::path &) {
+
+		// TODO: instantiate GameWrapper with deserialization constructor
+	});
 }

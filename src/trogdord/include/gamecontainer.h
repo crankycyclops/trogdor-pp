@@ -9,6 +9,7 @@
 #include <map>
 #include <unordered_map>
 
+#include "filesystem.h"
 #include "filter/filter.h"
 #include "filter/resolver.h"
 
@@ -95,6 +96,13 @@ class GameContainer {
 			indices.mutex.unlock();
 		}
 
+		// Applies the specified operation to each dumped game.
+		static void iterateDumpedGames(
+			std::string statePath,
+			std::function<void(const STD_FILESYSTEM::path &)> callback,
+			bool warnOnInvalid = false
+		);
+
 	public:
 
 		// Ensures all games are properly shutdown before the server goes down
@@ -167,14 +175,14 @@ class GameContainer {
 		void removePlayer(size_t gameId, std::string playerName, std::string message = "");
 
 		// Dumps the server's current state, including all existing games.
-		// Returns true if the operation could be performed successfully and
-		// false if not.
-		bool dump();
+		// Does nothing if the state feature was disabled.
+		void dump();
 
-		// Restores the server's state, including all saved games. Returns
-		// true if the operation could be performed successfully and false if
-		// not.
-		bool restore();
+		// Restores the server's state, including all saved games. This will
+		// not overwrite any newly created games, and since initState()
+		// reserves previously dumped game ids, id collisions shouldn't occur.
+		// Does nothing if the state feature was disabled.
+		void restore();
 };
 
 
