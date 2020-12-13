@@ -8,6 +8,7 @@
 #include "include/config.h"
 #include "include/filesystem.h"
 #include "include/serial/drivermap.h"
+#include "include/io/iostream/serverout.h"
 #include "include/exception/serverexception.h"
 
 #include "include/gamewrapper.h"
@@ -49,7 +50,7 @@ GameWrapper::GameWrapper(
 
 /*****************************************************************************/
 
-GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p) {
+GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p): gamePtr(nullptr) {
 
 	std::string idPath = p;
 	std::string idStr = p.filename();
@@ -93,12 +94,42 @@ GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p) {
 		);
 	}
 
-	auto &driver = serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
+	auto &serialDriver =
+		serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
+
+	ifstream metaFile(metaPath);
+	ifstream gameFile(gamePath);
+
+	ostringstream metaStr;
+	ostringstream gameStr;
+
+	metaStr << metaFile.rdbuf();
+	gameStr << gameFile.rdbuf();
+
+	std::shared_ptr<trogdor::serial::Serializable> metaData = serialDriver->deserialize(metaStr.str());
+	std::shared_ptr<trogdor::serial::Serializable> gameData = serialDriver->deserialize(gameStr.str());
 
 	gameMutex.lock();
 
-	// TODO: deserialize meta and game files and initialize accordingly
-	std::cout << "Stub GameWrapper::restore(): " << p << std::endl;
+	// Deserialize meta data associated with the GameWrapper instance
+	id = std::get<size_t>(*metaData->get("id"));
+	name = std::get<std::string>(*metaData->get("name"));
+	definition = std::get<std::string>(*metaData->get("definition"));
+	created = static_cast<time_t>(std::get<size_t>(*metaData->get("created")));
+
+	gamePtr = std::make_unique<trogdor::Game>(
+		gameData,
+		Config::get()->err().copy(),
+		[&](trogdor::Game *game) -> std::unique_ptr<trogdor::Trogout> {
+			return std::make_unique<ServerOut>(id);
+		}, [&](trogdor::Game *game) -> std::unique_ptr<trogdor::Trogerr> {
+			return Config::get()->err().copy();
+		}
+	);
+
+	for (auto &player: gamePtr->getPlayers()) {
+		static_cast<ServerOut *>(&player.second->out())->setEntity(player.second.get());
+	}
 
 	gameMutex.unlock();
 }

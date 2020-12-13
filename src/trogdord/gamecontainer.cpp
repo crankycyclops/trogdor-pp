@@ -437,6 +437,14 @@ void GameContainer::restore() {
 	std::string statePath = Config::get()->getStatePath();
 
 	iterateDumpedGames(statePath, [&](const STD_FILESYSTEM::path &p) {
-		games[std::stoi(p.filename())] = std::make_unique<GameWrapper>(p);
+
+		std::string idStr = p.filename();
+
+		try {
+			games[std::stoi(idStr)] = std::make_unique<GameWrapper>(p);
+		} catch (const std::exception &e) {
+			Config::get()->err(trogdor::Trogerr::ERROR) << "Failed to deserialize game id "
+				<< idStr << ": " << e.what() << std::endl;
+		}
 	});
 }

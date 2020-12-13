@@ -120,9 +120,9 @@ namespace trogdor::serial {
 					}
 
 					#if SIZE_MAX == UINT64_MAX
-						else if (it->value.IsUint64()) {
-							obj->set(it->name.GetString(), static_cast<size_t>(it->value.GetUint64()));
-						}
+					else if (it->value.IsUint64()) {
+						obj->set(it->name.GetString(), static_cast<size_t>(it->value.GetUint64()));
+					}
 					#endif
 
 					else {
