@@ -78,6 +78,24 @@ class GameContainer {
 			}
 		}
 
+		// Indexes a new game right after it's been created.
+		inline void indexNewGame(size_t gameId) {
+
+			indices.mutex.lock();
+
+			// Note that the game is always initialized in a stopped state.
+			indexStarted(gameId, games[gameId]->get()->inProgress(), false);
+			indices.all.insert(gameId);
+
+			if (indices.name.end() == indices.name.find(games[gameId]->getName())) {
+				indices.name[games[gameId]->getName()] = {};
+			}
+
+			indices.name[games[gameId]->getName()].insert(gameId);
+
+			indices.mutex.unlock();
+		}
+
 		// Removes all indices for the given game.
 		inline void clearIndices(size_t gameId) {
 

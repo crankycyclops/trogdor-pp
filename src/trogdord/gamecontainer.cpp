@@ -277,19 +277,7 @@ size_t GameContainer::createGame(
 		return false;
 	}));
 
-	indices.mutex.lock();
-
-	// Note that the game is always initialized in a stopped state.
-	indexStarted(gameId, false, false);
-	indices.all.insert(gameId);
-
-	if (indices.name.end() == indices.name.find(name)) {
-		indices.name[name] = {};
-	}
-
-	indices.name[name].insert(gameId);
-
-	indices.mutex.unlock();
+	indexNewGame(gameId);
 	return gameId;
 }
 
@@ -441,11 +429,18 @@ void GameContainer::restore() {
 		std::string idStr = p.filename();
 
 		try {
-			games[std::stoi(idStr)] = std::make_unique<GameWrapper>(p);
+
+			size_t gameId = std::stoi(idStr);
+
+			games[gameId] = std::make_unique<GameWrapper>(p);
+			indexNewGame(gameId);
+
 			Config::get()->err(trogdor::Trogerr::INFO) << "Restored game id "
 				<< idStr << std::endl;
-		} catch (const std::exception &e) {
-			Config::get()->err(trogdor::Trogerr::ERROR) << "Failed to deserialize game id "
+		}
+
+		catch (const std::exception &e) {
+			Config::get()->err(trogdor::Trogerr::ERROR) << "Failed to restore game id "
 				<< idStr << ": " << e.what() << std::endl;
 		}
 	});
