@@ -59,7 +59,6 @@ GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p) {
 	for (const auto &subdir: STD_FILESYSTEM::directory_iterator(idPath)) {
 
 		std::string timestamp = subdir.path().filename();
-		std::cout << timestamp << std::endl;
 
 		// Skip over obviously invalid files and directories
 		if (!trogdor::isValidInteger(timestamp)) {
@@ -76,8 +75,6 @@ GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p) {
 			timestamps.insert(std::stoul(timestamp));
 		#endif
 	}
-
-std::cout << timestamps.size() << std::endl;
 
 	std::string timestampStr = std::to_string(*timestamps.rbegin());
 	std::string metaPath = idPath + STD_FILESYSTEM::path::preferred_separator +

@@ -184,9 +184,28 @@ namespace trogdor {
 
    bool isValidInteger(const std::string &s) {
 
+      const char *cstr = s.c_str();
+
       // Doesn't match leading 0's because those represent octal numbers and this
       // method is used to validate ordinary 10-based numbers.
-      return std::regex_match(s, std::regex("^\\-?([0-9]|[1-9][0-9])$")) ? true : false;
+      if ('0' == *cstr && s.length() > 1) {
+         return false;
+      }
+
+      for (const char *c = cstr; *c != '\0'; c++) {
+
+         // It's okay if there's a positive or negative sign at the beginning
+         // of a number.
+         if (c == cstr && s.length() > 0 && ('-' == *c || '+' == *c)) {
+            continue;
+         }
+
+         if (!std::isdigit(*c)) {
+            return false;
+         }
+      }
+
+      return true;
    }
 
 
