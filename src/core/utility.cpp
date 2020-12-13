@@ -186,9 +186,14 @@ namespace trogdor {
 
       const char *cstr = s.c_str();
 
+      // Empty strings are not considered valid integers.
+      if (0 == s.length()) {
+         return false;
+      }
+
       // Doesn't match leading 0's because those represent octal numbers and this
       // method is used to validate ordinary 10-based numbers.
-      if ('0' == *cstr && s.length() > 1) {
+      else if ('0' == *cstr && s.length() > 1) {
          return false;
       }
 
