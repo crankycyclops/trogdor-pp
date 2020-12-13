@@ -60,6 +60,5 @@ void LoadAction::execute(
       }
    );
 
-   game->start();
    game->getPlayer("player")->out() << "Game state loaded from " << filename << '.' << std::endl;
 }

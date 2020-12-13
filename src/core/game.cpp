@@ -202,7 +202,10 @@ namespace trogdor {
       );
 
       executeCallback("afterDeserialize", nullptr);
-      // TODO: should I do something like if (inGame) {start()}?
+
+      if (inGame) {
+         start();
+      }
    }
 
    /***************************************************************************/
@@ -232,7 +235,7 @@ namespace trogdor {
       serializedIntro->set("enabled", introduction.enabled);
       serializedIntro->set("text", introduction.text);
 
-      data->set("inGame", inGame);
+      data->set("inGame", gameWasStarted);
       data->set("lua", L->serialize());
       data->set("timer", timer->serialize());
       data->set("introduction", serializedIntro);
