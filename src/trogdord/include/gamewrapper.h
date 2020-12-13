@@ -5,6 +5,9 @@
 #include <ctime>
 #include <trogdor/game.h>
 
+#include "filesystem.h"
+
+
 class GameWrapper {
 
 	private:
