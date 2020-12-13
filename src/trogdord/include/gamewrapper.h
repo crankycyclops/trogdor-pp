@@ -48,6 +48,10 @@ class GameWrapper {
 			std::unordered_map<std::string, std::string> meta = {}
 		);
 
+		// Deserialization constructor, which takes as input the path to data
+		// previously dumped by GameWrapper::dump().
+		GameWrapper(const STD_FILESYSTEM::path &p);
+
 		// Serializes and saves the state of the game, along with any
 		// associated meta data.
 		void dump();

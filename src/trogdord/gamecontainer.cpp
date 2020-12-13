@@ -433,12 +433,10 @@ void GameContainer::restore() {
 		return;
 	}
 
-	// I don't have to check this because it was already checked in
-	// initStatePath() on startup.
+	// I don't need to check this because I already did that in initStatePath().
 	std::string statePath = Config::get()->getStatePath();
 
-	iterateDumpedGames(statePath, [&](const STD_FILESYSTEM::path &) {
-
-		// TODO: instantiate GameWrapper with deserialization constructor
+	iterateDumpedGames(statePath, [&](const STD_FILESYSTEM::path &p) {
+		games[std::stoi(p.filename())] = std::make_unique<GameWrapper>(p);
 	});
 }

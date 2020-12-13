@@ -48,6 +48,13 @@ GameWrapper::GameWrapper(
 
 /*****************************************************************************/
 
+GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p) {
+
+	// TODO
+}
+
+/*****************************************************************************/
+
 std::shared_ptr<trogdor::serial::Serializable> GameWrapper::serializeMeta() {
 
 	std::shared_ptr<trogdor::serial::Serializable> meta =
