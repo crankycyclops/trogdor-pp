@@ -51,6 +51,7 @@ All the status codes that can currently be returned by trogdord are listed below
 | Code | Meaning |
 |-|-|
 | 200 | The request was successful |
+| 206 | The request was only partially successful, or is only returning a partial response |
 | 400 | The request was invalid |
 | 404 | The requested action or resource wasn't found |
 | 409 | The request failed due to a conflict with an existing resource |

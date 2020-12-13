@@ -10,6 +10,7 @@ class Response {
 
 		// These are all the possible status codes that can be returned.
 		static constexpr int STATUS_SUCCESS = 200;
+		static constexpr int STATUS_PARTIAL_CONTENT = 206;
 		static constexpr int STATUS_INVALID = 400;
 		static constexpr int STATUS_NOT_FOUND = 404;
 		static constexpr int STATUS_CONFLICT = 409;
