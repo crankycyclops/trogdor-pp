@@ -442,7 +442,7 @@ void GameContainer::restore() {
 			indexNewGame(gameId);
 
 			Config::get()->err(trogdor::Trogerr::INFO) << "Restored game id "
-				<< idStr << std::endl;
+				<< idStr << '.' << std::endl;
 		}
 
 		catch (const std::exception &e) {

@@ -47,10 +47,11 @@ int main(int argc, char **argv) {
 
 	try {
 
+		config->err(trogdor::Trogerr::INFO) << STARTUP_MESSAGE << std::endl;
+
 		// Calling GameContainer::get() invokes the constructor, which then sets up
 		// state management for the server.
 		GameContainer::get();
-		config->err(trogdor::Trogerr::INFO) << STARTUP_MESSAGE << std::endl;
 
 		// Retrieving the singleton instance of ListenerContainer will
 		// make sure it gets initialized and that the listeners get started
