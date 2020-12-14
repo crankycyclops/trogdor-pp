@@ -23,6 +23,12 @@ zend_object_handlers trogdordObjectHandlers;
 // This request retrieves statistics about the server and its environment
 static const char *STATS_REQUEST = "{\"method\":\"get\",\"scope\":\"global\",\"action\":\"statistics\"}";
 
+// This request dumps the server's state to disk
+static const char *DUMP_REQUEST = "{\"method\":\"get\",\"scope\":\"global\",\"action\":\"dump\"}";
+
+// This request restores the server's state from disk
+static const char *RESTORE_REQUEST = "{\"method\":\"get\",\"scope\":\"global\",\"action\":\"restore\"}";
+
 // This request retrieves a list of all existing games
 static const char *GAME_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"list\"%args}";
 
@@ -113,6 +119,83 @@ PHP_METHOD(Trogdord, statistics) {
 	// Throw \Trogord\RequestException
 	catch (const RequestException &e) {
 		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+	}
+}
+
+/*****************************************************************************/
+
+// Dumps the server's state to disk, including all games. Throws an instance of
+// \Trogdord\NetworkException if there's an issue with the network connection
+// that prevents this call from returning valid data.
+ZEND_BEGIN_ARG_INFO(arginfoDump, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Trogdord, dump) {
+
+	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(getThis()));
+
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	try {
+
+		Document response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			DUMP_REQUEST
+		);
+
+		RETURN_NULL();
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	// Throw \Trogord\RequestException
+	catch (const RequestException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+	}
+}
+
+/*****************************************************************************/
+
+// Restores the server's state from disk, including all games. Throws an
+// instance of \Trogdord\NetworkException if there's an issue with the network
+// connection that prevents this call from returning valid data.
+ZEND_BEGIN_ARG_INFO(arginfoRestore, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Trogdord, restore) {
+
+	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(getThis()));
+
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	try {
+
+		Document response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			RESTORE_REQUEST
+		);
+
+		RETURN_NULL();
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	// Throw \Trogord\RequestException
+	catch (const RequestException &e) {
+		// TODO: return some kind of signal to indicate only partial success
+		if (206 == e.getCode()) {
+			RETURN_NULL();
+		} else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
 	}
 }
 
@@ -453,6 +536,8 @@ PHP_METHOD(Trogdord, newGame) {
 static const zend_function_entry classMethods[] =  {
 	PHP_ME(Trogdord, __construct, arginfoCtor, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 	PHP_ME(Trogdord, statistics, arginfoStatistics, ZEND_ACC_PUBLIC)
+	PHP_ME(Trogdord, dump, arginfoDump, ZEND_ACC_PUBLIC)
+	PHP_ME(Trogdord, restore, arginfoRestore, ZEND_ACC_PUBLIC)
 	PHP_ME(Trogdord, games, arginfoListGames, ZEND_ACC_PUBLIC)
 	PHP_ME(Trogdord, definitions, arginfoListDefinitions, ZEND_ACC_PUBLIC)
 	PHP_ME(Trogdord, getGame, arginfoGetGame, ZEND_ACC_PUBLIC)

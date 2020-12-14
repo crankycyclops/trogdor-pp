@@ -103,6 +103,40 @@ array(3) {
 
 Like `\Trogdord`'s constructor, `\Trogdord::statistics()` will throw an instance of `\Trogdord\NetworkException` if there are any issues with the connection.
 
+### Dumping server's state to disk
+
+`\Trogdord::dump()` dumps the server's state to disk, along with all existing games. It does not return a value.
+
+```php
+try {
+	$connection = new \Trogdord("localhost");
+	$connection->dump();
+}
+
+catch (\Trogdord\NetworkException $e) {
+	// Handle error
+}
+```
+
+Like `\Trogdord`'s constructor, `\Trogdord::dump()` will throw an instance of `\Trogdord\NetworkException` if there are any issues with the connection.
+
+### Restoring server's state from disk
+
+`\Trogdord::restore()` restores the server's state from disk, along with all previously dumped games. It does not return a value.
+
+```php
+try {
+	$connection = new \Trogdord("localhost");
+	$connection->restore();
+}
+
+catch (\Trogdord\NetworkException $e) {
+	// Handle error
+}
+```
+
+Like `\Trogdord`'s constructor, `\Trogdord::restore()` will throw an instance of `\Trogdord\NetworkException` if there are any issues with the connection.
+
 ### Retrieving Games
 
 `\Trogdord::games()` retrieves a list of games that currently exist on the server:
