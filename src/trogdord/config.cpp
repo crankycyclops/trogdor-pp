@@ -31,6 +31,7 @@ const std::unordered_map<std::string, std::string> Config::DEFAULTS = {
 	{CONFIG_KEY_DEFINITIONS_PATH,                 "share/trogdor"},
 	{CONFIG_KEY_STATE_ENABLED,                    "false"},
 	{CONFIG_KEY_STATE_AUTORESTORE_ENABLED,        "false"},
+	{CONFIG_KEY_STATE_DUMP_SHUTDOWN_ENABLED,      "false"},
 	{CONFIG_KEY_STATE_FORMAT,                     "json"},
 	{CONFIG_KEY_STATE_PATH,                       "var/trogdord/state"}
 };

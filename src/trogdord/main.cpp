@@ -24,6 +24,12 @@ static std::unique_ptr<TCPServer> server;
 // Called whenever we receive SIGINT (CTRL-C) or SIGTERM.
 static void shutdownHandler(const asio::error_code &error, int signal_number) {
 
+	// If auto-dump is enabled, this will save the server's state to disk,
+	// including all games, before shutting down.
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_DUMP_SHUTDOWN_ENABLED)) {
+		GameContainer::get()->dump();
+	}
+
 	// Forces the server's destructor to be called, ensuring that any remaining
 	// connections are closed and that any other cleanup is performed before we
 	// exit.

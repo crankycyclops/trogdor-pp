@@ -406,11 +406,17 @@ void GameContainer::dump() {
 		return;
 	}
 
+	size_t numGames = 0;
+
 	for (auto &game: games) {
 		if (game.second) {
 			game.second->dump();
+			numGames++;
 		}
 	}
+
+	Config::get()->err(trogdor::Trogerr::INFO) << "Dumped " << numGames <<
+		" games to disk." << std::endl;
 }
 
 /*****************************************************************************/
