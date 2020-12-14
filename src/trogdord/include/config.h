@@ -73,6 +73,7 @@ class Config {
 		static constexpr const char *CONFIG_KEY_STATE_ENABLED = "state.enabled";
 		static constexpr const char *CONFIG_KEY_STATE_AUTORESTORE_ENABLED = "state.auto_restore";
 		static constexpr const char *CONFIG_KEY_STATE_DUMP_SHUTDOWN_ENABLED = "state.dump_on_shutdown";
+		static constexpr const char *CONFIG_KEY_STATE_CRASH_RECOVERY_ENABLED = "state.crash_recovery";
 		static constexpr const char *CONFIG_KEY_STATE_FORMAT = "state.format";
 		static constexpr const char *CONFIG_KEY_STATE_PATH = "state.save_path";
 
