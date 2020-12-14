@@ -165,6 +165,66 @@ class Trogdord extends EventEmitter {
 	}
 
 	/**
+	 * Dumps the server's state to disk, including all games.
+	 */
+	dump() {
+
+		return new Promise((resolve, reject) => {
+
+			this.makeRequest({
+				method: "post",
+				scope: "global",
+				action: "dump"
+			}).then(response => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				delete response.status;
+				resolve(response);
+
+			}).catch(error => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
+	 * Restores the server's state from disk, including all games.
+	 */
+	restore() {
+
+		return new Promise((resolve, reject) => {
+
+			this.makeRequest({
+				method: "post",
+				scope: "global",
+				action: "restore"
+			}).then(response => {
+
+				if (200 != response.status && 206 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				delete response.status;
+				resolve(response);
+
+			}).catch(error => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
 	 * Returns a promise that resolves to a JSON object containing a list of
 	 * all available game definitions.
 	 */

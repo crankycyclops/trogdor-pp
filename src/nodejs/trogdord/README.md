@@ -123,6 +123,44 @@ Result:
 }
 ```
 
+### Dumping Trogdord's State to Disk
+
+This method tells trogdord to dump its state to disk, including all games, and
+returns no output:
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.dump()
+	.catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+### Restoring Trogdord's State from Disk
+
+This method tells trogdord to restore its state from disk, including all
+previously dumped games, and returns no output:
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.restore()
+	.catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
 ### Retrieving Available Game Definitions
 
 This method retrieves a list of all game definition files that are available to the server:

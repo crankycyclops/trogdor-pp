@@ -24,10 +24,10 @@ zend_object_handlers trogdordObjectHandlers;
 static const char *STATS_REQUEST = "{\"method\":\"get\",\"scope\":\"global\",\"action\":\"statistics\"}";
 
 // This request dumps the server's state to disk
-static const char *DUMP_REQUEST = "{\"method\":\"get\",\"scope\":\"global\",\"action\":\"dump\"}";
+static const char *DUMP_REQUEST = "{\"method\":\"post\",\"scope\":\"global\",\"action\":\"dump\"}";
 
 // This request restores the server's state from disk
-static const char *RESTORE_REQUEST = "{\"method\":\"get\",\"scope\":\"global\",\"action\":\"restore\"}";
+static const char *RESTORE_REQUEST = "{\"method\":\"post\",\"scope\":\"global\",\"action\":\"restore\"}";
 
 // This request retrieves a list of all existing games
 static const char *GAME_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"list\"%args}";
