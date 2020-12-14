@@ -26,7 +26,7 @@ static void shutdownHandler(const asio::error_code &error, int signal_number) {
 
 	// If auto-dump is enabled, this will save the server's state to disk,
 	// including all games, before shutting down.
-	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_DUMP_SHUTDOWN_ENABLED)) {
+	if (Config::get()->getBool(Config::CONFIG_KEY_STATE_DUMP_SHUTDOWN_ENABLED)) {
 		GameContainer::get()->dump();
 	}
 
