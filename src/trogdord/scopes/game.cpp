@@ -415,8 +415,16 @@ rapidjson::Document GameController::destroyGame(const rapidjson::Document &reque
 		return errorCopy;
 	}
 
+	// By default, we destroy a game's dumps along with the game itself
+	bool destroyDump = true;
+	const rapidjson::Value *destroyDumpVal = rapidjson::Pointer("/args/delete_dump").Get(request);
+
+	if (destroyDumpVal && destroyDumpVal->IsBool()) {
+		destroyDump = destroyDumpVal->GetBool();
+	}
+
 	if (GameContainer::get()->getGame(gameId)) {
-		GameContainer::get()->destroyGame(gameId);
+		GameContainer::get()->destroyGame(gameId, destroyDump);
 		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 	}
 

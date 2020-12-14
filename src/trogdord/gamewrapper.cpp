@@ -197,3 +197,23 @@ void GameWrapper::dump() {
 	// directories.
 	gameMutex.unlock();
 }
+
+/*****************************************************************************/
+
+void GameWrapper::destroyDump() {
+
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+		return;
+	}
+
+	gameMutex.lock();
+
+	std::string gameStatePath = Config::get()->getStatePath() +
+		STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+	if (STD_FILESYSTEM::exists(gameStatePath)) {
+		STD_FILESYSTEM::remove_all(gameStatePath);
+	}
+
+	gameMutex.unlock();
+}

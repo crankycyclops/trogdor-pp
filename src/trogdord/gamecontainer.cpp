@@ -284,11 +284,16 @@ size_t GameContainer::createGame(
 
 /*****************************************************************************/
 
-void GameContainer::destroyGame(size_t id) {
+void GameContainer::destroyGame(size_t id, bool destroyDump) {
 
 	auto game = games.find(id);
 
 	if (games.end() != game && nullptr != game->second) {
+
+		if (destroyDump) {
+			games[id]->destroyDump();
+		}
+
 		numPlayers -= games[id]->getNumPlayers();
 		clearIndices(id);
 		games[id] = nullptr;

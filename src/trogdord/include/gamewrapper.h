@@ -59,6 +59,9 @@ class GameWrapper {
 		// associated meta data.
 		void dump();
 
+		// Deletes all dumped data for the given game.
+		void destroyDump();
+
 		// Returns a reference to the underlying game
 		inline std::unique_ptr<trogdor::Game> &get() {return gamePtr;}
 

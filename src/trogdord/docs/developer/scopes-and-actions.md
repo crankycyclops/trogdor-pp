@@ -288,6 +288,7 @@ Destroys an existing game.
 | Argument | Required? | Value |
 |-|-|-|
 | `id` | Yes | The game's id |
+| `delete_dump` | No | Whether or not to also delete all dumps of the game (true by default) |
 
 **Successful JSON Response:**
 

@@ -161,8 +161,10 @@ class GameContainer {
 		inline const size_t getNumPlayers() const {return numPlayers;}
 
 		// Destroys the game referenced by the given id (does nothing if the
-		// game doesn't exist.)
-		void destroyGame(size_t id);
+		// game doesn't exist.) If destroyDump is true, this method will also
+		// destroy any dumps of the game that have previously been written to
+		// disk.
+		void destroyGame(size_t id, bool destroyDump = true);
 
 		// Starts the game referenced by the given id.
 		void startGame(size_t id);
