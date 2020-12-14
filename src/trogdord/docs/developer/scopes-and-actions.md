@@ -131,6 +131,45 @@ Returns a status code.
 
 ---
 
+#### 2. post:global:restore
+
+Restores the server's current state (including all games) from disk.
+
+**JSON Request Format:**
+
+```
+{
+	"method": "post",
+	"scope": "global",
+	"action": "restore"
+}
+```
+
+**Arguments:**
+
+(none)
+
+**Successful JSON Response:**
+
+Returns a status code.
+
+```
+{
+	"status": 200
+}
+```
+
+**Possible Status Codes:**
+
+| Status | Meaning |
+|-|-|
+| 200 | Success |
+| 206 | Partial success (only some games could be restored, not all) |
+| 500 | An error occurred |
+| 501 | State feature was disabled in trogdord.ini |
+
+---
+
 ### Game Scope
 
 #### 1. get:game

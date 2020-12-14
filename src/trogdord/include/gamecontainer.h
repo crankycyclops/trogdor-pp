@@ -199,8 +199,9 @@ class GameContainer {
 		// Restores the server's state, including all saved games. This will
 		// not overwrite any newly created games, and since initState()
 		// reserves previously dumped game ids, id collisions shouldn't occur.
-		// Does nothing if the state feature was disabled.
-		void restore();
+		// Does nothing if the state feature was disabled. Returns a status
+		// code, which can be sent back if call was part of a request.
+		int restore();
 };
 
 

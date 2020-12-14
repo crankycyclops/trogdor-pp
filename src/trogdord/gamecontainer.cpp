@@ -2,6 +2,7 @@
 
 #include <trogdor/entities/player.h>
 
+#include "include/response.h"
 #include "include/gamecontainer.h"
 #include "include/io/iostream/serverout.h"
 
@@ -421,11 +422,14 @@ void GameContainer::dump() {
 
 /*****************************************************************************/
 
-void GameContainer::restore() {
+int GameContainer::restore() {
 
 	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
-		return;
+		return Response::STATUS_UNSUPPORTED;
 	}
+
+	size_t numGames = 0;
+	size_t numSuccessful = 0;
 
 	// I don't need to check this because I already did that in initStatePath().
 	std::string statePath = Config::get()->getStatePath();
@@ -436,10 +440,13 @@ void GameContainer::restore() {
 
 		try {
 
+			numGames++;
+
 			size_t gameId = std::stoi(idStr);
 
 			games[gameId] = std::make_unique<GameWrapper>(p);
 			indexNewGame(gameId);
+			numSuccessful++;
 
 			Config::get()->err(trogdor::Trogerr::INFO) << "Restored game id "
 				<< idStr << '.' << std::endl;
@@ -450,4 +457,6 @@ void GameContainer::restore() {
 				<< idStr << ": " << e.what() << std::endl;
 		}
 	});
+
+	return numGames == numSuccessful ? Response::STATUS_SUCCESS : Response::STATUS_PARTIAL_CONTENT;
 }

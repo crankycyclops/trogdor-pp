@@ -104,8 +104,7 @@ rapidjson::Document GlobalController::restore(const rapidjson::Document &request
 	else {
 
 		try {
-			GameContainer::get()->restore();
-			response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+			response.AddMember("status", GameContainer::get()->restore(), response.GetAllocator());
 		}
 
 		catch (const std::exception &e) {
