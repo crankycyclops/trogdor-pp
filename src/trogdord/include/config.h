@@ -76,6 +76,7 @@ class Config {
 		static constexpr const char *CONFIG_KEY_STATE_CRASH_RECOVERY_ENABLED = "state.crash_recovery";
 		static constexpr const char *CONFIG_KEY_STATE_FORMAT = "state.format";
 		static constexpr const char *CONFIG_KEY_STATE_PATH = "state.save_path";
+		static constexpr const char *CONFIG_KEY_STATE_MAX_DUMPS_PER_GAME = "state.max_dumps_per_game";
 
 		// Returns singleton instance of Config.
 		static std::unique_ptr<Config> &get() noexcept;

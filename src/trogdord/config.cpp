@@ -34,7 +34,8 @@ const std::unordered_map<std::string, std::string> Config::DEFAULTS = {
 	{CONFIG_KEY_STATE_DUMP_SHUTDOWN_ENABLED,      "false"},
 	{CONFIG_KEY_STATE_CRASH_RECOVERY_ENABLED,     "false"},
 	{CONFIG_KEY_STATE_FORMAT,                     "json"},
-	{CONFIG_KEY_STATE_PATH,                       "var/trogdord/state"}
+	{CONFIG_KEY_STATE_PATH,                       "var/trogdord/state"},
+	{CONFIG_KEY_STATE_MAX_DUMPS_PER_GAME,         "0"}
 };
 
 // Singleton instance of Config

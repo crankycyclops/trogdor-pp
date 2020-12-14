@@ -192,9 +192,12 @@ void GameWrapper::dump() {
 	gameFile << std::any_cast<std::string>(driver->serialize(gamePtr->serialize()));
 	gameFile.close();
 
-	// TODO: if configured to keep n number of snapshots, only delete oldest
-	// dirs until we reach that number. Otherwise, delete all previous timestamp
-	// directories.
+	if (Config::get()->getUInt(Config::CONFIG_KEY_STATE_MAX_DUMPS_PER_GAME) > 0) {
+		// TODO: if configured to keep n number of snapshots, only delete oldest
+		// dirs until we reach that number. Otherwise, delete all previous timestamp
+		// directories.
+	}
+
 	gameMutex.unlock();
 }
 
