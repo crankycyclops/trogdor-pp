@@ -57,25 +57,7 @@ GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p): gamePtr(nullptr) {
 	std::set<size_t> timestamps;
 
 	// Find the latest timestamp and restore that version of the game
-	for (const auto &subdir: STD_FILESYSTEM::directory_iterator(idPath)) {
-
-		std::string timestamp = subdir.path().filename();
-
-		// Skip over obviously invalid files and directories
-		if (!trogdor::isValidInteger(timestamp)) {
-			continue;
-		}
-
-		else if (!STD_FILESYSTEM::is_directory(subdir.path())) {
-			continue;
-		}
-
-		#if SIZE_MAX == UINT64_MAX
-			timestamps.insert(std::stoull(timestamp));
-		#else
-			timestamps.insert(std::stoul(timestamp));
-		#endif
-	}
+	getDumpedGameSlots(timestamps, idPath);
 
 	std::string timestampStr = std::to_string(*timestamps.rbegin());
 	std::string metaPath = idPath + STD_FILESYSTEM::path::preferred_separator +
@@ -136,6 +118,31 @@ GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p): gamePtr(nullptr) {
 
 /*****************************************************************************/
 
+void GameWrapper::getDumpedGameSlots(std::set<size_t> &slots, std::string gameIdPath) {
+
+	for (const auto &subdir: STD_FILESYSTEM::directory_iterator(gameIdPath)) {
+
+		std::string timestamp = subdir.path().filename();
+
+		// Skip over obviously invalid files and directories
+		if (!trogdor::isValidInteger(timestamp)) {
+			continue;
+		}
+
+		else if (!STD_FILESYSTEM::is_directory(subdir.path())) {
+			continue;
+		}
+
+		#if SIZE_MAX == UINT64_MAX
+			slots.insert(std::stoull(timestamp));
+		#else
+			slots.insert(std::stoul(timestamp));
+		#endif
+	}
+}
+
+/*****************************************************************************/
+
 std::shared_ptr<trogdor::serial::Serializable> GameWrapper::serializeMeta() {
 
 	std::shared_ptr<trogdor::serial::Serializable> meta =
@@ -168,16 +175,17 @@ void GameWrapper::dump() {
 		STD_FILESYSTEM::create_directory(gameStatePath);
 	}
 
-	gameStatePath += STD_FILESYSTEM::path::preferred_separator + std::to_string(
-		std::chrono::duration_cast<std::chrono::seconds>(
-			std::chrono::system_clock::now().time_since_epoch()
-		).count()
-	);
+	std::string gameStateSnapshotPath = gameStatePath +
+		STD_FILESYSTEM::path::preferred_separator + std::to_string(
+			std::chrono::duration_cast<std::chrono::seconds>(
+				std::chrono::system_clock::now().time_since_epoch()
+			).count()
+		);
 
-	STD_FILESYSTEM::create_directory(gameStatePath);
+	STD_FILESYSTEM::create_directory(gameStateSnapshotPath);
 
 	fstream metaFile(
-		gameStatePath + STD_FILESYSTEM::path::preferred_separator + "meta",
+		gameStateSnapshotPath + STD_FILESYSTEM::path::preferred_separator + "meta",
 		std::fstream::out
 	);
 
@@ -185,17 +193,31 @@ void GameWrapper::dump() {
 	metaFile.close();
 
 	fstream gameFile(
-		gameStatePath + STD_FILESYSTEM::path::preferred_separator + "game",
+		gameStateSnapshotPath + STD_FILESYSTEM::path::preferred_separator + "game",
 		std::fstream::out
 	);
 
 	gameFile << std::any_cast<std::string>(driver->serialize(gamePtr->serialize()));
 	gameFile.close();
 
-	if (Config::get()->getUInt(Config::CONFIG_KEY_STATE_MAX_DUMPS_PER_GAME) > 0) {
-		// TODO: if configured to keep n number of snapshots, only delete oldest
-		// dirs until we reach that number. Otherwise, delete all previous timestamp
-		// directories.
+	// If configured to do so, only keep the correct number of dumped games for
+	// the specified game id.
+	if (
+		size_t maxDumpsPerGame = Config::get()->getUInt(Config::CONFIG_KEY_STATE_MAX_DUMPS_PER_GAME);
+		maxDumpsPerGame > 0
+	) {
+
+		std::set<size_t> saveSlots;
+		getDumpedGameSlots(saveSlots, gameStatePath);
+
+		while (saveSlots.size() > maxDumpsPerGame) {
+			STD_FILESYSTEM::remove_all(
+				gameStatePath +
+				STD_FILESYSTEM::path::preferred_separator +
+				std::to_string(*saveSlots.begin())
+			);
+			saveSlots.erase(*saveSlots.begin());
+		}
 	}
 
 	gameMutex.unlock();

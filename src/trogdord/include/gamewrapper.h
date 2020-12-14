@@ -36,6 +36,10 @@ class GameWrapper {
 		// GameWrapper instance.
 		std::shared_ptr<trogdor::serial::Serializable> serializeMeta();
 
+		// Returns all timestamp directories within a game's save state path
+		// containing serialized games.
+		void getDumpedGameSlots(std::set<size_t> &slots, std::string gameIdPath);
+
 	public:
 
 		GameWrapper() = delete;
