@@ -246,16 +246,75 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 			#endif
 		}
 
+		// Verify that we get an unlimited number of dumps per game
 		SUBCASE("Config::CONFIG_KEY_MAX_DUMPS_PER_GAME = 0") {
 
-			// TODO
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				const int numDumps = 10;
+				const size_t gameId = 0;
+
+				std::string name = "I'm a game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(gameId);
+
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile (iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nmax_dumps_per_game=0\nsave_path=" << statePath << "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+
+				try {
+
+					GameWrapper test(gameId, definition, name);
+
+					// Helps us verify the auto-incrementing id
+					std::set<size_t> validDumpInts;
+
+					for (int i = 0; i < numDumps; i++) {
+						test.dump();
+						validDumpInts.insert(i);
+					}
+
+					int numActuallyDumped = 0;
+
+					for (const auto &subdir: STD_FILESYSTEM::directory_iterator(gameStatePath)) {
+						numActuallyDumped++;
+						CHECK(validDumpInts.find(std::stoi(subdir.path().filename().string())) != validDumpInts.end());
+					}
+
+					CHECK(numActuallyDumped == numDumps);
+				}
+
+				catch (const SerialDriverNotFound &e) {
+					FAIL(e.what());
+				}
+
+				STD_FILESYSTEM::remove(iniFilename);
+				STD_FILESYSTEM::remove_all(statePath);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 
+		// Verify that we get a maximum of 1 dump per game
 		SUBCASE("Config::CONFIG_KEY_MAX_DUMPS_PER_GAME = 1") {
 
 			// TODO
 		}
 
+		// Verify that we get a maximum of 2 dumps per game
 		SUBCASE("Config::CONFIG_KEY_MAX_DUMPS_PER_GAME = 2") {
 
 			// TODO
