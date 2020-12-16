@@ -213,4 +213,19 @@ TEST_SUITE("Config (config.cpp)") {
 			}
 		}
 	}
+
+	TEST_CASE ("Config (config.cpp): getStatePath()") {
+
+		SUBCASE("Default value") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			initIniFile(iniFilename, {{}});
+
+			std::string expected = std::string(TROGDORD_INSTALL_PREFIX) +
+				STD_FILESYSTEM::path::preferred_separator +
+				Config::DEFAULTS.find(Config::CONFIG_KEY_STATE_PATH)->second;
+
+			CHECK(0 == expected.compare(Config::get()->getStatePath()));
+		}
+	}
 }
