@@ -227,5 +227,52 @@ TEST_SUITE("Config (config.cpp)") {
 
 			CHECK(0 == expected.compare(Config::get()->getStatePath()));
 		}
+
+		SUBCASE("Relative path") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_STATE_PATH, "test"}});
+
+			std::string expected = std::string(TROGDORD_INSTALL_PREFIX) +
+				STD_FILESYSTEM::path::preferred_separator + "test";
+
+			CHECK(0 == expected.compare(Config::get()->getStatePath()));
+		}
+
+		SUBCASE("Absolute path") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_STATE_PATH, "/test"}});
+
+			CHECK(0 == std::string("/test").compare(Config::get()->getStatePath()));
+		}
+	}
+
+	TEST_CASE ("Config (config.cpp): initErrorLogger() and err()") {
+
+		SUBCASE("cout") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_LOGTO, "stdout"}});
+
+			CHECK(Config::get()->err().streamEquals(&std::cout));
+		}
+
+		SUBCASE("cerr") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_LOGTO, "stderr"}});
+
+			CHECK(Config::get()->err().streamEquals(&std::cerr));
+		}
+
+		SUBCASE("file") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::string logFile = STD_FILESYSTEM::temp_directory_path().string() + "/test.log";
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_LOGTO, logFile}});
+
+			CHECK(STD_FILESYSTEM::exists(logFile));
+		}
 	}
 }

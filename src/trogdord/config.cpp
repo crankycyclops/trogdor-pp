@@ -47,9 +47,6 @@ Config::Config(std::string newIniPath) noexcept {
 
 	// Load the ini file's values
 	load(newIniPath);
-
-	// Setup global error logger
-	initErrorLogger();
 }
 
 /*****************************************************************************/
@@ -68,7 +65,6 @@ std::unique_ptr<Config> &Config::get() noexcept {
 void Config::initErrorLogger() noexcept {
 
 	logFileStream = nullptr;
-
 	std::string logto = trogdor::strToLower(getString(CONFIG_KEY_LOGTO));
 
 	if (0 == logto.compare("stderr")) {
@@ -153,6 +149,9 @@ void Config::load(std::string newIniPath) noexcept {
 			ini[defaultVal.first] = defaultVal.second;
 		}
 	}
+
+	// Setup global error logger
+	initErrorLogger();
 }
 
 /*****************************************************************************/
