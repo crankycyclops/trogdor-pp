@@ -2,9 +2,13 @@
 #define TROGDORD_SERVEROUT_H
 
 
+#include <queue>
+
 #include <trogdor/game.h>
 #include <trogdor/entities/entity.h>
 #include <trogdor/iostream/trogout.h>
+
+#include "../../io/message.h"
 
 
 /*
@@ -38,15 +42,21 @@ class ServerOut: public trogdor::Trogout {
 		// The Entity whose output we're processing
 		trogdor::entity::Entity *entityPtr = nullptr;
 
+		// If we haven't yet associated the output stream with its entity,
+		// we'll buffer output messages here and then push them out as soon as
+		// setEntity is called.
+		std::queue<output::Message> msgBuffer;
+
 	public:
 
 		// Constructor
 		ServerOut() = delete;
 		explicit inline ServerOut(size_t gId): gameId(gId) {}
 
-		// Sets the entity the output stream belongs to. This must be
-		// called BEFORE the stream can be used.
-		inline void setEntity(trogdor::entity::Entity *e) {entityPtr = e;}
+		// Sets the entity the output stream belongs to. If we started
+		// receiving output before this was called, we'll remove that output
+		// from the queue and push it out now that we know how to route it.
+		void setEntity(trogdor::entity::Entity *e);
 
 		// See core/include/iostream/trogout.h for details.
 		virtual void flush();
