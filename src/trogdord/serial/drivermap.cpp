@@ -1,5 +1,5 @@
 #include "../include/serial/drivermap.h"
-#include "../include/exception/serverexception.h"
+#include "../include/exception/serialdrivernotfound.h"
 
 #ifdef ENABLE_SERIALIZE_JSON
 	#include <trogdor/serial/drivers/json.h>
@@ -37,7 +37,7 @@ namespace serial {
 		}
 
 		if (drivers.end() == drivers.find(name)) {
-			throw ServerException(name + " is not a valid serialization driver.");
+			throw SerialDriverNotFound(name + " is not a valid serialization driver.");
 		}
 
 		return drivers[name];

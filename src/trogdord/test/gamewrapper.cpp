@@ -10,6 +10,7 @@
 #include "../include/gamewrapper.h"
 #include "../include/filesystem.h"
 #include "../include/exception/serverexception.h"
+#include "../include/exception/serialdrivernotfound.h"
 
 
 TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
@@ -175,10 +176,12 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				STD_FILESYSTEM::create_directory(statePath);
 
 				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-				initIniFile(iniFilename, {
-					{Config::CONFIG_KEY_STATE_ENABLED, "false"},
-					{Config::CONFIG_KEY_STATE_PATH, statePath}
-				});
+				std::ofstream iniFile (iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=false\nsave_path=" << statePath << "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
 
 				try {
 
@@ -194,14 +197,53 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 					FAIL("GameWrapper constructor failed or there was an error calling GameWrapper::dump()");
 				}
 
+				STD_FILESYSTEM::remove(iniFilename);
 				STD_FILESYSTEM::remove_all(statePath);
+				initIniFile(iniFilename, {{}});
 
 			#endif
 		}
 
 		SUBCASE("Invalid serialization driver") {
 
-			// TODO
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				std::string name = "I'm a game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile (iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nformat=invalid\nsave_path=" << statePath << "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+
+				try {
+
+					GameWrapper test(0, definition, name);
+					test.dump();
+
+					FAIL("GameWrapper::dump() should fail if serialization driver isn't valid");
+				}
+
+				catch (const SerialDriverNotFound &e) {
+					CHECK(true);
+				}
+
+				STD_FILESYSTEM::remove(iniFilename);
+				STD_FILESYSTEM::remove_all(statePath);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 
 		SUBCASE("Config::CONFIG_KEY_MAX_DUMPS_PER_GAME = 0") {

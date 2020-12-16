@@ -1,5 +1,5 @@
 #include "../../include/config.h"
-#include "../../include/exception/serverexception.h"
+#include "../../include/exception/outputdrivernotfound.h"
 
 #include "../../include/io/output/local.h"
 
@@ -38,7 +38,7 @@ namespace output {
 		}
 
 		if (drivers.end() == drivers.find(name)) {
-			throw ServerException(name + " is not a valid output driver.");
+			throw OutputDriverNotFound(name + " is not a valid output driver.");
 		}
 
 		if (!drivers[name]->activated()) {
