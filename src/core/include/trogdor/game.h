@@ -989,8 +989,10 @@ namespace trogdor {
             the user has read the introduction before they can start playing.
 
             If one or more callbacks have been set on the Game object with the
-            key "insertPlayer", it will be called after the player has been
-            inserted with the player as the only argument.
+            key "beforeInsertPlayer", it will be called before the player has
+            been inserted with the player as the only argument. If one or more
+            callbacks have been set with the key "afterInsertPlayer", the same
+            will occur after all player-insertion logic has executed. 
 
             If we're deserializing a pre-existing game, the introduction will
             not be shown to the user, the callback will be ignored, and the

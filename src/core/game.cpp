@@ -509,6 +509,8 @@ namespace trogdor {
       bool deserialize
    ) {
 
+      executeCallback("beforeInsertPlayer", player);
+
       // Make sure there are no name conflicts before inserting the new player
       if (entities.find(player->getName()) != entities.end()) {
          throw entity::DuplicateEntity(
@@ -550,7 +552,7 @@ namespace trogdor {
          player->getLocation().lock()->observe(player, false);
       }
 
-      executeCallback("insertPlayer", player);
+      executeCallback("afterInsertPlayer", player);
 
       // Make sure the player's health information is sent out when they're
       // first inserted into the game. This should be the only time we have to
