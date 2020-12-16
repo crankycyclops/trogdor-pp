@@ -8,7 +8,7 @@
 #include "../include/filesystem.h"
 
 
-void initIniFile(std::string iniFilename, std::unordered_map<std::string, std::string> values) {
+inline void initIniFile(std::string iniFilename, std::unordered_map<std::string, std::string> values) {
 
 	for (auto const &value: values) {
 

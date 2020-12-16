@@ -69,6 +69,9 @@ class GameWrapper {
 		// Returns a reference to the underlying game
 		inline std::unique_ptr<trogdor::Game> &get() {return gamePtr;}
 
+		// Returns the game's id
+		inline const size_t getId() const {return id;}
+
 		// Returns the game's name
 		inline const std::string getName() const {return name;}
 

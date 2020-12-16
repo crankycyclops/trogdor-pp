@@ -5,6 +5,8 @@
 #include <trogdor/iostream/nullout.h>
 #include <trogdor/iostream/nullerr.h>
 
+#include "config.h"
+
 #include "../include/gamewrapper.h"
 #include "../include/filesystem.h"
 #include "../include/exception/serverexception.h"
@@ -85,7 +87,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 		#endif
 	}
 
-	TEST_CASE("GameWrapper (gamewrapper.cpp): getName(), getDefinition() and getCreated()") {
+	TEST_CASE("GameWrapper (gamewrapper.cpp): getId(), getName(), getDefinition() and getCreated()") {
 
 		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
 
@@ -101,6 +103,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				GameWrapper test(0, definition, name);
 
 				CHECK(test.get() != nullptr);
+				CHECK(0 == test.getId());
 				CHECK(0 == test.getName().compare(name));
 				CHECK(0 == test.getDefinition().compare(STD_FILESYSTEM::path(definition).filename()));
 
@@ -152,5 +155,73 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 			}
 
 		#endif
+	}
+
+	TEST_CASE("GameWrapper (gamewrapper.cpp): dump()") {
+
+		SUBCASE("State is disabled") {
+
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				std::string name = "I'm a game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				initIniFile(iniFilename, {
+					{Config::CONFIG_KEY_STATE_ENABLED, "false"},
+					{Config::CONFIG_KEY_STATE_PATH, statePath}
+				});
+
+				try {
+
+					GameWrapper test(0, definition, name);
+					test.dump();
+
+					for (const auto &subdir: STD_FILESYSTEM::directory_iterator(statePath)) {
+						FAIL(subdir.path().filename().string() + ": No data should be dumped when state id disabled");
+					}
+				}
+
+				catch (const ServerException &e) {
+					FAIL("GameWrapper constructor failed or there was an error calling GameWrapper::dump()");
+				}
+
+				STD_FILESYSTEM::remove_all(statePath);
+
+			#endif
+		}
+
+		SUBCASE("Invalid serialization driver") {
+
+			// TODO
+		}
+
+		SUBCASE("Config::CONFIG_KEY_MAX_DUMPS_PER_GAME = 0") {
+
+			// TODO
+		}
+
+		SUBCASE("Config::CONFIG_KEY_MAX_DUMPS_PER_GAME = 1") {
+
+			// TODO
+		}
+
+		SUBCASE("Config::CONFIG_KEY_MAX_DUMPS_PER_GAME = 2") {
+
+			// TODO
+		}
+	}
+
+	TEST_CASE("GameWrapper (gamewrapper.cpp): dumpDestroy()") {
+
+		// TODO
 	}
 }
