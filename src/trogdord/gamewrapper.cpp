@@ -54,16 +54,16 @@ GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p): gamePtr(nullptr) {
 
 	std::string idPath = p;
 	std::string idStr = p.filename();
-	std::set<size_t> timestamps;
+	std::set<size_t> slots;
 
-	// Find the latest timestamp and restore that version of the game
-	getDumpedGameSlots(timestamps, idPath);
+	// Find the latest dump of the game and restore it
+	getDumpedGameSlots(slots, idPath);
 
-	std::string timestampStr = std::to_string(*timestamps.rbegin());
+	std::string slotStr = std::to_string(*slots.rbegin());
 	std::string metaPath = idPath + STD_FILESYSTEM::path::preferred_separator +
-		timestampStr + STD_FILESYSTEM::path::preferred_separator + "meta";
+		slotStr + STD_FILESYSTEM::path::preferred_separator + "meta";
 	std::string gamePath = idPath + STD_FILESYSTEM::path::preferred_separator +
-		timestampStr + STD_FILESYSTEM::path::preferred_separator + "game";
+		slotStr + STD_FILESYSTEM::path::preferred_separator + "game";
 
 	if (
 		!STD_FILESYSTEM::exists(metaPath) ||
@@ -122,10 +122,10 @@ void GameWrapper::getDumpedGameSlots(std::set<size_t> &slots, std::string gameId
 
 	for (const auto &subdir: STD_FILESYSTEM::directory_iterator(gameIdPath)) {
 
-		std::string timestamp = subdir.path().filename();
+		std::string slot = subdir.path().filename();
 
 		// Skip over obviously invalid files and directories
-		if (!trogdor::isValidInteger(timestamp)) {
+		if (!trogdor::isValidInteger(slot)) {
 			continue;
 		}
 
@@ -134,9 +134,9 @@ void GameWrapper::getDumpedGameSlots(std::set<size_t> &slots, std::string gameId
 		}
 
 		#if SIZE_MAX == UINT64_MAX
-			slots.insert(std::stoull(timestamp));
+			slots.insert(std::stoull(slot));
 		#else
-			slots.insert(std::stoul(timestamp));
+			slots.insert(std::stoul(slot));
 		#endif
 	}
 }
@@ -164,6 +164,7 @@ void GameWrapper::dump() {
 		return;
 	}
 
+	size_t dumpSlot = 0;
 	auto &driver = serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
 
 	gameMutex.lock();
@@ -175,13 +176,18 @@ void GameWrapper::dump() {
 		STD_FILESYSTEM::create_directory(gameStatePath);
 	}
 
-	std::string gameStateSnapshotPath = gameStatePath +
-		STD_FILESYSTEM::path::preferred_separator + std::to_string(
-			std::chrono::duration_cast<std::chrono::seconds>(
-				std::chrono::system_clock::now().time_since_epoch()
-			).count()
-		);
+	else {
 
+		std::set<size_t> prevSlots;
+		getDumpedGameSlots(prevSlots, gameStatePath);
+
+		if (prevSlots.size()) {
+			dumpSlot = *prevSlots.rbegin() + 1;
+		}
+	}
+
+	std::string gameStateSnapshotPath = gameStatePath +
+		STD_FILESYSTEM::path::preferred_separator + std::to_string(dumpSlot);
 	STD_FILESYSTEM::create_directory(gameStateSnapshotPath);
 
 	fstream metaFile(
