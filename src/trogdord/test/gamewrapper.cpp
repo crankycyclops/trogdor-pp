@@ -516,6 +516,12 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 		SUBCASE("State is disabled") {
 
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
 				// Step 1: enable dumps and create one
 				const size_t gameId = 0;
 
@@ -582,6 +588,8 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				STD_FILESYSTEM::remove(iniFilename);
 				STD_FILESYSTEM::remove_all(statePath);
 				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 
 		SUBCASE("Root state path doesn't exist") {
