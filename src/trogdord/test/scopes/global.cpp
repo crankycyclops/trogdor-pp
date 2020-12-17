@@ -60,4 +60,12 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 		CHECK(response["lib_version"]["patch"].IsUint());
 		CHECK(TROGDOR_VERSION_PATCH == response["lib_version"]["patch"].GetUint());
 	}
+
+	TEST_CASE("GlobalController (scopes/global.cpp): dump()") {
+		// TODO
+	}
+
+	TEST_CASE("GlobalController (scopes/global.cpp): restore()") {
+		// TODO
+	}
 }

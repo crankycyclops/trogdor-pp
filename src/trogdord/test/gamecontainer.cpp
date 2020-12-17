@@ -660,4 +660,24 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		#endif
 	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): dump()") {
+		// TODO
+	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): restore()") {
+		// TODO
+	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): destroyGame() with state disabled (shouldn't touch previously dumped games)") {
+		// TODO
+	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): destroyGame() with state enabled: optionally preserve dumped games") {
+		// TODO
+	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): destroyGame() with state enabled: destroy dumped games (default with no argument and explicit with argument)") {
+		// TODO
+	}
 }

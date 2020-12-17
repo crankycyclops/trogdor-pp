@@ -604,4 +604,8 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 			// TODO: verify we can remove it
 		}
 	}
+
+	TEST_CASE("GameWrapper (gamewrapper.cpp): deserialization constructor") {
+		// TODO
+	}
 }
