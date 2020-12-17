@@ -273,6 +273,7 @@ TEST_SUITE("Config (config.cpp)") {
 			initIniFile(iniFilename, {{Config::CONFIG_KEY_LOGTO, logFile}});
 
 			CHECK(STD_FILESYSTEM::exists(logFile));
+			STD_FILESYSTEM::remove(logFile);
 		}
 	}
 }

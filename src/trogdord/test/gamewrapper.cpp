@@ -2,6 +2,7 @@
 #include <cstdlib>
 
 #include <trogdor/entities/player.h>
+#include <trogdor/serial/serializable.h>
 #include <trogdor/iostream/nullout.h>
 #include <trogdor/iostream/nullerr.h>
 
@@ -9,6 +10,8 @@
 
 #include "../include/gamewrapper.h"
 #include "../include/filesystem.h"
+#include "../include/serial/drivermap.h"
+
 #include "../include/exception/serverexception.h"
 #include "../include/exception/serialdrivernotfound.h"
 
@@ -189,7 +192,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 					test.dump();
 
 					for (const auto &subdir: STD_FILESYSTEM::directory_iterator(statePath)) {
-						FAIL(subdir.path().filename().string() + ": No data should be dumped when state id disabled");
+						FAIL(subdir.path().filename().string() + ": No data should be dumped when state is disabled");
 					}
 				}
 
@@ -435,9 +438,77 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 		SUBCASE("Verify validity of serialized data") {
 
-			// TODO: just check to make sure the meta and game files exist
-			// and that we can deserialize them after they're written to disk
-			// (we can assume the JSON driver.)
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				const size_t gameId = 0;
+
+				std::string name = "I'm a game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(gameId);
+
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile (iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nformat=json\nmax_dumps_per_game=1\nsave_path="
+					<< statePath << "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+
+				try {
+
+					GameWrapper test(gameId, definition, name);
+					test.dump();
+
+					std::string gameStateSlotPath = gameStatePath +
+						STD_FILESYSTEM::path::preferred_separator + '0';
+
+					CHECK(STD_FILESYSTEM::exists(gameStateSlotPath));
+
+					std::string metaFilename = gameStateSlotPath +
+						STD_FILESYSTEM::path::preferred_separator + "meta";
+					std::string gameFilename = gameStateSlotPath +
+						STD_FILESYSTEM::path::preferred_separator + "game";
+
+					CHECK(STD_FILESYSTEM::exists(metaFilename));
+					CHECK(STD_FILESYSTEM::exists(gameFilename));
+
+					auto &json = serial::DriverMap::get("json");
+
+					// Make sure we can deserialize the game data properly.
+					// An uncaught exception will occur if deserialization
+					// is unsuccessful, causing the test case to fail.
+					ifstream metaFile(metaFilename);
+					ifstream gameFile(gameFilename);
+
+					ostringstream metaStr;
+					ostringstream gameStr;
+
+					metaStr << metaFile.rdbuf();
+					gameStr << gameFile.rdbuf();
+
+					std::shared_ptr<trogdor::serial::Serializable> metaData = json->deserialize(metaStr.str());
+					std::shared_ptr<trogdor::serial::Serializable> gameData = json->deserialize(gameStr.str());
+				}
+
+				catch (const SerialDriverNotFound &e) {
+					FAIL(e.what());
+				}
+
+				STD_FILESYSTEM::remove(iniFilename);
+				STD_FILESYSTEM::remove_all(statePath);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 	}
 
