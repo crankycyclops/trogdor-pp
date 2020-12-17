@@ -179,7 +179,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				STD_FILESYSTEM::create_directory(statePath);
 
 				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-				std::ofstream iniFile (iniFilename, std::ofstream::out);
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
 
 				iniFile << "[state]\nenabled=false\nsave_path=" << statePath << "\n\n" << std::endl;
 				iniFile.close();
@@ -223,7 +223,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				STD_FILESYSTEM::create_directory(statePath);
 
 				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-				std::ofstream iniFile (iniFilename, std::ofstream::out);
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
 
 				iniFile << "[state]\nenabled=true\nformat=invalid\nsave_path=" << statePath << "\n\n" << std::endl;
 				iniFile.close();
@@ -271,7 +271,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				STD_FILESYSTEM::create_directory(statePath);
 
 				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-				std::ofstream iniFile (iniFilename, std::ofstream::out);
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
 
 				iniFile << "[state]\nenabled=true\nmax_dumps_per_game=0\nsave_path=" << statePath << "\n\n" << std::endl;
 				iniFile.close();
@@ -333,7 +333,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				STD_FILESYSTEM::create_directory(statePath);
 
 				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-				std::ofstream iniFile (iniFilename, std::ofstream::out);
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
 
 				iniFile << "[state]\nenabled=true\nmax_dumps_per_game=1\nsave_path=" << statePath << "\n\n" << std::endl;
 				iniFile.close();
@@ -394,7 +394,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				STD_FILESYSTEM::create_directory(statePath);
 
 				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-				std::ofstream iniFile (iniFilename, std::ofstream::out);
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
 
 				iniFile << "[state]\nenabled=true\nmax_dumps_per_game=2\nsave_path=" << statePath << "\n\n" << std::endl;
 				iniFile.close();
@@ -456,7 +456,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				STD_FILESYSTEM::create_directory(statePath);
 
 				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-				std::ofstream iniFile (iniFilename, std::ofstream::out);
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
 
 				iniFile << "[state]\nenabled=true\nformat=json\nmax_dumps_per_game=1\nsave_path="
 					<< statePath << "\n\n" << std::endl;
@@ -514,6 +514,86 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 	TEST_CASE("GameWrapper (gamewrapper.cpp): dumpDestroy()") {
 
-		// TODO
+		SUBCASE("State is disabled") {
+
+				// Step 1: enable dumps and create one
+				const size_t gameId = 0;
+
+				std::string name = "I'm a game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(gameId);
+
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+
+				std::string gameStateSlotPath = gameStatePath +
+					STD_FILESYSTEM::path::preferred_separator + '0';
+
+				try {
+
+					GameWrapper test(gameId, definition, name);
+					test.dump();
+
+					CHECK(STD_FILESYSTEM::exists(gameStateSlotPath));
+				}
+
+				catch (const SerialDriverNotFound &e) {
+					FAIL(e.what());
+				}
+
+				// Step 2: disable dumps and verify that calling destroyDump()
+				// doesn't do anything (the game we just dumped should remain
+				// intact.)
+				std::ofstream iniFile2(iniFilename, std::ofstream::out);
+				iniFile2 << "[state]\nenabled=false\nsave_path=" << statePath << "\n\n" << std::endl;
+				iniFile2.close();
+
+				Config::get()->load(iniFilename);
+
+				try {
+
+					// This creates another game with the same id. I can't
+					// deserialize the dump, because that would require me
+					// to enable state. Nevertheless, this should result in
+					// destroyDump() getting invoked with the proper id.
+					GameWrapper test(0, definition, name);
+					test.destroyDump();
+
+					CHECK(STD_FILESYSTEM::exists(gameStateSlotPath));
+					CHECK(STD_FILESYSTEM::exists(gameStateSlotPath + STD_FILESYSTEM::path::preferred_separator + "meta"));
+					CHECK(STD_FILESYSTEM::exists(gameStateSlotPath + STD_FILESYSTEM::path::preferred_separator + "game"));
+				}
+
+				catch (const ServerException &e) {
+					FAIL("GameWrapper constructor failed or there was an error calling GameWrapper::dump()");
+				}
+
+				STD_FILESYSTEM::remove(iniFilename);
+				STD_FILESYSTEM::remove_all(statePath);
+				initIniFile(iniFilename, {{}});
+		}
+
+		SUBCASE("Root state path doesn't exist") {
+			// TODO: verify that nothing happens (no exceptions, no return value)
+		}
+
+		SUBCASE("Game id's root dump path doesn't exist") {
+			// TODO: verify that nothing happens (no exceptions, no return value)
+		}
+
+		SUBCASE("Game dump exists") {
+			// TODO: verify we can remove it
+		}
 	}
 }
