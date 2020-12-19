@@ -701,6 +701,25 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 	}
 
 	TEST_CASE("GameWrapper (gamewrapper.cpp): deserialization constructor") {
-		// TODO
+
+		SUBCASE("State is disabled") {
+			// TODO
+		}
+
+		SUBCASE("Game dump doesn't exist") {
+			// TODO
+		}
+
+		SUBCASE("Game dump directory exists but is empty (no dump slots)") {
+			// TODO
+		}
+
+		SUBCASE("Game dump exists, but is invalid (files don't contain valid serialized data)") {
+			// TODO
+		}
+
+		SUBCASE("Game dump is valid") {
+			// TODO
+		}
 	}
 }
