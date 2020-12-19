@@ -53,14 +53,19 @@ GameWrapper::GameWrapper(
 
 GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p): gamePtr(nullptr) {
 
-std::cout << "Step 1..." << std::endl;
+	std::string idPath = p;
+	std::string idStr = p.filename();
+	std::set<size_t> slots;
+
 	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
 		throw UnsupportedOperation("Attempted to restore dumped game while state feature was disabled. Set state.enabled to true in trogdord.ini to use this feature.");
 	}
 
-	std::string idPath = p;
-	std::string idStr = p.filename();
-	std::set<size_t> slots;
+	else if (!STD_FILESYSTEM::exists(p)) {
+		throw ServerException(
+			std::string("Attempted to restore a non-existent game with id ") + idStr
+		);
+	}
 
 	// Find the latest dump of the game and restore it
 	getDumpedGameSlots(slots, idPath);

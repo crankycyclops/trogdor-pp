@@ -755,9 +755,8 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				statePath + STD_FILESYSTEM::path::preferred_separator + '0'
 			);
 
-			// Create an empty game directory with no dump slots
-			STD_FILESYSTEM::create_directory(gameStatePath);
-
+			// We attempt to deserialize a game when the game state path
+			// doesn't exist
 			try {
 				GameWrapper test(gameStatePath);
 				FAIL("GameWrapper construction from dumped game should never succeed when there are zero dump slots.");
@@ -773,7 +772,40 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 		}
 
 		SUBCASE("Game dump directory exists but is empty (no dump slots)") {
-			// TODO
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+			iniFile << "[state]\nenabled=true\nsave_path=" << statePath << "\n\n" << std::endl;
+			iniFile.close();
+
+			Config::get()->load(iniFilename);
+
+			auto gameStatePath = STD_FILESYSTEM::path(
+				statePath + STD_FILESYSTEM::path::preferred_separator + '0'
+			);
+
+			// Very similar to the test above, except that for this one, we
+			// create an empty game directory with no dump slots
+			STD_FILESYSTEM::create_directory(gameStatePath);
+
+			try {
+				GameWrapper test(gameStatePath);
+				FAIL("GameWrapper construction from dumped game should never succeed when there are zero dump slots.");
+			}
+
+			catch (const ServerException &e) {
+				CHECK(true);
+			}
+
+			STD_FILESYSTEM::remove(iniFilename);
+			STD_FILESYSTEM::remove_all(statePath);
+			initIniFile(iniFilename, {{}});
 		}
 
 		SUBCASE("Game dump exists, but is invalid (files don't contain valid serialized data)") {
