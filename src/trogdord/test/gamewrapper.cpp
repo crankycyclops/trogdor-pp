@@ -13,6 +13,7 @@
 #include "../include/serial/drivermap.h"
 
 #include "../include/exception/serverexception.h"
+#include "../include/exception/unsupportedoperation.h"
 #include "../include/exception/serialdrivernotfound.h"
 
 
@@ -633,7 +634,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 					CHECK(!STD_FILESYSTEM::exists(gameStatePath));
 				}
 
-				catch (const SerialDriverNotFound &e) {
+				catch (const ServerException &e) {
 					FAIL(e.what());
 				}
 
@@ -688,7 +689,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 					CHECK(!STD_FILESYSTEM::exists(gameStatePath));
 				}
 
-				catch (const SerialDriverNotFound &e) {
+				catch (const ServerException &e) {
 					FAIL(e.what());
 				}
 
@@ -703,7 +704,36 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 	TEST_CASE("GameWrapper (gamewrapper.cpp): deserialization constructor") {
 
 		SUBCASE("State is disabled") {
-			// TODO
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+			iniFile << "[state]\nenabled=false\n\n" << std::endl;
+			iniFile.close();
+
+			Config::get()->load(iniFilename);
+
+			auto gameStatePath = STD_FILESYSTEM::path(
+				statePath + STD_FILESYSTEM::path::preferred_separator + '0'
+			);
+
+			try {
+				GameWrapper test(gameStatePath);
+				FAIL("GameWrapper construction from dumped game should never succeed when state feature is disabled.");
+			}
+
+			catch (const UnsupportedOperation &e) {
+				CHECK(true);
+			}
+
+			STD_FILESYSTEM::remove(iniFilename);
+			STD_FILESYSTEM::remove_all(statePath);
+			initIniFile(iniFilename, {{}});
 		}
 
 		SUBCASE("Game dump doesn't exist") {

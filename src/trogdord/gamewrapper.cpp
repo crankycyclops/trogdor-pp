@@ -10,6 +10,7 @@
 #include "include/serial/drivermap.h"
 #include "include/io/iostream/serverout.h"
 #include "include/exception/serverexception.h"
+#include "include/exception/unsupportedoperation.h"
 
 #include "include/gamewrapper.h"
 
@@ -52,6 +53,10 @@ GameWrapper::GameWrapper(
 
 GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p): gamePtr(nullptr) {
 
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+		throw UnsupportedOperation("Attempted to restore dumped game while state feature was disabled. Set state.enabled to true in trogdord.ini to use this feature.");
+	}
+
 	std::string idPath = p;
 	std::string idStr = p.filename();
 	std::set<size_t> slots;
@@ -72,7 +77,7 @@ GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p): gamePtr(nullptr) {
 		STD_FILESYSTEM::is_directory(gamePath)
 	) {
 		throw ServerException(
-			std::string("Attempted to restore an invalidly dumped game with id ") + idStr
+			std::string("Attempted to restore a non-existent or invalidly dumped game with id ") + idStr
 		);
 	}
 
