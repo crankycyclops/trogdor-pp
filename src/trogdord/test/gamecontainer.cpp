@@ -661,6 +661,10 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		#endif
 	}
 
+	TEST_CASE("GameContainer (gamecontainer.cpp): state enabled, but configured state path doesn't exist") {
+		// TODO: initState() should throw exception
+	}
+
 	TEST_CASE("GameContainer (gamecontainer.cpp): dump()") {
 		// TODO
 	}
