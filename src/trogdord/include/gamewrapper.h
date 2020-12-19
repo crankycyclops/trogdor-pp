@@ -56,7 +56,10 @@ class GameWrapper {
 		);
 
 		// Deserialization constructor, which takes as input the path to data
-		// previously dumped by GameWrapper::dump().
+		// previously dumped by GameWrapper::dump(). Throws an instance of
+		// UnsupportedOperation if the state feature is disabled,
+		// ServerException if a path to the game's data doesn't exist, and
+		// trogdor::UndefinedException if the data to deserialize is invalid.
 		GameWrapper(const STD_FILESYSTEM::path &p);
 
 		// Serializes and saves the state of the game, along with any

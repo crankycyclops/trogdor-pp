@@ -759,7 +759,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 			// doesn't exist
 			try {
 				GameWrapper test(gameStatePath);
-				FAIL("GameWrapper construction from dumped game should never succeed when there are zero dump slots.");
+				FAIL("GameWrapper construction from dumped game should never succeed when the game's dump path doesn't exist.");
 			}
 
 			catch (const ServerException &e) {
@@ -809,7 +809,53 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 		}
 
 		SUBCASE("Game dump exists, but is invalid (files don't contain valid serialized data)") {
-			// TODO
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+			iniFile << "[state]\nenabled=true\nsave_path=" << statePath << "\n\n" << std::endl;
+			iniFile.close();
+
+			Config::get()->load(iniFilename);
+
+			auto gameStatePath = STD_FILESYSTEM::path(
+				statePath + STD_FILESYSTEM::path::preferred_separator + '0'
+			);
+
+			STD_FILESYSTEM::create_directory(gameStatePath);
+
+			// Create dump files containing non-deserializable data
+			std::string slotPath = gameStatePath.string() + STD_FILESYSTEM::path::preferred_separator + '0';
+			std::string metaDataPath = slotPath + STD_FILESYSTEM::path::preferred_separator + "meta";
+			std::string gameDataPath = slotPath + STD_FILESYSTEM::path::preferred_separator + "game";
+
+			STD_FILESYSTEM::create_directory(slotPath);
+
+			fstream metaFile(metaDataPath, std::fstream::out);
+			metaFile << "I'm not valid JSON!" << std::endl;
+			metaFile.close();
+
+			fstream gameFile(gameDataPath, std::fstream::out);
+			gameFile << "I'm not valid JSON!" << std::endl;
+			gameFile.close();
+
+			try {
+				GameWrapper test(gameStatePath);
+				FAIL("GameWrapper construction from dumped game should never succeed when the dump contains invalid data.");
+			}
+
+			catch (const trogdor::UndefinedException &e) {
+				CHECK(true);
+			}
+
+			STD_FILESYSTEM::remove(iniFilename);
+			STD_FILESYSTEM::remove_all(statePath);
+			initIniFile(iniFilename, {{}});
 		}
 
 		SUBCASE("Game dump is valid") {
