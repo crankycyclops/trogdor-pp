@@ -645,7 +645,58 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 		}
 
 		SUBCASE("Game dump exists") {
-			// TODO: verify we can remove it
+
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				const size_t gameId = 0;
+
+				std::string name = "I'm a game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(gameId);
+
+				try {
+
+					// First, make sure the game path didn't already exist
+					CHECK(!STD_FILESYSTEM::exists(gameStatePath));
+					GameWrapper test(gameId, definition, name);
+
+					// Next, make a dump and verify it was created
+					test.dump();
+					CHECK(STD_FILESYSTEM::exists(gameStatePath));
+
+					// Finally, destroy the dump and make sure it was removed
+					test.destroyDump();
+					CHECK(!STD_FILESYSTEM::exists(gameStatePath));
+				}
+
+				catch (const SerialDriverNotFound &e) {
+					FAIL(e.what());
+				}
+
+				STD_FILESYSTEM::remove(iniFilename);
+				STD_FILESYSTEM::remove_all(statePath);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 	}
 
