@@ -859,7 +859,62 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 		}
 
 		SUBCASE("Game dump is valid") {
-			// TODO
+
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				const size_t gameId = 0;
+
+				std::string name = "I'm a game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(gameId);
+
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+
+				try {
+
+					// Step 1: create and dump a game
+					GameWrapper test(gameId, definition, name);
+
+					test.dump();
+					CHECK(STD_FILESYSTEM::exists(gameStatePath));
+
+					// Step 2: demonstrate that we can restore the game
+					// using the deserialization constructor
+					GameWrapper testCopy((STD_FILESYSTEM::path(gameStatePath)));
+
+					// Just some rudimentary spot checks to make sure that
+					// things really were deserialized property and that we
+					// can access the underlying instance of trogdor::Game.
+					CHECK(0 == name.compare(testCopy.getName()));
+					CHECK(0 == STD_FILESYSTEM::path(definition).filename().string().compare(testCopy.getDefinition()));
+					CHECK(0 == testCopy.get()->getPlayers().size());
+				}
+
+				catch (const ServerException &e) {
+					FAIL(e.what());
+				}
+
+				STD_FILESYSTEM::remove(iniFilename);
+				STD_FILESYSTEM::remove_all(statePath);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 	}
 }
