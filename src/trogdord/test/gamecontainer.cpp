@@ -1,5 +1,8 @@
 #include <doctest.h>
+
+#include "config.h"
 #include "../include/gamecontainer.h"
+
 
 // Number of ms between clock ticks (make this value small enough to ensure
 // time-dependent unit tests finish quickly, but not so small that the Timer
@@ -662,7 +665,34 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 	}
 
 	TEST_CASE("GameContainer (gamecontainer.cpp): state enabled, but configured state path doesn't exist") {
-		// TODO: initState() should throw exception
+
+		// For this particular test, this path won't actually exist
+		std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+			STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+		std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+		std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+		iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+			<< "\n\n" << std::endl;
+		iniFile.close();
+
+		Config::get()->load(iniFilename);
+
+		GameContainer::reset();
+
+		try {
+			GameContainer::get();
+			FAIL("GameContainer construction must fail when state is enabled and the configured state path doesn't exist.");
+		}
+
+		catch (const ServerException &e) {
+			CHECK(true);
+		}
+
+		// Restore the default configuration
+		STD_FILESYSTEM::remove(iniFilename);
+		initIniFile(iniFilename, {{}});
 	}
 
 	TEST_CASE("GameContainer (gamecontainer.cpp): dump()") {
