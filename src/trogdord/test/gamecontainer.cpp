@@ -664,7 +664,7 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		#endif
 	}
 
-	TEST_CASE("GameContainer (gamecontainer.cpp): state enabled, but configured state path is blank") {
+	TEST_CASE("GameContainer (gamecontainer.cpp): Constructor: state enabled, but configured state path is blank") {
 
 		std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
 		std::ofstream iniFile(iniFilename, std::ofstream::out);
@@ -690,7 +690,7 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		initIniFile(iniFilename, {{}});
 	}
 
-	TEST_CASE("GameContainer (gamecontainer.cpp): state enabled, but configured state path doesn't exist") {
+	TEST_CASE("GameContainer (gamecontainer.cpp): Constructor: state enabled, but configured state path doesn't exist") {
 
 		// For this particular test, this path won't actually exist
 		std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
@@ -721,7 +721,7 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		initIniFile(iniFilename, {{}});
 	}
 
-	TEST_CASE("GameContainer (gamecontainer.cpp): state enabled, but configured state path is read-only") {
+	TEST_CASE("GameContainer (gamecontainer.cpp): Constructor: state enabled, but configured state path is read-only") {
 
 		std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
 			STD_FILESYSTEM::path::preferred_separator + "/trogstate";
@@ -760,6 +760,117 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		STD_FILESYSTEM::remove_all(statePath);
 		STD_FILESYSTEM::remove(iniFilename);
 		initIniFile(iniFilename, {{}});
+	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): Constructor: state enabled, no previously dumped games") {
+
+		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+		#else
+
+			std::string gameName = "My Game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Create valid writable state path
+			STD_FILESYSTEM::create_directory(statePath);
+
+			// Setup ini config options
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+			iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+				<< "\n\n" << std::endl;
+			iniFile.close();
+
+			Config::get()->load(iniFilename);
+
+			// Reset GameContainer to simulate trogdord startup
+			GameContainer::reset();
+
+			// Since there are no dumped game ids to reserve, we should be able
+			// to get an id of 0 the first time we create a game.
+			try {
+				auto &container = GameContainer::get();
+				size_t id = container->createGame(definition, gameName);
+				CHECK(0 == id);
+			}
+
+			catch (const ServerException &e) {
+				FAIL(e.what());
+			}
+
+			// Restore the default configuration
+			STD_FILESYSTEM::remove_all(statePath);
+			STD_FILESYSTEM::remove(iniFilename);
+			initIniFile(iniFilename, {{}});
+
+		#endif
+	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): Constructor: state enabled, one previously dumped game") {
+
+		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+		#else
+
+			std::string gameName = "My Game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Create valid writable state path
+			STD_FILESYSTEM::create_directory(statePath);
+
+			// Setup ini config options
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+			iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+				<< "\n\n" << std::endl;
+			iniFile.close();
+
+			Config::get()->load(iniFilename);
+
+			// Reset GameContainer to simulate trogdord startup
+			GameContainer::reset();
+
+			// Since there are no dumped game ids to reserve, we should be able
+			// to get an id of 0 the first time we create a game.
+			try {
+
+				// Step 1: create and dump a game
+				auto &container = GameContainer::get();
+				size_t id = container->createGame(definition, gameName);
+				CHECK(0 == id);
+
+				// Dump all existing games to disk (will just be the one)
+				container->dump();
+
+				// Pretend the application was shutdown and restarted
+				GameContainer::reset();
+				id = GameContainer::get()->createGame(definition, gameName);
+
+				// Since id 0 should have been reserved due to it having
+				// been dumped, the next id generated should be 1.
+				CHECK(1 == id);
+			}
+
+			catch (const ServerException &e) {
+				FAIL(e.what());
+			}
+
+			// Restore the default configuration
+			STD_FILESYSTEM::remove_all(statePath);
+			STD_FILESYSTEM::remove(iniFilename);
+			initIniFile(iniFilename, {{}});
+
+		#endif
 	}
 
 	TEST_CASE("GameContainer (gamecontainer.cpp): dump()") {
