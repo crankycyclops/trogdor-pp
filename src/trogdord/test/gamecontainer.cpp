@@ -873,12 +873,23 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		#endif
 	}
 
-	TEST_CASE("GameContainer (gamecontainer.cpp): dump()") {
-		// TODO
-	}
+	TEST_CASE("GameContainer (gamecontainer.cpp): dump() and restore()") {
 
-	TEST_CASE("GameContainer (gamecontainer.cpp): restore()") {
-		// TODO
+		SUBCASE("State disabled, zero games") {
+			// TODO
+		}
+
+		SUBCASE("State disabled, one game") {
+			// TODO
+		}
+
+		SUBCASE("State enabled, zero games") {
+			// TODO
+		}
+
+		SUBCASE("State enabled, one game") {
+			// TODO
+		}
 	}
 
 	TEST_CASE("GameContainer (gamecontainer.cpp): destroyGame() with state disabled (shouldn't touch previously dumped games)") {
