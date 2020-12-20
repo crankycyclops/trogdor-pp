@@ -989,19 +989,75 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		}
 
 		SUBCASE("State enabled, one game") {
-			// TODO
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				// Create a game with a player and demonstrate that it gets dumped.
+				size_t id = GameContainer::get()->createGame(definition, gameName);
+
+				GameContainer::get()->createPlayer(id, "test");
+				GameContainer::get()->dump();
+
+				// Make sure the dumped id matches the game id and that
+				// there's only one subdirectory to represent the dumped game.
+				size_t count = 0;
+
+				for (const auto &subdir: STD_FILESYSTEM::directory_iterator(statePath)) {
+
+					count++;
+
+					if (0 != std::to_string(id).compare(subdir.path().filename().string())) {
+						FAIL("Game id " + std::to_string(id) + " doesn't match dumped id " + subdir.path().filename().string());
+					}
+				}
+
+				CHECK(1 == count);
+
+				// Verify that after restoring, we get the same game back
+				// with the player we created.
+				GameContainer::reset();
+				GameContainer::get()->restore();
+
+				CHECK(1 == GameContainer::get()->getGames().size());
+				CHECK(GameContainer::get()->getGame(id));
+				CHECK(1 == GameContainer::get()->getGame(id)->getNumPlayers());
+				CHECK(GameContainer::get()->getGame(id)->get()->getPlayer("test"));
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove_all(statePath);
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
 		}
 	}
 
-	TEST_CASE("GameContainer (gamecontainer.cpp): destroyGame() with state disabled (shouldn't touch previously dumped games)") {
-		// TODO
-	}
+	TEST_CASE("GameContainer (gamecontainer.cpp): destroyGame()") {
 
-	TEST_CASE("GameContainer (gamecontainer.cpp): destroyGame() with state enabled: optionally preserve dumped games") {
-		// TODO
-	}
+		SUBCASE("State disabled (shouldn't touch previously dumped games)") {
+			// TODO
+		}
 
-	TEST_CASE("GameContainer (gamecontainer.cpp): destroyGame() with state enabled: destroy dumped games (default with no argument and explicit with argument)") {
-		// TODO
+		SUBCASE("State enabled: optionally preserve dumped games") {
+			// TODO
+		}
+
+		SUBCASE("state enabled: destroy dumped games (default with no argument and explicit with argument)"){
+			// TODO
+		}
 	}
 }
