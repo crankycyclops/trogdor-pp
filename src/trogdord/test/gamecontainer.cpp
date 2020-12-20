@@ -721,15 +721,19 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		initIniFile(iniFilename, {{}});
 	}
 
-	TEST_CASE("GameContainer (gamecontainer.cpp): state enabled, but configured state path is a file instead of a directory") {
+	TEST_CASE("GameContainer (gamecontainer.cpp): state enabled, but configured state path is read-only") {
 
 		std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
 			STD_FILESYSTEM::path::preferred_separator + "/trogstate";
 
-		// Make state path a file instead of a directory (should fail for obvious reasons)
-		std::ofstream stateFile(statePath, std::ofstream::out);
-		stateFile << "Wee!" << std::endl;
-		stateFile.close();
+		// Make a read-only state directory
+		STD_FILESYSTEM::create_directory(statePath);
+		STD_FILESYSTEM::permissions(
+			statePath,
+			STD_FILESYSTEM::perms::group_read  | STD_FILESYSTEM::perms::group_exec  |
+			STD_FILESYSTEM::perms::owner_read  | STD_FILESYSTEM::perms::owner_exec  |
+			STD_FILESYSTEM::perms::others_read | STD_FILESYSTEM::perms::others_exec
+		);
 
 		std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
 		std::ofstream iniFile(iniFilename, std::ofstream::out);
@@ -744,7 +748,7 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		try {
 			GameContainer::get();
-			FAIL("GameContainer construction must fail when state is enabled and the configured state path is a file.");
+			FAIL("GameContainer construction must fail when state is enabled and the configured state path is read-only.");
 		}
 
 		catch (const ServerException &e) {
@@ -752,7 +756,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		}
 
 		// Restore the default configuration
-		STD_FILESYSTEM::remove(statePath);
+		STD_FILESYSTEM::permissions(statePath, STD_FILESYSTEM::perms::owner_write);
+		STD_FILESYSTEM::remove_all(statePath);
 		STD_FILESYSTEM::remove(iniFilename);
 		initIniFile(iniFilename, {{}});
 	}
