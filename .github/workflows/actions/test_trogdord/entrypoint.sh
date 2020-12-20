@@ -8,4 +8,4 @@ make -j2 trogdord
 
 # Compile and run the unit tests
 make -j2 test_trogdord
-timeout -s SIGQUIT 10 ./test_trogdord
+timeout -s SIGQUIT 10 sudo -u app ./test_trogdord
