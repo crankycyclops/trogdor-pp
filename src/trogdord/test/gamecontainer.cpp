@@ -990,6 +990,12 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State enabled, one game") {
 
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
 				std::string gameName = "My Game";
 				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
 				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
@@ -1043,6 +1049,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				STD_FILESYSTEM::remove_all(statePath);
 				STD_FILESYSTEM::remove(iniFilename);
 				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 	}
 
