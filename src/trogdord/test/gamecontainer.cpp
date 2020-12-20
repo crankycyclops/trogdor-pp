@@ -876,11 +876,77 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 	TEST_CASE("GameContainer (gamecontainer.cpp): dump() and restore()") {
 
 		SUBCASE("State disabled, zero games") {
-			// TODO
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+			iniFile << "[state]\nenabled=false\n\n" << std::endl;
+			iniFile.close();
+
+			Config::get()->load(iniFilename);
+			GameContainer::reset();
+
+			// Methods should just return without actually doing anything
+			GameContainer::get()->dump();
+			GameContainer::reset();
+			GameContainer::get()->restore();
+
+			CHECK(0 == GameContainer::get()->getGames().size());
+
+			// Restore the default configuration
+			STD_FILESYSTEM::remove(iniFilename);
+			initIniFile(iniFilename, {{}});
 		}
 
 		SUBCASE("State disabled, one game") {
-			// TODO
+
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=false\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				// Create a game and demonstrate that it doesn't get dumped when
+				// state is disabled.
+				GameContainer::get()->createGame(definition, gameName);
+				GameContainer::get()->dump();
+
+				// If we encounter any subdirectories, we know we dun screwed up!
+				for (const auto &subdir: STD_FILESYSTEM::directory_iterator(statePath)) {
+					FAIL(subdir.path().filename().string() + ": no games should be dumped when state is disabled.");
+				}
+
+				// Verify that after restoring, we have zero games, since nothing
+				// should be dumped or restored when state is disabled.
+				GameContainer::reset();
+				GameContainer::get()->restore();
+
+				CHECK(0 == GameContainer::get()->getGames().size());
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove_all(statePath);
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 
 		SUBCASE("State enabled, zero games") {
