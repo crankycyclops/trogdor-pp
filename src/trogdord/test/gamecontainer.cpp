@@ -1058,76 +1058,213 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State disabled (shouldn't touch previously dumped games)") {
 
-			/////////////////////////////////////////////////////
-			// Part 1: Create a dumped game with state enabled //
-			/////////////////////////////////////////////////////
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
 
-			std::string gameName = "My Game";
-			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
-			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
-				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
 
-			// Make a read-only state directory
-			STD_FILESYSTEM::create_directory(statePath);
+			#else
 
-			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-			std::ofstream iniFile(iniFilename, std::ofstream::out);
+				/////////////////////////////////////////////////////
+				// Part 1: Create a dumped game with state enabled //
+				/////////////////////////////////////////////////////
 
-			iniFile << "[state]\nenabled=true\nsave_path=" << statePath
-				<< "\n\n" << std::endl;
-			iniFile.close();
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
 
-			Config::get()->load(iniFilename);
-			GameContainer::reset();
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
 
-			// Create a game with a player and demonstrate that it gets dumped.
-			size_t id = GameContainer::get()->createGame(definition, gameName);
-			GameContainer::get()->dump();
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
 
-			// Verify that the game was dumped
-			std::string gameStatePath = statePath +
-				STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
 
-			CHECK(STD_FILESYSTEM::exists(gameStatePath));
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
 
-			////////////////////////////////////////////////////
-			// Part 2: Restart the server with state disabled //
-			////////////////////////////////////////////////////
+				// Create a game with a player and demonstrate that it gets dumped.
+				size_t id = GameContainer::get()->createGame(definition, gameName);
+				GameContainer::get()->dump();
 
-			STD_FILESYSTEM::remove(iniFilename);
-			std::ofstream iniFile2(iniFilename, std::ofstream::out);
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
 
-			iniFile2 << "[state]\nenabled=false\nsave_path=" << statePath
-				<< "\n\n" << std::endl;
-			iniFile2.close();
+				// Verify that the game was dumped
+				CHECK(STD_FILESYSTEM::exists(gameStatePath));
 
-			Config::get()->load(iniFilename);
-			GameContainer::reset();
+				////////////////////////////////////////////////////
+				// Part 2: Restart the server with state disabled //
+				////////////////////////////////////////////////////
 
-			size_t id2 = GameContainer::get()->createGame(definition, gameName);
+				STD_FILESYSTEM::remove(iniFilename);
+				std::ofstream iniFile2(iniFilename, std::ofstream::out);
 
-			// First, verify that, with state disabled, no ids are reserved and
-			// that the two ids therefore match.
-			CHECK(id == id2);
+				iniFile2 << "[state]\nenabled=false\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile2.close();
 
-			// Next, call GameContainer::destroyGame() with the destroyDump
-			// argument explicitly set to true and observe that, with state
-			// disabled, the previously game remains untouched.
-			GameContainer::get()->destroyGame(id2);
-			CHECK(STD_FILESYSTEM::exists(gameStatePath));
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
 
-			// Restore the default configuration
-			STD_FILESYSTEM::remove_all(statePath);
-			STD_FILESYSTEM::remove(iniFilename);
-			initIniFile(iniFilename, {{}});
+				size_t id2 = GameContainer::get()->createGame(definition, gameName);
+
+				// First, verify that, with state disabled, no ids are reserved and
+				// that the two ids therefore match.
+				CHECK(id == id2);
+
+				// Next, call GameContainer::destroyGame() with the destroyDump
+				// argument explicitly set to true and observe that, with state
+				// disabled, the previously game remains untouched.
+				GameContainer::get()->destroyGame(id2);
+				CHECK(STD_FILESYSTEM::exists(gameStatePath));
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove_all(statePath);
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
+
+			#endif
+		}
+
+		SUBCASE("State enabled: destroyDump argument should be true by default") {
+
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				size_t id = GameContainer::get()->createGame(definition, gameName);
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+				GameContainer::get()->dump();
+				CHECK(STD_FILESYSTEM::exists(gameStatePath));
+
+				// By default, the dump should be destroyed along with the game
+				GameContainer::get()->destroyGame(id);
+				CHECK(!STD_FILESYSTEM::exists(gameStatePath));
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove_all(statePath);
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
+
+			#endif
+		}
+
+		SUBCASE("state enabled: destroy dumped games with destroyDump set explicitly to true"){
+
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				size_t id = GameContainer::get()->createGame(definition, gameName);
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+				GameContainer::get()->dump();
+				CHECK(STD_FILESYSTEM::exists(gameStatePath));
+
+				// The dump should be destroyed along with the game when we
+				// set destroyDump argument to true.
+				GameContainer::get()->destroyGame(id, true);
+				CHECK(!STD_FILESYSTEM::exists(gameStatePath));
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove_all(statePath);
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 
 		SUBCASE("State enabled: optionally preserve dumped games") {
-			// TODO
-		}
 
-		SUBCASE("state enabled: destroy dumped games (default with no argument and explicit with argument)"){
-			// TODO
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				size_t id = GameContainer::get()->createGame(definition, gameName);
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+				GameContainer::get()->dump();
+				CHECK(STD_FILESYSTEM::exists(gameStatePath));
+
+				// By setting destroyDump argument to false, we should be
+				// able to delete the game but keep its dump.
+				GameContainer::get()->destroyGame(id, false);
+				CHECK(STD_FILESYSTEM::exists(gameStatePath));
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove_all(statePath);
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 	}
 }
