@@ -62,10 +62,56 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 	}
 
 	TEST_CASE("GlobalController (scopes/global.cpp): dump()") {
-		// TODO
+
+		SUBCASE("State disabled, no games") {
+			// TODO: should return 501 unsupported
+		}
+
+		SUBCASE("State disabled, one game") {
+			// TODO: should return 501 unsupported
+		}
+
+		SUBCASE("State enabled, no games") {
+			// TODO: should return 200 success
+		}
+
+		SUBCASE("State enabled, one game") {
+			// TODO: should return 200 success
+		}
 	}
 
 	TEST_CASE("GlobalController (scopes/global.cpp): restore()") {
-		// TODO
+
+		SUBCASE("State disabled, no current games, no dumped games") {
+			// TODO: should return 501 unsupported, no games should exist
+		}
+
+		SUBCASE("State disabled, no current games, one dumped game") {
+			// TODO: should return 501 unsupported, no games should exist
+		}
+
+		SUBCASE("State disabled, one current games, no dumped games") {
+			// TODO: should return 501 unsupported, one game should remain, and it should be the same
+		}
+
+		SUBCASE("State disabled, one current games, one dumped game") {
+			// TODO: should return 501 unsupported, one game should remain, and it should be the same
+		}
+
+		SUBCASE("State enabled, no current games, no dumped games") {
+			// TODO: should return 200, no games should exist
+		}
+
+		SUBCASE("State enabled, no current games, one dumped game") {
+			// TODO: should return 200, have the one previously dumped game
+		}
+
+		SUBCASE("State enabled, one current games, no dumped games") {
+			// TODO: should return 200, zero games should remain
+		}
+
+		SUBCASE("State enabled, one current games, one dumped game") {
+			// TODO: should return 200, game should be replaced by previously dumped one
+		}
 	}
 }
