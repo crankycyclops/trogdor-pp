@@ -96,7 +96,43 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 		}
 
 		SUBCASE("State disabled, one game") {
-			// TODO: should return 501 unsupported
+
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=false\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+				GameContainer::get()->createGame(definition, gameName);
+
+				rapidjson::Document request(rapidjson::kObjectType);
+
+				request.AddMember("method", "post", request.GetAllocator());
+				request.AddMember("scope", "global", request.GetAllocator());
+				request.AddMember("action", "dump", request.GetAllocator());
+
+				rapidjson::Document response = GlobalController::get()->dump(request);
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 
 		SUBCASE("State enabled, no games") {
