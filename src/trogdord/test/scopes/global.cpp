@@ -64,19 +64,19 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 	TEST_CASE("GlobalController (scopes/global.cpp): dump()") {
 
 		SUBCASE("State disabled, no games") {
-			// TODO: should return 501 unsupported.
+			// TODO: should return 501 unsupported
 		}
 
 		SUBCASE("State disabled, one game") {
-			// TODO: should return 501 unsupported.
+			// TODO: should return 501 unsupported
 		}
 
 		SUBCASE("State enabled, no games") {
-			// TODO: should return 200 success.
+			// TODO: should return 200 success
 		}
 
 		SUBCASE("State enabled, one game") {
-			// TODO: should return 200 success.
+			// TODO: should return 200 success
 		}
 	}
 
