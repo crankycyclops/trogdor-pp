@@ -224,7 +224,31 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 	TEST_CASE("GlobalController (scopes/global.cpp): restore()") {
 
 		SUBCASE("State disabled, no current games, no dumped games") {
-			// TODO: should return 501 unsupported, no games should exist
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+			iniFile << "[state]\nenabled=false\n\n" << std::endl;
+			iniFile.close();
+
+			Config::get()->load(iniFilename);
+			GameContainer::reset();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "global", request.GetAllocator());
+			request.AddMember("action", "restore", request.GetAllocator());
+
+			rapidjson::Document response = GlobalController::get()->restore(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+			// Restore the default configuration
+			STD_FILESYSTEM::remove(iniFilename);
+			initIniFile(iniFilename, {{}});
 		}
 
 		SUBCASE("State disabled, no current games, one dumped game") {
