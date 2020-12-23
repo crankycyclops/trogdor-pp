@@ -1,12 +1,16 @@
 #include <doctest.h>
 #include <trogdor/version.h>
 
+#include "../config.h"
+
 #include "../../include/json.h"
 #include "../../include/request.h"
 #include "../../include/response.h"
 
 #include "../../include/version.h"
 #include "../../include/scopes/global.h"
+
+#include "../../include/gamecontainer.h"
 
 
 TEST_SUITE("GlobalController (scopes/global.cpp)") {
@@ -64,7 +68,31 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 	TEST_CASE("GlobalController (scopes/global.cpp): dump()") {
 
 		SUBCASE("State disabled, no games") {
-			// TODO: should return 501 unsupported
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+			iniFile << "[state]\nenabled=false\n\n" << std::endl;
+			iniFile.close();
+
+			Config::get()->load(iniFilename);
+			GameContainer::reset();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "global", request.GetAllocator());
+			request.AddMember("action", "dump", request.GetAllocator());
+
+			rapidjson::Document response = GlobalController::get()->dump(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+			// Restore the default configuration
+			STD_FILESYSTEM::remove(iniFilename);
+			initIniFile(iniFilename, {{}});
 		}
 
 		SUBCASE("State disabled, one game") {
