@@ -252,11 +252,17 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 		}
 
 		SUBCASE("State disabled, no current games, one dumped game") {
-			// TODO: should return 501 unsupported, no games should exist
+
+			// Step 1: start with state enabled, dump a game, then reconfigure with state disabled
+			// Step 2: reset GameController
+			// Step 3: continue with testing and verify we get 501 and no games exist
 		}
 
 		SUBCASE("State disabled, one current games, no dumped games") {
-			// TODO: should return 501 unsupported, one game should remain, and it should be the same
+
+			// Step 1: start with state disabled
+			// Step 2: create a game
+			// Step 3: attempt restore and verify 501 and that we still have the one game
 		}
 
 		SUBCASE("State disabled, one current games, one dumped game") {
