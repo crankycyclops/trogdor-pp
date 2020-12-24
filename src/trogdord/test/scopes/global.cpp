@@ -253,9 +253,74 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 
 		SUBCASE("State disabled, no current games, one dumped game") {
 
-			// Step 1: start with state enabled, dump a game, then reconfigure with state disabled
-			// Step 2: reset GameController
-			// Step 3: continue with testing and verify we get 501 and no games exist
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				////////////////////////////////////////////
+				// Step 1: Dump a game with state enabled //
+				////////////////////////////////////////////
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				// Setup ini file
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				GameContainer::get()->createGame(definition, gameName);
+				GameContainer::get()->dump();
+
+				//////////////////////////////////////////////////////////
+				// Step 2: Recofigure with state disabled and show that //
+				// nothing is restored and that we get the proper       //
+				// status returned in the response.                     //
+				//////////////////////////////////////////////////////////
+
+				std::ofstream iniFile2(iniFilename, std::ofstream::out);
+				iniFile2 << "[state]\nenabled=false\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile2.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				rapidjson::Document request(rapidjson::kObjectType);
+
+				request.AddMember("method", "post", request.GetAllocator());
+				request.AddMember("scope", "global", request.GetAllocator());
+				request.AddMember("action", "restore", request.GetAllocator());
+
+				rapidjson::Document response = GlobalController::get()->restore(request);
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+				// Verify that the previously dumped game isn't restored
+				// since state is now disabled.
+				CHECK(0 == GameContainer::get()->getGames().size());
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove_all(statePath);
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 
 		SUBCASE("State disabled, one current games, no dumped games") {
