@@ -325,9 +325,56 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 
 		SUBCASE("State disabled, one current games, no dumped games") {
 
-			// Step 1: start with state disabled
-			// Step 2: create a game
-			// Step 3: attempt restore and verify 501 and that we still have the one game
+				///////////////////////////
+				// Step 1: Create a game //
+				///////////////////////////
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				// Setup ini file
+				iniFile << "[state]\nenabled=false\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				GameContainer::get()->createGame(definition, gameName);
+				CHECK(1 == GameContainer::get()->getGames().size());
+
+				/////////////////////////////////////////////////
+				// Step 2: With state disabled, call restore() //
+				/////////////////////////////////////////////////
+
+				rapidjson::Document request(rapidjson::kObjectType);
+
+				request.AddMember("method", "post", request.GetAllocator());
+				request.AddMember("scope", "global", request.GetAllocator());
+				request.AddMember("action", "restore", request.GetAllocator());
+
+				rapidjson::Document response = GlobalController::get()->restore(request);
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+				// Verify that the current game wasn't destroyed after the
+				// call to restore()
+				CHECK(1 == GameContainer::get()->getGames().size());
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove_all(statePath);
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
 		}
 
 		SUBCASE("State disabled, one current games, one dumped game") {
