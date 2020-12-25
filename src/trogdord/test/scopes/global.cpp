@@ -325,6 +325,12 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 
 		SUBCASE("State disabled, one current games, no dumped games") {
 
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
 				///////////////////////////
 				// Step 1: Create a game //
 				///////////////////////////
@@ -375,6 +381,8 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 				STD_FILESYSTEM::remove_all(statePath);
 				STD_FILESYSTEM::remove(iniFilename);
 				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 
 		SUBCASE("State disabled, one current games, one dumped game") {
