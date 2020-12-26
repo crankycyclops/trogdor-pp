@@ -225,11 +225,18 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 
 		SUBCASE("State disabled, no current games, no dumped games") {
 
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
 			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
 			std::ofstream iniFile(iniFilename, std::ofstream::out);
 
-			iniFile << "[state]\nenabled=false\n\n" << std::endl;
+			iniFile << "[state]\nenabled=false\nsave_path=" << statePath
+				<< "\n\n" << std::endl;
 			iniFile.close();
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
 
 			Config::get()->load(iniFilename);
 			GameContainer::reset();
@@ -245,8 +252,10 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+			CHECK(0 == GameContainer::get()->getGames().size());
 
 			// Restore the default configuration
+			STD_FILESYSTEM::remove_all(statePath);
 			STD_FILESYSTEM::remove(iniFilename);
 			initIniFile(iniFilename, {{}});
 		}
@@ -387,6 +396,12 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 
 		SUBCASE("State disabled, one current games, one dumped game") {
 
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
 				////////////////////////////////////////////
 				// Step 1: Dump a game with state enabled //
 				////////////////////////////////////////////
@@ -453,10 +468,45 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 				STD_FILESYSTEM::remove_all(statePath);
 				STD_FILESYSTEM::remove(iniFilename);
 				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 
 		SUBCASE("State enabled, no current games, no dumped games") {
-			// TODO: should return 200, no games should exist
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+			iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+				<< "\n\n" << std::endl;
+			iniFile.close();
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			Config::get()->load(iniFilename);
+			GameContainer::reset();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "global", request.GetAllocator());
+			request.AddMember("action", "restore", request.GetAllocator());
+
+			rapidjson::Document response = GlobalController::get()->restore(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+			CHECK(0 == GameContainer::get()->getGames().size());
+
+			// Restore the default configuration
+			STD_FILESYSTEM::remove_all(statePath);
+			STD_FILESYSTEM::remove(iniFilename);
+			initIniFile(iniFilename, {{}});
 		}
 
 		SUBCASE("State enabled, no current games, one dumped game") {
