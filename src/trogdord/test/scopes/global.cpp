@@ -585,7 +585,61 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 		}
 
 		SUBCASE("State enabled, one current games, no dumped games") {
-			// TODO: should return 200, zero games should remain
+
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				// Setup ini file
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				// Start off with 0 games
+				CHECK(0 == GameContainer::get()->getGames().size());
+
+				// Create a game
+				GameContainer::get()->createGame(definition, gameName);
+				CHECK(1 == GameContainer::get()->getGames().size());
+
+				// Call restore with 0 dumped games and verify that it leaves
+				// the currently created game intact.
+				rapidjson::Document request(rapidjson::kObjectType);
+
+				request.AddMember("method", "post", request.GetAllocator());
+				request.AddMember("scope", "global", request.GetAllocator());
+				request.AddMember("action", "restore", request.GetAllocator());
+
+				rapidjson::Document response = GlobalController::get()->restore(request);
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+				CHECK(1 == GameContainer::get()->getGames().size());
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove_all(statePath);
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 
 		SUBCASE("State enabled, one current games, one dumped game") {
