@@ -419,8 +419,19 @@ rapidjson::Document GameController::destroyGame(const rapidjson::Document &reque
 	bool destroyDump = true;
 	const rapidjson::Value *destroyDumpVal = rapidjson::Pointer("/args/delete_dump").Get(request);
 
-	if (destroyDumpVal && destroyDumpVal->IsBool()) {
-		destroyDump = destroyDumpVal->GetBool();
+	if (destroyDumpVal) {
+
+		if (destroyDumpVal->IsBool()) {
+			destroyDump = destroyDumpVal->GetBool();
+		}
+
+		else {
+
+			response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+			response.AddMember("message", rapidjson::StringRef(INVALID_DELETE_DUMP_ARG), response.GetAllocator());
+
+			return response;
+		}
 	}
 
 	if (GameContainer::get()->getGame(gameId)) {

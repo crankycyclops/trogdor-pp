@@ -40,6 +40,7 @@ class GameController: public ScopeController {
 		static constexpr const char *INVALID_META = "meta values cannot be objects or arrays";
 		static constexpr const char *INVALID_META_KEYS = "invalid meta keys";
 		static constexpr const char *INVALID_FILTER_ARG = "filters must be expressed as a JSON object or array";
+		static constexpr const char *INVALID_DELETE_DUMP_ARG = "delete_dump must be a boolean value";
 
 		// Scope name that should be used in requests
 		static constexpr const char *SCOPE = "game";
