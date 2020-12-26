@@ -642,8 +642,79 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 			#endif
 		}
 
-		SUBCASE("State enabled, one current games, one dumped game") {
-			// TODO: should return 200, game should be replaced by previously dumped one
+		SUBCASE("State enabled, one current game, one dumped game") {
+
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				///////////////////////////////////////////////
+				// Step 1: Dump a game and then reset server //
+				///////////////////////////////////////////////
+
+				std::string dumpedName = "Dumped Game";
+				std::string gameName = "Game Name";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				// Setup ini file
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				GameContainer::get()->createGame(definition, dumpedName);
+				GameContainer::get()->dump();
+
+				//////////////////////////////////////
+				// Step 2: Reset server and restore //
+				//////////////////////////////////////
+
+				std::ofstream iniFile2(iniFilename, std::ofstream::out);
+				iniFile2 << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile2.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				GameContainer::get()->createGame(definition, gameName);
+
+				// We should have one existing game before restoring
+				CHECK(1 == GameContainer::get()->getGames().size());
+
+				rapidjson::Document request(rapidjson::kObjectType);
+
+				request.AddMember("method", "post", request.GetAllocator());
+				request.AddMember("scope", "global", request.GetAllocator());
+				request.AddMember("action", "restore", request.GetAllocator());
+
+				rapidjson::Document response = GlobalController::get()->restore(request);
+
+				CHECK(response.HasMember("status"));
+				CHECK(response["status"].IsUint());
+				CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+				// Now, there should be two games
+				CHECK(2 == GameContainer::get()->getGames().size());
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove_all(statePath);
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 	}
 }
