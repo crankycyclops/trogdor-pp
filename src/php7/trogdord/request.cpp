@@ -33,7 +33,11 @@ Document Request::execute(
 
 		zend_update_property_long(
 			TROGDORD_GLOBALS(classEntry),
-			trogdord,
+			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+				Z_OBJ_P(trogdord),
+			#else
+				trogdord,
+			#endif
 			STATUS_PROPERTY,
 			strlen(STATUS_PROPERTY),
 			status

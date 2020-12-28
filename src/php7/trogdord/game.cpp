@@ -99,7 +99,7 @@ PHP_METHOD(Game, __get) {
 	size_t keyLength;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &key, &keyLength) == FAILURE) {
-		RETURN_NULL()
+		RETURN_NULL();
 	}
 
 	zval rv; // ???
@@ -433,7 +433,11 @@ PHP_METHOD(Game, destroy) {
 		// Set the game ID to null so the object can't be used anymore
 		zend_update_property_null(
 			GAME_GLOBALS(classEntry),
-			getThis(),
+			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+				Z_OBJ_P(getThis()),
+			#else
+				getThis(),
+			#endif
 			GAME_ID_PROPERTY,
 			strlen(GAME_ID_PROPERTY)
 		);
@@ -1920,7 +1924,11 @@ bool createGameObj(
 
 	zend_update_property_string(
 		GAME_GLOBALS(classEntry),
-		gameObj,
+		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+			Z_OBJ_P(gameObj),
+		#else
+			gameObj,
+		#endif
 		GAME_NAME_PROPERTY,
 		strlen(GAME_NAME_PROPERTY),
 		name.c_str()
@@ -1928,7 +1936,11 @@ bool createGameObj(
 
 	zend_update_property_string(
 		GAME_GLOBALS(classEntry),
-		gameObj,
+		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+			Z_OBJ_P(gameObj),
+		#else
+			gameObj,
+		#endif
 		GAME_DEFINITION_PROPERTY,
 		strlen(GAME_DEFINITION_PROPERTY),
 		definition.c_str()
@@ -1936,7 +1948,11 @@ bool createGameObj(
 
 	zend_update_property_long(
 		GAME_GLOBALS(classEntry),
-		gameObj,
+		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+			Z_OBJ_P(gameObj),
+		#else
+			gameObj,
+		#endif
 		GAME_ID_PROPERTY,
 		strlen(GAME_ID_PROPERTY),
 		id
@@ -1944,7 +1960,11 @@ bool createGameObj(
 
 	zend_update_property(
 		GAME_GLOBALS(classEntry),
-		gameObj,
+		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+			Z_OBJ_P(gameObj),
+		#else
+			gameObj,
+		#endif
 		TROGDORD_PROPERTY,
 		strlen(TROGDORD_PROPERTY),
 		trogdordObj

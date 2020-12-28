@@ -16,4 +16,12 @@
 	#define WRITE_PROP_RETURN_TYPE void
 #endif
 
+// As of PHP 8.0, many functions require arguments of type zend_object * instead
+// of zval *.
+#if ZEND_MODULE_API_NO >= 20200930
+	#define THIS_PTR_COMPAT(THIS_PTR) (Z_OBJ_P(THIS_PTR))
+#else
+	#define THIS_PTR_COMPAT(THIS_PTR) (THIS_PTR)
+#endif
+
 #endif /* PHP_COMPATIBILITY_H */

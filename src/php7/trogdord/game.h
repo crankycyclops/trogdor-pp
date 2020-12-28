@@ -1,6 +1,8 @@
 #ifndef PHP_GAME_H
 #define PHP_GAME_H
 
+#include "compatibility.h"
+
 extern "C" {
 	#include "php.h"
 }
@@ -20,7 +22,7 @@ ZEND_END_MODULE_GLOBALS(game)
 // Retrieve the specified property for an instance of \Trogdord\Game. Return
 // type is zval *.
 #define GAME_TO_PROP_VAL(THIS_PTR, RV, PROPERTY) zend_read_property(\
-GAME_GLOBALS(classEntry), (THIS_PTR), (PROPERTY), \
+GAME_GLOBALS(classEntry), (THIS_PTR_COMPAT(THIS_PTR)), (PROPERTY), \
 strlen((PROPERTY)), 1, (RV))
 
 // Retrieve the instance of \Trogdord that spawned the instance of \Trogdord\Game.
