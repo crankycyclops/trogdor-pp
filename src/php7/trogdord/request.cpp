@@ -1,12 +1,20 @@
 #include "request.h"
+#include "trogdord.h"
 #include "network/tcpconnectionmap.h"
 
 #include "exception/jsonexception.h"
 #include "exception/networkexception.h"
 #include "exception/requestexception.h"
 
+ZEND_EXTERN_MODULE_GLOBALS(trogdord);
 
-Document Request::execute(std::string hostname, unsigned short port, std::string request) {
+
+Document Request::execute(
+	std::string hostname,
+	unsigned short port,
+	std::string request,
+	zval *trogdord
+) {
 
 	try {
 
@@ -21,6 +29,14 @@ Document Request::execute(std::string hostname, unsigned short port, std::string
 		Document responseObj = JSON::deserialize(response);
 
 		uint status = RequestException::DEFAULT_CODE;
+
+		zend_update_property_long(
+			TROGDORD_GLOBALS(classEntry),
+			trogdord,
+			STATUS_PROPERTY,
+			strlen(STATUS_PROPERTY),
+			status
+		);
 
 		if (!responseObj.HasMember("status") || SUCCESS != (status = responseObj["status"].GetUint())) {
 			throw RequestException(

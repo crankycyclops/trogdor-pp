@@ -99,7 +99,8 @@ PHP_METHOD(Trogdord, statistics) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			STATS_REQUEST
+			STATS_REQUEST,
+			getThis()
 		);
 
 		response.RemoveMember("status");
@@ -141,7 +142,8 @@ PHP_METHOD(Trogdord, dump) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			DUMP_REQUEST
+			DUMP_REQUEST,
+			getThis()
 		);
 
 		RETURN_NULL();
@@ -177,7 +179,8 @@ PHP_METHOD(Trogdord, restore) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			RESTORE_REQUEST
+			RESTORE_REQUEST,
+			getThis()
 		);
 
 		RETURN_NULL();
@@ -294,7 +297,8 @@ PHP_METHOD(Trogdord, games) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			request
+			request,
+			getThis()
 		);
 
 		zval data = JSON::JSONToZval(response["games"]);
@@ -336,7 +340,8 @@ PHP_METHOD(Trogdord, definitions) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			DEF_LIST_REQUEST
+			DEF_LIST_REQUEST,
+			getThis()
 		);
 
 		zval data = JSON::JSONToZval(response["definitions"]);
@@ -386,7 +391,8 @@ PHP_METHOD(Trogdord, getGame) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			request
+			request,
+			getThis()
 		);
 
 		if (!createGameObj(
@@ -503,7 +509,8 @@ PHP_METHOD(Trogdord, newGame) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			request
+			request,
+			getThis()
 		);
 
 		#ifdef ZEND_ENABLE_ZVAL_LONG64
@@ -617,6 +624,16 @@ void defineTrogdordClass() {
 
 	INIT_CLASS_ENTRY(trogdordClass, "Trogdord", classMethods);
 	TROGDORD_GLOBALS(classEntry) = zend_register_internal_class(&trogdordClass);
+
+	// Whenever a request takes place, this property gets set to response code
+	// returned as part of the response
+	zend_declare_property_null(
+		TROGDORD_GLOBALS(classEntry),
+		STATUS_PROPERTY,
+		strlen(STATUS_PROPERTY),
+		ZEND_ACC_PUBLIC
+		TSRMLS_CC
+	);
 
 	// Make sure users can't extend the class
 	TROGDORD_GLOBALS(classEntry)->ce_flags |= ZEND_ACC_FINAL;

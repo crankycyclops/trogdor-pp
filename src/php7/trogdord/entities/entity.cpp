@@ -208,7 +208,8 @@ static zval getEntityOutput(zval *entityObj, std::string channel) {
 	Document response = Request::execute(
 		objWrapper->data.hostname,
 		objWrapper->data.port,
-		request
+		request,
+		GAME_TO_TROGDORD(gameObj, &rv)
 	);
 
 	return JSON::JSONToZval(response["messages"]);
@@ -233,7 +234,8 @@ static void appendToEntityOutput(zval *entityObj, std::string channel, std::stri
 	Document response = Request::execute(
 		objWrapper->data.hostname,
 		objWrapper->data.port,
-		request
+		request,
+		GAME_TO_TROGDORD(gameObj, &rv)
 	);
 }
 

@@ -138,7 +138,8 @@ PHP_METHOD(Game, start) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			request
+			request,
+			trogdord
 		);
 	}
 
@@ -191,7 +192,8 @@ PHP_METHOD(Game, stop) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			request
+			request,
+			trogdord
 		);
 	}
 
@@ -245,7 +247,8 @@ PHP_METHOD(Game, getTime) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			request
+			request,
+			trogdord
 		);
 
 		#ifdef ZEND_ENABLE_ZVAL_LONG64
@@ -307,7 +310,8 @@ PHP_METHOD(Game, isRunning) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			request
+			request,
+			trogdord
 		);
 
 		RETURN_BOOL(response["is_running"].GetBool());
@@ -363,7 +367,8 @@ PHP_METHOD(Game, statistics) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			request
+			request,
+			trogdord
 		);
 
 		response.RemoveMember("status");
@@ -421,7 +426,8 @@ PHP_METHOD(Game, destroy) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			request
+			request,
+			trogdord
 		);
 
 		// Set the game ID to null so the object can't be used anymore
@@ -522,7 +528,8 @@ PHP_METHOD(Game, getMeta) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			request
+			request,
+			trogdord
 		);
 
 		zval meta = JSON::JSONToZval(response["meta"]);
@@ -621,7 +628,8 @@ PHP_METHOD(Game, setMeta) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			request
+			request,
+			trogdord
 		);
 
 		RETURN_NULL();
@@ -1755,7 +1763,8 @@ PHP_METHOD(Game, createPlayer) {
 		Document response = Request::execute(
 			objWrapper->data.hostname,
 			objWrapper->data.port,
-			request
+			request,
+			trogdord
 		);
 
 		Document player;
@@ -1854,7 +1863,8 @@ static zval getEntityList(size_t gameId, std::string type, zval *trogdord) {
 	Document response = Request::execute(
 		objWrapper->data.hostname,
 		objWrapper->data.port,
-		request
+		request,
+		trogdord
 	);
 
 	return JSON::JSONToZval(response["entities"]);
@@ -1881,7 +1891,8 @@ static zval getEntity(std::string name, std::string type, zval *game) {
 	Document response = Request::execute(
 		objWrapper->data.hostname,
 		objWrapper->data.port,
-		request
+		request,
+		trogdord
 	);
 
 	zval entity;

@@ -16,7 +16,8 @@ class Request {
 		static Document execute(
 			std::string hostname,
 			unsigned short port,
-			std::string request
+			std::string request,
+			zval *trogdord
 		);
 };
 

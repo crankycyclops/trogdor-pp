@@ -116,7 +116,8 @@ PHP_METHOD(Player, destroy) {
 		Document response = Request::execute(
 			trogdordObjWrapper->data.hostname,
 			trogdordObjWrapper->data.port,
-			request
+			request,
+			trogdord
 		);
 
 		// Set the player name to null so the object can't be used anymore
@@ -199,6 +200,7 @@ static void sendPlayerInput(zval *entityObj, std::string command) {
 	Document response = Request::execute(
 		objWrapper->data.hostname,
 		objWrapper->data.port,
-		request
+		request,
+		GAME_TO_TROGDORD(gameObj, &rv)
 	);
 }
