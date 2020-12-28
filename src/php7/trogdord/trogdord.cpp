@@ -193,7 +193,6 @@ PHP_METHOD(Trogdord, restore) {
 
 	// Throw \Trogord\RequestException
 	catch (const RequestException &e) {
-		// TODO: return some kind of signal to indicate only partial success
 		if (206 == e.getCode()) {
 			RETURN_NULL();
 		} else {
