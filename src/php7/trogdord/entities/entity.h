@@ -6,6 +6,7 @@ extern "C" {
 }
 
 #include "../json.h"
+#include "../compatibility.h"
 
 // For an explanation of what I'm doing here, see:
 // https://www.php.net/manual/en/internals2.structure.globals.php
@@ -22,7 +23,7 @@ ZEND_END_MODULE_GLOBALS(entity)
 // Retrieve the specified property for an instance of \Trogdord\Entity. Return
 // type is zval *.
 #define ENTITY_TO_PROP_VAL(THIS_PTR, RV, PROPERTY) zend_read_property(\
-ENTITY_GLOBALS(classEntry), (THIS_PTR), (PROPERTY), \
+ENTITY_GLOBALS(classEntry), (THIS_PTR_COMPAT(THIS_PTR)), (PROPERTY), \
 strlen((PROPERTY)), 1, (RV))
 
 // Retrieve the game id from an instance of \Trogdord\Game.

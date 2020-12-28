@@ -281,7 +281,11 @@ bool createEntityObj(zval *entityObj, Value &properties, zval *gameObj) {
 
 	zend_update_property_string(
 		eClassEntry,
-		entityObj,
+		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+			Z_OBJ_P(entityObj),
+		#else
+			entityObj,
+		#endif
 		NAME_PROPERTY_NAME,
 		strlen(NAME_PROPERTY_NAME),
 		properties["name"].GetString()
@@ -289,7 +293,11 @@ bool createEntityObj(zval *entityObj, Value &properties, zval *gameObj) {
 
 	zend_update_property(
 		eClassEntry,
-		entityObj,
+		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+			Z_OBJ_P(entityObj),
+		#else
+			entityObj,
+		#endif
 		GAME_PROPERTY_NAME,
 		strlen(GAME_PROPERTY_NAME),
 		gameObj

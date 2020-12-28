@@ -1,11 +1,11 @@
 #ifndef PHP_GAME_H
 #define PHP_GAME_H
 
-#include "compatibility.h"
-
 extern "C" {
 	#include "php.h"
 }
+
+#include "compatibility.h"
 
 // For an explanation of what I'm doing here, see:
 // https://www.php.net/manual/en/internals2.structure.globals.php

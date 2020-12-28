@@ -123,7 +123,11 @@ PHP_METHOD(Player, destroy) {
 		// Set the player name to null so the object can't be used anymore
 		zend_update_property_null(
 			ENTITY_GLOBALS(classEntry),
-			getThis(),
+			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+				Z_OBJ_P(getThis()),
+			#else
+				getThis(),
+			#endif
 			NAME_PROPERTY_NAME,
 			strlen(NAME_PROPERTY_NAME)
 		);
