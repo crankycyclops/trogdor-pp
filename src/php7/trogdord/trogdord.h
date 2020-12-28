@@ -48,6 +48,10 @@ extern zend_object_handlers trogdordObjectHandlers;
 
 /*****************************************************************************/
 
+// The read-only public property that gets set to status code returne by the
+// response to the last request
+constexpr const char *STATUS_PROPERTY = "status";
+
 // Declares Trogdord class to the Zend Engine.
 extern void defineTrogdordClass();
 

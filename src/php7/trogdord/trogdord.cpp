@@ -580,6 +580,35 @@ static void freeObject(zend_object *object TSRMLS_DC) {
 }
 
 /*****************************************************************************/
+
+// Danger, Will Robinson! The arguments here changed between 7.4 and 8.0, so
+// I'll have to conditionally define this function. See definition of
+// mysqli_write_property in mysqli's source code for an example of how this
+// differs.
+static WRITE_PROP_RETURN_TYPE writeObjectProperty(zval *object, zval *member, zval *value, void **cache_slot) {
+
+	// The status code of whatever the last request was is a read-only property
+	if (
+		Z_TYPE_P(member) == IS_STRING &&
+		0 == strncmp(Z_STRVAL_P(member), STATUS_PROPERTY, Z_STRLEN_P(member))
+	) {
+		zend_throw_error(NULL, "Cannot write property");
+	}
+
+	else {
+		#if ZEND_MODULE_API_NO >= 20190902 // PHP 7.4+
+			value = zend_std_write_property(object, member, value, cache_slot);
+		#else
+			zend_std_write_property(object, member, value, cache_slot);
+		#endif
+	}
+
+	#if ZEND_MODULE_API_NO >= 20190902 // PHP 7.4+
+		return value;
+	#endif
+}
+
+/*****************************************************************************/
 /*****************************************************************************/
 
 void defineTrogdordClass() {
@@ -603,6 +632,7 @@ void defineTrogdordClass() {
 	TROGDORD_GLOBALS(classEntry)->create_object = createObject;
 	trogdordObjectHandlers.free_obj = freeObject;
 	trogdordObjectHandlers.dtor_obj = destroyObject;
+	trogdordObjectHandlers.write_property = writeObjectProperty;
 
 	// For an explanation of why this is necessary, see:
 	// http://blog.jpauli.tech/2016-01-14-php-7-objects-html/
