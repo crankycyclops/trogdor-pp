@@ -21,7 +21,7 @@ ZEND_END_MODULE_GLOBALS(game)
 // type is zval *.
 #define GAME_TO_PROP_VAL(THIS_PTR, RV, PROPERTY) zend_read_property(\
 GAME_GLOBALS(classEntry), (THIS_PTR), (PROPERTY), \
-strlen((PROPERTY)), 1, (RV) TSRMLS_CC)
+strlen((PROPERTY)), 1, (RV))
 
 // Retrieve the instance of \Trogdord that spawned the instance of \Trogdord\Game.
 #define GAME_TO_TROGDORD(THIS_PTR, RV) GAME_TO_PROP_VAL(THIS_PTR, RV, TROGDORD_PROPERTY)

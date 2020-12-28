@@ -35,7 +35,7 @@ PHP_METHOD(Entity, input) {
 	char *command;
 	size_t commandLength;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &command, &commandLength) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &command, &commandLength) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -97,7 +97,7 @@ PHP_METHOD(Player, destroy) {
 	char *removeMsg = nullptr;
 	size_t removeMsgLen = 0;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &removeMsg, &removeMsgLen) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "|s", &removeMsg, &removeMsgLen) == FAILURE) {
 		RETURN_NULL();
 	}
 

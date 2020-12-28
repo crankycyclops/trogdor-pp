@@ -23,7 +23,7 @@ ZEND_END_MODULE_GLOBALS(entity)
 // type is zval *.
 #define ENTITY_TO_PROP_VAL(THIS_PTR, RV, PROPERTY) zend_read_property(\
 ENTITY_GLOBALS(classEntry), (THIS_PTR), (PROPERTY), \
-strlen((PROPERTY)), 1, (RV) TSRMLS_CC)
+strlen((PROPERTY)), 1, (RV))
 
 // Retrieve the game id from an instance of \Trogdord\Game.
 #define ENTITY_TO_NAME(THIS_PTR, RV) ENTITY_TO_PROP_VAL(THIS_PTR, RV, NAME_PROPERTY_NAME)

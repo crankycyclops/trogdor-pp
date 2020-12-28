@@ -86,7 +86,7 @@ PHP_METHOD(Entity, __get) {
 	char *key;
 	size_t keyLength;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &keyLength) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &key, &keyLength) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -120,7 +120,7 @@ PHP_METHOD(Entity, output) {
 	size_t messageLength = 0;
 
 	if (zend_parse_parameters(
-		ZEND_NUM_ARGS() TSRMLS_CC,
+		ZEND_NUM_ARGS(),
 		"|ss",
 		&channel,
 		&channelLength,
@@ -313,13 +313,13 @@ void defineEntityClass() {
 		ENTITY_GLOBALS(classEntry),
 		NAME_PROPERTY_NAME,
 		strlen(NAME_PROPERTY_NAME),
-		ZEND_ACC_PROTECTED TSRMLS_CC
+		ZEND_ACC_PROTECTED
 	);
 
 	zend_declare_property_null(
 		ENTITY_GLOBALS(classEntry),
 		GAME_PROPERTY_NAME,
 		strlen(GAME_PROPERTY_NAME),
-		ZEND_ACC_PROTECTED TSRMLS_CC
+		ZEND_ACC_PROTECTED
 	);
 }

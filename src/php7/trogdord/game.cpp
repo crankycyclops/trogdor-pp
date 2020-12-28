@@ -98,7 +98,7 @@ PHP_METHOD(Game, __get) {
 	char *key;
 	size_t keyLength;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &keyLength) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &key, &keyLength) == FAILURE) {
 		RETURN_NULL()
 	}
 
@@ -485,7 +485,7 @@ PHP_METHOD(Game, getMeta) {
 	zval *keys = nullptr;
 	std::string metaArg;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|a", &keys) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "|a", &keys) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -576,7 +576,7 @@ PHP_METHOD(Game, setMeta) {
 	zval *meta;
 	std::string valuesArg;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &meta) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "a", &meta) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -1124,7 +1124,7 @@ PHP_METHOD(Game, getEntity) {
 	char *name;
 	size_t nameLength;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &name, &nameLength) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -1186,7 +1186,7 @@ PHP_METHOD(Game, getTangible) {
 	char *name;
 	size_t nameLength;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &name, &nameLength) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -1248,7 +1248,7 @@ PHP_METHOD(Game, getPlace) {
 	char *name;
 	size_t nameLength;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &name, &nameLength) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -1310,7 +1310,7 @@ PHP_METHOD(Game, getThing) {
 	char *name;
 	size_t nameLength;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &name, &nameLength) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -1372,7 +1372,7 @@ PHP_METHOD(Game, getBeing) {
 	char *name;
 	size_t nameLength;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &name, &nameLength) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -1434,7 +1434,7 @@ PHP_METHOD(Game, getResource) {
 	char *name;
 	size_t nameLength;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &name, &nameLength) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -1495,7 +1495,7 @@ PHP_METHOD(Game, getRoom) {
 	char *name;
 	size_t nameLength;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &name, &nameLength) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -1556,7 +1556,7 @@ PHP_METHOD(Game, getObject) {
 	char *name;
 	size_t nameLength;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &name, &nameLength) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -1618,7 +1618,7 @@ PHP_METHOD(Game, getCreature) {
 	char *name;
 	size_t nameLength;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &name, &nameLength) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -1679,7 +1679,7 @@ PHP_METHOD(Game, getPlayer) {
 	char *name;
 	size_t nameLength;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &name, &nameLength) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -1741,7 +1741,7 @@ PHP_METHOD(Game, createPlayer) {
 	char *name;
 	size_t nameLength;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &nameLength) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &name, &nameLength) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -1967,7 +1967,6 @@ void defineGameClass() {
 		GAME_NAME_PROPERTY,
 		strlen(GAME_NAME_PROPERTY),
 		ZEND_ACC_PRIVATE
-		TSRMLS_CC
 	);
 
 	zend_declare_property_null(
@@ -1975,7 +1974,6 @@ void defineGameClass() {
 		GAME_DEFINITION_PROPERTY,
 		strlen(GAME_DEFINITION_PROPERTY),
 		ZEND_ACC_PRIVATE
-		TSRMLS_CC
 	);
 
 	zend_declare_property_null(
@@ -1983,7 +1981,6 @@ void defineGameClass() {
 		GAME_ID_PROPERTY,
 		strlen(GAME_ID_PROPERTY),
 		ZEND_ACC_PRIVATE
-		TSRMLS_CC
 	);
 
 	zend_declare_property_null(
@@ -1991,7 +1988,6 @@ void defineGameClass() {
 		TROGDORD_PROPERTY,
 		strlen(TROGDORD_PROPERTY),
 		ZEND_ACC_PRIVATE
-		TSRMLS_CC
 	);
 
 	// Make sure users can't extend the class

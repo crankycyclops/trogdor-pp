@@ -61,7 +61,7 @@ PHP_METHOD(Trogdord, __construct) {
 	long port = TROGDORD_DEFAULT_PORT;
 
 	zend_parse_parameters_throw(
-		ZEND_NUM_ARGS() TSRMLS_CC,
+		ZEND_NUM_ARGS(),
 		"s|l",
 		&hostname,
 		&hostnameLength,
@@ -226,7 +226,7 @@ PHP_METHOD(Trogdord, games) {
 	// The ! character tells us that if we pass in a literal null for the first
 	// argument, filters will be set to a nullptr rather than us getting a
 	// warning about the first parameter not being of the correct type.
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|a!a", &filters, &keys) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "|a!a", &filters, &keys) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -379,7 +379,7 @@ PHP_METHOD(Trogdord, getGame) {
 	size_t gameId;
 	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(getThis()));
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &gameId)  == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &gameId)  == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -456,7 +456,7 @@ PHP_METHOD(Trogdord, newGame) {
 	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(getThis()));
 
 	if (zend_parse_parameters(
-		ZEND_NUM_ARGS() TSRMLS_CC,
+		ZEND_NUM_ARGS(),
 		"ss|a",
 		&name,
 		&nameLength,
@@ -581,9 +581,9 @@ static void destroyObject(zend_object *object TSRMLS_DC) {
 
 /*****************************************************************************/
 
-static void freeObject(zend_object *object TSRMLS_DC) {
+static void freeObject(zend_object *object) {
 
-	zend_object_std_dtor(object TSRMLS_CC);
+	zend_object_std_dtor(object);
 }
 
 /*****************************************************************************/
@@ -632,7 +632,6 @@ void defineTrogdordClass() {
 		STATUS_PROPERTY,
 		strlen(STATUS_PROPERTY),
 		ZEND_ACC_PUBLIC
-		TSRMLS_CC
 	);
 
 	// Make sure users can't extend the class
