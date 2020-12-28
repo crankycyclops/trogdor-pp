@@ -1,4 +1,5 @@
 #include "request.h"
+#include "response.h"
 #include "trogdord.h"
 #include "network/tcpconnectionmap.h"
 
@@ -38,7 +39,7 @@ Document Request::execute(
 			status
 		);
 
-		if (!responseObj.HasMember("status") || SUCCESS != (status = responseObj["status"].GetUint())) {
+		if (!responseObj.HasMember("status") || STATUS_SUCCESS != (status = responseObj["status"].GetUint())) {
 			throw RequestException(
 				responseObj.HasMember("message") ? responseObj["message"].GetString() : "Invalid request",
 				status

@@ -8,10 +8,6 @@ class Request {
 
 	public:
 
-		// This status returned as part of the response indicates that the
-		// request was successful.
-		static const int SUCCESS = 200;
-
 		// Sends a request to trogdord and processes the response.
 		static Document execute(
 			std::string hostname,

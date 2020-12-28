@@ -3,6 +3,7 @@
 #include "json.h"
 #include "request.h"
 #include "utility.h"
+#include "response.h"
 #include "network/tcpconnectionmap.h"
 
 #include "trogdord.h"
@@ -193,7 +194,7 @@ PHP_METHOD(Trogdord, restore) {
 
 	// Throw \Trogord\RequestException
 	catch (const RequestException &e) {
-		if (206 == e.getCode()) {
+		if (STATUS_PARTIAL_CONTENT == e.getCode()) {
 			RETURN_NULL();
 		} else {
 			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());

@@ -2,6 +2,7 @@
 #include "trogdord.h"
 #include "game.h"
 #include "phpexception.h"
+#include "response.h"
 #include "network/tcpconnectionmap.h"
 
 #include "entities/entity.h"
@@ -121,43 +122,43 @@ PHP_MINIT_FUNCTION(trogdord) {
 	// of a trogdord response.
 	REGISTER_LONG_CONSTANT(
 		"Trogdord\\Status\\SUCCESS",
-		200,
+		STATUS_SUCCESS,
 		CONST_CS | CONST_PERSISTENT
 	);
 
 	REGISTER_LONG_CONSTANT(
 		"Trogdord\\Status\\PARTIAL_CONTENT",
-		206,
+		STATUS_PARTIAL_CONTENT,
 		CONST_CS | CONST_PERSISTENT
 	);
 
 	REGISTER_LONG_CONSTANT(
 		"Trogdord\\Status\\INVALID",
-		400,
+		STATUS_INVALID,
 		CONST_CS | CONST_PERSISTENT
 	);
 
 	REGISTER_LONG_CONSTANT(
 		"Trogdord\\Status\\NOT_FOUND",
-		404,
+		STATUS_NOT_FOUND,
 		CONST_CS | CONST_PERSISTENT
 	);
 
 	REGISTER_LONG_CONSTANT(
 		"Trogdord\\Status\\CONFLICT",
-		409,
+		STATUS_CONFLICT,
 		CONST_CS | CONST_PERSISTENT
 	);
 
 	REGISTER_LONG_CONSTANT(
 		"Trogdord\\Status\\INTERNAL_ERROR",
-		500,
+		STATUS_INTERNAL_ERROR,
 		CONST_CS | CONST_PERSISTENT
 	);
 
 	REGISTER_LONG_CONSTANT(
 		"Trogdord\\Status\\UNSUPPORTED",
-		501,
+		STATUS_UNSUPPORTED,
 		CONST_CS | CONST_PERSISTENT
 	);
 
