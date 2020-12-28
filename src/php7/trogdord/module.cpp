@@ -117,6 +117,50 @@ PHP_MINIT_FUNCTION(trogdord) {
 		CONST_CS | CONST_PERSISTENT
 	);
 
+	// Global namespaced constants that identify status codes returned as part
+	// of a trogdord response.
+	REGISTER_LONG_CONSTANT(
+		"Trogdord\\Status\\SUCCESS",
+		200,
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_LONG_CONSTANT(
+		"Trogdord\\Status\\PARTIAL_CONTENT",
+		206,
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_LONG_CONSTANT(
+		"Trogdord\\Status\\INVALID",
+		400,
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_LONG_CONSTANT(
+		"Trogdord\\Status\\NOT_FOUND",
+		404,
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_LONG_CONSTANT(
+		"Trogdord\\Status\\CONFLICT",
+		409,
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_LONG_CONSTANT(
+		"Trogdord\\Status\\INTERNAL_ERROR",
+		500,
+		CONST_CS | CONST_PERSISTENT
+	);
+
+	REGISTER_LONG_CONSTANT(
+		"Trogdord\\Status\\UNSUPPORTED",
+		501,
+		CONST_CS | CONST_PERSISTENT
+	);
+
 	return SUCCESS;
 }
 

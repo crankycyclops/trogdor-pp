@@ -584,10 +584,10 @@ public read-only property `$status` gets set to it so that you can check it if
 necessary. This allows for additional insight.
 
 For example, a call to `\Trogdord::restore()` is successful if the underlying
-request returns a 200 or a 206. 200 is returned when all dumped games are
-successfully restored, and 206 is returned when some but not all dumped games
-were restored. To find out if we only had partial success restoring the state of
-our trogdord instance, we can check this value after the call like so:
+request returns a 200 (`\Trogdord\Status\SUCCESS`), indicating success, or a 206
+(`\Trogdord\\Status\\PARTIAL_CONTENT`), indicating that some but not all dumped
+games were restored. To find out if we only had partial success restoring the
+state of our trogdord instance, we can check this value after the call like so:
 
 ```php
 try {
@@ -596,7 +596,7 @@ try {
 	$connection->restore();
 
 	// A 206 indicates only partial success
-	if (206 == $connection->status) {
+	if (\Trogdord\\Status\\PARTIAL_CONTENT == $connection->status) {
 		// do something if we only had partial success
 	}
 }
@@ -728,3 +728,22 @@ This inherits from `\Trogdord\Exception`.
 be thrown. This inherits from `\Trogdord\RequestException`.
 
 TODO: finish listing remaining exceptions
+
+## Status Codes
+
+Every response received by trogdord returns a status code indicating success or
+the nature of the error that occurred, and after every method that makes a
+request, the read-only public property `\Trogdord::$status` is set to that value
+for inspection if necessary.
+
+The following is a complete list of status codes:
+
+| Defined Constant | Value | Meaning |
+|----------------- | ----- | ------- |
+| `\Trogdord\Status\SUCCESS` | 200 | Indicates success. |
+| `\Trogdord\Status\PARTIAL_CONTENT` | 206 | Indicates only partial success or content returned. |
+| `\Trogdord\Status\INVALID` | 400 | Indicates that a request was made with invalid arguments. |
+| `\Trogdord\Status\NOT_FOUND` | 404 | Indicates that a request was made for a resource that doesn't exist. |
+| `\Trogdord\Status\CONFLICT` | 409 | Indicates that the request was not successful due to a conflict with existing resources. |
+| `\Trogdord\Status\INTERNAL_ERROR` | 500 | Indicates that some other error occurred when servicing the request. |
+| `\Trogdord\Status\UNSUPPORTED` | 501 | Indicates that the request requires the use of an unsupported operation. |
