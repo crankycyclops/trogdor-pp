@@ -558,7 +558,7 @@ static const zend_function_entry classMethods[] =  {
 // Custom Object Handlers
 // See: http://blog.jpauli.tech/2016-01-14-php-7-objects-html/
 
-static zend_object *createObject(zend_class_entry *classEntry TSRMLS_DC) {
+static zend_object *createObject(zend_class_entry *classEntry) {
 
 	trogdordObject *obj = static_cast<trogdordObject *>(
 		ecalloc(1, sizeof(*obj) + zend_object_properties_size(classEntry))
@@ -574,7 +574,7 @@ static zend_object *createObject(zend_class_entry *classEntry TSRMLS_DC) {
 
 /*****************************************************************************/
 
-static void destroyObject(zend_object *object TSRMLS_DC) {
+static void destroyObject(zend_object *object) {
 
 	zend_objects_destroy_object(object);
 }
@@ -588,17 +588,21 @@ static void freeObject(zend_object *object) {
 
 /*****************************************************************************/
 
-// Danger, Will Robinson! The arguments here changed between 7.4 and 8.0, so
-// I'll have to conditionally define this function. See definition of
-// mysqli_write_property in mysqli's source code for an example of how this
-// differs.
-static WRITE_PROP_RETURN_TYPE writeObjectProperty(zval *object, zval *member, zval *value, void **cache_slot) {
+#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+	static WRITE_PROP_RETURN_TYPE writeObjectProperty(zend_object *object, zend_string *member, zval *value, void **cache_slot) {
+#else
+	static WRITE_PROP_RETURN_TYPE writeObjectProperty(zval *object, zval *member, zval *value, void **cache_slot) {
+#endif
 
-	// The status code of whatever the last request was is a read-only property
-	if (
-		Z_TYPE_P(member) == IS_STRING &&
-		0 == strncmp(Z_STRVAL_P(member), STATUS_PROPERTY, Z_STRLEN_P(member))
-	) {
+	// The status code returned by the last request is a read-only property
+	#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+		if (0 == strncmp(ZSTR_VAL(member), STATUS_PROPERTY, ZSTR_LEN(member))) {
+	#else
+		if (
+			Z_TYPE_P(member) == IS_STRING &&
+			0 == strncmp(Z_STRVAL_P(member), STATUS_PROPERTY, Z_STRLEN_P(member))
+		) {
+	#endif
 		zend_throw_error(NULL, "Cannot write property");
 	}
 
