@@ -576,6 +576,40 @@ TODO
 
 TODO
 
+### Retrieving Status Code Returned After the Last Request
+
+Every time a request is made to an instance of trogdord, a status code is
+returned as part of the server's response. Whatever this status code is, the
+public read-only property `$status` gets set to it so that you can check it if
+necessary. This allows for additional insight.
+
+For example, a call to `\Trogdord::restore()` is successful if the underlying
+request returns a 200 or a 206. 200 is returned when all dumped games are
+successfully restored, and 206 is returned when some but not all dumped games
+were restored. To find out if we only had partial success restoring the state of
+our trogdord instance, we can check this value after the call like so:
+
+```php
+try {
+
+	$connection = new \Trogdord("localhost");
+  $connection->restore();
+
+  // A 206 indicates only partial success
+  if (206 == $connection->status) {
+    // do something if we only had partial success
+  }
+}
+
+catch (\Trogdord\NetworkException $e) {
+	// Handle error
+}
+
+catch (\Trogdord\RequestException $e) {
+	// Handle error
+}
+```
+
 ## Classes
 
 The `trogdord` extension defines the following classes:
@@ -585,9 +619,13 @@ The `trogdord` extension defines the following classes:
 Represents a connection to trogdord and is used to create and retrieve games, as
 well as to return statistical information about the server.
 
-Below is a complete list of public methods (all methods including the constructor
-throw an instance of `\Trogdord\NetworkException` if anything goes wrong with the
-connection):
+Below is a complete list of public methods and properties (all methods, including
+the constructor, throw an instance of `\Trogdord\NetworkException` if anything
+goes wrong with the connection):
+
+* `$status` — Gets set after every request to the status code returned in the
+response. This is a public read-only property and can only be set by internal
+methods.
 
 * `__construct(string hostname, int port = 1040)` — Establish a connection to an
 instance of trogdord over the network.
