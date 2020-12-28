@@ -593,12 +593,12 @@ our trogdord instance, we can check this value after the call like so:
 try {
 
 	$connection = new \Trogdord("localhost");
-  $connection->restore();
+	$connection->restore();
 
-  // A 206 indicates only partial success
-  if (206 == $connection->status) {
-    // do something if we only had partial success
-  }
+	// A 206 indicates only partial success
+	if (206 == $connection->status) {
+		// do something if we only had partial success
+	}
 }
 
 catch (\Trogdord\NetworkException $e) {
