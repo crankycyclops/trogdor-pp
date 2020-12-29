@@ -193,7 +193,8 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 					test.dump();
 
 					for (const auto &subdir: STD_FILESYSTEM::directory_iterator(statePath)) {
-						FAIL(subdir.path().filename().string() + ": No data should be dumped when state is disabled");
+						std::string message = subdir.path().filename().string() + ": No data should be dumped when state is disabled";
+						FAIL(message);
 					}
 				}
 
