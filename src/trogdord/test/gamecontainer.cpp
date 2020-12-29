@@ -54,7 +54,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			}
 
 			catch (const ServerException &e) {
-				FAIL(std::string("Failed to initialize game without metadata: ") + e.what());
+				std::string message = std::string("Failed to initialize game without metadata: ") + e.what();
+				FAIL(message);
 			}
 
 			CHECK(container->getGame(gameId1) != nullptr);
@@ -70,7 +71,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			}
 
 			catch (const ServerException &e) {
-				FAIL(std::string("Failed to initialize game with metadata: ") + e.what());
+				std::string message = std::string("Failed to initialize game with metadata: ") + e.what();
+				FAIL(message);
 			}
 
 			CHECK(container->getGame(gameId2) != nullptr);
@@ -130,7 +132,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			}
 
 			catch (const ServerException &e) {
-				FAIL(std::string("Failed to initialize game: ") + e.what());
+				std::string message = std::string("Failed to initialize game: ") + e.what();
+				FAIL(message);
 			}
 
 			container->startGame(gameId);
@@ -163,7 +166,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			}
 
 			catch (const ServerException &e) {
-				FAIL(std::string("Failed to initialize game: ") + e.what());
+				std::string message = std::string("Failed to initialize game: ") + e.what();
+				FAIL(message);
 			}
 
 			// getMeta() for unset value should return an empty string
@@ -200,7 +204,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			}
 
 			catch (const ServerException &e) {
-				FAIL(std::string("Failed to initialize game: ") + e.what());
+				std::string message = std::string("Failed to initialize game: ") + e.what();
+				FAIL(message);
 			}
 
 			try {
@@ -254,7 +259,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				}
 
 				catch (const ServerException &e) {
-					FAIL(std::string("Failed to initialize game: ") + e.what());
+					std::string message = std::string("Failed to initialize game: ") + e.what();
+					FAIL(message);
 				}
 
 				// Make sure game is stopped (that should be the default,
@@ -284,7 +290,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				}
 
 				catch (const ServerException &e) {
-					FAIL(std::string("Failed to initialize game: ") + e.what());
+					std::string message = std::string("Failed to initialize game: ") + e.what();
+					FAIL(message);
 				}
 
 				container->startGame(gameId);
@@ -311,7 +318,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				}
 
 				catch (const ServerException &e) {
-					FAIL(std::string("Failed to initialize game: ") + e.what());
+					std::string message = std::string("Failed to initialize game: ") + e.what();
+					FAIL(message);
 				}
 
 				// Make sure game is stopped (that should be the default,
@@ -462,7 +470,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			}
 
 			catch (const ServerException &e) {
-				FAIL(std::string("Failed to initialize game: ") + e.what());
+				std::string message = std::string("Failed to initialize game: ") + e.what();
+				FAIL(message);
 			}
 
 			container->startGame(gameId);
@@ -503,7 +512,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			}
 
 			catch (const ServerException &e) {
-				FAIL(std::string("Failed to initialize game: ") + e.what());
+				std::string message = std::string("Failed to initialize game: ") + e.what();
+				FAIL(message);
 			}
 
 			container->startGame(gameId);
@@ -544,7 +554,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			}
 
 			catch (const ServerException &e) {
-				FAIL(std::string("Failed to initialize game: ") + e.what());
+				std::string message = std::string("Failed to initialize game: ") + e.what();
+				FAIL(message);
 			}
 
 			container->startGame(gameId);
@@ -600,7 +611,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			}
 
 			catch (const ServerException &e) {
-				FAIL(std::string("Failed to initialize game: ") + e.what());
+				std::string message = std::string("Failed to initialize game: ") + e.what();
+				FAIL(message);
 			}
 
 			// Wait for a little while to give threads time to do their thing
@@ -641,7 +653,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			}
 
 			catch (const ServerException &e) {
-				FAIL(std::string("Failed to initialize game: ") + e.what());
+				std::string message = std::string("Failed to initialize game: ") + e.what();
+				FAIL(message);
 			}
 
 			// Step 2: start the game
@@ -931,7 +944,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 				// If we encounter any subdirectories, we know we dun screwed up!
 				for (const auto &subdir: STD_FILESYSTEM::directory_iterator(statePath)) {
-					FAIL(subdir.path().filename().string() + ": no games should be dumped when state is disabled.");
+					std::string message = subdir.path().filename().string() + ": no games should be dumped when state is disabled.";
+					FAIL(message);
 				}
 
 				// Verify that after restoring, we have zero games, since nothing
@@ -972,7 +986,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			// We didn't create a game, so this state directory should
 			// remain empty
 			for (const auto &subdir: STD_FILESYSTEM::directory_iterator(statePath)) {
-				FAIL(subdir.path().filename().string() + ": no games should be dumped when state is disabled.");
+				std::string message = subdir.path().filename().string() + ": no games should be dumped when state is disabled.";
+				FAIL(message);
 			}
 
 			// Verify that after restoring, we have zero games, since nothing
@@ -1029,7 +1044,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 					count++;
 
 					if (0 != std::to_string(id).compare(subdir.path().filename().string())) {
-						FAIL("Game id " + std::to_string(id) + " doesn't match dumped id " + subdir.path().filename().string());
+						std::string message = "Game id " + std::to_string(id) + " doesn't match dumped id " + subdir.path().filename().string();
+						FAIL(message);
 					}
 				}
 
