@@ -182,6 +182,7 @@ void GameWrapper::dump() {
 	}
 
 	size_t dumpSlot = 0;
+	std::set<size_t> slots;
 	auto &driver = serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
 
 	gameMutex.lock();
@@ -195,11 +196,10 @@ void GameWrapper::dump() {
 
 	else {
 
-		std::set<size_t> prevSlots;
-		getDumpedGameSlots(prevSlots, gameStatePath);
+		getDumpedGameSlots(slots, gameStatePath);
 
-		if (prevSlots.size()) {
-			dumpSlot = *prevSlots.rbegin() + 1;
+		if (slots.size()) {
+			dumpSlot = *slots.rbegin() + 1;
 		}
 	}
 
@@ -207,6 +207,20 @@ void GameWrapper::dump() {
 		STD_FILESYSTEM::path::preferred_separator + std::to_string(dumpSlot);
 	STD_FILESYSTEM::create_directory(gameStateSnapshotPath);
 
+	// Records when the game was dumped
+	fstream timestampFile(
+		gameStateSnapshotPath + STD_FILESYSTEM::path::preferred_separator + "timestamp",
+		std::fstream::out
+	);
+
+	std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+		std::chrono::system_clock::now().time_since_epoch()
+	);
+
+	timestampFile << std::to_string(ms.count());
+	timestampFile.close();
+
+	// Serialized GameWrapper-specific data
 	fstream metaFile(
 		gameStateSnapshotPath + STD_FILESYSTEM::path::preferred_separator + "meta",
 		std::fstream::out
@@ -215,6 +229,7 @@ void GameWrapper::dump() {
 	metaFile << std::any_cast<std::string>(driver->serialize(serializeMeta()));
 	metaFile.close();
 
+	// Serialized game data
 	fstream gameFile(
 		gameStateSnapshotPath + STD_FILESYSTEM::path::preferred_separator + "game",
 		std::fstream::out
@@ -230,16 +245,15 @@ void GameWrapper::dump() {
 		maxDumpsPerGame > 0
 	) {
 
-		std::set<size_t> saveSlots;
-		getDumpedGameSlots(saveSlots, gameStatePath);
+		slots.insert(dumpSlot);
 
-		while (saveSlots.size() > maxDumpsPerGame) {
+		while (slots.size() > maxDumpsPerGame) {
 			STD_FILESYSTEM::remove_all(
 				gameStatePath +
 				STD_FILESYSTEM::path::preferred_separator +
-				std::to_string(*saveSlots.begin())
+				std::to_string(*slots.begin())
 			);
-			saveSlots.erase(*saveSlots.begin());
+			slots.erase(*slots.begin());
 		}
 	}
 

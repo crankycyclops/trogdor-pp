@@ -21,6 +21,9 @@ class Response {
 		// error occurs
 		static constexpr const char *INTERNAL_ERROR_MSG = "An internal error occurred";
 
+		// Error message when state must be enabled and it's not
+		static constexpr const char *STATE_DISABLED = "operation requires state.enabled to be set to true in trogdord.ini.";
+
 		// Crafts a simple JSON response that looks like this:
 		// {"status":<statusCode>,"message":<message>}. This method is
 		// provided as a shortcut that sidesteps the

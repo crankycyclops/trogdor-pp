@@ -18,8 +18,8 @@ This repository includes the following modules:
 
 * [src/core](src/core/README.md): The core library, written in C++
 * [src/standalone](src/standalone/README.md): A barebones single-player CLI client, written primarily as a demonstration for how to use the library
-* [src/trogdord](src/trogdord/README.md): A queryable TCP server capable of hosting multi-player games with optional support for [Redis Pub/Sub](https://redis.io/topics/pubsub)
-* [src/php7/trogdord](src/php7/trogdord/README.md): A PHP 7 and 8 client for trogdord, implemented as an extension in C++
+* [src/trogdord](src/trogdord/README.md): A queryable TCP server capable of hosting multi-player games with configurable crash recovery features and optional support for [Redis Pub/Sub](https://redis.io/topics/pubsub)
+* [src/php7/trogdord](src/php7/trogdord/README.md): A PHP 7 and 8 client for trogdord, written as an extension in C++
 * [src/nodejs/trogdord](src/nodejs/trogdord/README.md): A Node.js client for trogdord, written in Javascript
 
 Descriptions of each component, along with build instructions, can be found by clicking the links above.
@@ -56,7 +56,7 @@ An example of this pattern in action is my sister project, [Trogserve](https://g
 
 ### Other Configurations
 
-Other configurations are, of course, possible. You could host single player games online via trogdord, or support multi-player games locally through a custom executable with multiple input devices. You can link any application to core for any purpose; what you choose to do with it is limited only by your imagination :)
+Other configurations are, of course, possible. You could host single player games online via trogdord, or support multi-player games locally through a custom executable with multiple input devices. You can link any application to core for any purpose; what you choose to do with it is limited only by your imagination!
 
 ## Experimental Inform 7 Support
 
@@ -64,7 +64,7 @@ As a programming exercise, I've been working on support for [Inform 7](http://in
 
 The subset of the language that I currently parse is too limited to be useful, so trogdord won't even try to open games that are written in it. However, if you want to play with the parser and see what it can do, the standalone client is equipped to load single-file Inform 7 games.
 
-To read more about what I currently support, including an EBNF of the limited grammar my parser can understand, take a look at [src/core/include/trogdor/parser/parsers/inform7parser.h](https://github.com/crankycyclops/trogdor-pp/blob/master/src/core/include/trogdor/parser/parsers/inform7parser.h).
+To read more about what I currently support, including an EBNF of the limited grammar my parser understands, take a look at [src/core/include/trogdor/parser/parsers/inform7parser.h](https://github.com/crankycyclops/trogdor-pp/blob/master/src/core/include/trogdor/parser/parsers/inform7parser.h).
 
 ## Copyright and License
 

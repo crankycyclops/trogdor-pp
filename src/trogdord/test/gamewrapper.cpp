@@ -475,13 +475,25 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 					CHECK(STD_FILESYSTEM::exists(gameStateSlotPath));
 
+					std::string timestampFilename = gameStateSlotPath +
+						STD_FILESYSTEM::path::preferred_separator + "timestamp";
 					std::string metaFilename = gameStateSlotPath +
 						STD_FILESYSTEM::path::preferred_separator + "meta";
 					std::string gameFilename = gameStateSlotPath +
 						STD_FILESYSTEM::path::preferred_separator + "game";
 
+					CHECK(STD_FILESYSTEM::exists(timestampFilename));
 					CHECK(STD_FILESYSTEM::exists(metaFilename));
 					CHECK(STD_FILESYSTEM::exists(gameFilename));
+
+					std::ifstream timestampFile(timestampFilename);
+					std::string timeStr(
+						(std::istreambuf_iterator<char>(timestampFile)),
+						std::istreambuf_iterator<char>()
+					);
+
+					// Make sure the timestamp file really contains a timestamp
+					CHECK(trogdor::isValidInteger(timeStr));
 
 					auto &json = serial::DriverMap::get("json");
 
@@ -578,6 +590,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 					test.destroyDump();
 
 					CHECK(STD_FILESYSTEM::exists(gameStateSlotPath));
+					CHECK(STD_FILESYSTEM::exists(gameStateSlotPath + STD_FILESYSTEM::path::preferred_separator + "timestamp"));
 					CHECK(STD_FILESYSTEM::exists(gameStateSlotPath + STD_FILESYSTEM::path::preferred_separator + "meta"));
 					CHECK(STD_FILESYSTEM::exists(gameStateSlotPath + STD_FILESYSTEM::path::preferred_separator + "game"));
 				}
@@ -831,10 +844,15 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 			// Create dump files containing non-deserializable data
 			std::string slotPath = gameStatePath.string() + STD_FILESYSTEM::path::preferred_separator + '0';
+			std::string timestampDataPath = slotPath + STD_FILESYSTEM::path::preferred_separator + "timestamp";
 			std::string metaDataPath = slotPath + STD_FILESYSTEM::path::preferred_separator + "meta";
 			std::string gameDataPath = slotPath + STD_FILESYSTEM::path::preferred_separator + "game";
 
 			STD_FILESYSTEM::create_directory(slotPath);
+
+			fstream timestampFile(timestampDataPath, std::fstream::out);
+			timestampFile << "0" << std::endl;
+			timestampFile.close();
 
 			fstream metaFile(metaDataPath, std::fstream::out);
 			metaFile << "I'm not valid JSON!" << std::endl;

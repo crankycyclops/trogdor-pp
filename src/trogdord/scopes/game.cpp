@@ -46,8 +46,20 @@ GameController::GameController() {
 		return this->getDefinitionList(request);
 	});
 
+	registerAction(Request::GET, DUMPED_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
+		return this->getDumped(request);
+	});
+
 	registerAction(Request::POST, DEFAULT_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->createGame(request);
+	});
+
+	registerAction(Request::POST, DUMP_GAME_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
+		return this->dumpGame(request);
+	});
+
+	registerAction(Request::POST, RESTORE_GAME_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
+		return this->restoreGame(request);
 	});
 
 	registerAction(Request::SET, META_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
@@ -720,5 +732,84 @@ rapidjson::Document GameController::getIsRunning(const rapidjson::Document &requ
 		response.AddMember("message", rapidjson::StringRef(GAME_NOT_FOUND), response.GetAllocator());
 	}
 
+	return response;
+}
+
+/*****************************************************************************/
+
+rapidjson::Document GameController::getDumped(const rapidjson::Document &request) {
+
+	rapidjson::Document response(rapidjson::kObjectType);
+
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+
+		response.AddMember("status", Response::STATUS_UNSUPPORTED, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(Response::STATE_DISABLED), response.GetAllocator());
+
+		return response;
+	}
+
+	try {
+
+		const rapidjson::Value *idArg = rapidjson::Pointer("/args/id").Get(request);
+
+		if (!idArg) {
+
+			rapidjson::Value jsonIds(rapidjson::kArrayType);
+			std::vector<size_t> ids = GameContainer::get()->getDumpedGameIds();
+
+			for (const auto &id: ids) {
+				jsonIds.PushBack(id, response.GetAllocator());
+			}
+
+			response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+			response.AddMember("games", jsonIds.Move(), response.GetAllocator());
+		}
+
+		else {
+
+			if (!idArg->IsUint()) {
+				response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+				response.AddMember("message", rapidjson::StringRef(Request::INVALID_GAME_ID), response.GetAllocator());
+			}
+
+			else if (!GameContainer::get()->isDumpedGameId(idArg->GetUint())) {
+				response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
+				response.AddMember("message", rapidjson::StringRef(DUMPED_GAME_NOT_FOUND), response.GetAllocator());
+			}
+
+			else {
+				// TODO: get all dump slots for the game, if any (could be empty)
+				// I need to dump out the timestamp in a third file in the dump slot
+					// . need to update unit tests to reflect this change
+			}
+		}
+	}
+
+	catch (const std::exception &e) {
+		response.AddMember("status", Response::STATUS_INTERNAL_ERROR, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(e.what()), response.GetAllocator());		
+	}
+
+	return response;
+}
+
+/*****************************************************************************/
+
+rapidjson::Document GameController::dumpGame(const rapidjson::Document &request) {
+
+	rapidjson::Document response(rapidjson::kObjectType);
+
+	// TODO
+	return response;
+}
+
+/*****************************************************************************/
+
+rapidjson::Document GameController::restoreGame(const rapidjson::Document &request) {
+
+	rapidjson::Document response(rapidjson::kObjectType);
+
+	// TODO
 	return response;
 }

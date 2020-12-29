@@ -465,3 +465,38 @@ int GameContainer::restore() {
 
 	return numGames == numSuccessful ? Response::STATUS_SUCCESS : Response::STATUS_PARTIAL_CONTENT;
 }
+
+/*****************************************************************************/
+
+bool GameContainer::isDumpedGameId(size_t id) {
+
+	if (Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+
+		std::string dumpPath = Config::get()->getStatePath() +
+			STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+		if (STD_FILESYSTEM::exists(dumpPath) && STD_FILESYSTEM::is_directory(dumpPath)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/*****************************************************************************/
+
+std::vector<size_t> GameContainer::getDumpedGameIds() {
+
+	std::vector<size_t> ids;
+
+	iterateDumpedGames(Config::get()->getStatePath(), [&](const STD_FILESYSTEM::path &p) {
+
+		std::string idStr = p.filename();
+
+		try {
+			ids.push_back(std::stoi(idStr));
+		} catch (const std::exception &e) {}
+	});
+
+	return ids;
+}

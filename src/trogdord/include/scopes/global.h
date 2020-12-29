@@ -24,9 +24,6 @@ class GlobalController: public ScopeController {
 
 	public:
 
-		// Error messages
-		static constexpr const char *STATE_DISABLED = "operation requires state.enabled to be set to true in trogdord.ini.";
-
 		// Scope name that should be used in requests
 		static constexpr const char *SCOPE = "global";
 

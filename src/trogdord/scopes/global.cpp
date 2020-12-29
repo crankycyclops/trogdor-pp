@@ -71,7 +71,7 @@ rapidjson::Document GlobalController::dump(const rapidjson::Document &request) {
 
 	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
 		response.AddMember("status", Response::STATUS_UNSUPPORTED, response.GetAllocator());
-		response.AddMember("message", rapidjson::StringRef(STATE_DISABLED), response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(Response::STATE_DISABLED), response.GetAllocator());
 	}
 
 	else {
@@ -98,7 +98,7 @@ rapidjson::Document GlobalController::restore(const rapidjson::Document &request
 
 	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
 		response.AddMember("status", Response::STATUS_UNSUPPORTED, response.GetAllocator());
-		response.AddMember("message", rapidjson::StringRef(STATE_DISABLED), response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(Response::STATE_DISABLED), response.GetAllocator());
 	}
 
 	else {

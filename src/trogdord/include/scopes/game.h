@@ -22,6 +22,9 @@ class GameController: public ScopeController {
 		static constexpr const char *STOP_ACTION = "stop";
 		static constexpr const char *TIME_ACTION = "time";
 		static constexpr const char *IS_RUNNING_ACTION = "is_running";
+		static constexpr const char *DUMPED_ACTION = "dumped";
+		static constexpr const char *DUMP_GAME_ACTION = "dump";
+		static constexpr const char *RESTORE_GAME_ACTION = "restore";
 
 		// Constructor should only be called internally by get(), which will
 		// ensure we only ever have a single instance of the class.
@@ -41,6 +44,7 @@ class GameController: public ScopeController {
 		static constexpr const char *INVALID_META_KEYS = "invalid meta keys";
 		static constexpr const char *INVALID_FILTER_ARG = "filters must be expressed as a JSON object or array";
 		static constexpr const char *INVALID_DELETE_DUMP_ARG = "delete_dump must be a boolean value";
+		static constexpr const char *DUMPED_GAME_NOT_FOUND = "dumped game not found";
 
 		// Scope name that should be used in requests
 		static constexpr const char *SCOPE = "game";
@@ -83,6 +87,16 @@ class GameController: public ScopeController {
 
 		// Returns whether or not the game is currently running
 		rapidjson::Document getIsRunning(const rapidjson::Document &request);
+
+		// Returns a list of either dumped game ids or save slots for a
+		// specific game, depending on the arguments
+		rapidjson::Document getDumped(const rapidjson::Document &request);
+
+		// Dumps the specified game to disk
+		rapidjson::Document dumpGame(const rapidjson::Document &request);
+
+		// Restores the specified game from disk
+		rapidjson::Document restoreGame(const rapidjson::Document &request);
 };
 
 

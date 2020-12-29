@@ -204,6 +204,13 @@ class GameContainer {
 		// Does nothing if the state feature was disabled. Returns a status
 		// code, which can be sent back if call was part of a request.
 		int restore();
+
+		// Returns true if the specified id is that of a dumped game and false
+		// if not (or if state is disabled.)
+		bool isDumpedGameId(size_t id);
+
+		// Returns all dumped game ids
+		std::vector<size_t> getDumpedGameIds();
 };
 
 
