@@ -883,7 +883,7 @@ rapidjson::Document GameController::dumpGame(const rapidjson::Document &request)
 
 	rapidjson::Document response(rapidjson::kObjectType);
 
-	// TODO
+	// TODO: simple wrapper around GameWrapper::dump()
 	return response;
 }
 
@@ -893,6 +893,9 @@ rapidjson::Document GameController::restoreGame(const rapidjson::Document &reque
 
 	rapidjson::Document response(rapidjson::kObjectType);
 
-	// TODO
+	// TODO: leaving slot argument blank will automatically restore the latest
+	// dump slot, while specifying the slot number will load that slot (need to
+	// see if slot exists and return 404 if it doesn't; also 404 if dumped game
+	// id not found.)
 	return response;
 }
