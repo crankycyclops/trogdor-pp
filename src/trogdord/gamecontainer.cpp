@@ -34,7 +34,10 @@ void GameContainer::iterateDumpedGames(
 			continue;
 		}
 
-		else if (!STD_FILESYSTEM::is_directory(subdir.path())) {
+		else if (
+			!STD_FILESYSTEM::is_directory(subdir.path()) ||
+			!STD_FILESYSTEM::exists(subdir.path().string() + STD_FILESYSTEM::path::preferred_separator + "meta")
+		) {
 
 			if (warnOnInvalid) {
 				Config::get()->err(trogdor::Trogerr::WARNING) << idStr
