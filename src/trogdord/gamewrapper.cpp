@@ -95,11 +95,11 @@ GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p): gamePtr(nullptr) {
 	auto &serialDriver =
 		serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
 
-	ifstream metaFile(metaPath);
-	ifstream gameFile(gamePath);
+	std::ifstream metaFile(metaPath);
+	std::ifstream gameFile(gamePath);
 
-	ostringstream metaStr;
-	ostringstream gameStr;
+	std::ostringstream metaStr;
+	std::ostringstream gameStr;
 
 	metaStr << metaFile.rdbuf();
 	gameStr << gameFile.rdbuf();
@@ -192,7 +192,7 @@ void GameWrapper::dump() {
 
 		// Serialized GameWrapper-specific data (this data doesn't change, so we
 		// store it in the id directory instead of with each dump slot.)
-		fstream metaFile(
+		std::fstream metaFile(
 			gameStatePath + STD_FILESYSTEM::path::preferred_separator + "meta",
 			std::fstream::out
 		);

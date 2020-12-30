@@ -1,5 +1,6 @@
 #include <utility>
 #include <iomanip>
+#include <fstream>
 
 #include <trogdor/utility.h>
 #include <trogdor/filesystem.h>
@@ -7,6 +8,7 @@
 #include "../include/request.h"
 #include "../include/gamecontainer.h"
 #include "../include/filesystem.h"
+#include "../include/serial/drivermap.h"
 
 #include "../include/scopes/game.h"
 
@@ -759,7 +761,51 @@ rapidjson::Document GameController::getDumped(const rapidjson::Document &request
 			std::vector<size_t> ids = GameContainer::get()->getDumpedGameIds();
 
 			for (const auto &id: ids) {
-				jsonIds.PushBack(id, response.GetAllocator());
+
+				std::string gameMetaPath = Config::get()->getStatePath() +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(id) +
+					STD_FILESYSTEM::path::preferred_separator + "meta";
+
+				if (STD_FILESYSTEM::exists(gameMetaPath) && STD_FILESYSTEM::is_regular_file(gameMetaPath)) {
+
+					try {
+
+						auto &serialDriver =
+							serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
+
+						std::ifstream metaFile(gameMetaPath);
+						std::string metaStr(
+							(std::istreambuf_iterator<char>(metaFile)),
+							std::istreambuf_iterator<char>()
+						);
+
+						std::shared_ptr<trogdor::serial::Serializable> metaData =
+							serialDriver->deserialize(metaStr);
+
+						rapidjson::Value jsonData(rapidjson::kObjectType);
+						rapidjson::Value gName(rapidjson::kStringType);
+						rapidjson::Value gDefinition(rapidjson::kStringType);
+
+						gName.SetString(rapidjson::StringRef(
+							std::get<std::string>(*metaData->get("name")).c_str()
+						), response.GetAllocator());
+						gDefinition.SetString(rapidjson::StringRef(
+							std::get<std::string>(*metaData->get("definition")).c_str()
+						), response.GetAllocator());
+
+						jsonData.AddMember("id", id, response.GetAllocator());
+						jsonData.AddMember("name", gName, response.GetAllocator());
+						jsonData.AddMember("definition", gDefinition, response.GetAllocator());
+						jsonData.AddMember("created", std::get<size_t>(*metaData->get("created")), response.GetAllocator());
+
+						jsonIds.PushBack(jsonData.Move(), response.GetAllocator());
+					}
+
+					// If we have a problem opening the meta file or
+					// deserializing it to get the necessary data, consider
+					// the dumped game invalid and ignore it.
+					catch (const std::exception &e) {}
+				}
 			}
 
 			response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
@@ -779,9 +825,35 @@ rapidjson::Document GameController::getDumped(const rapidjson::Document &request
 			}
 
 			else {
-				// TODO: get all dump slots for the game, if any (could be empty)
-				// I need to dump out the timestamp in a third file in the dump slot
-					// . need to update unit tests to reflect this change
+
+				std::set<size_t> slots;
+				rapidjson::Value slotsArr(rapidjson::kArrayType);
+				std::string gamePath = Config::get()->getString(Config::CONFIG_KEY_STATE_PATH) +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(idArg->GetUint());
+
+				GameWrapper::getDumpedGameSlots(slots, gamePath);
+
+				for (const auto &slot: slots) {
+
+					rapidjson::Value slotData(rapidjson::kObjectType);
+
+					std::ifstream timestampFile(
+						gamePath + STD_FILESYSTEM::path::preferred_separator +
+						std::to_string(slot) +
+						STD_FILESYSTEM::path::preferred_separator + "timestamp"
+					);
+
+					std::string timestampBuffer(
+						(std::istreambuf_iterator<char>(timestampFile)),
+						std::istreambuf_iterator<char>()
+					);
+
+					slotData.AddMember("slot", slot, response.GetAllocator());
+					slotData.AddMember("timestamp_ms", std::stoi(timestampBuffer), response.GetAllocator());
+				}
+
+				response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+				response.AddMember("slots", slotsArr.Move(), response.GetAllocator());
 			}
 		}
 	}
