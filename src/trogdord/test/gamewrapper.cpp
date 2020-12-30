@@ -295,6 +295,15 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 					int numActuallyDumped = 0;
 
 					for (const auto &subdir: STD_FILESYSTEM::directory_iterator(gameStatePath)) {
+
+						// Skip over "meta", the only valid file within the game id's directory
+						if (
+							STD_FILESYSTEM::is_regular_file(subdir.path()) &&
+							0 == subdir.path().filename().string().compare("meta")
+						) {
+							continue;
+						}
+
 						numActuallyDumped++;
 						CHECK(validDumpInts.find(std::stoi(subdir.path().filename().string())) != validDumpInts.end());
 					}
@@ -356,6 +365,15 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 					int numActuallyDumped = 0;
 
 					for (const auto &subdir: STD_FILESYSTEM::directory_iterator(gameStatePath)) {
+
+						// Skip over "meta", the only valid file within the game id's directory
+						if (
+							STD_FILESYSTEM::is_regular_file(subdir.path()) &&
+							0 == subdir.path().filename().string().compare("meta")
+						) {
+							continue;
+						}
+
 						numActuallyDumped++;
 						CHECK(validDumpInt == std::stoi(subdir.path().filename().string()));
 					}
@@ -420,6 +438,15 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 					int numActuallyDumped = 0;
 
 					for (const auto &subdir: STD_FILESYSTEM::directory_iterator(gameStatePath)) {
+
+						// Skip over "meta", the only valid file within the game id's directory
+						if (
+							STD_FILESYSTEM::is_regular_file(subdir.path()) &&
+							0 == subdir.path().filename().string().compare("meta")
+						) {
+							continue;
+						}
+
 						numActuallyDumped++;
 						CHECK(validDumpInts.find(std::stoi(subdir.path().filename().string())) != validDumpInts.end());
 					}
@@ -478,7 +505,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 					std::string timestampFilename = gameStateSlotPath +
 						STD_FILESYSTEM::path::preferred_separator + "timestamp";
-					std::string metaFilename = gameStateSlotPath +
+					std::string metaFilename = gameStatePath +
 						STD_FILESYSTEM::path::preferred_separator + "meta";
 					std::string gameFilename = gameStateSlotPath +
 						STD_FILESYSTEM::path::preferred_separator + "game";
@@ -591,8 +618,8 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 					test.destroyDump();
 
 					CHECK(STD_FILESYSTEM::exists(gameStateSlotPath));
+					CHECK(STD_FILESYSTEM::exists(gameStatePath + STD_FILESYSTEM::path::preferred_separator + "meta"));
 					CHECK(STD_FILESYSTEM::exists(gameStateSlotPath + STD_FILESYSTEM::path::preferred_separator + "timestamp"));
-					CHECK(STD_FILESYSTEM::exists(gameStateSlotPath + STD_FILESYSTEM::path::preferred_separator + "meta"));
 					CHECK(STD_FILESYSTEM::exists(gameStateSlotPath + STD_FILESYSTEM::path::preferred_separator + "game"));
 				}
 
@@ -845,8 +872,8 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 			// Create dump files containing non-deserializable data
 			std::string slotPath = gameStatePath.string() + STD_FILESYSTEM::path::preferred_separator + '0';
+			std::string metaDataPath = gameStatePath.string() + STD_FILESYSTEM::path::preferred_separator + "meta";
 			std::string timestampDataPath = slotPath + STD_FILESYSTEM::path::preferred_separator + "timestamp";
-			std::string metaDataPath = slotPath + STD_FILESYSTEM::path::preferred_separator + "meta";
 			std::string gameDataPath = slotPath + STD_FILESYSTEM::path::preferred_separator + "game";
 
 			STD_FILESYSTEM::create_directory(slotPath);

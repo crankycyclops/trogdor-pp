@@ -77,8 +77,7 @@ GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p): gamePtr(nullptr) {
 	}
 
 	std::string slotStr = std::to_string(*slots.rbegin());
-	std::string metaPath = idPath + STD_FILESYSTEM::path::preferred_separator +
-		slotStr + STD_FILESYSTEM::path::preferred_separator + "meta";
+	std::string metaPath = idPath + STD_FILESYSTEM::path::preferred_separator + "meta";
 	std::string gamePath = idPath + STD_FILESYSTEM::path::preferred_separator +
 		slotStr + STD_FILESYSTEM::path::preferred_separator + "game";
 
@@ -142,11 +141,7 @@ void GameWrapper::getDumpedGameSlots(std::set<size_t> &slots, std::string gameId
 		std::string slot = subdir.path().filename();
 
 		// Skip over obviously invalid files and directories
-		if (!trogdor::isValidInteger(slot)) {
-			continue;
-		}
-
-		else if (!STD_FILESYSTEM::is_directory(subdir.path())) {
+		if (!trogdor::isValidInteger(slot) || !STD_FILESYSTEM::is_directory(subdir.path())) {
 			continue;
 		}
 
@@ -190,8 +185,20 @@ void GameWrapper::dump() {
 	std::string gameStatePath = Config::get()->getStatePath() +
 		STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
 
+	// We're dumping this game for the first time
 	if (!STD_FILESYSTEM::exists(gameStatePath)) {
+
 		STD_FILESYSTEM::create_directory(gameStatePath);
+
+		// Serialized GameWrapper-specific data (this data doesn't change, so we
+		// store it in the id directory instead of with each dump slot.)
+		fstream metaFile(
+			gameStatePath + STD_FILESYSTEM::path::preferred_separator + "meta",
+			std::fstream::out
+		);
+
+		metaFile << std::any_cast<std::string>(driver->serialize(serializeMeta()));
+		metaFile.close();
 	}
 
 	else {
@@ -219,15 +226,6 @@ void GameWrapper::dump() {
 
 	timestampFile << std::to_string(ms.count());
 	timestampFile.close();
-
-	// Serialized GameWrapper-specific data
-	fstream metaFile(
-		gameStateSnapshotPath + STD_FILESYSTEM::path::preferred_separator + "meta",
-		std::fstream::out
-	);
-
-	metaFile << std::any_cast<std::string>(driver->serialize(serializeMeta()));
-	metaFile.close();
 
 	// Serialized game data
 	fstream gameFile(
