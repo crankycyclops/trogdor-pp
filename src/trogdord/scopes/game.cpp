@@ -828,7 +828,7 @@ rapidjson::Document GameController::getDumped(const rapidjson::Document &request
 
 				std::set<size_t> slots;
 				rapidjson::Value slotsArr(rapidjson::kArrayType);
-				std::string gamePath = Config::get()->getString(Config::CONFIG_KEY_STATE_PATH) +
+				std::string gamePath = Config::get()->getStatePath() +
 					STD_FILESYSTEM::path::preferred_separator + std::to_string(idArg->GetUint());
 
 				GameWrapper::getDumpedGameSlots(slots, gamePath);
@@ -848,8 +848,15 @@ rapidjson::Document GameController::getDumped(const rapidjson::Document &request
 						std::istreambuf_iterator<char>()
 					);
 
+					#if SIZE_MAX == UINT64_MAX
+						size_t timestamp = std::stoull(timestampBuffer);
+					#else
+						size_t timestamp = std::stoul(timestampBuffer);
+					#endif
+
 					slotData.AddMember("slot", slot, response.GetAllocator());
-					slotData.AddMember("timestamp_ms", std::stoi(timestampBuffer), response.GetAllocator());
+					slotData.AddMember("timestamp_ms", timestamp, response.GetAllocator());
+					slotsArr.PushBack(slotData, response.GetAllocator());
 				}
 
 				response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
@@ -859,8 +866,12 @@ rapidjson::Document GameController::getDumped(const rapidjson::Document &request
 	}
 
 	catch (const std::exception &e) {
+
+		rapidjson::Value error(rapidjson::kStringType);
+		error.SetString(e.what(), response.GetAllocator());
+
 		response.AddMember("status", Response::STATUS_INTERNAL_ERROR, response.GetAllocator());
-		response.AddMember("message", rapidjson::StringRef(e.what()), response.GetAllocator());		
+		response.AddMember("message", error.Move(), response.GetAllocator());		
 	}
 
 	return response;
