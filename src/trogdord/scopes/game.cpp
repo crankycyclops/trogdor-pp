@@ -871,7 +871,7 @@ rapidjson::Document GameController::getDumped(const rapidjson::Document &request
 		error.SetString(e.what(), response.GetAllocator());
 
 		response.AddMember("status", Response::STATUS_INTERNAL_ERROR, response.GetAllocator());
-		response.AddMember("message", error.Move(), response.GetAllocator());		
+		response.AddMember("message", error.Move(), response.GetAllocator());
 	}
 
 	return response;
@@ -881,9 +881,43 @@ rapidjson::Document GameController::getDumped(const rapidjson::Document &request
 
 rapidjson::Document GameController::dumpGame(const rapidjson::Document &request) {
 
+	size_t gameId;
 	rapidjson::Document response(rapidjson::kObjectType);
 
-	// TODO: simple wrapper around GameWrapper::dump()
+	try {
+		gameId = Request::parseGameId(request);
+	}
+
+	catch (const rapidjson::Document &error) {
+		rapidjson::Document errorCopy;
+		errorCopy.CopyFrom(error, errorCopy.GetAllocator());
+		return errorCopy;
+	}
+
+	std::unique_ptr<GameWrapper> &game = GameContainer::get()->getGame(gameId);
+
+	if (game) {
+
+		try {
+			game->dump();
+			response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+		}
+
+		catch (const std::exception &e) {
+
+			rapidjson::Value error(rapidjson::kStringType);
+			error.SetString(e.what(), response.GetAllocator());
+
+			response.AddMember("status", Response::STATUS_INTERNAL_ERROR, response.GetAllocator());
+			response.AddMember("message", error.Move(), response.GetAllocator());
+		}
+	}
+
+	else {
+		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(GAME_NOT_FOUND), response.GetAllocator());
+	}
+
 	return response;
 }
 
