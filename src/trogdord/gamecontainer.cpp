@@ -473,9 +473,14 @@ int GameContainer::restore() {
 
 void GameContainer::restoreGame(size_t id, std::optional<size_t> slot) {
 
-	// TODO: this will call GameWrapper constructor under the hood with two
-	// parameters, the path and the slot (passing along the std::nullopt if
-	// that's what we got by default is ok.)
+	std::string gameStatePath = Config::get()->getStatePath() +
+		STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+	// If a game by this id is already running, it will be replaced
+	games[id] = std::make_unique<GameWrapper>(gameStatePath, slot);
+
+	clearIndices(id);
+	indexNewGame(id);
 }
 
 /*****************************************************************************/
