@@ -471,6 +471,15 @@ int GameContainer::restore() {
 
 /*****************************************************************************/
 
+void GameContainer::restoreGame(size_t id, std::optional<size_t> slot) {
+
+	// TODO: this will call GameWrapper constructor under the hood with two
+	// parameters, the path and the slot (passing along the std::nullopt if
+	// that's what we got by default is ok.)
+}
+
+/*****************************************************************************/
+
 bool GameContainer::isDumpedGameId(size_t id) {
 
 	if (Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {

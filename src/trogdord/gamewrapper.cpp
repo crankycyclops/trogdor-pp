@@ -10,6 +10,7 @@
 #include "include/serial/drivermap.h"
 #include "include/io/iostream/serverout.h"
 #include "include/exception/serverexception.h"
+#include "include/exception/gamenotfound.h"
 #include "include/exception/unsupportedoperation.h"
 
 #include "include/gamewrapper.h"
@@ -51,7 +52,9 @@ GameWrapper::GameWrapper(
 
 /*****************************************************************************/
 
-GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p): gamePtr(nullptr) {
+// TODO: write code that checks for slot
+GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p, std::optional<size_t> slot):
+gamePtr(nullptr) {
 
 	std::string idPath = p;
 	std::string idStr = p.filename();
@@ -62,7 +65,7 @@ GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p): gamePtr(nullptr) {
 	}
 
 	else if (!STD_FILESYSTEM::exists(p)) {
-		throw ServerException(
+		throw GameNotFound(
 			std::string("Attempted to restore a non-existent game with id ") + idStr
 		);
 	}
@@ -71,7 +74,7 @@ GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p): gamePtr(nullptr) {
 	getDumpedGameSlots(slots, idPath);
 
 	if (!slots.size()) {
-		throw ServerException(
+		throw GameNotFound(
 			std::string("Attempted to restore a non-existent game with id ") + idStr
 		);
 	}

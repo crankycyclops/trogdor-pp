@@ -931,5 +931,6 @@ rapidjson::Document GameController::restoreGame(const rapidjson::Document &reque
 	// dump slot, while specifying the slot number will load that slot (need to
 	// see if slot exists and return 404 if it doesn't; also 404 if dumped game
 	// id not found.)
+	// call GameContainer::restoreGame()
 	return response;
 }
