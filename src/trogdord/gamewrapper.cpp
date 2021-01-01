@@ -10,8 +10,9 @@
 #include "include/serial/drivermap.h"
 #include "include/io/iostream/serverout.h"
 #include "include/exception/serverexception.h"
-#include "include/exception/gamenotfound.h"
 #include "include/exception/unsupportedoperation.h"
+#include "include/exception/gamenotfound.h"
+#include "include/exception/gameslotnotfound.h"
 
 #include "include/gamewrapper.h"
 
@@ -52,7 +53,6 @@ GameWrapper::GameWrapper(
 
 /*****************************************************************************/
 
-// TODO: write code that checks for slot
 GameWrapper::GameWrapper(const STD_FILESYSTEM::path &p, std::optional<size_t> slot):
 gamePtr(nullptr) {
 
@@ -79,7 +79,18 @@ gamePtr(nullptr) {
 		);
 	}
 
-	std::string slotStr = std::to_string(*slots.rbegin());
+	std::string slotStr;
+
+	if (slot) {
+		if (slots.end() != slots.find(*slot)) {
+			slotStr = std::to_string(*slot);
+		} else {
+			throw GameSlotNotFound();
+		}
+	} else {
+		slotStr = std::to_string(*slots.rbegin());
+	}
+
 	std::string metaPath = idPath + STD_FILESYSTEM::path::preferred_separator + "meta";
 	std::string gamePath = idPath + STD_FILESYSTEM::path::preferred_separator +
 		slotStr + STD_FILESYSTEM::path::preferred_separator + "game";
