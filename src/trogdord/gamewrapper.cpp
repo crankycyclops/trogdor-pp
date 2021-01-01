@@ -65,18 +65,14 @@ gamePtr(nullptr) {
 	}
 
 	else if (!STD_FILESYSTEM::exists(p)) {
-		throw GameNotFound(
-			std::string("Attempted to restore a non-existent game with id ") + idStr
-		);
+		throw GameNotFound();
 	}
 
 	// Find the latest dump of the game and restore it
 	getDumpedGameSlots(slots, idPath);
 
 	if (!slots.size()) {
-		throw GameNotFound(
-			std::string("Attempted to restore a non-existent game with id ") + idStr
-		);
+		throw GameNotFound();
 	}
 
 	std::string slotStr;
