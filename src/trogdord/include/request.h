@@ -79,11 +79,19 @@ class Request {
 				throwInvalidRequest(missingErrMsg);
 			}
 
-			else if (!value->IsUint()) {
+			#if SIZE_MAX == UINT64_MAX
+				else if (!value->IsUint64()) {
+			#else
+				else if (!value->IsUint()) {
+			#endif
 				throwInvalidRequest(invalidErrMsg);
 			}
 
-			return value->GetUint();
+			#if SIZE_MAX == UINT64_MAX
+				return value->GetUint64();
+			#else
+				return value->GetUint();
+			#endif
 		}
 
 		// Parses a double argument.

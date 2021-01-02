@@ -815,12 +815,20 @@ rapidjson::Document GameController::getDumped(const rapidjson::Document &request
 
 		else {
 
-			if (!idArg->IsUint()) {
+			#if SIZE_MAX == UINT64_MAX
+				if (!idArg->IsUint64()) {
+			#else
+				if (!idArg->IsUint()) {
+			#endif
 				response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
 				response.AddMember("message", rapidjson::StringRef(Request::INVALID_GAME_ID), response.GetAllocator());
 			}
 
-			else if (!GameContainer::get()->isDumpedGameId(idArg->GetUint())) {
+			#if SIZE_MAX == UINT64_MAX
+				else if (!GameContainer::get()->isDumpedGameId(idArg->GetUint64())) {
+			#else
+				else if (!GameContainer::get()->isDumpedGameId(idArg->GetUint())) {
+			#endif
 				response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
 				response.AddMember("message", rapidjson::StringRef(DUMPED_GAME_NOT_FOUND), response.GetAllocator());
 			}
