@@ -45,6 +45,8 @@ class GameController: public ScopeController {
 		static constexpr const char *INVALID_FILTER_ARG = "filters must be expressed as a JSON object or array";
 		static constexpr const char *INVALID_DELETE_DUMP_ARG = "delete_dump must be a boolean value";
 		static constexpr const char *DUMPED_GAME_NOT_FOUND = "dumped game not found";
+		static constexpr const char *INVALID_DUMPED_GAME_SLOT = "game slot must be an unsigned integer";
+		static constexpr const char *DUMPED_GAME_SLOT_NOT_FOUND = "game slot not found";
 
 		// Scope name that should be used in requests
 		static constexpr const char *SCOPE = "game";

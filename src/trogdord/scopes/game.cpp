@@ -11,6 +11,7 @@
 #include "../include/serial/drivermap.h"
 
 #include "../include/scopes/game.h"
+#include "../include/exception/gameslotnotfound.h"
 
 
 // Singleton instance of GameController
@@ -884,6 +885,14 @@ rapidjson::Document GameController::dumpGame(const rapidjson::Document &request)
 	size_t gameId;
 	rapidjson::Document response(rapidjson::kObjectType);
 
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+
+		response.AddMember("status", Response::STATUS_UNSUPPORTED, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(Response::STATE_DISABLED), response.GetAllocator());
+
+		return response;
+	}
+
 	try {
 		gameId = Request::parseGameId(request);
 	}
@@ -927,10 +936,71 @@ rapidjson::Document GameController::restoreGame(const rapidjson::Document &reque
 
 	rapidjson::Document response(rapidjson::kObjectType);
 
-	// TODO: leaving slot argument blank will automatically restore the latest
-	// dump slot, while specifying the slot number will load that slot (need to
-	// see if slot exists and return 404 if it doesn't; also 404 if dumped game
-	// id not found.)
-	// call GameContainer::restoreGame()
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+
+		response.AddMember("status", Response::STATUS_UNSUPPORTED, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(Response::STATE_DISABLED), response.GetAllocator());
+
+		return response;
+	}
+
+	size_t gameId;
+	std::optional<size_t> slot;
+
+	try {
+		gameId = Request::parseGameId(request);
+	}
+
+	catch (const rapidjson::Document &error) {
+		rapidjson::Document errorCopy;
+		errorCopy.CopyFrom(error, errorCopy.GetAllocator());
+		return errorCopy;
+	}
+
+	const rapidjson::Value *slotArg = rapidjson::Pointer("/args/slot").Get(request);
+
+	if (slotArg) {
+
+		#if SIZE_MAX == UINT64_MAX
+			if (!slotArg->IsUint64()) {
+		#else
+			if (!slotArg->IsUInt()) {
+		#endif
+
+			response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+			response.AddMember("message", rapidjson::StringRef(INVALID_DUMPED_GAME_SLOT), response.GetAllocator());
+
+			return response;
+		}
+
+		else {
+			#if SIZE_MAX == UINT64_MAX
+				slot = slotArg->GetUint64();
+			#else
+				slot = slotArg->GetUint();
+			#endif
+		}
+	}
+
+	try {
+		GameContainer::get()->restoreGame(gameId, slot);
+		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+	}
+
+	catch (const GameNotFound &e) {
+		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(DUMPED_GAME_NOT_FOUND), response.GetAllocator());
+	}
+
+	catch (const GameSlotNotFound &e) {
+		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(DUMPED_GAME_SLOT_NOT_FOUND), response.GetAllocator());
+	}
+
+	catch (const std::exception &e) {
+		response.AddMember("status", Response::STATUS_INTERNAL_ERROR, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(Response::INTERNAL_ERROR_MSG), response.GetAllocator());
+	}
+
 	return response;
 }
