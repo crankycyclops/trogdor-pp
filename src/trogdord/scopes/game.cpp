@@ -983,7 +983,15 @@ rapidjson::Document GameController::restoreGame(const rapidjson::Document &reque
 	}
 
 	try {
+
 		GameContainer::get()->restoreGame(gameId, slot);
+
+		std::string logMsg = "Restored game id " + std::to_string(gameId);
+		if (slot) {
+			logMsg += " (slot " + std::to_string(*slot) + ")";
+		}
+
+		Config::get()->err(trogdor::Trogerr::INFO) << logMsg << '.' << std::endl;
 		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 	}
 
