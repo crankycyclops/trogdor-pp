@@ -15,6 +15,7 @@
 #include "../include/exception/serverexception.h"
 #include "../include/exception/unsupportedoperation.h"
 #include "../include/exception/serialdrivernotfound.h"
+#include "../include/exception/gamenotfound.h"
 
 
 TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
@@ -803,7 +804,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				FAIL("GameWrapper construction from dumped game should never succeed when the game's dump path doesn't exist.");
 			}
 
-			catch (const ServerException &e) {
+			catch (const GameNotFound &e) {
 				CHECK(true);
 			}
 
@@ -837,10 +838,10 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 			try {
 				GameWrapper test(gameStatePath);
-				FAIL("GameWrapper construction from dumped game should never succeed when there are zero dump slots.");
+				FAIL("GameWrapper construction from dumped game should never succeed when there are zero dump slots but should be treated as if the game dump doesn't exist.");
 			}
 
-			catch (const ServerException &e) {
+			catch (const GameNotFound &e) {
 				CHECK(true);
 			}
 
@@ -961,6 +962,26 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				initIniFile(iniFilename, {{}});
 
 			#endif
+		}
+
+		SUBCASE("Deserialization constructor with optional slot: dumped game doesn't exist") {
+
+			// TODO
+		}
+
+		SUBCASE("Deserialization constructor with optional slot: dumped game exists, but slot doesn't") {
+
+			// TODO
+		}
+
+		SUBCASE("Deserialization constructor with optional slot: dumped game and slot both exist") {
+
+			// TODO
+		}
+
+		SUBCASE("Deserialization constructor without slot: verify that the latest slot is loaded by default") {
+
+			// TODO
 		}
 	}
 }
