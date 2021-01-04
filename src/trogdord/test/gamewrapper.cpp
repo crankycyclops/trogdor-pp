@@ -1053,12 +1053,101 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 		SUBCASE("Deserialization constructor with optional slot: dumped game and slot both exist") {
 
-			// TODO
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				const size_t gameId = 0;
+
+				std::string name = "I'm a game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(gameId);
+
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+
+				// Step 1: create and dump a game (will populate slot 0)
+				GameWrapper test(gameId, definition, name);
+
+				test.dump();
+				CHECK(STD_FILESYSTEM::exists(gameStatePath));
+
+				// If this fails, it'll throw an exception that doctest will
+				// catch and report
+				GameWrapper testCopy(gameStatePath, 0);
+
+				STD_FILESYSTEM::remove(iniFilename);
+				STD_FILESYSTEM::remove_all(statePath);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 
 		SUBCASE("Deserialization constructor without slot: verify that the latest slot is loaded by default") {
 
-			// TODO
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				const size_t gameId = 0;
+
+				std::string name = "I'm a game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(gameId);
+
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+
+				// Step 1: create and dump a game with no meta set
+				GameWrapper test(gameId, definition, name);
+
+				test.dump();
+				CHECK(STD_FILESYSTEM::exists(gameStatePath));
+
+				// Step 2: set a meta value, then dump again
+				test.get()->setMeta("metakey", "wee");
+				test.dump();
+
+				// By default, if no slot is specified, we should restore
+				// the latest version with the meta value set.
+				GameWrapper testCopy(gameStatePath);
+				CHECK(0 == testCopy.get()->getMeta("metakey").compare("wee"));
+
+				// Let's also verify that the previous dump does exist
+				GameWrapper testCopy2(gameStatePath, 0);
+				CHECK(0 == testCopy2.get()->getMeta("metakey").compare(""));
+
+				STD_FILESYSTEM::remove(iniFilename);
+				STD_FILESYSTEM::remove_all(statePath);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 	}
 }
