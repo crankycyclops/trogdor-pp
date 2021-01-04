@@ -16,6 +16,7 @@
 #include "../include/exception/unsupportedoperation.h"
 #include "../include/exception/serialdrivernotfound.h"
 #include "../include/exception/gamenotfound.h"
+#include "../include/exception/gameslotnotfound.h"
 
 
 TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
@@ -966,12 +967,88 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 		SUBCASE("Deserialization constructor with optional slot: dumped game doesn't exist") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+			iniFile << "[state]\nenabled=true\nsave_path=" << statePath << "\n\n" << std::endl;
+			iniFile.close();
+
+			Config::get()->load(iniFilename);
+
+			auto gameStatePath = STD_FILESYSTEM::path(
+				statePath + STD_FILESYSTEM::path::preferred_separator + '0'
+			);
+
+			try {
+				GameWrapper testGame(gameStatePath, 0);
+				FAIL("GameWrapper construction should not succeed when dumped game doesn't exist.");
+			}
+
+			catch (const GameNotFound &e) {
+				CHECK(true);
+			}
+
+			STD_FILESYSTEM::remove(iniFilename);
+			STD_FILESYSTEM::remove_all(statePath);
+			initIniFile(iniFilename, {{}});
 		}
 
 		SUBCASE("Deserialization constructor with optional slot: dumped game exists, but slot doesn't") {
 
-			// TODO
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				const size_t gameId = 0;
+
+				std::string name = "I'm a game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(gameId);
+
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+
+				try {
+
+					// Step 1: create and dump a game (will populate slot 0)
+					GameWrapper test(gameId, definition, name);
+
+					test.dump();
+					CHECK(STD_FILESYSTEM::exists(gameStatePath));
+
+					// Step 2: attempt to restore game slot 1, which is not
+					// an existing dump slot.
+					GameWrapper testCopy(gameStatePath, 1);
+					FAIL("GameWrapper construction should fail when passing a non-existent dump slot");
+				}
+
+				catch (const GameSlotNotFound &e) {
+					CHECK(true);
+				}
+
+				STD_FILESYSTEM::remove(iniFilename);
+				STD_FILESYSTEM::remove_all(statePath);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 
 		SUBCASE("Deserialization constructor with optional slot: dumped game and slot both exist") {
