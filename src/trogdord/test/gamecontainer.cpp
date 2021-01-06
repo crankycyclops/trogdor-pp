@@ -1284,6 +1284,9 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		}
 	}
 
+	// TODO: Need to write more unit tests for GameContainer::restore() that
+	// will check to make sure restored games are properly indexed
+
 	TEST_CASE("GameContainer (gamecontainer.cpp): dumpGame()") {
 
 		// TODO
@@ -1297,11 +1300,168 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 	TEST_CASE("GameContainer (gamecontainer.cpp): getDumpedGameIds()") {
 
-		// TODO
-	}
+		SUBCASE("State feature is disabled, no dumped games") {
 
-	// TODO: Need to write more unit tests for GameContainer::restore() that
-	// will check to make sure restored games are properly indexed
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+			iniFile << "[state]\nenabled=false\n\n" << std::endl;
+			iniFile.close();
+
+			Config::get()->load(iniFilename);
+			GameContainer::reset();
+
+			CHECK(0 == GameContainer::get()->getDumpedGameIds().size());
+
+			// Restore the default configuration
+			STD_FILESYSTEM::remove(iniFilename);
+			initIniFile(iniFilename, {{}});
+		}
+
+		SUBCASE("State feature is disabled, one dumped game") {
+
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				/////////////////////////////////////////////////////
+				// Part 1: Create a dumped game with state enabled //
+				/////////////////////////////////////////////////////
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				// Create a game with a player and demonstrate that it gets dumped.
+				size_t id = GameContainer::get()->createGame(definition, gameName);
+				GameContainer::get()->dump();
+
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+				// Verify that the game was dumped
+				CHECK(STD_FILESYSTEM::exists(gameStatePath));
+
+				////////////////////////////////////////////////////
+				// Part 2: Restart the server with state disabled //
+				////////////////////////////////////////////////////
+
+				STD_FILESYSTEM::remove(iniFilename);
+				std::ofstream iniFile2(iniFilename, std::ofstream::out);
+
+				iniFile2 << "[state]\nenabled=false\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile2.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				CHECK(0 == GameContainer::get()->getDumpedGameIds().size());
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove_all(statePath);
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
+
+			#endif
+		}
+
+		SUBCASE("State feature is enabled, no dumped games") {
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+			iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+				<< "\n\n" << std::endl;
+			iniFile.close();
+
+			Config::get()->load(iniFilename);
+			GameContainer::reset();
+
+			// Since we didn't dump any games, we shouldn't get any ids back
+			CHECK(0 == GameContainer::get()->getDumpedGameIds().size());
+
+			// Restore the default configuration
+			STD_FILESYSTEM::remove_all(statePath);
+			STD_FILESYSTEM::remove(iniFilename);
+			initIniFile(iniFilename, {{}});
+		}
+
+		SUBCASE("State feature is enabled, one dumped game") {
+
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				// Create a game with a player and demonstrate that it gets dumped.
+				size_t id = GameContainer::get()->createGame(definition, gameName);
+
+				// Show that we don't return true until after it's been dumped
+				CHECK(false == GameContainer::get()->isDumpedGameId(id));
+
+				GameContainer::get()->dump();
+
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+				// Verify that the game was dumped
+				CHECK(STD_FILESYSTEM::exists(gameStatePath));
+
+				// We should now get back a list of size 1 containing the
+				// game id we just dumped.
+				CHECK(1 == GameContainer::get()->getDumpedGameIds().size());
+				CHECK(id == *GameContainer::get()->getDumpedGameIds().begin());
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove_all(statePath);
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
+
+			#endif
+		}
+	}
 
 	TEST_CASE("GameContainer (gamecontainer.cpp): isDumpedGameId()") {
 

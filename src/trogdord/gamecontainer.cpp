@@ -506,6 +506,11 @@ std::vector<size_t> GameContainer::getDumpedGameIds() {
 
 	std::vector<size_t> ids;
 
+	// Return nothing if state feature is disabled
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+		return ids;
+	}
+
 	iterateDumpedGames(Config::get()->getStatePath(), [&](const STD_FILESYSTEM::path &p) {
 
 		std::string idStr = p.filename();
