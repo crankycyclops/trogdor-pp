@@ -1300,6 +1300,9 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		// TODO
 	}
 
+	// TODO: Need to write more unit tests for GameContainer::restore() that
+	// will check to make sure restored games are properly indexed
+
 	TEST_CASE("GameContainer (gamecontainer.cpp): isDumpedGameId()") {
 
 		SUBCASE("State feature is disabled, dumped game doesn't exist") {
@@ -1388,15 +1391,101 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State feature is enabled, dumped game doesn't exist") {
 
-			// TODO
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				// Create a game with a player and demonstrate that it gets dumped.
+				size_t id = GameContainer::get()->createGame(definition, gameName);
+				GameContainer::get()->dump();
+
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+				// Verify that the game was dumped
+				CHECK(STD_FILESYSTEM::exists(gameStatePath));
+
+				// Now, we're going to check an id that we know for a fact
+				// doesn't exist (id + 1).
+				CHECK(false == GameContainer::get()->isDumpedGameId(id + 1));
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove_all(statePath);
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 
-		SUBCASE("State feature is disabled, dumped game exists") {
+		SUBCASE("State feature is enabled, dumped game exists") {
 
-			// TODO
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				// Create a game with a player and demonstrate that it gets dumped.
+				size_t id = GameContainer::get()->createGame(definition, gameName);
+
+				// Show that we don't return true until after it's been dumped
+				CHECK(false == GameContainer::get()->isDumpedGameId(id));
+
+				GameContainer::get()->dump();
+
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+				// Verify that the game was dumped
+				CHECK(STD_FILESYSTEM::exists(gameStatePath));
+
+				// This should now return true
+				CHECK(true == GameContainer::get()->isDumpedGameId(id));
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove_all(statePath);
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 	}
-
-	// TODO: Need to write more unit tests for GameContainer::restore() that
-	// will check to make sure restored games are properly indexed
 }
