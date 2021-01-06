@@ -1,7 +1,9 @@
 #include <doctest.h>
 
 #include "config.h"
+
 #include "../include/gamecontainer.h"
+#include "../include/exception/unsupportedoperation.h"
 
 
 // Number of ms between clock ticks (make this value small enough to ensure
@@ -1284,15 +1286,135 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		}
 	}
 
-	// TODO: Need to write more unit tests for GameContainer::restore() that
-	// will check to make sure restored games are properly indexed
+	TEST_CASE("GameContainer (gamecontainer.cpp): dumpGame() and restoreGame()") {
 
-	TEST_CASE("GameContainer (gamecontainer.cpp): dumpGame()") {
+		SUBCASE("dumpGame(): state disabled, game doesn't exist") {
 
-		// TODO
-	}
+			// TODO
+		}
 
-	TEST_CASE("GameContainer (gamecontainer.cpp): restoreGame()") {
+		SUBCASE("dumpGame(): state disabled, game exists") {
+
+			// TODO
+		}
+
+		SUBCASE("restoreGame(): state disabled, dumped game doesn't exist") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+			iniFile << "[state]\nenabled=false\n\n" << std::endl;
+			iniFile.close();
+
+			Config::get()->load(iniFilename);
+			GameContainer::reset();
+
+			// Without a game slot
+			try {
+				GameContainer::get()->restoreGame(0);
+				FAIL("GameContainer::restoreGame() should fail if state is disabled.");
+			}
+
+			catch (const UnsupportedOperation &e) {
+				CHECK(true);
+			}
+
+			// With a game slot
+			try {
+				GameContainer::get()->restoreGame(0, 0);
+				FAIL("GameContainer::restoreGame() should fail if state is disabled.");
+			}
+
+			catch (const UnsupportedOperation &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			STD_FILESYSTEM::remove(iniFilename);
+			initIniFile(iniFilename, {{}});
+		}
+
+		SUBCASE("restoreGame(): state disabled, dumped game exists") {
+
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				/////////////////////////////////////////////////////
+				// Part 1: Create a dumped game with state enabled //
+				/////////////////////////////////////////////////////
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				// Create a game with a player and demonstrate that it gets dumped.
+				size_t id = GameContainer::get()->createGame(definition, gameName);
+				GameContainer::get()->dump();
+
+				std::string gameStatePath = statePath +
+					STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+				// Verify that the game was dumped
+				CHECK(STD_FILESYSTEM::exists(gameStatePath));
+
+				////////////////////////////////////////////////////
+				// Part 2: Restart the server with state disabled //
+				////////////////////////////////////////////////////
+
+				STD_FILESYSTEM::remove(iniFilename);
+				std::ofstream iniFile2(iniFilename, std::ofstream::out);
+
+				iniFile2 << "[state]\nenabled=false\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile2.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				// Without a game slot
+				try {
+					GameContainer::get()->restoreGame(id);
+					FAIL("GameContainer::restoreGame() should fail if state is disabled.");
+				}
+
+				catch (const UnsupportedOperation &e) {
+					CHECK(true);
+				}
+
+				// With a game slot
+				try {
+					GameContainer::get()->restoreGame(id, 0);
+					FAIL("GameContainer::restoreGame() should fail if state is disabled.");
+				}
+
+				catch (const UnsupportedOperation &e) {
+					CHECK(true);
+				}
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove_all(statePath);
+				STD_FILESYSTEM::remove(iniFilename);
+				initIniFile(iniFilename, {{}});
+
+			#endif
+		}
 
 		// TODO: one unit test needs to make sure replacing an existing game
 		// as well as restoring a new game will properly update indexes
