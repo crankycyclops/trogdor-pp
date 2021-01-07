@@ -4,6 +4,7 @@
 
 #include "../include/gamecontainer.h"
 #include "../include/exception/unsupportedoperation.h"
+#include "../include/exception/gameslotnotfound.h"
 
 
 // Number of ms between clock ticks (make this value small enough to ensure
@@ -1104,7 +1105,7 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				Config::get()->load(iniFilename);
 				GameContainer::reset();
 
-				// Create a game with a player and demonstrate that it gets dumped.
+				// Create a game and demonstrate that it gets dumped.
 				size_t id = GameContainer::get()->createGame(definition, gameName);
 				GameContainer::get()->dump();
 
@@ -1354,7 +1355,7 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				Config::get()->load(iniFilename);
 				GameContainer::reset();
 
-				// Create a game with a player and demonstrate that it gets dumped.
+				// Create a game and demonstrate that it gets dumped.
 				size_t id = GameContainer::get()->createGame(definition, gameName);
 				GameContainer::get()->dump();
 
@@ -1450,20 +1451,158 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			initIniFile(iniFilename, {{}});
 		}
 
-		SUBCASE("State enabled, game exists") {
+		// TODO: test indexes via GameContainer::getGames() with appropriate
+		// filter unions.
+		SUBCASE("State enabled, game exists, reset server between resets") {
 
-			// TODO: test default and specific slot arguments (also test
-			// GameSlotNotFound)
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				// Version 1 of the game will be stopped and have no players
+				size_t id = GameContainer::get()->createGame(definition, gameName);
+				GameContainer::get()->dump();
+
+				// Version 2 of the game will be started and have one player
+				GameContainer::get()->startGame(id);
+				GameContainer::get()->createPlayer(id, "player");
+				GameContainer::get()->dump();
+
+				GameContainer::reset();
+				CHECK(0 == GameContainer::get()->getGames().size());
+
+				// By default, restoreGame() should restore the most recent
+				// dump slot, which we verify by checking to make sure it's
+				// started and that a player was created.
+				GameContainer::get()->restoreGame(id);
+
+				CHECK(true == GameContainer::get()->getGame(id)->get()->inProgress());
+				CHECK(1 == GameContainer::get()->getGame(id)->getNumPlayers());
+
+				GameContainer::reset();
+				CHECK(0 == GameContainer::get()->getGames().size());
+
+				// Next, we load the first dumped slot, which shouldn't yet
+				// be started and shouldn't yet have a player.
+				GameContainer::get()->restoreGame(id, 0);
+
+				CHECK(false == GameContainer::get()->getGame(id)->get()->inProgress());
+				CHECK(0 == GameContainer::get()->getGame(id)->getNumPlayers());
+
+				GameContainer::reset();
+				CHECK(0 == GameContainer::get()->getGames().size());
+
+				// Finally, attempt to restore a dump slot that doesn't exist
+				try {
+					GameContainer::get()->restoreGame(id, 100);
+					FAIL("GameContainer::restoreGame() should fail when passed a dump slot that doesn't exist.");
+				}
+
+				catch (const GameSlotNotFound &e) {
+					CHECK(true);
+				}
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove(iniFilename);
+				STD_FILESYSTEM::remove_all(statePath);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 
-		SUBCASE("Make sure restoring game that's already running updates indexes correctly") {
+		// TODO: test indexes via GameContainer::getGames() with appropriate
+		// filter unions.
+		SUBCASE("State enabled, game exists, don't reset server between resets") {
 
-			// TODO
-		}
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
 
-		SUBCASE("Make sure restoring game that isn't yet running sets indexes properly") {
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
 
-			// TODO
+			#else
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				// Make a read-only state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+				std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+					<< "\n\n" << std::endl;
+				iniFile.close();
+
+				Config::get()->load(iniFilename);
+				GameContainer::reset();
+
+				// Version 1 of the game will be stopped and have no players
+				size_t id = GameContainer::get()->createGame(definition, gameName);
+				GameContainer::get()->dump();
+
+				// Version 2 of the game will be started and have one player
+				GameContainer::get()->startGame(id);
+				GameContainer::get()->createPlayer(id, "player");
+				GameContainer::get()->dump();
+
+				// By default, restoreGame() should restore the most recent
+				// dump slot, which we verify by checking to make sure it's
+				// started and that a player was created.
+				GameContainer::get()->restoreGame(id);
+
+				CHECK(true == GameContainer::get()->getGame(id)->get()->inProgress());
+				CHECK(1 == GameContainer::get()->getGame(id)->getNumPlayers());
+
+				// Next, we load the first dumped slot, which shouldn't yet
+				// be started and shouldn't yet have a player.
+				GameContainer::get()->restoreGame(id, 0);
+
+				CHECK(false == GameContainer::get()->getGame(id)->get()->inProgress());
+				CHECK(0 == GameContainer::get()->getGame(id)->getNumPlayers());
+
+				// Finally, attempt to restore a dump slot that doesn't exist
+				try {
+					GameContainer::get()->restoreGame(id, 100);
+					FAIL("GameContainer::restoreGame() should fail when passed a dump slot that doesn't exist.");
+				}
+
+				catch (const GameSlotNotFound &e) {
+					CHECK(true);
+				}
+
+				// Verify that the game wasn't destroyed as a result of the
+				// failed restore.
+				CHECK(1 == GameContainer::get()->getGames().size());
+				CHECK(nullptr != GameContainer::get()->getGame(id));
+
+				// Restore the default configuration
+				STD_FILESYSTEM::remove(iniFilename);
+				STD_FILESYSTEM::remove_all(statePath);
+				initIniFile(iniFilename, {{}});
+
+			#endif
 		}
 	}
 
@@ -1792,7 +1931,7 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				Config::get()->load(iniFilename);
 				GameContainer::reset();
 
-				// Create a game with a player and demonstrate that it gets dumped.
+				// Create a game and demonstrate that it gets dumped.
 				size_t id = GameContainer::get()->createGame(definition, gameName);
 
 				// Show that we don't return true until after it's been dumped
