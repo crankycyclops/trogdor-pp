@@ -1286,17 +1286,7 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		}
 	}
 
-	TEST_CASE("GameContainer (gamecontainer.cpp): dumpGame() and restoreGame()") {
-
-		SUBCASE("dumpGame(): state disabled, game doesn't exist") {
-
-			// TODO
-		}
-
-		SUBCASE("dumpGame(): state disabled, game exists") {
-
-			// TODO
-		}
+	TEST_CASE("GameContainer (gamecontainer.cpp): restoreGame()") {
 
 		SUBCASE("restoreGame(): state disabled, dumped game doesn't exist") {
 
@@ -1416,8 +1406,65 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			#endif
 		}
 
-		// TODO: one unit test needs to make sure replacing an existing game
-		// as well as restoring a new game will properly update indexes
+		SUBCASE("State enabled, game doesn't exist") {
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+			iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+				<< "\n\n" << std::endl;
+			iniFile.close();
+
+			Config::get()->load(iniFilename);
+			GameContainer::reset();
+
+			// Without a game slot
+			try {
+				GameContainer::get()->restoreGame(0);
+				FAIL("GameContainer::restoreGame() should fail if the game isn't found.");
+			}
+
+			catch (const GameNotFound &e) {
+				CHECK(true);
+			}
+
+			// With a game slot
+			try {
+				GameContainer::get()->restoreGame(0, 0);
+				FAIL("GameContainer::restoreGame() should fail if state is disabled.");
+			}
+
+			catch (const GameNotFound &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			STD_FILESYSTEM::remove(iniFilename);
+			STD_FILESYSTEM::remove_all(statePath);
+			initIniFile(iniFilename, {{}});
+		}
+
+		SUBCASE("State enabled, game exists") {
+
+			// TODO: test default and specific slot arguments (also test
+			// GameSlotNotFound)
+		}
+
+		SUBCASE("Make sure restoring game that's already running updates indexes correctly") {
+
+			// TODO
+		}
+
+		SUBCASE("Make sure restoring game that isn't yet running sets indexes properly") {
+
+			// TODO
+		}
 	}
 
 	TEST_CASE("GameContainer (gamecontainer.cpp): getDumpedGameIds()") {
