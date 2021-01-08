@@ -3884,4 +3884,59 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			destroyConfig();
 		}
 	}
+
+	TEST_CASE("GameController (scopes/game.cpp): getDumped()") {
+
+		SUBCASE("State disabled") {
+
+			// TODO
+		}
+
+		SUBCASE("Invalid game id") {
+
+			// TODO
+		}
+
+		SUBCASE("No game id: returns list of dumped games (no dumped games exist)") {
+
+			// TODO
+		}
+
+		SUBCASE("No game id: returns list of dumped games (one dumped game exists)") {
+
+			// TODO: three dumped games (one is empty directory, one is directory
+			// with subdirectory called "meta", and the last is a valid game. Should
+			// only get one game back in list.)
+		}
+
+		SUBCASE("With game id: game id doesn't exist") {
+
+			// TODO
+		}
+
+		SUBCASE("With game id: game id directory is empty (should treat this as GameNotFound)") {
+
+			// TODO
+		}
+
+		SUBCASE("With game id: directory is not readable. Should return 500 Internal Error.") {
+
+			// TODO
+		}
+
+		SUBCASE("With game id: returns list of dump slots") {
+
+			// TODO
+		}
+	}
+
+	TEST_CASE("GameController (scopes/game.cpp): dumpGame()") {
+
+		// TODO
+	}
+
+	TEST_CASE("GameController (scopes/game.cpp): restoreGame()") {
+
+		// TODO
+	}
 }
