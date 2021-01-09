@@ -1,16 +1,11 @@
 #include <doctest.h>
 
 #include "config.h"
+#include "scopes/helper.h"
 
 #include "../include/gamecontainer.h"
 #include "../include/exception/unsupportedoperation.h"
 #include "../include/exception/gameslotnotfound.h"
-
-
-// Number of ms between clock ticks (make this value small enough to ensure
-// time-dependent unit tests finish quickly, but not so small that the Timer
-// becomes unstable.)
-constexpr size_t tickInterval = 5;
 
 
 TEST_SUITE("GameContainer (gamecontainer.cpp)") {
@@ -682,14 +677,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 	TEST_CASE("GameContainer (gamecontainer.cpp): Constructor: state enabled, but configured state path is blank") {
 
-		std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-		std::ofstream iniFile(iniFilename, std::ofstream::out);
-
-		iniFile << "[state]\nenabled=true\nsave_path=""\n\n" << std::endl;
-		iniFile.close();
-
-		Config::get()->load(iniFilename);
-
+		initGameXML();
+		initConfig(false, true, "");
 		GameContainer::reset();
 
 		try {
@@ -702,8 +691,9 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		}
 
 		// Restore the default configuration
-		STD_FILESYSTEM::remove(iniFilename);
-		initIniFile(iniFilename, {{}});
+		destroyGameXML();
+		destroyConfig();
+		initIniFile(iniFilename, {{}}); // iniFilename is defined in helper.h
 	}
 
 	TEST_CASE("GameContainer (gamecontainer.cpp): Constructor: state enabled, but configured state path doesn't exist") {
@@ -712,15 +702,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
 			STD_FILESYSTEM::path::preferred_separator + "/trogstate";
 
-		std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-		std::ofstream iniFile(iniFilename, std::ofstream::out);
-
-		iniFile << "[state]\nenabled=true\nsave_path=" << statePath
-			<< "\n\n" << std::endl;
-		iniFile.close();
-
-		Config::get()->load(iniFilename);
-
+		initGameXML();
+		initConfig(false, true, statePath);
 		GameContainer::reset();
 
 		try {
@@ -733,8 +716,9 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		}
 
 		// Restore the default configuration
-		STD_FILESYSTEM::remove(iniFilename);
-		initIniFile(iniFilename, {{}});
+		destroyGameXML();
+		destroyConfig();
+		initIniFile(iniFilename, {{}}); // iniFilename is defined in helper.h
 	}
 
 	TEST_CASE("GameContainer (gamecontainer.cpp): Constructor: state enabled, but configured state path is read-only") {
@@ -751,15 +735,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			STD_FILESYSTEM::perms::others_read | STD_FILESYSTEM::perms::others_exec
 		);
 
-		std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-		std::ofstream iniFile(iniFilename, std::ofstream::out);
-
-		iniFile << "[state]\nenabled=true\nsave_path=" << statePath
-			<< "\n\n" << std::endl;
-		iniFile.close();
-
-		Config::get()->load(iniFilename);
-
+		initGameXML();
+		initConfig(false, true, statePath);
 		GameContainer::reset();
 
 		try {
@@ -772,10 +749,11 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 		}
 
 		// Restore the default configuration
+		destroyGameXML();
+		destroyConfig();
+		initIniFile(iniFilename, {{}}); // iniFilename is defined in helper.h
 		STD_FILESYSTEM::permissions(statePath, STD_FILESYSTEM::perms::owner_write);
 		STD_FILESYSTEM::remove_all(statePath);
-		STD_FILESYSTEM::remove(iniFilename);
-		initIniFile(iniFilename, {{}});
 	}
 
 	TEST_CASE("GameContainer (gamecontainer.cpp): Constructor: state enabled, no previously dumped games") {
@@ -794,17 +772,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			// Create valid writable state path
 			STD_FILESYSTEM::create_directory(statePath);
 
-			// Setup ini config options
-			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-			std::ofstream iniFile(iniFilename, std::ofstream::out);
-
-			iniFile << "[state]\nenabled=true\nsave_path=" << statePath
-				<< "\n\n" << std::endl;
-			iniFile.close();
-
-			Config::get()->load(iniFilename);
-
-			// Reset GameContainer to simulate trogdord startup
+			initGameXML();
+			initConfig(false, true, statePath);
 			GameContainer::reset();
 
 			// Since there are no dumped game ids to reserve, we should be able
@@ -820,9 +789,10 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			}
 
 			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
 			STD_FILESYSTEM::remove_all(statePath);
-			STD_FILESYSTEM::remove(iniFilename);
-			initIniFile(iniFilename, {{}});
+			initIniFile(iniFilename, {{}}); // iniFilename is defined in helper.h
 
 		#endif
 	}
@@ -843,15 +813,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			// Create valid writable state path
 			STD_FILESYSTEM::create_directory(statePath);
 
-			// Setup ini config options
-			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-			std::ofstream iniFile(iniFilename, std::ofstream::out);
-
-			iniFile << "[state]\nenabled=true\nsave_path=" << statePath
-				<< "\n\n" << std::endl;
-			iniFile.close();
-
-			Config::get()->load(iniFilename);
+			initGameXML();
+			initConfig(false, true, statePath);
 
 			// Reset GameContainer to simulate trogdord startup
 			GameContainer::reset();
@@ -882,8 +845,9 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			}
 
 			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
 			STD_FILESYSTEM::remove_all(statePath);
-			STD_FILESYSTEM::remove(iniFilename);
 			initIniFile(iniFilename, {{}});
 
 		#endif
@@ -893,13 +857,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State disabled, zero games") {
 
-			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-			std::ofstream iniFile(iniFilename, std::ofstream::out);
-
-			iniFile << "[state]\nenabled=false\n\n" << std::endl;
-			iniFile.close();
-
-			Config::get()->load(iniFilename);
+			initGameXML();
+			initConfig(false, false);
 			GameContainer::reset();
 
 			// Methods should just return without actually doing anything
@@ -910,7 +869,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			CHECK(0 == GameContainer::get()->getGames().size());
 
 			// Restore the default configuration
-			STD_FILESYSTEM::remove(iniFilename);
+			destroyGameXML();
+			destroyConfig();
 			initIniFile(iniFilename, {{}});
 		}
 
@@ -930,14 +890,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				// Make a read-only state directory
 				STD_FILESYSTEM::create_directory(statePath);
 
-				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-				std::ofstream iniFile(iniFilename, std::ofstream::out);
-
-				iniFile << "[state]\nenabled=false\nsave_path=" << statePath
-					<< "\n\n" << std::endl;
-				iniFile.close();
-
-				Config::get()->load(iniFilename);
+				initGameXML();
+				initConfig(false, false, statePath);
 				GameContainer::reset();
 
 				// Create a game and demonstrate that it doesn't get dumped when
@@ -959,8 +913,9 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				CHECK(0 == GameContainer::get()->getGames().size());
 
 				// Restore the default configuration
+				destroyGameXML();
+				destroyConfig();
 				STD_FILESYSTEM::remove_all(statePath);
-				STD_FILESYSTEM::remove(iniFilename);
 				initIniFile(iniFilename, {{}});
 
 			#endif
@@ -974,14 +929,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			// Make a read-only state directory
 			STD_FILESYSTEM::create_directory(statePath);
 
-			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-			std::ofstream iniFile(iniFilename, std::ofstream::out);
-
-			iniFile << "[state]\nenabled=true\nsave_path=" << statePath
-				<< "\n\n" << std::endl;
-			iniFile.close();
-
-			Config::get()->load(iniFilename);
+			initGameXML();
+			initConfig(false, true, statePath);
 			GameContainer::reset();
 
 			GameContainer::get()->dump();
@@ -1001,8 +950,9 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			CHECK(0 == GameContainer::get()->getGames().size());
 
 			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
 			STD_FILESYSTEM::remove_all(statePath);
-			STD_FILESYSTEM::remove(iniFilename);
 			initIniFile(iniFilename, {{}});
 		}
 
@@ -1022,14 +972,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				// Make a read-only state directory
 				STD_FILESYSTEM::create_directory(statePath);
 
-				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-				std::ofstream iniFile(iniFilename, std::ofstream::out);
-
-				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
-					<< "\n\n" << std::endl;
-				iniFile.close();
-
-				Config::get()->load(iniFilename);
+				initGameXML();
+				initConfig(false, true, statePath);
 				GameContainer::reset();
 
 				// Create a game with a player and demonstrate that it gets dumped.
@@ -1065,8 +1009,9 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				CHECK(GameContainer::get()->getGame(id)->get()->getPlayer("test"));
 
 				// Restore the default configuration
+				destroyGameXML();
+				destroyConfig();
 				STD_FILESYSTEM::remove_all(statePath);
-				STD_FILESYSTEM::remove(iniFilename);
 				initIniFile(iniFilename, {{}});
 
 			#endif
@@ -1095,14 +1040,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				// Make a read-only state directory
 				STD_FILESYSTEM::create_directory(statePath);
 
-				std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-				std::ofstream iniFile(iniFilename, std::ofstream::out);
-
-				iniFile << "[state]\nenabled=true\nsave_path=" << statePath
-					<< "\n\n" << std::endl;
-				iniFile.close();
-
-				Config::get()->load(iniFilename);
+				initGameXML();
+				initConfig(false, true, statePath);
 				GameContainer::reset();
 
 				// Create a game and demonstrate that it gets dumped.
@@ -1119,14 +1058,10 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				// Part 2: Restart the server with state disabled //
 				////////////////////////////////////////////////////
 
-				STD_FILESYSTEM::remove(iniFilename);
-				std::ofstream iniFile2(iniFilename, std::ofstream::out);
+				destroyConfig();
 
-				iniFile2 << "[state]\nenabled=false\nsave_path=" << statePath
-					<< "\n\n" << std::endl;
-				iniFile2.close();
-
-				Config::get()->load(iniFilename);
+				initGameXML();
+				initConfig(false, false, statePath);
 				GameContainer::reset();
 
 				size_t id2 = GameContainer::get()->createGame(definition, gameName);
@@ -1142,8 +1077,9 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				CHECK(STD_FILESYSTEM::exists(gameStatePath));
 
 				// Restore the default configuration
+				destroyGameXML();
+				destroyConfig();
 				STD_FILESYSTEM::remove_all(statePath);
-				STD_FILESYSTEM::remove(iniFilename);
 				initIniFile(iniFilename, {{}});
 
 			#endif
