@@ -1323,14 +1323,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			// Make a read-only state directory
 			STD_FILESYSTEM::create_directory(statePath);
 
-			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-			std::ofstream iniFile(iniFilename, std::ofstream::out);
-
-			iniFile << "[state]\nenabled=true\nsave_path=" << statePath
-				<< "\n\n" << std::endl;
-			iniFile.close();
-
-			Config::get()->load(iniFilename);
+			initGameXML();
+			initConfig(false, true, statePath);
 			GameContainer::reset();
 
 			// Without a game slot
@@ -1354,7 +1348,8 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			}
 
 			// Restore the default configuration
-			STD_FILESYSTEM::remove(iniFilename);
+			destroyGameXML();
+			destroyConfig();
 			STD_FILESYSTEM::remove_all(statePath);
 			initIniFile(iniFilename, {{}});
 		}
