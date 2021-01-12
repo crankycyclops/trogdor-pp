@@ -677,6 +677,23 @@ inline rapidjson::Document postInput(
 	return PlayerController::get()->postInput(request);
 }
 
+// Dumps the specified game.
+inline rapidjson::Document dumpGame(size_t id) {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+
+	request.AddMember("method", "post", request.GetAllocator());
+	request.AddMember("scope", "game", request.GetAllocator());
+	request.AddMember("action", "dump", request.GetAllocator());
+
+	rapidjson::Value args(rapidjson::kObjectType);
+
+	args.AddMember("id", id, request.GetAllocator());
+	request.AddMember("args", args, request.GetAllocator());
+
+	return GameController::get()->dumpGame(request);
+}
+
 // Depending on whether or not an id is passed in, either returns a list of all
 // dumped games or a list of all save slots within a dumped game.
 inline rapidjson::Document getDumped(

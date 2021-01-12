@@ -4111,9 +4111,101 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("No game id: returns list of dumped games (one dumped game exists)") {
 
-			// TODO: three dumped games (one is empty directory, one is directory
-			// with subdirectory called "meta", and the last is a valid game. Should
-			// only get one game back in list.)
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			// Create and dump a game
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t dumpedId = response["id"].GetUint();
+
+			response = dumpGame(dumpedId);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// Create an empty game id directory (id = 100) in the state
+			// directory so we can verify that it doesn't get picked up in
+			// the list of dumped games.
+			STD_FILESYSTEM::create_directory(statePath + STD_FILESYSTEM::path::preferred_separator + "100");
+
+			// I'll create one last malformatted game by dumping a game and
+			// then replacing the meta file with a directory.
+			response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t badId = response["id"].GetUint();
+
+			response = dumpGame(badId);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			STD_FILESYSTEM::remove(
+				statePath + STD_FILESYSTEM::path::preferred_separator +
+				std::to_string(badId) + STD_FILESYSTEM::path::preferred_separator +
+				"meta"
+			);
+
+			STD_FILESYSTEM::create_directory(
+				statePath + STD_FILESYSTEM::path::preferred_separator +
+				std::to_string(badId) + STD_FILESYSTEM::path::preferred_separator +
+				"meta"
+			);
+
+			// Simulate a server reset so that we have only an unrestored
+			// dumped game.
+			GameContainer::get()->reset();
+			initConfig(false, true, statePath);
+
+			response = getDumped();
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// There should only be one validly dumped game
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(1 == response["games"].Size());
+
+			CHECK(response["games"][0].IsObject());
+			CHECK(response["games"][0].HasMember("id"));
+
+			#if SIZE_MAX == UINT64_MAX
+				CHECK(dumpedId == response["games"][0]["id"].GetUint64());
+			#else
+				CHECK(dumpedId == response["games"][0]["id"].GetUint());
+			#endif
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("With game id: returns list of dump slots") {
