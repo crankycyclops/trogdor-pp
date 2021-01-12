@@ -144,22 +144,65 @@ gamePtr(nullptr) {
 
 /*****************************************************************************/
 
-void GameWrapper::getDumpedGameSlots(std::set<size_t> &slots, std::string gameIdPath) {
+void GameWrapper::getDumpedGameSlots(
+	std::set<size_t> &slots,
+	std::string gameIdPath,
+	std::unordered_map<size_t, size_t> *timestamps
+) {
 
 	for (const auto &subdir: STD_FILESYSTEM::directory_iterator(gameIdPath)) {
 
 		std::string slot = subdir.path().filename();
+		std::string gameFname = gameIdPath + STD_FILESYSTEM::path::preferred_separator +
+			slot + STD_FILESYSTEM::path::preferred_separator + "game";
+		std::string timestampFname = gameIdPath + STD_FILESYSTEM::path::preferred_separator +
+			slot + STD_FILESYSTEM::path::preferred_separator + "timestamp";
 
 		// Skip over obviously invalid files and directories
-		if (!trogdor::isValidInteger(slot) || !STD_FILESYSTEM::is_directory(subdir.path())) {
+		if (
+			!trogdor::isValidInteger(slot) ||
+			!STD_FILESYSTEM::is_directory(subdir.path()) ||
+			!STD_FILESYSTEM::exists(gameFname) ||
+			!STD_FILESYSTEM::is_regular_file(gameFname)
+		) {
+			continue;
+		}
+
+		std::ifstream timestampFile(timestampFname);
+
+		std::string timestampBuffer(
+			(std::istreambuf_iterator<char>(timestampFile)),
+			std::istreambuf_iterator<char>()
+		);
+
+		size_t timestamp;
+
+		try {
+
+			#if SIZE_MAX == UINT64_MAX
+				timestamp = std::stoull(timestampBuffer);
+			#else
+				timestamp = std::stoul(timestampBuffer);
+			#endif
+		}
+
+		// If the timestamp file isn't valid, then the dump slot
+		// is also invalid and we should skip it.
+		catch (const std::invalid_argument &e) {
 			continue;
 		}
 
 		#if SIZE_MAX == UINT64_MAX
-			slots.insert(std::stoull(slot));
+			size_t slotUint = std::stoull(slot);
 		#else
-			slots.insert(std::stoul(slot));
+			size_t slotUint = std::stoul(slot);
 		#endif
+
+		slots.insert(slotUint);
+
+		if (timestamps) {
+			(*timestamps)[slotUint] = timestamp;
+		}
 	}
 }
 

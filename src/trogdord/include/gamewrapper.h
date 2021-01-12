@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <ctime>
+#include <utility>
 #include <trogdor/game.h>
 
 #include "filesystem.h"
@@ -38,9 +39,15 @@ class GameWrapper {
 
 	public:
 
-		// Returns all timestamp directories within a game's save state path
-		// containing serialized games.
-		static void getDumpedGameSlots(std::set<size_t> &slots, std::string gameIdPath);
+		// Returns all valid timestamp directories within a game's save state
+		// path containing serialized games. Also takes an optional third
+		// parameter, which if passed will be populated with dump slot id ->
+		// timestamp pairs.
+		static void getDumpedGameSlots(
+			std::set<size_t> &slots,
+			std::string gameIdPath,
+			std::unordered_map<size_t, size_t> *timestamps = nullptr
+		);
 
 		GameWrapper() = delete;
 		GameWrapper(const GameWrapper &) = delete;

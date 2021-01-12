@@ -4266,7 +4266,91 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("With game id: returns list of dump slots") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			// Create and dump a game
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			response = dumpGame(gameId);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// Create an empty dump slot (slot = 100) in the dumped game's
+			// directory so we can verify that it doesn't get picked up in
+			// the list of slots returned by trogdord.
+			STD_FILESYSTEM::create_directory(
+				statePath + STD_FILESYSTEM::path::preferred_separator +
+				std::to_string(gameId) +
+				STD_FILESYSTEM::path::preferred_separator + "100"
+			);
+
+			// Also create an empty dump slot (slot = 101) that has a valid
+			// timestamp, but no other dumped data.
+			STD_FILESYSTEM::create_directory(
+				statePath + STD_FILESYSTEM::path::preferred_separator +
+				std::to_string(gameId) +
+				STD_FILESYSTEM::path::preferred_separator + "101"
+			);
+
+			std::ofstream timestampFile(
+				statePath + STD_FILESYSTEM::path::preferred_separator +
+				std::to_string(gameId) +
+				STD_FILESYSTEM::path::preferred_separator + "101" +
+				STD_FILESYSTEM::path::preferred_separator + "timestamp"
+			);
+
+			timestampFile << "1610488193530";
+			timestampFile.close();
+
+			// Simulate a server reset so that we have only an unrestored
+			// dumped game.
+			GameContainer::get()->reset();
+			initConfig(false, true, statePath);
+
+			response = getDumped(gameId);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("slots"));
+			CHECK(response["slots"].IsArray());
+			CHECK(1 == response["slots"].Size());
+
+			CHECK(response["slots"][0].IsObject());
+
+			CHECK(response["slots"][0].HasMember("slot"));
+			CHECK(response["slots"][0]["slot"].IsUint64());
+			CHECK(0 == response["slots"][0]["slot"].GetUint());
+
+			CHECK(response["slots"][0].HasMember("timestamp_ms"));
+			CHECK(response["slots"][0]["timestamp_ms"].IsUint64());
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 	}
 

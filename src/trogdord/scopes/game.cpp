@@ -836,35 +836,20 @@ rapidjson::Document GameController::getDumped(const rapidjson::Document &request
 			else {
 
 				std::set<size_t> slots;
+				std::unordered_map<size_t, size_t> timestamps;
+
 				rapidjson::Value slotsArr(rapidjson::kArrayType);
 				std::string gamePath = Config::get()->getStatePath() +
 					STD_FILESYSTEM::path::preferred_separator + std::to_string(idArg->GetUint());
 
-				GameWrapper::getDumpedGameSlots(slots, gamePath);
+				GameWrapper::getDumpedGameSlots(slots, gamePath, &timestamps);
 
 				for (const auto &slot: slots) {
 
 					rapidjson::Value slotData(rapidjson::kObjectType);
 
-					std::ifstream timestampFile(
-						gamePath + STD_FILESYSTEM::path::preferred_separator +
-						std::to_string(slot) +
-						STD_FILESYSTEM::path::preferred_separator + "timestamp"
-					);
-
-					std::string timestampBuffer(
-						(std::istreambuf_iterator<char>(timestampFile)),
-						std::istreambuf_iterator<char>()
-					);
-
-					#if SIZE_MAX == UINT64_MAX
-						size_t timestamp = std::stoull(timestampBuffer);
-					#else
-						size_t timestamp = std::stoul(timestampBuffer);
-					#endif
-
 					slotData.AddMember("slot", slot, response.GetAllocator());
-					slotData.AddMember("timestamp_ms", timestamp, response.GetAllocator());
+					slotData.AddMember("timestamp_ms", timestamps[slot], response.GetAllocator());
 					slotsArr.PushBack(slotData, response.GetAllocator());
 				}
 
