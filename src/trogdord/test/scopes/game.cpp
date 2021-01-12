@@ -4103,7 +4103,37 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("With game id: directory is not readable. Should return 500 Internal Error.") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+			STD_FILESYSTEM::permissions(
+				statePath,
+				STD_FILESYSTEM::perms::group_read  | STD_FILESYSTEM::perms::group_exec  |
+				STD_FILESYSTEM::perms::owner_read  | STD_FILESYSTEM::perms::owner_exec  |
+				STD_FILESYSTEM::perms::others_read | STD_FILESYSTEM::perms::others_exec
+			);
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			rapidjson::Document response = getDumped();
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INTERNAL_ERROR == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::permissions(statePath, STD_FILESYSTEM::perms::owner_write);
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("No game id: returns list of dumped games (no dumped games exist)") {
