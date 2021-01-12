@@ -3892,7 +3892,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = getDumped();
 
@@ -3915,7 +3915,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = getDumped(0);
 
@@ -3938,7 +3938,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
@@ -3969,9 +3969,105 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			destroyConfig();
 		}
 
-		SUBCASE("Invalid game id") {
+		SUBCASE("State disabled: malformatted game id") {
 
-			// TODO
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig(false, false);
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "dumped", request.GetAllocator());
+			args.AddMember("id", "a string, not an id", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->getDumped(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Response::STATE_DISABLED).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
+		SUBCASE("State enabled: malformatted game id") {
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "dumped", request.GetAllocator());
+			args.AddMember("id", "a string, not an id", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->getDumped(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::INVALID_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
+		}
+
+		SUBCASE("State enabled: non-existent game id") {
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			rapidjson::Document response = getDumped(0);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(GameController::DUMPED_GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("No game id: returns list of dumped games (no dumped games exist)") {
