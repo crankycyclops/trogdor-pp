@@ -4070,23 +4070,6 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			STD_FILESYSTEM::remove_all(statePath);
 		}
 
-		SUBCASE("No game id: returns list of dumped games (no dumped games exist)") {
-
-			// TODO
-		}
-
-		SUBCASE("No game id: returns list of dumped games (one dumped game exists)") {
-
-			// TODO: three dumped games (one is empty directory, one is directory
-			// with subdirectory called "meta", and the last is a valid game. Should
-			// only get one game back in list.)
-		}
-
-		SUBCASE("With game id: game id doesn't exist") {
-
-			// TODO
-		}
-
 		SUBCASE("With game id: game id directory is empty (should treat this as GameNotFound)") {
 
 			// TODO
@@ -4095,6 +4078,42 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		SUBCASE("With game id: directory is not readable. Should return 500 Internal Error.") {
 
 			// TODO
+		}
+
+		SUBCASE("No game id: returns list of dumped games (no dumped games exist)") {
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			rapidjson::Document response = getDumped();
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("games"));
+			CHECK(response["games"].IsArray());
+			CHECK(0 == response["games"].Size());
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
+		}
+
+		SUBCASE("No game id: returns list of dumped games (one dumped game exists)") {
+
+			// TODO: three dumped games (one is empty directory, one is directory
+			// with subdirectory called "meta", and the last is a valid game. Should
+			// only get one game back in list.)
 		}
 
 		SUBCASE("With game id: returns list of dump slots") {
