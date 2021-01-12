@@ -3940,7 +3940,30 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig();
 
-			// TODO
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t id = response["id"].GetUint();
+
+			rapidjson::Document response2 = getDumped(id);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response2)));
+
+			CHECK(response2.HasMember("status"));
+			CHECK(response2["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response2["status"].GetUint());
+
+			CHECK(response2.HasMember("message"));
+			CHECK(response2["message"].IsString());
+			CHECK(0 == std::string(Response::STATE_DISABLED).compare(response2["message"].GetString()));
 
 			destroyGameXML();
 			destroyConfig();
