@@ -528,9 +528,12 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 	TEST_CASE("GameController (scopes/game.cpp): destroyGame()") {
 
-		SUBCASE("Game ID is missing") {
+		SUBCASE("State disabled: Game ID is missing") {
 
 			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 
@@ -552,11 +555,17 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			// (I run into this with RapidJSON a lot, especially when I try
 			// to insert std::string values into JSON objects.)
 			CHECK(trogdor::isAscii(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
-		SUBCASE("Game ID is missing with empty args value") {
+		SUBCASE("State disabled: Game ID is missing with empty args value") {
 
 			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
@@ -580,11 +589,17 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			// (I run into this with RapidJSON a lot, especially when I try
 			// to insert std::string values into JSON objects.)
 			CHECK(trogdor::isAscii(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
-		SUBCASE("Passing non-existent game ID") {
+		SUBCASE("State disabled: Passing non-existent game ID") {
 
 			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
@@ -606,14 +621,17 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response.HasMember("message"));
 			CHECK(response["message"].IsString());
 			CHECK( 0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
-		SUBCASE("Successful destruction of game") {
+		SUBCASE("State disabled: Successful destruction of game") {
 
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			// Step 1: create a game and store the ID
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
