@@ -763,11 +763,11 @@ rapidjson::Document GameController::getDumped(const rapidjson::Document &request
 
 			for (const auto &id: ids) {
 
-				std::string gameMetaPath = Config::get()->getStatePath() +
-					STD_FILESYSTEM::path::preferred_separator + std::to_string(id) +
-					STD_FILESYSTEM::path::preferred_separator + "meta";
+				if (GameContainer::get()->isDumpedGameId(id)) {
 
-				if (STD_FILESYSTEM::exists(gameMetaPath) && STD_FILESYSTEM::is_regular_file(gameMetaPath)) {
+					std::string gameMetaPath = Config::get()->getStatePath() +
+						STD_FILESYSTEM::path::preferred_separator + std::to_string(id) +
+						STD_FILESYSTEM::path::preferred_separator + "meta";
 
 					try {
 

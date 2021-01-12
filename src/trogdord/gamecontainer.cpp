@@ -491,8 +491,16 @@ bool GameContainer::isDumpedGameId(size_t id) {
 
 		std::string dumpPath = Config::get()->getStatePath() +
 			STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+		std::string gameMetaPath = dumpPath +
+			STD_FILESYSTEM::path::preferred_separator + "meta";
 
-		if (STD_FILESYSTEM::exists(dumpPath) && STD_FILESYSTEM::is_directory(dumpPath)) {
+		// This won't do any actual checking to see if the data can be
+		// deserialized, only that the file structure is valid.
+		if (
+			STD_FILESYSTEM::exists(dumpPath) &&
+			STD_FILESYSTEM::is_directory(dumpPath) &&
+			STD_FILESYSTEM::is_regular_file(gameMetaPath)
+		) {
 			return true;
 		}
 	}
