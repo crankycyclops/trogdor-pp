@@ -677,5 +677,28 @@ inline rapidjson::Document postInput(
 	return PlayerController::get()->postInput(request);
 }
 
+// Depending on whether or not an id is passed in, either returns a list of all
+// dumped games or a list of all save slots within a dumped game.
+inline rapidjson::Document getDumped(
+	std::optional<size_t> id = std::nullopt
+) {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+
+	request.AddMember("method", "get", request.GetAllocator());
+	request.AddMember("scope", "game", request.GetAllocator());
+	request.AddMember("action", "dumped", request.GetAllocator());
+
+	if (id) {
+
+		rapidjson::Value args(rapidjson::kObjectType);
+
+		args.AddMember("id", *id, request.GetAllocator());
+		request.AddMember("args", args, request.GetAllocator());
+	}
+
+	return GameController::get()->getDumped(request);
+}
+
 
 #endif // TROGDORD_TEST_HELPER_H

@@ -3887,9 +3887,63 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 	TEST_CASE("GameController (scopes/game.cpp): getDumped()") {
 
-		SUBCASE("State disabled") {
+		SUBCASE("State disabled, without game id") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = getDumped();
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Response::STATE_DISABLED).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
+		SUBCASE("State disabled, with non-existent game id") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
+
+			rapidjson::Document response = getDumped(0);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Response::STATE_DISABLED).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
+		SUBCASE("State disabled, with existing game id") {
+
+			GameContainer::get()->reset();
+
+			initGameXML();
+			initConfig();
 
 			// TODO
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("Invalid game id") {
