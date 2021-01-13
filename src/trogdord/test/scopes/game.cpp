@@ -4911,6 +4911,156 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 	TEST_CASE("GameController (scopes/game.cpp): restoreGame()") {
 
-		// TODO
+		SUBCASE("State disabled, no game id, no slot") {
+
+			initGameXML();
+			initConfig(false, false);
+
+			GameContainer::get()->reset();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "restore", request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->restoreGame(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Response::STATE_DISABLED).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
+		SUBCASE("State disabled, no game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, no game id, valid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, invalid game id, no slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, invalid game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, invalid game id, valid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid but non-existent game id, no slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid but non-existent game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid but non-existent game id, valid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, existing game id, no slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, existing game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, existing game id, valid but non-existent slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, existing game id, existing slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, no game id, no slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, no game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, no game id, valid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, invalid game id, no slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, invalid game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, invalid game id, valid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid but non-existent game id, no slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid but non-existent game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid but non-existent game id, valid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, existing game id, no slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, existing game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, existing game id, valid but non-existent slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, existing game id, existing slot") {
+
+			// TODO
+		}
 	}
 }
