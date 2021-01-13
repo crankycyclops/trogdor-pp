@@ -4569,10 +4569,10 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			// Make a read-only state directory
 			STD_FILESYSTEM::create_directory(statePath);
 
-			GameContainer::get()->reset();
-
 			initGameXML();
 			initConfig(false, true, statePath);
+
+			GameContainer::get()->reset();
 
 			// Create and dump a game
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
@@ -4653,7 +4653,105 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 	TEST_CASE("GameController (scopes/game.cpp): dumpGame()") {
 
-		// TODO
+		SUBCASE("State disabled, no game id passed") {
+
+			// TODO: should return unsupported instead of missing game id
+		}
+
+		SUBCASE("State disabled, invalid game id") {
+
+			// TODO: should return unsupported
+		}
+
+		SUBCASE("State disabled, valid but non-existent game id") {
+
+			// TODO: should return unsupported
+		}
+
+		SUBCASE("State disabled, valid and existing game id") {
+
+			// TODO: should return unsupported
+		}
+
+		SUBCASE("State enabled, no game id") {
+
+			// TODO: should return invalid, missing game id
+		}
+
+		SUBCASE("State enabled, invalid game id") {
+
+			// TODO: should return invalid, malformatted game id
+		}
+
+		SUBCASE("State enabled, valid but non-existent game id") {
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::get()->reset();
+
+			rapidjson::Document response = dumpGame(0);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(GameController::GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
+		}
+
+		SUBCASE("State enabled, valid and existing game id") {
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::get()->reset();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t gameId = response["id"].GetUint();
+
+			response = dumpGame(gameId);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			std::string dumpPath = statePath +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(gameId);
+
+			CHECK(STD_FILESYSTEM::exists(dumpPath));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
+		}
 	}
 
 	TEST_CASE("GameController (scopes/game.cpp): restoreGame()") {
