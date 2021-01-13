@@ -771,6 +771,77 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			destroyGameXML();
 			destroyConfig();
 		}
+
+		SUBCASE("State enabled: game id exists, delete_dump = malformatted") {
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::get()->reset();
+
+			// Step 1: create a game and store the ID
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+
+			CHECK(response["id"].IsUint());
+			size_t id = response["id"].GetUint();
+
+			// Step 2: Craft a request where the delete_dump argument is not
+			// a boolean value (in this case, let's try a string)
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			args.AddMember("id", id, request.GetAllocator());
+			args.AddMember("delete_dump", "I'm a string", request.GetAllocator());
+
+			request.AddMember("method", "delete", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("args", args.Move(), request.GetAllocator());
+
+			response = GameController::get()->destroyGame(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(GameController::INVALID_DELETE_DUMP_ARG).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
+		}
+
+		SUBCASE("State enabled: game id exists, delete_dump = true") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled: game id exists, delete_dump = false") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled: game id exists, delete_dump not set (default value)") {
+
+			// TODO
+		}
 	}
 
 	TEST_CASE("GameController (scopes/game.cpp): getGame()") {
