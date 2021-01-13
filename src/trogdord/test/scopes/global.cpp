@@ -18,6 +18,9 @@ TEST_SUITE("GlobalController (scopes/global.cpp)") {
 	// TODO: need to add a separate test case for number of games
 	TEST_CASE("GlobalController (scopes/global.cpp): resolve() with no action and no default action") {
 
+		std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+		initIniFile(iniFilename, {{}});
+
 		rapidjson::Document request(rapidjson::kObjectType);
 
 		request.AddMember("method", "get", request.GetAllocator());
