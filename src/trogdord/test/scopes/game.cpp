@@ -830,7 +830,51 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State enabled: game id exists, delete_dump = true") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::get()->reset();
+
+			// Step 1: create a game and store the ID
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+
+			CHECK(response["id"].IsUint());
+			size_t id = response["id"].GetUint();
+
+			std::string dumpPath = statePath +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+			// Step 2: Dump the game and verify that it was successful
+			GameContainer::get()->getGame(id)->dump();
+			CHECK(STD_FILESYSTEM::exists(dumpPath));
+
+			// Step 3: Call delete:game and verify that the dump is destroyed
+			// along with the game
+			response = destroyGame(id, true);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(!STD_FILESYSTEM::exists(dumpPath));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled: game id exists, delete_dump = false") {

@@ -232,12 +232,16 @@ inline rapidjson::Document createGame(
 }
 
 // Destroys a game
-inline rapidjson::Document destroyGame(size_t id) {
+inline rapidjson::Document destroyGame(size_t id, std::optional<bool> deleteDump = std::nullopt) {
 
 	rapidjson::Document deleteRequest(rapidjson::kObjectType);
 	rapidjson::Value deleteArgs(rapidjson::kObjectType);
 
 	deleteArgs.AddMember("id", id, deleteRequest.GetAllocator());
+
+	if (deleteDump) {
+		deleteArgs.AddMember("delete_dump", *deleteDump, deleteRequest.GetAllocator());
+	}
 
 	deleteRequest.AddMember("method", "delete", deleteRequest.GetAllocator());
 	deleteRequest.AddMember("scope", "game", deleteRequest.GetAllocator());
