@@ -11,7 +11,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 	TEST_CASE("GameController (scopes/game.cpp): getDefinitionList()") {
 
 		initGameXML();
-		initConfig();
+		initConfig(false, false);
 
 		rapidjson::Document request(rapidjson::kObjectType);
 
@@ -44,7 +44,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
@@ -80,7 +80,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
@@ -117,7 +117,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
@@ -149,7 +149,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
@@ -182,7 +182,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
@@ -219,7 +219,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
@@ -254,7 +254,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
@@ -291,7 +291,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
@@ -357,7 +357,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
@@ -452,7 +452,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
@@ -491,7 +491,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
@@ -528,12 +528,89 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 	TEST_CASE("GameController (scopes/game.cpp): destroyGame()") {
 
-		SUBCASE("State disabled: Game ID is missing") {
+		SUBCASE("State enabled: Game ID is missing") {
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
 
 			GameContainer::get()->reset();
 
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "delete", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->destroyGame(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+
+			CHECK(trogdor::isAscii(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
+		}
+
+		SUBCASE("State enabled: Game ID is missing with empty args value") {
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::get()->reset();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			request.AddMember("method", "delete", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->destroyGame(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+
+			// This last check helps verify that the string wasn't corrupted
+			// (I run into this with RapidJSON a lot, especially when I try
+			// to insert std::string values into JSON objects.)
+			CHECK(trogdor::isAscii(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
+		}
+
+		SUBCASE("State disabled: Game ID is missing") {
+
 			initGameXML();
 			initConfig(false, false);
+
+			GameContainer::get()->reset();
 
 			rapidjson::Document request(rapidjson::kObjectType);
 
@@ -562,10 +639,10 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State disabled: Game ID is missing with empty args value") {
 
-			GameContainer::get()->reset();
-
 			initGameXML();
 			initConfig(false, false);
+
+			GameContainer::get()->reset();
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
@@ -596,10 +673,10 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State disabled: Passing non-existent game ID") {
 
-			GameContainer::get()->reset();
-
 			initGameXML();
 			initConfig(false, false);
+
+			GameContainer::get()->reset();
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Value args(rapidjson::kObjectType);
@@ -628,10 +705,10 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State disabled: Successful destruction of game") {
 
-			GameContainer::get()->reset();
-
 			initGameXML();
 			initConfig(false, false);
+
+			GameContainer::get()->reset();
 
 			// Step 1: create a game and store the ID
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
@@ -700,10 +777,10 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Without args") {
 
-			GameContainer::get()->reset();
-
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
+
+			GameContainer::get()->reset();
 
 			rapidjson::Document request(rapidjson::kObjectType);
 
@@ -725,10 +802,10 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("With args but missing game id") {
 
-			GameContainer::get()->reset();
-
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
+
+			GameContainer::get()->reset();
 
 			rapidjson::Document request(rapidjson::kObjectType);
 
@@ -750,10 +827,10 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Invalid game id") {
 
-			GameContainer::get()->reset();
-
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
+
+			GameContainer::get()->reset();
 
 			// Step 1: test with no games running
 			rapidjson::Document response = getGame(1);
@@ -797,10 +874,10 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Valid game id") {
 
-			GameContainer::get()->reset();
-
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
+
+			GameContainer::get()->reset();
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
@@ -871,10 +948,10 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("Without args") {
 
-			GameContainer::get()->reset();
-
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
+
+			GameContainer::get()->reset();
 
 			rapidjson::Document metaRequest(rapidjson::kObjectType);
 
@@ -903,7 +980,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document metaRequest(rapidjson::kObjectType);
 			rapidjson::Document metaArgs(rapidjson::kObjectType);
@@ -934,7 +1011,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(
 				gameName,
@@ -984,7 +1061,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(
 				gameName,
@@ -1034,7 +1111,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(
 				gameName,
@@ -1075,7 +1152,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(
 				gameName,
@@ -1127,7 +1204,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(
 				gameName,
@@ -1168,7 +1245,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(
 				gameName,
@@ -1224,7 +1301,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 
@@ -1253,7 +1330,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Document args(rapidjson::kObjectType);
@@ -1284,7 +1361,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Document args(rapidjson::kObjectType);
@@ -1317,7 +1394,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Document args(rapidjson::kObjectType);
@@ -1359,7 +1436,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Document args(rapidjson::kObjectType);
@@ -1396,7 +1473,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Document args(rapidjson::kObjectType);
@@ -1444,7 +1521,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Document args(rapidjson::kObjectType);
@@ -1479,7 +1556,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Document args(rapidjson::kObjectType);
@@ -1525,7 +1602,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Document args(rapidjson::kObjectType);
@@ -1560,7 +1637,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 			rapidjson::Document args(rapidjson::kObjectType);
@@ -1609,7 +1686,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
@@ -1685,7 +1762,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
@@ -1761,7 +1838,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		SUBCASE("definitions directory doesn't exist (results in internal error)") {
 
 			GameContainer::get()->reset();
-			initConfig();
+			initConfig(false, false);
 
 			// initGameXML() creates the subdirectory as well as creates the
 			// definition file, so by not calling this and not manually
@@ -1791,7 +1868,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		SUBCASE("No definitions available") {
 
 			GameContainer::get()->reset();
-			initConfig();
+			initConfig(false, false);
 
 			// Create the directory for definitions like we do in initGameXML(),
 			// but don't create the XML file
@@ -1827,7 +1904,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 
@@ -1861,7 +1938,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = getGameList();
 
@@ -1884,7 +1961,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
@@ -1929,7 +2006,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = getGameList({"key1", "key2"});
 
@@ -1952,7 +2029,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(
 				gameName,
@@ -2009,7 +2086,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			// The empty string should translate to a null JSON value, which
 			// should just act as if there are no filters.
@@ -2088,7 +2165,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
@@ -2372,7 +2449,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			// The empty string should translate to a null JSON value, which
 			// should just act as if there are no filters.
@@ -2454,7 +2531,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
@@ -2813,7 +2890,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 
@@ -2854,7 +2931,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = startGame(0);
 
@@ -2877,7 +2954,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
@@ -2913,7 +2990,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			static std::chrono::milliseconds threadSleepTime(tickInterval * 2);
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
@@ -3026,7 +3103,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 
@@ -3067,7 +3144,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = stopGame(0);
 
@@ -3090,7 +3167,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
@@ -3126,7 +3203,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			static std::chrono::milliseconds threadSleepTime(tickInterval * 2);
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
@@ -3279,7 +3356,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 
@@ -3320,7 +3397,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = isRunning(0);
 
@@ -3343,7 +3420,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
@@ -3379,7 +3456,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
@@ -3451,7 +3528,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 
@@ -3492,7 +3569,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = getTime(0);
 
@@ -3515,7 +3592,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
@@ -3551,7 +3628,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			static std::chrono::milliseconds threadSleepTime(tickInterval * 2);
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
@@ -3633,7 +3710,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document request(rapidjson::kObjectType);
 
@@ -3674,7 +3751,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = getStatistics(0);
 
@@ -3697,7 +3774,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
@@ -3733,7 +3810,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			static std::chrono::milliseconds threadSleepTime(tickInterval * 2);
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
@@ -3838,7 +3915,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 
 			initGameXML();
-			initConfig();
+			initConfig(false, false);
 
 			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
 
