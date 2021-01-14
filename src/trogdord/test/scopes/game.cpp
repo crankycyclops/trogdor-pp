@@ -5240,7 +5240,62 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State disabled, existing game id, invalid slot") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			// Part 1: Enable state, then create and dump a game
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::get()->reset();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+			size_t id = response["id"].GetUint();
+
+			GameContainer::get()->getGame(id)->dump();
+
+			// Part 2: Disable state and attempt to restore with an invalid
+			// dump slot
+			initConfig(false, false);
+			GameContainer::get()->reset();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			args.AddMember("id", id, request.GetAllocator());
+			args.AddMember("slot", "Not a valid slot", request.GetAllocator());
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "restore", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			response = GameController::get()->restoreGame(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Response::STATE_DISABLED).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State disabled, existing game id, valid but non-existent slot") {
@@ -5647,7 +5702,56 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State enabled, existing game id, invalid slot") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::get()->reset();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+			size_t id = response["id"].GetUint();
+
+			GameContainer::get()->getGame(id)->dump();
+			GameContainer::get()->reset();
+
+			rapidjson::Document request(rapidjson::kObjectType);
+			rapidjson::Value args(rapidjson::kObjectType);
+
+			args.AddMember("id", id, request.GetAllocator());
+			args.AddMember("slot", "Not a valid slot", request.GetAllocator());
+
+			request.AddMember("method", "post", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "restore", request.GetAllocator());
+			request.AddMember("args", args, request.GetAllocator());
+
+			response = GameController::get()->restoreGame(request);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(GameController::INVALID_DUMPED_GAME_SLOT).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, existing game id, valid but non-existent slot") {
