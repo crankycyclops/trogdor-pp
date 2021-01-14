@@ -278,7 +278,8 @@ Destroys an existing game.
 	"method": "delete",
 	"scope": "game",
 	"args": {
-		"id": <unsigned int>
+		"id": <unsigned int>,
+		"delete_dump": <boolean> (optional)
 	}
 }
 ```
@@ -667,6 +668,147 @@ Returns a status code indicating success.
 |-|-|
 | 200 | Success |
 | 404 | Game not found |
+
+---
+
+#### 12. set:game:meta
+
+Sets meta data associated with the specified game.
+
+**JSON Request Format:**
+
+```
+{
+	"method": "set",
+	"scope": "game",
+	"action": "meta",
+	"args": {
+		"id": <unsigned int>,
+		"meta": <object of key/value pairs>
+	}
+}
+```
+
+**Arguments:**
+
+| Argument | Required? | Value |
+|-|-|-|
+| `id` | Yes | Id of an existing game |
+| `meta` | Yes | Object containing key/value pairs of data |
+
+**Successful JSON Response:**
+
+Returns a status code indicating success.
+
+```
+{
+	"status": 200
+}
+```
+
+**Possible Status Codes:**
+
+| Status | Meaning |
+|-|-|
+| 200 | Success |
+| 400 | Request was invalid |
+| 404 | Game not found |
+
+---
+
+#### 13. post:game:dump
+
+Dumps the specified game.
+
+**JSON Request Format:**
+
+```
+{
+	"method": "post",
+	"scope": "game",
+	"action": "dump",
+	"args": {
+		"id": <unsigned int>
+	}
+}
+```
+
+**Arguments:**
+
+| Argument | Required? | Value |
+|-|-|-|
+| `id` | Yes | Id of an existing game |
+
+**Successful JSON Response:**
+
+Returns a status code indicating success and the dump slot (like a version) the
+game was saved to.
+
+```
+{
+	"status": 200,
+	"slot": 0
+}
+```
+
+**Possible Status Codes:**
+
+| Status | Meaning |
+|-|-|
+| 200 | Success |
+| 400 | Invalid request |
+| 404 | Game not found |
+| 500 | An internal error occured |
+| 501 | State feature was disabled in trogdord.ini |
+
+---
+
+#### 14. post:game:restore
+
+Restores the specified dumped game.
+
+**JSON Request Format:**
+
+```
+{
+	"method": "post",
+	"scope": "game",
+	"action": "restore",
+	"args": {
+		"id": <unsigned int>,
+		"slot": <unsigned int> (optional)
+	}
+}
+```
+
+**Arguments:**
+
+| Argument | Required? | Value |
+|-|-|-|
+| `id` | Yes | Id of an existing game |
+| `slot` | No | The dump slot (like a version) to restore (defaults to the latest slot) |
+
+**Successful JSON Response:**
+
+Returns a status code indicating success and the dump slot (like a version) that
+was restored.
+
+```
+{
+	"status": 200,
+	"slot": 0
+}
+```
+
+**Possible Status Codes:**
+
+| Status | Meaning |
+|-|-|
+| 200 | Success |
+| 400 | Invalid request |
+| 404 | Game or slot not found |
+| 500 | An internal error occured |
+| 501 | State feature was disabled in trogdord.ini |
 
 ---
 
