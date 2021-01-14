@@ -5300,7 +5300,51 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State disabled, existing game id, valid but non-existent slot") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			// Part 1: Enable state, then create and dump a game
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::get()->reset();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+			size_t id = response["id"].GetUint();
+
+			GameContainer::get()->getGame(id)->dump();
+
+			// Part 2: Disable state and attempt to restore non-existent
+			// dump slot
+			initConfig(false, false);
+			GameContainer::get()->reset();
+
+			response = restoreGame(id, 100);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Response::STATE_DISABLED).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State disabled, existing game id, existing slot") {
@@ -5756,7 +5800,54 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State enabled, existing game id, valid but non-existent slot") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::get()->reset();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+			size_t id = response["id"].GetUint();
+
+			// Dump two versions of the game so we can tell them apart
+			// TODO: use slot returned by dump() instead of what I assume them
+			// to be.
+			GameContainer::get()->getGame(id)->dump();
+			GameContainer::get()->setMeta(id, "latest", "true");
+			GameContainer::get()->getGame(id)->dump();
+
+			GameContainer::get()->reset();
+
+			// Slot 100 doesn't exist.
+			// TODO: add 1 to last value returned by call above once I return
+			// the slot to guarantee a non-existing slot
+			response = restoreGame(id, 100);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(GameController::DUMPED_GAME_SLOT_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, existing game id, existing slot") {
