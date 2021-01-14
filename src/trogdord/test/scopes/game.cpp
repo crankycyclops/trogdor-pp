@@ -4891,17 +4891,28 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response["id"].IsUint());
 
 			size_t gameId = response["id"].GetUint();
-
 			response = dumpGame(gameId);
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
+			CHECK(response.HasMember("slot"));
+			#if SIZE_MAX == UINT64_MAX
+				CHECK(response["slot"].IsUint64());
+				size_t slot = response["slot"].GetUint64();
+			#else
+				CHECK(response["slot"].IsUint());
+				size_t slot = response["slot"].GetUint();
+			#endif
+
 			std::string dumpPath = statePath +
 				STD_FILESYSTEM::path::preferred_separator + std::to_string(gameId);
+			std::string slotPath = dumpPath +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(slot);
 
 			CHECK(STD_FILESYSTEM::exists(dumpPath));
+			CHECK(STD_FILESYSTEM::exists(slotPath));
 
 			destroyGameXML();
 			destroyConfig();
