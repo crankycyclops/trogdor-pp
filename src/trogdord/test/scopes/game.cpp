@@ -5554,7 +5554,52 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State enabled, existing game id, no slot") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::get()->reset();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+			size_t id = response["id"].GetUint();
+
+			// Dump two versions of the game so we can tell them apart
+			// TODO: use slot returned by dump() instead of what I assume them
+			// to be.
+			GameContainer::get()->getGame(id)->dump();
+			GameContainer::get()->setMeta(id, "latest", "true");
+			GameContainer::get()->getGame(id)->dump();
+
+			GameContainer::get()->reset();
+
+			// In the absence of a specific slot, the latest slot should be
+			// restored, which means the meta value of "latest" should be
+			// "true."
+			response = restoreGame(id);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(0 == GameContainer::get()->getMeta(id, "latest").compare("true"));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, existing game id, invalid slot") {

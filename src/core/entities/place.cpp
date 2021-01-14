@@ -42,12 +42,15 @@ namespace trogdor::entity {
       g->addCallback("afterDeserialize",
       std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {
 
-         std::vector<std::string> serializedThings =
-            std::get<std::vector<std::string>>(*data.get("things"));
+         if (data.arraySize("things")) {
 
-         for (const auto &thing: serializedThings) {
-            if (const std::shared_ptr<Thing> &t = game->getThing(thing)) {
-               insertThing(t);
+            std::vector<std::string> serializedThings =
+               std::get<std::vector<std::string>>(*data.get("things"));
+
+            for (const auto &thing: serializedThings) {
+               if (const std::shared_ptr<Thing> &t = game->getThing(thing)) {
+                  insertThing(t);
+               }
             }
          }
 

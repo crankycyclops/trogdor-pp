@@ -115,21 +115,24 @@ namespace trogdor::entity {
       g->addCallback("afterDeserialize",
       std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {
 
-         std::vector<std::shared_ptr<serial::Serializable>> serializedDepositors =
-            std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("depositors"));
+         if (data.arraySize("depositors")) {
 
-         for (auto const &depositor: serializedDepositors) {
+            std::vector<std::shared_ptr<serial::Serializable>> serializedDepositors =
+               std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("depositors"));
 
-            const std::shared_ptr<Tangible> &owner =
-               game->getTangible(std::get<std::string>(*depositor->get("depositor")));
+            for (auto const &depositor: serializedDepositors) {
 
-            if (owner) {
+               const std::shared_ptr<Tangible> &owner =
+                  game->getTangible(std::get<std::string>(*depositor->get("depositor")));
 
-               double amount = std::get<double>(*depositor->get("amount"));
+               if (owner) {
 
-               depositors[owner] = amount;
-               owner->recordResourceAllocation(getShared(), amount);
-               totalAmountAllocated += amount;
+                  double amount = std::get<double>(*depositor->get("amount"));
+
+                  depositors[owner] = amount;
+                  owner->recordResourceAllocation(getShared(), amount);
+                  totalAmountAllocated += amount;
+               }
             }
          }
 

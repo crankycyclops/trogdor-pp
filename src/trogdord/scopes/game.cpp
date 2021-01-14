@@ -999,6 +999,7 @@ rapidjson::Document GameController::restoreGame(const rapidjson::Document &reque
 	}
 
 	catch (const std::exception &e) {
+		Config::get()->err(trogdor::Trogerr::ERROR) << e.what() << std::endl;
 		response.AddMember("status", Response::STATUS_INTERNAL_ERROR, response.GetAllocator());
 		response.AddMember("message", rapidjson::StringRef(Response::INTERNAL_ERROR_MSG), response.GetAllocator());
 	}

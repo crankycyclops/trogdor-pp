@@ -138,12 +138,15 @@ namespace trogdor::entity {
          std::shared_ptr<serial::Serializable> serializedInventory =
             std::get<std::shared_ptr<serial::Serializable>>(*data.get("inventory"));
 
-         std::vector<std::string> inventoryItems =
-            std::get<std::vector<std::string>>(*serializedInventory->get("objects"));
+         if (serializedInventory->arraySize("objects")) {
 
-         for (const auto &objName: inventoryItems) {
-            if (const std::shared_ptr<Object> &object = game->getObject(objName)) {
-               insertIntoInventory(object, false);
+            std::vector<std::string> inventoryItems =
+               std::get<std::vector<std::string>>(*serializedInventory->get("objects"));
+
+            for (const auto &objName: inventoryItems) {
+               if (const std::shared_ptr<Object> &object = game->getObject(objName)) {
+                  insertIntoInventory(object, false);
+               }
             }
          }
 

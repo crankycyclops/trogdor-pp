@@ -6,6 +6,7 @@
 #include <optional>
 #include <unordered_map>
 
+#include <trogdor/exception/undefinedexception.h>
 #include "driver.h"
 
 namespace trogdor::serial {
@@ -82,6 +83,43 @@ namespace trogdor::serial {
                (none)
          */
          void erase(std::string key) {data.erase(key);}
+
+         /*
+            If the value identified by the specified key is defined and an array,
+            this method returns its size. Otherwise, it throws an instance of
+            UndefinedException.
+
+            Input:
+               key (std::string)
+
+            Output:
+               Array size (size_t)
+         */
+         size_t arraySize(std::string key) const {
+
+            size_t size = 0;
+            auto v = get(key);
+
+            if (!v) {
+               throw UndefinedException("'key' is undefined.");
+            }
+
+            std::visit([&](auto &&arg) {
+
+               using T = std::decay_t<decltype(arg)>;
+
+               if constexpr (
+                  std::is_same_v<T, std::vector<std::string>> ||
+                  std::is_same_v<T, std::vector<std::shared_ptr<Serializable>>>
+               ) {
+                  size = arg.size();
+               } else {
+                  throw UndefinedException("'key' is not an array.");
+               }
+            }, *v);
+
+            return size;
+         }
 
          /*
             Returns all serialized values (read-only.)

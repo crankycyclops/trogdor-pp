@@ -31,27 +31,33 @@ namespace trogdor::entity {
       g->addCallback("afterDeserialize",
       std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {
 
-         std::vector<std::string> serializedGlancedBy =
-            std::get<std::vector<std::string>>(*data.get("glancedBy"));
+         if (data.arraySize("glancedBy")) {
 
-         for (const auto &glancedBy: serializedGlancedBy) {
+            std::vector<std::string> serializedGlancedBy =
+               std::get<std::vector<std::string>>(*data.get("glancedBy"));
 
-            const std::shared_ptr<Being> &being = game->getBeing(glancedBy);
+            for (const auto &glancedBy: serializedGlancedBy) {
 
-            if (being) {
-               glancedByMap.insert(being);
+               const std::shared_ptr<Being> &being = game->getBeing(glancedBy);
+
+               if (being) {
+                  glancedByMap.insert(being);
+               }
             }
          }
 
-         std::vector<std::string> serializedObservedBy =
-            std::get<std::vector<std::string>>(*data.get("observedBy"));
+         if (data.arraySize("observedBy")) {
 
-         for (const auto &observedBy: serializedObservedBy) {
+            std::vector<std::string> serializedObservedBy =
+               std::get<std::vector<std::string>>(*data.get("observedBy"));
 
-            const std::shared_ptr<Being> &being = game->getBeing(observedBy);
+            for (const auto &observedBy: serializedObservedBy) {
 
-            if (being) {
-               observedByMap.insert(being);
+               const std::shared_ptr<Being> &being = game->getBeing(observedBy);
+
+               if (being) {
+                  observedByMap.insert(being);
+               }
             }
          }
 

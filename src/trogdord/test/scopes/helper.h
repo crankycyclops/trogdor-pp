@@ -698,6 +698,28 @@ inline rapidjson::Document dumpGame(size_t id) {
 	return GameController::get()->dumpGame(request);
 }
 
+// Restores the specified game.
+inline rapidjson::Document restoreGame(size_t id, std::optional<size_t> slot = std::nullopt) {
+
+	rapidjson::Document request(rapidjson::kObjectType);
+
+	request.AddMember("method", "post", request.GetAllocator());
+	request.AddMember("scope", "game", request.GetAllocator());
+	request.AddMember("action", "restore", request.GetAllocator());
+
+	rapidjson::Value args(rapidjson::kObjectType);
+
+	args.AddMember("id", id, request.GetAllocator());
+
+	if (slot) {
+		args.AddMember("slot", *slot, request.GetAllocator());
+	}
+
+	request.AddMember("args", args, request.GetAllocator());
+
+	return GameController::get()->restoreGame(request);
+}
+
 // Depending on whether or not an id is passed in, either returns a list of all
 // dumped games or a list of all save slots within a dumped game.
 inline rapidjson::Document getDumped(

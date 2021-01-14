@@ -38,17 +38,20 @@ namespace trogdor {
       lastTickTime = std::chrono::milliseconds(std::get<size_t>(*data.get("lastTickTime")));
       jobThreadSleepTime = std::chrono::milliseconds(std::get<size_t>(*data.get("jobThreadSleepTime")));
 
-      std::vector<std::shared_ptr<serial::Serializable>> serializedJobs =
-         std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("jobs"));
+      if (data.arraySize("jobs")) {
 
-      for (const auto &job: serializedJobs) {
+         std::vector<std::shared_ptr<serial::Serializable>> serializedJobs =
+            std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("jobs"));
 
-         std::string typeName = std::get<std::string>(*job->get("type"));
+         for (const auto &job: serializedJobs) {
 
-         queue.insert(queue.end(), TimerJob::instantiate(
-            typeName.c_str(),
-            std::tuple<serial::Serializable, Game *>({*job, game})
-         ));
+            std::string typeName = std::get<std::string>(*job->get("type"));
+
+            queue.insert(queue.end(), TimerJob::instantiate(
+               typeName.c_str(),
+               std::tuple<serial::Serializable, Game *>({*job, game})
+            ));
+         }
       }
 
       if (std::get<bool>(*data.get("active"))) {
