@@ -5764,11 +5764,9 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			size_t id = response["id"].GetUint();
 
 			// Dump two versions of the game so we can tell them apart
-			// TODO: use slot returned by dump() instead of what I assume them
-			// to be.
 			GameContainer::get()->getGame(id)->dump();
 			GameContainer::get()->setMeta(id, "latest", "true");
-			GameContainer::get()->getGame(id)->dump();
+			size_t newSlot = GameContainer::get()->getGame(id)->dump();
 
 			GameContainer::get()->reset();
 
@@ -5780,6 +5778,15 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("slot"));
+			#if SIZE_MAX == UINT64_MAX
+				CHECK(response["slot"].IsUint64());
+				CHECK(newSlot == response["slot"].GetUint64());
+			#else
+				CHECK(response["slot"].IsUint());
+				CHECK(newSlot == response["slot"].GetUint());
+			#endif
 
 			CHECK(0 == GameContainer::get()->getMeta(id, "latest").compare("true"));
 
@@ -5867,19 +5874,12 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response["id"].IsUint());
 			size_t id = response["id"].GetUint();
 
-			// Dump two versions of the game so we can tell them apart
-			// TODO: use slot returned by dump() instead of what I assume them
-			// to be.
-			GameContainer::get()->getGame(id)->dump();
-			GameContainer::get()->setMeta(id, "latest", "true");
-			GameContainer::get()->getGame(id)->dump();
+			size_t slot = GameContainer::get()->getGame(id)->dump();
 
 			GameContainer::get()->reset();
 
-			// Slot 100 doesn't exist.
-			// TODO: add 1 to last value returned by call above once I return
-			// the slot to guarantee a non-existing slot
-			response = restoreGame(id, 100);
+			// Attempt to restore a slot that doesn't exist
+			response = restoreGame(id, slot + 1);
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
