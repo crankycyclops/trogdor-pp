@@ -80,11 +80,13 @@ gamePtr(nullptr) {
 	if (slot) {
 		if (slots.end() != slots.find(*slot)) {
 			slotStr = std::to_string(*slot);
+			restoredSlot = *slot;
 		} else {
 			throw GameSlotNotFound();
 		}
 	} else {
 		slotStr = std::to_string(*slots.rbegin());
+		restoredSlot = *slots.rbegin();
 	}
 
 	std::string metaPath = idPath + STD_FILESYSTEM::path::preferred_separator + "meta";
@@ -223,10 +225,10 @@ std::shared_ptr<trogdor::serial::Serializable> GameWrapper::serializeMeta() {
 
 /*****************************************************************************/
 
-void GameWrapper::dump() {
+size_t GameWrapper::dump() {
 
 	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
-		return;
+		return 0;
 	}
 
 	size_t dumpSlot = 0;
@@ -309,6 +311,7 @@ void GameWrapper::dump() {
 	}
 
 	gameMutex.unlock();
+	return dumpSlot;
 }
 
 /*****************************************************************************/

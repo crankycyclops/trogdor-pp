@@ -901,8 +901,11 @@ rapidjson::Document GameController::dumpGame(const rapidjson::Document &request)
 	if (game) {
 
 		try {
-			game->dump();
+
+			size_t dumpedSlot = game->dump();
+
 			response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+			response.AddMember("slot", dumpedSlot, response.GetAllocator());
 		}
 
 		catch (const std::exception &e) {
@@ -977,7 +980,7 @@ rapidjson::Document GameController::restoreGame(const rapidjson::Document &reque
 
 	try {
 
-		GameContainer::get()->restoreGame(gameId, slot);
+		size_t restoredSlot = GameContainer::get()->restoreGame(gameId, slot);
 
 		std::string logMsg = "Restored game id " + std::to_string(gameId);
 		if (slot) {
@@ -986,6 +989,7 @@ rapidjson::Document GameController::restoreGame(const rapidjson::Document &reque
 
 		Config::get()->err(trogdor::Trogerr::INFO) << logMsg << '.' << std::endl;
 		response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+		response.AddMember("slot", restoredSlot, response.GetAllocator());
 	}
 
 	catch (const GameNotFound &e) {

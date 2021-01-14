@@ -210,8 +210,8 @@ class GameContainer {
 		// most recent one will be restored. GameWrapper::restore(), which we
 		// call in this method, will throw GameNotFound if the dumped game id
 		// doesn't exist and GameSlotNotFound if a slot was specified but
-		// doesn't exist.
-		void restoreGame(size_t id, std::optional<size_t> slot = std::nullopt);
+		// doesn't exist. Returns the dump slot that was restored.
+		size_t restoreGame(size_t id, std::optional<size_t> slot = std::nullopt);
 
 		// Returns true if the specified id is that of a dumped game and false
 		// if not (or if state is disabled.)

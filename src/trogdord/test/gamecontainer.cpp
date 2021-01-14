@@ -1268,7 +1268,7 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 				// Create a game and demonstrate that it gets dumped.
 				size_t id = GameContainer::get()->createGame(definition, gameName);
-				GameContainer::get()->dump();
+				size_t slot = GameContainer::get()->getGame(id)->dump();
 
 				std::string gameStatePath = statePath +
 					STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
@@ -1298,7 +1298,7 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 				// With a game slot
 				try {
-					GameContainer::get()->restoreGame(id, 0);
+					GameContainer::get()->restoreGame(id, slot);
 					FAIL("GameContainer::restoreGame() should fail if state is disabled.");
 				}
 
@@ -1378,12 +1378,12 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 				// Version 1 of the game will be stopped and have no players
 				size_t id = GameContainer::get()->createGame(definition, gameName);
-				GameContainer::get()->dump();
+				size_t oldSlot = GameContainer::get()->getGame(id)->dump();
 
 				// Version 2 of the game will be started and have one player
 				GameContainer::get()->startGame(id);
 				GameContainer::get()->createPlayer(id, "player");
-				GameContainer::get()->dump();
+				size_t newSlot = GameContainer::get()->getGame(id)->dump();
 
 				GameContainer::reset();
 				CHECK(0 == GameContainer::get()->getGames().size());
@@ -1391,8 +1391,9 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				// By default, restoreGame() should restore the most recent
 				// dump slot, which we verify by checking to make sure it's
 				// started and that a player was created.
-				GameContainer::get()->restoreGame(id);
+				size_t restoredSlot = GameContainer::get()->restoreGame(id);
 
+				CHECK(newSlot == restoredSlot);
 				CHECK(true == GameContainer::get()->getGame(id)->get()->inProgress());
 				CHECK(1 == GameContainer::get()->getGame(id)->getNumPlayers());
 
@@ -1401,8 +1402,9 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 				// Next, we load the first dumped slot, which shouldn't yet
 				// be started and shouldn't yet have a player.
-				GameContainer::get()->restoreGame(id, 0);
+				restoredSlot = GameContainer::get()->restoreGame(id, oldSlot);
 
+				CHECK(oldSlot == restoredSlot);
 				CHECK(false == GameContainer::get()->getGame(id)->get()->inProgress());
 				CHECK(0 == GameContainer::get()->getGame(id)->getNumPlayers());
 
@@ -1452,25 +1454,27 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 				// Version 1 of the game will be stopped and have no players
 				size_t id = GameContainer::get()->createGame(definition, gameName);
-				GameContainer::get()->dump();
+				size_t oldSlot = GameContainer::get()->getGame(id)->dump();
 
 				// Version 2 of the game will be started and have one player
 				GameContainer::get()->startGame(id);
 				GameContainer::get()->createPlayer(id, "player");
-				GameContainer::get()->dump();
+				size_t newSlot = GameContainer::get()->getGame(id)->dump();
 
 				// By default, restoreGame() should restore the most recent
 				// dump slot, which we verify by checking to make sure it's
 				// started and that a player was created.
-				GameContainer::get()->restoreGame(id);
+				size_t restoredSlot = GameContainer::get()->restoreGame(id);
 
+				CHECK(newSlot == restoredSlot);
 				CHECK(true == GameContainer::get()->getGame(id)->get()->inProgress());
 				CHECK(1 == GameContainer::get()->getGame(id)->getNumPlayers());
 
 				// Next, we load the first dumped slot, which shouldn't yet
 				// be started and shouldn't yet have a player.
-				GameContainer::get()->restoreGame(id, 0);
+				restoredSlot = GameContainer::get()->restoreGame(id, 0);
 
+				CHECK(oldSlot == restoredSlot);
 				CHECK(false == GameContainer::get()->getGame(id)->get()->inProgress());
 				CHECK(0 == GameContainer::get()->getGame(id)->getNumPlayers());
 

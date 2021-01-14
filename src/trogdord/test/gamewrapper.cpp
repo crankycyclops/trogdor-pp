@@ -192,12 +192,16 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				try {
 
 					GameWrapper test(0, definition, name);
-					test.dump();
+					size_t slot = test.dump();
 
 					for (const auto &subdir: STD_FILESYSTEM::directory_iterator(statePath)) {
 						std::string message = subdir.path().filename().string() + ": No data should be dumped when state is disabled";
 						FAIL(message);
 					}
+
+					// dump() always returns 0 without effect when state is
+					// disabled.
+					CHECK(0 == slot);
 				}
 
 				catch (const ServerException &e) {
@@ -290,8 +294,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 					std::set<size_t> validDumpInts;
 
 					for (int i = 0; i < numDumps; i++) {
-						test.dump();
-						validDumpInts.insert(i);
+						validDumpInts.insert(test.dump());
 					}
 
 					int numActuallyDumped = 0;
@@ -361,7 +364,8 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 					size_t validDumpInt = 9;
 
 					for (int i = 0; i < numDumps; i++) {
-						test.dump();
+						size_t slot = test.dump();
+						CHECK(i == slot);
 					}
 
 					int numActuallyDumped = 0;
@@ -430,11 +434,8 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 					// Helps us verify the auto-incrementing id
 					std::set<size_t> validDumpInts;
 
-					validDumpInts.insert(numDumps - 1);
-					validDumpInts.insert(numDumps - 2);
-
 					for (int i = 0; i < numDumps; i++) {
-						test.dump();
+						validDumpInts.insert(test.dump());
 					}
 
 					int numActuallyDumped = 0;
@@ -498,10 +499,10 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				try {
 
 					GameWrapper test(gameId, definition, name);
-					test.dump();
+					size_t slot = test.dump();
 
 					std::string gameStateSlotPath = gameStatePath +
-						STD_FILESYSTEM::path::preferred_separator + '0';
+						STD_FILESYSTEM::path::preferred_separator + std::to_string(slot);
 
 					CHECK(STD_FILESYSTEM::exists(gameStateSlotPath));
 
@@ -1088,6 +1089,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				// If this fails, it'll throw an exception that doctest will
 				// catch and report
 				GameWrapper testCopy(gameStatePath, 0);
+				CHECK(0 == testCopy.getRestoredSlot());
 
 				STD_FILESYSTEM::remove(iniFilename);
 				STD_FILESYSTEM::remove_all(statePath);
@@ -1138,10 +1140,12 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 				// the latest version with the meta value set.
 				GameWrapper testCopy(gameStatePath);
 				CHECK(0 == testCopy.get()->getMeta("metakey").compare("wee"));
+				CHECK(1 == testCopy.getRestoredSlot());
 
 				// Let's also verify that the previous dump does exist
 				GameWrapper testCopy2(gameStatePath, 0);
 				CHECK(0 == testCopy2.get()->getMeta("metakey").compare(""));
+				CHECK(0 == testCopy2.getRestoredSlot());
 
 				STD_FILESYSTEM::remove(iniFilename);
 				STD_FILESYSTEM::remove_all(statePath);
@@ -1149,5 +1153,49 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 			#endif
 		}
+	}
+
+	TEST_CASE("GameWrapper (gamewrapper.cpp): getRestoredSlot()") {
+
+		#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+			FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+		#else
+
+			const size_t gameId = 0;
+
+			std::string name = "I'm a game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+			std::string gameStatePath = statePath +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(gameId);
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::ofstream iniFile(iniFilename, std::ofstream::out);
+
+			iniFile << "[state]\nenabled=true\nsave_path=" << statePath
+				<< "\n\n" << std::endl;
+			iniFile.close();
+
+			Config::get()->load(iniFilename);
+
+			// Step 1: create an original game (shouldn't have a value)
+			GameWrapper test(gameId, definition, name);
+			CHECK(std::nullopt == test.getRestoredSlot());
+
+			size_t slot = test.dump();
+
+			GameWrapper testCopy(gameStatePath);
+			CHECK(slot == *testCopy.getRestoredSlot());
+
+			STD_FILESYSTEM::remove(iniFilename);
+			STD_FILESYSTEM::remove_all(statePath);
+			initIniFile(iniFilename, {{}});
+
+		#endif
 	}
 }

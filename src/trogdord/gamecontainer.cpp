@@ -471,7 +471,7 @@ int GameContainer::restore() {
 
 /*****************************************************************************/
 
-void GameContainer::restoreGame(size_t id, std::optional<size_t> slot) {
+size_t GameContainer::restoreGame(size_t id, std::optional<size_t> slot) {
 
 	std::string gameStatePath = Config::get()->getStatePath() +
 		STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
@@ -481,6 +481,8 @@ void GameContainer::restoreGame(size_t id, std::optional<size_t> slot) {
 
 	clearIndices(id);
 	indexNewGame(id);
+
+	return *games[id]->getRestoredSlot();
 }
 
 /*****************************************************************************/

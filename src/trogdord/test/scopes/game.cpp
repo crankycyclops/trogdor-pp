@@ -5920,22 +5920,27 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			size_t id = response["id"].GetUint();
 
 			// Dump two versions of the game so we can tell them apart
-			// TODO: use slot returned by dump() instead of what I assume them
-			// to be.
-			GameContainer::get()->getGame(id)->dump();
+			size_t oldSlot = GameContainer::get()->getGame(id)->dump();
 			GameContainer::get()->setMeta(id, "latest", "true");
 			GameContainer::get()->getGame(id)->dump();
 
 			GameContainer::get()->reset();
 
 			// Explicitly restore the earlier slot.
-			// TODO: use value returned by dump() above once it returns the
-			// slot.
-			response = restoreGame(id, 0);
+			response = restoreGame(id, oldSlot);
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("slot"));
+			#if SIZE_MAX == UINT64_MAX
+				CHECK(response["slot"].IsUint64());
+				CHECK(oldSlot == response["slot"].GetUint64());
+			#else
+				CHECK(response["slot"].IsUint());
+				CHECK(oldSlot == response["slot"].GetUint());
+			#endif
 
 			// In the earlier dump, we didn't set this meta value, so
 			// getMeta() should return an empty string.

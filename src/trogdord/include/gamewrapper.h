@@ -33,6 +33,10 @@ class GameWrapper {
 		// The actual underlying game object
 		std::unique_ptr<trogdor::Game> gamePtr;
 
+		// If set, this is the dump slot that was restored when the instance
+		// of GameWrapper was instantiated
+		std::optional<size_t> restoredSlot;
+
 		// Returns a serialized version of all meta data associate with the
 		// GameWrapper instance.
 		std::shared_ptr<trogdor::serial::Serializable> serializeMeta();
@@ -73,8 +77,9 @@ class GameWrapper {
 		GameWrapper(const STD_FILESYSTEM::path &p, std::optional<size_t> slot = std::nullopt);
 
 		// Serializes and saves the state of the game, along with any
-		// associated meta data.
-		void dump();
+		// associated meta data and returns the dump slot where the game was
+		// saved (if state is disabled, this always returns 0 with no effect.)
+		size_t dump();
 
 		// Deletes all dumped data for the given game.
 		void destroyDump();
@@ -96,6 +101,9 @@ class GameWrapper {
 
 		// Returns the current number of players in the game
 		inline const size_t getNumPlayers() const {return gamePtr->getPlayers().size();}
+
+		// Returns the dump slot that was restored for this game (if any)
+		std::optional<size_t> getRestoredSlot() const {return restoredSlot;}
 };
 
 #endif
