@@ -540,6 +540,14 @@ TODO
 
 TODO
 
+### Dumping a Game
+
+TODO
+
+### Restoring a Game
+
+TODO
+
 ### Getting a Game's Metadata
 
 TODO
@@ -579,9 +587,9 @@ TODO
 ### Retrieving Status Code Returned After the Last Request
 
 Every time a request is made to an instance of trogdord, a status code is
-returned as part of the server's response. Whatever this status code is, the
-public read-only property `$status` gets set to it so that you can check it if
-necessary. This allows for additional insight.
+returned as part of the server's response. Whatever this status code is will be
+stored in the public read-only property `$status` so that you can check it if
+necessary, allowing for additional insight.
 
 For example, a call to `\Trogdord::restore()` is successful if the underlying
 request returns a 200 (`\Trogdord\Status\SUCCESS`), indicating success, or a 206

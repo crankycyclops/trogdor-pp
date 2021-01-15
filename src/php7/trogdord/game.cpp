@@ -39,6 +39,9 @@ static const char *GAME_STOP_REQUEST = "{\"method\":\"set\",\"scope\":\"game\",\
 // This request destroys the game
 static const char *GAME_DESTROY_REQUEST = "{\"method\":\"delete\",\"scope\":\"game\",\"args\":{\"id\": %gid%deletedumparg}}";
 
+// This request dumps the game
+static const char *GAME_DUMP_REQUEST = "{\"method\":\"post\",\"scope\":\"game\",\"action\":\"dump\",\"args\":{\"id\": %gid}}";
+
 // This request retrieves meta data associated with the game
 static const char *GAME_GET_META_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"meta\",\"args\":{\"id\":%gid%metaarg}}";
 
@@ -457,6 +460,59 @@ PHP_METHOD(Game, destroy) {
 			GAME_ID_PROPERTY,
 			strlen(GAME_ID_PROPERTY)
 		);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		RETURN_NULL();
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+	}
+}
+
+/*****************************************************************************/
+
+ZEND_BEGIN_ARG_INFO(arginfoDump, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Game, dump) {
+
+	zval rv; // ???
+
+	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
+	zval *id = GAME_TO_ID(getThis(), &rv);
+
+	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+
+	try {
+
+		std::string request = GAME_DUMP_REQUEST;
+		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+
+		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+		Document response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request,
+			trogdord
+		);
+
+		RETURN_NULL();
 	}
 
 	// Throw \Trogord\NetworkException
@@ -1841,6 +1897,7 @@ static const zend_function_entry classMethods[] =  {
 	PHP_ME(Game, isRunning, arginfoIsRunning, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, statistics, arginfoStatistics, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, destroy, arginfoDestroy, ZEND_ACC_PUBLIC)
+	PHP_ME(Game, dump, arginfoDump, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, getMeta, arginfoGetMeta, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, setMeta, arginfoSetMeta, ZEND_ACC_PUBLIC)
 	PHP_ME(Game, entities, arginfoListEntities, ZEND_ACC_PUBLIC)
