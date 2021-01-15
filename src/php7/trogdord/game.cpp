@@ -411,7 +411,7 @@ ZEND_END_ARG_INFO()
 PHP_METHOD(Game, destroy) {
 
 	zval rv; // ???
-	zval *deleteDump = nullptr;
+	zend_bool deleteDump = false;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "|b", &deleteDump) == FAILURE) {
 		RETURN_NULL();
@@ -427,12 +427,14 @@ PHP_METHOD(Game, destroy) {
 		std::string request = GAME_DESTROY_REQUEST;
 		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
 
-		if (IS_TRUE == Z_TYPE_P(deleteDump)) {
-			strReplace(request, "%deletedumparg", ",\"delete_dump\":true");
-		} else if (IS_FALSE == Z_TYPE_P(deleteDump)) {
-			strReplace(request, "%deletedumparg", ",\"delete_dump\":false");
+		if (ZEND_NUM_ARGS()) {
+			if (deleteDump) {
+				strReplace(request, "%deletedumparg", ",\"delete_dump\":true");
+			} else {
+				strReplace(request, "%deletedumparg", ",\"delete_dump\":false");
+			}
 		} else {
-			strReplace(request, "%deletedumparg", "");	
+			strReplace(request, "%deletedumparg", "");
 		}
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));

@@ -29,6 +29,9 @@ struct customData {
 	// The hostname and port we're connecting to
 	std::string hostname;
 	unsigned short port;
+
+	// Allows us to temporarily write to the read-only status property
+	bool unlockStatusProperty = false;
 };
 
 // Allows us to wrap instance of PHP class \Trogdord with extra data

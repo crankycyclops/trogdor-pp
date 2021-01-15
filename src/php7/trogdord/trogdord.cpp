@@ -594,13 +594,18 @@ static void freeObject(zend_object *object) {
 	static WRITE_PROP_RETURN_TYPE writeObjectProperty(zval *object, zval *member, zval *value, void **cache_slot) {
 #endif
 
-	// The status code returned by the last request is a read-only property
+	// The status code returned by the last request is a read-only property and
+	// can only be written to when we signal internally that it's okay to do so.
 	#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
-		if (0 == strncmp(ZSTR_VAL(member), STATUS_PROPERTY, ZSTR_LEN(member))) {
+		if (
+			0 == strncmp(ZSTR_VAL(member), STATUS_PROPERTY, ZSTR_LEN(member)) &&
+			!ZOBJ_TO_TROGDORD(object)->data.unlockStatusProperty
+		) {
 	#else
 		if (
 			Z_TYPE_P(member) == IS_STRING &&
-			0 == strncmp(Z_STRVAL_P(member), STATUS_PROPERTY, Z_STRLEN_P(member))
+			0 == strncmp(Z_STRVAL_P(member), STATUS_PROPERTY, Z_STRLEN_P(member)) &&
+			!ZOBJ_TO_TROGDORD(Z_OBJ_P(object))->data.unlockStatusProperty
 		) {
 	#endif
 		zend_throw_error(NULL, "Cannot write property");
