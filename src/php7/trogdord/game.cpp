@@ -404,7 +404,7 @@ PHP_METHOD(Game, statistics) {
 // \Trogdord\NetworkException if the call fails due to network connectivity
 // issues. If the game has already been destroyed, \Trogdord\GameNotFound will
 // be thrown.
-ZEND_BEGIN_ARG_INFO(arginfoDestroy, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfoDestroy, 0, 0, 0)
 	ZEND_ARG_INFO(0, deleteDump)
 ZEND_END_ARG_INFO()
 
@@ -489,7 +489,7 @@ PHP_METHOD(Game, destroy) {
 // returned. Throws an instance of \Trogdord\NetworkException if the call fails
 // due to network connectivity issues. If the game has already been destroyed,
 // \Trogdord\GameNotFound will be thrown.
-ZEND_BEGIN_ARG_INFO(arginfoGetMeta, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfoGetMeta, 0, 0, 0)
 	ZEND_ARG_TYPE_INFO(0, keys, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
 

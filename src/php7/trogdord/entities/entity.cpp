@@ -106,7 +106,7 @@ PHP_METHOD(Entity, __get) {
 // be appended to the output buffer on the specified channel. If neither a
 // channel nor a message are specified in the arguments, the messages returned
 // are those on the default channel.
-ZEND_BEGIN_ARG_INFO(arginfoOutput, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfoOutput, 0, 0, 0)
 	ZEND_ARG_TYPE_INFO(0, channel, IS_STRING, 1)
 	ZEND_ARG_TYPE_INFO(0, message, IS_STRING, 1)
 ZEND_END_ARG_INFO()

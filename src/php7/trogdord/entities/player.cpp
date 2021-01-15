@@ -81,7 +81,7 @@ PHP_METHOD(Entity, input) {
 // issues. If the game the player belongs to no longer exists,
 // \TrogdordGameNotFound will be thrown. If the player has already been
 // destroyed, \Trogdord\PlayerNotFound will be thrown.
-ZEND_BEGIN_ARG_INFO(arginfoDestroy, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfoDestroy, 0, 0, 0)
 	ZEND_ARG_TYPE_INFO(0, removeMsg, IS_STRING, 1)
 ZEND_END_ARG_INFO()
 
