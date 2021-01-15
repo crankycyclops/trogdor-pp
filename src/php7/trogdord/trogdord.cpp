@@ -47,9 +47,9 @@ static const char *NEW_GAME_REQUEST = "{\"method\":\"post\",\"scope\":\"game\",\
 // Trogdord Constructor (returned instance represents a connection to an
 // instance of trogdord over the network.) Throws instance of
 // \Trogdord\NetworkException if the attempt to connect is unsuccessful.
-ZEND_BEGIN_ARG_INFO(arginfoCtor, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfoCtor, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, hostname, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO(0, port, IS_LONG, 1)
+	ZEND_ARG_TYPE_INFO(0, port, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 PHP_METHOD(Trogdord, __construct) {
@@ -58,6 +58,7 @@ PHP_METHOD(Trogdord, __construct) {
 
 	char *hostname;
 	size_t hostnameLength;
+
 	long port = TROGDORD_DEFAULT_PORT;
 
 	zend_parse_parameters_throw(
@@ -209,7 +210,7 @@ PHP_METHOD(Trogdord, restore) {
 // meta values that should be returned along with the id and name of each game.
 // Throws an instance of \Trogdord\NetworkException if there's an issue with the
 // network connection that prevents this call from returning a valid list.
-ZEND_BEGIN_ARG_INFO(arginfoListGames, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfoListGames, 0, 0, 0)
 	ZEND_ARG_TYPE_INFO(0, filters, IS_ARRAY, 1)
 	ZEND_ARG_TYPE_INFO(0, keys, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
@@ -436,7 +437,7 @@ PHP_METHOD(Trogdord, getGame) {
 // if there's an issue creating the game and \Trogdord\NetworkException if
 // there's an issue with the network connection that prevents this call from
 // creating a new game.
-ZEND_BEGIN_ARG_INFO(arginfoNewGame, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfoNewGame, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, definition, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, meta, IS_ARRAY, 1)
