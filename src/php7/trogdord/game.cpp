@@ -37,7 +37,7 @@ static const char *GAME_START_REQUEST = "{\"method\":\"set\",\"scope\":\"game\",
 static const char *GAME_STOP_REQUEST = "{\"method\":\"set\",\"scope\":\"game\",\"action\":\"stop\",\"args\":{\"id\": %gid}}";
 
 // This request destroys the game
-static const char *GAME_DESTROY_REQUEST = "{\"method\":\"delete\",\"scope\":\"game\",\"args\":{\"id\": %gid}}";
+static const char *GAME_DESTROY_REQUEST = "{\"method\":\"delete\",\"scope\":\"game\",\"args\":{\"id\": %gid%deletedumparg}}";
 
 // This request retrieves meta data associated with the game
 static const char *GAME_GET_META_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"meta\",\"args\":{\"id\":%gid%metaarg}}";
@@ -405,11 +405,17 @@ PHP_METHOD(Game, statistics) {
 // issues. If the game has already been destroyed, \Trogdord\GameNotFound will
 // be thrown.
 ZEND_BEGIN_ARG_INFO(arginfoDestroy, 0)
+	ZEND_ARG_INFO(0, deleteDump)
 ZEND_END_ARG_INFO()
 
 PHP_METHOD(Game, destroy) {
 
 	zval rv; // ???
+	zval *deleteDump = nullptr;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "|b", &deleteDump) == FAILURE) {
+		RETURN_NULL();
+	}
 
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
@@ -420,6 +426,14 @@ PHP_METHOD(Game, destroy) {
 
 		std::string request = GAME_DESTROY_REQUEST;
 		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+
+		if (IS_TRUE == Z_TYPE_P(deleteDump)) {
+			strReplace(request, "%deletedumparg", ",\"delete_dump\":true");
+		} else if (IS_FALSE == Z_TYPE_P(deleteDump)) {
+			strReplace(request, "%deletedumparg", ",\"delete_dump\":false");
+		} else {
+			strReplace(request, "%deletedumparg", "");	
+		}
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
