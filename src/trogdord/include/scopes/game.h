@@ -16,13 +16,13 @@ class GameController: public ScopeController {
 		// Actions served by the "game" scope
 		static constexpr const char *STATISTICS_ACTION = "statistics";
 		static constexpr const char *LIST_ACTION = "list";
+		static constexpr const char *DUMP_LIST_ACTION = "dumplist";
 		static constexpr const char *META_ACTION = "meta";
 		static constexpr const char *DEFINITIONS_ACTION = "definitions";
 		static constexpr const char *START_ACTION = "start";
 		static constexpr const char *STOP_ACTION = "stop";
 		static constexpr const char *TIME_ACTION = "time";
 		static constexpr const char *IS_RUNNING_ACTION = "is_running";
-		static constexpr const char *DUMPED_ACTION = "dumped";
 		static constexpr const char *DUMP_GAME_ACTION = "dump";
 		static constexpr const char *RESTORE_GAME_ACTION = "restore";
 

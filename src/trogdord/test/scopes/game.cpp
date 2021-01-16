@@ -4278,7 +4278,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			request.AddMember("method", "get", request.GetAllocator());
 			request.AddMember("scope", "game", request.GetAllocator());
-			request.AddMember("action", "dumped", request.GetAllocator());
+			request.AddMember("action", "dumplist", request.GetAllocator());
 			args.AddMember("id", "a string, not an id", request.GetAllocator());
 			request.AddMember("args", args, request.GetAllocator());
 
@@ -4316,7 +4316,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			request.AddMember("method", "get", request.GetAllocator());
 			request.AddMember("scope", "game", request.GetAllocator());
-			request.AddMember("action", "dumped", request.GetAllocator());
+			request.AddMember("action", "dumplist", request.GetAllocator());
 			args.AddMember("id", "a string, not an id", request.GetAllocator());
 			request.AddMember("args", args, request.GetAllocator());
 

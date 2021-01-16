@@ -730,7 +730,7 @@ inline rapidjson::Document getDumped(
 
 	request.AddMember("method", "get", request.GetAllocator());
 	request.AddMember("scope", "game", request.GetAllocator());
-	request.AddMember("action", "dumped", request.GetAllocator());
+	request.AddMember("action", "dumplist", request.GetAllocator());
 
 	if (id) {
 

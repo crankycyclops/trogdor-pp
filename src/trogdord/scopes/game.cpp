@@ -49,7 +49,7 @@ GameController::GameController() {
 		return this->getDefinitionList(request);
 	});
 
-	registerAction(Request::GET, DUMPED_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
+	registerAction(Request::GET, DUMP_LIST_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->getDumped(request);
 	});
 
