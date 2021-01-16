@@ -722,7 +722,7 @@ inline rapidjson::Document restoreGame(size_t id, std::optional<size_t> slot = s
 
 // Depending on whether or not an id is passed in, either returns a list of all
 // dumped games or a list of all save slots within a dumped game.
-inline rapidjson::Document getDumped(
+inline rapidjson::Document getDumpList(
 	std::optional<size_t> id = std::nullopt
 ) {
 
@@ -740,7 +740,7 @@ inline rapidjson::Document getDumped(
 		request.AddMember("args", args, request.GetAllocator());
 	}
 
-	return GameController::get()->getDumped(request);
+	return GameController::get()->getDumpList(request);
 }
 
 

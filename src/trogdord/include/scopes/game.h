@@ -16,15 +16,15 @@ class GameController: public ScopeController {
 		// Actions served by the "game" scope
 		static constexpr const char *STATISTICS_ACTION = "statistics";
 		static constexpr const char *LIST_ACTION = "list";
-		static constexpr const char *DUMP_LIST_ACTION = "dumplist";
 		static constexpr const char *META_ACTION = "meta";
 		static constexpr const char *DEFINITIONS_ACTION = "definitions";
 		static constexpr const char *START_ACTION = "start";
 		static constexpr const char *STOP_ACTION = "stop";
 		static constexpr const char *TIME_ACTION = "time";
 		static constexpr const char *IS_RUNNING_ACTION = "is_running";
-		static constexpr const char *DUMP_GAME_ACTION = "dump";
-		static constexpr const char *RESTORE_GAME_ACTION = "restore";
+		static constexpr const char *DUMP_LIST_ACTION = "dumplist";
+		static constexpr const char *DUMP_ACTION = "dump";
+		static constexpr const char *RESTORE_ACTION = "restore";
 
 		// Constructor should only be called internally by get(), which will
 		// ensure we only ever have a single instance of the class.
@@ -69,6 +69,9 @@ class GameController: public ScopeController {
 		// Instantiates a new game and returns its id
 		rapidjson::Document createGame(const rapidjson::Document &request);
 
+		// Destroys a dumped game or slot
+		rapidjson::Document destroyDump(const rapidjson::Document &request);
+
 		// Destroys a game
 		rapidjson::Document destroyGame(const rapidjson::Document &request);
 
@@ -90,9 +93,12 @@ class GameController: public ScopeController {
 		// Returns whether or not the game is currently running
 		rapidjson::Document getIsRunning(const rapidjson::Document &request);
 
+		// Returns the details of a dumped game or a specific slot
+		rapidjson::Document getDump(const rapidjson::Document &request);
+
 		// Returns a list of either dumped game ids or save slots for a
 		// specific game, depending on the arguments
-		rapidjson::Document getDumped(const rapidjson::Document &request);
+		rapidjson::Document getDumpList(const rapidjson::Document &request);
 
 		// Dumps the specified game to disk
 		rapidjson::Document dumpGame(const rapidjson::Document &request);

@@ -49,19 +49,23 @@ GameController::GameController() {
 		return this->getDefinitionList(request);
 	});
 
+	registerAction(Request::GET, DUMP_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
+		return this->getDump(request);
+	});
+
 	registerAction(Request::GET, DUMP_LIST_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
-		return this->getDumped(request);
+		return this->getDumpList(request);
 	});
 
 	registerAction(Request::POST, DEFAULT_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->createGame(request);
 	});
 
-	registerAction(Request::POST, DUMP_GAME_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
+	registerAction(Request::POST, DUMP_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->dumpGame(request);
 	});
 
-	registerAction(Request::POST, RESTORE_GAME_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
+	registerAction(Request::POST, RESTORE_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->restoreGame(request);
 	});
 
@@ -75,6 +79,10 @@ GameController::GameController() {
 
 	registerAction(Request::SET, STOP_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->stopGame(request);
+	});
+
+	registerAction(Request::DELETE, DUMP_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
+		return this->destroyDump(request);
 	});
 
 	registerAction(Request::DELETE, DEFAULT_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
@@ -415,6 +423,18 @@ rapidjson::Document GameController::createGame(const rapidjson::Document &reques
 
 /*****************************************************************************/
 
+rapidjson::Document GameController::destroyDump(const rapidjson::Document &request) {
+
+	rapidjson::Document response(rapidjson::kObjectType);
+
+	// TODO
+	response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+
+	return response;
+}
+
+/*****************************************************************************/
+
 rapidjson::Document GameController::destroyGame(const rapidjson::Document &request) {
 
 	size_t gameId;
@@ -740,7 +760,19 @@ rapidjson::Document GameController::getIsRunning(const rapidjson::Document &requ
 
 /*****************************************************************************/
 
-rapidjson::Document GameController::getDumped(const rapidjson::Document &request) {
+rapidjson::Document GameController::getDump(const rapidjson::Document &request) {
+
+	rapidjson::Document response(rapidjson::kObjectType);
+
+	// TODO
+	response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+
+	return response;
+}
+
+/*****************************************************************************/
+
+rapidjson::Document GameController::getDumpList(const rapidjson::Document &request) {
 
 	rapidjson::Document response(rapidjson::kObjectType);
 

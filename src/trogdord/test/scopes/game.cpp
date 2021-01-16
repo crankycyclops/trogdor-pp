@@ -4182,7 +4182,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		}
 	}
 
-	TEST_CASE("GameController (scopes/game.cpp): getDumped()") {
+	TEST_CASE("GameController (scopes/game.cpp): getDumpList()") {
 
 		SUBCASE("State disabled, without game id") {
 
@@ -4191,7 +4191,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig(false, false);
 
-			rapidjson::Document response = getDumped();
+			rapidjson::Document response = getDumpList();
 
 			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
@@ -4214,7 +4214,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig(false, false);
 
-			rapidjson::Document response = getDumped(0);
+			rapidjson::Document response = getDumpList(0);
 
 			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
@@ -4250,7 +4250,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			size_t id = response["id"].GetUint();
 
-			rapidjson::Document response2 = getDumped(id);
+			rapidjson::Document response2 = getDumpList(id);
 
 			CHECK(trogdor::isAscii(JSON::serialize(response2)));
 
@@ -4282,7 +4282,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			args.AddMember("id", "a string, not an id", request.GetAllocator());
 			request.AddMember("args", args, request.GetAllocator());
 
-			rapidjson::Document response = GameController::get()->getDumped(request);
+			rapidjson::Document response = GameController::get()->getDumpList(request);
 
 			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
@@ -4320,7 +4320,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			args.AddMember("id", "a string, not an id", request.GetAllocator());
 			request.AddMember("args", args, request.GetAllocator());
 
-			rapidjson::Document response = GameController::get()->getDumped(request);
+			rapidjson::Document response = GameController::get()->getDumpList(request);
 
 			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
@@ -4350,7 +4350,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig(false, true, statePath);
 
-			rapidjson::Document response = getDumped(0);
+			rapidjson::Document response = getDumpList(0);
 
 			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
@@ -4382,7 +4382,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			STD_FILESYSTEM::create_directory(statePath + STD_FILESYSTEM::path::preferred_separator + "100");
 
-			rapidjson::Document response = getDumped(100);
+			rapidjson::Document response = getDumpList(100);
 			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
@@ -4417,7 +4417,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig(false, true, statePath);
 
-			rapidjson::Document response = getDumped();
+			rapidjson::Document response = getDumpList();
 			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
@@ -4446,7 +4446,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig(false, true, statePath);
 
-			rapidjson::Document response = getDumped();
+			rapidjson::Document response = getDumpList();
 			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
 			CHECK(response.HasMember("status"));
@@ -4536,7 +4536,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 			initConfig(false, true, statePath);
 
-			response = getDumped();
+			response = getDumpList();
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
@@ -4626,7 +4626,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			GameContainer::get()->reset();
 			initConfig(false, true, statePath);
 
-			response = getDumped(gameId);
+			response = getDumpList(gameId);
 
 			CHECK(response.HasMember("status"));
 			CHECK(response["status"].IsUint());
