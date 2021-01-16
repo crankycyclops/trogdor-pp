@@ -131,7 +131,7 @@ Returns a status code.
 
 ---
 
-#### 2. post:global:restore
+#### 3. post:global:restore
 
 Restores the server's current state (including all games) from disk.
 
@@ -310,7 +310,58 @@ Returns a status code indicating success.
 
 ---
 
-#### 4. get:game:list
+#### 4. delete:game:dump
+
+Deletes a game's entire dump history or just a specific dump slot, depending on
+the arguments passed.
+
+**JSON Request Format:**
+
+```
+{
+	"method": "delete",
+	"scope": "game",
+	"action": "dump",
+	"args": {
+		"id": <unsigned int>,
+		"slot": <unsigned int> (optional)
+	}
+}
+```
+
+Passing just an id results in the game's entire dump history being deleted.
+Passing a slot results in just that dump slot being deleted.
+
+**Arguments:**
+
+| Argument | Required? | Value |
+|-|-|-|
+| `id` | Yes | The game's id |
+| `slot` | No | Dump slot to delete. If this argument isn't passed, the game's entire dump history will be destroyed. |
+
+**Successful JSON Response:**
+
+Returns a status code indicating success.
+
+```
+{
+	"status": 200
+}
+```
+
+**Possible Status Codes:**
+
+| Status | Meaning |
+|-|-|
+| 200 | Success |
+| 400 | Request was invalid |
+| 404 | Game or slot not found |
+| 500 | An internal server error occurred |
+| 501 | State feature was disabled in trogdord.ini |
+
+---
+
+#### 5. get:game:list
 
 Returns a list of all games that currently exist on the server.
 
@@ -365,7 +416,7 @@ Returns a status code and an array of key/value pairs containing the id and name
 
 ---
 
-#### 5. get:game:meta
+#### 6. get:game:meta
 
 Returns metadata for a specific game. Can either return specific values or all values depending on the arguments passed along with the request.
 
@@ -413,7 +464,7 @@ Returns a status code and an object of key/value pairs representing the requeste
 
 ---
 
-#### 6. get:game:statistics
+#### 7. get:game:statistics
 
 Returns game-specific statistics.
 
@@ -460,7 +511,7 @@ Returns a status code, the time the game was created, how many players are curre
 
 ---
 
-#### 7. get:game:time
+#### 8. get:game:time
 
 Returns the current time in a game.
 
@@ -503,7 +554,7 @@ Returns a status code and the current in-game time.
 
 ---
 
-#### 8. get:game:is_running
+#### 9. get:game:is_running
 
 Returns true if the specified game is running and false if it's not.
 
@@ -546,7 +597,7 @@ Returns a status code and whether or not the game is running.
 
 ---
 
-#### 9. get:game:definitions
+#### 10. get:game:definitions
 
 Returns a list of all game definition files seen by the server. These are the files that can be used to make new games.
 
@@ -587,7 +638,19 @@ Returns a status code and a JSON array of all available definition files.
 
 ---
 
-#### 10. set:game:start
+#### 11. get:game:dump
+
+TODO
+
+---
+
+#### 12. get:game:dumplist
+
+TODO
+
+---
+
+#### 13. set:game:start
 
 Starts the specified game.
 
@@ -629,7 +692,7 @@ Returns a status code indicating success.
 
 ---
 
-#### 11. set:game:stop
+#### 14. set:game:stop
 
 Stops the specified game.
 
@@ -671,7 +734,7 @@ Returns a status code indicating success.
 
 ---
 
-#### 12. set:game:meta
+#### 15. set:game:meta
 
 Sets meta data associated with the specified game.
 
@@ -716,7 +779,7 @@ Returns a status code indicating success.
 
 ---
 
-#### 13. post:game:dump
+#### 16. post:game:dump
 
 Dumps the specified game.
 
@@ -763,7 +826,7 @@ game was saved to.
 
 ---
 
-#### 14. post:game:restore
+#### 17. post:game:restore
 
 Restores the specified dumped game.
 
