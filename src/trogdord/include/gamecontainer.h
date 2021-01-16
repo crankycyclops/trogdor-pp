@@ -16,12 +16,16 @@
 #include "gamewrapper.h"
 
 #include "exception/gamenotfound.h"
+#include "exception/unsupportedoperation.h"
 #include "exception/entity/playernotfound.h"
 
 
 class GameContainer {
 
 	protected:
+
+		// The type returned by getDumpedGame().
+		typedef std::tuple<std::string, std::string, size_t> DumpData;
 
 		// Singleton instance of GameContainer.
 		static std::unique_ptr<GameContainer> instance;
@@ -219,6 +223,12 @@ class GameContainer {
 
 		// Returns all dumped game ids
 		std::vector<size_t> getDumpedGameIds();
+
+		// Returns the read-only details of a specific dumped game and throws
+		// an instance of GameNotFound if the dump id doesn't exist or is
+		// invalid and an instance of UnsupportedOperation if the state
+		// feature is disabled.
+		DumpData getDumpedGame(size_t id);
 };
 
 

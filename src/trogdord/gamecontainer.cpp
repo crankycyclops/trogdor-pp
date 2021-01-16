@@ -1,9 +1,12 @@
 #include <any>
+#include <fstream>
 
 #include <trogdor/entities/player.h>
 
-#include "include/response.h"
 #include "include/gamecontainer.h"
+#include "include/response.h"
+#include "include/serial/drivermap.h"
+
 #include "include/io/iostream/serverout.h"
 
 
@@ -531,4 +534,43 @@ std::vector<size_t> GameContainer::getDumpedGameIds() {
 	});
 
 	return ids;
+}
+
+/*****************************************************************************/
+
+GameContainer::DumpData GameContainer::getDumpedGame(size_t id) {
+
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+		throw UnsupportedOperation(Response::STATE_DISABLED);
+	}
+
+	else if (!isDumpedGameId(id)) {
+		throw GameNotFound();
+	}
+
+	std::string gameMetaPath = Config::get()->getStatePath() +
+		STD_FILESYSTEM::path::preferred_separator + std::to_string(id) +
+		STD_FILESYSTEM::path::preferred_separator + "meta";
+
+	auto &serialDriver =
+		serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
+
+	std::ifstream metaFile(gameMetaPath);
+	std::string metaStr(
+		(std::istreambuf_iterator<char>(metaFile)),
+		std::istreambuf_iterator<char>()
+	);
+
+	std::shared_ptr<trogdor::serial::Serializable> metaData =
+		serialDriver->deserialize(metaStr);
+
+	rapidjson::Value jsonData(rapidjson::kObjectType);
+	rapidjson::Value gName(rapidjson::kStringType);
+	rapidjson::Value gDefinition(rapidjson::kStringType);
+
+	return {
+		std::get<std::string>(*metaData->get("name")),
+		std::get<std::string>(*metaData->get("definition")),
+		std::get<size_t>(*metaData->get("created"))
+	};
 }

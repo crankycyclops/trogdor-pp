@@ -1,6 +1,5 @@
 #include <utility>
 #include <iomanip>
-#include <fstream>
 
 #include <trogdor/utility.h>
 #include <trogdor/filesystem.h>
@@ -795,50 +794,30 @@ rapidjson::Document GameController::getDumpList(const rapidjson::Document &reque
 
 			for (const auto &id: ids) {
 
-				if (GameContainer::get()->isDumpedGameId(id)) {
+				try {
 
-					std::string gameMetaPath = Config::get()->getStatePath() +
-						STD_FILESYSTEM::path::preferred_separator + std::to_string(id) +
-						STD_FILESYSTEM::path::preferred_separator + "meta";
+					auto dump = GameContainer::get()->getDumpedGame(id);
 
-					try {
+					rapidjson::Value jsonData(rapidjson::kObjectType);
+					rapidjson::Value gName(rapidjson::kStringType);
+					rapidjson::Value gDefinition(rapidjson::kStringType);
 
-						auto &serialDriver =
-							serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
+					gName.SetString(rapidjson::StringRef(std::get<0>(dump).c_str()), response.GetAllocator());
+					gDefinition.SetString(rapidjson::StringRef(std::get<1>(dump).c_str()), response.GetAllocator());
 
-						std::ifstream metaFile(gameMetaPath);
-						std::string metaStr(
-							(std::istreambuf_iterator<char>(metaFile)),
-							std::istreambuf_iterator<char>()
-						);
+					jsonData.AddMember("id", id, response.GetAllocator());
+					jsonData.AddMember("name", gName, response.GetAllocator());
+					jsonData.AddMember("definition", gDefinition, response.GetAllocator());
+					jsonData.AddMember("created", std::get<2>(dump), response.GetAllocator());
 
-						std::shared_ptr<trogdor::serial::Serializable> metaData =
-							serialDriver->deserialize(metaStr);
-
-						rapidjson::Value jsonData(rapidjson::kObjectType);
-						rapidjson::Value gName(rapidjson::kStringType);
-						rapidjson::Value gDefinition(rapidjson::kStringType);
-
-						gName.SetString(rapidjson::StringRef(
-							std::get<std::string>(*metaData->get("name")).c_str()
-						), response.GetAllocator());
-						gDefinition.SetString(rapidjson::StringRef(
-							std::get<std::string>(*metaData->get("definition")).c_str()
-						), response.GetAllocator());
-
-						jsonData.AddMember("id", id, response.GetAllocator());
-						jsonData.AddMember("name", gName, response.GetAllocator());
-						jsonData.AddMember("definition", gDefinition, response.GetAllocator());
-						jsonData.AddMember("created", std::get<size_t>(*metaData->get("created")), response.GetAllocator());
-
-						jsonIds.PushBack(jsonData.Move(), response.GetAllocator());
-					}
-
-					// If we have a problem opening the meta file or
-					// deserializing it to get the necessary data, consider
-					// the dumped game invalid and ignore it.
-					catch (const std::exception &e) {}
+					jsonIds.PushBack(jsonData.Move(), response.GetAllocator());
 				}
+
+				// If the dumped game id doesn't exist or there was a
+				// problem opening the meta file or deserializing it to
+				// get the necessary data, consider the dump invalid
+				// and ignore it.
+				catch (const std::exception &e) {}
 			}
 
 			response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
