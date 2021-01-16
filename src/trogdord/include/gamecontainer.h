@@ -16,6 +16,7 @@
 #include "gamewrapper.h"
 
 #include "exception/gamenotfound.h"
+#include "exception/gameslotnotfound.h"
 #include "exception/unsupportedoperation.h"
 #include "exception/entity/playernotfound.h"
 
@@ -26,6 +27,9 @@ class GameContainer {
 
 		// The type returned by getDumpedGame().
 		typedef std::tuple<std::string, std::string, size_t> DumpData;
+
+		// The type returned by getDumpedGameSlot().
+		typedef std::tuple<size_t> DumpSlotData;
 
 		// Singleton instance of GameContainer.
 		static std::unique_ptr<GameContainer> instance;
@@ -229,6 +233,13 @@ class GameContainer {
 		// invalid and an instance of UnsupportedOperation if the state
 		// feature is disabled.
 		DumpData getDumpedGame(size_t id);
+
+		// Returns the read-only details of a specific dumped game slot.
+		// Throws an instance of GameNotFound if the dump id doesn't exist or
+		// is invalid, an instance of GameSlotNotFound if the dump exists but
+		// the slot doesn't, and an instance of UnsupportedOperation if the
+		// state feature is disabled.
+		DumpSlotData getDumpedGameSlot(size_t id, size_t slot);
 };
 
 

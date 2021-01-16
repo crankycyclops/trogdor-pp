@@ -574,3 +574,50 @@ GameContainer::DumpData GameContainer::getDumpedGame(size_t id) {
 		std::get<size_t>(*metaData->get("created"))
 	};
 }
+
+/*****************************************************************************/
+
+GameContainer::DumpSlotData GameContainer::getDumpedGameSlot(size_t id, size_t slot) {
+
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+		throw UnsupportedOperation(Response::STATE_DISABLED);
+	}
+
+	else if (!isDumpedGameId(id)) {
+		throw GameNotFound();
+	}
+
+	std::string timestampFname = std::to_string(id) +
+		STD_FILESYSTEM::path::preferred_separator + std::to_string(slot) +
+		STD_FILESYSTEM::path::preferred_separator + "timestamp";
+
+	if (!STD_FILESYSTEM::exists(timestampFname) || !STD_FILESYSTEM::is_regular_file(timestampFname)) {
+		throw GameSlotNotFound();
+	}
+
+	std::ifstream timestampFile(timestampFname);
+
+	std::string timestampBuffer(
+		(std::istreambuf_iterator<char>(timestampFile)),
+		std::istreambuf_iterator<char>()
+	);
+
+	size_t timestamp;
+
+	try {
+
+		#if SIZE_MAX == UINT64_MAX
+			timestamp = std::stoull(timestampBuffer);
+		#else
+			timestamp = std::stoul(timestampBuffer);
+		#endif
+	}
+
+	// If the timestamp file isn't valid, then the dump slot
+	// is also invalid.
+	catch (const std::invalid_argument &e) {
+		throw GameSlotNotFound();
+	}
+
+	return {timestamp};
+}
