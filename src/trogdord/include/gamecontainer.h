@@ -131,6 +131,16 @@ class GameContainer {
 
 	public:
 
+		// Returns all valid timestamp directories within a game's save state
+		// path containing serialized games. Also takes an optional third
+		// parameter, which if passed will be populated with dump slot id ->
+		// timestamp pairs.
+		static void getDumpedGameSlots(
+			std::set<size_t> &slots,
+			std::string gameIdPath,
+			std::unordered_map<size_t, size_t> *timestamps = nullptr
+		);
+
 		// Ensures all games are properly shutdown before the server goes down
 		~GameContainer();
 
@@ -225,6 +235,10 @@ class GameContainer {
 		// if not (or if state is disabled.)
 		bool isDumpedGameId(size_t id);
 
+		// Returns true if the specified slot is a valid dumped game slot and
+		// false if not (or if state is disabled.)
+		bool isDumpedGameSlot(size_t id, size_t slot);
+
 		// Returns all dumped game ids
 		std::vector<size_t> getDumpedGameIds();
 
@@ -240,6 +254,12 @@ class GameContainer {
 		// the slot doesn't, and an instance of UnsupportedOperation if the
 		// state feature is disabled.
 		DumpSlotData getDumpedGameSlot(size_t id, size_t slot);
+
+		// Deletes all dumped data for the given game.
+		void destroyDump(size_t id);
+
+		// Deletes the specified dump slot for the given game.
+		void destroyDumpSlot(size_t id, size_t slot);
 };
 
 

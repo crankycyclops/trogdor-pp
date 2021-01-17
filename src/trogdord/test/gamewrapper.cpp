@@ -556,7 +556,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 		}
 	}
 
-	TEST_CASE("GameWrapper (gamewrapper.cpp): dumpDestroy()") {
+	TEST_CASE("GameWrapper (gamewrapper.cpp) and GameContainer (gamecontainer.cpp): dumpDestroy()") {
 
 		SUBCASE("State is disabled") {
 

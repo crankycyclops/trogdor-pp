@@ -7,8 +7,10 @@
 
 #include "include/config.h"
 #include "include/filesystem.h"
+#include "include/gamecontainer.h"
 #include "include/serial/drivermap.h"
 #include "include/io/iostream/serverout.h"
+
 #include "include/exception/serverexception.h"
 #include "include/exception/unsupportedoperation.h"
 #include "include/exception/gamenotfound.h"
@@ -69,7 +71,7 @@ gamePtr(nullptr) {
 	}
 
 	// Find the latest dump of the game and restore it
-	getDumpedGameSlots(slots, idPath);
+	GameContainer::getDumpedGameSlots(slots, idPath);
 
 	if (!slots.size()) {
 		throw GameNotFound();
@@ -146,70 +148,6 @@ gamePtr(nullptr) {
 
 /*****************************************************************************/
 
-void GameWrapper::getDumpedGameSlots(
-	std::set<size_t> &slots,
-	std::string gameIdPath,
-	std::unordered_map<size_t, size_t> *timestamps
-) {
-
-	for (const auto &subdir: STD_FILESYSTEM::directory_iterator(gameIdPath)) {
-
-		std::string slot = subdir.path().filename();
-		std::string gameFname = gameIdPath + STD_FILESYSTEM::path::preferred_separator +
-			slot + STD_FILESYSTEM::path::preferred_separator + "game";
-		std::string timestampFname = gameIdPath + STD_FILESYSTEM::path::preferred_separator +
-			slot + STD_FILESYSTEM::path::preferred_separator + "timestamp";
-
-		// Skip over obviously invalid files and directories
-		if (
-			!trogdor::isValidInteger(slot) ||
-			!STD_FILESYSTEM::is_directory(subdir.path()) ||
-			!STD_FILESYSTEM::exists(gameFname) ||
-			!STD_FILESYSTEM::is_regular_file(gameFname)
-		) {
-			continue;
-		}
-
-		std::ifstream timestampFile(timestampFname);
-
-		std::string timestampBuffer(
-			(std::istreambuf_iterator<char>(timestampFile)),
-			std::istreambuf_iterator<char>()
-		);
-
-		size_t timestamp;
-
-		try {
-
-			#if SIZE_MAX == UINT64_MAX
-				timestamp = std::stoull(timestampBuffer);
-			#else
-				timestamp = std::stoul(timestampBuffer);
-			#endif
-		}
-
-		// If the timestamp file isn't valid, then the dump slot
-		// is also invalid and we should skip it.
-		catch (const std::invalid_argument &e) {
-			continue;
-		}
-
-		#if SIZE_MAX == UINT64_MAX
-			size_t slotUint = std::stoull(slot);
-		#else
-			size_t slotUint = std::stoul(slot);
-		#endif
-
-		slots.insert(slotUint);
-
-		if (timestamps) {
-			(*timestamps)[slotUint] = timestamp;
-		}
-	}
-}
-
-/*****************************************************************************/
-
 std::shared_ptr<trogdor::serial::Serializable> GameWrapper::serializeMeta() {
 
 	std::shared_ptr<trogdor::serial::Serializable> meta =
@@ -258,7 +196,7 @@ size_t GameWrapper::dump() {
 
 	else {
 
-		getDumpedGameSlots(slots, gameStatePath);
+		GameContainer::getDumpedGameSlots(slots, gameStatePath);
 
 		if (slots.size()) {
 			dumpSlot = *slots.rbegin() + 1;
@@ -318,18 +256,7 @@ size_t GameWrapper::dump() {
 
 void GameWrapper::destroyDump() {
 
-	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
-		return;
-	}
-
 	gameMutex.lock();
-
-	std::string gameStatePath = Config::get()->getStatePath() +
-		STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
-
-	if (STD_FILESYSTEM::exists(gameStatePath)) {
-		STD_FILESYSTEM::remove_all(gameStatePath);
-	}
-
+	GameContainer::get()->destroyDump(id);
 	gameMutex.unlock();
 }

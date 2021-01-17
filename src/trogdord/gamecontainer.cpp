@@ -15,6 +15,70 @@ std::unique_ptr<GameContainer> GameContainer::instance = nullptr;
 
 /*****************************************************************************/
 
+void GameContainer::getDumpedGameSlots(
+	std::set<size_t> &slots,
+	std::string gameIdPath,
+	std::unordered_map<size_t, size_t> *timestamps
+) {
+
+	for (const auto &subdir: STD_FILESYSTEM::directory_iterator(gameIdPath)) {
+
+		std::string slot = subdir.path().filename();
+		std::string gameFname = gameIdPath + STD_FILESYSTEM::path::preferred_separator +
+			slot + STD_FILESYSTEM::path::preferred_separator + "game";
+		std::string timestampFname = gameIdPath + STD_FILESYSTEM::path::preferred_separator +
+			slot + STD_FILESYSTEM::path::preferred_separator + "timestamp";
+
+		// Skip over obviously invalid files and directories
+		if (
+			!trogdor::isValidInteger(slot) ||
+			!STD_FILESYSTEM::is_directory(subdir.path()) ||
+			!STD_FILESYSTEM::exists(gameFname) ||
+			!STD_FILESYSTEM::is_regular_file(gameFname)
+		) {
+			continue;
+		}
+
+		std::ifstream timestampFile(timestampFname);
+
+		std::string timestampBuffer(
+			(std::istreambuf_iterator<char>(timestampFile)),
+			std::istreambuf_iterator<char>()
+		);
+
+		size_t timestamp;
+
+		try {
+
+			#if SIZE_MAX == UINT64_MAX
+				timestamp = std::stoull(timestampBuffer);
+			#else
+				timestamp = std::stoul(timestampBuffer);
+			#endif
+		}
+
+		// If the timestamp file isn't valid, then the dump slot
+		// is also invalid and we should skip it.
+		catch (const std::invalid_argument &e) {
+			continue;
+		}
+
+		#if SIZE_MAX == UINT64_MAX
+			size_t slotUint = std::stoull(slot);
+		#else
+			size_t slotUint = std::stoul(slot);
+		#endif
+
+		slots.insert(slotUint);
+
+		if (timestamps) {
+			(*timestamps)[slotUint] = timestamp;
+		}
+	}
+}
+
+/*****************************************************************************/
+
 void GameContainer::iterateDumpedGames(
 	std::string statePath,
 	std::function<void(const STD_FILESYSTEM::path &)> callback,
@@ -620,4 +684,37 @@ GameContainer::DumpSlotData GameContainer::getDumpedGameSlot(size_t id, size_t s
 	}
 
 	return {timestamp};
+}
+
+/*****************************************************************************/
+
+void GameContainer::destroyDump(size_t id) {
+
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+		return;
+	}
+
+	std::string gameStatePath = Config::get()->getStatePath() +
+		STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+	if (STD_FILESYSTEM::exists(gameStatePath)) {
+		STD_FILESYSTEM::remove_all(gameStatePath);
+	}
+}
+
+/*****************************************************************************/
+
+void GameContainer::destroyDumpSlot(size_t id, size_t slot) {
+
+	if (!Config::get()->getBool(Config::CONFIG_KEY_STATE_ENABLED)) {
+		return;
+	}
+
+	std::string slotPath = Config::get()->getStatePath() +
+		STD_FILESYSTEM::path::preferred_separator + std::to_string(id) +
+		STD_FILESYSTEM::path::preferred_separator + std::to_string(slot);
+
+	if (STD_FILESYSTEM::exists(slotPath)) {
+		STD_FILESYSTEM::remove_all(slotPath);
+	}
 }
