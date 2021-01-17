@@ -6031,12 +6031,64 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State disabled, invalid game id") {
 
-			// TODO
+			initGameXML();
+			initConfig(false, false);
+
+			rapidjson::Value args(rapidjson::kObjectType);
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			args.AddMember("id", "not an id", request.GetAllocator());
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "dump", request.GetAllocator());
+			request.AddMember("args", args.Move(), request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->getDump(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Response::STATE_DISABLED).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("State disabled, valid game id that doesn't exist") {
 
-			// TODO
+			initGameXML();
+			initConfig(false, false);
+
+			rapidjson::Value args(rapidjson::kObjectType);
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			args.AddMember("id", 0, request.GetAllocator());
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "dump", request.GetAllocator());
+			request.AddMember("args", args.Move(), request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->getDump(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Response::STATE_DISABLED).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("State disabled, valid game id that exists") {
@@ -6046,12 +6098,78 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State enabled, invalid game id") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			rapidjson::Value args(rapidjson::kObjectType);
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			args.AddMember("id", "not an id", request.GetAllocator());
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "dump", request.GetAllocator());
+			request.AddMember("args", args.Move(), request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->getDump(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::INVALID_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, valid game id that doesn't exist") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			rapidjson::Value args(rapidjson::kObjectType);
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			args.AddMember("id", 0, request.GetAllocator());
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "dump", request.GetAllocator());
+			request.AddMember("args", args.Move(), request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->getDump(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(GameController::DUMPED_GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, valid game id that exists") {
