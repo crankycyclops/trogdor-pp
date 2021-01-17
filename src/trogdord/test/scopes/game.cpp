@@ -16,8 +16,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		rapidjson::Document request(rapidjson::kObjectType);
 
 		request.AddMember("method", "get", request.GetAllocator());
-		request.AddMember("scope", "global", request.GetAllocator());
-		request.AddMember("action", "statistics", request.GetAllocator());
+		request.AddMember("scope", "game", request.GetAllocator());
+		request.AddMember("action", "definitions", request.GetAllocator());
 
 		rapidjson::Document response = GameController::get()->getDefinitionList(request);
 
@@ -5960,6 +5960,176 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			destroyGameXML();
 			destroyConfig();
 			STD_FILESYSTEM::remove_all(statePath);
+		}
+	}
+
+	TEST_CASE("GameController (scopes/game.cpp): getDump() with no arguments") {
+
+		SUBCASE("State disabled") {
+
+			initGameXML();
+			initConfig(false, false);
+
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "dump", request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->getDump(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Response::STATE_DISABLED).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
+		SUBCASE("State enabled") {
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "get", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "dump", request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->getDump(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
+		}
+	}
+
+	TEST_CASE("GameController (scopes/game.cpp): getDump() with game id") {
+
+		SUBCASE("State disabled, invalid game id") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid game id that doesn't exist") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid game id that exists") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, invalid game id") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid game id that doesn't exist") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid game id that exists") {
+
+			// TODO
+		}
+	}
+
+	TEST_CASE("GameController (scopes/game.cpp): getDump() with game id and slot") {
+
+		SUBCASE("State disabled, invalid game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid game id that doesn't exist, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid game id that exists, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, invalid game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid game id that doesn't exist, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid game id that exists, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, invalid game id, valid slot that doesn't exist") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid game id that doesn't exist, valid slot that doesn't exist") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid game id that exists, valid slot that doesn't exist") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, invalid game id, valid slot that doesn't exist") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid game id that doesn't exist, valid slot that doesn't exist") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid game id that exists, valid slot that doesn't exist") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid game id that exists, valid slot that exists") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid game id that exists, valid slot that exists") {
+
+			// TODO
 		}
 	}
 }

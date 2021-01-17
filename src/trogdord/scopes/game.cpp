@@ -1043,12 +1043,9 @@ rapidjson::Document GameController::getDumpList(const rapidjson::Document &reque
 	}
 
 	catch (const std::exception &e) {
-
-		rapidjson::Value error(rapidjson::kStringType);
-		error.SetString(e.what(), response.GetAllocator());
-
+		Config::get()->err(trogdor::Trogerr::ERROR) << e.what() << std::endl;
 		response.AddMember("status", Response::STATUS_INTERNAL_ERROR, response.GetAllocator());
-		response.AddMember("message", error.Move(), response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(Response::INTERNAL_ERROR_MSG), response.GetAllocator());
 	}
 
 	return response;
@@ -1092,12 +1089,9 @@ rapidjson::Document GameController::dumpGame(const rapidjson::Document &request)
 		}
 
 		catch (const std::exception &e) {
-
-			rapidjson::Value error(rapidjson::kStringType);
-			error.SetString(e.what(), response.GetAllocator());
-
+			Config::get()->err(trogdor::Trogerr::ERROR) << e.what() << std::endl;
 			response.AddMember("status", Response::STATUS_INTERNAL_ERROR, response.GetAllocator());
-			response.AddMember("message", error.Move(), response.GetAllocator());
+			response.AddMember("message", rapidjson::StringRef(Response::INTERNAL_ERROR_MSG), response.GetAllocator());
 		}
 	}
 
