@@ -5970,6 +5970,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig(false, false);
 
+			GameContainer::reset();
+
 			rapidjson::Document request(rapidjson::kObjectType);
 
 			request.AddMember("method", "get", request.GetAllocator());
@@ -6003,6 +6005,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig(false, true, statePath);
 
+			GameContainer::reset();
+
 			rapidjson::Document request(rapidjson::kObjectType);
 
 			request.AddMember("method", "get", request.GetAllocator());
@@ -6033,6 +6037,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			initGameXML();
 			initConfig(false, false);
+
+			GameContainer::reset();
 
 			rapidjson::Value args(rapidjson::kObjectType);
 			rapidjson::Document request(rapidjson::kObjectType);
@@ -6065,17 +6071,9 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig(false, false);
 
-			rapidjson::Value args(rapidjson::kObjectType);
-			rapidjson::Document request(rapidjson::kObjectType);
+			GameContainer::reset();
 
-			args.AddMember("id", 0, request.GetAllocator());
-
-			request.AddMember("method", "get", request.GetAllocator());
-			request.AddMember("scope", "game", request.GetAllocator());
-			request.AddMember("action", "dump", request.GetAllocator());
-			request.AddMember("args", args.Move(), request.GetAllocator());
-
-			rapidjson::Document response = GameController::get()->getDump(request);
+			rapidjson::Document response = getDump(0);
 
 			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
@@ -6093,7 +6091,60 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State disabled, valid game id that exists") {
 
-			// TODO
+			// Part 1: Dump a game with state enabled
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::reset();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t id = response["id"].GetUint();
+			response = dumpGame(id);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// Part 2: Attempt to get dump info with state enabled
+
+			initGameXML();
+			initConfig(false, false);
+
+			GameContainer::reset();
+
+			response = getDump(id);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Response::STATE_DISABLED).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("State enabled, invalid game id") {
@@ -6106,6 +6157,8 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			initGameXML();
 			initConfig(false, true, statePath);
+
+			GameContainer::reset();
 
 			rapidjson::Value args(rapidjson::kObjectType);
 			rapidjson::Document request(rapidjson::kObjectType);
@@ -6145,17 +6198,9 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			initGameXML();
 			initConfig(false, true, statePath);
 
-			rapidjson::Value args(rapidjson::kObjectType);
-			rapidjson::Document request(rapidjson::kObjectType);
+			GameContainer::reset();
 
-			args.AddMember("id", 0, request.GetAllocator());
-
-			request.AddMember("method", "get", request.GetAllocator());
-			request.AddMember("scope", "game", request.GetAllocator());
-			request.AddMember("action", "dump", request.GetAllocator());
-			request.AddMember("args", args.Move(), request.GetAllocator());
-
-			rapidjson::Document response = GameController::get()->getDump(request);
+			rapidjson::Document response = getDump(0);
 
 			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
@@ -6174,7 +6219,51 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State enabled, valid game id that exists") {
 
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::reset();
+
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t id = response["id"].GetUint();
+			response = dumpGame(id);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			response = getDump(id);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
 			// TODO
+			std::cout << JSON::serialize(response) << std::endl;
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 	}
 
