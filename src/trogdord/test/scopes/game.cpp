@@ -6258,8 +6258,20 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response["status"].IsUint());
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
-			// TODO
-			std::cout << JSON::serialize(response) << std::endl;
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+			CHECK(id == response["id"].GetUint());
+
+			CHECK(response.HasMember("name"));
+			CHECK(response["name"].IsString());
+			CHECK(0 == std::string(gameName).compare(response["name"].GetString()));
+
+			CHECK(response.HasMember("definition"));
+			CHECK(response["definition"].IsString());
+			CHECK(0 == gameXMLRelativeFilename.compare(response["definition"].GetString()));
+
+			CHECK(response.HasMember("created"));
+			CHECK(response["created"].IsUint());
 
 			destroyGameXML();
 			destroyConfig();

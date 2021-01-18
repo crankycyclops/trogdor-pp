@@ -743,7 +743,7 @@ inline rapidjson::Document getDump(
 
 	request.AddMember("args", args, request.GetAllocator());
 
-	return GameController::get()->getDumpList(request);
+	return GameController::get()->getDump(request);
 }
 
 // Depending on whether or not an id is passed in, either returns a list of all
