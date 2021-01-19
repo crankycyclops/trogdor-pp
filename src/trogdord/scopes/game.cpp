@@ -875,41 +875,41 @@ rapidjson::Document GameController::getDump(const rapidjson::Document &request) 
 
 	const rapidjson::Value *slotArg = rapidjson::Pointer("/args/slot").Get(request);
 
-	// We're returning data about a specific dump slot
-	if (slotArg) {
+	try {
 
-		size_t slot;
+		// We're returning data about a specific dump slot
+		if (slotArg) {
 
-		#if SIZE_MAX == UINT64_MAX
-			if (!slotArg->IsUint64()) {
-		#else
-			if (!slotArg->IsUInt()) {
-		#endif
-			response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
-			response.AddMember("message", rapidjson::StringRef(INVALID_DUMPED_GAME_SLOT), response.GetAllocator());
-		}
-
-		else {
+			size_t slot;
 
 			#if SIZE_MAX == UINT64_MAX
-				slot = slotArg->GetUint64();
+				if (!slotArg->IsUint64()) {
 			#else
-				slot = slotArg->GetUint();
+				if (!slotArg->IsUInt()) {
 			#endif
+				response.AddMember("status", Response::STATUS_INVALID, response.GetAllocator());
+				response.AddMember("message", rapidjson::StringRef(INVALID_DUMPED_GAME_SLOT), response.GetAllocator());
+			}
 
-			auto data = GameContainer::get()->getDumpedGameSlot(gameId, slot);
+			else {
 
-			response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
-			response.AddMember("id", gameId, response.GetAllocator());
-			response.AddMember("slot", slot, response.GetAllocator());
-			response.AddMember("timestamp_ms", std::get<0>(data), response.GetAllocator());
+				#if SIZE_MAX == UINT64_MAX
+					slot = slotArg->GetUint64();
+				#else
+					slot = slotArg->GetUint();
+				#endif
+
+				auto data = GameContainer::get()->getDumpedGameSlot(gameId, slot);
+
+				response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+				response.AddMember("id", gameId, response.GetAllocator());
+				response.AddMember("slot", slot, response.GetAllocator());
+				response.AddMember("timestamp_ms", std::get<0>(data), response.GetAllocator());
+			}
 		}
-	}
 
-	// We're returning data common to a game's entire dump history
-	else {
-
-		try {
+		// We're returning data common to a game's entire dump history
+		else {
 
 			auto dump = GameContainer::get()->getDumpedGame(gameId);
 
@@ -925,17 +925,22 @@ rapidjson::Document GameController::getDump(const rapidjson::Document &request) 
 			response.AddMember("definition", gDefinition, response.GetAllocator());
 			response.AddMember("created", std::get<2>(dump), response.GetAllocator());
 		}
+	}
 
-		catch (const GameNotFound &e) {
-			response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
-			response.AddMember("message", rapidjson::StringRef(DUMPED_GAME_NOT_FOUND), response.GetAllocator());		
-		}
+	catch (const GameNotFound &e) {
+		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(DUMPED_GAME_NOT_FOUND), response.GetAllocator());
+	}
 
-		catch (const std::exception &e) {
-			Config::get()->err(trogdor::Trogerr::ERROR) << e.what() << std::endl;
-			response.AddMember("status", Response::STATUS_INTERNAL_ERROR, response.GetAllocator());
-			response.AddMember("message", rapidjson::StringRef(Response::INTERNAL_ERROR_MSG), response.GetAllocator());
-		}
+	catch (const GameSlotNotFound &e) {
+		response.AddMember("status", Response::STATUS_NOT_FOUND, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(DUMPED_GAME_SLOT_NOT_FOUND), response.GetAllocator());
+	}
+
+	catch (const std::exception &e) {
+		Config::get()->err(trogdor::Trogerr::ERROR) << e.what() << std::endl;
+		response.AddMember("status", Response::STATUS_INTERNAL_ERROR, response.GetAllocator());
+		response.AddMember("message", rapidjson::StringRef(Response::INTERNAL_ERROR_MSG), response.GetAllocator());
 	}
 
 	return response;
