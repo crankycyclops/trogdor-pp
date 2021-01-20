@@ -651,7 +651,8 @@ GameContainer::DumpSlotData GameContainer::getDumpedGameSlot(size_t id, size_t s
 		throw GameNotFound();
 	}
 
-	std::string timestampFname = std::to_string(id) +
+	std::string timestampFname = Config::get()->getStatePath() +
+		STD_FILESYSTEM::path::preferred_separator + std::to_string(id) +
 		STD_FILESYSTEM::path::preferred_separator + std::to_string(slot) +
 		STD_FILESYSTEM::path::preferred_separator + "timestamp";
 
