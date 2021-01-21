@@ -769,5 +769,29 @@ inline rapidjson::Document getDumpList(
 	return GameController::get()->getDumpList(request);
 }
 
+// Destroys a game's entire dump history, or just a single dump slot
+inline rapidjson::Document destroyDump(
+	size_t id,
+	std::optional<size_t> slot = std::nullopt
+) {
+
+	rapidjson::Value args(rapidjson::kObjectType);
+	rapidjson::Document request(rapidjson::kObjectType);
+
+	request.AddMember("method", "delete", request.GetAllocator());
+	request.AddMember("scope", "game", request.GetAllocator());
+	request.AddMember("action", "dump", request.GetAllocator());
+
+	args.AddMember("id", id, request.GetAllocator());
+
+	if (slot) {
+		args.AddMember("slot", *slot, request.GetAllocator());
+	}
+
+	request.AddMember("args", args, request.GetAllocator());
+
+	return GameController::get()->destroyDump(request);
+}
+
 
 #endif // TROGDORD_TEST_HELPER_H

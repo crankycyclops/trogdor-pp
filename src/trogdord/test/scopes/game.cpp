@@ -7027,7 +7027,25 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State disabled, valid but non-existent game id") {
 
-			// TODO
+			initGameXML();
+			initConfig(false, false);
+
+			GameContainer::reset();
+
+			rapidjson::Document response = destroyDump(0);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Response::STATE_DISABLED).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("State disabled, valid and existing game id") {
