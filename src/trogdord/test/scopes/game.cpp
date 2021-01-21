@@ -6958,4 +6958,110 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			STD_FILESYSTEM::remove_all(statePath);
 		}
 	}
+
+	TEST_CASE("GameController (scopes/game.cpp): destroyDump() with only the game id") {
+
+		SUBCASE("State disabled, invalid game id") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid but non-existent game id") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid and existing game id") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, invalid game id") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid but non-existent game id") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid and existing game id") {
+
+			// TODO
+		}
+	}
+
+	TEST_CASE("GameController (scopes/game.cpp): destroyDump() with game id and slot") {
+
+		SUBCASE("State disabled, invalid game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, invalid game id, valid non-existent slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid non-existent game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid non-existent game id, valid non-existent slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid existing game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid existing game id, valid non-existent slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, valid existing game id, valid existing slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, invalid game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, invalid game id, valid non-existent slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid non-existent game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid non-existent game id, valid non-existent slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid existing game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid existing game id, valid non-existent slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, valid existing game id, valid existing slot") {
+
+			// TODO
+		}
+	}
 }
