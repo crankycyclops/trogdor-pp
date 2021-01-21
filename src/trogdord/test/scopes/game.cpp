@@ -6961,9 +6961,68 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 	TEST_CASE("GameController (scopes/game.cpp): destroyDump() with only the game id") {
 
+		SUBCASE("State disabled, no game id") {
+
+			initGameXML();
+			initConfig(false, false);
+
+			GameContainer::reset();
+
+			rapidjson::Value args(rapidjson::kObjectType);
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			request.AddMember("method", "delete", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "dump", request.GetAllocator());
+			request.AddMember("args", args.Move(), request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->destroyDump(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Response::STATE_DISABLED).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+		}
+
 		SUBCASE("State disabled, invalid game id") {
 
-			// TODO
+			initGameXML();
+			initConfig(false, false);
+
+			GameContainer::reset();
+
+			rapidjson::Value args(rapidjson::kObjectType);
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			args.AddMember("id", "not an id", request.GetAllocator());
+
+			request.AddMember("method", "delete", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "dump", request.GetAllocator());
+			request.AddMember("args", args.Move(), request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->destroyDump(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_UNSUPPORTED == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Response::STATE_DISABLED).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
 		}
 
 		SUBCASE("State disabled, valid but non-existent game id") {
@@ -6972,6 +7031,11 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		}
 
 		SUBCASE("State disabled, valid and existing game id") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, no game id") {
 
 			// TODO
 		}
@@ -6993,6 +7057,16 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 	}
 
 	TEST_CASE("GameController (scopes/game.cpp): destroyDump() with game id and slot") {
+
+		SUBCASE("State disabled, no game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, no game id, valid non-existent slot") {
+
+			// TODO
+		}
 
 		SUBCASE("State disabled, invalid game id, invalid slot") {
 
@@ -7025,6 +7099,16 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 		}
 
 		SUBCASE("State disabled, valid existing game id, valid existing slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, no game id, invalid slot") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, no game id, valid non-existent slot") {
 
 			// TODO
 		}
