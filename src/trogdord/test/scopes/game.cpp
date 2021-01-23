@@ -7208,7 +7208,70 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State enabled, valid and existing game id") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::reset();
+
+			// 1. Create and dump a game.
+			rapidjson::Document response = createGame(gameName, gameXMLRelativeFilename.c_str());
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			CHECK(response.HasMember("id"));
+			CHECK(response["id"].IsUint());
+
+			size_t id = response["id"].GetUint();
+
+			response = dumpGame(id);
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			GameContainer::reset();
+
+			// 2. Verify that the dumped game exists after a server reset.
+			response = getDump(id);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// 3. Destroy the game's entire dump history and verify the
+			// operation was successful.
+			response = destroyDump(id);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+			// 4. Check to make sure the dump data was really destroyed.
+			response = getDump(id);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 	}
 
