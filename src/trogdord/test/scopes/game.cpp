@@ -7452,18 +7452,7 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 			GameContainer::reset();
 
-			rapidjson::Value args(rapidjson::kObjectType);
-			rapidjson::Document request(rapidjson::kObjectType);
-
-			args.AddMember("id", 0, request.GetAllocator());
-			args.AddMember("slot", 0, request.GetAllocator());
-
-			request.AddMember("method", "delete", request.GetAllocator());
-			request.AddMember("scope", "game", request.GetAllocator());
-			request.AddMember("action", "dump", request.GetAllocator());
-			request.AddMember("args", args.Move(), request.GetAllocator());
-
-			rapidjson::Document response = GameController::get()->destroyDump(request);
+			rapidjson::Document response = destroyDump(0, 0);
 
 			CHECK(trogdor::isAscii(JSON::serialize(response)));
 
@@ -7536,27 +7525,195 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 
 		SUBCASE("State enabled, no game id, valid non-existent slot") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::reset();
+
+			rapidjson::Value args(rapidjson::kObjectType);
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			args.AddMember("slot", 0, request.GetAllocator());
+
+			request.AddMember("method", "delete", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "dump", request.GetAllocator());
+			request.AddMember("args", args.Move(), request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->destroyDump(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::MISSING_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, invalid game id, invalid slot") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::reset();
+
+			rapidjson::Value args(rapidjson::kObjectType);
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			args.AddMember("id", "not an id", request.GetAllocator());
+			args.AddMember("slot", "not a slot", request.GetAllocator());
+
+			request.AddMember("method", "delete", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "dump", request.GetAllocator());
+			request.AddMember("args", args.Move(), request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->destroyDump(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::INVALID_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, invalid game id, valid non-existent slot") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::reset();
+
+			rapidjson::Value args(rapidjson::kObjectType);
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			args.AddMember("id", "not an id", request.GetAllocator());
+			args.AddMember("slot", 0, request.GetAllocator());
+
+			request.AddMember("method", "delete", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "dump", request.GetAllocator());
+			request.AddMember("args", args.Move(), request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->destroyDump(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(Request::INVALID_GAME_ID).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, valid non-existent game id, invalid slot") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::reset();
+
+			rapidjson::Value args(rapidjson::kObjectType);
+			rapidjson::Document request(rapidjson::kObjectType);
+
+			args.AddMember("id", 0, request.GetAllocator());
+			args.AddMember("slot", "not a slot", request.GetAllocator());
+
+			request.AddMember("method", "delete", request.GetAllocator());
+			request.AddMember("scope", "game", request.GetAllocator());
+			request.AddMember("action", "dump", request.GetAllocator());
+			request.AddMember("args", args.Move(), request.GetAllocator());
+
+			rapidjson::Document response = GameController::get()->destroyDump(request);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_INVALID == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(GameController::INVALID_DUMPED_GAME_SLOT).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, valid non-existent game id, valid non-existent slot") {
 
-			// TODO
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Make a read-only state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+
+			GameContainer::reset();
+
+			rapidjson::Document response = destroyDump(0, 0);
+
+			CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+			CHECK(response.HasMember("status"));
+			CHECK(response["status"].IsUint());
+			CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+			CHECK(response.HasMember("message"));
+			CHECK(response["message"].IsString());
+			CHECK(0 == std::string(GameController::DUMPED_GAME_NOT_FOUND).compare(response["message"].GetString()));
+
+			destroyGameXML();
+			destroyConfig();
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, valid existing game id, invalid slot") {
