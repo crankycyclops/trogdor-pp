@@ -711,11 +711,25 @@ void GameContainer::destroyDumpSlot(size_t id, size_t slot) {
 		return;
 	}
 
-	std::string slotPath = Config::get()->getStatePath() +
-		STD_FILESYSTEM::path::preferred_separator + std::to_string(id) +
+	std::string gameStatePath = Config::get()->getStatePath() +
+		STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+	std::string slotPath = gameStatePath +
 		STD_FILESYSTEM::path::preferred_separator + std::to_string(slot);
 
 	if (STD_FILESYSTEM::exists(slotPath)) {
 		STD_FILESYSTEM::remove_all(slotPath);
+	}
+
+	// If that was the only dump slot left, we should also destroy the rest
+	// of the game's dump history, since it's invalid without at least one
+	// slot anyway.
+	std::set<size_t> slots;
+	getDumpedGameSlots(slots, gameStatePath);
+
+	if (!slots.size()) {
+		if (STD_FILESYSTEM::exists(gameStatePath)) {
+			STD_FILESYSTEM::remove_all(gameStatePath);
+		}
 	}
 }
