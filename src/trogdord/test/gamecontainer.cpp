@@ -2009,4 +2009,67 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			#endif
 		}
 	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): getDumpedGameSlot()") {
+
+		SUBCASE("State disabled, dumped game doesn't exist") {
+
+			// TODO: should throw UnsupportedOperation
+		}
+
+		SUBCASE("State disabled, dumped game id is an empty directory") {
+
+			// TODO: should throw UnsupportedOperation
+		}
+
+		SUBCASE("State disabled, dumped game slot is an empty directory") {
+
+			// TODO: should throw UnsupportedOperation
+		}
+
+		SUBCASE("State disabled, dumped game slot timestamp file is a directory") {
+
+			// TODO: should throw UnsupportedOperation
+		}
+
+		SUBCASE("State disabled, dumped game slot timestamp contains non-timestamp data") {
+
+			// TODO: should throw UnsupportedOperation
+		}
+
+		SUBCASE("State disabled, dumped game slot is valid") {
+
+			// TODO: should throw UnsupportedOperation
+		}
+
+		SUBCASE("State enabled, dumped game doesn't exist") {
+
+			// TODO: should throw GameNotFound
+		}
+
+		SUBCASE("State enabled, dumped game id is an empty directory") {
+
+			// TODO: should throw GameNotFound
+		}
+
+		SUBCASE("State enabled, dumped game slot is an empty directory") {
+
+			// TODO: should throw GameSlotNotFound
+		}
+
+		SUBCASE("State enabled, dumped game slot timestamp file is a directory") {
+
+			// TODO: should throw GameSlotNotFound
+		}
+
+		SUBCASE("State enabled, dumped game slot timestamp contains non-timestamp data") {
+
+			// TODO: should throw GameSlotNotFound
+		}
+
+		SUBCASE("State enabled, dumped game slot is valid") {
+
+			// TODO: should succeed
+		}
+	}
 }
