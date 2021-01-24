@@ -1807,4 +1807,133 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			#endif
 		}
 	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): getDumpedGame()") {
+
+		SUBCASE("getDumpedGame(): state disabled, dumped game id doesn't exist") {
+
+			initGameXML();
+			initConfig(false, false);
+			GameContainer::reset();
+
+			try {
+				GameContainer::get()->getDumpedGame(0);
+			}
+
+			catch (const UnsupportedOperation &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+		}
+
+		SUBCASE("getDumpedGame(): state disabled, dumped game exists but is invalid") {
+
+			size_t gameId = 0;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			initGameXML();
+			initConfig(false, false);
+			GameContainer::reset();
+
+			std::string gameStatePath = statePath +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(gameId);
+
+			// Make an empty and invalid "dumped game"
+			STD_FILESYSTEM::create_directory(statePath);
+			STD_FILESYSTEM::create_directory(gameStatePath);
+
+			try {
+				GameContainer::get()->getDumpedGame(gameId);
+				FAIL("State is disabled, so call to GameContainer::dumpedGame() should not succeed.");
+			}
+
+			catch (const UnsupportedOperation &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
+		}
+
+		SUBCASE("getDumpedGame(): state disabled, dumped game exists and is valid") {
+
+			// TODO
+		}
+
+		SUBCASE("getDumpedGame(): state enabled, dumped game id doesn't exist") {
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Create state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+			GameContainer::reset();
+
+			try {
+				GameContainer::get()->getDumpedGame(0);
+				FAIL("Call to GameContainer::getDumpedGame() should fail when the dumped game doesn't exist.");
+			}
+
+			catch (const GameNotFound &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
+		}
+
+		SUBCASE("getDumpedGame(): state enabled, dumped game exists but is invalid") {
+
+			size_t gameId = 0;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Create state path
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+			GameContainer::reset();
+
+			std::string gameStatePath = statePath +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(gameId);
+
+			// Make an empty and invalid "dumped game"
+			STD_FILESYSTEM::create_directory(gameStatePath);
+
+			try {
+				GameContainer::get()->getDumpedGame(gameId);
+				FAIL("Call to GameContainer::getDumpedGame() should fail when the game doesn't exist or is invalid.");
+			}
+
+			catch (const GameNotFound &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
+		}
+
+		SUBCASE("getDumpedGame(): state enabled, dumped game exists and is valid") {
+
+			// TODO
+		}
+	}
 }
