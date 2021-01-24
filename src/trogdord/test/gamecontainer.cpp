@@ -1836,6 +1836,9 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
 					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
 
+			// Create state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
 			initGameXML();
 			initConfig(false, false);
 			GameContainer::reset();
@@ -1844,7 +1847,6 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 				STD_FILESYSTEM::path::preferred_separator + std::to_string(gameId);
 
 			// Make an empty and invalid "dumped game"
-			STD_FILESYSTEM::create_directory(statePath);
 			STD_FILESYSTEM::create_directory(gameStatePath);
 
 			try {
@@ -1865,7 +1867,44 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("getDumpedGame(): state disabled, dumped game exists and is valid") {
 
-			// TODO
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+						STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				// Create state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				initGameXML();
+				initConfig(false, false);
+				GameContainer::reset();
+
+				// Create and dump a game
+				size_t id = GameContainer::get()->createGame(definition, gameName);
+				GameContainer::get()->dump();
+
+				try {
+					GameContainer::get()->getDumpedGame(id);
+					FAIL("State is disabled, so call to GameContainer::dumpedGame() should not succeed.");
+				}
+
+				catch (const UnsupportedOperation &e) {
+					CHECK(true);
+				}
+
+				// Restore the default configuration
+				destroyGameXML();
+				destroyConfig();
+				initIniFile(iniFilename, {{}});
+				STD_FILESYSTEM::remove_all(statePath);
+
+			#endif
 		}
 
 		SUBCASE("getDumpedGame(): state enabled, dumped game id doesn't exist") {
@@ -1933,7 +1972,41 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("getDumpedGame(): state enabled, dumped game exists and is valid") {
 
-			// TODO
+			#ifndef CORE_UNIT_TEST_DEFINITION_FILE
+
+				FAIL("CORE_UNIT_TEST_DEFINITION_FILE must be defined.");
+
+			#else
+
+				std::string gameName = "My Game";
+				std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+				std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+						STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+				// Create state directory
+				STD_FILESYSTEM::create_directory(statePath);
+
+				initGameXML();
+				initConfig(false, true, statePath);
+				GameContainer::reset();
+
+				// Create and dump a game
+				size_t id = GameContainer::get()->createGame(definition, gameName);
+				GameContainer::get()->dump();
+
+				auto data = GameContainer::get()->getDumpedGame(id);
+
+				CHECK(0 == std::get<0>(data).compare(gameName));
+				CHECK(0 == std::get<1>(data).compare("game.xml")); // TODO: derive from CORE_UNIT_TEST_DEFINITION_FILE
+				CHECK(std::get<2>(data) > 0);
+
+				// Restore the default configuration
+				destroyGameXML();
+				destroyConfig();
+				initIniFile(iniFilename, {{}});
+				STD_FILESYSTEM::remove_all(statePath);
+
+			#endif
 		}
 	}
 }
