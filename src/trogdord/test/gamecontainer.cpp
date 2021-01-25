@@ -2014,10 +2014,30 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State disabled, dumped game doesn't exist") {
 
-			// TODO: should throw UnsupportedOperation
+			initGameXML();
+			initConfig(false, false);
+			GameContainer::reset();
+
+			try {
+				GameContainer::get()->getDumpedGameSlot(0, 0);
+			}
+
+			catch (const UnsupportedOperation &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
 		}
 
 		SUBCASE("State disabled, dumped game id is an empty directory") {
+
+			// TODO: should throw UnsupportedOperation
+		}
+
+		SUBCASE("State disabled, dumped game id exists but slot does not") {
 
 			// TODO: should throw UnsupportedOperation
 		}
@@ -2044,7 +2064,35 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State enabled, dumped game doesn't exist") {
 
-			// TODO: should throw GameNotFound
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+					STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			// Create state directory
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+			GameContainer::reset();
+
+			try {
+				GameContainer::get()->getDumpedGameSlot(0, 0);
+				FAIL("Call to GameContainer::getDumpedGame() should fail when the dumped game doesn't exist.");
+			}
+
+			catch (const GameNotFound &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
+		}
+
+		SUBCASE("State enabled, dumped game id exists but slot does not") {
+
+			// TODO: should throw GameSlotNotFound
 		}
 
 		SUBCASE("State enabled, dumped game id is an empty directory") {
