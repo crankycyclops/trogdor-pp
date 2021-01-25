@@ -2035,12 +2035,75 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State disabled, dumped game id is an empty directory") {
 
-			// TODO: should throw UnsupportedOperation
+			size_t id = 0;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, false);
+			GameContainer::reset();
+
+			// Create a fake (empty) game dump directory and attempt to get its details
+			std::string gamePath = statePath +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+			STD_FILESYSTEM::create_directory(gamePath);
+
+			try {
+				GameContainer::get()->getDumpedGameSlot(id, 0);
+				FAIL("GameContainer::getDumpedGameSlot() should throw UnsupportedOperation.");
+			}
+
+			catch (const UnsupportedOperation &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State disabled, dumped game id exists but slot does not") {
 
-			// TODO: should throw UnsupportedOperation
+			std::string gameName = "My Game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			// Temporarily enable state so we can dump a game
+			initGameXML();
+			initConfig(false, true, statePath);
+			GameContainer::reset();
+
+			// Create and dump a game
+			size_t id = GameContainer::get()->createGame(definition, gameName);
+			size_t slot = GameContainer::get()->getGame(id)->dump();
+
+			// Now, disable state and attempt to get a non-existing dump slot
+			initGameXML();
+			initConfig(false, false);
+			GameContainer::reset();
+
+			try {
+				GameContainer::get()->getDumpedGameSlot(id, slot + 1);
+				FAIL("GameContainer::getDumpedGameSlot() should always throw UnsupportedOperation when state is disabled.");
+			}
+
+			catch (const UnsupportedOperation &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State disabled, dumped game slot is an empty directory") {
@@ -2134,12 +2197,69 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State enabled, dumped game id is an empty directory") {
 
-			// TODO: should throw GameNotFound
+			size_t id = 0;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+			GameContainer::reset();
+
+			// Create a fake (empty) game dump directory and attempt to get its details
+			std::string gamePath = statePath +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+			STD_FILESYSTEM::create_directory(gamePath);
+
+			try {
+				GameContainer::get()->getDumpedGameSlot(id, 0);
+				FAIL("GameContainer::getDumpedGameSlot() should throw GameNotFound.");
+			}
+
+			catch (const GameNotFound &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, dumped game id exists but slot does not") {
 
-			// TODO: should throw GameSlotNotFound
+			std::string gameName = "My Game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+			GameContainer::reset();
+
+			// Create and dump a game so that I have a valid dump directory
+			size_t id = GameContainer::get()->createGame(definition, gameName);
+			size_t slot = GameContainer::get()->getGame(id)->dump();
+
+			try {
+				GameContainer::get()->getDumpedGameSlot(id, slot + 1);
+				FAIL("GameContainer::getDumpedGameSlot() should throw GameSlotNotFound.");
+			}
+
+			catch (const GameSlotNotFound &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, dumped game slot is an empty directory") {
@@ -2151,7 +2271,6 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 			STD_FILESYSTEM::create_directory(statePath);
 
-			// Temporarily enable state so we can dump a game
 			initGameXML();
 			initConfig(false, true, statePath);
 			GameContainer::reset();
