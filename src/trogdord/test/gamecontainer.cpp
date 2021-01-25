@@ -2020,6 +2020,7 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 			try {
 				GameContainer::get()->getDumpedGameSlot(0, 0);
+				FAIL("GameContainer::getDumpedGameSlot() should always throw UnsupportedOperation when state is disabled.");
 			}
 
 			catch (const UnsupportedOperation &e) {
@@ -2044,7 +2045,48 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State disabled, dumped game slot is an empty directory") {
 
-			// TODO: should throw UnsupportedOperation
+			std::string gameName = "My Game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			// Temporarily enable state so we can dump a game
+			initGameXML();
+			initConfig(false, true, statePath);
+			GameContainer::reset();
+
+			// Create and dump a game so that I have a valid dump directory
+			size_t id = GameContainer::get()->createGame(definition, gameName);
+			size_t slot = GameContainer::get()->getGame(id)->dump();
+
+			// Create a second empty (invalid) dump slot
+			std::string slotPath = statePath +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(id) +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(slot + 1);
+
+			STD_FILESYSTEM::create_directory(slotPath);
+
+			// Now, disable state and attempt to get an invalid (empty) dump slot
+			initGameXML();
+			initConfig(false, false);
+			GameContainer::reset();
+
+			try {
+				GameContainer::get()->getDumpedGameSlot(id, slot + 1);
+				FAIL("GameContainer::getDumpedGameSlot() should always throw UnsupportedOperation when state is disabled.");
+			}
+
+			catch (const UnsupportedOperation &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State disabled, dumped game slot timestamp file is a directory") {
@@ -2090,19 +2132,55 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			STD_FILESYSTEM::remove_all(statePath);
 		}
 
-		SUBCASE("State enabled, dumped game id exists but slot does not") {
-
-			// TODO: should throw GameSlotNotFound
-		}
-
 		SUBCASE("State enabled, dumped game id is an empty directory") {
 
 			// TODO: should throw GameNotFound
 		}
 
-		SUBCASE("State enabled, dumped game slot is an empty directory") {
+		SUBCASE("State enabled, dumped game id exists but slot does not") {
 
 			// TODO: should throw GameSlotNotFound
+		}
+
+		SUBCASE("State enabled, dumped game slot is an empty directory") {
+
+			std::string gameName = "My Game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			// Temporarily enable state so we can dump a game
+			initGameXML();
+			initConfig(false, true, statePath);
+			GameContainer::reset();
+
+			// Create and dump a game so that I have a valid dump directory
+			size_t id = GameContainer::get()->createGame(definition, gameName);
+			size_t slot = GameContainer::get()->getGame(id)->dump();
+
+			// Create a second empty (invalid) dump slot
+			std::string slotPath = statePath +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(id) +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(slot + 1);
+
+			STD_FILESYSTEM::create_directory(slotPath);
+
+			try {
+				GameContainer::get()->getDumpedGameSlot(id, slot + 1);
+				FAIL("GameContainer::getDumpedGameSlot() should throw GameSlotNotFound.");
+			}
+
+			catch (const GameSlotNotFound &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, dumped game slot timestamp file is a directory") {
