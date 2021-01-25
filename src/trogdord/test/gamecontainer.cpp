@@ -2154,7 +2154,51 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State disabled, dumped game slot timestamp file is a directory") {
 
-			// TODO: should throw UnsupportedOperation
+			std::string gameName = "My Game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			// Temporarily enable state so we can dump a game
+			initGameXML();
+			initConfig(false, true, statePath);
+			GameContainer::reset();
+
+			// Create and dump a game
+			size_t id = GameContainer::get()->createGame(definition, gameName);
+			size_t slot = GameContainer::get()->getGame(id)->dump();
+
+			std::string timestampPath = statePath +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(id) +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(slot) +
+				STD_FILESYSTEM::path::preferred_separator + "timestamp";
+
+			// Replace slot timestamp with a directory, so we can demonstrate
+			// that it's caught as an invalid slot
+			STD_FILESYSTEM::remove(timestampPath);
+			STD_FILESYSTEM::create_directory(timestampPath);
+
+			// Now, disable state and attempt to get a non-existing dump slot
+			initGameXML();
+			initConfig(false, false);
+			GameContainer::reset();
+
+			try {
+				GameContainer::get()->getDumpedGameSlot(id, slot);
+				FAIL("GameContainer::getDumpedGameSlot() should always throw UnsupportedOperation when state is disabled.");
+			}
+
+			catch (const UnsupportedOperation &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State disabled, dumped game slot timestamp contains non-timestamp data") {
@@ -2304,7 +2348,46 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State enabled, dumped game slot timestamp file is a directory") {
 
-			// TODO: should throw GameSlotNotFound
+			std::string gameName = "My Game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			// Temporarily enable state so we can dump a game
+			initGameXML();
+			initConfig(false, true, statePath);
+			GameContainer::reset();
+
+			// Create and dump a game
+			size_t id = GameContainer::get()->createGame(definition, gameName);
+			size_t slot = GameContainer::get()->getGame(id)->dump();
+
+			std::string timestampPath = statePath +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(id) +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(slot) +
+				STD_FILESYSTEM::path::preferred_separator + "timestamp";
+
+			// Replace slot timestamp with a directory, so we can demonstrate
+			// that it's caught as an invalid slot
+			STD_FILESYSTEM::remove(timestampPath);
+			STD_FILESYSTEM::create_directory(timestampPath);
+
+			try {
+				GameContainer::get()->getDumpedGameSlot(id, slot);
+				FAIL("GameContainer::getDumpedGameSlot() should throw GameSlotNotFound.");
+			}
+
+			catch (const GameSlotNotFound &e) {
+				CHECK(true);
+			}
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, dumped game slot timestamp contains non-timestamp data") {
