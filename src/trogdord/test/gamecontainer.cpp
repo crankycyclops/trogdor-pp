@@ -2548,4 +2548,150 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			STD_FILESYSTEM::remove_all(statePath);
 		}
 	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): destroyDump()") {
+
+		SUBCASE("State disabled, dumped game doesn't exist") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, dumped game exists but is invalid") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, dumped game exists and is valid") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, dumped game doesn't exist") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, dumped game exists but is invalid") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, dumped game exists and is valid") {
+
+			// TODO
+		}
+	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): destroyDumpSlot()") {
+
+		SUBCASE("State disabled, dumped game doesn't exist, slot doesn't exist") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, dumped game exists but is invalid, slot doesn't exist") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, dumped game exists and is valid, slot doesn't exist") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, dumped game exists but is invalid, slot exists but is invalid, no slot remains") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, dumped game exists and is valid, slot exists but is invalid, no slot remains") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, dumped game exists but is invalid, slot exists but is invalid, second slot remains") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, dumped game exists and is valid, slot exists but is invalid, second slot remains") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, dumped game exists but is invalid, slot exists and is valid, no slot remains") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, dumped game exists and is valid, slot exists and is valid, no slot remains") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, dumped game exists but is invalid, slot exists and is valid, second slot remains") {
+
+			// TODO
+		}
+
+		SUBCASE("State disabled, dumped game exists and is valid, slot exists and is valid, second slot remains") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, dumped game doesn't exist, slot doesn't exists") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, dumped game exists but is invalid, slot doesn't exists") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, dumped game exists and is valid, slot doesn't exists") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, dumped game exists but is invalid, slot exists but is invalid, no slot remains") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, dumped game exists and is valid, slot exists but is invalid, no slot remains") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, dumped game exists but is invalid, slot exists but is invalid, second slot remains") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, dumped game exists and is valid, slot exists but is invalid, second slot remains") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, dumped game exists but is invalid, slot exists and is valid, no slot remains") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, dumped game exists and is valid, slot exists and is valid, no slot remains") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, dumped game exists but is invalid, slot exists and is valid, second slot remains") {
+
+			// TODO
+		}
+
+		SUBCASE("State enabled, dumped game exists and is valid, slot exists and is valid, second slot remains") {
+
+			// TODO
+		}
+	}
 }
