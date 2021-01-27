@@ -2598,7 +2598,40 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State disabled, dumped game exists and is valid") {
 
-			// TODO
+			std::string gameName = "My Game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			// Temporarily enable state so we can dump a game
+			initGameXML();
+			initConfig(false, true, statePath);
+			GameContainer::reset();
+
+			// Create and dump a game
+			size_t id = GameContainer::get()->createGame(definition, gameName);
+			GameContainer::get()->getGame(id)->dump();
+
+			// Now, disable state and attempt to get the slot
+			initGameXML();
+			initConfig(false, false);
+			GameContainer::reset();
+
+			std::string gamePath = statePath + STD_FILESYSTEM::path::preferred_separator +
+				std::to_string(id);
+
+			// Verify that destroyDump() doesn't do anything when state is disabled
+			CHECK(STD_FILESYSTEM::exists(gamePath));
+			GameContainer::get()->destroyDump(id);
+			CHECK(STD_FILESYSTEM::exists(gamePath));
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, dumped game doesn't exist") {
@@ -2654,7 +2687,34 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State enabled, dumped game exists and is valid") {
 
-			// TODO
+			std::string gameName = "My Game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+			GameContainer::reset();
+
+			// Create and dump a game
+			size_t id = GameContainer::get()->createGame(definition, gameName);
+			GameContainer::get()->getGame(id)->dump();
+
+			std::string gamePath = statePath + STD_FILESYSTEM::path::preferred_separator +
+				std::to_string(id);
+
+			// Verify that destroyDump() removes the game's dump directory
+			CHECK(STD_FILESYSTEM::exists(gamePath));
+			GameContainer::get()->destroyDump(id);
+			CHECK(!STD_FILESYSTEM::exists(gamePath));
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 	}
 
