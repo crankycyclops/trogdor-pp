@@ -2722,7 +2722,19 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State disabled, dumped game doesn't exist, slot doesn't exist") {
 
-			// TODO
+			initGameXML();
+			initConfig(false, false);
+			GameContainer::reset();
+
+			// Attempt to destroy dump slot that doesn't exist. There is no return
+			// value. Just need to verify that no exceptions are found.
+			GameContainer::get()->destroyDumpSlot(0, 0);
+			CHECK(true);
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
 		}
 
 		SUBCASE("State disabled, dumped game exists but is invalid, slot doesn't exist") {
@@ -2775,17 +2787,35 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			// TODO
 		}
 
-		SUBCASE("State enabled, dumped game doesn't exist, slot doesn't exists") {
+		SUBCASE("State enabled, dumped game doesn't exist, slot doesn't exist") {
+
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			initGameXML();
+			initConfig(false, true, statePath);
+			GameContainer::reset();
+
+			// Attempt to destroy dump slot that doesn't exist. There is no return
+			// value. Just need to verify that no exceptions are found.
+			GameContainer::get()->destroyDumpSlot(0, 0);
+			CHECK(true);
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
+		}
+
+		SUBCASE("State enabled, dumped game exists but is invalid, slot doesn't exist") {
 
 			// TODO
 		}
 
-		SUBCASE("State enabled, dumped game exists but is invalid, slot doesn't exists") {
-
-			// TODO
-		}
-
-		SUBCASE("State enabled, dumped game exists and is valid, slot doesn't exists") {
+		SUBCASE("State enabled, dumped game exists and is valid, slot doesn't exist") {
 
 			// TODO
 		}
