@@ -2834,7 +2834,47 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State disabled, dumped game exists and is valid, slot exists but is invalid, no slot remains") {
 
-			// TODO
+			std::string gameName = "My Game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			// Temporarily enable state so we can dump a game
+			initGameXML();
+			initConfig(false, true, statePath);
+			GameContainer::reset();
+
+			// Create and dump a game
+			size_t id = GameContainer::get()->createGame(definition, gameName);
+			size_t slot = GameContainer::get()->getGame(id)->dump();
+
+			std::string gamePath = statePath +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+			std::string newSlotPath = gamePath +
+				STD_FILESYSTEM::path::preferred_separator + "1";
+
+			// Remove the valid dump slot and replace it with one that's invalid
+			STD_FILESYSTEM::remove_all(gamePath + STD_FILESYSTEM::path::preferred_separator + std::to_string(slot));
+			STD_FILESYSTEM::create_directory(newSlotPath);
+
+			// Now, disable state and attempt to destroy the slot
+			initGameXML();
+			initConfig(false, false);
+			GameContainer::reset();
+
+			// Verify that destroyDumpSlot() doesn't do anything
+			CHECK(STD_FILESYSTEM::exists(newSlotPath));
+			GameContainer::get()->destroyDumpSlot(id, 1);
+			CHECK(STD_FILESYSTEM::exists(newSlotPath));
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State disabled, dumped game exists but is invalid, slot exists but is invalid, second slot remains") {
@@ -3052,7 +3092,43 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 
 		SUBCASE("State enabled, dumped game exists and is valid, slot exists but is invalid, no slot remains") {
 
-			// TODO
+			std::string gameName = "My Game";
+			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
+			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+
+			STD_FILESYSTEM::create_directory(statePath);
+
+			// Temporarily enable state so we can dump a game
+			initGameXML();
+			initConfig(false, true, statePath);
+			GameContainer::reset();
+
+			// Create and dump a game
+			size_t id = GameContainer::get()->createGame(definition, gameName);
+			size_t slot = GameContainer::get()->getGame(id)->dump();
+
+			std::string gamePath = statePath +
+				STD_FILESYSTEM::path::preferred_separator + std::to_string(id);
+
+			std::string newSlotPath = gamePath +
+				STD_FILESYSTEM::path::preferred_separator + "1";
+
+			// Remove the valid dump slot and replace it with one that's invalid
+			STD_FILESYSTEM::remove_all(gamePath + STD_FILESYSTEM::path::preferred_separator + std::to_string(slot));
+			STD_FILESYSTEM::create_directory(newSlotPath);
+
+			// Verify that destroyDumpSlot() removes the invalid slot, along with the whole
+			// dumped game since it was the only slot left
+			CHECK(STD_FILESYSTEM::exists(newSlotPath));
+			GameContainer::get()->destroyDumpSlot(id, 1);
+			CHECK(!STD_FILESYSTEM::exists(gamePath));
+
+			// Restore the default configuration
+			destroyGameXML();
+			destroyConfig();
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(statePath);
 		}
 
 		SUBCASE("State enabled, dumped game exists but is invalid, slot exists but is invalid, second slot remains") {
