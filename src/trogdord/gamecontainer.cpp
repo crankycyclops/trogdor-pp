@@ -721,13 +721,22 @@ void GameContainer::destroyDumpSlot(size_t id, size_t slot) {
 
 		STD_FILESYSTEM::remove_all(slotPath);
 
-		// If that was the only dump slot left, we should also destroy the rest
-		// of the game's dump history, since it's invalid without at least one
-		// slot anyway.
-		std::set<size_t> slots;
-		getDumpedGameSlots(slots, gameStatePath);
+		// If that was the only dump slot left and we don't have any other
+		// subdirectories inside the dumped game's directory, we should also
+		// destroy the game's dump history, since it's invalid without at
+		// least one slot anyway (checking for subdirectories instead of
+		// valid dump slots because in the case of invalid data, I want to
+		// be careful about what gets deleted.)
+		bool subdirsFound = false;
 
-		if (!slots.size()) {
+		for (auto &subdir: STD_FILESYSTEM::directory_iterator(gameStatePath)) {
+			if (STD_FILESYSTEM::is_directory(subdir)) {
+				subdirsFound = true;
+				break;
+			}
+		}
+
+		if (!subdirsFound) {
 			if (STD_FILESYSTEM::exists(gameStatePath)) {
 				STD_FILESYSTEM::remove_all(gameStatePath);
 			}
