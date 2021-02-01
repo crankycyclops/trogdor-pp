@@ -25,24 +25,6 @@ ZEND_EXTERN_MODULE_GLOBALS(object);
 ZEND_EXTERN_MODULE_GLOBALS(creature);
 ZEND_EXTERN_MODULE_GLOBALS(player);
 
-// The private property that contains the entity's name
-const char *NAME_PROPERTY_NAME = "name";
-
-// The private property that contains reference to the game the entity belongs to
-const char *GAME_PROPERTY_NAME = "game";
-
-// String representations of each entity type
-const char *ENTITY_TYPE_STR = "entity";
-const char *TANGIBLE_TYPE_STR = "tangible";
-const char *PLACE_TYPE_STR = "place";
-const char *THING_TYPE_STR = "thing";
-const char *BEING_TYPE_STR = "being";
-const char *RESOURCE_TYPE_STR = "resource";
-const char *ROOM_TYPE_STR = "room";
-const char *OBJECT_TYPE_STR = "object";
-const char *CREATURE_TYPE_STR = "creature";
-const char *PLAYER_TYPE_STR = "player";
-
 // By default, we read from an entity's output buffer on this channel
 static const char *ENTITY_DEFAULT_OUTPUT_CHANNEL = "notifications";
 

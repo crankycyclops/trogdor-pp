@@ -27,7 +27,7 @@ ZEND_EXTERN_MODULE_GLOBALS(being);
 /*****************************************************************************/
 
 // Exception message when methods are called on a player that's already been destroyed
-extern const char *PLAYER_ALREADY_DESTROYED;
+constexpr const char *PLAYER_ALREADY_DESTROYED = "Player has already been destroyed";
 
 // Declares the PHP Player class to the Zend engine.
 extern void definePlayerClass();

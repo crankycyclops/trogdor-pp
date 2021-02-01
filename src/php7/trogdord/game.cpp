@@ -14,22 +14,6 @@ using namespace rapidjson;
 ZEND_DECLARE_MODULE_GLOBALS(game);
 ZEND_EXTERN_MODULE_GLOBALS(trogdord);
 
-// Exception message when methods are called on a game that's already been destroyed
-const char *GAME_ALREADY_DESTROYED = "Game has already been destroyed";
-
-// The private property that stores the game's name
-const char *GAME_NAME_PROPERTY = "name";
-
-// The private property that stores the game's definition filename
-const char *GAME_DEFINITION_PROPERTY = "definition";
-
-// The private property that stores the game's id
-const char *GAME_ID_PROPERTY = "id";
-
-// The private property through which an instance of \Trogdord\Game can access
-// the connection that spawned it
-const char *TROGDORD_PROPERTY = "trogdord";
-
 // This request starts the game
 static const char *GAME_START_REQUEST = "{\"method\":\"set\",\"scope\":\"game\",\"action\":\"start\",\"args\":{\"id\": %gid}}";
 

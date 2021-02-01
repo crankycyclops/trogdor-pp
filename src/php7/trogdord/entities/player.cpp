@@ -11,9 +11,6 @@
 ZEND_DECLARE_MODULE_GLOBALS(player);
 ZEND_EXTERN_MODULE_GLOBALS(game);
 
-// Exception message when methods are called on a game that's already been destroyed
-const char *PLAYER_ALREADY_DESTROYED = "Player has already been destroyed";
-
 // This request sends a command to the entity's input buffer.
 static const char *PLAYER_POST_INPUT_REQUEST = "{\"method\":\"post\",\"scope\":\"player\",\"action\":\"input\",\"args\":{\"game_id\":%gid,\"name\":\"%ename\",\"command\":\"%input\"}}";
 

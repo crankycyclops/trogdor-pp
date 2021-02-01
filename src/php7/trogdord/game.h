@@ -41,20 +41,20 @@ if (IS_NULL == ZVAL_ID) { \
 /*****************************************************************************/
 
 // Exception message when methods are called on a game that's already been destroyed
-extern const char *GAME_ALREADY_DESTROYED;
+constexpr const char *GAME_ALREADY_DESTROYED = "Game has already been destroyed";
 
 // The private property that stores the game's name
-extern const char *GAME_NAME_PROPERTY;
+constexpr const char *GAME_NAME_PROPERTY = "name";
 
 // The private property that stores the game's definition filename
-extern const char *GAME_DEFINITION_PROPERTY;
+constexpr const char *GAME_DEFINITION_PROPERTY = "definition";
 
 // The private property that stores the game's id
-extern const char *GAME_ID_PROPERTY;
+constexpr const char *GAME_ID_PROPERTY = "id";
 
 // The private property through which an instance of \Trogdord\Game can access
 // the connection that spawned it
-extern const char *TROGDORD_PROPERTY;
+constexpr const char *TROGDORD_PROPERTY = "trogdord";
 
 // Creates an instance of \Trogdord\Game. Returns true on success and false on
 // error.
