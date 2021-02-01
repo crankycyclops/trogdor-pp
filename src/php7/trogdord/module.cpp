@@ -16,6 +16,9 @@
 #include "entities/creature.h"
 #include "entities/player.h"
 
+#include "dump/dump.h"
+#include "dump/slot.h"
+
 PHP_MINFO_FUNCTION(trogdord) {
 
 	php_info_print_table_start();
@@ -31,6 +34,10 @@ PHP_MINIT_FUNCTION(trogdord) {
 	defineTrogdordClass();
 	defineGameClass();
 	defineExceptionClasses();
+
+	// Classes for managing dumped game state
+	defineDumpClass();
+	defineDumpSlotClass();
 
 	// Entity class hierarchy
 	defineEntityClass();
