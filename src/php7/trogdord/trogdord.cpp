@@ -515,9 +515,9 @@ PHP_METHOD(Trogdord, newGame) {
 		);
 
 		#ifdef ZEND_ENABLE_ZVAL_LONG64
-			int64_t id = response["id"].GetInt64();
+			size_t id = response["id"].GetUint64();
 		#else
-			int id = response["id"].GetInt();
+			size_t id = response["id"].GetUint();
 		#endif
 
 		if (!createGameObj(return_value, name, definition, id, getThis())) {
