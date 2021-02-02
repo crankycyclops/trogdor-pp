@@ -8,6 +8,7 @@
 
 #include "trogdord.h"
 #include "game.h"
+#include "dump/dump.h"
 #include "phpexception.h"
 
 #include "exception/jsonexception.h"
@@ -35,6 +36,9 @@ static const char *GAME_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\
 
 // This request retrieves a list of all available game definitions
 static const char *DEF_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"definitions\"}";
+
+// This request retrieves details of a dumped game
+static const char *GET_DUMP_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"dump\",\"args\":{\"id\":%gid}}";
 
 // This request retrieves details of a specific game
 static const char *GET_GAME_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"args\":{\"id\":%gid}}";
@@ -366,6 +370,75 @@ PHP_METHOD(Trogdord, definitions) {
 
 /*****************************************************************************/
 
+// Returns an instance of \Trogdord\Game\Dump, which provides an interface to a
+// dumped game contained by an instance of trogdord. Throws an instance of
+// \Trogdord\GameNotFound if the dumped game doesn't exist and
+// \Trogdord\NetworkException if there's an issue with the network connection
+// that prevents this call from returning a valid value.
+ZEND_BEGIN_ARG_INFO(arginfoGetDump, 0)
+	ZEND_ARG_TYPE_INFO(0, id, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Trogdord, getDump) {
+
+	size_t gameId;
+	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(getThis()));
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &gameId)  == FAILURE) {
+		RETURN_NULL();
+	}
+
+	try {
+
+		std::string request = GET_DUMP_REQUEST;
+		strReplace(request, "%gid", std::to_string(gameId));
+
+		Document response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request,
+			getThis()
+		);
+
+		if (!createDumpObj(
+			return_value,
+			gameId,
+			response["name"].GetString(),
+			response["definition"].GetString(),
+			#ifdef ZEND_ENABLE_ZVAL_LONG64
+				response["created"].GetUint64(),
+			#else
+				response["created"].GetUint(),
+			#endif
+			getThis()
+		)) {
+			php_error_docref(NULL, E_ERROR, "failed to instantiate Trogdord\\Game\\Dump");
+		}
+
+		return;
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
+}
+
+/*****************************************************************************/
+
 // Returns an instance of \Trogdord\Game, which provides an interface to a game
 // that exists inside an instance of trogdord. Throws an instance of
 // \Trogdord\GameNotFound if the game doesn't exist and
@@ -548,6 +621,7 @@ static const zend_function_entry classMethods[] =  {
 	PHP_ME(Trogdord, restore, arginfoRestore, ZEND_ACC_PUBLIC)
 	PHP_ME(Trogdord, games, arginfoListGames, ZEND_ACC_PUBLIC)
 	PHP_ME(Trogdord, definitions, arginfoListDefinitions, ZEND_ACC_PUBLIC)
+	PHP_ME(Trogdord, getDump, arginfoGetDump, ZEND_ACC_PUBLIC)
 	PHP_ME(Trogdord, getGame, arginfoGetGame, ZEND_ACC_PUBLIC)
 	PHP_ME(Trogdord, newGame, arginfoNewGame, ZEND_ACC_PUBLIC)
 	PHP_FE_END
