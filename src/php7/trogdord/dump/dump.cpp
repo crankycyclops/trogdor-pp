@@ -14,8 +14,21 @@ ZEND_EXTERN_MODULE_GLOBALS(trogdord);
 
 /*****************************************************************************/
 
+// The constructor should NEVER be called in PHP userland. Instead, instances of
+// Trogdord\Game\Dump will be returned by calls to \Trogdord::getDump().
+ZEND_BEGIN_ARG_INFO(arginfoCtor, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Dump, __construct) {
+
+	php_error_docref(NULL, E_ERROR, "Tried to instantiate non-instantiable class.");
+}
+
+/*****************************************************************************/
+
 // PHP Dump class methods
 static const zend_function_entry classMethods[] =  {
+	PHP_ME(Dump, __construct, arginfoCtor, ZEND_ACC_PRIVATE | ZEND_ACC_CTOR)
 	PHP_FE_END
 };
 
