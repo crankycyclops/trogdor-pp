@@ -1,3 +1,5 @@
+#include <Zend/zend_long.h>
+
 #include "trogdord.h"
 #include "json.h"
 #include "request.h"
@@ -2003,17 +2005,31 @@ bool createGameObj(
 		definition.c_str()
 	);
 
-	zend_update_property_long(
-		GAME_GLOBALS(classEntry),
-		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
-			Z_OBJ_P(gameObj),
-		#else
-			gameObj,
-		#endif
-		GAME_ID_PROPERTY,
-		strlen(GAME_ID_PROPERTY),
-		id
-	);
+	if (id > ZEND_LONG_MAX) {
+		zend_update_property_double(
+			GAME_GLOBALS(classEntry),
+			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+				Z_OBJ_P(gameObj),
+			#else
+				gameObj,
+			#endif
+			GAME_ID_PROPERTY,
+			strlen(GAME_ID_PROPERTY),
+			id
+		);
+	} else {
+		zend_update_property_long(
+			GAME_GLOBALS(classEntry),
+			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+				Z_OBJ_P(gameObj),
+			#else
+				gameObj,
+			#endif
+			GAME_ID_PROPERTY,
+			strlen(GAME_ID_PROPERTY),
+			id
+		);
+	}
 
 	zend_update_property(
 		GAME_GLOBALS(classEntry),

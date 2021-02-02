@@ -7,6 +7,24 @@ extern "C" {
 
 #include "compatibility.h"
 
+// Exception message when methods are called on a game that's already been destroyed
+constexpr const char *GAME_ALREADY_DESTROYED = "Game has already been destroyed";
+
+// The private property that stores the game's name
+constexpr const char *GAME_NAME_PROPERTY = "name";
+
+// The private property that stores the game's definition filename
+constexpr const char *GAME_DEFINITION_PROPERTY = "definition";
+
+// The private property that stores the game's id
+constexpr const char *GAME_ID_PROPERTY = "id";
+
+// The private property through which an instance of \Trogdord\Game can access
+// the connection that spawned it
+constexpr const char *TROGDORD_PROPERTY = "trogdord";
+
+/*****************************************************************************/
+
 // For an explanation of what I'm doing here, see:
 // https://www.php.net/manual/en/internals2.structure.globals.php
 ZEND_BEGIN_MODULE_GLOBALS(game)
@@ -39,22 +57,6 @@ if (IS_NULL == ZVAL_ID) { \
 }
 
 /*****************************************************************************/
-
-// Exception message when methods are called on a game that's already been destroyed
-constexpr const char *GAME_ALREADY_DESTROYED = "Game has already been destroyed";
-
-// The private property that stores the game's name
-constexpr const char *GAME_NAME_PROPERTY = "name";
-
-// The private property that stores the game's definition filename
-constexpr const char *GAME_DEFINITION_PROPERTY = "definition";
-
-// The private property that stores the game's id
-constexpr const char *GAME_ID_PROPERTY = "id";
-
-// The private property through which an instance of \Trogdord\Game can access
-// the connection that spawned it
-constexpr const char *TROGDORD_PROPERTY = "trogdord";
 
 // Creates an instance of \Trogdord\Game. Returns true on success and false on
 // error.
