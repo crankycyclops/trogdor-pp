@@ -16,6 +16,9 @@ ZEND_EXTERN_MODULE_GLOBALS(trogdord);
 // This request retrieves a list of all slots for a dumped game
 static const char *DUMP_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"dumplist\",\"args\":{\"id\":%gid}}";
 
+// This request destroys a game's entire dump history
+static const char *DUMP_DESTROY_REQUEST = "{\"method\":\"delete\",\"scope\":\"game\",\"action\":\"dump\",\"args\":{\"id\":%gid}}";
+
 /*****************************************************************************/
 
 // The constructor should NEVER be called in PHP userland. Instead, instances of
@@ -111,7 +114,61 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Dump, destroy) {
 
-	// TODO
+	zval rv; // ???
+
+	zval *trogdord = DUMP_TO_TROGDORD(getThis(), &rv);
+	zval *id = DUMP_TO_ID(getThis(), &rv);
+
+	ZEND_PARSE_PARAMETERS_NONE();
+	ASSERT_DUMP_ID_IS_VALID(Z_TYPE_P(id));
+
+	try {
+
+		std::string request = DUMP_DESTROY_REQUEST;
+		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+
+		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+		Document response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request,
+			getThis()
+		);
+
+		// Set the game ID to null so the object can't be used anymore
+		zend_update_property_null(
+			DUMP_GLOBALS(classEntry),
+			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+				Z_OBJ_P(getThis()),
+			#else
+				getThis(),
+			#endif
+			DUMP_ID_PROPERTY,
+			strlen(DUMP_ID_PROPERTY)
+		);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		RETURN_NULL();
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+	}
 }
 
 /*****************************************************************************/
