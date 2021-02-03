@@ -7,14 +7,14 @@ extern "C" {
 
 #include "compatibility.h"
 
+// Dumped game's id
+constexpr const char *DUMP_ID_PROPERTY = "id";
+
 // Dumped game's name
 constexpr const char *DUMP_NAME_PROPERTY = "name";
 
 // Definition file that was used to create the dumped game
 constexpr const char *DUMP_DEFINITION_PROPERTY = "definition";
-
-// Dumped game's id
-constexpr const char *DUMP_ID_PROPERTY = "id";
 
 // The private property through which an instance of \Trogdord\Game\Dump can access
 // the connection that spawned it.

@@ -26,9 +26,60 @@ PHP_METHOD(Dump, __construct) {
 
 /*****************************************************************************/
 
+// Returns an instance of \Trogdord\Game\Dump\Slot, which provides an interface
+// to a game dump's slot. Throws an instance of \Trogdord\GameNotFound if the
+// slot doesn't exist and \Trogdord\NetworkException if there's an issue with
+// the network connection that prevents this call from returning a valid value.
+ZEND_BEGIN_ARG_INFO(arginfoGetSlot, 0)
+	ZEND_ARG_TYPE_INFO(0, id, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Dump, getSlot) {
+
+	size_t slot;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &slot)  == FAILURE) {
+		RETURN_NULL();
+	}
+
+	// TODO
+}
+
+/*****************************************************************************/
+
+// Returns a list of all slots in the game's dump history. Throws an instance
+// of \Trogdord\NetworkException if there's an issue with the network connection
+// that prevents this call from returning a valid list.
+ZEND_BEGIN_ARG_INFO(arginfoSlots, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Dump, slots) {
+
+	// TODO
+}
+
+/*****************************************************************************/
+
+// Destroys the game's entire dump history, making it permanently inaccessible.
+// Throws an instance of \Trogdord\NetworkException if the call fails due to
+// network connectivity issues. If the game has already been destroyed,
+// \Trogdord\GameNotFound will be thrown.
+ZEND_BEGIN_ARG_INFO(arginfoDestroy, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Dump, destroy) {
+
+	// TODO
+}
+
+/*****************************************************************************/
+
 // PHP Dump class methods
 static const zend_function_entry classMethods[] =  {
 	PHP_ME(Dump, __construct, arginfoCtor, ZEND_ACC_PRIVATE | ZEND_ACC_CTOR)
+	PHP_ME(Dump, getSlot, arginfoGetSlot, ZEND_ACC_PUBLIC)
+	PHP_ME(Dump, slots, arginfoSlots, ZEND_ACC_PUBLIC)
+	PHP_ME(Dump, destroy, arginfoDestroy, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 
@@ -46,30 +97,6 @@ bool createDumpObj(
 	if (SUCCESS != object_init_ex(dumpObj, DUMP_GLOBALS(classEntry))) {
 		return false;
 	}
-
-	zend_update_property_string(
-		DUMP_GLOBALS(classEntry),
-		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
-			Z_OBJ_P(dumpObj),
-		#else
-			dumpObj,
-		#endif
-		DUMP_NAME_PROPERTY,
-		strlen(DUMP_NAME_PROPERTY),
-		name.c_str()
-	);
-
-	zend_update_property_string(
-		DUMP_GLOBALS(classEntry),
-		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
-			Z_OBJ_P(dumpObj),
-		#else
-			dumpObj,
-		#endif
-		DUMP_DEFINITION_PROPERTY,
-		strlen(DUMP_DEFINITION_PROPERTY),
-		definition.c_str()
-	);
 
 	if (id > ZEND_LONG_MAX) {
 		zend_update_property_double(
@@ -96,6 +123,30 @@ bool createDumpObj(
 			id
 		);
 	}
+
+	zend_update_property_string(
+		DUMP_GLOBALS(classEntry),
+		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+			Z_OBJ_P(dumpObj),
+		#else
+			dumpObj,
+		#endif
+		DUMP_NAME_PROPERTY,
+		strlen(DUMP_NAME_PROPERTY),
+		name.c_str()
+	);
+
+	zend_update_property_string(
+		DUMP_GLOBALS(classEntry),
+		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+			Z_OBJ_P(dumpObj),
+		#else
+			dumpObj,
+		#endif
+		DUMP_DEFINITION_PROPERTY,
+		strlen(DUMP_DEFINITION_PROPERTY),
+		definition.c_str()
+	);
 
 	zend_update_property(
 		DUMP_GLOBALS(classEntry),
