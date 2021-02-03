@@ -3,6 +3,7 @@
 #include "../trogdord.h"
 #include "../json.h"
 #include "../request.h"
+#include "../utility.h"
 
 #include "../phpexception.h"
 #include "../exception/requestexception.h"
@@ -11,6 +12,9 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(dump);
 ZEND_EXTERN_MODULE_GLOBALS(trogdord);
+
+// This request retrieves a list of all slots for a dumped game
+static const char *DUMP_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"dumplist\",\"args\":{\"id\":%gid}}";
 
 /*****************************************************************************/
 
@@ -55,7 +59,45 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Dump, slots) {
 
-	// TODO
+	zval rv; // ???
+
+	zval *trogdord = DUMP_TO_TROGDORD(getThis(), &rv);
+	zval *id = DUMP_TO_ID(getThis(), &rv);
+
+	ZEND_PARSE_PARAMETERS_NONE();
+	ASSERT_DUMP_ID_IS_VALID(Z_TYPE_P(id));
+
+	try {
+
+		std::string request = DUMP_LIST_REQUEST;
+		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+
+		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+		Document response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request,
+			getThis()
+		);
+
+		zval data = JSON::JSONToZval(response["slots"]);
+
+		// There's some insanity in how this works, so for reference, here's
+		// what I read to help me understand what all the arguments mean:
+		// https://medium.com/@davidtstrauss/copy-and-move-semantics-of-zvals-in-php-7-41427223d784
+		RETURN_ZVAL(&data, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	// Throw \Trogord\RequestException
+	catch (const RequestException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+	}
 }
 
 /*****************************************************************************/

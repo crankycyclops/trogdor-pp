@@ -7,6 +7,9 @@ extern "C" {
 
 #include "compatibility.h"
 
+// Exception message when methods are called on a game dump that's already been destroyed
+constexpr const char *DUMP_ALREADY_DESTROYED = "Dump has already been destroyed";
+
 // Dumped game's id
 constexpr const char *DUMP_ID_PROPERTY = "id";
 
@@ -42,6 +45,16 @@ strlen((PROPERTY)), 1, (RV))
 
 // Retrieve the underlying instance of \Trogdord.
 #define DUMP_TO_TROGDORD(THIS_PTR, RV) DUMP_TO_PROP_VAL(THIS_PTR, RV, DUMP_TROGDORD_PROPERTY)
+
+// Retrieve the game id.
+#define DUMP_TO_ID(THIS_PTR, RV) DUMP_TO_PROP_VAL(THIS_PTR, RV, DUMP_ID_PROPERTY)
+
+// Validate the instance of \Trogdord\Game\Dump before proceeding with an operation.
+#define ASSERT_DUMP_ID_IS_VALID(ZVAL_ID) \
+if (IS_NULL == ZVAL_ID) { \
+	zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), DUMP_ALREADY_DESTROYED, 0); \
+	RETURN_NULL(); \
+}
 
 /*****************************************************************************/
 
