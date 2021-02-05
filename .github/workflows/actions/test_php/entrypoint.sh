@@ -2,6 +2,24 @@
 
 export TEST_PHP_ARGS="-q"
 
+cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_REDIS=ON -DENABLE_SERIALIZE_JSON=ON .
+
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+
+make -j2 trogdord
+
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+
+make install
+
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+
 cd src/php7/trogdord
 
 trogdord &
