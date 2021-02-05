@@ -9,9 +9,13 @@
 #include "../exception/requestexception.h"
 
 #include "dump.h"
+#include "slot.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(dump);
 ZEND_EXTERN_MODULE_GLOBALS(trogdord);
+
+// This request retrieves a specific dump slot
+static const char *DUMP_GET_SLOT_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"dump\",\"args\":{\"id\":%gid,\"slot\":%slot}}";
 
 // This request retrieves a list of all slots for a dumped game
 static const char *DUMP_LIST_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"dumplist\",\"args\":{\"id\":%gid}}";
@@ -43,13 +47,66 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Dump, getSlot) {
 
+	zval rv; // ???
+
 	size_t slot;
+	zval *id = DUMP_TO_ID(getThis(), &rv);
+	zval *trogdord = DUMP_TO_TROGDORD(getThis(), &rv);
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &slot)  == FAILURE) {
 		RETURN_NULL();
 	}
 
-	// TODO
+	ASSERT_DUMP_ID_IS_VALID(Z_TYPE_P(id));
+
+	try {
+
+		std::string request = DUMP_GET_SLOT_REQUEST;
+		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+		strReplace(request, "%slot", std::to_string(slot));
+
+		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+		Document response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request,
+			getThis()
+		);
+
+		if (!createDumpSlotObj(
+			return_value,
+			slot,
+			#ifdef ZEND_ENABLE_ZVAL_LONG64
+				response["timestamp_ms"].GetUint64(),
+			#else
+				response["timestamp_ms"].GetUint(),
+			#endif
+			getThis()
+		)) {
+			php_error_docref(NULL, E_ERROR, "failed to instantiate Trogdord\\Game");
+		}
+
+		return;
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
+	}
 }
 
 /*****************************************************************************/
