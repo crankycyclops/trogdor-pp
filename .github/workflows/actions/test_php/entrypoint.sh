@@ -1,5 +1,6 @@
 #!/bin/sh
 
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"/usr/local/lib"
 export TEST_PHP_ARGS="-q"
 
 cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_REDIS=ON -DENABLE_SERIALIZE_JSON=ON .
