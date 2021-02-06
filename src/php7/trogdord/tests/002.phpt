@@ -15,10 +15,24 @@
 
 	try {
 
+		// I only check these so that if I forget to write checks for additional stats
+		// that are added later, I'll get a nice obvious warning in the form of a failed test :)
+		$validKeys = [
+			'lib_version',
+			'version',
+			'players'
+		];
+
 		$stats = $trogdord->statistics();
 
 		if (!is_array($stats)) {
 			die("\$trogdord->statistics() did not return an array.");
+		}
+
+		foreach ($stats as $key => $value) {
+			if (!in_array($key, $validKeys, true)) {
+				die("Unexpected key '$key' encountered in response.");
+			}
 		}
 
 		if (!isset($stats['lib_version'])) {
