@@ -6,6 +6,11 @@
 
 class Request {
 
+	private:
+
+		// Sets the status property on the trogdord object after a response is received.
+		static void setStatusProperty(zval *trogdord, uint status);
+
 	public:
 
 		// Sends a request to trogdord and processes the response.
