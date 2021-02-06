@@ -9,7 +9,11 @@
 	require_once("inc/connect.inc");
 	$trogdord = trogConnect();
 
-	echo "done!";
+	if (!$trogdord instanceof \Trogdord) {
+		echo $trogdord->getMessage();
+	} else {
+		echo "done!";
+	}
 ?>
 --EXPECT--
 done!
