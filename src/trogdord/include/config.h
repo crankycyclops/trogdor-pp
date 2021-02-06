@@ -56,6 +56,13 @@ class Config {
 		// Default values
 		static const std::unordered_map<std::string, std::string> DEFAULTS;
 
+		// Determines which values should be hidden from the outside
+		// for security purposes
+		static const std::unordered_map<std::string, bool> hidden;
+
+		// Determines what type each setting should be when its value is retrieved
+		static const std::unordered_map<std::string, const std::type_info *> types;
+
 		// Ini file keys
 		static constexpr const char *CONFIG_KEY_PORT = "network.port";
 		static constexpr const char *CONFIG_KEY_REUSE_ADDRESS = "network.reuse_address";
@@ -86,6 +93,10 @@ class Config {
 		// will be set to their defaults. Calling this method with no argument
 		// can be used to reset the Config object.
 		void load(std::string newIniPath = "") noexcept;
+
+		// Provide const iterators to walk through each config setting.
+		const auto begin() const {return ini.cbegin();}
+		const auto end() const {return ini.cend();}
 
 		// Special helper function that returns the absolute path pointed to
 		// by CONFIG_KEY_STATE_PATH or a blank string if no path was set.

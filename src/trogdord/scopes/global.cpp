@@ -45,6 +45,7 @@ rapidjson::Document GlobalController::statistics(const rapidjson::Document &requ
 
 	rapidjson::Value version(rapidjson::kObjectType);
 	rapidjson::Value libVersion(rapidjson::kObjectType);
+	rapidjson::Value config(rapidjson::kObjectType);
 
 	version.AddMember("major", TROGDORD_VERSION_MAJOR, response.GetAllocator());
 	version.AddMember("minor", TROGDORD_VERSION_MINOR, response.GetAllocator());
@@ -54,11 +55,43 @@ rapidjson::Document GlobalController::statistics(const rapidjson::Document &requ
 	libVersion.AddMember("minor", TROGDOR_VERSION_MINOR, response.GetAllocator());
 	libVersion.AddMember("patch", TROGDOR_VERSION_PATCH, response.GetAllocator());
 
+	for (const auto &setting: *Config::get()) {
+
+		// Only expose config settings that don't contain sensitive information
+		if (!Config::get()->hidden.find(setting.first)->second) {
+
+			if (typeid(int) == *Config::get()->types.find(setting.first)->second) {
+				config.AddMember(
+					rapidjson::StringRef(setting.first.c_str()),
+					Config::get()->getInt(setting.first),
+					response.GetAllocator()
+				);
+			}
+
+			else if (typeid(bool) == *Config::get()->types.find(setting.first)->second) {
+				config.AddMember(
+					rapidjson::StringRef(setting.first.c_str()),
+					Config::get()->getBool(setting.first),
+					response.GetAllocator()
+				);
+			}
+
+			else {
+				config.AddMember(
+					rapidjson::StringRef(setting.first.c_str()),
+					rapidjson::StringRef(setting.second.c_str()),
+					response.GetAllocator()
+				);
+			}
+		}
+	}
+
 	// TODO: add number of existing games after I change from ids to names
 	response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 	response.AddMember("players", GameContainer::get()->getNumPlayers(), response.GetAllocator());
 	response.AddMember("version", version, response.GetAllocator());
 	response.AddMember("lib_version", libVersion, response.GetAllocator());
+	response.AddMember("config", config, response.GetAllocator());
 
 	return response;
 }

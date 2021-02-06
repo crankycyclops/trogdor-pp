@@ -38,6 +38,56 @@ const std::unordered_map<std::string, std::string> Config::DEFAULTS = {
 	{CONFIG_KEY_STATE_MAX_DUMPS_PER_GAME,         "0"}
 };
 
+// Any setting that has a value of true will be considered sensitive
+// information and will be hidden from the outside world.
+const std::unordered_map<std::string, bool> Config::hidden = {
+
+	{CONFIG_KEY_PORT,                             true},
+	{CONFIG_KEY_REUSE_ADDRESS,                    true},
+	{CONFIG_KEY_SEND_TCP_KEEPALIVE,               true},
+	{CONFIG_KEY_LOGTO,                            true},
+	{CONFIG_KEY_INPUT_LISTENERS,                  true},
+	{CONFIG_KEY_OUTPUT_DRIVER,                    false},
+	{CONFIG_KEY_REDIS_HOST,                       true},
+	{CONFIG_KEY_REDIS_PORT,                       true},
+	{CONFIG_KEY_REDIS_CONNECTION_TIMEOUT,         true},
+	{CONFIG_KEY_REDIS_CONNECTION_RETRY_INTERVAL,  true},
+	{CONFIG_KEY_REDIS_OUTPUT_CHANNEL,             false},
+	{CONFIG_KEY_REDIS_INPUT_CHANNEL,              false},
+	{CONFIG_KEY_DEFINITIONS_PATH,                 true},
+	{CONFIG_KEY_STATE_ENABLED,                    false},
+	{CONFIG_KEY_STATE_AUTORESTORE_ENABLED,        true},
+	{CONFIG_KEY_STATE_DUMP_SHUTDOWN_ENABLED,      true},
+	{CONFIG_KEY_STATE_CRASH_RECOVERY_ENABLED,     true},
+	{CONFIG_KEY_STATE_FORMAT,                     true},
+	{CONFIG_KEY_STATE_PATH,                       true},
+	{CONFIG_KEY_STATE_MAX_DUMPS_PER_GAME,         false}
+};
+
+const std::unordered_map<std::string, const std::type_info *> Config::types = {
+
+	{CONFIG_KEY_PORT,                             &typeid(int)},
+	{CONFIG_KEY_REUSE_ADDRESS,                    &typeid(bool)},
+	{CONFIG_KEY_SEND_TCP_KEEPALIVE,               &typeid(bool)},
+	{CONFIG_KEY_LOGTO,                            &typeid(std::string)},
+	{CONFIG_KEY_INPUT_LISTENERS,                  &typeid(std::string)},
+	{CONFIG_KEY_OUTPUT_DRIVER,                    &typeid(std::string)},
+	{CONFIG_KEY_REDIS_HOST,                       &typeid(std::string)},
+	{CONFIG_KEY_REDIS_PORT,                       &typeid(int)},
+	{CONFIG_KEY_REDIS_CONNECTION_TIMEOUT,         &typeid(int)},
+	{CONFIG_KEY_REDIS_CONNECTION_RETRY_INTERVAL,  &typeid(int)},
+	{CONFIG_KEY_REDIS_OUTPUT_CHANNEL,             &typeid(std::string)},
+	{CONFIG_KEY_REDIS_INPUT_CHANNEL,              &typeid(std::string)},
+	{CONFIG_KEY_DEFINITIONS_PATH,                 &typeid(std::string)},
+	{CONFIG_KEY_STATE_ENABLED,                    &typeid(bool)},
+	{CONFIG_KEY_STATE_AUTORESTORE_ENABLED,        &typeid(bool)},
+	{CONFIG_KEY_STATE_DUMP_SHUTDOWN_ENABLED,      &typeid(bool)},
+	{CONFIG_KEY_STATE_CRASH_RECOVERY_ENABLED,     &typeid(bool)},
+	{CONFIG_KEY_STATE_FORMAT,                     &typeid(std::string)},
+	{CONFIG_KEY_STATE_PATH,                       &typeid(std::string)},
+	{CONFIG_KEY_STATE_MAX_DUMPS_PER_GAME,         &typeid(int)}
+};
+
 // Singleton instance of Config
 std::unique_ptr<Config> Config::instance = nullptr;
 
