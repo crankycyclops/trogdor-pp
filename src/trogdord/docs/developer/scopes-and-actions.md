@@ -45,7 +45,47 @@ Below, you'll find a complete reference of all currently defined actions as well
 
 ### Global Scope
 
-#### 1. get:global:statistics
+#### 1. get:global:config
+
+Retrieves non-sensitive settings from trogdord.ini.
+
+**JSON Request Format:**
+
+```
+{
+	"method": "get",
+	"scope": "global",
+	"action": "config"
+}
+```
+
+**Arguments:**
+
+(none)
+
+**Successful JSON Response:**
+
+Returns a status code and all non-sensitive configuration settings.
+
+```
+{
+	"status": 200,
+	"config": {
+		"<setting>": <int|boolean|string>,
+		...
+	}
+}
+```
+
+**Possible Status Codes:**
+
+| Status | Meaning |
+|-|-|
+| 200 | Success |
+
+---
+
+#### 2. get:global:statistics
 
 Retrieves statistical information about the server.
 
@@ -92,7 +132,7 @@ Returns a status code, the number of players, and the version of both the core l
 
 ---
 
-#### 2. post:global:dump
+#### 3. post:global:dump
 
 Dumps the server's current state (including all games) to disk. This state can
 later be restored.
@@ -131,7 +171,7 @@ Returns a status code.
 
 ---
 
-#### 3. post:global:restore
+#### 4. post:global:restore
 
 Restores the server's current state (including all games) from disk.
 
