@@ -13,6 +13,10 @@ std::unique_ptr<GlobalController> GlobalController::instance;
 
 GlobalController::GlobalController() {
 
+	registerAction(Request::GET, CONFIG_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
+		return this->config(request);
+	});
+
 	registerAction(Request::GET, STATISTICS_ACTION, [&] (const rapidjson::Document &request) -> rapidjson::Document {
 		return this->statistics(request);
 	});
@@ -39,21 +43,10 @@ std::unique_ptr<GlobalController> &GlobalController::get() {
 
 /*****************************************************************************/
 
-rapidjson::Document GlobalController::statistics(const rapidjson::Document &request) {
+rapidjson::Document GlobalController::config(const rapidjson::Document &request) {
 
 	rapidjson::Document response(rapidjson::kObjectType);
-
-	rapidjson::Value version(rapidjson::kObjectType);
-	rapidjson::Value libVersion(rapidjson::kObjectType);
 	rapidjson::Value config(rapidjson::kObjectType);
-
-	version.AddMember("major", TROGDORD_VERSION_MAJOR, response.GetAllocator());
-	version.AddMember("minor", TROGDORD_VERSION_MINOR, response.GetAllocator());
-	version.AddMember("patch", TROGDORD_VERSION_PATCH, response.GetAllocator());
-
-	libVersion.AddMember("major", TROGDOR_VERSION_MAJOR, response.GetAllocator());
-	libVersion.AddMember("minor", TROGDOR_VERSION_MINOR, response.GetAllocator());
-	libVersion.AddMember("patch", TROGDOR_VERSION_PATCH, response.GetAllocator());
 
 	for (const auto &setting: *Config::get()) {
 
@@ -86,12 +79,34 @@ rapidjson::Document GlobalController::statistics(const rapidjson::Document &requ
 		}
 	}
 
+	response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
+	response.AddMember("config", config, response.GetAllocator());
+
+	return response;
+}
+
+/*****************************************************************************/
+
+rapidjson::Document GlobalController::statistics(const rapidjson::Document &request) {
+
+	rapidjson::Document response(rapidjson::kObjectType);
+
+	rapidjson::Value version(rapidjson::kObjectType);
+	rapidjson::Value libVersion(rapidjson::kObjectType);
+
+	version.AddMember("major", TROGDORD_VERSION_MAJOR, response.GetAllocator());
+	version.AddMember("minor", TROGDORD_VERSION_MINOR, response.GetAllocator());
+	version.AddMember("patch", TROGDORD_VERSION_PATCH, response.GetAllocator());
+
+	libVersion.AddMember("major", TROGDOR_VERSION_MAJOR, response.GetAllocator());
+	libVersion.AddMember("minor", TROGDOR_VERSION_MINOR, response.GetAllocator());
+	libVersion.AddMember("patch", TROGDOR_VERSION_PATCH, response.GetAllocator());
+
 	// TODO: add number of existing games after I change from ids to names
 	response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 	response.AddMember("players", GameContainer::get()->getNumPlayers(), response.GetAllocator());
 	response.AddMember("version", version, response.GetAllocator());
 	response.AddMember("lib_version", libVersion, response.GetAllocator());
-	response.AddMember("config", config, response.GetAllocator());
 
 	return response;
 }

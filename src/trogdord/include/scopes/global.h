@@ -13,6 +13,7 @@ class GlobalController: public ScopeController {
 		static std::unique_ptr<GlobalController> instance;
 
 		// Action names that get mapped to methods in GlobalController
+		static constexpr const char *CONFIG_ACTION = "config";
 		static constexpr const char *STATISTICS_ACTION = "statistics";
 		static constexpr const char *DUMP_ACTION = "dump";
 		static constexpr const char *RESTORE_ACTION = "restore";
@@ -29,6 +30,9 @@ class GlobalController: public ScopeController {
 
 		// Returns singleton instance of GlobalController.
 		static std::unique_ptr<GlobalController> &get();
+
+		// Action that returns non-sensitive trogdord.ini settings
+		rapidjson::Document config(const rapidjson::Document &request);
 
 		// Action that returns statistical information about the server
 		rapidjson::Document statistics(const rapidjson::Document &request);
