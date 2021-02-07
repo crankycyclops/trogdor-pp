@@ -22,6 +22,9 @@ ZEND_EXTERN_MODULE_GLOBALS(game);
 
 zend_object_handlers trogdordObjectHandlers;
 
+// This request retrieves non-sensitive trogdord.ini settings
+static const char *CONFIG_REQUEST = "{\"method\":\"get\",\"scope\":\"global\",\"action\":\"config\"}";
+
 // This request retrieves statistics about the server and its environment
 static const char *STATS_REQUEST = "{\"method\":\"get\",\"scope\":\"global\",\"action\":\"statistics\"}";
 
@@ -86,6 +89,48 @@ PHP_METHOD(Trogdord, __construct) {
 	// Throw \Trogord\NetworkException
 	catch (const NetworkException &e) {
 		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+}
+
+/*****************************************************************************/
+
+// Returns non-sensitive trogdord.ini settings from an instance of trogdord.
+// Throws an instance of \Trogdord\NetworkException if there's an issue with the
+// network connection that prevents this call from returning valid data.
+ZEND_BEGIN_ARG_INFO(arginfoConfig, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Trogdord, config) {
+
+	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(getThis()));
+
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	try {
+
+		Document response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			CONFIG_REQUEST,
+			getThis()
+		);
+
+		zval data = JSON::JSONToZval(response["config"].GetObject());
+
+		// There's some insanity in how this works, so for reference, here's
+		// what I read to help me understand what all the arguments mean:
+		// https://medium.com/@davidtstrauss/copy-and-move-semantics-of-zvals-in-php-7-41427223d784
+		RETURN_ZVAL(&data, 1, 1);
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+	}
+
+	// Throw \Trogord\RequestException
+	catch (const RequestException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
 	}
 }
 
@@ -662,6 +707,7 @@ PHP_METHOD(Trogdord, getDump) {
 // PHP Trogdord class methods
 static const zend_function_entry classMethods[] =  {
 	PHP_ME(Trogdord, __construct, arginfoCtor, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+	PHP_ME(Trogdord, config, arginfoConfig, ZEND_ACC_PUBLIC)
 	PHP_ME(Trogdord, statistics, arginfoStatistics, ZEND_ACC_PUBLIC)
 	PHP_ME(Trogdord, dump, arginfoDump, ZEND_ACC_PUBLIC)
 	PHP_ME(Trogdord, restore, arginfoRestore, ZEND_ACC_PUBLIC)
