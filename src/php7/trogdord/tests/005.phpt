@@ -17,8 +17,7 @@
 
 		// Test with no games running
 		$games = $trogdord->games();
-var_dump($games);
-exit;
+
 		if (!is_array($games)) {
 			die('\Trogdord::games() should return an array.');
 		} else if (count($games) > 0) {
