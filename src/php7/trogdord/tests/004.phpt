@@ -1,5 +1,5 @@
 --TEST--
-\Trogdord::dump(), \Trogdord::restore(), and \Trogdord::dumped()
+\Trogdord::dump(), \Trogdord::restore(), \Trogdord::getDump(), and \Trogdord::dumped()
 --SKIPIF--
 <?php if (!extension_loaded('trogdord')) die('skip The trogdord extension must be installed'); ?>
 <?php require_once('inc/skipifconnectfailure.inc'); ?>
@@ -39,6 +39,16 @@
 				die('Failed to create My Game. Is game.xml installed under the configured defintiions path?');
 			}
 
+			try {
+				$dump1 = $trogdord->getDump(10000);
+				die("\Trogdord::getDump() should fail for a non-existent game id.");
+			} catch (\Trogdord\GameNotFound $e) {}
+
+			try {
+				$dump1 = $trogdord->getDump($game1->id);
+				die("\Trogdord::getDump() should fail for an existing game if it hasn't been dumped.");
+			} catch (\Trogdord\GameNotFound $e) {}
+
 			$dumpList = $trogdord->dumped();
 
 			if (!is_array($dumpList)) {
@@ -53,6 +63,12 @@
 
 			if (200 != $trogdord->status) {
 				die('When state is enabled, \Trogdord::dump() should succeed and \Trogdord::$status should be set to 200.');
+			}
+
+			try {
+				$dump1 = $trogdord->getDump($game1->id);
+			} catch (\Trogdord\GameNotFound $e) {
+				die("Game 1 has been dumped, so call to \Trogdord::getDumped() should succeed.");
 			}
 
 			$dumpList = $trogdord->dumped();
