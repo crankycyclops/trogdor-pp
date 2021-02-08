@@ -15,8 +15,48 @@
 
 TEST_SUITE("GlobalController (scopes/global.cpp)") {
 
+	TEST_CASE("GlobalController (scopes/global.cpp): config()") {
+
+		std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+		initIniFile(iniFilename, {{}});
+
+		rapidjson::Document request(rapidjson::kObjectType);
+
+		request.AddMember("method", "get", request.GetAllocator());
+		request.AddMember("scope", "global", request.GetAllocator());
+		request.AddMember("action", "config", request.GetAllocator());
+
+		rapidjson::Document response = GlobalController::get()->config(request);
+
+		// Make sure strings were encoded properly
+		CHECK(trogdor::isAscii(JSON::serialize(response)));
+
+		// Make sure response was successful
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+		CHECK(response.HasMember("config"));
+		CHECK(response["config"].IsObject());
+
+		for (auto setting = response["config"].MemberBegin(); setting != response["config"].MemberEnd(); setting++) {
+
+			// Make sure hidden settings don't appear in the output
+			CHECK(!Config::hidden.find(setting->name.GetString())->second);
+
+			// Make sure the output type is correct
+			if (typeid(int) == *Config::types.find(setting->name.GetString())->second) {
+				CHECK(response["config"][setting->name.GetString()].IsInt());
+			} else if (typeid(bool) == *Config::types.find(setting->name.GetString())->second) {
+				CHECK(response["config"][setting->name.GetString()].IsBool());
+			} else {
+				CHECK(response["config"][setting->name.GetString()].IsString());
+			}
+		}
+	}
+
 	// TODO: need to add a separate test case for number of games
-	TEST_CASE("GlobalController (scopes/global.cpp): resolve() with no action and no default action") {
+	TEST_CASE("GlobalController (scopes/global.cpp): statistics()") {
 
 		std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
 		initIniFile(iniFilename, {{}});

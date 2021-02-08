@@ -8,6 +8,7 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
+#include <typeinfo>
 
 #include <ini.h>
 #include <trogdor/utility.h>

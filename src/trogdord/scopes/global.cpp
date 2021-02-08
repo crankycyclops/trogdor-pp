@@ -46,23 +46,23 @@ std::unique_ptr<GlobalController> &GlobalController::get() {
 rapidjson::Document GlobalController::config(const rapidjson::Document &request) {
 
 	rapidjson::Document response(rapidjson::kObjectType);
-	rapidjson::Value config(rapidjson::kObjectType);
+	rapidjson::Value configVals(rapidjson::kObjectType);
 
 	for (const auto &setting: *Config::get()) {
 
 		// Only expose config settings that don't contain sensitive information
-		if (!Config::get()->hidden.find(setting.first)->second) {
+		if (auto i = Config::hidden.find(setting.first); i != Config::hidden.end() && !i->second) {
 
-			if (typeid(int) == *Config::get()->types.find(setting.first)->second) {
-				config.AddMember(
+			if (typeid(int) == *Config::types.find(setting.first)->second) {
+				configVals.AddMember(
 					rapidjson::StringRef(setting.first.c_str()),
 					Config::get()->getInt(setting.first),
 					response.GetAllocator()
 				);
 			}
 
-			else if (typeid(bool) == *Config::get()->types.find(setting.first)->second) {
-				config.AddMember(
+			else if (typeid(bool) == *Config::types.find(setting.first)->second) {
+				configVals.AddMember(
 					rapidjson::StringRef(setting.first.c_str()),
 					Config::get()->getBool(setting.first),
 					response.GetAllocator()
@@ -70,7 +70,7 @@ rapidjson::Document GlobalController::config(const rapidjson::Document &request)
 			}
 
 			else {
-				config.AddMember(
+				configVals.AddMember(
 					rapidjson::StringRef(setting.first.c_str()),
 					rapidjson::StringRef(setting.second.c_str()),
 					response.GetAllocator()
@@ -80,7 +80,7 @@ rapidjson::Document GlobalController::config(const rapidjson::Document &request)
 	}
 
 	response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
-	response.AddMember("config", config, response.GetAllocator());
+	response.AddMember("config", configVals, response.GetAllocator());
 
 	return response;
 }
