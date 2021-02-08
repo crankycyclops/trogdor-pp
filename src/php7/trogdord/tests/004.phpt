@@ -1,5 +1,5 @@
 --TEST--
-\Trogdord::dump()
+\Trogdord::dump() and \Trogdord::restore()
 --SKIPIF--
 <?php if (!extension_loaded('trogdord')) die('skip The trogdord extension must be installed'); ?>
 <?php require_once('inc/skipifconnectfailure.inc'); ?>
@@ -20,6 +20,9 @@
         // If state is enabled, \Trogdord::dump() should succeed
         if ($config['state.enabled']) {
 
+            // TODO: create a game and verify that it actually gets dumped
+            // TODO: destroy the game without destroying the dump, then verify that restore restores it
+
             $trogdord->dump();
 
             if (200 != $trogdord->status) {
@@ -34,9 +37,9 @@
                 $trogdord->dump();
             }
 
-            catch (\Trogord\RequestException $e) {
+            catch (\Trogdord\RequestException $e) {
 
-                if (501 != e.getCode()) {
+                if (501 != $e->getCode()) {
                     die('\Trogdord::dump() should result in a 501 unsupported status when state is disabled.');
                 }
 
