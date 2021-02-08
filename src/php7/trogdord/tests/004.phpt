@@ -1,5 +1,5 @@
 --TEST--
-\Trogdord::dump() and \Trogdord::restore()
+\Trogdord::dump(), \Trogdord::restore(), and \Trogdord::dumped()
 --SKIPIF--
 <?php if (!extension_loaded('trogdord')) die('skip The trogdord extension must be installed'); ?>
 <?php require_once('inc/skipifconnectfailure.inc'); ?>
@@ -39,10 +39,57 @@
                 die('Failed to create My Game. Is game.xml installed under the configured defintiions path?');
             }
 
+            $dumpList = $trogdord->dumped();
+
+            if (!is_array($dumpList)) {
+                die('\Trogdord::dumped() should return an array.');
+            }
+
+            if (0 != count($dumpList)) {
+                die('Dump list should be empty until we dump our games.');
+            }
+
             $trogdord->dump();
 
             if (200 != $trogdord->status) {
                 die('When state is enabled, \Trogdord::dump() should succeed and \Trogdord::$status should be set to 200.');
+            }
+
+            $dumpList = $trogdord->dumped();
+
+            if (!is_array($dumpList)) {
+                die('\Trogdord::dumped() should return an array.');
+            }
+
+            if (count($dumpList) != 2) {
+                die('Dump list should return exactly two dumped games.');
+            }
+
+            foreach ($dumpList as $dump) {
+
+                if (!isset($dump['id'])) {
+                    die("Missing id field from entry in dump list array.");
+                } else if (!is_int($dump['id'])) {
+                    die("Id field must be an int.");
+                }
+
+                if (!isset($dump['name'])) {
+                    die("Missing name field from entry in dump list array.");
+                } else if (!is_string($dump['name'])) {
+                    die("Name field must be a string.");
+                }
+
+                if (!isset($dump['definition'])) {
+                    die("Missing definition field from entry in dump list array.");
+                } else if (!is_string($dump['definition'])) {
+                    die("Definition field must be a string.");
+                }
+
+                if (!isset($dump['created'])) {
+                    die("Missing created field from entry in dump list array.");
+                } else if (!is_int($dump['created'])) {
+                    die("Created field must be a string.");
+                }
             }
 
             $gameId1 = $game1->id;
