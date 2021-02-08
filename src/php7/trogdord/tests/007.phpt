@@ -41,6 +41,7 @@
 			die("$trogdord->getGame($game->id) should return object with equivalent id.");
 		}
 
+		// TODO: test newGame() with optional meta
 		echo "done!";
 	}
 
