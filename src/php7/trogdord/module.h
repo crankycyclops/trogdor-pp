@@ -20,6 +20,7 @@
 
 extern "C" {
 	#include "php.h"
+	#include "php_config.h"
 	#include "ext/standard/info.h"
 }
 

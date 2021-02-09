@@ -3,6 +3,7 @@
 
 extern "C" {
 	#include "php.h"
+	#include "php_config.h"
 }
 
 #include "compatibility.h"

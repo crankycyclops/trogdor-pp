@@ -1,5 +1,3 @@
-#include <Zend/zend_long.h>
-
 #include "trogdord.h"
 #include "json.h"
 #include "request.h"
@@ -10,6 +8,8 @@
 
 #include "game.h"
 #include "entities/entity.h"
+
+#include <Zend/zend_long.h>
 
 using namespace rapidjson;
 
