@@ -9,7 +9,7 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 RUN apt-get install -y tzdata
 
 # Install dependencies for trogdord so we can build and use it for our PHP tests
-RUN apt-get -y install sudo bash wget git g++ cmake libasio-dev rapidjson-dev libhiredis-dev libxml2 libxml2-dev liblua5.3 liblua5.3-dev libinih1 libinih-dev redis-server
+RUN apt-get -y install sudo bash wget git g++ cmake libonig-dev libasio-dev rapidjson-dev libhiredis-dev libxml2 libxml2-dev liblua5.3 liblua5.3-dev libinih1 libinih-dev redis-server
 
 # Install build dependencies for each supported PHP version
 RUN apt-get update
