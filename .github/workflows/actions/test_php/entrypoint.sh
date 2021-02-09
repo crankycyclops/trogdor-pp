@@ -102,7 +102,8 @@ trogdord &
 TROGDORD_PID=$!
 
 # Test build against PHP 8.0
-/usr/bin/phpize8.0 && ./configure && make
+export PATH=/usr/local/php8.0/bin:$PREFIX/composer/$VER/vendor/bin:$PATH
+phpize && ./configure && make
 
 if [ $? -ne 0 ]; then
 	exit 1
@@ -114,7 +115,7 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-make clean && /usr/bin/phpize8.0 --clean
+make clean && phpize --clean
 
 if [ $? -ne 0 ]; then
 	exit 1

@@ -117,6 +117,25 @@ if [ ! -d $PREFIX/php$VER ]; then
 	echo "; Load the trogdord extension" >> $PREFIX/php$VER/lib/php.ini
 	echo "extension=trogdord.so" >> $PREFIX/php$VER/lib/php.ini
 
+    SHORTVER=`echo $VER | cut -d '.' -f 1,2`
+
+    if [ -L $PREFIX/php$SHORTVER ]; then
+
+        rm $PREFIX/php$SHORTVER
+
+    elif [ -f $PREFIX/php$SHORTVER ]; then
+
+        echo "Warning: cannot create symlink $PREFIX/php$VER -> $PREFIX/php$SHORTVER because a file with that path already exists."
+
+    else
+
+        ln -s $PREFIX/php$VER $PREFIX/php$SHORTVER
+
+    	if [ 0 -ne $? ]; then
+            echo "Warning: could not create symlink $PREFIX/php$VER -> $PREFIX/php$SHORTVER."
+        fi
+    fi
+
 	echo
 	echo "Finished! Enjoy :)"
 	echo
