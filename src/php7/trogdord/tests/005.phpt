@@ -113,6 +113,14 @@
 			}
 		}
 
+		////////
+
+		// Clean up
+		$game1->destroy();
+		$game2->destroy();
+		$game3->destroy();
+		$game4->destroy();
+
 		echo "done!";
 	}
 

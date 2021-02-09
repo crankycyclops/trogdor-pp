@@ -35,6 +35,10 @@
 			die('$game->id should be an integer.');
 		}
 
+		if (200 != $trogdord->status) {
+			die('200 should be status after a successful request.');
+		}
+
 		$game2 = $trogdord->getGame($game->id);
 
 		if ($game2->id != $game->id) {
@@ -78,11 +82,15 @@
 			die("\$meta['int'] value is incorrect");
 		}
 
+		// Clean up
+		$game->destroy();
+		$gameWithMeta->destroy();
+
 		echo "done!";
 	}
 
 	catch (Exception $e) {
-		die($e->getMessage());
+        die("Caught instance of " . get_class($e) . ": " . $e->getMessage());
 	}
 ?>
 --EXPECT--
