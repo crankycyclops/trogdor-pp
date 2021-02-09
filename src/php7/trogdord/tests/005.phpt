@@ -49,7 +49,63 @@
 			die('\Trogdord::$status should be 200 after a successful request.');
 		}
 
-		// TODO: test with both filters and meta keys
+		////////
+
+		$stopped = $trogdord->games(['is_running' => false]);
+
+		if (2 != count($stopped)) {
+			die('There are only two stopped games.');
+		}
+
+		foreach ($stopped as $game) {
+			if ($game['id'] != $game1->id && $game['id'] != $game3->id) {
+				die('Got a started game when filtering for stopped games.');
+			}
+		}
+
+		////////
+
+		$started = $trogdord->games(['is_running' => true]);
+
+		if (2 != count($started)) {
+			die('There are only two started games.');
+		}
+
+		foreach ($started as $game) {
+			if ($game['id'] != $game2->id && $game['id'] != $game4->id) {
+				die('Got a stopped game when filtering for started games.');
+			}
+		}
+
+		////////
+
+		$mixed = $trogdord->games(['is_running' => true, 'name_starts' => 'a']);
+
+		if (1 != count($mixed)) {
+			die("There is only one started game that starts with 'a'");
+		}
+
+		if ($mixed[0]['id'] != $game2->id) {
+			die("Got the wrong game back when filtering for games that are started and whose names start with 'a'");
+		}
+
+		////////
+
+		$union = $trogdord->games([['is_running' => true], ['name_starts' => 'b']]);
+
+		if (3 != count($union)) {
+			die("There are 3 games that are started or that start with 'b'");
+		}
+
+		foreach ($started as $game) {
+			if ($game['id'] != $game2->id && $game['id'] != $game3->id && $game['id'] != $game4->id) {
+				die("Got a game that doesn't match the filter union.");
+			}
+		}
+
+		////////
+
+		// TODO: test meta keys
 		echo "done!";
 	}
 
