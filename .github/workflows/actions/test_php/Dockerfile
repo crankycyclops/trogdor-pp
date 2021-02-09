@@ -13,7 +13,10 @@ RUN apt-get -y install sudo bash wget git g++ cmake libasio-dev rapidjson-dev li
 
 # Install build dependencies for each supported PHP version
 RUN apt-get update
-RUN apt-get -y install git g++ libasio-dev rapidjson-dev php7.2-cli php7.2-dev php7.3-cli php7.3-dev php7.4-cli php7.4-dev php8.0-cli php8.0-dev
+RUN apt-get -y install git g++ libasio-dev rapidjson-dev php7.2-cli php7.2-dev php7.3-cli php7.3-dev php7.4-cli php7.4-dev
+
+# Build and install PHP 8.0 from source
+RUN /buildphp.sh 8.0.2
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
