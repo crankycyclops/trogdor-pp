@@ -27,10 +27,10 @@
 		}
 
 		// Create games matching various criteria.
-		$game1 = $trogdord->newGame('aaa', 'game.xml');
-		$game2 = $trogdord->newGame('aaa', 'game.xml');
-		$game3 = $trogdord->newGame('bbb', 'game.xml');
-		$game4 = $trogdord->newGame('bbb', 'game.xml');
+		$game1 = $trogdord->newGame('aaa', 'game.xml', ['key' => 'value']);
+		$game2 = $trogdord->newGame('aaa', 'game.xml', ['key' => 'value']);
+		$game3 = $trogdord->newGame('bbb', 'game.xml', ['key' => 'value']);
+		$game4 = $trogdord->newGame('bbb', 'game.xml', ['key' => 'value']);
 
 		$game1->stop();
 		$game3->stop();
@@ -105,7 +105,14 @@
 
 		////////
 
-		// TODO: test meta keys
+		$gamesWithMeta = $trogdord->games([], ['key']);
+
+		foreach ($gamesWithMeta as $game) {
+			if (!isset($game['key'])) {
+				die('Meta key not returned when included as second optional argument to \Trogdord::games()');
+			}
+		}
+
 		echo "done!";
 	}
 
