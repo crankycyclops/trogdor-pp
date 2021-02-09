@@ -98,26 +98,26 @@ fi
 kill $TROGDORD_PID
 sleep 1
 
-#trogdord &
-#TROGDORD_PID=$!
+trogdord &
+TROGDORD_PID=$!
 
 # Test build against PHP 8.0
-#/usr/bin/phpize8.0 && ./configure && make
+/usr/bin/phpize8.0 && ./configure && make
 
-#if [ $? -ne 0 ]; then
-#	exit 1
-#fi
+if [ $? -ne 0 ]; then
+	exit 1
+fi
 
-#make test
+make test
 
-#if [ $? -ne 0 ]; then
-#	exit 1
-#fi
+if [ $? -ne 0 ]; then
+	exit 1
+fi
 
-#make clean && /usr/bin/phpize8.0 --clean
+make clean && /usr/bin/phpize8.0 --clean
 
-#if [ $? -ne 0 ]; then
-#	exit 1
-#fi
+if [ $? -ne 0 ]; then
+	exit 1
+fi
 
-#kill $TROGDORD_PID
+kill $TROGDORD_PID

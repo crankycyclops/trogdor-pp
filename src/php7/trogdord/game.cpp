@@ -9,6 +9,7 @@
 #include "game.h"
 #include "entities/entity.h"
 
+// This must be included after "game.h" because it depends on "php_config.h"
 #include <Zend/zend_long.h>
 
 using namespace rapidjson;

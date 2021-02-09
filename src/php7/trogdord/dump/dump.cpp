@@ -9,6 +9,7 @@
 #include "dump.h"
 #include "slot.h"
 
+// This must be included after "dump.h" because it depends on "php_config.h"
 #include <Zend/zend_long.h>
 
 ZEND_DECLARE_MODULE_GLOBALS(dump);
