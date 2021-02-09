@@ -148,6 +148,10 @@
 			catch (\Trogdord\GameNotFound $e) {
 				die('My Game 2 should exist after call to \Trogdord::restore()');
 			}
+
+			// Clean up
+			$trogdord->getGame($gameId1)->destroy();
+			$trogdord->getGame($gameId2)->destroy();
 		}
 
 		// If state is disabled, we should get a 501 unsupported status
