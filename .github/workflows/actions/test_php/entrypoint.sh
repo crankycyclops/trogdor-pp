@@ -27,7 +27,8 @@ trogdord &
 TROGDORD_PID=$!
 
 # Test build against PHP 7.2
-/usr/local/php7.2/bin/phpize && ./configure && make
+export PATH=/usr/local/php7.2/bin:$PATH
+phpize && ./configure && make
 
 if [ $? -ne 0 ]; then
 	exit 1
@@ -39,7 +40,7 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-make clean && /usr/local/php7.2/bin/phpize --clean
+make clean && phpize --clean
 
 if [ $? -ne 0 ]; then
 	exit 1
@@ -52,7 +53,8 @@ trogdord &
 TROGDORD_PID=$!
 
 # Test build against PHP 7.3
-/usr/local/php7.3/bin/phpize && ./configure && make
+export PATH=/usr/local/php7.3/bin:$PATH
+phpize && ./configure && make
 
 if [ $? -ne 0 ]; then
 	exit 1
@@ -64,7 +66,7 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-make clean && /usr/local/php7.3/bin/phpize --clean
+make clean && phpize --clean
 
 if [ $? -ne 0 ]; then
 	exit 1
@@ -77,7 +79,8 @@ trogdord &
 TROGDORD_PID=$!
 
 # Test build against PHP 7.4
-/usr/local/php7.4/bin/phpize && ./configure && make
+export PATH=/usr/local/php7.4/bin:$PATH
+phpize && ./configure && make
 
 if [ $? -ne 0 ]; then
 	exit 1
@@ -89,7 +92,7 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-make clean && /usr/local/php7.4/bin/phpize --clean
+make clean && phpize --clean
 
 if [ $? -ne 0 ]; then
 	exit 1
@@ -102,7 +105,7 @@ trogdord &
 TROGDORD_PID=$!
 
 # Test build against PHP 8.0
-export PATH=/usr/local/php8.0/bin:$PREFIX/composer/$VER/vendor/bin:$PATH
+export PATH=/usr/local/php8.0/bin:$PATH
 phpize && ./configure && make
 
 if [ $? -ne 0 ]; then
