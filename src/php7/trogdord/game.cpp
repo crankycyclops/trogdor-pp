@@ -669,7 +669,15 @@ PHP_METHOD(Game, setMeta) {
 				break;
 		}
 
-		convert_to_string(entry);
+		std::string value;
+
+		// PHP converts false to "", but we want it to send "0" instead.
+		if (IS_FALSE == Z_TYPE_P(entry)) {
+			value = "0";
+		} else {
+			convert_to_string(entry);
+			value = Z_STRVAL_P(entry);
+		}
 
 		if (!firstEntryVisited) {
 			firstEntryVisited = true;
@@ -677,7 +685,7 @@ PHP_METHOD(Game, setMeta) {
 			valuesArg += ",";
 		}
 
-		valuesArg += std::string("\"") + key + "\":\"" + Z_STRVAL_P(entry) + "\"";
+		valuesArg += std::string("\"") + key + "\":\"" + value + "\"";
 	}
 
 	try {
