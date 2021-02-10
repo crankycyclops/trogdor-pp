@@ -30,16 +30,29 @@
 		///////////////////////////////////////////////////////////////////////////////
 
 		$types = [
-			['entity', 'entities'],
+			['entity',   'entities'],
 			['tangible', 'tangibles'],
-			['place', 'places'],
-			['thing', 'things'],
-			['being', 'beings'],
+			['place',    'places'],
+			['thing',    'things'],
+			['being',    'beings'],
 			['resource', 'resources'],
-			['room', 'rooms'],
-			['object', 'objects'],
-			['player', 'players'],
+			['room',     'rooms'],
+			['object',   'objects'],
+			['player',   'players'],
 			['creature', 'creatures']
+		];
+
+		$hierarchy = [
+			'entity'   => ['entity', 'tangible', 'place', 'thing', 'being', 'resource', 'room', 'object', 'player', 'creature'],
+			'tangible' => ['tangible', 'place', 'thing', 'being', 'room', 'object', 'player', 'creature'],
+			'place'    => ['place', 'room'],
+			'thing'    => ['thing', 'being', 'room', 'object', 'player', 'creature'],
+			'being'    => ['being', 'player', 'creature'],
+			'resource' => ['resource'],
+			'room'     => ['room'],
+			'object'   => ['object'],
+			'player'   => ['player'],
+			'creature' => ['creature']
 		];
 
 		foreach ($types as $type) {
@@ -72,8 +85,8 @@
 					die("{$type[1]}: \$entity[\"type\"] should be a string but isn't");
 				}
 
-				if ("entity" != $type[0] && $type[0] != $entity['type']) {
-					die("{$type[1]}: expected \$entity[\"type\"] for '{$entity['name']}' to be '{$type[0]}' but got '{$entity['type']}'");
+				if (!in_array($entity['type'], $hierarchy[$type[0]])) {
+					echo("{$type[1]}: expected \$entity[\"type\"] for '{$entity['name']}' to inherit from '{$type[0]}', but '{$entity['type']}' doesn't\n");
 				}
 			}
 
