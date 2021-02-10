@@ -13,7 +13,7 @@ RUN apt-get -y install sudo bash wget git g++ cmake libasio-dev rapidjson-dev li
 
 # Install build dependencies for each supported PHP version
 RUN apt-get update
-RUN apt-get -y install git g++ zlib1g-dev libonig-dev 
+RUN apt-get -y install git g++ zlib1g-dev libonig-dev libzip libzip-devel
 
 # Build and install each PHP version from source
 COPY buildphp.sh /buildphp.sh
