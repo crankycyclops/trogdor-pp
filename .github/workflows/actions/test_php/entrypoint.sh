@@ -3,6 +3,70 @@
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"/usr/local/lib"
 export TEST_PHP_ARGS="-q"
 
+runTest() {
+
+	$PHPVER = $1
+
+	export PATH=/usr/local/php$PHPVER/bin:$PATH
+	phpize && ./configure && make
+
+	if [ $? -ne 0 ]; then
+		exit 1
+	fi
+
+	##########################
+	# Part 1: State disabled #
+	##########################
+
+	printf "[state]\nenabled=false\n" >> /usr/local/etc/trogdord/trogdord.ini
+
+	trogdord &
+	TROGDORD_PID=$!
+
+	make test
+
+	if [ $? -ne 0 ]; then
+		return 1
+	fi
+
+	make clean && phpize --clean
+
+	if [ $? -ne 0 ]; then
+		return 1
+	fi
+
+	kill $TROGDORD_PID
+	sleep 1
+
+	#########################
+	# Part 2: State enabled #
+	#########################
+
+	printf "[state]\nenabled=true\nmax_dumps_per_game=5\nsave_path=var/trogdord/state\n" >> /usr/local/etc/trogdord/trogdord.ini
+
+	trogdord &
+	TROGDORD_PID=$!
+
+	make test
+
+	if [ $? -ne 0 ]; then
+		return 1
+	fi
+
+	kill $TROGDORD_PID
+	sleep 1
+
+	make clean && phpize --clean
+
+	if [ $? -ne 0 ]; then
+		return 1
+	fi
+}
+
+##############################
+#       Build trogdord       #
+##############################
+
 cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_REDIS=ON -DENABLE_SERIALIZE_JSON=ON .
 
 if [ $? -ne 0 ]; then
@@ -23,106 +87,30 @@ fi
 
 cd src/php7/trogdord
 
-trogdord &
-TROGDORD_PID=$!
+##############################
+#          Run tests         #
+##############################
 
-# Test build against PHP 7.2
-export PATH=/usr/local/php7.2/bin:$PATH
-phpize && ./configure && make
-
-if [ $? -ne 0 ]; then
-	exit 1
-fi
-
-make test
+runTest 7.2
 
 if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-make clean && phpize --clean
+runTest 7.3
 
 if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-kill $TROGDORD_PID
-sleep 1
-
-trogdord &
-TROGDORD_PID=$!
-
-# Test build against PHP 7.3
-export PATH=/usr/local/php7.3/bin:$PATH
-phpize && ./configure && make
+runTest 7.4
 
 if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-make test
+runTest 8.0
 
 if [ $? -ne 0 ]; then
 	exit 1
 fi
-
-make clean && phpize --clean
-
-if [ $? -ne 0 ]; then
-	exit 1
-fi
-
-kill $TROGDORD_PID
-sleep 1
-
-trogdord &
-TROGDORD_PID=$!
-
-# Test build against PHP 7.4
-export PATH=/usr/local/php7.4/bin:$PATH
-phpize && ./configure && make
-
-if [ $? -ne 0 ]; then
-	exit 1
-fi
-
-make test
-
-if [ $? -ne 0 ]; then
-	exit 1
-fi
-
-make clean && phpize --clean
-
-if [ $? -ne 0 ]; then
-	exit 1
-fi
-
-kill $TROGDORD_PID
-sleep 1
-
-trogdord &
-TROGDORD_PID=$!
-
-# Test build against PHP 8.0
-export PATH=/usr/local/php8.0/bin:$PATH
-phpize && ./configure && make
-
-if [ $? -ne 0 ]; then
-	exit 1
-fi
-
-make test
-
-if [ $? -ne 0 ]; then
-	exit 1
-fi
-
-make clean && phpize --clean
-
-if [ $? -ne 0 ]; then
-	exit 1
-fi
-
-kill $TROGDORD_PID
-sleep 1
