@@ -52,7 +52,7 @@ trogdord &
 TROGDORD_PID=$!
 
 # Test build against PHP 7.3
-/usr/bin/phpize7.3 && ./configure && make
+/usr/local/php7.3/bin/phpize && ./configure && make
 
 if [ $? -ne 0 ]; then
 	exit 1
@@ -64,7 +64,7 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-make clean && /usr/bin/phpize7.3 --clean
+make clean && /usr/local/php7.3/bin/phpize --clean
 
 if [ $? -ne 0 ]; then
 	exit 1
@@ -77,7 +77,7 @@ trogdord &
 TROGDORD_PID=$!
 
 # Test build against PHP 7.4
-/usr/bin/phpize7.4 && ./configure && make
+/usr/local/php7.4/bin/phpize && ./configure && make
 
 if [ $? -ne 0 ]; then
 	exit 1
@@ -89,7 +89,7 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-make clean && /usr/bin/phpize7.4 --clean
+make clean && /usr/local/php7.4/bin/phpize --clean
 
 if [ $? -ne 0 ]; then
 	exit 1
