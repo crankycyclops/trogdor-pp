@@ -5,7 +5,7 @@ export TEST_PHP_ARGS="-q"
 
 runTest() {
 
-	$PHPVER = $1
+	PHPVER=$1
 
 	export PATH=/usr/local/php$PHPVER/bin:$PATH
 	phpize && ./configure && make
