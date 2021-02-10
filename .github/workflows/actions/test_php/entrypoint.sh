@@ -27,7 +27,7 @@ trogdord &
 TROGDORD_PID=$!
 
 # Test build against PHP 7.2
-/usr/bin/phpize7.2 && ./configure && make
+/usr/local/php7.2/bin/phpize && ./configure && make
 
 if [ $? -ne 0 ]; then
 	exit 1
@@ -39,7 +39,7 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-make clean && /usr/bin/phpize7.2 --clean
+make clean && /usr/local/php7.2/bin/phpize --clean
 
 if [ $? -ne 0 ]; then
 	exit 1
@@ -122,3 +122,4 @@ if [ $? -ne 0 ]; then
 fi
 
 kill $TROGDORD_PID
+sleep 1

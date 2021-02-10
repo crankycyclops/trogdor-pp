@@ -18,6 +18,7 @@ RUN apt-get -y install git g++ libasio-dev rapidjson-dev php7.2-cli php7.2-dev p
 # Build and install PHP 8.0 from source
 COPY buildphp.sh /buildphp.sh
 RUN chmod +x /buildphp.sh
+RUN /buildphp.sh 7.2.34
 RUN /buildphp.sh 8.0.2
 
 COPY entrypoint.sh /entrypoint.sh
