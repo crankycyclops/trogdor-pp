@@ -23,6 +23,17 @@
 			die('Creating game should have been successful');
 		}
 
+		// We need at least one player to test all entity types
+		$player = $game->createPlayer("player");
+
+		if (200 != $trogdord->status) {
+			die('Creating player in game should have been successful');
+		}
+
+		if (!$player instanceof \Trogdord\Player) {
+			die('$player should be an instance of \Trogdord\Player');
+		}
+
 		///////////////////////////////////////////////////////////////////////////////
 		// The remaining tests all rely on specific data to be present in the sample //
 		// game.xml file. If that file changes, these tests might break or otherwise //
@@ -55,15 +66,31 @@
 			'creature' => ['creature']
 		];
 
+		// We'll index the entities we encounter here so that we can test them
+		// later with \Trogdord\Game::getEntity() and friends
+		$entities = [
+			'entity'   => [],
+			'tangible' => [],
+			'place'    => [],
+			'thing'    => [],
+			'being'    => [],
+			'resource' => [],
+			'room'     => [],
+			'object'   => [],
+			'player'   => [],
+			'creature' => []
+		];
+
+		// Test \Trogdord\Game::entities() and friends
 		foreach ($types as $type) {
 
-			$entities = call_user_func_array([$game, $type[1]], []);
+			$list = call_user_func_array([$game, $type[1]], []);
 
-			if (!is_array($entities)) {
-				die("$type: return value should be an array");
+			if (!is_array($list)) {
+				die("{$type[1]}: return value should be an array");
 			}
 
-			foreach ($entities as $entity) {
+			foreach ($list as $entity) {
 
 				if (!is_array($entity)) {
 					die("{$type[1]}: each entity returned by \$game->entities() should be an array");
@@ -88,9 +115,23 @@
 				if (!in_array($entity['type'], $hierarchy[$type[0]])) {
 					echo("{$type[1]}: expected \$entity[\"type\"] for '{$entity['name']}' to inherit from '{$type[0]}', but '{$entity['type']}' doesn't\n");
 				}
+
+				// This will be used for our test of \Trogdord\Game::getEntity() and friends
+				$entities[$type[0]][] = $entity['name'];
+			}
+		}
+
+		// Test \Trogdord\Game::getEntity() and friends
+		foreach ($types as $type) {
+
+			foreach ($entities as $eType => $group) {
+
+				if (0 == count($group)) {
+					die("$eType: no entities of this type were listed, so we can't test its corresponding getter :(");
+				}
 			}
 
-			// TODO: test getEntity() and friends
+			// TODO: finish
 		}
 
 		// Clean up
@@ -100,6 +141,7 @@
 			die('Game destruction should have been successful');
 		}
 
+		// TODO: do foreach $types on this so we test each one
 		// Make sure invalidated game object's methods can't be called again
 		try {
 			$game->entities();
@@ -110,16 +152,15 @@
 			}
 		}
 
+		// TODO: do foreach $types on this so we test each one
 		try {
-			$game->getEntity("candle");
+			$game->getEntity($entities['entity'][0]);
 			die('Call should not be successful after game has been destroyed and object has been invalidated.');
 		} catch (\Trogdord\GameNotFound $e) {
 			if ("Game has already been destroyed" != $e->getMessage()) {
 				die("getEntity(): Call to method on invalidated game object resulted in incorrect message. This could indicate that a request was made to the server, in which case the PHP method needs to be fixed.");
 			}
 		}
-
-		// TODO: do the same for other entity types
 	}
 
 	catch (Exception $e) {
