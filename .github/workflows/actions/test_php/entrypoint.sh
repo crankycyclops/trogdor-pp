@@ -3,6 +3,8 @@
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"/usr/local/lib"
 export TEST_PHP_ARGS="-q"
 
+###############################################################################
+
 runTest() {
 
 	PHPVER=$1
@@ -24,12 +26,6 @@ runTest() {
 	TROGDORD_PID=$!
 
 	make test
-
-	if [ $? -ne 0 ]; then
-		return 1
-	fi
-
-	make clean && phpize --clean
 
 	if [ $? -ne 0 ]; then
 		return 1
@@ -62,6 +58,8 @@ runTest() {
 		return 1
 	fi
 }
+
+###############################################################################
 
 ##############################
 #       Build trogdord       #
