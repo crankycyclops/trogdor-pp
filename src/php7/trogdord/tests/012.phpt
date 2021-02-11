@@ -81,6 +81,21 @@
 			'creature' => []
 		];
 
+		// Maps each entity type to those not in its hierarchy. I could compute this
+		// in one of the for loops below, but this is easier to code. There's no
+		// entry for 'entity' since everything inherits from it.
+		$contraries = [
+			'tangible' => ['resource'],
+			'place'    => ['thing', 'object', 'being', 'creature', 'player', 'resource'],
+			'thing'    => ['place', 'room', 'resource'],
+			'being'    => ['object', 'place', 'room', 'resource'],
+			'resource' => ['tangible', 'place', 'room', 'thing', 'object', 'being', 'creature', 'player'],
+			'room'     => ['thing', 'object', 'being', 'creature', 'player', 'resource'],
+			'object'   => ['place', 'room', 'being', 'creature', 'player', 'resource'],
+			'player'   => ['creature', 'object', 'place', 'room', 'resource'],
+			'creature' => ['player', 'object', 'place', 'room', 'resource']
+		];
+
 		// Test \Trogdord\Game::entities() and friends
 		foreach ($types as $type) {
 
@@ -122,16 +137,46 @@
 		}
 
 		// Test \Trogdord\Game::getEntity() and friends
-		foreach ($types as $type) {
+		foreach ($entities as $eType => $group) {
 
-			foreach ($entities as $eType => $group) {
+			if (0 == count($group)) {
+				die("$eType: no entities of this type were listed, so we can't test its corresponding getter :(");
+			}
 
-				if (0 == count($group)) {
-					die("$eType: no entities of this type were listed, so we can't test its corresponding getter :(");
+			foreach ($group as $eName) {
+
+				$getter = 'get' . ucwords($eType);
+				$entity = call_user_func_array([$game, $getter], [$eName]);
+
+				if (200 != $trogdord->status) {
+					die("\$game->{$getter}('$eName') should have been successful.");
+				}
+
+				if (!$entity instanceof \Trogdord\Entity) {
+					die("\$game->{$getter}('$eName') should produce an instance of \Trogdord\Entity.");
 				}
 			}
 
-			// TODO: finish
+			// Prove that the getter won't return an entity of a type not in its hierarchy
+			if (isset($contraries[$eType])) {
+
+				foreach ($contraries[$eType] as $contraryType) {
+
+					$getter = 'get' . ucwords($contraryType);
+
+					try {
+						$entity = call_user_func_array([$game, $getter], [$eName]);
+						die("\$game->{$getter}('$eName') should not be successful for entity '$eName'.");
+					}
+
+					catch (\Trogdord\EntityNotFound $e) {
+
+						if (404 != $trogdord->status) {
+							die('$trogdord->status should be 404 when an entity isn\'t found.');
+						}
+					}
+				}
+			}
 		}
 
 		// Clean up
@@ -141,24 +186,25 @@
 			die('Game destruction should have been successful');
 		}
 
-		// TODO: do foreach $types on this so we test each one
 		// Make sure invalidated game object's methods can't be called again
-		try {
-			$game->entities();
-			die('Call should not be successful after game has been destroyed and object has been invalidated.');
-		} catch (\Trogdord\GameNotFound $e) {
-			if ("Game has already been destroyed" != $e->getMessage()) {
-				die("entities(): Call to method on invalidated game object resulted in incorrect message. This could indicate that a request was made to the server, in which case the PHP method needs to be fixed.");
-			}
-		}
+		foreach ($types as $type) {
 
-		// TODO: do foreach $types on this so we test each one
-		try {
-			$game->getEntity($entities['entity'][0]);
-			die('Call should not be successful after game has been destroyed and object has been invalidated.');
-		} catch (\Trogdord\GameNotFound $e) {
-			if ("Game has already been destroyed" != $e->getMessage()) {
-				die("getEntity(): Call to method on invalidated game object resulted in incorrect message. This could indicate that a request was made to the server, in which case the PHP method needs to be fixed.");
+			try {
+				call_user_func_array([$game, $type[1]], []);
+				die('Call should not be successful after game has been destroyed and object has been invalidated.');
+			} catch (\Trogdord\GameNotFound $e) {
+				if ("Game has already been destroyed" != $e->getMessage()) {
+					die("entities(): Call to method on invalidated game object resulted in incorrect message. This could indicate that a request was made to the server, in which case the PHP method needs to be fixed.");
+				}
+			}
+
+			try {
+				call_user_func_array([$game, 'get' . ucwords($type[0])], [$entities['entity'][0]]);
+				die('Call should not be successful after game has been destroyed and object has been invalidated.');
+			} catch (\Trogdord\GameNotFound $e) {
+				if ("Game has already been destroyed" != $e->getMessage()) {
+					die("getEntity(): Call to method on invalidated game object resulted in incorrect message. This could indicate that a request was made to the server, in which case the PHP method needs to be fixed.");
+				}
 			}
 		}
 	}
