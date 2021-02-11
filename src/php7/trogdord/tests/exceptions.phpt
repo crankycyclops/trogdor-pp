@@ -8,7 +8,7 @@ Test Exception Classes
 	///////////////////////////////////////////////////////////////////////////
 	// Basically, I'm just going to try throwing each type of exception and  //
 	// make sure there aren't any problems in the inheritance hierarchy that //
-	// would cause me to get an error like "class must implement Throwable"  //
+	// would cause me to get an error like, "class must implement Throwable" //
 	// (I got bit by this once and don't want it to happen again.)           //
 	///////////////////////////////////////////////////////////////////////////
 
