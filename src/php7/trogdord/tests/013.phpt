@@ -33,6 +33,24 @@
 		if (!$player instanceof \Trogdord\Player) {
 			die('$player should be an instance of \Trogdord\Player');
 		}
+
+		// Clean up
+		$game->destroy();
+
+		if (200 != $trogdord->status) {
+			die('Call to $game->destroy() should have been successful');
+		}
+
+		// Verify that we can't call \Trogdord\Game::createPlayer() after
+		// destroying the object.
+		try {
+			$game->createPlayer("player 1");
+			die('Call should not be successful after game has been destroyed and object has been invalidated.');
+		} catch (\Trogdord\GameNotFound $e) {
+			if ("Game has already been destroyed" != $e->getMessage()) {
+				die("createPlayer(): Call to method on invalidated game object resulted in incorrect message. This could indicate that a request was made to the server, in which case the PHP method needs to be fixed.");
+			}
+		}
 	}
 
 	catch (Exception $e) {
