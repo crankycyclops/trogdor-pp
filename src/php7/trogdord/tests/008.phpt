@@ -1,5 +1,5 @@
 --TEST--
-\Trogdord\Game::start(), \Trogdord\Game::stop(), and \Trogdord\Game::isRunning()
+\Trogdord\Game::start(), \Trogdord\Game::stop(), \Trogdord\Game::isRunning(), and \Trogdord\Game::getTime()
 --SKIPIF--
 <?php if (!extension_loaded('trogdord')) die('skip The trogdord extension must be installed'); ?>
 <?php require_once('inc/skipifconnectfailure.inc'); ?>
@@ -36,6 +36,17 @@
 			die('Upon creation, game should default to a stopped state.');
 		}
 
+		sleep(1);
+		$time = $game->getTime();
+
+		if (200 != $trogdord->status) {
+			die('200 should be status after call to $game->getTime().');
+		}
+
+		if (0 != $time) {
+			die('Time should be 0 before game starts.');
+		}
+
 		$game->start();
 
 		if (200 != $trogdord->status) {
@@ -45,6 +56,17 @@
 		// Game should now be running
 		if (!$game->isRunning()) {
 			die('Game should have been started but seems to be stopped.');
+		}
+
+		sleep(2);
+		$time = $game->getTime();
+
+		if (200 != $trogdord->status) {
+			die('200 should be status after call to $game->getTime().');
+		}
+
+		if ($time <= 0) {
+			die('Time should greater than 0 after game starts and has been running for two seconds.');
 		}
 
 		$game->stop();
