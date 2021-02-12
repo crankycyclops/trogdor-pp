@@ -8,4 +8,4 @@ Making sure \Trogdord\Player::__construct() is private
 	$player = new \Trogdord\Player();
 ?>
 --EXPECTF--
-%ACall to private Trogdord\Entity::__construct() from invalid context%A
+%ACall to private Trogdord\Entity::__construct()%A

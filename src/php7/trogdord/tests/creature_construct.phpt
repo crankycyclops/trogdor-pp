@@ -8,4 +8,4 @@ Making sure \Trogdord\Creature::__construct() is private
 	$creature = new \Trogdord\Creature();
 ?>
 --EXPECTF--
-%ACall to private Trogdord\Entity::__construct() from invalid context%A
+%ACall to private Trogdord\Entity::__construct()%A
