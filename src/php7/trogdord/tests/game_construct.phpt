@@ -1,5 +1,5 @@
 --TEST--
-Test Exception Classes
+Making sure \Trogdord\Game::__construct() is private
 --SKIPIF--
 <?php if (!extension_loaded('trogdord')) die('skip The trogdord extension must be installed'); ?>
 --FILE--
@@ -10,4 +10,4 @@ Test Exception Classes
 	$game = new \Trogdord\Game();
 ?>
 --EXPECTF--
-Fatal error: Uncaught Error: Call to private Trogdord\Game::__construct()%A
+%ACall to private Trogdord\Game::__construct()%A
