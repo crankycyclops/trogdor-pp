@@ -27,7 +27,9 @@ ZEND_BEGIN_ARG_INFO(arginfoInput, 0)
 	ZEND_ARG_TYPE_INFO(0, command, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
-PHP_METHOD(Entity, input) {
+PHP_METHOD(Player, input) {
+
+	zval rv; // ???
 
 	char *command;
 	size_t commandLength;
@@ -35,6 +37,9 @@ PHP_METHOD(Entity, input) {
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &command, &commandLength) == FAILURE) {
 		RETURN_NULL();
 	}
+
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(ENTITY_TO_GAME(getThis(), &rv), &rv));
+	ASSERT_ENTITY_IS_VALID(getThis());
 
 	try {
 		sendPlayerInput(getThis(), command);
@@ -99,7 +104,7 @@ PHP_METHOD(Player, destroy) {
 	}
 
 	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(game, &rv));
-	ASSERT_PLAYER_NAME_IS_VALID(Z_TYPE_P(pName));
+	ASSERT_ENTITY_IS_VALID(getThis());
 
 	try {
 
@@ -117,16 +122,17 @@ PHP_METHOD(Player, destroy) {
 			trogdord
 		);
 
-		// Set the player name to null so the object can't be used anymore
-		zend_update_property_null(
+		// Invalidate the instance of \Trogdord\Player so it can't be used anymore
+		zend_update_property_bool(
 			ENTITY_GLOBALS(classEntry),
 			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
 				Z_OBJ_P(getThis()),
 			#else
 				getThis(),
 			#endif
-			NAME_PROPERTY_NAME,
-			strlen(NAME_PROPERTY_NAME)
+			ENTITY_VALID_PROPERTY,
+			strlen(ENTITY_VALID_PROPERTY),
+			0
 		);
 	}
 
@@ -165,7 +171,7 @@ PHP_METHOD(Player, destroy) {
 
 // PHP Player class methods
 static const zend_function_entry playerMethods[] =  {
-	PHP_ME(Entity, input, arginfoInput, ZEND_ACC_PUBLIC)
+	PHP_ME(Player, input, arginfoInput, ZEND_ACC_PUBLIC)
 	PHP_ME(Player, destroy, arginfoDestroy, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };

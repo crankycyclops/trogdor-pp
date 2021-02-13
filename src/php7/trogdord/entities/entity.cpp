@@ -95,6 +95,8 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Entity, output) {
 
+	zval rv; // ???
+
 	char *channel = nullptr;
 	size_t channelLength = 0;
 
@@ -111,6 +113,9 @@ PHP_METHOD(Entity, output) {
 	) == FAILURE) {
 		RETURN_NULL();
 	}
+
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(ENTITY_TO_GAME(getThis(), &rv), &rv));
+	ASSERT_ENTITY_IS_VALID(getThis());
 
 	if (nullptr == channel || 0 == strlen(channel)) {
 		channel = const_cast<char *>(ENTITY_DEFAULT_OUTPUT_CHANNEL);
@@ -285,6 +290,18 @@ bool createEntityObj(zval *entityObj, Value &properties, zval *gameObj) {
 		gameObj
 	);
 
+	zend_update_property_bool(
+		eClassEntry,
+		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+			Z_OBJ_P(entityObj),
+		#else
+			entityObj,
+		#endif
+		ENTITY_VALID_PROPERTY,
+		strlen(ENTITY_VALID_PROPERTY),
+		1
+	);
+
 	return true;
 }
 
@@ -310,6 +327,14 @@ void defineEntityClass() {
 		ENTITY_GLOBALS(classEntry),
 		GAME_PROPERTY_NAME,
 		strlen(GAME_PROPERTY_NAME),
+		ZEND_ACC_PROTECTED
+	);
+
+	zend_declare_property_bool(
+		ENTITY_GLOBALS(classEntry),
+		ENTITY_VALID_PROPERTY,
+		strlen(ENTITY_VALID_PROPERTY),
+		0,
 		ZEND_ACC_PROTECTED
 	);
 }

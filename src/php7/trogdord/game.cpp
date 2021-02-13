@@ -2051,6 +2051,18 @@ bool createGameObj(
 		trogdordObj
 	);
 
+	zend_update_property_bool(
+		GAME_GLOBALS(classEntry),
+		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+			Z_OBJ_P(gameObj),
+		#else
+			gameObj,
+		#endif
+		GAME_VALID_PROPERTY,
+		strlen(GAME_VALID_PROPERTY),
+		1
+	);
+
 	return true;
 }
 
@@ -2094,7 +2106,7 @@ void defineGameClass() {
 	zend_declare_property_bool(
 		GAME_GLOBALS(classEntry),
 		GAME_VALID_PROPERTY,
-		strlen(TROGDORD_PROPERTY),
+		strlen(GAME_VALID_PROPERTY),
 		0,
 		ZEND_ACC_PRIVATE
 	);
