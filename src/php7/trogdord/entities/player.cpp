@@ -98,7 +98,7 @@ PHP_METHOD(Player, destroy) {
 		RETURN_NULL();
 	}
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(game, &rv));
 	ASSERT_PLAYER_NAME_IS_VALID(Z_TYPE_P(pName));
 
 	try {

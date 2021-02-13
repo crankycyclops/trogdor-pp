@@ -116,7 +116,7 @@ PHP_METHOD(Game, start) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 
@@ -170,7 +170,7 @@ PHP_METHOD(Game, stop) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 
@@ -225,7 +225,7 @@ PHP_METHOD(Game, getTime) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 
@@ -288,7 +288,7 @@ PHP_METHOD(Game, isRunning) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 
@@ -345,7 +345,7 @@ PHP_METHOD(Game, statistics) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 
@@ -410,7 +410,7 @@ PHP_METHOD(Game, destroy) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 
@@ -436,16 +436,17 @@ PHP_METHOD(Game, destroy) {
 			trogdord
 		);
 
-		// Set the game ID to null so the object can't be used anymore
-		zend_update_property_null(
+		// Invalidate the instance of \Trogdord\Game so that it can't be used anymore
+		zend_update_property_bool(
 			GAME_GLOBALS(classEntry),
 			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
 				Z_OBJ_P(getThis()),
 			#else
 				getThis(),
 			#endif
-			GAME_ID_PROPERTY,
-			strlen(GAME_ID_PROPERTY)
+			GAME_VALID_PROPERTY,
+			strlen(GAME_VALID_PROPERTY),
+			0
 		);
 	}
 
@@ -483,7 +484,7 @@ PHP_METHOD(Game, dump) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 
@@ -543,7 +544,7 @@ PHP_METHOD(Game, getMeta) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	zval *keys = nullptr;
 	std::string metaArg;
@@ -634,7 +635,7 @@ PHP_METHOD(Game, setMeta) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	zval *meta;
 	std::string valuesArg;
@@ -744,7 +745,7 @@ PHP_METHOD(Game, entities) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), ENTITY_TYPE_STR, trogdord);
@@ -789,7 +790,7 @@ PHP_METHOD(Game, tangibles) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), TANGIBLE_TYPE_STR, trogdord);
@@ -834,7 +835,7 @@ PHP_METHOD(Game, places) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), PLACE_TYPE_STR, trogdord);
@@ -879,7 +880,7 @@ PHP_METHOD(Game, things) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), THING_TYPE_STR, trogdord);
@@ -924,7 +925,7 @@ PHP_METHOD(Game, beings) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), BEING_TYPE_STR, trogdord);
@@ -969,7 +970,7 @@ PHP_METHOD(Game, resources) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), RESOURCE_TYPE_STR, trogdord);
@@ -1014,7 +1015,7 @@ PHP_METHOD(Game, rooms) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), ROOM_TYPE_STR, trogdord);
@@ -1059,7 +1060,7 @@ PHP_METHOD(Game, objects) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), OBJECT_TYPE_STR, trogdord);
@@ -1104,7 +1105,7 @@ PHP_METHOD(Game, creatures) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), CREATURE_TYPE_STR, trogdord);
@@ -1149,7 +1150,7 @@ PHP_METHOD(Game, players) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval list = getEntityList(Z_LVAL_P(id), PLAYER_TYPE_STR, trogdord);
@@ -1202,7 +1203,7 @@ PHP_METHOD(Game, getEntity) {
 	zval rv;
 	zval *gameId = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval entity = getEntity(name, ENTITY_TYPE_STR, getThis());
@@ -1264,7 +1265,7 @@ PHP_METHOD(Game, getTangible) {
 	zval rv;
 	zval *gameId = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval entity = getEntity(name, TANGIBLE_TYPE_STR, getThis());
@@ -1326,7 +1327,7 @@ PHP_METHOD(Game, getPlace) {
 	zval rv;
 	zval *gameId = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval entity = getEntity(name, PLACE_TYPE_STR, getThis());
@@ -1388,7 +1389,7 @@ PHP_METHOD(Game, getThing) {
 	zval rv;
 	zval *gameId = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval entity = getEntity(name, THING_TYPE_STR, getThis());
@@ -1450,7 +1451,7 @@ PHP_METHOD(Game, getBeing) {
 	zval rv;
 	zval *gameId = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval entity = getEntity(name, BEING_TYPE_STR, getThis());
@@ -1512,7 +1513,7 @@ PHP_METHOD(Game, getResource) {
 	zval rv;
 	zval *gameId = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval entity = getEntity(name, RESOURCE_TYPE_STR, getThis());
@@ -1573,7 +1574,7 @@ PHP_METHOD(Game, getRoom) {
 	zval rv;
 	zval *gameId = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval entity = getEntity(name, ROOM_TYPE_STR, getThis());
@@ -1634,7 +1635,7 @@ PHP_METHOD(Game, getObject) {
 	zval rv;
 	zval *gameId = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval entity = getEntity(name, OBJECT_TYPE_STR, getThis());
@@ -1696,7 +1697,7 @@ PHP_METHOD(Game, getCreature) {
 	zval rv;
 	zval *gameId = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval entity = getEntity(name, CREATURE_TYPE_STR, getThis());
@@ -1757,7 +1758,7 @@ PHP_METHOD(Game, getPlayer) {
 	zval rv;
 	zval *gameId = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(gameId));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		zval entity = getEntity(name, PLAYER_TYPE_STR, getThis());
@@ -1821,7 +1822,7 @@ PHP_METHOD(Game, createPlayer) {
 	zval *trogdord = GAME_TO_TROGDORD(getThis(), &rv);
 	zval *id = GAME_TO_ID(getThis(), &rv);
 
-	ASSERT_GAME_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 
@@ -2087,6 +2088,14 @@ void defineGameClass() {
 		GAME_GLOBALS(classEntry),
 		TROGDORD_PROPERTY,
 		strlen(TROGDORD_PROPERTY),
+		ZEND_ACC_PRIVATE
+	);
+
+	zend_declare_property_bool(
+		GAME_GLOBALS(classEntry),
+		GAME_VALID_PROPERTY,
+		strlen(TROGDORD_PROPERTY),
+		0,
 		ZEND_ACC_PRIVATE
 	);
 

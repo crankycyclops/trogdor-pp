@@ -24,6 +24,10 @@ constexpr const char *GAME_ID_PROPERTY = "id";
 // the connection that spawned it
 constexpr const char *TROGDORD_PROPERTY = "trogdord";
 
+// True when the instance of \Trogdord\Game is valid and false if the game it
+// refers to no longer exists server-side.
+constexpr const char *GAME_VALID_PROPERTY = "valid";
+
 /*****************************************************************************/
 
 // For an explanation of what I'm doing here, see:
@@ -50,9 +54,12 @@ strlen((PROPERTY)), 1, (RV))
 // Retrieve the game id from an instance of \Trogdord\Game.
 #define GAME_TO_ID(THIS_PTR, RV) GAME_TO_PROP_VAL(THIS_PTR, RV, GAME_ID_PROPERTY)
 
+// Retrieve the "valid" property from an instance of \Trogdord\Game.
+#define GAME_IS_VALID_PROP(THIS_PTR, RV) GAME_TO_PROP_VAL(THIS_PTR, RV, GAME_VALID_PROPERTY)
+
 // Validate the instance of \Trogdord\Game before proceeding with an operation.
-#define ASSERT_GAME_ID_IS_VALID(ZVAL_ID) \
-if (IS_NULL == ZVAL_ID) { \
+#define ASSERT_GAME_IS_VALID(ZVAL_VALID) \
+if (IS_FALSE == Z_TYPE_P(ZVAL_VALID)) { \
 	zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0); \
 	RETURN_NULL(); \
 }
