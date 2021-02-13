@@ -93,7 +93,43 @@
 		// Part 2: Test output on specific channel //
 		/////////////////////////////////////////////
 
-        // TODO
+		// The test channel should have received no messages on the "test"
+		// channel before the following call to send one. If it did, that's
+		// something that should be fixed.
+		$output = $player->output("test");
+
+		if (200 != $player->game->trogdord->status) {
+			die('Getting output should have been successful');
+		}
+
+		if (!is_array($output)) {
+			die('Output returned by $player->output() should be an array.');
+		}
+
+		if (0 != count($output)) {
+			die('Output on test channel should have received no messages.');
+		}
+
+		// Send output to the "test" channel
+		$player->output("test", "I'm a message");
+
+		if (200 != $player->game->trogdord->status) {
+			die('Setting message on channel "test" should have been successful');
+		}
+
+		$output = $player->output("test");
+
+		if (200 != $player->game->trogdord->status) {
+			die('Getting output after setting it should have been successful.');
+		}
+
+		if (1 != count($output)) {
+			die('Output on channel "test" should be exactly 1 message after sending a message to the buffer.');
+		}
+
+		if ("I'm a message" != trim($output[0]['content'])) {
+			die('Output message on channel "test" should send what was sent in previous call.');
+		}
 
 		// Clean up
 		$game->destroy();
