@@ -115,7 +115,7 @@ PHP_METHOD(Entity, output) {
 	}
 
 	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(ENTITY_TO_GAME(getThis(), &rv), &rv));
-	ASSERT_ENTITY_IS_VALID(getThis());
+	ASSERT_ENTITY_IS_VALID(ENTITY_IS_VALID_PROP(getThis(), &rv));
 
 	if (nullptr == channel || 0 == strlen(channel)) {
 		channel = const_cast<char *>(ENTITY_DEFAULT_OUTPUT_CHANNEL);

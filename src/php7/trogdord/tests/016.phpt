@@ -141,7 +141,7 @@
         // TODO: also test calling after destroying entity
 
 		// Verify that we can't call \Trogdord\Entity::output() after
-		// destroying the object.
+		// destroying the game object.
 		try {
 			$player->output();
 			die('Call should not be successful after game has been destroyed and object has been invalidated.');
@@ -150,6 +150,28 @@
 				die("\Trogdord\Entity::output(): Call to method on invalidated game object resulted in incorrect message. This could indicate that a request was made to the server, in which case the PHP method needs to be fixed.");
 			}
 		}
+
+		// Verify that we can't call \Trogdord\Entity::output() after
+		// destroying the player object.
+		$game = $trogdord->newGame('My Game', 'game.xml');
+		$player = $game->createPlayer("player");
+
+		$player->destroy();
+
+		if (200 != $player->game->trogdord->status) {
+			die('Call to $player->destroy() should have been successful');
+		}
+
+		try {
+			$player->output();
+			die('Call should not be successful after game has been destroyed and object has been invalidated.');
+		} catch (\Trogdord\EntityNotFound $e) {
+			if ("Entity has already been destroyed" != $e->getMessage()) {
+				die("\Trogdord\Entity::output(): Call to method on invalidated player object resulted in incorrect message: '" . $e->getMessage() . "'. This could indicate that a request was made to the server, in which case the PHP method needs to be fixed.");
+			}
+		}
+
+		$game->destroy();
 	}
 
 	catch (Exception $e) {

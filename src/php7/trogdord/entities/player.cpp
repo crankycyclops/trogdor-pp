@@ -39,7 +39,7 @@ PHP_METHOD(Player, input) {
 	}
 
 	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(ENTITY_TO_GAME(getThis(), &rv), &rv));
-	ASSERT_ENTITY_IS_VALID(getThis());
+	ASSERT_ENTITY_IS_VALID(ENTITY_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 		sendPlayerInput(getThis(), command);
@@ -104,7 +104,7 @@ PHP_METHOD(Player, destroy) {
 	}
 
 	ASSERT_GAME_IS_VALID(GAME_IS_VALID_PROP(game, &rv));
-	ASSERT_ENTITY_IS_VALID(getThis());
+	ASSERT_ENTITY_IS_VALID(ENTITY_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 

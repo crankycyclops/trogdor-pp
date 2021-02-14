@@ -59,7 +59,7 @@ strlen((PROPERTY)), 1, (RV))
 
 // Validate the instance of \Trogdord\Game before proceeding with an operation.
 #define ASSERT_GAME_IS_VALID(ZVAL_VALID) \
-if (IS_FALSE == Z_TYPE_P(ZVAL_VALID)) { \
+if (IS_NULL == Z_TYPE_P(ZVAL_VALID) || IS_FALSE == Z_TYPE_P(ZVAL_VALID)) { \
 	zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), GAME_ALREADY_DESTROYED, 0); \
 	RETURN_NULL(); \
 }
