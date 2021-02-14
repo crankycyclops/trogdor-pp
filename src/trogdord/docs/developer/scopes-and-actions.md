@@ -236,7 +236,7 @@ Returns the details of an existing game, referenced by id.
 
 **Successful JSON Response:**
 
-Returns a status code, the game's id, the game's name, the definition filename that was used to create the game, the current time in the game, and whether or not the game is running.
+Returns a status code, the game's id, the game's name, the definition filename that was used to create the game, the time the game was created (UNIX timestamp), the current time in the game, and whether or not the game is running.
 
 ```
 {
@@ -244,6 +244,7 @@ Returns a status code, the game's id, the game's name, the definition filename t
 	"id": <unsigned int>,
 	"name": <string>,
 	"definition": <string>,
+	"created": <unsigned int>,
 	"current_time": <unsigned int>,
 	"is_running": <boolean>
 }
@@ -288,12 +289,13 @@ Creates a new game and returns its id as part of a successful response.
 
 **Successful JSON Response:**
 
-Returns a status code and the new game's id.
+Returns a status code, the new game's id, and the time the game was created (UNIX timestamp.)
 
 ```
 {
 	"status": 200,
-	"id": <unsigned int>
+	"id": <unsigned int>,
+	"created": <unsigned int>
 }
 ```
 

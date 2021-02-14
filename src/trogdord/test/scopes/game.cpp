@@ -305,6 +305,13 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response["id"].IsUint());
 			size_t id = response["id"].GetUint();
 
+			CHECK(response.HasMember("created"));
+			#if SIZE_MAX == UINT64_MAX
+				CHECK(response["created"].IsUint64());
+			#else
+				CHECK(response["created"].IsUint());
+			#endif
+
 			response = getGame(id);
 
 			CHECK(trogdor::isAscii(JSON::serialize(response)));
@@ -320,6 +327,13 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response.HasMember("definition"));
 			CHECK(response["definition"].IsString());
 			CHECK(0 == std::string(gameXMLRelativeFilename).compare(response["definition"].GetString()));
+
+			CHECK(response.HasMember("created"));
+			#if SIZE_MAX == UINT64_MAX
+				CHECK(response["created"].IsUint64());
+			#else
+				CHECK(response["created"].IsUint());
+			#endif
 
 			rapidjson::Document getMetaRequest(rapidjson::kObjectType);
 			rapidjson::Value getMetaArgs(rapidjson::kObjectType);
@@ -386,10 +400,16 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 
 			CHECK(response.HasMember("id"));
-
 			CHECK(response["id"].IsUint());
-			size_t id = response["id"].GetUint();
 
+			CHECK(response.HasMember("created"));
+			#if SIZE_MAX == UINT64_MAX
+				CHECK(response["created"].IsUint64());
+			#else
+				CHECK(response["created"].IsUint());
+			#endif
+
+			size_t id = response["id"].GetUint();
 			response = getGame(id);
 
 			CHECK(trogdor::isAscii(JSON::serialize(response)));
@@ -405,6 +425,13 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response.HasMember("definition"));
 			CHECK(response["definition"].IsString());
 			CHECK(0 == std::string(gameXMLRelativeFilename).compare(response["definition"].GetString()));
+
+			CHECK(response.HasMember("created"));
+			#if SIZE_MAX == UINT64_MAX
+				CHECK(response["created"].IsUint64());
+			#else
+				CHECK(response["created"].IsUint());
+			#endif
 
 			rapidjson::Document getMetaRequest(rapidjson::kObjectType);
 			rapidjson::Value getMetaArgs(rapidjson::kObjectType);
@@ -1113,6 +1140,13 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response.HasMember("definition"));
 			CHECK(response["definition"].IsString());
 			CHECK(0 == std::string(gameXMLRelativeFilename).compare(response["definition"].GetString()));
+
+			CHECK(response.HasMember("created"));
+			#if SIZE_MAX == UINT64_MAX
+				CHECK(response["created"].IsUint64());
+			#else
+				CHECK(response["created"].IsUint());
+			#endif
 
 			CHECK(response.HasMember("current_time"));
 			CHECK(response["current_time"].IsUint());

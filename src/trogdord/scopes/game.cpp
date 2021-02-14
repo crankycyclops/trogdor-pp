@@ -131,6 +131,7 @@ rapidjson::Document GameController::getGame(const rapidjson::Document &request) 
 		response.AddMember("id", gameId, response.GetAllocator());
 		response.AddMember("name", name.Move(), response.GetAllocator());
 		response.AddMember("definition", definition.Move(), response.GetAllocator());
+		response.AddMember("created", static_cast<size_t>(game->getCreated()), response.GetAllocator());
 		response.AddMember("current_time", game->get()->getTime(), response.GetAllocator());
 		response.AddMember("is_running", game->get()->inProgress(), response.GetAllocator());
 	}
@@ -402,9 +403,13 @@ rapidjson::Document GameController::createGame(const rapidjson::Document &reques
 		}
 
 		try {
+
 			size_t gameId = GameContainer::get()->createGame(definitionStr, nameStr, meta);
+			size_t created = static_cast<size_t>(GameContainer::get()->getGame(gameId)->getCreated());
+
 			response.AddMember("status", Response::STATUS_SUCCESS, response.GetAllocator());
 			response.AddMember("id", gameId, response.GetAllocator());
+			response.AddMember("created", created, response.GetAllocator());
 		}
 
 		catch (const ServerException &e) {
