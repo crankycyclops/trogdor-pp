@@ -7,6 +7,7 @@
 #include "exception/requestexception.h"
 
 #include "game.h"
+#include "dump/dump.h"
 #include "entities/entity.h"
 
 // This must be included after "game.h" because it depends on "php_config.h"
@@ -500,7 +501,20 @@ PHP_METHOD(Game, dump) {
 			trogdord
 		);
 
-		RETURN_NULL();
+		zval *created = GAME_TO_PROP_VAL(getThis(), &rv, GAME_CREATED_PROPERTY);
+
+		if (!createDumpObj(
+			return_value,
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : Z_DVAL_P(id),
+			ZSTR_VAL(Z_STR_P(GAME_TO_PROP_VAL(getThis(), &rv, GAME_NAME_PROPERTY))),
+			ZSTR_VAL(Z_STR_P(GAME_TO_PROP_VAL(getThis(), &rv, GAME_DEFINITION_PROPERTY))),
+			IS_LONG == Z_TYPE_P(created) ? Z_LVAL_P(created) : Z_DVAL_P(created),
+			getThis()
+		)) {
+			php_error_docref(NULL, E_ERROR, "failed to instantiate Trogdord\\Game\\Dump");
+		}
+
+		return;
 	}
 
 	// Throw \Trogord\NetworkException
@@ -1981,6 +1995,7 @@ bool createGameObj(
 	zval *gameObj,
 	std::string name,
 	std::string definition,
+	size_t created,
 	size_t id,
 	zval *trogdordObj
 ) {
@@ -2012,6 +2027,32 @@ bool createGameObj(
 		strlen(GAME_DEFINITION_PROPERTY),
 		definition.c_str()
 	);
+
+	if (created > ZEND_LONG_MAX) {
+		zend_update_property_double(
+			GAME_GLOBALS(classEntry),
+			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+				Z_OBJ_P(gameObj),
+			#else
+				gameObj,
+			#endif
+			GAME_CREATED_PROPERTY,
+			strlen(GAME_CREATED_PROPERTY),
+			created
+		);
+	} else {
+		zend_update_property_long(
+			GAME_GLOBALS(classEntry),
+			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+				Z_OBJ_P(gameObj),
+			#else
+				gameObj,
+			#endif
+			GAME_CREATED_PROPERTY,
+			strlen(GAME_CREATED_PROPERTY),
+			created
+		);
+	}
 
 	if (id > ZEND_LONG_MAX) {
 		zend_update_property_double(
@@ -2086,6 +2127,13 @@ void defineGameClass() {
 		GAME_GLOBALS(classEntry),
 		GAME_DEFINITION_PROPERTY,
 		strlen(GAME_DEFINITION_PROPERTY),
+		ZEND_ACC_PRIVATE
+	);
+
+	zend_declare_property_null(
+		GAME_GLOBALS(classEntry),
+		GAME_CREATED_PROPERTY,
+		strlen(GAME_CREATED_PROPERTY),
 		ZEND_ACC_PRIVATE
 	);
 

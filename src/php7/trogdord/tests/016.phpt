@@ -138,8 +138,6 @@
 			die('Call to $game->destroy() should have been successful');
 		}
 
-        // TODO: also test calling after destroying entity
-
 		// Verify that we can't call \Trogdord\Entity::output() after
 		// destroying the game object.
 		try {

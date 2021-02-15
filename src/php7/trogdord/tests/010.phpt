@@ -33,13 +33,23 @@
 			$id = $game->id;
 
 			// Dump (and validate that the dump was successful)
-			$game->dump();
+			$dump = $game->dump();
 
 			if (200 != $trogdord->status) {
 				die('Game dump should be successful');
 			}
 
-			$dump = $trogdord->getDump($id);
+			if (!$dump instanceof \Trogdord\Game\Dump) {
+				die('Return value of $game->dump() should be of type \Trogdord\GameDump but isn\'t');
+			}
+
+			$dumpCopy = $trogdord->getDump($id);
+
+			// Verify that the result of $trogdord->getDump() and the return value
+			// of $game->dump() are both objects pointing to the same resource.
+			if ($dumpCopy->id != $dump->id) {
+				die('Return value of either $game->dump() or $trogdord->getDump($id) is not correct!');
+			}
 
 			if (200 != $trogdord->status) {
 				die('Dump should have been successful');

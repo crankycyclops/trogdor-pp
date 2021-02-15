@@ -17,6 +17,9 @@ constexpr const char *GAME_NAME_PROPERTY = "name";
 // The private property that stores the game's definition filename
 constexpr const char *GAME_DEFINITION_PROPERTY = "definition";
 
+// The private property that stores timestamp when the game was created
+constexpr const char *GAME_CREATED_PROPERTY = "created";
+
 // The private property that stores the game's id
 constexpr const char *GAME_ID_PROPERTY = "id";
 
@@ -72,6 +75,7 @@ extern bool createGameObj(
 	zval *gameObj,
 	std::string name,
 	std::string definition,
+	size_t created,
 	size_t id,
 	zval *trogdordObj
 );

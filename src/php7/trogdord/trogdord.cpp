@@ -452,6 +452,11 @@ PHP_METHOD(Trogdord, getGame) {
 			return_value,
 			response["name"].GetString(),
 			response["definition"].GetString(),
+			#ifdef ZEND_ENABLE_ZVAL_LONG64
+				response["created"].GetUint64(),
+			#else
+				response["created"].GetUint(),
+			#endif
 			gameId,
 			getThis()
 		)) {
@@ -568,11 +573,13 @@ PHP_METHOD(Trogdord, newGame) {
 
 		#ifdef ZEND_ENABLE_ZVAL_LONG64
 			size_t id = response["id"].GetUint64();
+			size_t created = response["created"].GetUint64();
 		#else
 			size_t id = response["id"].GetUint();
+			size_t created = response["created"].GetUint();
 		#endif
 
-		if (!createGameObj(return_value, name, definition, id, getThis())) {
+		if (!createGameObj(return_value, name, definition, created, id, getThis())) {
 			php_error_docref(NULL, E_ERROR, "failed to instantiate Trogdord\\Game");
 		}
 
