@@ -66,18 +66,18 @@
 			die('Call to $game->destroy() should have been successful');
 		}
 
-		// Verify that we can't call \Trogdord\Entity::output() after
+		// Verify that we can't call \Trogdord\Player::input() after
 		// destroying the game object.
 		try {
 			$player->input("north");
 			die('Call should not be successful after game has been destroyed and object has been invalidated.');
 		} catch (\Trogdord\GameNotFound $e) {
 			if ("Game has already been destroyed" != $e->getMessage()) {
-				die("\Trogdord\Entity::output(): Call to method on invalidated game object resulted in incorrect message. This could indicate that a request was made to the server, in which case the PHP method needs to be fixed.");
+				die("\Trogdord\Player::input(): Call to method on invalidated game object resulted in incorrect message. This could indicate that a request was made to the server, in which case the PHP method needs to be fixed.");
 			}
 		}
 
-		// Verify that we can't call \Trogdord\Entity::output() after
+		// Verify that we can't call \Trogdord\Player::input() after
 		// destroying the player object.
 		$game = $trogdord->newGame('My Game', 'game.xml');
 		$player = $game->createPlayer("player");
@@ -93,7 +93,7 @@
 			die('Call should not be successful after game has been destroyed and object has been invalidated.');
 		} catch (\Trogdord\EntityNotFound $e) {
 			if ("Entity has already been destroyed" != $e->getMessage()) {
-				die("\Trogdord\Entity::output(): Call to method on invalidated player object resulted in incorrect message: '" . $e->getMessage() . "'. This could indicate that a request was made to the server, in which case the PHP method needs to be fixed.");
+				die("\Trogdord\Player::input(): Call to method on invalidated player object resulted in incorrect message: '" . $e->getMessage() . "'. This could indicate that a request was made to the server, in which case the PHP method needs to be fixed.");
 			}
 		}
 
