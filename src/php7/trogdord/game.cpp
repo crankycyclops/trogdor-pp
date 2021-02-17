@@ -509,7 +509,7 @@ PHP_METHOD(Game, dump) {
 			ZSTR_VAL(Z_STR_P(GAME_TO_PROP_VAL(getThis(), &rv, GAME_NAME_PROPERTY))),
 			ZSTR_VAL(Z_STR_P(GAME_TO_PROP_VAL(getThis(), &rv, GAME_DEFINITION_PROPERTY))),
 			IS_LONG == Z_TYPE_P(created) ? Z_LVAL_P(created) : Z_DVAL_P(created),
-			getThis()
+			trogdord
 		)) {
 			php_error_docref(NULL, E_ERROR, "failed to instantiate Trogdord\\Game\\Dump");
 		}

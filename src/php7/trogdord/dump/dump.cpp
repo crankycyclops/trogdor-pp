@@ -38,6 +38,31 @@ PHP_METHOD(Dump, __construct) {
 
 /*****************************************************************************/
 
+// Magic "__get" allows us to make private and protected data members read-only.
+ZEND_BEGIN_ARG_INFO(arginfoMagicGet, 0)
+	ZEND_ARG_TYPE_INFO(0, key, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Dump, __get) {
+
+	char *key;
+	size_t keyLength;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &key, &keyLength) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	zval rv; // ???
+	zval *propVal = DUMP_TO_PROP_VAL(getThis(), &rv, key);
+
+	// There's some insanity in how this works, so for reference, here's what
+	// I read to help me understand what all the arguments mean:
+	// https://medium.com/@davidtstrauss/copy-and-move-semantics-of-zvals-in-php-7-41427223d784
+	RETURN_ZVAL(propVal, 1, 0);
+}
+
+/*****************************************************************************/
+
 // Returns an instance of \Trogdord\Game\Dump\Slot, which provides an interface
 // to a game dump's slot. Throws an instance of \Trogdord\GameNotFound if the
 // slot doesn't exist and \Trogdord\NetworkException if there's an issue with
@@ -72,7 +97,7 @@ PHP_METHOD(Dump, getSlot) {
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			request,
-			getThis()
+			trogdord
 		);
 
 		if (!createDumpSlotObj(
@@ -139,7 +164,7 @@ PHP_METHOD(Dump, slots) {
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			request,
-			getThis()
+			trogdord
 		);
 
 		zval data = JSON::JSONToZval(response["slots"]);
@@ -191,7 +216,7 @@ PHP_METHOD(Dump, destroy) {
 			objWrapper->data.hostname,
 			objWrapper->data.port,
 			request,
-			getThis()
+			trogdord
 		);
 
 		// Set the game ID to null so the object can't be used anymore
@@ -234,6 +259,7 @@ PHP_METHOD(Dump, destroy) {
 // PHP Dump class methods
 static const zend_function_entry classMethods[] =  {
 	PHP_ME(Dump, __construct, arginfoCtor, ZEND_ACC_PRIVATE | ZEND_ACC_CTOR)
+	PHP_ME(Dump, __get, arginfoMagicGet, ZEND_ACC_PUBLIC)
 	PHP_ME(Dump, getSlot, arginfoGetSlot, ZEND_ACC_PUBLIC)
 	PHP_ME(Dump, slots, arginfoSlots, ZEND_ACC_PUBLIC)
 	PHP_ME(Dump, destroy, arginfoDestroy, ZEND_ACC_PUBLIC)
