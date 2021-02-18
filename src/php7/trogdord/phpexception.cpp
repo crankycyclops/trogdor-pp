@@ -28,6 +28,10 @@ void defineExceptionClasses() {
 	INIT_CLASS_ENTRY(ce, "Trogdord\\GameNotFound", NULL);
 	EXCEPTION_GLOBALS(gameNotFound) = zend_register_internal_class_ex(&ce, EXCEPTION_GLOBALS(requestException));
 
+	// Thrown if a request refers to a speciic game dump slot that doesn't exist
+	INIT_CLASS_ENTRY(ce, "Trogdord\\DumpSlotNotFound", NULL);
+	EXCEPTION_GLOBALS(dumpSlotNotFound) = zend_register_internal_class_ex(&ce, EXCEPTION_GLOBALS(requestException));
+
 	// Thrown if a request refers to a specific entity in a game but that
 	// entity doesn't exist
 	INIT_CLASS_ENTRY(ce, "Trogdord\\EntityNotFound", NULL);

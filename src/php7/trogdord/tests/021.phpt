@@ -35,6 +35,13 @@
 			die('Getting game slots should have been successful');
 		}
 
+		// Try to get a slot that doesn't exist
+		try {
+			$dump->getSlot($slots[0]['slot'] + 1);
+			die('Getting dump slot that doesn\'t exist should fail but did not');
+		} catch (\Trogdord\DumpSlotNotFound $e) {}
+
+		// Now, get a slot that does exist
 		$slot = $dump->getSlot($slots[0]['slot']);
 
 		if (200 != $game->trogdord->status) {

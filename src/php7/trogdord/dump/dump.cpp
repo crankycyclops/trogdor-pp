@@ -15,6 +15,9 @@
 ZEND_DECLARE_MODULE_GLOBALS(dump);
 ZEND_EXTERN_MODULE_GLOBALS(trogdord);
 
+// This request restores a specific game dump
+static const char *DUMP_RESTORE_REQUEST = "{\"method\":\"post\",\"scope\":\"game\",\"action\":\"restore\",\"args\":{\"id\":%gid%slotArg}}";
+
 // This request retrieves a specific dump slot
 static const char *DUMP_GET_SLOT_REQUEST = "{\"method\":\"get\",\"scope\":\"game\",\"action\":\"dump\",\"args\":{\"id\":%gid,\"slot\":%slot}}";
 
@@ -123,9 +126,9 @@ PHP_METHOD(Dump, getSlot) {
 
 	catch (const RequestException &e) {
 
-		// Throw \Trogdord\GameNotFound
+		// Throw \Trogdord\DumpSlotNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+			zend_throw_exception(EXCEPTION_GLOBALS(dumpSlotNotFound), e.what(), e.getCode());
 		}
 
 		// Throw \Trogdord\RequestException
@@ -184,6 +187,24 @@ PHP_METHOD(Dump, slots) {
 	catch (const RequestException &e) {
 		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
 	}
+}
+
+/*****************************************************************************/
+
+// Restores the game dump. Optional argument is the slot that should be restored.
+// If that argument is not present, the most recent slot is restored. Returns an
+// instance of \Trogdord\Game representing the newly restored game. Throws an
+// instance of \Trogdord\GameNotFound if the dump no longer exists, an instance
+// of \Trogdord\DumpSlotNotFound if the specified slot doesn't exist, and
+// \Trogdord\NetworkException if there's an issue with the network connection
+// that prevents this call from returning a valid value.
+ZEND_BEGIN_ARG_INFO(arginfoRestore, 0)
+	ZEND_ARG_TYPE_INFO(0, slot, IS_LONG, 1)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Dump, restore) {
+
+	// TODO
 }
 
 /*****************************************************************************/
@@ -263,6 +284,7 @@ static const zend_function_entry classMethods[] =  {
 	PHP_ME(Dump, __get, arginfoMagicGet, ZEND_ACC_PUBLIC)
 	PHP_ME(Dump, getSlot, arginfoGetSlot, ZEND_ACC_PUBLIC)
 	PHP_ME(Dump, slots, arginfoSlots, ZEND_ACC_PUBLIC)
+	PHP_ME(Dump, restore, arginfoRestore, ZEND_ACC_PUBLIC)
 	PHP_ME(Dump, destroy, arginfoDestroy, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };

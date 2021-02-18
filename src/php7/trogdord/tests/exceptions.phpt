@@ -22,6 +22,7 @@ Test Exception Classes
 		'\Trogdord\RequestException' => '\Trogdord\Exception',
 		'\Trogdord\FilterException'  => '\Trogdord\Exception',
 		'\Trogdord\GameNotFound'     => '\Trogdord\RequestException',
+		'\Trogdord\DumpSlotNotFound' => '\Trogdord\RequestException',
 		'\Trogdord\EntityNotFound'   => '\Trogdord\RequestException',
 		'\Trogdord\ResourceNotFound' => '\Trogdord\EntityNotFound',
 		'\Trogdord\TangibleNotFound' => '\Trogdord\EntityNotFound',
