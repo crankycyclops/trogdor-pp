@@ -25,9 +25,35 @@ PHP_METHOD(Slot, __construct) {
 
 /*****************************************************************************/
 
+// Magic "__get" allows us to make private and protected data members read-only.
+ZEND_BEGIN_ARG_INFO(arginfoMagicGet, 0)
+	ZEND_ARG_TYPE_INFO(0, key, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Slot, __get) {
+
+	char *key;
+	size_t keyLength;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &key, &keyLength) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	zval rv; // ???
+	zval *propVal = DUMP_TO_PROP_VAL(getThis(), &rv, key);
+
+	// There's some insanity in how this works, so for reference, here's what
+	// I read to help me understand what all the arguments mean:
+	// https://medium.com/@davidtstrauss/copy-and-move-semantics-of-zvals-in-php-7-41427223d784
+	RETURN_ZVAL(propVal, 1, 0);
+}
+
+/*****************************************************************************/
+
 // PHP Slot class methods
 static const zend_function_entry classMethods[] =  {
 	PHP_ME(Slot, __construct, arginfoCtor, ZEND_ACC_PRIVATE | ZEND_ACC_CTOR)
+	PHP_ME(Slot, __get, arginfoMagicGet, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 
