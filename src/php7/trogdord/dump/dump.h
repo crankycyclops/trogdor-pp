@@ -24,6 +24,9 @@ constexpr const char *DUMP_DEFINITION_PROPERTY = "definition";
 // the connection that spawned it.
 constexpr const char *DUMP_TROGDORD_PROPERTY = "trogdord";
 
+// Whether or not the instance of \Trogdord\Game\Dump is valid
+constexpr const char *DUMP_VALID_PROPERTY = "valid";
+
 /*****************************************************************************/
 
 // For an explanation of what I'm doing here, see:
@@ -50,9 +53,12 @@ strlen((PROPERTY)), 1, (RV))
 // Retrieve the game id.
 #define DUMP_TO_ID(THIS_PTR, RV) DUMP_TO_PROP_VAL(THIS_PTR, RV, DUMP_ID_PROPERTY)
 
+// Retrieve the "valid" property from an instance of \Trogdord\Game\Dump.
+#define DUMP_IS_VALID_PROP(THIS_PTR, RV) DUMP_TO_PROP_VAL(THIS_PTR, RV, DUMP_VALID_PROPERTY)
+
 // Validate the instance of \Trogdord\Game\Dump before proceeding with an operation.
-#define ASSERT_DUMP_ID_IS_VALID(ZVAL_ID) \
-if (IS_NULL == ZVAL_ID) { \
+#define ASSERT_DUMP_IS_VALID(ZVAL_VALID) \
+if (IS_NULL == Z_TYPE_P(ZVAL_VALID) || IS_FALSE == Z_TYPE_P(ZVAL_VALID)) { \
 	zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), DUMP_ALREADY_DESTROYED, 0); \
 	RETURN_NULL(); \
 }

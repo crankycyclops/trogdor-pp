@@ -43,8 +43,6 @@
 			die('Fetched dump and created dump ids should match but don\'t');
 		}
 
-		$dumpId = $dump->id;
-
 		// Destroy the dump and confirm that it's properly invalidated
 		$dump->destroy();
 
@@ -53,7 +51,7 @@
 		}
 
 		try {
-			$fetchedDump = $trogdord->getDump($dumpId);
+			$fetchedDump = $trogdord->getDump($dump->id);
 			die('Dump should have been destroyed but was not');
 		} catch (\Trogdord\GameNotFound $e) {}
 

@@ -83,7 +83,7 @@ PHP_METHOD(Dump, getSlot) {
 		RETURN_NULL();
 	}
 
-	ASSERT_DUMP_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_DUMP_IS_VALID(DUMP_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 
@@ -151,7 +151,7 @@ PHP_METHOD(Dump, slots) {
 	zval *id = DUMP_TO_ID(getThis(), &rv);
 
 	ZEND_PARSE_PARAMETERS_NONE();
-	ASSERT_DUMP_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_DUMP_IS_VALID(DUMP_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 
@@ -203,7 +203,7 @@ PHP_METHOD(Dump, destroy) {
 	zval *id = DUMP_TO_ID(getThis(), &rv);
 
 	ZEND_PARSE_PARAMETERS_NONE();
-	ASSERT_DUMP_ID_IS_VALID(Z_TYPE_P(id));
+	ASSERT_DUMP_IS_VALID(DUMP_IS_VALID_PROP(getThis(), &rv));
 
 	try {
 
@@ -219,16 +219,17 @@ PHP_METHOD(Dump, destroy) {
 			trogdord
 		);
 
-		// Set the game ID to null so the object can't be used anymore
-		zend_update_property_null(
+		// Invalidate the object so it can't be used anymore
+		zend_update_property_bool(
 			DUMP_GLOBALS(classEntry),
 			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
 				Z_OBJ_P(getThis()),
 			#else
 				getThis(),
 			#endif
-			DUMP_ID_PROPERTY,
-			strlen(DUMP_ID_PROPERTY)
+			DUMP_VALID_PROPERTY,
+			strlen(DUMP_VALID_PROPERTY),
+			0
 		);
 	}
 
@@ -343,6 +344,18 @@ bool createDumpObj(
 		trogdordObj
 	);
 
+	zend_update_property_bool(
+		DUMP_GLOBALS(classEntry),
+		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+			Z_OBJ_P(dumpObj),
+		#else
+			dumpObj,
+		#endif
+		DUMP_VALID_PROPERTY,
+		strlen(DUMP_VALID_PROPERTY),
+		1
+	);
+
 	return true;
 }
 
@@ -359,6 +372,14 @@ void defineDumpClass() {
 		DUMP_GLOBALS(classEntry),
 		DUMP_TROGDORD_PROPERTY,
 		strlen(DUMP_TROGDORD_PROPERTY),
+		ZEND_ACC_PRIVATE
+	);
+
+	zend_declare_property_bool(
+		DUMP_GLOBALS(classEntry),
+		DUMP_VALID_PROPERTY,
+		strlen(DUMP_VALID_PROPERTY),
+		0,
 		ZEND_ACC_PRIVATE
 	);
 
