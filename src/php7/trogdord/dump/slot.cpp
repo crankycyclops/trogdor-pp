@@ -40,6 +40,10 @@ bool createDumpSlotObj(
 	zval *dumpObj
 ) {
 
+	if (SUCCESS != object_init_ex(slotObj, SLOT_GLOBALS(classEntry))) {
+		return false;
+	}
+
 	if (slot > ZEND_LONG_MAX) {
 		zend_update_property_double(
 			SLOT_GLOBALS(classEntry),
