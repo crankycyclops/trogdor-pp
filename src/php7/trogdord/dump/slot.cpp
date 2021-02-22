@@ -11,6 +11,12 @@
 ZEND_DECLARE_MODULE_GLOBALS(slot);
 ZEND_EXTERN_MODULE_GLOBALS(dump);
 
+// This request restores a specific game dump slot
+static const char *SLOT_RESTORE_REQUEST = "{\"method\":\"post\",\"scope\":\"game\",\"action\":\"restore\",\"args\":{\"id\":%gid,\"slot\":%slot}}";
+
+// This request destroys a dump slot
+static const char *SLOT_DESTROY_REQUEST = "{\"method\":\"delete\",\"scope\":\"game\",\"action\":\"dump\",\"args\":{\"id\":%gid,\"slot\":%slot}}";
+
 /*****************************************************************************/
 
 // The constructor should NEVER be called in PHP userland. Instead, instances of
@@ -50,10 +56,43 @@ PHP_METHOD(Slot, __get) {
 
 /*****************************************************************************/
 
+// Equivalent to a call to \Trogdord\Game\Dump::restore() with the optional
+// slot argment. Throws an instance of \Trogdord\DumpSlotNotFound if the slot
+// no longer exists, an instance of \Trogdord\GameNotFound if the dump the slot
+// belongs to no longer exists, and \Trogdord\NetworkException if there's an
+// issue with the network connection that prevents this call from returning a
+// valid value.
+ZEND_BEGIN_ARG_INFO(arginfoRestore, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Slot, restore) {
+
+	// TODO
+}
+
+/*****************************************************************************/
+
+// Destroys the dump slot. Throws an instance of \Trogdord\DumpSlotNotFound if
+// the slot no longer exists, an instance of \Trogdord\GameNotFound if the
+// dump the slot belongs to no longer exists, and \Trogdord\NetworkException
+// if there's an issue with the network connection that prevents this call
+// from returning a valid value.
+ZEND_BEGIN_ARG_INFO(arginfoDestroy, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(Slot, destroy) {
+
+	// TODO
+}
+
+/*****************************************************************************/
+
 // PHP Slot class methods
 static const zend_function_entry classMethods[] =  {
 	PHP_ME(Slot, __construct, arginfoCtor, ZEND_ACC_PRIVATE | ZEND_ACC_CTOR)
 	PHP_ME(Slot, __get, arginfoMagicGet, ZEND_ACC_PUBLIC)
+	PHP_ME(Slot, restore, arginfoRestore, ZEND_ACC_PUBLIC)
+	PHP_ME(Slot, destroy, arginfoDestroy, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 
