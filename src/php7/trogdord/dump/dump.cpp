@@ -199,8 +199,8 @@ PHP_METHOD(Dump, slots) {
 // of \Trogdord\DumpSlotNotFound if the specified slot doesn't exist, and
 // \Trogdord\NetworkException if there's an issue with the network connection
 // that prevents this call from returning a valid value.
-ZEND_BEGIN_ARG_INFO(arginfoRestore, 0)
-	ZEND_ARG_TYPE_INFO(0, slot, IS_LONG, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfoRestore, 0, 0, 0)
+	ZEND_ARG_TYPE_INFO(0, slot, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 PHP_METHOD(Dump, restore) {
