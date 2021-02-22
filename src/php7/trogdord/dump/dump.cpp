@@ -212,13 +212,15 @@ PHP_METHOD(Dump, restore) {
 
 	zend_long slot = -1;
 
+	ASSERT_DUMP_IS_VALID(DUMP_IS_VALID_PROP(getThis(), &rv));
+
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "|l", &slot) == FAILURE) {
 		RETURN_NULL();
 	}
 
 	std::string slotArg = "";
 
-	if (slot > 0) {
+	if (slot >= 0) {
 		slotArg = std::string(",\"slot\":") + std::to_string(slot);
 	}
 
