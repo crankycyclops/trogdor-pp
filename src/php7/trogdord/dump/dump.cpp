@@ -3,6 +3,7 @@
 #include "../request.h"
 #include "../utility.h"
 
+#include "../game.h"
 #include "../phpexception.h"
 #include "../exception/requestexception.h"
 
@@ -204,7 +205,74 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Dump, restore) {
 
-	// TODO
+	zval rv; // ???
+
+	zval *trogdord = DUMP_TO_TROGDORD(getThis(), &rv);
+	zval *id = DUMP_TO_ID(getThis(), &rv);
+
+	zend_long slot = -1;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "|l", &slot) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	std::string slotArg = "";
+
+	if (slot > 0) {
+		slotArg = std::string(",\"slot\":") + std::to_string(slot);
+	}
+
+	try {
+
+		std::string request = DUMP_RESTORE_REQUEST;
+		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+		strReplace(request, "%slotArg", slotArg);
+
+		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+		Document response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request,
+			trogdord
+		);
+
+		zval *created = DUMP_TO_PROP_VAL(getThis(), &rv, DUMP_CREATED_PROPERTY);
+
+		if (!createGameObj(
+			return_value,
+			ZSTR_VAL(Z_STR_P(DUMP_TO_PROP_VAL(getThis(), &rv, DUMP_NAME_PROPERTY))),
+			ZSTR_VAL(Z_STR_P(DUMP_TO_PROP_VAL(getThis(), &rv, DUMP_DEFINITION_PROPERTY))),
+			IS_LONG == Z_TYPE_P(created) ? Z_LVAL_P(created) : Z_DVAL_P(created),
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : Z_DVAL_P(id),
+			trogdord
+		)) {
+			php_error_docref(NULL, E_ERROR, "failed to instantiate Trogdord\\Game");
+		}
+
+		return;
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		RETURN_NULL();
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -330,6 +398,32 @@ bool createDumpObj(
 		);
 	}
 
+	if (created > ZEND_LONG_MAX) {
+		zend_update_property_double(
+			DUMP_GLOBALS(classEntry),
+			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+				Z_OBJ_P(dumpObj),
+			#else
+				dumpObj,
+			#endif
+			DUMP_CREATED_PROPERTY,
+			strlen(DUMP_CREATED_PROPERTY),
+			created
+		);
+	} else {
+		zend_update_property_long(
+			DUMP_GLOBALS(classEntry),
+			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+				Z_OBJ_P(dumpObj),
+			#else
+				dumpObj,
+			#endif
+			DUMP_CREATED_PROPERTY,
+			strlen(DUMP_CREATED_PROPERTY),
+			created
+		);
+	}
+
 	zend_update_property_string(
 		DUMP_GLOBALS(classEntry),
 		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
@@ -389,6 +483,34 @@ void defineDumpClass() {
 
 	INIT_CLASS_ENTRY(dumpClass, "Trogdord\\Game\\Dump", classMethods);
 	DUMP_GLOBALS(classEntry) = zend_register_internal_class(&dumpClass);
+
+	zend_declare_property_null(
+		DUMP_GLOBALS(classEntry),
+		DUMP_ID_PROPERTY,
+		strlen(DUMP_ID_PROPERTY),
+		ZEND_ACC_PRIVATE
+	);
+
+	zend_declare_property_null(
+		DUMP_GLOBALS(classEntry),
+		DUMP_NAME_PROPERTY,
+		strlen(DUMP_NAME_PROPERTY),
+		ZEND_ACC_PRIVATE
+	);
+
+	zend_declare_property_null(
+		DUMP_GLOBALS(classEntry),
+		DUMP_DEFINITION_PROPERTY,
+		strlen(DUMP_DEFINITION_PROPERTY),
+		ZEND_ACC_PRIVATE
+	);
+
+	zend_declare_property_null(
+		DUMP_GLOBALS(classEntry),
+		DUMP_CREATED_PROPERTY,
+		strlen(DUMP_CREATED_PROPERTY),
+		ZEND_ACC_PRIVATE
+	);
 
 	zend_declare_property_null(
 		DUMP_GLOBALS(classEntry),

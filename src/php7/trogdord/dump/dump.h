@@ -20,6 +20,9 @@ constexpr const char *DUMP_NAME_PROPERTY = "name";
 // Definition file that was used to create the dumped game
 constexpr const char *DUMP_DEFINITION_PROPERTY = "definition";
 
+// When the game that was dumped was created (UNIX timestamp)
+constexpr const char *DUMP_CREATED_PROPERTY = "created";
+
 // The private property through which an instance of \Trogdord\Game\Dump can access
 // the connection that spawned it.
 constexpr const char *DUMP_TROGDORD_PROPERTY = "trogdord";
