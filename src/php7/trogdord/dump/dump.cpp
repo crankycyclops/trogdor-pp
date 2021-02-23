@@ -92,8 +92,10 @@ PHP_METHOD(Dump, getSlot) {
 	try {
 
 		std::string request = DUMP_GET_SLOT_REQUEST;
-		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
 		strReplace(request, "%slot", std::to_string(slot));
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
@@ -160,7 +162,9 @@ PHP_METHOD(Dump, slots) {
 	try {
 
 		std::string request = DUMP_LIST_REQUEST;
-		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
@@ -227,8 +231,10 @@ PHP_METHOD(Dump, restore) {
 	try {
 
 		std::string request = DUMP_RESTORE_REQUEST;
-		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
 		strReplace(request, "%slotArg", slotArg);
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
@@ -299,7 +305,9 @@ PHP_METHOD(Dump, destroy) {
 	try {
 
 		std::string request = DUMP_DESTROY_REQUEST;
-		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 

@@ -1,6 +1,7 @@
 #include "../trogdord.h"
 #include "../json.h"
 #include "../request.h"
+#include "../utility.h"
 
 #include "../phpexception.h"
 #include "../exception/requestexception.h"
@@ -67,6 +68,17 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Slot, restore) {
 
+	zval rv; // ???
+
+	zval *dump = SLOT_TO_DUMP(getThis(), &rv);
+	zval *trogdord = DUMP_TO_TROGDORD(dump, &rv);
+	zval *id = DUMP_TO_ID(dump, &rv);
+	zval *slot = SLOT_TO_SLOTVAL(getThis(), &rv);
+
+	ZEND_PARSE_PARAMETERS_NONE();
+	ASSERT_DUMP_IS_VALID(DUMP_IS_VALID_PROP(dump, &rv));
+	ASSERT_DUMP_SLOT_IS_VALID(SLOT_IS_VALID_PROP(getThis(), &rv));
+
 	// TODO
 }
 
@@ -82,10 +94,31 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Slot, destroy) {
 
-/*  TODO
+	zval rv; // ???
+
+	zval *dump = SLOT_TO_DUMP(getThis(), &rv);
+	zval *trogdord = DUMP_TO_TROGDORD(dump, &rv);
+	zval *id = DUMP_TO_ID(dump, &rv);
+	zval *slot = SLOT_TO_SLOTVAL(getThis(), &rv);
+
+	ZEND_PARSE_PARAMETERS_NONE();
+	ASSERT_DUMP_IS_VALID(DUMP_IS_VALID_PROP(dump, &rv));
+	ASSERT_DUMP_SLOT_IS_VALID(SLOT_IS_VALID_PROP(getThis(), &rv));
+
 	try {
 
-		...
+		std::string request = SLOT_DESTROY_REQUEST;
+		strReplace(request, "%gid", std::to_string(IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))));
+		strReplace(request, "%slot", std::to_string(IS_LONG == Z_TYPE_P(slot) ? Z_LVAL_P(slot) : static_cast<int>(Z_DVAL_P(slot))));
+
+		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+		Document response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request,
+			trogdord
+		);
 
 		// Invalidate the object so it can't be used anymore
 		zend_update_property_bool(
@@ -100,7 +133,36 @@ PHP_METHOD(Slot, destroy) {
 			0
 		);
 	}
-*/
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		RETURN_NULL();
+	}
+
+	catch (const RequestException &e) {
+
+		// Throw \Trogdord\GameNotFound
+		if (404 == e.getCode()) {
+
+			// This is a little hokey. I'm thinking of implementing substatus
+			// codes in trogdord responses so I won't have to parse strings
+			// like this.
+			if (std::string(e.what()).find("slot") != std::string::npos) {
+				zend_throw_exception(EXCEPTION_GLOBALS(dumpSlotNotFound), e.what(), e.getCode());
+			} else {
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+			}
+
+			RETURN_NULL();
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+	}
 }
 
 /*****************************************************************************/
