@@ -3,6 +3,7 @@
 #include "../request.h"
 #include "../utility.h"
 
+#include "../game.h"
 #include "../phpexception.h"
 #include "../exception/requestexception.h"
 
@@ -79,7 +80,70 @@ PHP_METHOD(Slot, restore) {
 	ASSERT_DUMP_IS_VALID(DUMP_IS_VALID_PROP(dump, &rv));
 	ASSERT_DUMP_SLOT_IS_VALID(SLOT_IS_VALID_PROP(getThis(), &rv));
 
-	// TODO
+	try {
+
+		std::string request = SLOT_RESTORE_REQUEST;
+
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
+		strReplace(request, "%slot", std::to_string(
+			IS_LONG == Z_TYPE_P(slot) ? Z_LVAL_P(slot) : static_cast<int>(Z_DVAL_P(slot))
+		));
+
+		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
+
+		Document response = Request::execute(
+			objWrapper->data.hostname,
+			objWrapper->data.port,
+			request,
+			trogdord
+		);
+
+		zval *created = DUMP_TO_PROP_VAL(dump, &rv, DUMP_CREATED_PROPERTY);
+
+		if (!createGameObj(
+			return_value,
+			ZSTR_VAL(Z_STR_P(DUMP_TO_PROP_VAL(dump, &rv, DUMP_NAME_PROPERTY))),
+			ZSTR_VAL(Z_STR_P(DUMP_TO_PROP_VAL(dump, &rv, DUMP_DEFINITION_PROPERTY))),
+			IS_LONG == Z_TYPE_P(created) ? Z_LVAL_P(created) : Z_DVAL_P(created),
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : Z_DVAL_P(id),
+			trogdord
+		)) {
+			php_error_docref(NULL, E_ERROR, "failed to instantiate Trogdord\\Game");
+		}
+
+		return;
+	}
+
+	// Throw \Trogord\NetworkException
+	catch (const NetworkException &e) {
+		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
+		RETURN_NULL();
+	}
+
+	catch (const RequestException &e) {
+
+		if (404 == e.getCode()) {
+
+			// This is a little hokey. I'm thinking of implementing substatus
+			// codes in trogdord responses so I won't have to parse strings
+			// like this.
+			if (std::string(e.what()).find("slot") != std::string::npos) {
+				zend_throw_exception(EXCEPTION_GLOBALS(dumpSlotNotFound), e.what(), e.getCode());
+			} else {
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+			}
+
+			RETURN_NULL();
+		}
+
+		// Throw \Trogdord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+			RETURN_NULL();
+		}
+	}
 }
 
 /*****************************************************************************/
@@ -147,7 +211,6 @@ PHP_METHOD(Slot, destroy) {
 
 	catch (const RequestException &e) {
 
-		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
 
 			// This is a little hokey. I'm thinking of implementing substatus
