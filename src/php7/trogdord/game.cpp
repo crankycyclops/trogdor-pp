@@ -122,7 +122,9 @@ PHP_METHOD(Game, start) {
 	try {
 
 		std::string request = GAME_START_REQUEST;
-		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
@@ -176,7 +178,9 @@ PHP_METHOD(Game, stop) {
 	try {
 
 		std::string request = GAME_STOP_REQUEST;
-		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
@@ -231,7 +235,9 @@ PHP_METHOD(Game, getTime) {
 	try {
 
 		std::string request = GAME_TIME_REQUEST;
-		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
@@ -294,7 +300,9 @@ PHP_METHOD(Game, isRunning) {
 	try {
 
 		std::string request = GAME_IS_RUNNING_REQUEST;
-		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
@@ -351,7 +359,9 @@ PHP_METHOD(Game, statistics) {
 	try {
 
 		std::string request = GAME_STATISTICS_REQUEST;
-		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
@@ -416,7 +426,9 @@ PHP_METHOD(Game, destroy) {
 	try {
 
 		std::string request = GAME_DESTROY_REQUEST;
-		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
 
 		if (ZEND_NUM_ARGS()) {
 			if (deleteDump) {
@@ -490,7 +502,9 @@ PHP_METHOD(Game, dump) {
 	try {
 
 		std::string request = GAME_DUMP_REQUEST;
-		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
@@ -598,8 +612,10 @@ PHP_METHOD(Game, getMeta) {
 	try {
 
 		std::string request = GAME_GET_META_REQUEST;
-		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
 		strReplace(request, "%metaarg", metaArg);
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
@@ -706,8 +722,10 @@ PHP_METHOD(Game, setMeta) {
 	try {
 
 		std::string request = GAME_SET_META_REQUEST;
-		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
 		strReplace(request, "%values", valuesArg);
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
@@ -1841,8 +1859,10 @@ PHP_METHOD(Game, createPlayer) {
 	try {
 
 		std::string request = NEW_PLAYER_REQUEST;
-		strReplace(request, "%gid", std::to_string(Z_LVAL_P(id)));
 		strReplace(request, "%pname", name);
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
@@ -1967,9 +1987,11 @@ static zval getEntity(std::string name, std::string type, zval *game) {
 	zval *gameId = GAME_TO_ID(game, &rv);
 	zval *trogdord = GAME_TO_TROGDORD(game, &rv);
 
-	strReplace(request, "%gid", std::to_string(Z_LVAL_P(gameId)));
 	strReplace(request, "%etype", type);
 	strReplace(request, "%ename", name);
+	strReplace(request, "%gid", std::to_string(
+		IS_LONG == Z_TYPE_P(gameId) ? Z_LVAL_P(gameId) : static_cast<int>(Z_DVAL_P(gameId))
+	));
 
 	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 

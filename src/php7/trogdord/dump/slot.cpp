@@ -108,8 +108,13 @@ PHP_METHOD(Slot, destroy) {
 	try {
 
 		std::string request = SLOT_DESTROY_REQUEST;
-		strReplace(request, "%gid", std::to_string(IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))));
-		strReplace(request, "%slot", std::to_string(IS_LONG == Z_TYPE_P(slot) ? Z_LVAL_P(slot) : static_cast<int>(Z_DVAL_P(slot))));
+
+		strReplace(request, "%gid", std::to_string(
+			IS_LONG == Z_TYPE_P(id) ? Z_LVAL_P(id) : static_cast<int>(Z_DVAL_P(id))
+		));
+		strReplace(request, "%slot", std::to_string(
+			IS_LONG == Z_TYPE_P(slot) ? Z_LVAL_P(slot) : static_cast<int>(Z_DVAL_P(slot))
+		));
 
 		trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
