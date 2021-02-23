@@ -82,7 +82,25 @@ ZEND_END_ARG_INFO()
 
 PHP_METHOD(Slot, destroy) {
 
-	// TODO
+/*  TODO
+	try {
+
+		...
+
+		// Invalidate the object so it can't be used anymore
+		zend_update_property_bool(
+			SLOT_GLOBALS(classEntry),
+			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+				Z_OBJ_P(getThis()),
+			#else
+				getThis(),
+			#endif
+			SLOT_VALID_PROPERTY,
+			strlen(SLOT_VALID_PROPERTY),
+			0
+		);
+	}
+*/
 }
 
 /*****************************************************************************/
@@ -117,8 +135,8 @@ bool createDumpSlotObj(
 			#else
 				slotObj,
 			#endif
-			SLOT_PROPERTY,
-			strlen(SLOT_PROPERTY),
+			SLOT_SLOT_PROPERTY,
+			strlen(SLOT_SLOT_PROPERTY),
 			slot
 		);
 	} else {
@@ -129,8 +147,8 @@ bool createDumpSlotObj(
 			#else
 				slotObj,
 			#endif
-			SLOT_PROPERTY,
-			strlen(SLOT_PROPERTY),
+			SLOT_SLOT_PROPERTY,
+			strlen(SLOT_SLOT_PROPERTY),
 			slot
 		);
 	}
@@ -173,6 +191,18 @@ bool createDumpSlotObj(
 		dumpObj
 	);
 
+	zend_update_property_bool(
+		SLOT_GLOBALS(classEntry),
+		#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
+			Z_OBJ_P(slotObj),
+		#else
+			slotObj,
+		#endif
+		SLOT_VALID_PROPERTY,
+		strlen(SLOT_VALID_PROPERTY),
+		1
+	);
+
 	return true;
 }
 
@@ -187,8 +217,30 @@ void defineDumpSlotClass() {
 
 	zend_declare_property_null(
 		SLOT_GLOBALS(classEntry),
+		SLOT_SLOT_PROPERTY,
+		strlen(SLOT_SLOT_PROPERTY),
+		ZEND_ACC_PRIVATE
+	);
+
+	zend_declare_property_null(
+		SLOT_GLOBALS(classEntry),
+		SLOT_TIMESTAMP_PROPERTY,
+		strlen(SLOT_TIMESTAMP_PROPERTY),
+		ZEND_ACC_PRIVATE
+	);
+
+	zend_declare_property_null(
+		SLOT_GLOBALS(classEntry),
 		SLOT_DUMP_PROPERTY,
 		strlen(SLOT_DUMP_PROPERTY),
+		ZEND_ACC_PRIVATE
+	);
+
+	zend_declare_property_bool(
+		SLOT_GLOBALS(classEntry),
+		SLOT_VALID_PROPERTY,
+		strlen(SLOT_VALID_PROPERTY),
+		0,
 		ZEND_ACC_PRIVATE
 	);
 
