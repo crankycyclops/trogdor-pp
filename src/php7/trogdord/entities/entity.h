@@ -67,6 +67,27 @@ if (IS_NULL == Z_TYPE_P(ZVAL_VALID) || IS_FALSE == Z_TYPE_P(ZVAL_VALID)) { \
 	RETURN_NULL(); \
 }
 
+// Invalidate the entity object
+#if ZEND_MODULE_API_NO >= 20200930
+	#define INVALIDATE_ENTITY(ZVAL) \
+	zend_update_property_bool( \
+		ENTITY_GLOBALS(classEntry), \
+		Z_OBJ_P(ZVAL), \
+		ENTITY_VALID_PROPERTY, \
+		strlen(ENTITY_VALID_PROPERTY), \
+		0 \
+	)
+#else
+	#define INVALIDATE_ENTITY(ZVAL) \
+	zend_update_property_bool( \
+		ENTITY_GLOBALS(classEntry), \
+		ZVAL, \
+		ENTITY_VALID_PROPERTY, \
+		strlen(ENTITY_VALID_PROPERTY), \
+		0 \
+	)
+#endif
+
 /*****************************************************************************/
 
 // Creates a PHP instance corresponding to the given trogdord entity. Returns

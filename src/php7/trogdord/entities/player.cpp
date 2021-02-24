@@ -57,12 +57,14 @@ PHP_METHOD(Player, input) {
 
 			// Throw \Trogdord\GameNotFound
 			if (0 == strcmp(e.what(), "game not found")) {
+				INVALIDATE_GAME(ENTITY_TO_GAME(getThis(), &rv));
 				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 
 			// Throw \Trogdord\EntityNotFound
 			else {
+				INVALIDATE_ENTITY(getThis());
 				zend_throw_exception(EXCEPTION_GLOBALS(entityNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
@@ -148,12 +150,14 @@ PHP_METHOD(Player, destroy) {
 
 			// Throw \Trogdord\GameNotFound
 			if (0 == strcmp(e.what(), "game not found")) {
+				INVALIDATE_GAME(ENTITY_TO_GAME(getThis(), &rv));
 				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
 
 			// Throw \Trogdord\PlayerNotFound
 			else {
+				INVALIDATE_ENTITY(getThis());
 				zend_throw_exception(EXCEPTION_GLOBALS(playerNotFound), e.what(), e.getCode());
 				RETURN_NULL();
 			}
