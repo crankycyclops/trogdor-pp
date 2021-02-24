@@ -65,7 +65,7 @@
 		// Test slot that doesn't exist
 		try {
 			$dump->restore($slots[0]['slot'] + 5);
-		} catch (\Trogdord\GameNotFound $e) {}
+		} catch (\Trogdord\DumpSlotNotFound $e) {}
 
 		// Test the least recent slot, which doesn't have the meta value set
 		$game = $dump->restore($slots[1]['slot']);

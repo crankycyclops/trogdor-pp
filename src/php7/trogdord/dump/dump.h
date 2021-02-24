@@ -66,6 +66,27 @@ if (IS_NULL == Z_TYPE_P(ZVAL_VALID) || IS_FALSE == Z_TYPE_P(ZVAL_VALID)) { \
 	RETURN_NULL(); \
 }
 
+// Invalidate the dump object
+#if ZEND_MODULE_API_NO >= 20200930
+	#define INVALIDATE_DUMP(ZVAL) \
+	zend_update_property_bool( \
+		DUMP_GLOBALS(classEntry), \
+		Z_OBJ_P(ZVAL), \
+		DUMP_VALID_PROPERTY, \
+		strlen(DUMP_VALID_PROPERTY), \
+		0 \
+	)
+#else
+	#define INVALIDATE_DUMP(ZVAL) \
+	zend_update_property_bool( \
+		DUMP_GLOBALS(classEntry), \
+		ZVAL, \
+		DUMP_VALID_PROPERTY, \
+		strlen(DUMP_VALID_PROPERTY), \
+		0 \
+	)
+#endif
+
 /*****************************************************************************/
 
 // Creates an instance of \Trogdord\Game\Dump. Returns true on success and false on

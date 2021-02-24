@@ -129,9 +129,18 @@ PHP_METHOD(Dump, getSlot) {
 
 	catch (const RequestException &e) {
 
-		// Throw \Trogdord\DumpSlotNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(dumpSlotNotFound), e.what(), e.getCode());
+
+			// Throw \Trogdord\DumpSlotNotFound
+			if (std::string(e.what()).find("slot") != std::string::npos) {
+				zend_throw_exception(EXCEPTION_GLOBALS(dumpSlotNotFound), e.what(), e.getCode());
+			}
+
+			// Throw \Trogdord\GameNotFound
+			else {
+				INVALIDATE_DUMP(getThis());
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+			}
 		}
 
 		// Throw \Trogdord\RequestException
@@ -188,9 +197,18 @@ PHP_METHOD(Dump, slots) {
 		zend_throw_exception(EXCEPTION_GLOBALS(networkException), e.what(), 0);
 	}
 
-	// Throw \Trogord\RequestException
 	catch (const RequestException &e) {
-		zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+
+		// Throw \Trogdord\DumpSlotNotFound
+		if (404 == e.getCode()) {
+			INVALIDATE_DUMP(getThis());
+			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+		}
+
+		// Throw \Trogord\RequestException
+		else {
+			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
+		}
 	}
 }
 
@@ -269,9 +287,19 @@ PHP_METHOD(Dump, restore) {
 
 	catch (const RequestException &e) {
 
-		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
-			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+
+			// Throw \Trogdord\DumpSlotNotFound
+			if (std::string(e.what()).find("slot") != std::string::npos) {
+				zend_throw_exception(EXCEPTION_GLOBALS(dumpSlotNotFound), e.what(), e.getCode());
+			}
+
+			// Throw \Trogdord\GameNotFound
+			else {
+				INVALIDATE_DUMP(getThis());
+				zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
+			}
+
 			RETURN_NULL();
 		}
 
@@ -319,17 +347,7 @@ PHP_METHOD(Dump, destroy) {
 		);
 
 		// Invalidate the object so it can't be used anymore
-		zend_update_property_bool(
-			DUMP_GLOBALS(classEntry),
-			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
-				Z_OBJ_P(getThis()),
-			#else
-				getThis(),
-			#endif
-			DUMP_VALID_PROPERTY,
-			strlen(DUMP_VALID_PROPERTY),
-			0
-		);
+		INVALIDATE_DUMP(getThis());
 	}
 
 	// Throw \Trogord\NetworkException
@@ -342,15 +360,16 @@ PHP_METHOD(Dump, destroy) {
 
 		// Throw \Trogdord\GameNotFound
 		if (404 == e.getCode()) {
+			INVALIDATE_DUMP(getThis());
 			zend_throw_exception(EXCEPTION_GLOBALS(gameNotFound), e.what(), e.getCode());
-			RETURN_NULL();
 		}
 
 		// Throw \Trogdord\RequestException
 		else {
 			zend_throw_exception(EXCEPTION_GLOBALS(requestException), e.what(), e.getCode());
-			RETURN_NULL();
 		}
+
+		RETURN_NULL();
 	}
 }
 
