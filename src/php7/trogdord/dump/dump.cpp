@@ -346,7 +346,6 @@ PHP_METHOD(Dump, destroy) {
 			trogdord
 		);
 
-		// Invalidate the object so it can't be used anymore
 		INVALIDATE_DUMP(getThis());
 	}
 

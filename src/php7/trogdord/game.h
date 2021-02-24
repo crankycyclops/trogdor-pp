@@ -67,6 +67,27 @@ if (IS_NULL == Z_TYPE_P(ZVAL_VALID) || IS_FALSE == Z_TYPE_P(ZVAL_VALID)) { \
 	RETURN_NULL(); \
 }
 
+// Invalidate the game object
+#if ZEND_MODULE_API_NO >= 20200930
+	#define INVALIDATE_GAME(ZVAL) \
+	zend_update_property_bool( \
+		GAME_GLOBALS(classEntry), \
+		Z_OBJ_P(ZVAL), \
+		GAME_VALID_PROPERTY, \
+		strlen(GAME_VALID_PROPERTY), \
+		0 \
+	)
+#else
+	#define INVALIDATE_GAME(ZVAL) \
+	zend_update_property_bool( \
+		GAME_GLOBALS(classEntry), \
+		ZVAL, \
+		GAME_VALID_PROPERTY, \
+		strlen(GAME_VALID_PROPERTY), \
+		0 \
+	)
+#endif
+
 /*****************************************************************************/
 
 // Creates an instance of \Trogdord\Game. Returns true on success and false on

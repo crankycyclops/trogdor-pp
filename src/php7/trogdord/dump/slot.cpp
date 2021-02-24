@@ -126,7 +126,6 @@ PHP_METHOD(Slot, restore) {
 
 		if (404 == e.getCode()) {
 
-			// Invalidate the object so it can't be used anymore
 			INVALIDATE_SLOT(getThis());
 
 			// This is a little hokey. I'm thinking of implementing substatus
@@ -193,7 +192,6 @@ PHP_METHOD(Slot, destroy) {
 			trogdord
 		);
 
-		// Invalidate the object so it can't be used anymore
 		INVALIDATE_SLOT(getThis());
 	}
 
@@ -207,7 +205,6 @@ PHP_METHOD(Slot, destroy) {
 
 		if (404 == e.getCode()) {
 
-			// Invalidate the object so it can't be used anymore
 			INVALIDATE_SLOT(getThis());
 
 			// This is a little hokey. I'm thinking of implementing substatus
