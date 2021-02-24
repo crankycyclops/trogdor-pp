@@ -59,6 +59,27 @@ if (IS_NULL == Z_TYPE_P(ZVAL_VALID) || IS_FALSE == Z_TYPE_P(ZVAL_VALID)) { \
 	RETURN_NULL(); \
 }
 
+// Invalidate the slot object
+#if ZEND_MODULE_API_NO >= 20200930
+	#define INVALIDATE_SLOT(ZVAL) \
+	zend_update_property_bool( \
+		SLOT_GLOBALS(classEntry), \
+		Z_OBJ_P(ZVAL), \
+		SLOT_VALID_PROPERTY, \
+		strlen(SLOT_VALID_PROPERTY), \
+		0 \
+	)
+#else
+	#define INVALIDATE_SLOT(ZVAL) \
+	zend_update_property_bool( \
+		SLOT_GLOBALS(classEntry), \
+		ZVAL, \
+		SLOT_VALID_PROPERTY, \
+		strlen(SLOT_VALID_PROPERTY), \
+		0 \
+	)
+#endif
+
 /*****************************************************************************/
 
 // Creates an instance of \Trogdord\Game\Dump\Slot. Returns true on success and

@@ -127,17 +127,7 @@ PHP_METHOD(Slot, restore) {
 		if (404 == e.getCode()) {
 
 			// Invalidate the object so it can't be used anymore
-			zend_update_property_bool(
-				SLOT_GLOBALS(classEntry),
-				#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
-					Z_OBJ_P(getThis()),
-				#else
-					getThis(),
-				#endif
-				SLOT_VALID_PROPERTY,
-				strlen(SLOT_VALID_PROPERTY),
-				0
-			);
+			INVALIDATE_SLOT(getThis());
 
 			// This is a little hokey. I'm thinking of implementing substatus
 			// codes in trogdord responses so I won't have to parse strings
@@ -204,17 +194,7 @@ PHP_METHOD(Slot, destroy) {
 		);
 
 		// Invalidate the object so it can't be used anymore
-		zend_update_property_bool(
-			SLOT_GLOBALS(classEntry),
-			#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
-				Z_OBJ_P(getThis()),
-			#else
-				getThis(),
-			#endif
-			SLOT_VALID_PROPERTY,
-			strlen(SLOT_VALID_PROPERTY),
-			0
-		);
+		INVALIDATE_SLOT(getThis());
 	}
 
 	// Throw \Trogord\NetworkException
@@ -228,17 +208,7 @@ PHP_METHOD(Slot, destroy) {
 		if (404 == e.getCode()) {
 
 			// Invalidate the object so it can't be used anymore
-			zend_update_property_bool(
-				SLOT_GLOBALS(classEntry),
-				#if ZEND_MODULE_API_NO >= 20200930 // PHP 8.0+
-					Z_OBJ_P(getThis()),
-				#else
-					getThis(),
-				#endif
-				SLOT_VALID_PROPERTY,
-				strlen(SLOT_VALID_PROPERTY),
-				0
-			);
+			INVALIDATE_SLOT(getThis());
 
 			// This is a little hokey. I'm thinking of implementing substatus
 			// codes in trogdord responses so I won't have to parse strings
