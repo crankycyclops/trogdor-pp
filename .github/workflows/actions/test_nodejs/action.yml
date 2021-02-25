@@ -1,0 +1,5 @@
+name: 'Build and run unit tests for trogdord NodeJS module'
+description: 'Builds and runs all unit tests for the trogdord NodeJS module.'
+runs:
+   using: 'docker'
+   image: 'Dockerfile'
