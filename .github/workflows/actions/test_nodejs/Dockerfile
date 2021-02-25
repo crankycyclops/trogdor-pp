@@ -19,7 +19,7 @@ RUN apt-get -y install git g++ zlib1g-dev libonig-dev libzip5 libzip-dev
 RUN apt-get -y install curl dirmngr apt-transport-https lsb-release ca-certificates
 RUN curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 RUN apt-get update
-RUN apt-get -y install nodejs npm
+RUN apt-get -y install nodejs
 RUN echo node -v
 
 COPY entrypoint.sh /entrypoint.sh
