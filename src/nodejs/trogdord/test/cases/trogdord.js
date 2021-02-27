@@ -131,11 +131,28 @@ class TrogdordTest extends ConnectionRequired {
 					connection.statistics().then(response => {
 
 						if (200 != connection.status) {
-							reject("Request should have returned 200 status but did not");
+							reject(new Error("Request should have returned 200 status but did not"));
 						}
 
 						if ('object' != typeof response) {
-							reject("Response should be of type 'object' but isn't");
+							reject(new Error("Response should be of type 'object' but isn't"));
+						}
+
+						let unexpectedKey = null;
+						let responseKeys = Object.keys(response);
+
+						for (let i = 0; i < responseKeys.length; i++) {
+							if (!validKeys.includes(responseKeys[i])) {
+								reject(new Error("Found unexpected key '" + responseKeys[i] + "' in response. Likely, the unit tests need to be updated."));
+							}
+						}
+
+						if (!Number.isInteger(response.players)) {
+							reject(new Error("response.players should be an integer but is not"));
+						}
+
+						if (response.players < 0) {
+							reject(new Error("response.players should be >= 0 but is not"));
 						}
 
 						resolve();
@@ -156,12 +173,17 @@ class TrogdordTest extends ConnectionRequired {
 	 */
 	run() {
 
-		return this.#testConstructor().then(
-			this.#testConnected
-		).then(
-			this.#testStatistics
-		).catch(error => {
-			reject(error);
+		return new Promise((resolve, reject) => {
+
+			return this.#testConstructor().then(
+				this.#testConnected
+			).then(
+				this.#testStatistics
+			).then(() => {
+				resolve();
+			}).catch(error => {
+				reject(error);
+			});
 		});
 	}
 };
