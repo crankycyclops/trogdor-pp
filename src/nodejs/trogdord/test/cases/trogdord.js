@@ -1,12 +1,15 @@
 'use strict';
 
-const Case = require('./lib/case');
+const ConnectionRequired = require('./lib/connectionrequired');
 
-class Trogdord extends Case {
+class Trogdord extends ConnectionRequired {
 
 	run() {
 
-		console.log("Trogdord.js: TODO");
+		return new Promise((resolve, reject) => {
+			console.log("Trogdord.js: TODO");
+			resolve();
+		});
 	}
 };
 
