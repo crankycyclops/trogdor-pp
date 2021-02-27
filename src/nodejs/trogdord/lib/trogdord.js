@@ -30,6 +30,9 @@ class Trogdord extends EventEmitter {
 	// Underlying socket connection
 	#connection;
 
+	// Stores the status of the last request
+	#status = 0;
+
 	/**
 	 * Create a new connection to an instance of trogdord.
 	 *
@@ -131,6 +134,14 @@ class Trogdord extends EventEmitter {
 	get connected() {
 
 		return !this.#connection.destroyed && !this.#connection.connecting ? true : false;
+	}
+
+	/**
+	 * Returns the status of the last request.
+	 */
+	get status() {
+
+		return this.#status;
 	}
 
 	/**
@@ -427,9 +438,12 @@ class Trogdord extends EventEmitter {
 
 					this.#connection.removeListener('data', onData);
 					this.#connection.removeListener('error', onError);
-
 					this.#connection.setTimeout(0);
-					resolve(JSON.parse(dataStr.slice(0, -1)));
+
+					let jsonObj = JSON.parse(dataStr.slice(0, -1));
+
+					this.#status = jsonObj.status;
+					resolve(jsonObj);
 				}
 			};
 

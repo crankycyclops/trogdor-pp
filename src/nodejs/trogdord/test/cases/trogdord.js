@@ -6,7 +6,7 @@ const ConnectionRequired = require('./lib/connectionrequired');
 class TrogdordTest extends ConnectionRequired {
 
 	/**
-	 * Tests Trogdord.prototype.constructor.
+	 * Tests Trogdord.constructor().
 	 */
 	#testConstructor = function () {
 
@@ -30,70 +30,123 @@ class TrogdordTest extends ConnectionRequired {
 			}
 		}).then(() => {
 
-			// Test with explicit arguments (for now, I'm not testing the third
-			// options argument)
-			try {
+			return new Promise((resolve, reject) => {
 
-				let connection = new Trogdord('localhost', 1040);
+				// Test with explicit arguments (for now, I'm not testing the third
+				// options argument)
+				try {
 
-				connection.on('connect', () => {
-					connection.close();
-					resolve('Connected');
-				});
+					let connection = new Trogdord('localhost', 1040);
 
-				connection.on('error', (e) => {
-					reject(new Error(e.message));
-				});
-			} catch (e) {
-				reject(e);
-			}
+					connection.on('connect', () => {
+						connection.close();
+						resolve('Connected');
+					});
+
+					connection.on('error', (e) => {
+						reject(new Error(e.message));
+					});
+				} catch (e) {
+					reject(e);
+				}
+			});
 		});
 	}
 
 	/**
-	 * Tests Trogdord.prototype.connected.
+	 * Tests Trogdord.connected().
 	 */
 	#testConnected = function () {
+
+		let connection;
 
 		return new Promise((resolve, reject) => {
 
 			// 1: Connect
 			try {
 
-				let connection = new Trogdord();
+				connection = new Trogdord();
 
 				connection.on('connect', () => {
-					connection.close();
 					resolve('Connected');
 				});
 
 				connection.on('error', (e) => {
 					reject(new Error(e.message));
 				});
-
-				return connection;
 			} catch (e) {
 				reject(e);
 			}
-		}).then(connection => {
+		}).then(() => {
 
-			// 2: Test connected() method while connected
-			if (connection.connected()) {
-				resolve();
-			} else {
-				reject(new Error("connection.connected() should have returned true after connecting but didn't"));
-			}
+			return new Promise((resolve, reject) => {
 
-			return connection;
-		}).then(connection => {
+				// 2: Test connected() method while connected
+				if (connection.connected) {
+					resolve();
+				} else {
+					reject(new Error("connection.connected getter should have returned true after connecting but didn't"));
+				}
+			});
+		}).then(() => {
 
-			// 3: Test connected() method after closing the connection
-			connection.close();
+			return new Promise((resolve, reject) => {
 
-			if (!connection.connected()) {
-				resolve();
-			} else {
-				reject(new Error("connection.connected() should have returned false immediately after being closed but didn't"));
+				// 3: Test connected() method after closing the connection
+				connection.close();
+
+				if (!connection.connected) {
+					resolve();
+				} else {
+					reject(new Error("connection.connected getter should have returned false immediately after being closed but didn't"));
+				}
+			});
+		});
+	}
+
+	/**
+	 * Tests Trogdord.statistics().
+	 */
+	#testStatistics = function () {
+
+		let connection;
+
+		// I only check these so that if I forget to write checks for additional
+		// stats that are added later, I'll get a nice obvious warning in the
+		// form of a failed test :)
+		let validKeys = [
+			'lib_version',
+			'version',
+			'players'
+		];
+
+		return new Promise((resolve, reject) => {
+
+			try {
+
+				connection = new Trogdord();
+
+				connection.on('connect', () => {
+
+					connection.statistics().then(response => {
+
+						if (200 != connection.status) {
+							reject("Request should have returned 200 status but did not");
+						}
+
+						if ('object' != typeof response) {
+							reject("Response should be of type 'object' but isn't");
+						}
+
+						resolve();
+					});
+				});
+
+				connection.on('error', (e) => {
+					reject(new Error(e.message));
+				});
+			} catch (e) {
+				reject(e);
 			}
 		});
 	}
@@ -104,8 +157,12 @@ class TrogdordTest extends ConnectionRequired {
 	run() {
 
 		return this.#testConstructor().then(
-			this.#testConnected()
-		);
+			this.#testConnected
+		).then(
+			this.#testStatistics
+		).catch(error => {
+			reject(error);
+		});
 	}
 };
 
