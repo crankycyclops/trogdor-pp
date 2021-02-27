@@ -7,9 +7,8 @@ const casesDir = fs.opendirSync(casesPath);
 // Number of tests that failed
 let failed = 0;
 
-// Each skip determination and test (if it's found that the test shouldn't be
-// skipped) is executed asynchronously as a Promise
-let jobs = [];
+// Each test is executed asynchronously as a Promise
+let tests = [];
 
 console.log("Running nodejs/trogdord unit tests:\n");
 
@@ -20,28 +19,32 @@ for (let entry = casesDir.readSync(); entry != null; entry = casesDir.readSync()
 		let test = require(casesPath + path.sep + entry.name);
 		let instance = new test();
 
-		jobs.push(
-			instance.skip().then(() => {
-				console.log(entry.name + ': SKIPPED');
-			}).catch(e => {
-				jobs.push(
+		tests.push(
+			new Promise((resolve, reject) => {
+				instance.skip().then(() => {
+					console.log(entry.name + ': SKIPPED');
+					resolve();
+				}).catch(e => {
 					instance.run().then(result => {
 						console.log(entry.name + ': PASSED');
+						resolve();
 					}).catch(error => {
 						console.log(entry.name + ': FAILED');
-						console.error("\t" + entry.name + ':' + e.lineNumber + ': ' + e.message);
+						console.error("\t" + entry.name + ':' + error.stack.split("\n")[1].split(':')[1] + ': ' + error.message);
 						failed++;
-					})
-				);
+						resolve();
+					});
+				});
 			})
 		);
 	}
 }
 
-Promise.allSettled(jobs).then(result => {
+Promise.allSettled(tests).then(result => {
 	casesDir.closeSync();
 	process.exit(failed);
 }).catch(error => {
 	casesDir.closeSync();
 	console.error(error);
+	process.exit(1);
 });

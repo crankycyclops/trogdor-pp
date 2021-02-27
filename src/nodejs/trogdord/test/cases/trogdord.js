@@ -2,15 +2,41 @@
 
 const ConnectionRequired = require('./lib/connectionrequired');
 
-class Trogdord extends ConnectionRequired {
+class TrogdordTest extends ConnectionRequired {
 
-	run() {
+	/**
+	 * Tests Trogdord.prototype.constructor.
+	 */
+	#testConstructor = function () {
 
 		return new Promise((resolve, reject) => {
-			console.log("Trogdord.js: TODO");
+			resolve();
+		});
+
+		// When rejecting, send instance of Error, like so:
+		// reject(new Error("Wee"));
+	}
+
+	/**
+	 * Tests Trogdord.prototype.connected.
+	 */
+	#testConnected = function () {
+
+		return new Promise((resolve, reject) => {
+			console.log("testConnected: TODO");
 			resolve();
 		});
 	}
+
+	/**
+	 * Run all unit tests.
+	 */
+	run() {
+
+		return this.#testConstructor().then(
+			this.#testConnected()
+		);
+	}
 };
 
-module.exports = Trogdord;
+module.exports = TrogdordTest;
