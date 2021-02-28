@@ -125,8 +125,21 @@ class TrogdordTest extends ConnectionRequired {
 						reject(new Error("Status getter should return 0 before the first request has been made"));
 					}
 
-					// TODO: test 200 status and non-200 status
-					resolve();
+					// Should get 200 status after a successful call
+					connection.statistics().then(response => {
+
+						if (200 != connection.status) {
+							reject(new Error(
+								"Expected 200 status after successful call to connection.status, but got " +
+								connection.status + " instead"
+							));
+						}
+
+						resolve();
+
+					}).catch(error => {
+						reject (new Error("Expected call to connection.status() to succeed: " + error.message));
+					});
 				});
 
 				connection.on('error', (e) => {

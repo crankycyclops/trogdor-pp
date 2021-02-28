@@ -19,7 +19,7 @@ This repository includes the following modules:
 * [src/core](src/core/README.md): The core library, written in C++
 * [src/standalone](src/standalone/README.md): A barebones single-player CLI client, written primarily as a demonstration for how to use the library
 * [src/trogdord](src/trogdord/README.md): A queryable TCP server capable of hosting multi-player games with configurable crash recovery features and optional support for [Redis Pub/Sub](https://redis.io/topics/pubsub)
-* [src/php7/trogdord](src/php7/trogdord/README.md): A PHP 7 and 8 client for trogdord, written as an extension in C++
+* [src/php7/trogdord](src/php7/trogdord/README.md): A PHP 7/8 client for trogdord, written as an extension in C++
 * [src/nodejs/trogdord](src/nodejs/trogdord/README.md): A Node.js client for trogdord, written in Javascript
 
 Descriptions of each component, along with build instructions, can be found by clicking the links above.
