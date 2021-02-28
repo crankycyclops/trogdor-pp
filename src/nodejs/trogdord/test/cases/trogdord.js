@@ -138,22 +138,45 @@ class TrogdordTest extends ConnectionRequired {
 							reject(new Error("Response should be of type 'object' but isn't"));
 						}
 
-						let unexpectedKey = null;
 						let responseKeys = Object.keys(response);
+						let keysFound = [];
 
 						for (let i = 0; i < responseKeys.length; i++) {
 							if (!validKeys.includes(responseKeys[i])) {
 								reject(new Error("Found unexpected key '" + responseKeys[i] + "' in response. Likely, the unit tests need to be updated."));
+							} else {
+								keysFound.push(responseKeys[i]);
 							}
 						}
 
+						let difference = validKeys.filter(value => !responseKeys.includes(value));
+
+						if (difference.length) {
+							reject(new Error("Response is missing required keys: " + difference.toString()));
+						}
+
 						if (!Number.isInteger(response.players)) {
-							reject(new Error("response.players should be an integer but is not"));
+							reject(new Error("response.players should be an integer but isn't"));
 						}
 
 						if (response.players < 0) {
-							reject(new Error("response.players should be >= 0 but is not"));
+							reject(new Error("response.players should be >= 0 but isn't"));
 						}
+
+						['version', 'lib_version'].forEach(key => {
+
+							if ('object' != typeof response[key]) {
+								reject(new Error("response." + key + " should be an object but isn't"));
+							}
+
+							['major', 'minor', 'patch'].forEach(verKey => {
+								if (!verKey in response[key]) {
+									reject(new Error("Missing required '" + verKey + "' in response." + key));
+								} else if (!Number.isInteger(response[key][verKey])) {
+									reject(new Error("response." + key + "." + verKey + " should be an integer but isn't"));
+								}
+							});
+						});
 
 						resolve();
 					});
