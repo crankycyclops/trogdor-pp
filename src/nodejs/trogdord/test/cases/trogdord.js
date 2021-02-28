@@ -54,9 +54,9 @@ class TrogdordTest extends ConnectionRequired {
 	}
 
 	/**
-	 * Tests Trogdord.connected().
+	 * Tests Trogdord.connected getter.
 	 */
-	#testConnected = function () {
+	#testConnectedGetter = function () {
 
 		let connection;
 
@@ -101,6 +101,40 @@ class TrogdordTest extends ConnectionRequired {
 					reject(new Error("connection.connected getter should have returned false immediately after being closed but didn't"));
 				}
 			});
+		});
+	}
+
+	/**
+	 * Tests the Trogdord.status getter.
+	 */
+	#testStatusGetter = function () {
+
+		let connection;
+
+		return new Promise((resolve, reject) => {
+
+			try {
+
+				connection = new Trogdord();
+
+				connection.on('connect', () => {
+
+					// The value of status should be initialized to zero before
+					// the first request has been made
+					if (0 != connection.status) {
+						reject(new Error("Status getter should return 0 before the first request has been made"));
+					}
+
+					// TODO: test 200 status and non-200 status
+					resolve();
+				});
+
+				connection.on('error', (e) => {
+					reject(new Error(e.message));
+				});
+			} catch (e) {
+				reject(e);
+			}
 		});
 	}
 
@@ -199,7 +233,9 @@ class TrogdordTest extends ConnectionRequired {
 		return new Promise((resolve, reject) => {
 
 			return this.#testConstructor().then(
-				this.#testConnected
+				this.#testConnectedGetter
+			).then(
+				this.#testStatusGetter
 			).then(
 				this.#testStatistics
 			).then(() => {
