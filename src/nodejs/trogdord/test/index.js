@@ -25,12 +25,12 @@ for (let entry = casesDir.readSync(); entry != null; entry = casesDir.readSync()
 					console.log(entry.name + ': SKIPPED');
 					resolve();
 				}).catch(e => {
-					instance.run().then(result => {
+					instance.init().then(() => {return instance.run();}).then(result => {
 						console.log(entry.name + ': PASSED');
 						resolve();
 					}).catch(error => {
 						console.log(entry.name + ': FAILED');
-						console.error("\t" + entry.name + ':' + error.stack.split("\n")[1].split(':')[1] + ': ' + error.message);
+						console.error("\t" + ("string" == typeof error ? error : entry.name + ':' + error.stack.split("\n")[1].split(':')[1] + ': ' + error.message));
 						failed++;
 						resolve();
 					});
