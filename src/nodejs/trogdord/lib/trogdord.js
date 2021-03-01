@@ -300,7 +300,7 @@ class Trogdord extends EventEmitter {
 					let games = [];
 
 					response.games.forEach((game, index) => {
-						games.push(new this.#Game(game.id, game.name, this));
+						games.push(new this.#Game(game.id, game.name, game.definition, this));
 					});
 
 					resolve(games);

@@ -1,7 +1,9 @@
 'use strict';
 
-const Trogdord = require('../../lib/trogdord');
 const ConnectionRequired = require('./lib/connectionrequired');
+
+const Trogdord = require('../../lib/trogdord');
+const Game = require('../../lib/game');
 
 class TrogdordTest extends ConnectionRequired {
 
@@ -252,6 +254,132 @@ class TrogdordTest extends ConnectionRequired {
 	}
 
 	/**
+	 * Tests Trogdord.games(), Trogdord.newGame(), and Trogdord.getGame().
+	 */
+	#testNewGameAndGetGame = function () {
+
+		return new Promise((resolve, reject) => {
+
+			let createdGame;
+			let connection = new Trogdord();
+
+			connection.on('connect', () => {
+
+				// Attempt to get a game that doesn't exist
+				connection.getGame(0).then(response => {
+
+					reject(new Error("Call to getGame() with non-existent id should have failed but didn't"));
+				}).catch(error => {
+
+					if (404 != error.status) {
+						reject(new Error("Call to getGame() with non-existent id should have resulted in 404 status but didn't"));
+					}
+
+					// Get a list of all games so far and verify the list is empty
+					connection.games().then(response => {
+
+						if (200 != connection.status) {
+							reject(new Error("Trogdord.games() should have resulted in 200 status but didn't"));
+						}
+
+						if (!Array.isArray(response)) {
+							reject(new Error("Trogdord.games() should have returned an array but didn't"));
+						}
+
+						if (0 != response.length) {
+							reject(new Error("Games list should be empty before one has been created but wasn't"));
+						}
+
+						// Attempt to create a new game
+						return connection.newGame("My Game", "game.xml");
+					}).then(game => {
+
+						if (200 != connection.status) {
+							reject(new Error("Trogdord.newGame() should have resulted in 200 status but didn't"));
+						}
+
+						if (!game instanceof Game) {
+							reject(new Error("Trogdord.newGame() should resolve to an instance of Game but doesn't"));
+						}
+
+						// Attempt to get the game we just created
+						createdGame = game;
+						return connection.getGame(game.id);
+					}).then(game => {
+
+						if (200 != connection.status) {
+							reject(new Error("Trogdord.getGame() should return 200 status on success but doesn't"));
+						}
+
+						if (!game instanceof Game) {
+							reject(new Error("Return value of Trogdord.getGame() should resolve to instance of Game but doesn't"));
+						}
+
+						if (createdGame.id != game.id) {
+							reject(new Error("Game id of new game should have matched the game we retrieved, but it didn't"));
+						}
+
+						// Get a list of games again and show that the new games is now part of it
+						return connection.games();
+					}).then(games => {
+
+						if (200 != connection.status) {
+							reject(new Error("Trogdord.games() should have resulted in 200 status but didn't"));
+						}
+
+						if (!Array.isArray(games)) {
+							reject(new Error("Trogdord.games() should have returned an array but didn't"));
+						}
+
+						if (1 != games.length) {
+							reject(new Error("Games list should contain exactly one value but doesn't"));
+						}
+
+						if (!games[0] instanceof Game) {
+							reject(new Error("Members of array returned by Trogdord.games() should be instances of Game"));
+						}
+
+						if (games[0].id != createdGame.id) {
+							reject(new Error("Id of game in list doesn't match id of game returned by Trogdord.newGame()"));
+						}
+
+						// TODO: make sure Game instance has all its members correctly initialized
+
+						// Clean up
+						return games[0].destroy();
+					}).then(response => {
+
+						if (200 != connection.status) {
+							reject(new Error("Game should have been successfully destroyed but wasn't"));
+						}
+
+						resolve();
+					}).catch(error => {
+
+						reject(error);
+					})
+				})
+			});
+
+			connection.on('error', (e) => {
+				reject(new Error(e.message));
+			});
+		});
+	}
+
+	/**
+	 * Tests Trogdord.games() with filters.
+	 */
+	#testGamesWithFilters = function () {
+
+		return new Promise((resolve, reject) => {
+
+			// TODO
+			resolve();
+		});
+	}
+
+	/**
 	 * Tests Trogdord.makeRequest() and Trogdord.close().
 	 */
 	#testMakeRequestAndClose = function () {
@@ -338,11 +466,13 @@ class TrogdordTest extends ConnectionRequired {
 
 		return new Promise((resolve, reject) => {
 
-			this.addTest(this.#testConnectedGetter);
-			this.addTest(this.#testStatusGetter);
-			this.addTest(this.#testStatistics);
-			this.addTest(this.#testDefinitions);
-			this.addTest(this.#testMakeRequestAndClose);
+			this.addTest("Trogdord.connected Getter", this.#testConnectedGetter);
+			this.addTest("Trogdord.status Getter", this.#testStatusGetter);
+			this.addTest("Trogdord.statistics()", this.#testStatistics);
+			this.addTest("Trogdord.definitions()", this.#testDefinitions);
+			this.addTest("Trogdord.games(), Trogdord.newGame(), and Trogdord.getGame()", this.#testNewGameAndGetGame);
+			this.addTest("Trogdord.games() with filters", this.#testGamesWithFilters);
+			this.addTest("Trogdord.makeRequest() and Trogdord.close()", this.#testMakeRequestAndClose);
 
 			resolve();
 		});
