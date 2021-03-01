@@ -239,6 +239,88 @@ class TrogdordTest extends ConnectionRequired {
 	}
 
 	/**
+	 * Tests Trogdord.makeRequest().
+	 */
+	#testMakeRequest = function () {
+
+		let connection;
+
+		return new Promise((resolve, reject) => {
+
+			connection = new Trogdord();
+
+			connection.on('connect', () => {
+
+				// Attempt valid request without timeout
+				connection.makeRequest({method: 'get', scope: 'global', action: 'statistics'}).catch(error => {
+
+					reject(new Error(error));
+				}).then(response => {
+
+					if (200 != connection.status) {
+						reject(new Error('Status of valid request should be 200'));
+					}
+				}).then(() => {
+
+					// Attempt valid request with timeout
+					return connection.makeRequest({method: 'get', scope: 'global', action: 'statistics'}, 500);
+				}).catch(error => {
+
+					reject(new Error(error));
+				}).then(response => {
+
+					if (200 != connection.status) {
+						reject(new Error('Status of valid request with timeout should be 200'));
+					}
+
+					// Attempt unroutable request without timeout
+					return connection.makeRequest({method: 'notamethod', scope: 'notascope'});
+				}).catch(error => {
+
+					reject(new Error(error));
+				}).then(response => {
+
+					if (404 != connection.status) {
+						reject(new Error('Status of unroutable request without should have been 404'));
+					}
+
+					// Attempt unroutable request with timeout
+					return connection.makeRequest({method: 'notamethod', scope: 'notascope'}, 500);
+				}).catch(error => {
+
+					reject(new Error(error));
+				}).then(response => {
+
+					if (404 != connection.status) {
+						reject(new Error('Status of unroutable request with timeout should have been 404'));
+					}
+
+					// Attempt request after connection has been closed without timeout
+					connection.close();
+					return connection.makeRequest({method: 'get', scope: 'global', action: 'statistics'});
+				}).then(response => {
+
+					reject(new Error('Request without timeout should not have been successful after closing the connection'));
+				}).catch(error => {
+
+					// Attempt request after connection has been closed with timeout
+					return connection.makeRequest({method: 'get', scope: 'global', action: 'statistics'}, 500);
+				}).then(response => {
+
+					reject(new Error('Request with timeout should not have been successful after closing the connection'));
+				}).catch(error => {
+
+					resolve();
+				});
+			});
+
+			connection.on('error', (e) => {
+				reject(new Error(e.message));
+			});
+		});
+	}
+
+	/**
 	 * Run all unit tests.
 	 */
 	run() {
@@ -251,6 +333,8 @@ class TrogdordTest extends ConnectionRequired {
 				this.#testStatusGetter
 			).then(
 				this.#testStatistics
+			).then(
+				this.#testMakeRequest
 			).then(() => {
 				resolve();
 			}).catch(error => {
