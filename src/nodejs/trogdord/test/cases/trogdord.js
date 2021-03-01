@@ -221,8 +221,33 @@ class TrogdordTest extends ConnectionRequired {
 
 		return new Promise((resolve, reject) => {
 
-			// TODO
-			resolve();
+			let connection = new Trogdord();
+
+			connection.on('connect', () => {
+
+				connection.definitions().then(response => {
+
+					if (200 != connection.status) {
+						reject(new Error("Status after successful call to Trogdord.definitions() should have been 200 but wasn't"));
+					}
+
+					if (!Array.isArray(response)) {
+						reject(new Error("Response should have been an array of definitions but wasn't"));
+					}
+
+					response.forEach((definition, response) => {
+						if ("string" != typeof definition) {
+							reject(new Error("One or more returned definitions was not a string but should have been"));
+						}
+					});
+
+					resolve();
+				});
+			});
+
+			connection.on('error', (e) => {
+				reject(new Error(e.message));
+			});
 		});
 	}
 
