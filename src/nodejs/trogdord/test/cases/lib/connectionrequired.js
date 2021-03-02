@@ -8,6 +8,7 @@ const Trogdord = require('../../../lib/trogdord');
 // to an instance of trogdord cannot be established.
 class ConnectionRequired extends Case {
 
+	// The unit test is skipped if we can't connect to an instance of trogdord
 	skip() {
 
 		return new Promise((resolve, reject) => {
@@ -26,6 +27,16 @@ class ConnectionRequired extends Case {
 			setTimeout(() => {
 				resolve('Connection timed out');
 			}, 1000);
+		});
+	}
+
+	// Returns a promise that resolves to true if trogdord's configuration has
+	// state features turned on and false if not.
+	stateEnabled() {
+
+		return new Promise((resolve, reject) => {
+
+			
 		});
 	}
 };

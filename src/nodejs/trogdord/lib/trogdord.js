@@ -145,6 +145,38 @@ class Trogdord extends EventEmitter {
 	}
 
 	/**
+	 * Returns a promise that resolves to a JSON object detailing trogdord's
+	 * configuration. Excludes sensitive settings that should not be made
+	 * public.
+	 */
+	config() {
+
+		return new Promise((resolve, reject) => {
+
+			this.makeRequest({
+				method: "get",
+				scope: "global",
+				action: "config"
+			}).then(response => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				delete response.status;
+				resolve(response.config);
+
+			}).catch(error => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
 	 * Returns a promise that resolves to a JSON object detailing useful
 	 * statistical data.
 	 */

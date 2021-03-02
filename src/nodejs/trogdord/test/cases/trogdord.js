@@ -137,6 +137,34 @@ class TrogdordTest extends ConnectionRequired {
 	}
 
 	/**
+	 * Tests Trogdord.config().
+	 */
+	#testConfig = function () {
+
+		return new Promise((resolve, reject) => {
+
+			const connection = new Trogdord();
+
+			connection.on('connect', () => {
+
+				connection.config().then(response => {
+
+					if ('object' != typeof response) {
+						reject(new Error("Response of Trogdord.config() should be an object but wasn't"));
+					}
+
+					resolve();
+				}).catch(error => {
+					reject(new Error(error.message));
+				}).catch(error => {
+
+					reject(error);
+				});
+			});
+		});
+	}
+
+	/**
 	 * Tests Trogdord.statistics().
 	 */
 	#testStatistics = function () {
@@ -207,6 +235,9 @@ class TrogdordTest extends ConnectionRequired {
 					});
 
 					resolve();
+				}).catch(error => {
+
+					reject(error);
 				});
 			});
 
@@ -244,6 +275,9 @@ class TrogdordTest extends ConnectionRequired {
 					});
 
 					resolve();
+				}).catch(error => {
+
+					reject(error);
 				});
 			});
 
@@ -656,6 +690,7 @@ class TrogdordTest extends ConnectionRequired {
 			this.addTest("Trogdord.construct()", this.#testConstructor);
 			this.addTest("Trogdord.connected Getter", this.#testConnectedGetter);
 			this.addTest("Trogdord.status Getter", this.#testStatusGetter);
+			this.addTest("Trogdord.config()", this.#testConfig);
 			this.addTest("Trogdord.statistics()", this.#testStatistics);
 			this.addTest("Trogdord.definitions()", this.#testDefinitions);
 			this.addTest("Trogdord.games() without filters, Trogdord.newGame(), and Trogdord.getGame()", this.#testNewGameAndGetGame);

@@ -93,9 +93,41 @@ connection.on('close', () => {
 })
 ```
 
+### Retrieving Trogdord Configuration Settings
+
+This method returns the settings trogdord was configured with. Settings that expose security-sensitive information about the server are excluded.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.config()
+	.then(stats => {
+		console.log(stats);
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+Result:
+
+```
+{
+  'output.driver': 'local',
+  'state.max_dumps_per_game': 0,
+  'redis.input_channel': 'trogdord:in',
+  'state.enabled': false,
+  'redis.output_channel': 'trogdord:out'
+}
+```
+
 ### Retrieving Trogdord Statistics
 
-This method retrieves useful statistical data about the instance of trogdord we're connected to:
+This method retrieves useful statistical data about the instance of trogdord we're connected to.
 
 Example:
 
