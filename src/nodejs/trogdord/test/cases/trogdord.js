@@ -405,9 +405,56 @@ class TrogdordTest extends ConnectionRequired {
 
 			const gameName1 = "aaa";
 			const gameName2 = "bbb";
+			const definition = "game.xml";
+	
+			const connection = new Trogdord();
 
-			// TODO
-			resolve();
+			// Game1 is named "aaa" and will be started.
+			// Game2 is named "bbb" and will be started.
+			// Game3 is named "aaa" and will be stopped.
+			// Game4 is named "bbb" and will be stopped.
+			let game1, game2, game3, game4;
+
+			connection.on('connect', () => {
+
+				connection.newGame(gameName1, definition).then(game => {
+
+					game1 = game;
+					return connection.newGame(gameName2, definition);
+				}).then(game => {
+
+					game2 = game;
+					return connection.newGame(gameName1, definition);
+				}).then(game => {
+
+					game3 = game;
+					return connection.newGame(gameName2, definition);
+				}).then(game => {
+
+					game4 = game;
+					return game1.start();
+				}).then(response => {
+
+					return game2.start();
+				}).then(response => {
+
+					return game3.stop();
+				}).then(response => {
+
+					return game4.stop();
+				}).then(response => {
+
+					// TODO: test filters
+					resolve();
+				}).catch(error => {
+
+					reject(error);
+				});
+			});
+
+			connection.on('error', (e) => {
+				reject(new Error(e.message));
+			});
 		});
 	}
 
