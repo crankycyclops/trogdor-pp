@@ -15,7 +15,7 @@ class TrogdordTest extends ConnectionRequired {
 		return new Promise((resolve, reject) => {
 
 			// Test with default arguments
-			let connection = new Trogdord();
+			const connection = new Trogdord();
 
 			connection.on('connect', () => {
 				connection.close();
@@ -33,7 +33,7 @@ class TrogdordTest extends ConnectionRequired {
 				// options argument)
 				try {
 
-					let connection = new Trogdord('localhost', 1040);
+					const connection = new Trogdord('localhost', 1040);
 
 					connection.on('connect', () => {
 						connection.close();
@@ -103,7 +103,7 @@ class TrogdordTest extends ConnectionRequired {
 
 		return new Promise((resolve, reject) => {
 
-			let connection = new Trogdord();
+			const connection = new Trogdord();
 
 			connection.on('connect', () => {
 
@@ -146,13 +146,13 @@ class TrogdordTest extends ConnectionRequired {
 			// I only check these so that if I forget to write checks for additional
 			// stats that are added later, I'll get a nice obvious warning in the
 			// form of a failed test :)
-			let validKeys = [
+			const validKeys = [
 				'lib_version',
 				'version',
 				'players'
 			];
 
-			let connection = new Trogdord();
+			const connection = new Trogdord();
 
 			connection.on('connect', () => {
 
@@ -223,7 +223,7 @@ class TrogdordTest extends ConnectionRequired {
 
 		return new Promise((resolve, reject) => {
 
-			let connection = new Trogdord();
+			const connection = new Trogdord();
 
 			connection.on('connect', () => {
 
@@ -261,10 +261,10 @@ class TrogdordTest extends ConnectionRequired {
 		return new Promise((resolve, reject) => {
 
 			let createdGame;
-			let connection = new Trogdord();
+			const connection = new Trogdord();
 
-			let gameName = "My Game";
-			let definition = "game.xml";
+			const gameName = "My Game";
+			const definition = "game.xml";
 
 			connection.on('connect', () => {
 
@@ -403,6 +403,9 @@ class TrogdordTest extends ConnectionRequired {
 
 		return new Promise((resolve, reject) => {
 
+			const gameName1 = "aaa";
+			const gameName2 = "bbb";
+
 			// TODO
 			resolve();
 		});
@@ -495,6 +498,7 @@ class TrogdordTest extends ConnectionRequired {
 
 		return new Promise((resolve, reject) => {
 
+			this.addTest("Trogdord.construct()", this.#testConstructor);
 			this.addTest("Trogdord.connected Getter", this.#testConnectedGetter);
 			this.addTest("Trogdord.status Getter", this.#testStatusGetter);
 			this.addTest("Trogdord.statistics()", this.#testStatistics);
