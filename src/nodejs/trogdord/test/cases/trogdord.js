@@ -449,7 +449,7 @@ class TrogdordTest extends ConnectionRequired {
 				}).then(games => {
 
 					if (2 != games.length) {
-						reject(new Error('There should only be two stopped games'));
+						reject(new Error('There should be exactly two stopped games'));
 					}
 
 					games.forEach(game => {
@@ -463,7 +463,7 @@ class TrogdordTest extends ConnectionRequired {
 				}).then(games => {
 
 					if (2 != games.length) {
-						reject(new Error('There should only be two stopped games'));
+						reject(new Error('There should be exactly two started games'));
 					}
 
 					games.forEach(game => {
@@ -472,7 +472,60 @@ class TrogdordTest extends ConnectionRequired {
 						}
 					});
 
-					// TODO: finish
+					// Test name_starts = 'a' filter
+					return connection.games({name_starts: 'a'});
+				}).then(games => {
+
+					if (2 != games.length) {
+						reject(new Error("There should be exactly two games that start with 'a'"))
+					}
+
+					games.forEach(game => {
+						if (game1.id != game.id && game3.id != game.id) {
+							reject(new Error("Got a game that doesn't start with 'a'"));
+						}
+					});
+
+					// Test name_starts = 'b' filter
+					return connection.games({name_starts: 'b'});
+				}).then(games => {
+
+					if (2 != games.length) {
+						reject(new Error("There should be exactly two games that start with 'b'"))
+					}
+
+					games.forEach(game => {
+						if (game2.id != game.id && game4.id != game.id) {
+							reject(new Error("Got a game that doesn't start with 'b'"));
+						}
+					});
+
+					// Test filter group name_starts = 'a' && is_running = true
+					return connection.games({is_running: true, name_starts: 'a'});
+				}).then(games => {
+
+					if (1 != games.length) {
+						reject(new Error("There should be exactly one started game that start with 'a'"))
+					}
+
+					if (game1.id != games[0].id) {
+						reject(new Error("Got a game that wasn't started or that didn't begin with 'a'"));
+					}
+
+					// Test filter union name_starts = 'a' || is_running = true
+					return connection.games([{is_running: true}, {name_starts: 'a'}]);
+				}).then(games => {
+
+					if (3 != games.length) {
+						reject(new Error("There should be exactly three games that are either started or begin with 'a'"))
+					}
+
+					games.forEach(game => {
+						if (game1.id != game.id && game2.id != game.id && game3.id != game.id) {
+							reject(new Error("Got a game that wasn't started or didn't begin with 'a'"));
+						}
+					});
+
 					resolve();
 				}).catch(error => {
 
