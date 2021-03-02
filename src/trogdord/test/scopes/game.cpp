@@ -2233,6 +2233,11 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(trogdor::isAscii(response["games"][0]["name"].GetString()));
 			CHECK(0 == std::string(gameName).compare(response["games"][0]["name"].GetString()));
 
+			CHECK(response["games"][0].HasMember("definition"));
+			CHECK(response["games"][0]["definition"].IsString());
+			CHECK(trogdor::isAscii(response["games"][0]["definition"].GetString()));
+			CHECK(0 == std::string(gameXMLRelativeFilename.c_str()).compare(response["games"][0]["definition"].GetString()));
+
 			destroyGameXML();
 			destroyConfig();
 		}
@@ -2304,6 +2309,10 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(1 == response["games"][0].HasMember("name"));
 			CHECK(response["games"][0]["name"].IsString());
 			CHECK(0 == std::string(gameName).compare(response["games"][0]["name"].GetString()));
+
+			CHECK(response["games"][0].HasMember("definition"));
+			CHECK(response["games"][0]["definition"].IsString());
+			CHECK(0 == std::string(gameXMLRelativeFilename.c_str()).compare(response["games"][0]["definition"].GetString()));
 
 			CHECK(1 == response["games"][0].HasMember("key1"));
 			CHECK(response["games"][0]["key1"].IsString());
