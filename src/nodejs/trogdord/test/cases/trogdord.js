@@ -526,6 +526,21 @@ class TrogdordTest extends ConnectionRequired {
 						}
 					});
 
+				}).then(() => {
+
+					// Clean up
+					return game1.destroy();
+				}).then(() => {
+
+					return game2.destroy();
+				}).then(() => {
+
+					return game3.destroy();
+				}).then(() => {
+
+					return game4.destroy();
+				}).then(() => {
+
 					resolve();
 				}).catch(error => {
 
