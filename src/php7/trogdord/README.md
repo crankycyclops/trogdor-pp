@@ -172,6 +172,8 @@ array(3) {
     int(0)
     ["name"]=>
     string(5) "game1"
+    ["definition"]=>
+    string(8) "game.xml"
   }
   [1]=>
   array(2) {
@@ -179,6 +181,8 @@ array(3) {
     int(1)
     ["name"]=>
     string(5) "game2"
+    ["definition"]=>
+    string(8) "game.xml"
   }
   [2]=>
   array(2) {
@@ -186,6 +190,8 @@ array(3) {
     int(2)
     ["name"]=>
     string(5) "game3"
+    ["definition"]=>
+    string(8) "game.xml"
   }
   [3]=>
   array(2) {
@@ -193,6 +199,8 @@ array(3) {
     int(3)
     ["name"]=>
     string(13) "mystartedgame"
+    ["definition"]=>
+    string(8) "game.xml"
   }
   [3]=>
   array(2) {
@@ -200,6 +208,8 @@ array(3) {
     int(3)
     ["name"]=>
     string(13) "mystoppedgame"
+    ["definition"]=>
+    string(8) "game.xml"
   }
 }
 ```
@@ -224,6 +234,8 @@ array(1) {
     int(0)
     ["name"]=>
     string(5) "game1"
+    ["definition"]=>
+    string(8) "game.xml"
   }
   [1]=>
   array(2) {
@@ -231,6 +243,8 @@ array(1) {
     int(3)
     ["name"]=>
     string(13) "mystartedgame"
+    ["definition"]=>
+    string(8) "game.xml"
   }
 }
 ```
@@ -256,6 +270,8 @@ array(1) {
     int(3)
     ["name"]=>
     string(13) "mystartedgame"
+    ["definition"]=>
+    string(8) "game.xml"
   }
 }
 ```
@@ -283,6 +299,8 @@ array(3) {
     int(0)
     ["name"]=>
     string(5) "game1"
+    ["definition"]=>
+    string(8) "game.xml"
   }
   [1]=>
   array(2) {
@@ -290,6 +308,8 @@ array(3) {
     int(3)
     ["name"]=>
     string(13) "mystartedgame"
+    ["definition"]=>
+    string(8) "game.xml"
   }
   [2]=>
   array(2) {
@@ -297,6 +317,8 @@ array(3) {
     int(4)
     ["name"]=>
     string(13) "mystoppedgame"
+    ["definition"]=>
+    string(8) "game.xml"
   }
 }
 ```
@@ -325,6 +347,8 @@ array(5) {
     int(0)
     ["name"]=>
     string(5) "game1"
+    ["definition"]=>
+    string(8) "game.xml"
     ["title"]=>
     string(14) "Game 1's title"
     ["author"]=>
@@ -336,6 +360,8 @@ array(5) {
     int(1)
     ["name"]=>
     string(5) "game2"
+    ["definition"]=>
+    string(8) "game.xml"
     ["title"]=>
     string(14) "Game 2's title"
     ["author"]=>
@@ -347,6 +373,8 @@ array(5) {
     int(2)
     ["name"]=>
     string(5) "game3"
+    ["definition"]=>
+    string(8) "game.xml"
     ["title"]=>
     string(14) "Game 3's title"
     ["author"]=>
@@ -358,6 +386,8 @@ array(5) {
     int(3)
     ["name"]=>
     string(10) "mystartedgame"
+    ["definition"]=>
+    string(8) "game.xml"
     ["title"]=>
     string(23) "My Started Game's title"
     ["author"]=>
@@ -369,6 +399,8 @@ array(5) {
     int(4)
     ["name"]=>
     string(13) "mystoppedgame"
+    ["definition"]=>
+    string(8) "game.xml"
     ["title"]=>
     string(23) "My Stopped Game's Title"
     ["author"]=>
