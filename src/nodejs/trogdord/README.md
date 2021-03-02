@@ -995,7 +995,7 @@ Raw JSON requests are a low level mechanism that should, under ordinary circumst
 Example:
 
 ```javascript
-const connection = new Trogdord()
+const connection = new Trogdord();
 
 connection.on('connect', () => {
 
@@ -1014,7 +1014,7 @@ connection.on('connect', () => {
 By default, the request timeout is three seconds, but you can change that by passing in a different value (in milliseconds) as an optional second argument to makeRequest:
 
 ```javascript
-const connection = new Trogdord()
+const connection = new Trogdord();
 
 connection.on('connect', () => {
 
@@ -1027,6 +1027,46 @@ connection.on('connect', () => {
 		// ...
 	}).catch(error => {
 		// ...
+	});
+});
+```
+
+### Checking if a Connection is Open or Closed
+
+Although instances of `Trogdord` are constructed with open connections, it's possible that the connection will be closed at some point. To check if the connection is open or closed, read the `Trogdord.connected` property:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// Will output boolean true
+	console.log(connection.connected);
+
+	connection.close();
+
+	// Will output boolean false
+	console.log(connection.connected);
+}
+```
+
+### Checking the Status of the Last Request
+
+After any request to trogdord, the Trogdord.status getter will return the status returned as part of the server's response:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.statistics().then(response => {
+
+		// Since the request was successful, this should output 200
+		console.log(connection.status);
+	}).catch(error => {
+
+		// Will output the status of our unsuccessful request to get:global:statistics
+		console.log(connection.status);
 	});
 });
 ```

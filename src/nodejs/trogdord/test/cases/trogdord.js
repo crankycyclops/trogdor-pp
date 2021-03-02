@@ -499,7 +499,7 @@ class TrogdordTest extends ConnectionRequired {
 			this.addTest("Trogdord.status Getter", this.#testStatusGetter);
 			this.addTest("Trogdord.statistics()", this.#testStatistics);
 			this.addTest("Trogdord.definitions()", this.#testDefinitions);
-			this.addTest("Trogdord.games(), Trogdord.newGame(), and Trogdord.getGame()", this.#testNewGameAndGetGame);
+			this.addTest("Trogdord.games() without filters, Trogdord.newGame(), and Trogdord.getGame()", this.#testNewGameAndGetGame);
 			this.addTest("Trogdord.games() with filters", this.#testGamesWithFilters);
 			this.addTest("Trogdord.makeRequest() and Trogdord.close()", this.#testMakeRequestAndClose);
 
