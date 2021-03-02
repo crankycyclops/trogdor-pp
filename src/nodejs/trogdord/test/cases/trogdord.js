@@ -589,14 +589,31 @@ class TrogdordTest extends ConnectionRequired {
 	}
 
 	/**
-	 * Tests Trogdord.makeRequest() and Trogdord.close().
+	 * Tests Trogdord.makeRequest() and Trogdord.close(). Since ES6 doesn't
+	 * support real private methods and I instead have to create this function
+	 * with no binding to the class, I'm passing in a "this" reference called
+	 * "that."
 	 */
-	#testDumpAndRestore = function () {
+	#testDumpAndRestore = function (that) {
 
 		return new Promise((resolve, reject) => {
 
-			// TODO
-			resolve();
+			that.isStateEnabled().then(enabled => {
+
+				if (enabled) {
+					// TODO
+				}
+
+				else {
+					// TODO
+				}
+
+				// TODO
+				resolve();
+			}).catch(error => {
+
+				reject(error);
+			});
 		});
 	}
 
@@ -695,7 +712,7 @@ class TrogdordTest extends ConnectionRequired {
 			this.addTest("Trogdord.definitions()", this.#testDefinitions);
 			this.addTest("Trogdord.games() without filters, Trogdord.newGame(), and Trogdord.getGame()", this.#testNewGameAndGetGame);
 			this.addTest("Trogdord.games() with filters", this.#testGamesWithFilters);
-			this.addTest("Trogdord.dump() and Trogdord.restore()", this.#testDumpAndRestore);
+			this.addTest("Trogdord.dump() and Trogdord.restore()", () => this.#testDumpAndRestore(this));
 			this.addTest("Trogdord.makeRequest() and Trogdord.close()", this.#testMakeRequestAndClose);
 
 			resolve();
