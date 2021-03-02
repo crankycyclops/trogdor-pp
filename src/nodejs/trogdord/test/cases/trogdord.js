@@ -557,6 +557,18 @@ class TrogdordTest extends ConnectionRequired {
 	/**
 	 * Tests Trogdord.makeRequest() and Trogdord.close().
 	 */
+	#testDumpAndRestore = function () {
+
+		return new Promise((resolve, reject) => {
+
+			// TODO
+			resolve();
+		});
+	}
+
+	/**
+	 * Tests Trogdord.makeRequest() and Trogdord.close().
+	 */
 	#testMakeRequestAndClose = function () {
 
 		return new Promise((resolve, reject) => {
@@ -648,6 +660,7 @@ class TrogdordTest extends ConnectionRequired {
 			this.addTest("Trogdord.definitions()", this.#testDefinitions);
 			this.addTest("Trogdord.games() without filters, Trogdord.newGame(), and Trogdord.getGame()", this.#testNewGameAndGetGame);
 			this.addTest("Trogdord.games() with filters", this.#testGamesWithFilters);
+			this.addTest("Trogdord.dump() and Trogdord.restore()", this.#testDumpAndRestore);
 			this.addTest("Trogdord.makeRequest() and Trogdord.close()", this.#testMakeRequestAndClose);
 
 			resolve();
