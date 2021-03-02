@@ -444,7 +444,35 @@ class TrogdordTest extends ConnectionRequired {
 					return game4.stop();
 				}).then(response => {
 
-					// TODO: test filters
+					// Test is_running = false filter
+					return connection.games({is_running: false});
+				}).then(games => {
+
+					if (2 != games.length) {
+						reject(new Error('There should only be two stopped games'));
+					}
+
+					games.forEach(game => {
+						if (game3.id != game.id && game4.id != game.id) {
+							reject(new Error("Got a game that wasn't stopped when filtering for stopped games"));
+						}
+					});
+
+					// Test is_running = true filter
+					return connection.games({is_running: true});
+				}).then(games => {
+
+					if (2 != games.length) {
+						reject(new Error('There should only be two stopped games'));
+					}
+
+					games.forEach(game => {
+						if (game1.id != game.id && game2.id != game.id) {
+							reject(new Error("Got a game that wasn't started when filtering for started games"));
+						}
+					});
+
+					// TODO: finish
 					resolve();
 				}).catch(error => {
 
