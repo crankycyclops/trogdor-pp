@@ -263,6 +263,9 @@ class TrogdordTest extends ConnectionRequired {
 			let createdGame;
 			let connection = new Trogdord();
 
+			let gameName = "My Game";
+			let definition = "game.xml";
+
 			connection.on('connect', () => {
 
 				// Attempt to get a game that doesn't exist
@@ -291,7 +294,7 @@ class TrogdordTest extends ConnectionRequired {
 						}
 
 						// Attempt to create a new game
-						return connection.newGame("My Game", "game.xml");
+						return connection.newGame(gameName, definition);
 					}).then(game => {
 
 						if (200 != connection.status) {
@@ -300,6 +303,15 @@ class TrogdordTest extends ConnectionRequired {
 
 						if (!game instanceof Game) {
 							reject(new Error("Trogdord.newGame() should resolve to an instance of Game but doesn't"));
+						}
+
+						// Make sure Game instance has its members correctly initialized
+						if (game.name !== gameName) {
+							reject(new Error("newGame: game.name not correctly initialized"));
+						}
+
+						if (game.definition !== definition) {
+							reject(new Error("newGame: game.definition not correctly initialized"));
 						}
 
 						// Attempt to get the game we just created
@@ -315,8 +327,17 @@ class TrogdordTest extends ConnectionRequired {
 							reject(new Error("Return value of Trogdord.getGame() should resolve to instance of Game but doesn't"));
 						}
 
-						if (createdGame.id != game.id) {
+						if (createdGame.id !== game.id) {
 							reject(new Error("Game id of new game should have matched the game we retrieved, but it didn't"));
+						}
+
+						// Make sure Game instance has its members correctly initialized
+						if (game.name !== gameName) {
+							reject(new Error("getGame: game.name not correctly initialized"));
+						}
+
+						if (game.definition !== definition) {
+							reject(new Error("getGame: game.definition not correctly initialized"));
 						}
 
 						// Get a list of games again and show that the new games is now part of it
@@ -339,11 +360,19 @@ class TrogdordTest extends ConnectionRequired {
 							reject(new Error("Members of array returned by Trogdord.games() should be instances of Game"));
 						}
 
-						if (games[0].id != createdGame.id) {
+						if (games[0].id !== createdGame.id) {
 							reject(new Error("Id of game in list doesn't match id of game returned by Trogdord.newGame()"));
 						}
 
-						// TODO: make sure Game instance has all its members correctly initialized
+						// Make sure Game instances returned by Trogdord.games()
+						// have their other members correctly initialized
+						if (games[0].name !== gameName) {
+							reject(new Error("games[0].name not correctly initialized"));
+						}
+
+						if (games[0].definition !== definition) {
+							reject(new Error("games[0].definition not correctly initialized"));
+						}
 
 						// Clean up
 						return games[0].destroy();
