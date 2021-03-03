@@ -39,6 +39,46 @@ class Dump {
 		this.#created = created;
 		this.#trogdord = trogdord;
 	}
+
+	/**
+	 * Returns the dumped game's id.
+	 */
+	get id() {
+
+		return this.#id;
+	}
+
+	/**
+	 * Returns the dumped game's name.
+	 */
+	get name() {
+
+		return this.#name;
+	}
+
+	/**
+	 * Returns the dumped game's definition.
+	 */
+	get definition() {
+
+		return this.#definition;
+	}
+
+	/**
+	 * Returns the UNIX timestamp for when the dump was created.
+	 */
+	get created() {
+
+		return this.#created;
+	}
+
+	/**
+	 * Returns the connection to trogdord associated with the dump.
+	 */
+	get trogdord() {
+
+		return this.#trogdord;
+	}
 };
 
 module.exports = Dump;

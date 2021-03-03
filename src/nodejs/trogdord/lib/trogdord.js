@@ -474,8 +474,8 @@ class Trogdord extends EventEmitter {
 	 * Returns a promise that resolves to an instance of the new game.
 	 * 
 	 * @param {String} name The game's name
-	 * @param {String} name The game's definition file
-	 * @param {String} meta Any game meta data that should be set (optional)
+	 * @param {String} definition The game's definition file
+	 * @param {Object} meta Any game meta data that should be set (optional)
 	 */
 	newGame(name, definition, meta = {}) {
 
