@@ -602,17 +602,40 @@ class TrogdordTest extends ConnectionRequired {
 			that.isStateEnabled().then(enabled => {
 
 				if (enabled) {
+
 					// TODO
+					resolve();
 				}
 
 				else {
-					// TODO
+
+					const connection = new Trogdord();
+
+					connection.on('connect', () => {
+
+						connection.dumped().then(response => {
+
+							reject(new Error("Call to Trogdord.dumped() shouldn't succeed when the state feature is disabled in trogdord.ini"));
+						}).catch(error => {
+
+							if (501 != error.status) {
+								reject(new Error("501 should have been error status but wasn't"));
+							}
+
+							else if (501 != connection.status) {
+								reject(new Error("501 should be the return value of connection.status but wasn't"));
+							}
+
+							resolve();
+						});
+					});
+
+					connection.on('error', (e) => {
+						reject(new Error(e.message));
+					});
 				}
 
-				// TODO
-				resolve();
 			}).catch(error => {
-
 				reject(error);
 			});
 		});
@@ -630,15 +653,17 @@ class TrogdordTest extends ConnectionRequired {
 			that.isStateEnabled().then(enabled => {
 
 				if (enabled) {
+
 					// TODO
+					resolve();
 				}
 
 				else {
+
 					// TODO
+					resolve();
 				}
 
-				// TODO
-				resolve();
 			}).catch(error => {
 
 				reject(error);
@@ -658,15 +683,39 @@ class TrogdordTest extends ConnectionRequired {
 			that.isStateEnabled().then(enabled => {
 
 				if (enabled) {
+
 					// TODO
+					resolve();
 				}
 
 				else {
-					// TODO
+
+					const connection = new Trogdord();
+
+					connection.on('connect', () => {
+
+						connection.getDump(0).then(response => {
+
+							reject(new Error("Call to Trogdord.dumped() shouldn't succeed when the state feature is disabled in trogdord.ini"));
+						}).catch(error => {
+
+							if (501 != error.status) {
+								reject(new Error("501 should have been error status but wasn't"));
+							}
+
+							else if (501 != connection.status) {
+								reject(new Error("501 should be the return value of connection.status but wasn't"));
+							}
+
+							resolve();
+						});
+					});
+
+					connection.on('error', (e) => {
+						reject(new Error(e.message));
+					});
 				}
 
-				// TODO
-				resolve();
 			}).catch(error => {
 
 				reject(error);
