@@ -660,8 +660,44 @@ class TrogdordTest extends ConnectionRequired {
 
 				else {
 
-					// TODO
-					resolve();
+					const connection = new Trogdord();
+
+					connection.on('connect', () => {
+
+						connection.dump().then(response => {
+
+							reject(new Error("Call to Trogdord.dump() shouldn't succeed when the state feature is disabled in trogdord.ini"));
+						}).catch(error => {
+
+							if (501 != error.status) {
+								reject(new Error("501 should have been error status but wasn't"));
+							}
+
+							else if (501 != connection.status) {
+								reject(new Error("501 should be the return value of connection.status but wasn't"));
+							}
+
+							return connection.restore();
+						}).then(response => {
+
+							reject(new Error("Call to Trogdord.restore() shouldn't succeed when the state feature is disabled in trogdord.ini"));
+						}).catch(error => {
+
+							if (501 != error.status) {
+								reject(new Error("501 should have been error status but wasn't"));
+							}
+
+							else if (501 != connection.status) {
+								reject(new Error("501 should be the return value of connection.status but wasn't"));
+							}
+
+							resolve();
+						});
+					});
+
+					connection.on('error', (e) => {
+						reject(new Error(e.message));
+					});
 				}
 
 			}).catch(error => {
