@@ -16,8 +16,8 @@ class Dump {
 	// The dumped game's definition file
 	#definition;
 
-    // UNIX timestamp representing when the dump was created
-    #created;
+	// UNIX timestamp representing when the dump was created
+	#created;
 
 	// Instance of Trogdord that spawned this instance of Dump
 	#trogdord;
