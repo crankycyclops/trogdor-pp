@@ -27,6 +27,10 @@ class Trogdord extends EventEmitter {
 	// is why I've imported it as a private field.
 	#Game = require('./game');
 
+	// Game dump object represent dumps that exist inside the trogdord instance.
+	// Like Game, only Trogdord should be able to instantiate this class.
+	#Dump = require('./dump/dump');
+
 	// Underlying socket connection
 	#connection;
 
@@ -200,6 +204,88 @@ class Trogdord extends EventEmitter {
 
 				delete response.status;
 				resolve(response);
+
+			}).catch(error => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
+	 * Returns a promise that resolves to a JSON object containing all
+	 * dumped games that currently exist on the server.
+	 */
+	dumped() {
+
+		return new Promise((resolve, reject) => {
+
+			let data = {
+				method: "get",
+				scope: "game",
+				action: "dumplist"
+			};
+
+			this.makeRequest(data).then(response => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				try {
+
+					let games = [];
+
+					response.games.forEach((game, index) => {
+						games.push(new this.#Dump(game.id, game.name, game.definition, game.created, this));
+					});
+
+					resolve(games);
+				}
+
+				catch (e) {
+					reject(e);
+				}
+
+			}).catch(error => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
+	 * Returns a promise that resolves to an instance of the dump referenced by
+	 * the given id.
+	 * 
+	 * @param {Integer} id The dumped game's id
+	 */
+	getDump(id) {
+
+		return new Promise((resolve, reject) => {
+
+			if (!id && 0 != id) {
+				reject(new Error('passed invalid or undefined game id'));
+			}
+
+			this.makeRequest({
+				method: "get",
+				scope: "game",
+				action: "dump",
+				args: {id: id}
+			}).then(response => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(new this.#Dump(response.id, response.name, response.definition, response.created, this));
 
 			}).catch(error => {
 				reject(error);

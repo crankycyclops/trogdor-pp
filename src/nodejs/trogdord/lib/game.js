@@ -116,6 +116,7 @@ class Game {
 	 *
 	 * @param {Integer} id The game's id
 	 * @param {String} name The game's name
+	 * @param {String} definition The game's definition filename
 	 * @param {Object} trogdord Connection to the instance of trogdord the game belongs to
 	 */
 	constructor(id, name, definition, trogdord) {

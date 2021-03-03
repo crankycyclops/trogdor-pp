@@ -4,6 +4,8 @@ const ConnectionRequired = require('./lib/connectionrequired');
 
 const Trogdord = require('../../lib/trogdord');
 const Game = require('../../lib/game');
+const Dump = require('../../lib/dump/dump');
+const Slot = require('../../lib/dump/slot');
 
 class TrogdordTest extends ConnectionRequired {
 
@@ -589,12 +591,67 @@ class TrogdordTest extends ConnectionRequired {
 	}
 
 	/**
-	 * Tests Trogdord.makeRequest() and Trogdord.close(). Since ES6 doesn't
-	 * support real private methods and I instead have to create this function
-	 * with no binding to the class, I'm passing in a "this" reference called
-	 * "that."
+	 * Tests Trogdord.dumped(). Since ES6 doesn't support real private methods
+	 * and I instead have to create this function with no binding to the class,
+	 * I'm passing in a "this" reference called "that."
+	 */
+	#testDumped = function (that) {
+
+		return new Promise((resolve, reject) => {
+
+			that.isStateEnabled().then(enabled => {
+
+				if (enabled) {
+					// TODO
+				}
+
+				else {
+					// TODO
+				}
+
+				// TODO
+				resolve();
+			}).catch(error => {
+
+				reject(error);
+			});
+		});
+	}
+
+	/**
+	 * Tests Trogdord.dump() and Trogdord.restore(). Since ES6 doesn't support
+	 * real private methods and I instead have to create this function with no
+	 * binding to the class, I'm passing in a "this" reference called "that."
 	 */
 	#testDumpAndRestore = function (that) {
+
+		return new Promise((resolve, reject) => {
+
+			that.isStateEnabled().then(enabled => {
+
+				if (enabled) {
+					// TODO
+				}
+
+				else {
+					// TODO
+				}
+
+				// TODO
+				resolve();
+			}).catch(error => {
+
+				reject(error);
+			});
+		});
+	}
+
+	/**
+	 * Tests Trogdord.getDump(). Since ES6 doesn't support real private
+	 * methods and I instead have to create this function with no binding to
+	 * the class, I'm passing in a "this" reference called "that."
+	 */
+	#testGetDump = function (that) {
 
 		return new Promise((resolve, reject) => {
 
@@ -712,6 +769,8 @@ class TrogdordTest extends ConnectionRequired {
 			this.addTest("Trogdord.definitions()", this.#testDefinitions);
 			this.addTest("Trogdord.games() without filters, Trogdord.newGame(), and Trogdord.getGame()", this.#testNewGameAndGetGame);
 			this.addTest("Trogdord.games() with filters", this.#testGamesWithFilters);
+			this.addTest("Trogdord.dumped()", () => this.#testDumped(this));
+			this.addTest("Trogdord.getDump()", () => this.#testGetDump(this));
 			this.addTest("Trogdord.dump() and Trogdord.restore()", () => this.#testDumpAndRestore(this));
 			this.addTest("Trogdord.makeRequest() and Trogdord.close()", this.#testMakeRequestAndClose);
 
