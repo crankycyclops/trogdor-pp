@@ -533,6 +533,27 @@ connection.on('connect', () => {
 });
 ```
 
+By passing in an optional boolean argument to Game.destroy(), we can instruct the server to either delete or not delete all dumps of the game (if any) in addition to the game itself. At the time of this writing, the server's default behavior is to delete the dumps.
+
+Example:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// Get an existing game and destroy it, but preserve the dump
+	connection.getGame(0)
+	.then(game => game.destroy(false))
+	.then(response => {
+		// At this point, the game itself has been destroyed, but any dump that was made has been preserved.
+	})
+	.catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
 ### Getting a Game's Metadata
 
 Game.getMeta() returns one or more metadata values associated with a game.

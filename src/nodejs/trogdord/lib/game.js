@@ -317,31 +317,24 @@ class Game {
 	 * invalid and network requests that originate from it will result in a
 	 * 404 game not found error.
 	 * 
-	 * If provided, the optional parameter deleteDump will determine whether
-	 * or not to also delete all dumps of the game (if any.)
+	 * If provided, the optional parameter destroyDump will determine whether
+	 * or not to also destroy all dumps of the game (if any.)
 	 * 
-	 * @param {Boolean|null} deleteDump Whether or not to delete all dumps of the game as well (if any)
+	 * @param {Boolean} destroyDump Whether or not to destroy all dumps of the game as well (if any)
 	 */
-	destroy(deleteDump = null) {
+	destroy(destroyDump = true) {
 
 		return new Promise((resolve, reject) => {
 
-			let request = {
-				method: "delete",
-				scope: "game",
-				args: {id: this.#id}
-			};
-
-			if (null !== deleteDump) {
-
-				if ('boolean' != typeof deleteDump) {
-					throw new Error('optional argument deleteDump must be a boolean value');
-				} else {
-					request.delete_dump = deleteDump;
-				}
+			if ('boolean' != typeof destroyDump) {
+				throw new Error('optional argument destroyDump must be a boolean value');
 			}
 
-			this.#trogdord.makeRequest(request).then(response => {
+			this.#trogdord.makeRequest({
+				method: "delete",
+				scope: "game",
+				args: {id: this.#id, destroy_dump: destroyDump}
+			}).then(response => {
 
 				if (200 != response.status) {
 
