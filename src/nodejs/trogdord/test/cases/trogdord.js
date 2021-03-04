@@ -302,6 +302,8 @@ class TrogdordTest extends ConnectionRequired {
 			const gameName = "My Game";
 			const definition = "game.xml";
 
+			let gameWithMeta;
+
 			connection.on('connect', () => {
 
 				// Attempt to get a game that doesn't exist
@@ -416,6 +418,38 @@ class TrogdordTest extends ConnectionRequired {
 
 						if (200 != connection.status) {
 							reject(new Error("Game should have been successfully destroyed but wasn't"));
+						}
+
+						// Attempt to create a second game, this time with third optional meta argument
+						return connection.newGame(gameName, definition, {int: 1, str: "wee", boolean: true});
+					}).then(game => {
+
+						if (200 != connection.status) {
+							reject(new Error("Game creation should have been successful but wasn't"));
+						}
+
+						gameWithMeta = game;
+						return game.getMeta();
+					}).then(data => {
+
+						if (!data.hasOwnProperty('int') || '1' != data.int) {
+							reject(new Error('int meta value was not set or was formatted incorrectly'));
+						}
+
+						if (!data.hasOwnProperty('str') || 'wee' != data.str) {
+							reject(new Error('str meta value was not set or was formatted incorrectly'));
+						}
+
+						if (!data.hasOwnProperty('boolean') || 'true' != data.boolean) {
+							reject(new Error('boolean meta value was not set or was formatted incorrectly'));
+						}
+
+						// Clean up after second game
+						return gameWithMeta.destroy();
+					}).then(() => {
+
+						if (200 != connection.status) {
+							reject(new Error("Destroying game with meta should have been successful but wasn't"));
 						}
 
 						resolve();
