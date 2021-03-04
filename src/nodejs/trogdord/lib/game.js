@@ -333,7 +333,7 @@ class Game {
 			this.#trogdord.makeRequest({
 				method: "delete",
 				scope: "game",
-				args: {id: this.#id, destroy_dump: destroyDump}
+				args: {id: this.#id, delete_dump: destroyDump}
 			}).then(response => {
 
 				if (200 != response.status) {

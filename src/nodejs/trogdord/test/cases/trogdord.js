@@ -591,11 +591,12 @@ class TrogdordTest extends ConnectionRequired {
 	}
 
 	/**
-	 * Tests Trogdord.dumped(). Since ES6 doesn't support real private methods
-	 * and I instead have to create this function with no binding to the class,
-	 * I'm passing in a "this" reference called "that."
+	 * Tests Trogdord.dump(), Trogdord.restore(), and Trogdord.dumped(). Since
+	 * ES6 doesn't support real private methods and I instead have to create
+	 * this function with no binding to the class, I'm passing in a "this"
+	 * reference called "that."
 	 */
-	#testDumped = function (that) {
+	#testDumpRestoreAndDumped = function (that) {
 
 		return new Promise((resolve, reject) => {
 
@@ -603,8 +604,94 @@ class TrogdordTest extends ConnectionRequired {
 
 				if (enabled) {
 
-					// TODO
-					resolve();
+					const gameName = "My Game";
+					const definition = "game.xml";
+		
+					let game1, game2;
+					let dumps = [];
+
+					const connection = new Trogdord();
+
+					connection.on('connect', () => {
+
+						connection.newGame(gameName, definition).then(game => {
+
+							game1 = game;
+							return connection.newGame(gameName, definition);
+						}).then(game => {
+
+							game2 = game;
+							return connection.dump();
+						}).then(() => {
+
+							if (200 != connection.status) {
+								reject(new Error('connection.status should return 200 after successful call to connection.dump()'));
+							}
+
+							return connection.dumped();
+						}).then(dumped => {
+
+							if (2 != dumped.length) {
+								reject(new Error('Two games should have been dumped, but two games were not returned by Trogdord.dumped()'));
+							}
+
+							dumped.forEach(dump => {
+								if (dump.id != game1.id && dump.id != game2.id) {
+									reject(new Error("One or more dumped game objects have ids that don't match either of the two created games"));
+								}
+							});
+
+							dumps = dumped;
+							return game1.destroy(false);
+						}).then(() => {
+
+							return game2.destroy(false);
+						}).then(() => {
+
+							return connection.games();
+						}).then(games => {
+
+							if (0 != games.length) {
+								reject(new Error('Both games should have been destroyed but were not'));
+							}
+
+							return connection.restore();
+						}).then(() => {
+
+							if (200 != connection.status) {
+								reject(new Error('connection.status should return 200 after successful call to connection.restore()'));
+							}
+
+							return connection.games();
+						}).then(games => {
+
+							if (2 != games.length) {
+								reject(new Error('Both games should have been restored but were not'));
+							}
+
+							games.forEach(game => {
+								if (game.id != game1.id && game.id != game2.id) {
+									reject(new Error("One or more dumped games were improperly restored"));
+								}
+							});
+
+							// Clean up
+							return game1.destroy(true);
+						}).then(() => {
+
+							return game2.destroy(true);
+						}).then(() => {
+
+							resolve();
+						}).catch(error => {
+
+							reject(new Error(e.message));
+						});
+					});
+
+					connection.on('error', (e) => {
+						reject(new Error(e.message));
+					});
 				}
 
 				else {
@@ -626,45 +713,8 @@ class TrogdordTest extends ConnectionRequired {
 								reject(new Error("501 should be the return value of connection.status but wasn't"));
 							}
 
-							resolve();
-						});
-					});
-
-					connection.on('error', (e) => {
-						reject(new Error(e.message));
-					});
-				}
-
-			}).catch(error => {
-				reject(error);
-			});
-		});
-	}
-
-	/**
-	 * Tests Trogdord.dump() and Trogdord.restore(). Since ES6 doesn't support
-	 * real private methods and I instead have to create this function with no
-	 * binding to the class, I'm passing in a "this" reference called "that."
-	 */
-	#testDumpAndRestore = function (that) {
-
-		return new Promise((resolve, reject) => {
-
-			that.isStateEnabled().then(enabled => {
-
-				if (enabled) {
-
-					// TODO
-					resolve();
-				}
-
-				else {
-
-					const connection = new Trogdord();
-
-					connection.on('connect', () => {
-
-						connection.dump().then(response => {
+							return connection.dump();
+						}).then(response => {
 
 							reject(new Error("Call to Trogdord.dump() shouldn't succeed when the state feature is disabled in trogdord.ini"));
 						}).catch(error => {
@@ -692,7 +742,7 @@ class TrogdordTest extends ConnectionRequired {
 							}
 
 							resolve();
-						});
+						});;
 					});
 
 					connection.on('error', (e) => {
@@ -701,7 +751,6 @@ class TrogdordTest extends ConnectionRequired {
 				}
 
 			}).catch(error => {
-
 				reject(error);
 			});
 		});
@@ -854,9 +903,8 @@ class TrogdordTest extends ConnectionRequired {
 			this.addTest("Trogdord.definitions()", this.#testDefinitions);
 			this.addTest("Trogdord.games() without filters, Trogdord.newGame(), and Trogdord.getGame()", this.#testNewGameAndGetGame);
 			this.addTest("Trogdord.games() with filters", this.#testGamesWithFilters);
-			this.addTest("Trogdord.dumped()", () => this.#testDumped(this));
+			this.addTest("Trogdord.dump(), Trogdord.restore(), and Trogdord.dumped()", () => this.#testDumpRestoreAndDumped(this));
 			this.addTest("Trogdord.getDump()", () => this.#testGetDump(this));
-			this.addTest("Trogdord.dump() and Trogdord.restore()", () => this.#testDumpAndRestore(this));
 			this.addTest("Trogdord.makeRequest() and Trogdord.close()", this.#testMakeRequestAndClose);
 
 			resolve();
