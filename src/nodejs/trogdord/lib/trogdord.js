@@ -42,6 +42,7 @@ class Trogdord extends EventEmitter {
 	 *
 	 * @param {String} hostname Hostname pointing to the box trogdord is running on
 	 * @param {Integer} port Port trogdord is listening on
+	 * @param {Object} options connection options (optional)
 	 */
 	constructor(hostname = DEFAULT_HOST, port = DEFAULT_PORT, options = {}) {
 
@@ -387,6 +388,8 @@ class Trogdord extends EventEmitter {
 	/**
 	 * Returns a promise that resolves to a JSON object containing all games
 	 * that currently exist on the server.
+	 * 
+	 * @param {Object} filters A filter group or union used to return games matching specific criteria (optional)
 	 */
 	games(filters = null) {
 
@@ -418,7 +421,13 @@ class Trogdord extends EventEmitter {
 					let games = [];
 
 					response.games.forEach((game, index) => {
-						games.push(new this.#Game(game.id, game.name, game.definition, this));
+						games.push(new this.#Game(
+							game.id,
+							game.name,
+							game.definition,
+							game.created,
+							this
+						));
 					});
 
 					resolve(games);
@@ -462,7 +471,13 @@ class Trogdord extends EventEmitter {
 					reject(error);
 				}
 
-				resolve(new this.#Game(response.id, response.name, response.definition, this));
+				resolve(new this.#Game(
+					response.id,
+					response.name,
+					response.definition,
+					response.created,
+					this
+				));
 
 			}).catch(error => {
 				reject(error);
@@ -516,7 +531,13 @@ class Trogdord extends EventEmitter {
 					reject(error);
 				}
 
-				resolve(new this.#Game(response.id, name, definition, this));
+				resolve(new this.#Game(
+					response.id,
+					name,
+					definition,
+					response.created,
+					this
+				));
 
 			}).catch(error => {
 				reject(error);

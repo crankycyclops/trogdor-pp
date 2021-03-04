@@ -25,6 +25,9 @@ class Game {
 	// The game's definition file
 	#definition;
 
+	// UNIX timestamp when the game was created
+	#created;
+
 	// Instance of Trogdord that spawned this instance of Game
 	#trogdord;
 
@@ -117,13 +120,15 @@ class Game {
 	 * @param {Integer} id The game's id
 	 * @param {String} name The game's name
 	 * @param {String} definition The game's definition filename
+	 * @param {Integer} created UNIX timestamp when the game was created
 	 * @param {Object} trogdord Connection to the instance of trogdord the game belongs to
 	 */
-	constructor(id, name, definition, trogdord) {
+	constructor(id, name, definition, created, trogdord) {
 
 		this.#id = id;
 		this.#name = name;
 		this.#definition = definition;
+		this.#created = created;
 		this.#trogdord = trogdord;
 	}
 
@@ -149,6 +154,14 @@ class Game {
 	get definition() {
 
 		return this.#definition;
+	}
+
+	/**
+	 * Returns the UNIX timestamp when the game was created.
+	 */
+	get created() {
+
+		return this.#created;
 	}
 
 	/**

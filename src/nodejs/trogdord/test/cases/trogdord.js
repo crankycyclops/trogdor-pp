@@ -343,13 +343,24 @@ class TrogdordTest extends ConnectionRequired {
 							reject(new Error("Trogdord.newGame() should resolve to an instance of Game but doesn't"));
 						}
 
-						// Make sure Game instance has its members correctly initialized
+						if (!Number.isInteger(game.id)) {
+							reject(new Error("newGame(): game.id not correctly initialized"));
+						}
+
 						if (game.name !== gameName) {
-							reject(new Error("newGame: game.name not correctly initialized"));
+							reject(new Error("newGame(): game.name not correctly initialized"));
 						}
 
 						if (game.definition !== definition) {
-							reject(new Error("newGame: game.definition not correctly initialized"));
+							reject(new Error("newGame(): game.definition not correctly initialized"));
+						}
+
+						if (!Number.isInteger(game.created)) {
+							reject(new Error("newGame(): game.created not correctly initialized"));
+						}
+
+						if (game.trogdord != connection) {
+							reject(new Error("newGame(): game.trogdord not correctly initialized"));
 						}
 
 						// Attempt to get the game we just created
@@ -369,13 +380,24 @@ class TrogdordTest extends ConnectionRequired {
 							reject(new Error("Game id of new game should have matched the game we retrieved, but it didn't"));
 						}
 
-						// Make sure Game instance has its members correctly initialized
+						if (!Number.isInteger(game.id)) {
+							reject(new Error("getGame(): game.id not correctly initialized"));
+						}
+
 						if (game.name !== gameName) {
-							reject(new Error("getGame: game.name not correctly initialized"));
+							reject(new Error("getGame(): game.name not correctly initialized"));
 						}
 
 						if (game.definition !== definition) {
-							reject(new Error("getGame: game.definition not correctly initialized"));
+							reject(new Error("getGame(): game.definition not correctly initialized"));
+						}
+
+						if (!Number.isInteger(game.created)) {
+							reject(new Error("getGame(): game.created not correctly initialized"));
+						}
+
+						if (game.trogdord != connection) {
+							reject(new Error("getGame(): game.trogdord not correctly initialized"));
 						}
 
 						// Get a list of games again and show that the new games is now part of it
@@ -405,11 +427,19 @@ class TrogdordTest extends ConnectionRequired {
 						// Make sure Game instances returned by Trogdord.games()
 						// have their other members correctly initialized
 						if (games[0].name !== gameName) {
-							reject(new Error("games[0].name not correctly initialized"));
+							reject(new Error("games(): games[0].name not correctly initialized"));
 						}
 
 						if (games[0].definition !== definition) {
-							reject(new Error("games[0].definition not correctly initialized"));
+							reject(new Error("games(): games[0].definition not correctly initialized"));
+						}
+
+						if (!Number.isInteger(games[0].created)) {
+							reject(new Error("games(): games[0].created not correctly initialized"));
+						}
+
+						if (games[0].trogdord != connection) {
+							reject(new Error("games(): games[0].trogdord not correctly initialized"));
 						}
 
 						// Clean up
