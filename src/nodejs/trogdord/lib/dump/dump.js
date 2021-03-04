@@ -16,7 +16,7 @@ class Dump {
 	// The dumped game's definition file
 	#definition;
 
-	// UNIX timestamp representing when the dump was created
+	// UNIX timestamp representing when the game was created
 	#created;
 
 	// Instance of Trogdord that spawned this instance of Dump
@@ -28,7 +28,7 @@ class Dump {
 	 * @param {Integer} id The dumped game's id
 	 * @param {String} name The dumped game's name
 	 * @param {String} definition The dumped game's definition filename
-	 * @param {Integer} created UNIX timestamp representing when the dump was created
+	 * @param {Integer} created UNIX timestamp representing when the game was created
 	 * @param {Object} trogdord Connection to the instance of trogdord the dump belongs to
 	 */
 	constructor(id, name, definition, created, trogdord) {
@@ -65,7 +65,7 @@ class Dump {
 	}
 
 	/**
-	 * Returns the UNIX timestamp for when the dump was created.
+	 * Returns the UNIX timestamp for when the game was created.
 	 */
 	get created() {
 

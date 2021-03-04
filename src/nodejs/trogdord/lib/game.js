@@ -7,6 +7,9 @@ const Trogdord = require('./trogdord');
  */
 class Game {
 
+	// This type should only be internally instantiable
+	#Dump = require('./dump/dump');
+
 	// Private class definitions for each entity type
 	#EntityTypes = {
 		resource: require('./resource'),
@@ -358,6 +361,42 @@ class Game {
 				}
 
 				resolve(response);
+
+			}).catch(error => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
+	 * Dumps the game and returns an instance of Dump.
+	 */
+	dump() {
+
+		return new Promise((resolve, reject) => {
+
+			this.#trogdord.makeRequest({
+				method: "post",
+				scope: "game",
+				action: "dump",
+				args: {id: this.#id}
+			}).then(response => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(new this.#Dump(
+					response.id,
+					response.name,
+					response.definition,
+					response.created,
+					this.trogdord
+				));
 
 			}).catch(error => {
 				reject(error);

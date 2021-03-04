@@ -365,6 +365,7 @@ class TrogdordTest extends ConnectionRequired {
 
 						// Attempt to get the game we just created
 						createdGame = game;
+
 						return connection.getGame(game.id);
 					}).then(game => {
 
