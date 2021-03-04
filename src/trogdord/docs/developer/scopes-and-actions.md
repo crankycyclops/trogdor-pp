@@ -226,9 +226,9 @@ Returns the details of an existing game, referenced by id.
 		"id": <unsigned integer>,
 		"name": <string>,
 		"definition": <string>,
-		"created": <integer>,
-		"current_time": <integer>,
-		"is_running": <integer>
+		"created": <unsigned int>,
+		"current_time": <int>,
+		"is_running": <boolean>
 	}
 }
 ```
@@ -276,8 +276,8 @@ Creates a new game and returns its id as part of a successful response.
 	"method": "post",
 	"scope": "game",
 	"args": {
-		"id": <integer>,
-		"created": <integer>
+		"id": <int>,
+		"created": <unsigned int>
 	}
 }
 ```
@@ -448,7 +448,12 @@ Returns a status code and an array of key/value pairs containing the id and name
 {
 	"status": 200,
 	"games": [
-		{"id": <unsigned int>, "name": <string>},
+		{
+			"id": <unsigned int>,
+			"name": <string>,
+			"definition": <string>,
+			"created": <unsigned int>
+		},
 		...
 	]
 }
@@ -541,7 +546,7 @@ Returns a status code, the time the game was created, how many players are curre
 ```
 {
 	"status": 200,
-	"created": <timestamp>,
+	"created": <unsigned int>,
 	"players": <unsigned int>,
 	"current_time": <unsigned int>,
 	"is_running": <boolean>
