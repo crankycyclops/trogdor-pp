@@ -391,10 +391,10 @@ class Game {
 				}
 
 				resolve(new this.#Dump(
-					response.id,
-					response.name,
-					response.definition,
-					response.created,
+					this.id,
+					this.name,
+					this.definition,
+					this.created,
 					this.trogdord
 				));
 

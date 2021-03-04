@@ -671,7 +671,7 @@ class TrogdordTest extends ConnectionRequired {
 
 					const gameName = "My Game";
 					const definition = "game.xml";
-		
+
 					let game1, game2;
 					let dumps = [];
 
@@ -834,8 +834,74 @@ class TrogdordTest extends ConnectionRequired {
 
 				if (enabled) {
 
-					// TODO
-					resolve();
+					const gameName = "My Game";
+					const definition = "game.xml";
+
+					let game, dump;
+
+					const connection = new Trogdord();
+
+					connection.on('connect', () => {
+
+						// 1. Test getting a non-existent dump
+						connection.getDump(0).then(response => {
+
+							reject(new Error('Getting non-existent dump should not have been successful'));
+						}).catch(error => {
+
+							// 2. Create a game, dump it, and make sure we can retrieve it
+							return connection.newGame(gameName, definition);
+						}).then(newGame => {
+
+							if (200 != connection.status) {
+								reject(new Error('Creating game should have been successful'));
+							}
+
+							game = newGame;
+							return game.dump();
+						}).then(newDump => {
+
+							if (200 != connection.status) {
+								reject(new Error('Dumping game should have been successful'));
+							}
+
+							dump = newDump;
+
+							// Validate properties
+							if (game.id != dump.id) {
+								reject(new Error('Dump id has the following invalid value: ' + dump.id));
+							}
+
+							if (game.name != dump.name) {
+								reject(new Error('Dump name has the following invalid value: ' + dump.name));
+							}
+
+							if (game.definition != dump.definition) {
+								reject(new Error('Dump definition has the following invalid value: ' + dump.definition));
+							}
+
+							if (game.created != dump.created) {
+								reject(new Error('Dump created property has the following invalid value: ' + dump.created));
+							}
+
+							if (game.trogdord != dump.trogdord) {
+								reject(new Error('Dump trogdord property is invalid'));
+							}
+
+							// 3. Clean up game and dump
+							return game.destroy();
+						}).then(response => {
+
+							resolve();
+						}).catch(error => {
+
+							reject(error);
+						});
+					});
+
+					connection.on('error', (e) => {
+						reject(new Error(e.message));
+					});
 				}
 
 				else {
