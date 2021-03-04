@@ -223,7 +223,12 @@ Returns the details of an existing game, referenced by id.
 	"method": "get",
 	"scope": "game",
 	"args": {
-		"id": <unsigned integer>
+		"id": <unsigned integer>,
+		"name": <string>,
+		"definition": <string>,
+		"created": <integer>,
+		"current_time": <integer>,
+		"is_running": <integer>
 	}
 }
 ```
@@ -271,10 +276,8 @@ Creates a new game and returns its id as part of a successful response.
 	"method": "post",
 	"scope": "game",
 	"args": {
-		"name": <string>,
-		"definition": <string>,
-		<string>: <string>,
-		...
+		"id": <integer>,
+		"created": <integer>
 	}
 }
 ```
@@ -295,6 +298,8 @@ Returns a status code, the new game's id, and the time the game was created (UNI
 {
 	"status": 200,
 	"id": <unsigned int>,
+	"name": <string>,
+	"definition": <string>,
 	"created": <unsigned int>
 }
 ```

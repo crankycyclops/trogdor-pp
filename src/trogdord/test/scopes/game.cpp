@@ -2238,6 +2238,15 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(trogdor::isAscii(response["games"][0]["definition"].GetString()));
 			CHECK(0 == std::string(gameXMLRelativeFilename.c_str()).compare(response["games"][0]["definition"].GetString()));
 
+			CHECK(response["games"][0].HasMember("created"));
+			#if SIZE_MAX == UINT64_MAX
+				CHECK(response["games"][0]["created"].IsUint64());
+				CHECK(response["games"][0]["created"].GetUint64() > 0);
+			#else
+				CHECK(response["games"][0]["created"].IsUint());
+				CHECK(response["games"][0]["created"].GetUint() > 0);
+			#endif
+
 			destroyGameXML();
 			destroyConfig();
 		}
@@ -2313,6 +2322,15 @@ TEST_SUITE("GameController (scopes/game.cpp)") {
 			CHECK(response["games"][0].HasMember("definition"));
 			CHECK(response["games"][0]["definition"].IsString());
 			CHECK(0 == std::string(gameXMLRelativeFilename.c_str()).compare(response["games"][0]["definition"].GetString()));
+
+			CHECK(response["games"][0].HasMember("created"));
+			#if SIZE_MAX == UINT64_MAX
+				CHECK(response["games"][0]["created"].IsUint64());
+				CHECK(response["games"][0]["created"].GetUint64() > 0);
+			#else
+				CHECK(response["games"][0]["created"].IsUint());
+				CHECK(response["games"][0]["created"].GetUint() > 0);
+			#endif
 
 			CHECK(1 == response["games"][0].HasMember("key1"));
 			CHECK(response["games"][0]["key1"].IsString());

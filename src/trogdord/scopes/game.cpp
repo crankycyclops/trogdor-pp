@@ -224,6 +224,7 @@ rapidjson::Document GameController::getGameList(const rapidjson::Document &reque
 		gameJSON.AddMember("id", gameId, response.GetAllocator());
 		gameJSON.AddMember("name", name.Move(), response.GetAllocator());
 		gameJSON.AddMember("definition", definition.Move(), response.GetAllocator());
+		gameJSON.AddMember("created", static_cast<size_t>(GameContainer::get()->getGame(gameId)->getCreated()), response.GetAllocator());
 
 		// If an include_meta argument is included, it specifies Game
 		// meta data values that should be included along with the game's
