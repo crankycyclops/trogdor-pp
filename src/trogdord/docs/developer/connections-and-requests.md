@@ -44,7 +44,7 @@ In addition to the three properties listed above, some requests require addition
 
 ### The Server's Response
 
-Once you've established a connection with trogdord and sent off a request, the server will return a JSON response. At a minimum, this response will always contain a property called `status`. This will be a code roughly analagous to an HTTP status code. If the status code is anything other than 200, a `message` property will also be returned as part of the response, giving you more details about why the request failed.
+Once you've established a connection with trogdord and sent off a request, the server will return a JSON response. At a minimum, this response will always contain a property called `status`. This will be a code roughly analagous to an HTTP status code. If the status code is anything other than 200 or 206, a `message` property will also be returned as part of the response, giving you more details about why the request failed.
 
 All the status codes that can currently be returned by trogdord are listed below:
 
