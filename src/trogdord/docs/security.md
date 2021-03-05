@@ -8,7 +8,7 @@ If you're looking for an existing project that already builds on what trogdord p
 
 ## Placing Trogdord Behind a Firewall
 
-Trogdord should **never** run on an open port on a public facing network. Since it will accept all connections and execute all valid requests, anyone in the world could maliciously delete or alter games and players at any time. Instead, you should place it behind a firewall and setup your environment such that only trusted tools can communicate with it.
+Trogdord should **never** run on an open port on a public facing network. Since it will accept all connections and execute all valid requests, anyone in the world could maliciously delete or alter games and players or their data at any time. Instead, you should place it behind a firewall and setup your environment such that only trusted applications can communicate with it.
 
 ## Connections and Rate Limiting
 
@@ -22,16 +22,16 @@ I do plan on implementing some rudimentary support for these protections in a co
 
 Once you've taken the very important first step of blocking connections from the outside world, you should then make sure, when designing a system around trogdord, that only trusted clients and users can make privileged requests.
 
-Once again, if you'd like to see how one might choose to control access to trogdord, you can refer to my sister project, [Trogserve](https://github.com/crankycyclops/trogserve). In this particular example, there's an admin panel accessible only to authenticated administrators. The admin panel is the only way that certain requests can be made, and as long the environment in which Trogserve is running prevents access to trogdord from other clients, that should be sufficient to ensure that only the right people have full access.
+Once again, if you'd like to see how one might choose to control access to trogdord, you can refer to my sister project, [Trogserve](https://github.com/crankycyclops/trogserve). In this particular example, there's an admin panel accessible only to authenticated administrators. The admin panel is the only way that certain requests can be made, and as long as the environment in which Trogserve is running prevents access to trogdord from other clients, that should be sufficient to ensure that only the right people have full access.
 
-You might envision an even more complex architecture in which different users have different privileges. How you delegate control of a trogdord instance is up to you.
+You might envision an even more complex architecture in which different users have different privileges. How you structure access control to trogdord is entirely up to you.
 
 ## Player Accounts and Permissions
 
 You might want to allow anyone to join any game under any name. Or, instead, you might want to restrict access to logged-in users. Perhaps you want to go one step further and only allow certain users to play certain games. By not taking user security into account, trogdord gives you the freedom to implement whatever authentication you choose (or to implement none at all.)
 
-Most likely, you'll also want to secure your cient's code to prevent one player from altering another player's state.
+At a minimum, you'll likely want your architecture to prevent one player from altering another player's state.
 
 ## Other Considerations
 
-As mentioned above, this is not meant to be an exhaustive list. If I have any additional ideas, I'll add them, and, of course, if you'd like to make your own contribution, I welcome and encourage you to submit an issue or PR :)
+As mentioned above, this is not an exhaustive list. If I have any additional ideas, I'll add them to this document, and, of course, if you'd like to make your own contribution, I welcome and encourage you to submit an issue or PR :)
