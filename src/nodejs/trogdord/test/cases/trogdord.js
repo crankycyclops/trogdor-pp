@@ -849,6 +849,10 @@ class TrogdordTest extends ConnectionRequired {
 							reject(new Error('Getting non-existent dump should not have been successful'));
 						}).catch(error => {
 
+							if (404 != connection.status) {
+								reject(new Error("Should have received a 404 status for non-existent dump but didn't"));
+							}
+
 							// 2. Create a game, dump it, and make sure we can retrieve it
 							return connection.newGame(gameName, definition);
 						}).then(newGame => {
@@ -867,7 +871,7 @@ class TrogdordTest extends ConnectionRequired {
 
 							dump = newDump;
 
-							// Validate properties
+							// Validate properties of returnd Dump object
 							if (game.id != dump.id) {
 								reject(new Error('Dump id has the following invalid value: ' + dump.id));
 							}
