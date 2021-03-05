@@ -11,8 +11,49 @@ class GameTest extends ConnectionRequired {
 
         return new Promise((resolve, reject) => {
 
-            // TODO
-            resolve();
+            const gameName = "My Game";
+            const definition = "game.xml";
+
+            const connection = new Trogdord();
+
+            connection.on('connect', () => {
+
+                connection.newGame(gameName, definition).then(game => {
+
+                    if (!Number.isInteger(game.id) || game.id < 0) {
+                        reject(new Error('Value of Game.id is invalid'));
+                    }
+
+                    if (gameName != game.name) {
+                        reject(new Error('Value of Game.name is invalid'));
+                    }
+
+                    if (definition != game.definition) {
+                        reject(new Error('Value of Game.definition is invalid'));
+                    }
+
+                    if (!Number.isInteger(game.created) || game.created < 0) {
+                        reject(new Error('Value of Game.created is invalid'));
+                    }
+
+                    if (connection != game.trogdord) {
+                        reject(new Error('Value of Game.trogdord is invalid'));
+                    }
+
+                    // Clean up
+                    return game.destroy();
+                }).then(response => {
+
+                    resolve();
+                }).catch(error => {
+
+                    reject(error);
+                });
+            });
+
+            connection.on('error', (e) => {
+                reject(new Error(e.message));
+            });
         });
     }
 
