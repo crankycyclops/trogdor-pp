@@ -85,6 +85,40 @@ Every new installation of trogdord includes the following default configuration 
 ; paths are based on the root directory where trogdord was installed.
 ; definitions_path=share/trogdor
 
+[state]
+
+; Whether or not to enable the saving and loading of game and server state. This
+; is off by default.
+; enabled=false
+
+; This is the serialization format that should be used when saving a game's
+; state. By default, we use json (requires support for the JSON serialization
+; driver to be turned on during the compilation of the core library.)
+; format=json
+
+; This is the default path where game state is saved. Relative paths are based
+; on the root directory where trogdord was installed.
+; save_path=var/trogdord/state
+
+; This is the maximum number of dumps to store for each game. If set to 0, we
+; keep all previous dumps.
+; max_dumps_per_game=1
+
+; If state is enabled, this determines whether or not we should automatically
+; restore the server's last known state the next time it starts up. This is
+; disabled by default.
+; auto_restore=false
+
+; If set to true, and if the state feature is enabled, the server's state will
+; be dumped to disk on shutdown.
+; dump_on_shutdown=false
+
+; If set to true, and if the state feature is enabled, the server will attempt
+; to dump its state to disk before crashing due to uncaught exceptions or other
+; unusual behavior. This will not be invoked for things like SIGSEGV, SIGFPE,
+; etc. I tried, and it doesn't work.
+; crash_recovery=false
+
 ```
 
 To change an option from its default value, uncomment it by deleting the semi-colon, set it to the desired value, save the file, and restart trogdord.
