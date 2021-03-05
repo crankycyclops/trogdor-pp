@@ -7,6 +7,33 @@ const Game = require('../../lib/game');
 
 class GameTest extends ConnectionRequired {
 
+	/**
+	 * Tests Game.statistics().
+	 */
+    #testStatistics = function () {
+
+        return new Promise((resolve, reject) => {
+
+            const gameName = "My Game";
+            const definition = "game.xml";
+
+            const connection = new Trogdord();
+
+            connection.on('connect', () => {
+
+                // TODO
+                resolve();
+            });
+
+            connection.on('error', (e) => {
+                reject(new Error(e.message));
+            });
+        });
+    }
+
+	/**
+	 * Tests various getters for the Game class.
+	 */
     #testGetters = function () {
 
         return new Promise((resolve, reject) => {
@@ -64,6 +91,7 @@ class GameTest extends ConnectionRequired {
 
 		return new Promise((resolve, reject) => {
 
+            this.addTest("Game.statistics()", this.#testStatistics);
 			this.addTest("Game Getters for id, name, definition, created, and trogdord", this.#testGetters);
 			resolve();
 		});
