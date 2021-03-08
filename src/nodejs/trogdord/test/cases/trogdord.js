@@ -807,7 +807,7 @@ class TrogdordTest extends ConnectionRequired {
 							}
 
 							resolve();
-						});;
+						});
 					});
 
 					connection.on('error', (e) => {

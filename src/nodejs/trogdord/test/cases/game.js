@@ -251,20 +251,44 @@ class GameTest extends ConnectionRequired {
 	/**
 	 * Tests Game.dump()
 	 */
-	#testDump = function () {
+	#testDump = function (that) {
 
 		return new Promise((resolve, reject) => {
 
-			const connection = new Trogdord();
+			that.isStateEnabled().then(enabled => {
 
-			connection.on('connect', () => {
+				if (enabled) {
 
-				// TODO
-				resolve();
-			});
+					const connection = new Trogdord();
 
-			connection.on('error', (e) => {
-				reject(new Error(e.message));
+					connection.on('connect', () => {
+
+						// TODO
+						resolve();
+					});
+
+					connection.on('error', (e) => {
+						reject(new Error(e.message));
+					});
+				}
+
+				else {
+
+					const connection = new Trogdord();
+
+					connection.on('connect', () => {
+
+						// TODO
+						resolve();
+					});
+
+					connection.on('error', (e) => {
+						reject(new Error(e.message));
+					});
+				}
+
+			}).catch(error => {
+				reject(error);
 			});
 		});
 	}
@@ -272,20 +296,44 @@ class GameTest extends ConnectionRequired {
 	/**
 	 * Tests Game.destroy()
 	 */
-	#testDestroy = function () {
+	#testDestroy = function (that) {
 
 		return new Promise((resolve, reject) => {
 
-			const connection = new Trogdord();
+			that.isStateEnabled().then(enabled => {
 
-			connection.on('connect', () => {
+				if (enabled) {
 
-				// TODO
-				resolve();
-			});
+					const connection = new Trogdord();
 
-			connection.on('error', (e) => {
-				reject(new Error(e.message));
+					connection.on('connect', () => {
+
+						// TODO
+						resolve();
+					});
+
+					connection.on('error', (e) => {
+						reject(new Error(e.message));
+					});
+				}
+
+				else {
+
+					const connection = new Trogdord();
+
+					connection.on('connect', () => {
+
+						// TODO
+						resolve();
+					});
+
+					connection.on('error', (e) => {
+						reject(new Error(e.message));
+					});
+				}
+
+			}).catch(error => {
+				reject(error);
 			});
 		});
 	}
@@ -437,8 +485,8 @@ class GameTest extends ConnectionRequired {
 			this.addTest("Game.statistics()", this.#testStatistics);
 			this.addTest("Game.start(), Game.stop(), and Game.isRunning()", this.#testIsRunningAndStartStop);
 			this.addTest("Game.getTime()", this.#testGetTime);
-			this.addTest("Game.dump()", this.#testDump);
-			this.addTest("Game.destroy()", this.#testDestroy);
+			this.addTest("Game.dump()", () => this.#testDump(this));
+			this.addTest("Game.destroy()", () => this.#testDestroy(this));
 			this.addTest("Game.setMeta() and Game.getMeta()", this.#testGetAndSetMeta);
 			this.addTest("Game.createPlayer()", this.#testCreatePlayer);
 			this.addTest("Game entity list methods", this.#testEntityListMethods);
