@@ -312,6 +312,69 @@ class GameTest extends ConnectionRequired {
 	}
 
 	/**
+	 * Tests Game.createPlayer()
+	 */
+	#testCreatePlayer = function () {
+
+		return new Promise((resolve, reject) => {
+
+			const connection = new Trogdord();
+
+			connection.on('connect', () => {
+
+				// TODO
+				resolve();
+			});
+
+			connection.on('error', (e) => {
+				reject(new Error(e.message));
+			});
+		});
+	}
+
+	/**
+	 * Tests Game Entity List Methods
+	 */
+	#testEntityListMethods = function () {
+
+		return new Promise((resolve, reject) => {
+
+			const connection = new Trogdord();
+
+			connection.on('connect', () => {
+
+				// TODO
+				resolve();
+			});
+
+			connection.on('error', (e) => {
+				reject(new Error(e.message));
+			});
+		});
+	}
+
+	/**
+	 * Tests Game Entity Getter Methods
+	 */
+	#testEntityGetterMethods = function () {
+
+		return new Promise((resolve, reject) => {
+
+			const connection = new Trogdord();
+
+			connection.on('connect', () => {
+
+				// TODO
+				resolve();
+			});
+
+			connection.on('error', (e) => {
+				reject(new Error(e.message));
+			});
+		});
+	}
+
+	/**
 	 * Tests various getters for the Game class.
 	 */
 	#testGetters = function () {
@@ -377,6 +440,9 @@ class GameTest extends ConnectionRequired {
 			this.addTest("Game.dump()", this.#testDump);
 			this.addTest("Game.destroy()", this.#testDestroy);
 			this.addTest("Game.setMeta() and Game.getMeta()", this.#testGetAndSetMeta);
+			this.addTest("Game.createPlayer()", this.#testCreatePlayer);
+			this.addTest("Game entity list methods", this.#testEntityListMethods);
+			this.addTest("Game entity getter methods", this.#testEntityGetterMethods);
 			this.addTest("Game Getters for id, name, definition, created, and trogdord", this.#testGetters);
 			resolve();
 		});
