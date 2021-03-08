@@ -8,7 +8,7 @@ const Game = require('../../lib/game');
 class GameTest extends ConnectionRequired {
 
 	/**
-	 * Tests Game.statistics().
+	 * Tests Game.statistics()
 	 */
 	#testStatistics = function () {
 
@@ -94,6 +94,9 @@ class GameTest extends ConnectionRequired {
 		});
 	}
 
+	/**
+	 * Tests Game.start(), Game.stop(), and Game.isRunning()
+	 */
 	#testIsRunningAndStartStop = function () {
 
 		return new Promise((resolve, reject) => {
@@ -163,6 +166,9 @@ class GameTest extends ConnectionRequired {
 		});
 	}
 
+	/**
+	 * Tests Game.getTime()
+	 */
 	#testGetTime = function () {
 
 		return new Promise((resolve, reject) => {
@@ -243,6 +249,69 @@ class GameTest extends ConnectionRequired {
 	}
 
 	/**
+	 * Tests Game.dump()
+	 */
+	#testDump = function () {
+
+		return new Promise((resolve, reject) => {
+
+			const connection = new Trogdord();
+
+			connection.on('connect', () => {
+
+				// TODO
+				resolve();
+			});
+
+			connection.on('error', (e) => {
+				reject(new Error(e.message));
+			});
+		});
+	}
+
+	/**
+	 * Tests Game.destroy()
+	 */
+	#testDestroy = function () {
+
+		return new Promise((resolve, reject) => {
+
+			const connection = new Trogdord();
+
+			connection.on('connect', () => {
+
+				// TODO
+				resolve();
+			});
+
+			connection.on('error', (e) => {
+				reject(new Error(e.message));
+			});
+		});
+	}
+
+	/**
+	 * Tests Game.setMeta() and Game.getMeta()
+	 */
+	#testGetAndSetMeta = function () {
+
+		return new Promise((resolve, reject) => {
+
+			const connection = new Trogdord();
+
+			connection.on('connect', () => {
+
+				// TODO
+				resolve();
+			});
+
+			connection.on('error', (e) => {
+				reject(new Error(e.message));
+			});
+		});
+	}
+
+	/**
 	 * Tests various getters for the Game class.
 	 */
 	#testGetters = function () {
@@ -305,6 +374,9 @@ class GameTest extends ConnectionRequired {
 			this.addTest("Game.statistics()", this.#testStatistics);
 			this.addTest("Game.start(), Game.stop(), and Game.isRunning()", this.#testIsRunningAndStartStop);
 			this.addTest("Game.getTime()", this.#testGetTime);
+			this.addTest("Game.dump()", this.#testDump);
+			this.addTest("Game.destroy()", this.#testDestroy);
+			this.addTest("Game.setMeta() and Game.getMeta()", this.#testGetAndSetMeta);
 			this.addTest("Game Getters for id, name, definition, created, and trogdord", this.#testGetters);
 			resolve();
 		});
