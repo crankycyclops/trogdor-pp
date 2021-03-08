@@ -163,6 +163,85 @@ class GameTest extends ConnectionRequired {
 		});
 	}
 
+	#testGetTime = function () {
+
+		return new Promise((resolve, reject) => {
+
+			let game;
+			const connection = new Trogdord();
+
+			connection.on('connect', () => {
+
+				connection.newGame("My Game", "game.xml").then(newGame => {
+
+					game = newGame;
+					return game.stop();
+				}).then(() => {
+
+					if (200 != connection.status) {
+						reject(new Error('Stopping game should have been successful'));
+					}
+
+					return game.getTime();
+				}).then(time => {
+
+					if (200 != connection.status) {
+						reject(new Error('Call to game.getTime() should have been successful'));
+					}
+
+					if (0 != time) {
+						reject(new Error('Game time should be 0 when game is initialized in stopped state'));
+					}
+
+					return game.start();
+				}).then(response => {
+
+					if (200 != connection.status) {
+						reject(new Error('Call to game.start() should have been successful'));
+					}
+
+					return new Promise((resolve, reject) => {
+
+						// Wait for the time to advance
+						setTimeout(() => {
+
+							resolve();
+						}, 1500);
+					});
+				}).then(() => {
+
+					return game.getTime();
+				}).then(time => {
+
+					if (200 != connection.status) {
+						reject(new Error('Call to game.getTime() should have been successful'));
+					}
+
+					if (time <= 0) {
+						reject(new Error('Game time should be greater than 0 after starting but is not'));
+					}
+
+					// Clean up
+					return game.destroy();
+				}).then(() => {
+
+					if (200 != connection.status) {
+						reject(new Error('Destroying game should have been successful'));
+					}
+
+					resolve();
+				}).catch(error => {
+
+					reject(error);
+				});
+			});
+
+			connection.on('error', (e) => {
+				reject(new Error(e.message));
+			});
+		});
+	}
+
 	/**
 	 * Tests various getters for the Game class.
 	 */
@@ -225,6 +304,7 @@ class GameTest extends ConnectionRequired {
 
 			this.addTest("Game.statistics()", this.#testStatistics);
 			this.addTest("Game.start(), Game.stop(), and Game.isRunning()", this.#testIsRunningAndStartStop);
+			this.addTest("Game.getTime()", this.#testGetTime);
 			this.addTest("Game Getters for id, name, definition, created, and trogdord", this.#testGetters);
 			resolve();
 		});
