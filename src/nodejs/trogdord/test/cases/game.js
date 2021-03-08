@@ -94,6 +94,75 @@ class GameTest extends ConnectionRequired {
 		});
 	}
 
+	#testIsRunningAndStartStop = function () {
+
+		return new Promise((resolve, reject) => {
+
+			let game;
+			const connection = new Trogdord();
+
+			connection.on('connect', () => {
+
+				connection.newGame("My Game", "game.xml").then(newGame => {
+
+					game = newGame;
+					return game.stop();
+				}).then(() => {
+
+					if (200 != connection.status) {
+						reject(new Error('Stopping game should have been successful'));
+					}
+
+					return game.isRunning();
+				}).then(response => {
+
+					if (200 != connection.status) {
+						reject(new Error('Call to game.isRunning() should have been successful'));
+					}
+
+					if (response) {
+						reject(new Error('game.isRunning() should resolve to false but does not'));
+					}
+
+					return game.start();
+				}).then(response => {
+
+					if (200 != connection.status) {
+						reject(new Error('Starting game should have been successful'));
+					}
+
+					return game.isRunning();
+				}).then(response => {
+
+					if (200 != connection.status) {
+						reject(new Error('Call to game.isRunning() should have been successful'));
+					}
+
+					if (!response) {
+						reject(new Error('game.isRunning() should resolve to true but does not'));
+					}
+
+					// Clean up
+					return game.destroy();
+				}).then(() => {
+
+					if (200 != connection.status) {
+						reject(new Error('Destroying game should have been successful'));
+					}
+
+					resolve();
+				}).catch(error => {
+
+					reject(error);
+				});
+			});
+
+			connection.on('error', (e) => {
+				reject(new Error(e.message));
+			});
+		});
+	}
+
 	/**
 	 * Tests various getters for the Game class.
 	 */
@@ -155,6 +224,7 @@ class GameTest extends ConnectionRequired {
 		return new Promise((resolve, reject) => {
 
 			this.addTest("Game.statistics()", this.#testStatistics);
+			this.addTest("Game.start(), Game.stop(), and Game.isRunning()", this.#testIsRunningAndStartStop);
 			this.addTest("Game Getters for id, name, definition, created, and trogdord", this.#testGetters);
 			resolve();
 		});
