@@ -7,10 +7,15 @@ const casesDir = fs.opendirSync(casesPath);
 // Number of tests that failed
 let failed = 0;
 
-// Each test is executed asynchronously as a Promise
-let tests = [];
+// When set to true, this signals that the tests are finished running
+let finished = false;
 
-console.log("Running nodejs/trogdord unit tests:\n");
+// Promise chain that will execute our tests one by one
+let run = new Promise((resolve, reject) => {
+
+	console.log("Running nodejs/trogdord unit tests:\n");
+	resolve();
+});
 
 for (let entry = casesDir.readSync(); entry != null; entry = casesDir.readSync()) {
 
@@ -19,8 +24,10 @@ for (let entry = casesDir.readSync(); entry != null; entry = casesDir.readSync()
 		let test = require(casesPath + path.sep + entry.name);
 		let instance = new test();
 
-		tests.push(
-			new Promise((resolve, reject) => {
+		run = run.then(() => {
+
+			return new Promise((resolve, reject) => {
+
 				instance.skip().then(() => {
 					console.log(entry.name + ': SKIPPED');
 					resolve();
@@ -35,16 +42,23 @@ for (let entry = casesDir.readSync(); entry != null; entry = casesDir.readSync()
 						resolve();
 					});
 				});
-			})
-		);
+			});
+		});
 	}
 }
 
-Promise.allSettled(tests).then(result => {
+run.finally(() => {
+	finished = true;
+});
+
+// Wait for tests to finish
+(function wait () {
+
+	if (!finished) {
+		setTimeout(wait, 250);
+		return;
+	}
+
 	casesDir.closeSync();
 	process.exit(failed);
-}).catch(error => {
-	casesDir.closeSync();
-	console.error(error);
-	process.exit(1);
-});
+})();
