@@ -276,8 +276,37 @@ class GameTest extends ConnectionRequired {
 
 					connection.on('connect', () => {
 
-						// TODO
-						resolve();
+						let game;
+
+						connection.newGame('My Game', 'game.xml').then(newGame => {
+
+							if (200 != connection.status) {
+								reject(new Error('Creating game should have been successful'));
+							}
+
+							game = newGame;
+							return game.dump();
+						}).then(() => {
+
+							reject(new Error('Dumping game should not be successful when state feature is turned off'));
+						}).catch(error => {
+
+							if (501 != connection.status) {
+								reject(new Error('Attempting to dump when state is disabled should return a 501 unsupported status'));
+							}
+
+							return game.destroy();
+						}).then(() => {
+
+							if (200 != connection.status) {
+								reject(new Error('Destroying game should have been successful'));
+							}
+
+							resolve();
+						}).catch(error => {
+
+							reject(error);
+						});
 					});
 
 					connection.on('error', (e) => {
