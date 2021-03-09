@@ -1,7 +1,5 @@
 'use strict';
 
-const Dump = require('./dump');
-
 /**
  * Class representing a game dump slot that exists inside an instance of trogdord.
  */

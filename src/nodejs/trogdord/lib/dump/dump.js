@@ -1,7 +1,5 @@
 'use strict';
 
-const Trogdord = require('../trogdord');
-
 /**
  * Class representing a game dump that exists inside an instance of trogdord.
  */
