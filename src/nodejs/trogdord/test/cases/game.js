@@ -255,14 +255,14 @@ class GameTest extends ConnectionRequired {
 
 			that.isStateEnabled().then(enabled => {
 
+				const name = "My Game";
+				const definition = "game.xml";
+
 				if (enabled) {
 
 					const connection = new Trogdord();
 
 					connection.on('connect', () => {
-
-						const name = "My Game";
-						const definition = "game.xml";
 
 						let game;
 
@@ -328,7 +328,7 @@ class GameTest extends ConnectionRequired {
 
 						let game;
 
-						connection.newGame('My Game', 'game.xml').then(newGame => {
+						connection.newGame(name, definition).then(newGame => {
 
 							if (200 != connection.status) {
 								reject(new Error('Creating game should have been successful'));
