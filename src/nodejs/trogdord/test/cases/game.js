@@ -1,9 +1,7 @@
 'use strict';
 
 const ConnectionRequired = require('./lib/connectionrequired');
-
 const Trogdord = require('../../lib/trogdord');
-const Game = require('../../lib/game');
 
 class GameTest extends ConnectionRequired {
 
