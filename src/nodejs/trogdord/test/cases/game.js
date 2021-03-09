@@ -261,8 +261,58 @@ class GameTest extends ConnectionRequired {
 
 					connection.on('connect', () => {
 
-						// TODO
-						resolve();
+						const name = "My Game";
+						const definition = "game.xml";
+
+						let game;
+
+						connection.newGame(name, definition).then(newGame => {
+
+							if (200 != connection.status) {
+								reject(new Error('Creating game should have been successful'));
+							}
+
+							game = newGame;
+							return game.dump();
+						}).then(dump => {
+
+							if (200 != connection.status) {
+								reject(new Error('Dumping game should have been successful'));
+							}
+
+							if (game.id != dump.id || !Number.isInteger(dump.id)) {
+								reject(new Error('Dump.id not correctly initialized on return from Game.dump()'));
+							}
+
+							if (name != dump.name) {
+								reject(new Error('Dump.name not correctly initialized on return from Game.dump()'));
+							}
+
+							if (definition != dump.definition) {
+								reject(new Error('Dump.definition not correctly initialized on return from Game.dump()'));
+							}
+
+							if (!Number.isInteger(dump.created) || dump.created != game.created) {
+								reject(new Error('Dump.created not correctly initialized on return from Game.dump()'));
+							}
+
+							if (connection != dump.trogdord) {
+								reject(new Error('Dump.trogdord not correctly initialized on return from Game.dump()'));
+							}
+
+							// Clean up
+							return game.destroy(true);
+						}).then(() => {
+
+							if (200 != connection.status) {
+								reject(new Error('Destroying game and dump should have been successful'));
+							}
+
+							resolve();
+						}).catch(error => {
+
+							reject(error);
+						});
 					});
 
 					connection.on('error', (e) => {
