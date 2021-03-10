@@ -51,10 +51,10 @@ class Case {
 			}
 
 			return this.#tests.reduce((chain, currentTest) => {
-				return chain.then(currentTest);
-			}, Promise.resolve()).catch(error => {
-				reject(error);
-			}).then(() => {
+				return chain.then(currentTest.test).catch(error => {
+					reject({test: currentTest.name, error: error});
+				});
+			}, Promise.resolve()).then(() => {
 				resolve();
 			});
 		});
@@ -71,7 +71,7 @@ class Case {
 	 */
 	addTest(name, callback) {
 
-		this.#tests.push(callback);
+		this.#tests.push({name: name, test: callback});
 		return this;
 	}
 };

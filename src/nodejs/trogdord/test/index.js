@@ -37,7 +37,13 @@ for (let entry = casesDir.readSync(); entry != null; entry = casesDir.readSync()
 						resolve();
 					}).catch(error => {
 						console.log(entry.name + ': FAILED');
-						console.error("\t" + ("string" == typeof error ? error : entry.name + ':' + error.stack.split("\n")[1].split(':')[1] + ': ' + error.message));
+						console.error(
+							"\t While testing " + error.test + ": " + (
+								"string" == typeof error.error ?
+								error.error :
+								entry.name + ':' + error.error.stack.split("\n")[1].split(':')[1] + ': ' + error.error.message
+							)
+						);
 						failed++;
 						resolve();
 					});
