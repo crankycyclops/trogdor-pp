@@ -377,6 +377,11 @@ class GameTest extends ConnectionRequired {
 
 		return new Promise((resolve, reject) => {
 
+			let game;
+
+			const name = "My Game";
+			const definition = "game.xml";
+
 			that.isStateEnabled().then(enabled => {
 
 				if (enabled) {
@@ -394,14 +399,92 @@ class GameTest extends ConnectionRequired {
 					});
 				}
 
+				// When the state feature is disabled, the argument that you
+				// pass to Game.destroy() shouldn't matter; the game should
+				// always be destroyed.
 				else {
 
 					const connection = new Trogdord();
 
 					connection.on('connect', () => {
 
-						// TODO
-						resolve();
+						connection.newGame(name, definition).then(newGame => {
+
+							if (200 != connection.status) {
+								reject(new Error('Creating game should have been successful'));
+							}
+
+							game = newGame;
+
+							// 1: test default argument
+							return game.destroy();
+						}).then(() => {
+
+							if (200 != connection.status) {
+								reject(new Error('Destroying game should have been successful'));
+							}
+
+							// Make sure game was destroyed
+							return connection.getGame(game.id);
+						}).then(() => {
+
+							reject(new Error('Got game that should have been deleted'));
+						}).catch(() => {
+
+							if (404 != connection.status) {
+								reject(new Error('Should have gotten 404 game not found'));
+							}
+
+							return connection.newGame(name, definition);
+						}).then(newGame => {
+
+							game = newGame;
+
+							// 2: test with destroyDump = false
+							return game.destroy(false);
+						}).then(() => {
+
+							if (200 != connection.status) {
+								reject(new Error('Destroying game should have been successful'));
+							}
+
+							// Make sure game was destroyed
+							return connection.getGame(game.id);
+						}).then(() => {
+
+							reject(new Error('Got game that should have been deleted'));
+						}).catch(() => {
+
+							if (404 != connection.status) {
+								reject(new Error('Should have gotten 404 game not found'));
+							}
+
+							return connection.newGame(name, definition);
+						}).then(newGame => {
+
+							game = newGame;
+
+							// 3: test with destroyDump = true
+							return game.destroy(true);
+						}).then(() => {
+
+							if (200 != connection.status) {
+								reject(new Error('Destroying game should have been successful'));
+							}
+
+							// Make sure game was destroyed
+							return connection.getGame(game.id);
+						}).then(() => {
+
+							reject(new Error('Got game that should have been deleted'));
+						}).catch(() => {
+
+							if (404 != connection.status) {
+								reject(new Error('Should have gotten 404 game not found'));
+							}
+
+							return connection.newGame(name, definition);
+						});
 					});
 
 					connection.on('error', (e) => {
