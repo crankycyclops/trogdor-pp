@@ -483,7 +483,7 @@ class GameTest extends ConnectionRequired {
 								reject(new Error('Should have gotten 404 game not found'));
 							}
 
-							return connection.newGame(name, definition);
+							resolve();
 						});
 					});
 
