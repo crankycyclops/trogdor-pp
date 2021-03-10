@@ -1,10 +1,9 @@
 'use strict';
 
-const ConnectionRequired = require('./lib/connectionrequired');
-
 const Trogdord = require('../../lib/trogdord');
+const StateRequired = require('./lib/staterequired');
 
-class DumpTest extends ConnectionRequired {
+class DumpTest extends StateRequired {
 
 	/**
 	 * Tests various getters for the Dump class.

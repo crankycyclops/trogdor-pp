@@ -65,9 +65,6 @@ class Case {
 	/**
 	 * Inserts a tests to be performed. At least one test must be inserted for
 	 * the instance of Case to be valid at runtime.
-	 *
-	 * TODO: figure out how I'm going to display the name of each test being
-	 * executed so that there's more context.
 	 */
 	addTest(name, callback) {
 

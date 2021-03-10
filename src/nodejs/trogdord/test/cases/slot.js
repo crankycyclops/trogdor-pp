@@ -1,10 +1,9 @@
 'use strict';
 
-const ConnectionRequired = require('./lib/connectionrequired');
-
 const Trogdord = require('../../lib/trogdord');
+const StateRequired = require('./lib/staterequired');
 
-class SlotTest extends ConnectionRequired {
+class SlotTest extends StateRequired {
 
 	/**
 	 * Tests various getters for the Slot class.
