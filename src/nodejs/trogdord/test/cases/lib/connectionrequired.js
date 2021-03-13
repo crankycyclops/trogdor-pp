@@ -35,10 +35,77 @@ class ConnectionRequired extends Case {
 	}
 
 	/**
+	 * Remove any games or dumps left behind by a test case.
+	 */
+	cleanup() {
+
+		return new Promise((resolve, reject) => {
+
+			let promises = Promise.resolve();
+			let connection = new Trogdord('localhost', 1040, {connectTimeout: 1000});
+
+			connection.on('connect', () => {
+
+				connection.games().then(games => {
+
+					games.forEach(game => {
+
+						promises.then(() => {
+							return game.destroy(true);
+						}).then(() => {
+							if (200 != connection.status) {
+								reject("Failed to cleanup game id " + game.id);
+							}
+							console.log('Game destroyed');
+						});
+					});
+
+					promises.catch(error => {
+						reject(error.message);
+					});
+
+					return connection.config();
+				}).then(response => {
+
+					if (response['state.enabled']) {
+
+						return connection.dumped().then(dumped => {
+
+							dumped.forEach(dump => {
+
+								promises.then(() => {
+									return dump.destroy();
+								}).then(() => {
+									if (200 != connection.status) {
+										reject("Failed to cleanup dump id " + dump.id);
+									}
+								});
+							});
+						});
+					} else {
+						return Promise.resolve();
+					}
+				}).catch(error => {
+
+					reject(error);
+				});
+
+				promises.then(() => {
+					resolve();
+				});
+			});
+
+			connection.on('error', () => {
+				reject('Connection failed');
+			});
+		});
+	}
+
+	/**
 	 * Returns a promise that resolves to true if trogdord's configuration has
 	 * state features turned on and false if not.
 	 */
-	isStateEnabled() {
+	 isStateEnabled() {
 
 		return new Promise((resolve, reject) => {
 

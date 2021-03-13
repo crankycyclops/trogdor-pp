@@ -63,6 +63,22 @@ class Case {
 	/*************************************************************************/
 
 	/**
+	 * Test cases that leave behind temporary date should override this method
+	 * in order to clean it up. This ensures that each test case can start with
+	 * a known clean state. This is called after both failed and successful
+	 * runs. Return value should be a promise so that we can wait for
+	 * asynchronous activities to finish before moving on to the next case.
+	 */
+	cleanup() {
+
+		return new Promise((resolve,reject) => {
+			resolve();
+		})
+	}
+
+	/*************************************************************************/
+
+	/**
 	 * Inserts a tests to be performed. At least one test must be inserted for
 	 * the instance of Case to be valid at runtime.
 	 */

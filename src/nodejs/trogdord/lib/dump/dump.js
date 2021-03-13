@@ -77,6 +77,38 @@ class Dump {
 
 		return this.#trogdord;
 	}
+
+	/**
+	 * Destroys the dump, along with all its slots. From this point forward,
+	 * the Dump object will be invalid and network requests that originate 
+	 * from it will result in a 404 dump not found error.
+	 */
+	 destroy() {
+
+		return new Promise((resolve, reject) => {
+
+			this.#trogdord.makeRequest({
+				method: "delete",
+				scope: "game",
+				action: "dump",
+				args: {id: this.#id}
+			}).then(response => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(response);
+
+			}).catch(error => {
+				reject(error);
+			});
+		});
+	}
 };
 
 module.exports = Dump;

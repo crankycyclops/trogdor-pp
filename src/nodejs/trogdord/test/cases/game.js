@@ -386,12 +386,63 @@ class GameTest extends ConnectionRequired {
 
 				if (enabled) {
 
+					let dump;
 					const connection = new Trogdord();
 
 					connection.on('connect', () => {
 
-						// TODO
-						resolve();
+						connection.newGame(name, definition).then(newGame => {
+
+							if (200 != connection.status) {
+								reject(new Error('Creating game should have been successful'));
+							}
+
+							game = newGame;
+							return game.dump();
+						}).then(newDump => {
+
+							if (200 != connection.status) {
+								reject(new Error('Destroying game should have been successful'));
+							}
+
+							if (game.id != newDump.id) {
+								reject(new Error("Dump id doesn't match game id"));
+							}
+
+							dump = newDump;
+
+							// 1: test destroyDump = false
+							return game.destroy(false);
+						}).then(() => {
+
+							if (200 != connection.status) {
+								reject(new Error('Destroying game should have been successful'));
+							}
+
+							return connection.getDump(dump.id);
+						}).then(gottenDump => {
+
+							if (200 != connection.status) {
+								reject(new Error('Destroying game should have been successful'));
+							}
+
+							if (gottenDump.id != dump.id) {
+								reject(new Error("Dump ids don't match"));
+							}
+
+							return connection.getGame(game.id);
+						}).then(() => {
+
+							reject(new Error("Getting destroyed game should have failed but didn't"));
+						}).catch(error => {
+
+							if (404 != connection.status) {
+								reject(new Error("Getting destroyed game should have resulted in 404 game not found but didn't"));
+							}
+
+							// TODO
+							resolve();
+						})
 					});
 
 					connection.on('error', (e) => {
