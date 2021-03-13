@@ -440,9 +440,106 @@ class GameTest extends ConnectionRequired {
 								reject(new Error("Getting destroyed game should have resulted in 404 game not found but didn't"));
 							}
 
-							// TODO
+							return connection.newGame(name, definition);
+						}).then(newGame => {
+
+							if (200 != connection.status) {
+								reject(new Error('Creating game should have been successful'));
+							}
+
+							game = newGame;
+							return game.dump();
+						}).then(newDump => {
+
+							if (200 != connection.status) {
+								reject(new Error('Destroying game should have been successful'));
+							}
+
+							if (game.id != newDump.id) {
+								reject(new Error("Dump id doesn't match game id"));
+							}
+
+							dump = newDump;
+
+							// 2: test destroyDump = true
+							return game.destroy(true);
+						}).then(() => {
+
+							if (200 != connection.status) {
+								reject(new Error('Destroying game should have been successful'));
+							}
+
+							return connection.getDump(dump.id);
+						}).then(() => {
+
+							reject(new Error("Dump should have been destroyed by call to game.destroy(true) but was not"));
+						}).catch(error => {
+
+							if (404 != connection.status) {
+								reject(new Error("Getting destroyed dump should have resulted in 404 dump not found but didn't"));
+							}
+
+							return connection.getGame(game.id);
+						}).then(() => {
+
+							reject(new Error("Getting destroyed game should have failed but didn't"));
+						}).catch(error => {
+
+							if (404 != connection.status) {
+								reject(new Error("Getting destroyed game should have resulted in 404 game not found but didn't"));
+							}
+
+							return connection.newGame(name, definition);
+						}).then(newGame => {
+
+							if (200 != connection.status) {
+								reject(new Error('Creating game should have been successful'));
+							}
+
+							game = newGame;
+							return game.dump();
+						}).then(newDump => {
+
+							if (200 != connection.status) {
+								reject(new Error('Destroying game should have been successful'));
+							}
+
+							if (game.id != newDump.id) {
+								reject(new Error("Dump id doesn't match game id"));
+							}
+
+							dump = newDump;
+
+							// 3: test with default argument (destroyDump = true)
+							return game.destroy();
+						}).then(() => {
+
+							if (200 != connection.status) {
+								reject(new Error('Destroying game should have been successful'));
+							}
+
+							return connection.getDump(dump.id);
+						}).then(() => {
+
+							reject(new Error("Dump should have been destroyed by call to game.destroy() but was not"));
+						}).catch(error => {
+
+							if (404 != connection.status) {
+								reject(new Error("Getting destroyed dump should have resulted in 404 dump not found but didn't"));
+							}
+
+							return connection.getGame(game.id);
+						}).then(() => {
+
+							reject(new Error("Getting destroyed game should have failed but didn't"));
+						}).catch(error => {
+
+							if (404 != connection.status) {
+								reject(new Error("Getting destroyed game should have resulted in 404 game not found but didn't"));
+							}
+
 							resolve();
-						})
+						});
 					});
 
 					connection.on('error', (e) => {
