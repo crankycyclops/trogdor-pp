@@ -5,6 +5,9 @@
  */
 class Slot {
 
+	// Game objects represent games that exist inside the trogdord instance
+	#Game = require('../game');
+
 	// The slot number
 	#slot;
 
@@ -77,6 +80,43 @@ class Slot {
 				}
 
 				resolve(response);
+
+			}).catch(error => {
+				reject(error);
+			});
+		});
+	}
+
+	/**
+	 * Restores the dump slotand returns an instance of Game representing the
+	 * newly restored game.
+	 */
+	restore() {
+
+		return new Promise((resolve, reject) => {
+
+			this.#dump.trogdord.makeRequest({
+				method: "post",
+				scope: "game",
+				action: "restore",
+				args: {id: this.#dump.id, slot: this.#slot}
+			}).then(response => {
+
+				if (200 != response.status) {
+
+					let error = new Error(response.message);
+
+					error.status = response.status;
+					reject(error);
+				}
+
+				resolve(new this.#Game(
+					this.#dump.id,
+					this.#dump.name,
+					this.#dump.definition,
+					this.#dump.created,
+					this.#dump.trogdord
+				));
 
 			}).catch(error => {
 				reject(error);
