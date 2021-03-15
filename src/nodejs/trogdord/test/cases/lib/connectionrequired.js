@@ -56,7 +56,6 @@ class ConnectionRequired extends Case {
 							if (200 != connection.status) {
 								reject("Failed to cleanup game id " + game.id);
 							}
-							console.log('Game destroyed');
 						});
 					});
 
@@ -79,6 +78,8 @@ class ConnectionRequired extends Case {
 									if (200 != connection.status) {
 										reject("Failed to cleanup dump id " + dump.id);
 									}
+								}).catch(error => {
+									reject(error);
 								});
 							});
 						});

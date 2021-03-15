@@ -32,7 +32,9 @@ for (let entry = casesDir.readSync(); entry != null; entry = casesDir.readSync()
 					console.log(entry.name + ': SKIPPED');
 					resolve();
 				}).catch(e => {
-					instance.init().then(() => {return instance.run()}).then(result => {
+					instance.init().then(() => {
+						return instance.run();
+					}).then(result => {
 						console.log(entry.name + ': PASSED');
 					}).catch(error => {
 						console.log(entry.name + ': FAILED');
@@ -45,12 +47,12 @@ for (let entry = casesDir.readSync(); entry != null; entry = casesDir.readSync()
 						);
 						failed++;
 					}).then(() => {
-						instance.cleanup().then(() => {
-							resolve();
-						}).catch(error => {
-							console.log("Cleanup failed due to error: " + error + ". Aborting remaining tests.");
-							process.exit(1);
-						});
+						return instance.cleanup();
+					}).then(() => {
+						resolve();
+					}).catch(error => {
+						console.log("Cleanup failed due to error: " + error + ". Aborting remaining tests.");
+						process.exit(1);
 					});
 				});
 			});
