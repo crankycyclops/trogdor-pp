@@ -359,6 +359,278 @@ connection.on('connect', () => {
 });
 ```
 
+The returned instance of `Game` has the following read-only members:
+
+| Member       | Description                                                      |
+| -----------  | -----------------------------------------------------------------|
+| `id`         | The game's id                                                    |
+| `name`       | The game's name                                                  |
+| `definition` | The definition file used to create the game                      |
+| `created`    | UNIX timestamp of when the game was created                      |
+| `trogdord`   | The underlying instance of Trogdord that spawned the Dump object | 
+
+### Dumping a Game to Disk
+
+`Game.dump()` dumps a game to disk.
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.newGame('Game Name', 'game.xml')
+	.then(game => {
+		return game.dump();
+	}).then(dump => {
+		console.log(dump);
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+Result (a Dump object):
+
+```
+Dump {}
+```
+
+### Restoring a Dumped Game from Disk
+
+`Dump.restore()` restores a dumped game from disk.
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// 0 is the dumped game's id
+	connection.getDump(0)
+	.then(dump => {
+		return dump.restore();
+	}).then(game => {
+		console.log(game);
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+You can also pass in an optional slot number to restore a specific slot. See: [Restoring a Specific Dumped Game Slot](#restoring-a-specific-dumped-game-slot).
+
+Result (a Game object):
+
+```
+Game {}
+```
+
+### Getting a Dumped Game's Details
+
+`Trogdord.getDumped(id)` returns the details of a dumped game.
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// 0 is the dumped game's id
+	connection.getDump(0)
+	.then(dump => {
+		console.log(dump);
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+Result (a Dump object):
+
+```
+Dump {}
+```
+
+The returned instance of `Dump` has the following read-only members:
+
+| Member       | Description                                                      |
+| -----------  | -----------------------------------------------------------------|
+| `id`         | The dumped game's id                                             |
+| `name`       | The dumped game's name                                           |
+| `definition` | The definition file used to create the game                      |
+| `created`    | UNIX timestamp of when the game was created                      |
+| `trogdord`   | The underlying instance of Trogdord that spawned the Dump object | 
+
+### Getting a List of All Dumped Games
+
+`Trogdord.dumped()` returns an array of Dump instances representing every dumped game.
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	connection.dumped()
+	.then(list => {
+		console.log(list);
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+Result (array of Dump objects):
+
+```
+[Dump {},  Dump {}, ...]
+```
+
+### Deleting a Dumped Game
+
+`Dump.destroy()` deletes a dumped game (if the dump has been restored, this does not affect the already existing game.)
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// 0 is the dumped game's id
+	connection.getDump(0)
+	.then(dump => {
+		dump.destroy();
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+### Retrieving a Specific Dumped Game Slot
+
+The way you version a dumped game is via slots. Every time a game is dumped, a new slot is formed containing that version's game state. You can use the `Dump.getSlot(id)` method to retrieve a specific slot from a game's dump history.
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// 0 is the dumped game's id
+	connection.getDump(0)
+	.then(dump => {
+		// Every dump has at least one slot with the value 0. Each time a game
+		// is dumped, the slot number of the next game is incremented.
+		return dump.getSlot(0);
+	}).then(slot => {
+		console.log(slot);
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+Result (a Slot object):
+
+```
+Slot {}
+```
+
+The returned instance of `Slot` has the following read-only members:
+
+| Member       | Description                                                                             |
+| -----------  | ----------------------------------------------------------------------------------------|
+| `slot`       | The slot number                                                                         |
+| `timestamp`  | Timestamp (in milliseconds this time, not a UNIX timestamp) of when the slot was dumped |
+| `dump`       | The underlying instance of Dump that spawned the Slot object                            | 
+
+### Retrieving a List of All Slots for a Dumped Game
+
+`Dump.slots()` returns all slots associated with a game's dump history.
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// 0 is the example dumped game's id
+	connection.getDump(0)
+	.then(dump => {
+		return dump.slots();
+	}).then(slots => {
+		console.log(slots);
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+Result (array of Slot objects):
+
+```
+[Slot {},  Slot {}, ...]
+```
+
+### Restoring a Specific Dumped Game Slot
+
+Games can be restored from a specific slot either via `Dump.restore(slot)` or `Slot.restore()`.
+
+Example using `Dump.restore(slot)`:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// 0 is the dumped game's id
+	connection.getDump(0)
+	.then(dump => {
+		return dump.restore(0);
+	}).then(game => {
+		// ... Do something with the restored game ...
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+Example using `Slot.restore()`:
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// 0 is the dumped game's id
+	connection.getDump(0)
+	.then(dump => {
+		return dump.getSlot(0);
+	}).then(slot => {
+		return slot.restore();
+	}).then(game => {
+		// ... Do something with the restored game ...
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
+### Deleting a Specific Dumped Game Slot
+
+`Slot.destroy()` removes the specified dump slot. If all slots for a given game have been removed, the associated instance of `Dump` will also be destroyed server-side and invalidated.
+
+```javascript
+const connection = new Trogdord();
+
+connection.on('connect', () => {
+
+	// 0 is the dumped game's id
+	connection.getDump(0)
+	.then(dump => {
+		return dump.getSlot(0);
+	}).then(slot => {
+		slot.destroy();
+	}).catch(error => {
+		// ...Handle error...
+	});
+});
+```
+
 ### Returning Game-Specific Statistics
 
 Game.statistics() returns statistical data associated with a specific game.

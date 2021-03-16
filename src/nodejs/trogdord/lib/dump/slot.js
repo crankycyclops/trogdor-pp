@@ -40,7 +40,7 @@ class Slot {
 	}
 
 	/**
-	 * Returns the UNIX timestamp for when the slot was created.
+	 * Returns the timestamp (in milliseconds) for when the slot was created.
 	 */
 	get timestamp() {
 
