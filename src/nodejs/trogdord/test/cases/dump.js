@@ -91,14 +91,56 @@ class DumpTest extends StateRequired {
 				connection.newGame(gameName, definition).then(newGame => {
 
 					game = newGame;
+
+					// Dump one version of the game without a meta key set
 					return game.dump();
 				}).then(newDump => {
 
 					dump = newDump;
+					return game.setMeta({key: "value"});
+				}).then(response => {
 
-					// ...TODO...
+					// Dump another version of the game without a meta key set
+					return game.dump();
+				}).then(() => {
 
-					// Cleanup
+					return game.destroy(false);
+				}).then(() => {
+
+					// Restore the default slot (should be the latest with the meta key set)
+					return dump.restore();
+				}).then(() => {
+
+					if (200 != connection.status) {
+						reject(new Error("Restoring dumped game should have succeeded"));
+					}
+
+					return game.getMeta(['key']);
+				}).then(data => {
+
+					if (200 != connection.status) {
+						reject(new Error("Restoring dumped game should have succeeded"));
+					}
+
+					if ('value' != data['key']) {
+						reject(new Error('The latest version of the game should have been restored, but the earlier one was restored instead'));
+					}
+
+					return game.destroy(false);
+				}).then(() => {
+
+					// Restore the earlier version of the game
+					return dump.restore(0);
+				}).then(() => {
+
+					return game.getMeta(['key']);
+				}).then(data => {
+
+					if ('' != data['key']) {
+						reject(new Error('The earlier version of the game should have been restored, but the later one was restored instead'));
+					}
+
+					// Clean up (destroys game along with the dump)
 					return game.destroy();
 				}).then(() => {
 
