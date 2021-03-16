@@ -134,6 +134,105 @@ class DumpTest extends StateRequired {
 	}
 
 	/**
+	 * Tests Dump.slots() and Dump.getSlot()
+	 */
+	 #testSlotsAndGetSlot = function () {
+
+		return new Promise((resolve, reject) => {
+
+			let game, dump, slots;
+
+			const gameName = "My Game";
+			const definition = "game.xml";
+
+			const connection = new Trogdord();
+
+			connection.on('connect', () => {
+
+				connection.newGame(gameName, definition).then(newGame => {
+
+					game = newGame;
+					return game.dump();
+				}).then(newDump => {
+
+					dump = newDump;
+					return dump.slots();
+				}).then(result => {
+
+					slots = result;
+
+					if (!Array.isArray(slots)) {
+						reject(new Error("Dump.slots() should resolve to an array but doesn't"));
+					}
+
+					// We only dumped once, so there should only be one slot
+					if (slots.length != 1) {
+						reject(new Error("There should be exactly one dump slot, but more or less were found"));
+					}
+
+					if ('undefined' == typeof slots[0].slot || !Number.isInteger(slots[0].slot) || slots[0].slot < 0) {
+						reject(new Error("Every slot in the list must have a slot member with an unsigned integral value"));
+					}
+
+					if ('undefined' == typeof slots[0].timestamp || !Number.isInteger(slots[0].timestamp) || slots[0].timestamp < 0) {
+						reject(new Error("Every slot in the list must have a timestamp member with an unsigned integral value"));
+					}
+
+					if (slots[0].dump != dump) {
+						reject(new Error("slot.dump must contain a reference to a parent instance of Dump"));
+					}
+
+					return dump.getSlot(slots[0].slot);
+				}).catch(error => {
+
+					reject(error);
+				}).then(slot => {
+
+					if ('undefined' == typeof slot.slot || !Number.isInteger(slot.slot) || slot.slot < 0) {
+						reject(new Error("Slot must have a slot member with an unsigned integral value"));
+					}
+
+					if ('undefined' == typeof slot.timestamp || !Number.isInteger(slot.timestamp) || slot.timestamp < 0) {
+						reject(new Error("Slot must have a timestamp member with an unsigned integral value"));
+					}
+
+					if (slot.dump != dump) {
+						reject(new Error("slot.dump must contain a reference to a parent instance of Dump"));
+					}
+
+					if (slot.slot != slots[0].slot) {
+						reject(new Error("The result from Dump.slot() doesn't match the object returned by Dump.getSlot()"));
+					}
+
+					// Attempt to get a slot that doesn't exist and demonstrate that it fails
+					return dump.getSlot(slots[0].slot + 1);
+				}).then(() => {
+
+					reject(new Error("Call to Dump.getSlot() should not exist with the slot doesn't exist"));
+				}).catch(error => {
+
+					if (404 != connection.status) {
+						reject(new Error("Getting non-existent slot should return 404 slot not found but returned a different status"));
+					}
+
+					// Cleanup
+					return dump.destroy();
+				}).then(() => {
+
+					resolve();
+				}).catch(error => {
+
+					reject(error);
+				});
+			});
+
+			connection.on('error', (e) => {
+				reject(new Error(e.message));
+			});
+		});
+	}
+
+	/**
 	 * Initialize tests.
 	 */
 	init() {
@@ -141,6 +240,7 @@ class DumpTest extends StateRequired {
 		return new Promise((resolve, reject) => {
 
 			this.addTest("Dump.destroy()", this.#testDestroy);
+			this.addTest("Dump.slots() and Dump.getSlot()", this.#testSlotsAndGetSlot);
 			this.addTest("Dump Getters for id, name, definition, created, and trogdord", this.#testGetters);
 			resolve();
 		});
