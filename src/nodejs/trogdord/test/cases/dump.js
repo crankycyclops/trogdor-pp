@@ -73,6 +73,49 @@ class DumpTest extends StateRequired {
 	}
 
 	/**
+	 * Tests Dump.restore()
+	 */
+	 #testRestore = function () {
+
+		return new Promise((resolve, reject) => {
+
+			let game, dump;
+
+			const gameName = "My Game";
+			const definition = "game.xml";
+
+			const connection = new Trogdord();
+
+			connection.on('connect', () => {
+
+				connection.newGame(gameName, definition).then(newGame => {
+
+					game = newGame;
+					return game.dump();
+				}).then(newDump => {
+
+					dump = newDump;
+
+					// ...TODO...
+
+					// Cleanup
+					return game.destroy();
+				}).then(() => {
+
+					resolve();
+				}).catch(error => {
+
+					reject(error);
+				});
+			});
+
+			connection.on('error', (e) => {
+				reject(new Error(e.message));
+			});
+		});
+	}
+
+	/**
 	 * Tests various getters for the Dump class.
 	 */
 	#testGetters = function () {
@@ -216,7 +259,7 @@ class DumpTest extends StateRequired {
 					}
 
 					// Cleanup
-					return dump.destroy();
+					return game.destroy();
 				}).then(() => {
 
 					resolve();
@@ -240,6 +283,7 @@ class DumpTest extends StateRequired {
 		return new Promise((resolve, reject) => {
 
 			this.addTest("Dump.destroy()", this.#testDestroy);
+			this.addTest("Dump.restore()", this.#testRestore);
 			this.addTest("Dump.slots() and Dump.getSlot()", this.#testSlotsAndGetSlot);
 			this.addTest("Dump Getters for id, name, definition, created, and trogdord", this.#testGetters);
 			resolve();
