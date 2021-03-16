@@ -46,7 +46,7 @@ class ConnectionRequired extends Case {
 
 			connection.on('connect', () => {
 
-				connection.games().then(games => {
+				promises = connection.games().then(games => {
 
 					games.forEach(game => {
 
