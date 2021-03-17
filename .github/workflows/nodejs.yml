@@ -1,4 +1,4 @@
-name: NodeJS Tests
+name: Node.js Tests
 on: [push, pull_request]
 
 jobs:
@@ -6,7 +6,7 @@ jobs:
    test_php:
 
       runs-on: ubuntu-latest
-      name: NodeJS
+      name: Node.js
 
       steps:
          - name: Checkout
