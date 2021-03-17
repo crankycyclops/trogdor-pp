@@ -1,3 +1,5 @@
+![Node.js Tests](https://github.com/crankycyclops/trogdor-pp/workflows/NodeJS%20Tests/badge.svg)
+
 # Trogdord Node.js Module
 
 The official Node.js client for trogdord.
