@@ -148,10 +148,13 @@ namespace output {
 		std::unique_ptr<rapidjson::Document> msgJSON = std::make_unique<rapidjson::Document>();
 		message.order = nextOrder(gameId, entityName, channel);
 
+		rapidjson::Value entityVal(rapidjson::StringRef(entityName.c_str()), msgJSON->GetAllocator());
+		rapidjson::Value channelVal(rapidjson::StringRef(channel.c_str()), msgJSON->GetAllocator());
+
  		msgJSON->CopyFrom(message.toJSONObject(msgJSON->GetAllocator()), msgJSON->GetAllocator());
 		msgJSON->AddMember("game_id", gameId, msgJSON->GetAllocator());
-		msgJSON->AddMember("entity", rapidjson::StringRef(entityName.c_str()), msgJSON->GetAllocator());
-		msgJSON->AddMember("channel", rapidjson::StringRef(channel.c_str()), msgJSON->GetAllocator());
+		msgJSON->AddMember("entity", entityVal.Move(), msgJSON->GetAllocator());
+		msgJSON->AddMember("channel", channelVal.Move(), msgJSON->GetAllocator());
 
 		std::unique_lock<std::mutex> lock(redisMutex);
 		msgQueue.push(std::move(msgJSON));
