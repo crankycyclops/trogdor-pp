@@ -5,6 +5,10 @@
 	#include <trogdor/serial/drivers/json.h>
 #endif
 
+#ifdef ENABLE_SERIALIZE_SQLITE
+	#include <trogdor/serial/drivers/sqlite.h>
+#endif
+
 namespace serial {
 
 
@@ -23,6 +27,10 @@ namespace serial {
 
 		#ifdef ENABLE_SERIALIZE_JSON
 			drivers[trogdor::serial::Json::CLASS_NAME] = std::make_unique<trogdor::serial::Json>();
+		#endif
+
+		#ifdef ENABLE_SERIALIZE_SQLITE
+			drivers[trogdor::serial::Sqlite::CLASS_NAME] = std::make_unique<trogdor::serial::Sqlite>();
 		#endif
 
 		driversInstantiated = true;

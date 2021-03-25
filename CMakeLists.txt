@@ -44,12 +44,6 @@ option(ENABLE_SERIALIZE_SQLITE "Enable SQLite Serialization Format" OFF)
 # build using the standalone header-only ASIO library.
 add_definitions(-DASIO_STANDALONE)
 
-# If the SQLite serialization driver is enabled, make sure the library is
-# installed where CMake can find it
-if (ENABLE_SERIALIZE_SQLITE)
-	pkg_search_module(SQLITE REQUIRED sqlite3)
-endif (ENABLE_SERIALIZE_SQLITE)
-
 ###############################################################################
 
 # C++ Include files necessary to develop for the library
@@ -204,6 +198,8 @@ endif (ENABLE_SERIALIZE_JSON)
 
 # Link in the SQLite serialization driver if that feature was enabled
 if (ENABLE_SERIALIZE_SQLITE)
+
+	pkg_search_module(SQLITE REQUIRED sqlite3)
 
 	target_link_libraries(trogdor
 		PUBLIC trogdor_serialize_sqlite
