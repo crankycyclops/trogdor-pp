@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
+enable_language(C CXX)
 
 include(FindPkgConfig)
 include(CheckIncludeFile)
@@ -35,9 +36,19 @@ option(ENABLE_REDIS "Enable Redis support" OFF)
 # into core
 option(ENABLE_SERIALIZE_JSON "Enable JSON Serialization Format" OFF)
 
+# If this is turned on, we'll build support for SQLite as a serialization format
+# into core
+option(ENABLE_SERIALIZE_SQLITE "Enable SQLite Serialization Format" OFF)
+
 # I'm trying to cut my reliance on the Boost libraries. This ensures that we'll
 # build using the standalone header-only ASIO library.
 add_definitions(-DASIO_STANDALONE)
+
+# If the SQLite serialization driver is enabled, make sure the library is
+# installed where CMake can find it
+if (ENABLE_SERIALIZE_SQLITE)
+	pkg_search_module(SQLITE REQUIRED sqlite3)
+endif (ENABLE_SERIALIZE_SQLITE)
 
 ###############################################################################
 
@@ -150,6 +161,22 @@ if (ENABLE_SERIALIZE_JSON)
 
 endif (ENABLE_SERIALIZE_JSON)
 
+if (ENABLE_SERIALIZE_SQLITE)
+
+	add_library(trogdor_serialize_sqlite STATIC
+		src/core/serial/drivers/sqlite.cpp
+	)
+
+	target_include_directories(trogdor_serialize_sqlite
+		PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
+	)
+
+	target_link_libraries(trogdor_serialize_sqlite
+		PRIVATE sqlite3
+	)
+
+endif (ENABLE_SERIALIZE_SQLITE)
+
 set(CORE_INCLUDES
 	PUBLIC ${LIBXML_INCLUDE_DIRS}
 	PUBLIC ${LUA_INCLUDE_DIRS}
@@ -175,6 +202,17 @@ if (ENABLE_SERIALIZE_JSON)
 
 endif (ENABLE_SERIALIZE_JSON)
 
+# Link in the SQLite serialization driver if that feature was enabled
+if (ENABLE_SERIALIZE_SQLITE)
+
+	target_link_libraries(trogdor
+		PUBLIC trogdor_serialize_sqlite
+	)
+
+	add_definitions(-DENABLE_SERIALIZE_SQLITE)
+
+endif (ENABLE_SERIALIZE_SQLITE)
+
 target_include_directories(trogdor ${CORE_INCLUDES})
 target_link_libraries(trogdor ${CORE_LIBRARIES})
 
@@ -185,7 +223,7 @@ install(TARGETS trogdor DESTINATION lib COMPONENT trogdor OPTIONAL)
 
 ###############################################################################
 
-if (ENABLE_SERIALIZE_JSON)
+if (ENABLE_SERIALIZE_JSON OR ENABLE_SERIALIZE_SQLITE)
 
 	add_library(standalone_save_load STATIC
 		src/standalone/actions/saveaction.cpp
@@ -202,7 +240,7 @@ if (ENABLE_SERIALIZE_JSON)
 		PUBLIC trogdor
 	)
 
-endif (ENABLE_SERIALIZE_JSON)
+endif (ENABLE_SERIALIZE_JSON OR ENABLE_SERIALIZE_SQLITE)
 
 # Build the example standalone game, which illustrates what a single player
 # client might look like
@@ -216,8 +254,8 @@ add_executable(standalone
 
 add_dependencies(standalone trogdor)
 
-# Link in the JSON serialization driver if that feature was enabled
-if (ENABLE_SERIALIZE_JSON)
+# Link in the serialization commands if at least one driver was enabled
+if (ENABLE_SERIALIZE_JSON OR ENABLE_SERIALIZE_SQLITE)
 
 	target_link_libraries(standalone
 		PRIVATE standalone_save_load
@@ -225,7 +263,7 @@ if (ENABLE_SERIALIZE_JSON)
 
 	add_dependencies(standalone standalone_save_load)
 
-endif (ENABLE_SERIALIZE_JSON)
+endif (ENABLE_SERIALIZE_JSON OR ENABLE_SERIALIZE_SQLITE)
 
 target_link_libraries(standalone
 	PUBLIC trogdor
@@ -419,6 +457,14 @@ if (ENABLE_SERIALIZE_JSON)
 	)
 
 endif (ENABLE_SERIALIZE_JSON)
+
+if (ENABLE_SERIALIZE_SQLITE)
+
+	target_link_libraries(_trogdor_test
+		PUBLIC trogdor_serialize_sqlite
+	)
+
+endif (ENABLE_SERIALIZE_SQLITE)
 
 # The default interval between timer ticks should be much shorter for unit tests
 target_compile_definitions(_trogdor_test PRIVATE TIMER_CUSTOM_INTERVAL=5)
