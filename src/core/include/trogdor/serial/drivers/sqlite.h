@@ -11,6 +11,32 @@ namespace trogdor::serial {
    // Maps data from an instance of Serializer to a SQLite3 database.
    class Sqlite: public Driver {
 
+      protected:
+
+         /*
+            These methods are called by doSerialize() and convert each type of
+            value to its resulting representation on disk. They take as input
+            a parent object of any type (should only be a raw or smart pointer
+            to the underlying data structure) where the key/value pair should
+            be set, the key (always a string) and the value.
+
+            Input:
+               Pointer to the parent data structure (std::any)
+               Key (std::string)
+               Value (varied)
+
+            Output:
+               (none)
+         */
+         virtual void serializeSizeT(std::any data, std::string key, const size_t &value);
+         virtual void serializeInt(std::any data, std::string key, int const &value);
+         virtual void serializeDouble(std::any data, std::string key, const double &value);
+         virtual void serializeBool(std::any data, std::string key, const bool &value);
+         virtual void serializeString(std::any data, std::string key, const std::string &value);
+         virtual void serializeSerializable(std::any data, std::string key, const std::shared_ptr<Serializable> &value);
+         virtual void serializeStringVector(std::any data, std::string key, const std::vector<std::string> &value);
+         virtual void serializeSerializableVector(std::any data, std::string key, const std::vector<std::shared_ptr<Serializable>> &value);
+
       public:
 
          // The driver's name

@@ -29,7 +29,8 @@ namespace trogdor::serial {
 
             If for some reason you're writing a serialization driver that does
             not use doSerialize() (probably a bad idea, but hey, it's your
-            driver and I'm sure you have a good reason), you can ignore these.
+            driver and I'm sure you have a good reason), you don't have to
+            implement this.
 
             Input:
                Pointer to the parent data structure (std::any)
@@ -51,7 +52,8 @@ namespace trogdor::serial {
          /*
             When doSerialize() needs to create a child object, it calls this
             method. If you don't plan to use doSerialize() in your own driver,
-            implement this as an empty method.
+            or if you're always going to pass in a non-empty value as the
+            second argument to doSerialize(), you don't have to implement this.
 
             Input:
                (none)
