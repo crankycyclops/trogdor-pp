@@ -2,9 +2,6 @@
 #include <trogdor/serial/serializable.h>
 #include <trogdor/exception/fileexception.h>
 
-// TODO: remove
-#include <iostream>
-
 namespace trogdor::serial {
 
 
@@ -266,7 +263,7 @@ namespace trogdor::serial {
    void Sqlite::serializeSizeT(std::any data, std::string key, const size_t &value) {
 
       std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
-      insertUnsigned(std::get<0>(handle), std::get<1>(handle), value);
+      insertUnsigned(std::get<0>(handle), std::get<1>(handle), value, key);
    }
 
    /**************************************************************************/
@@ -274,7 +271,7 @@ namespace trogdor::serial {
    void Sqlite::serializeInt(std::any data, std::string key, int const &value) {
 
       std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
-      insertInt(std::get<0>(handle), std::get<1>(handle), value);
+      insertInt(std::get<0>(handle), std::get<1>(handle), value, key);
    }
 
    /**************************************************************************/
@@ -282,7 +279,7 @@ namespace trogdor::serial {
    void Sqlite::serializeDouble(std::any data, std::string key, const double &value) {
 
       std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
-      insertDouble(std::get<0>(handle), std::get<1>(handle), value);
+      insertDouble(std::get<0>(handle), std::get<1>(handle), value, key);
    }
 
    /**************************************************************************/
@@ -290,7 +287,7 @@ namespace trogdor::serial {
    void Sqlite::serializeBool(std::any data, std::string key, const bool &value) {
 
       std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
-      insertBool(std::get<0>(handle), std::get<1>(handle), value);
+      insertBool(std::get<0>(handle), std::get<1>(handle), value, key);
    }
 
    /**************************************************************************/
@@ -298,7 +295,7 @@ namespace trogdor::serial {
    void Sqlite::serializeString(std::any data, std::string key, const std::string &value) {
 
       std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
-      insertString(std::get<0>(handle), std::get<1>(handle), value);
+      insertString(std::get<0>(handle), std::get<1>(handle), value, key);
    }
 
    /**************************************************************************/
