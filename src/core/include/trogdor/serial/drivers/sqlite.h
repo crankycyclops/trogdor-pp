@@ -159,7 +159,7 @@ namespace trogdor::serial {
             Output:
                (none)
          */
-         void insertObjectValue(sqlite3 *db, size_t parent, std::string key);
+         void insertObjectValue(sqlite3 *db, size_t parent, std::string key = "");
 
          /*
             Inserts an array value into the data table.
@@ -172,7 +172,7 @@ namespace trogdor::serial {
             Output:
                (none)
          */
-         void insertArrayValue(sqlite3 *db, size_t parent, std::string key);
+         void insertArrayValue(sqlite3 *db, size_t parent, std::string key = "");
 
          /*
             Links a child row in the data table to a parent in the array table.

@@ -362,7 +362,8 @@ namespace trogdor::serial {
 
          size_t childId = lastRowId + 1;
 
-         doSerialize(obj, std::tuple<sqlite3 *, size_t>({std::get<0>(handle), lastRowId}));
+         insertObjectValue(std::get<0>(handle), arrayId);
+         doSerialize(obj, std::tuple<sqlite3 *, size_t>({std::get<0>(handle), childId}));
          insertArrayEntry(std::get<0>(handle), arrayId, childId);
       }
    }
