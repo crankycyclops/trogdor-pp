@@ -179,7 +179,7 @@ namespace trogdor::serial {
          throw Exception("insertObjectValue(): Failed to bind key parameter to INSERT query");
       }
 
-      if (lastRowId < 1) {
+      if (parent < 1) {
          status = sqlite3_bind_null(insert, 2);
       } else {
          status = sqlite3_bind_int64(insert, 2, parent);
@@ -224,7 +224,7 @@ namespace trogdor::serial {
          throw Exception("insertArrayValue(): Failed to bind key parameter to INSERT query");
       }
 
-      if (lastRowId < 1) {
+      if (parent < 1) {
          status = sqlite3_bind_null(insert, 2);
       } else {
          status = sqlite3_bind_int64(insert, 2, parent);
