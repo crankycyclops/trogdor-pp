@@ -1,7 +1,12 @@
 #include <memory>
 #include <fstream>
 #include <trogdor/entities/player.h>
-#include <trogdor/serial/drivers/json.h>
+
+#ifdef ENABLE_SERIALIZE_SQLITE
+   #include <trogdor/serial/drivers/sqlite.h>
+#else
+   #include <trogdor/serial/drivers/json.h>
+#endif
 
 #include "../include/actions/saveaction.h"
 
@@ -33,7 +38,13 @@ void SaveAction::execute(
    std::string filename = command.getDirectObject().length() ?
       command.getDirectObject() : command.getIndirectObject();
 
-   trogdor::serial::Json driver;
+   // For now, we're defaulting to the SQLite3 driver if available
+   #ifdef ENABLE_SERIALIZE_SQLITE
+      trogdor::serial::Sqlite driver;
+   #else
+      trogdor::serial::Json driver;
+   #endif
+
    std::shared_ptr<trogdor::serial::Serializable> data = game->serialize();
 
    ofstream outputFile(filename);

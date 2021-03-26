@@ -4,12 +4,47 @@
 
 #include <sqlite3.h>
 #include <trogdor/serial/driver.h>
+#include <trogdor/exception/exception.h>
 
 namespace trogdor::serial {
 
 
    // Maps data from an instance of Serializer to a SQLite3 database.
    class Sqlite: public Driver {
+
+      private:
+
+         // Tracks the previous rowid for the data table before an insert
+         // was performed.
+         size_t lastRowId = 0;
+
+         /*
+            Creates the schema used to store serialized data.
+
+            Input:
+               Database handle (sqlite3 *)
+
+            Output:
+               (none)
+         */
+         void createSchema(sqlite3 *db);
+
+         /*
+            Throws a SQLite3 error message, freeing the C-string in the process.
+
+            Input:
+               Error message, allocated by SQLite3 (char *)
+
+            Output:
+               (none)
+         */
+         inline void throwSqliteError(char *error) {
+
+            std::string errorStr(error);
+
+            sqlite3_free(error);
+            throw Exception(errorStr);
+         }
 
       protected:
 

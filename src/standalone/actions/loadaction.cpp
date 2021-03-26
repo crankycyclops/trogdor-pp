@@ -1,7 +1,12 @@
 #include <memory>
 #include <fstream>
 #include <trogdor/entities/player.h>
-#include <trogdor/serial/drivers/json.h>
+
+#ifdef ENABLE_SERIALIZE_SQLITE
+   #include <trogdor/serial/drivers/sqlite.h>
+#else
+   #include <trogdor/serial/drivers/json.h>
+#endif
 
 #include "../include/streamout.h"
 #include "../include/streamerr.h"
@@ -48,7 +53,13 @@ void LoadAction::execute(
    ss << inputFile.rdbuf();
    buffer = ss.str();
 
-   trogdor::serial::Json driver;
+   // For now, we're defaulting to the SQLite3 driver if available
+   #ifdef ENABLE_SERIALIZE_SQLITE
+      trogdor::serial::Sqlite driver;
+   #else
+      trogdor::serial::Json driver;
+   #endif
+
    std::shared_ptr<trogdor::serial::Serializable> data = driver.deserialize(buffer);
 
    game->deserialize(

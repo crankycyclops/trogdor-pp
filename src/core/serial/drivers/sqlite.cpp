@@ -9,35 +9,35 @@ namespace trogdor::serial {
 
    void Sqlite::serializeSizeT(std::any data, std::string key, const size_t &value) {
 
-      // TODO
+      throw UndefinedException("TODO: serializeSizeT");
    }
 
    /**************************************************************************/
 
    void Sqlite::serializeInt(std::any data, std::string key, int const &value) {
 
-      // TODO
+      throw UndefinedException("TODO: serializeInt");
    }
 
    /**************************************************************************/
 
    void Sqlite::serializeDouble(std::any data, std::string key, const double &value) {
 
-      // TODO
+      throw UndefinedException("TODO: serializeDouble");
    }
 
    /**************************************************************************/
 
    void Sqlite::serializeBool(std::any data, std::string key, const bool &value) {
 
-      // TODO
+      throw UndefinedException("TODO: serializeBool");
    }
 
    /**************************************************************************/
 
    void Sqlite::serializeString(std::any data, std::string key, const std::string &value) {
 
-      // TODO
+      throw UndefinedException("TODO: serializeString");
    }
 
    /**************************************************************************/
@@ -48,7 +48,7 @@ namespace trogdor::serial {
       const std::shared_ptr<Serializable> &value
    ) {
 
-      // TODO
+      throw UndefinedException("TODO: serializeSerializable");
    }
 
    /**************************************************************************/
@@ -59,7 +59,7 @@ namespace trogdor::serial {
       const std::vector<std::string> &value
    ) {
 
-      // TODO
+      throw UndefinedException("TODO: serializeStringVector");
    }
 
    /**************************************************************************/
@@ -70,7 +70,86 @@ namespace trogdor::serial {
       const std::vector<std::shared_ptr<Serializable>> &value
    ) {
 
-      // TODO
+      sqlite3_stmt *insert;
+      std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
+
+      if (sqlite3_prepare_v2(
+         std::get<0>(handle),
+         "INSERT INTO data(key, parent, type) VALUES (?, ?, 'a')",
+         -1,
+         &insert,
+         nullptr
+      )) {
+         throw Exception("serializeSerializableVector(): Preparing INSERT INTO data query failed");
+      }
+
+      if (sqlite3_bind_text(insert, 1, key.c_str(), -1, nullptr)) {
+         throw Exception("serializeSerializableVector(): Failed to bind key parameter to INSERT query");
+      }
+
+      int status;
+
+      if (lastRowId < 1) {
+         status = sqlite3_bind_null(insert, 2);
+      } else {
+         status = sqlite3_bind_int64(insert, 2, std::get<1>(handle));
+      }
+
+      if (status) {
+         throw Exception("serializeSerializableVector(): Failed to bind parent parameter to INSERT query");
+      }
+
+      if (int status = sqlite3_step(insert); SQLITE_DONE != status) {
+         throw Exception("serializeSerializableVector(): Failed to execute INSERT query (" + std::to_string(status) + ")");
+      }
+
+      // This should be incremented every time an insert is performed
+      lastRowId++;
+
+      for (const auto &obj: value) {
+         doSerialize(obj, std::tuple<sqlite3 *, size_t>({std::get<0>(handle), lastRowId}));
+      }
+   }
+
+   /**************************************************************************/
+
+   void Sqlite::createSchema(sqlite3 *db) {
+
+      char *zErrMsg = nullptr;
+
+      if (sqlite3_exec(
+         db,
+         "CREATE TABLE data("
+         "  key TEXT,"
+         "  parent BIGINT,"
+         "  type CHAR(1) NOT NULL,"
+         "  unsigned_val UNSIGNED BIGINT,"
+         "  int_val BIGINT,"
+         "  double_val DOUBLE,"
+         "  bool_val BOOLEAN,"
+         "  string_val TEXT,"
+         "  object_val BIGINT"
+         ")",
+         nullptr,
+         nullptr,
+         &zErrMsg
+      )) {
+         throwSqliteError(zErrMsg);
+      }
+
+      if (sqlite3_exec(
+         db,
+         "CREATE TABLE array("
+         "  parent BIGINT NOT NULL,"
+         "  child BIGINT NOT NULL,"
+         "  PRIMARY KEY(parent, child)"
+         ")",
+         nullptr,
+         nullptr,
+         &zErrMsg
+      )) {
+         throwSqliteError(zErrMsg);
+      }
    }
 
    /**************************************************************************/
@@ -83,7 +162,9 @@ namespace trogdor::serial {
          throw Exception("Failed to initialize in-memory database");
       }
 
-      doSerialize(data, db);
+      createSchema(db);
+      doSerialize(data, std::tuple<sqlite3 *, size_t>({db, 0}));
+
       return db;
    }
 
