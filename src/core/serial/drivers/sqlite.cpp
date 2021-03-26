@@ -2,6 +2,9 @@
 #include <trogdor/serial/serializable.h>
 #include <trogdor/exception/fileexception.h>
 
+// TODO: remove
+#include <iostream>
+
 namespace trogdor::serial {
 
 
@@ -249,7 +252,7 @@ namespace trogdor::serial {
          throw Exception("insertArrayEntry(): Failed to bind parent parameter to INSERT INTO array query");
       }
 
-      if (sqlite3_bind_int64(addToArray, 2, lastRowId)) {
+      if (sqlite3_bind_int64(addToArray, 2, child)) {
          throw Exception("insertArrayEntry(): Failed to bind parent parameter to INSERT INTO array query");
       }
 
