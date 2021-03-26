@@ -185,13 +185,10 @@ size_t GameWrapper::dump() {
 
 		// Serialized GameWrapper-specific data (this data doesn't change, so we
 		// store it in the id directory instead of with each dump slot.)
-		std::fstream metaFile(
-			gameStatePath + STD_FILESYSTEM::path::preferred_separator + "meta",
-			std::fstream::out
+		driver->writeToDisk(
+			driver->serialize(serializeMeta()),
+			gameStatePath + STD_FILESYSTEM::path::preferred_separator + "meta"
 		);
-
-		metaFile << std::any_cast<std::string>(driver->serialize(serializeMeta()));
-		metaFile.close();
 	}
 
 	else {
@@ -220,14 +217,11 @@ size_t GameWrapper::dump() {
 	timestampFile << std::to_string(ms.count());
 	timestampFile.close();
 
-	// Serialized game data
-	fstream gameFile(
-		gameStateSnapshotPath + STD_FILESYSTEM::path::preferred_separator + "game",
-		std::fstream::out
+	// Serialize game data and write it to disk
+	driver->writeToDisk(
+		driver->serialize(gamePtr->serialize()),
+		gameStateSnapshotPath + STD_FILESYSTEM::path::preferred_separator + "game"
 	);
-
-	gameFile << std::any_cast<std::string>(driver->serialize(gamePtr->serialize()));
-	gameFile.close();
 
 	// If configured to do so, only keep the correct number of dumped games for
 	// the specified game id.

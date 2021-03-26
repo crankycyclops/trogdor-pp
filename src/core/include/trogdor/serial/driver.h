@@ -108,6 +108,19 @@ namespace trogdor::serial {
                Populated instance of Serializable (Serializable)
          */
          virtual std::shared_ptr<Serializable> deserialize(const std::any &data) = 0;
+
+         /*
+            Utility method that writes the serialized data to disk. Each driver
+            should implement this method.
+
+            Input:
+               Data to write (std::any)
+               Output filename (std::string)
+
+            Output:
+               (none)
+         */
+        virtual void writeToDisk(std::any data, std::string filename) = 0;
    };
 }
 

@@ -14,6 +14,12 @@ namespace trogdor::serial {
 
       private:
 
+         #if SIZE_MAX == UINT64_MAX
+            typedef int64_t IntType;
+         #else
+            typedef int32_t IntType;
+         #endif
+
          // Tracks the previous rowid for the data table before an insert
          // was performed.
          size_t lastRowId = 0;
@@ -47,6 +53,88 @@ namespace trogdor::serial {
          }
 
          /*
+            Inserts an integer value into the data table.
+
+            Input:
+               Database handle (sqlite3 *)
+               Id of parent row (size_t)
+               Value (int32_t or int64_t, depending on the architecture)
+               Key (std::string)
+
+            Output:
+               (none)
+         */
+         inline void insertInt(sqlite3 *db, size_t parent, IntType value, std::string key = "") {
+
+            _insertInt(db, parent, value, 'i', key);
+         }
+
+         /*
+            Inserts an unsigned integer value into the data table.
+
+            Input:
+               Database handle (sqlite3 *)
+               Id of parent row (size_t)
+               Value (size_t)
+               Key (std::string)
+
+            Output:
+               (none)
+         */
+         inline void insertUnsigned(sqlite3 *db, size_t parent, size_t value, std::string key = "") {
+
+            _insertInt(db, parent, value, 'u', key);
+         }
+
+         /*
+            Inserts a boolean value into the data table.
+
+            Input:
+               Database handle (sqlite3 *)
+               Id of parent row (size_t)
+               Value (bool)
+               Key (std::string)
+
+            Output:
+               (none)
+         */
+         inline void insertBool(sqlite3 *db, size_t parent, bool value, std::string key = "") {
+
+            _insertInt(db, parent, value, 'b', key);
+         }
+
+         /*
+            Inserts any value type that ultimately gets stored as an integer
+            in SQLite3. This includes booleans, unsigned, and ordinary signed
+            ints.
+
+            Input:
+               Database handle (sqlite3 *)
+               Id of parent row (size_t)
+               Value (int32_t or int64_t, depending on the architecture)
+               Type (one of 'b' for boolean, 'i' for integer, or 'u' for unsigned)
+               Key (std::string)
+
+            Output:
+               (none)
+         */
+         void _insertInt(sqlite3 *db, size_t parent, IntType value, char type, std::string key = "");
+
+         /*
+            Inserts a double precision value into the data table.
+
+            Input:
+               Database handle (sqlite3 *)
+               Id of parent row (size_t)
+               Value (double)
+               Key (std::string)
+
+            Output:
+               (none)
+         */
+         void insertDouble(sqlite3 *db, size_t parent, double value, std::string key = "");
+
+         /*
             Inserts a string value into the data table.
 
             Input:
@@ -59,6 +147,19 @@ namespace trogdor::serial {
                (none)
          */
          void insertString(sqlite3 *db, size_t parent, std::string value, std::string key = "");
+
+         /*
+            Inserts an object value into the data table.
+
+            Input:
+               Database handle (sqlite3 *)
+               Id of parent row (size_t)
+               Key (std::string)
+
+            Output:
+               (none)
+         */
+         void insertObjectValue(sqlite3 *db, size_t parent, std::string key);
 
          /*
             Inserts an array value into the data table.
@@ -149,13 +250,13 @@ namespace trogdor::serial {
             write the output of serialize() to disk.
 
             Input:
-               SQLite3 database object (sqlite3 *)
+               SQLite3 database object (std::any wrapping sqlite3 *)
                Output filename (std::string)
 
             Output:
                (none)
          */
-        void writeToDisk(sqlite3 *data, std::string filename);
+        virtual void writeToDisk(std::any data, std::string filename);
    };
 }
 

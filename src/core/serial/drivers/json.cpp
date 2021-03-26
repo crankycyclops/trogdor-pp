@@ -1,6 +1,9 @@
+#include <fstream>
+
 #include <trogdor/serial/drivers/json.h>
 #include <trogdor/serial/serializable.h>
 #include <trogdor/exception/undefinedexception.h>
+#include <trogdor/exception/fileexception.h>
 
 namespace trogdor::serial {
 
@@ -292,5 +295,20 @@ namespace trogdor::serial {
       }
 
       return doDeserialize(jsonObj);
+   }
+
+   /************************************************************************/
+
+   void Json::writeToDisk(std::any data, std::string filename) {
+
+      std::ofstream outputFile(filename);
+      std::string json = std::any_cast<std::string>(data);
+
+      if (outputFile.is_open()) {
+         outputFile << json;
+         outputFile.close();
+      } else {
+         throw FileException(std::string("Failed to write ") + filename + " to disk");
+      }
    }
 }

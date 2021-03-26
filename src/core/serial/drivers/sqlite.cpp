@@ -5,6 +5,105 @@
 namespace trogdor::serial {
 
 
+   void Sqlite::_insertInt(sqlite3 *db, size_t parent, Sqlite::IntType value, char type, std::string key) {
+
+      sqlite3_stmt *insert;
+      std::string query = std::string("INSERT INTO data(key, parent, type, int_val) VALUES (?, ?, '") + type + "', ?)";
+
+      if (sqlite3_prepare_v2(
+         db,
+         query.c_str(),
+         -1,
+         &insert,
+         nullptr
+      )) {
+         throw Exception("_insertInt(): Preparing INSERT INTO data query failed");
+      }
+
+      int status;
+
+      if (key.length()) {
+         status = sqlite3_bind_text(insert, 1, key.c_str(), -1, nullptr);
+      } else {
+         status = sqlite3_bind_null(insert, 1);
+      }
+
+      if (status) {
+         throw Exception("_insertInt(): Failed to bind key parameter to INSERT INTO data query");
+      }
+
+      if (parent < 1) {
+         status = sqlite3_bind_null(insert, 2);
+      } else {
+         status = sqlite3_bind_int64(insert, 2, parent);
+      }
+
+      if (status) {
+         throw Exception("_insertInt(): Failed to bind parent parameter to INSERT INTO data query");
+      }
+
+      if (sqlite3_bind_int64(insert, 3, value)) {
+         throw Exception("_insertInt(): Failed to bind value parameter to INSERT INTO data query");
+      }
+
+      if (int status = sqlite3_step(insert); SQLITE_DONE != status) {
+         throw Exception("_insertInt(): Failed to execute INSERT INTO DATA query (" + std::to_string(status) + ")");
+      }
+
+      lastRowId++;
+   }
+
+   /**************************************************************************/
+
+   void Sqlite::insertDouble(sqlite3 *db, size_t parent, double value, std::string key) {
+
+      sqlite3_stmt *insert;
+
+      if (sqlite3_prepare_v2(
+         db,
+         "INSERT INTO data(key, parent, type, double_val) VALUES (?, ?, 'd', ?)",
+         -1,
+         &insert,
+         nullptr
+      )) {
+         throw Exception("insertDouble(): Preparing INSERT INTO data query failed");
+      }
+
+      int status;
+
+      if (key.length()) {
+         status = sqlite3_bind_text(insert, 1, key.c_str(), -1, nullptr);
+      } else {
+         status = sqlite3_bind_null(insert, 1);
+      }
+
+      if (status) {
+         throw Exception("insertDouble(): Failed to bind key parameter to INSERT INTO data query");
+      }
+
+      if (parent < 1) {
+         status = sqlite3_bind_null(insert, 2);
+      } else {
+         status = sqlite3_bind_int64(insert, 2, parent);
+      }
+
+      if (status) {
+         throw Exception("insertDouble(): Failed to bind parent parameter to INSERT INTO data query");
+      }
+
+      if (sqlite3_bind_double(insert, 3, value)) {
+         throw Exception("insertDouble(): Failed to bind value parameter to INSERT INTO data query");
+      }
+
+      if (int status = sqlite3_step(insert); SQLITE_DONE != status) {
+         throw Exception("insertDouble(): Failed to execute INSERT INTO DATA query (" + std::to_string(status) + ")");
+      }
+
+      lastRowId++;
+   }
+
+   /**************************************************************************/
+
    void Sqlite::insertString(sqlite3 *db, size_t parent, std::string value, std::string key) {
 
       sqlite3_stmt *insert;
@@ -47,6 +146,45 @@ namespace trogdor::serial {
 
       if (int status = sqlite3_step(insert); SQLITE_DONE != status) {
          throw Exception("insertString(): Failed to execute INSERT INTO DATA query (" + std::to_string(status) + ")");
+      }
+
+      lastRowId++;
+   }
+
+   /**************************************************************************/
+
+   void Sqlite::insertObjectValue(sqlite3 *db, size_t parent, std::string key) {
+
+      sqlite3_stmt *insert;
+
+      if (sqlite3_prepare_v2(
+         db,
+         "INSERT INTO data(key, parent, type) VALUES (?, ?, 'o')",
+         -1,
+         &insert,
+         nullptr
+      )) {
+         throw Exception("serializeStringVector(): Preparing INSERT INTO data query failed");
+      }
+
+      if (sqlite3_bind_text(insert, 1, key.c_str(), -1, nullptr)) {
+         throw Exception("serializeStringVector(): Failed to bind key parameter to INSERT query");
+      }
+
+      int status;
+
+      if (lastRowId < 1) {
+         status = sqlite3_bind_null(insert, 2);
+      } else {
+         status = sqlite3_bind_int64(insert, 2, parent);
+      }
+
+      if (status) {
+         throw Exception("serializeStringVector(): Failed to bind parent parameter to INSERT query");
+      }
+
+      if (int status = sqlite3_step(insert); SQLITE_DONE != status) {
+         throw Exception("serializeStringVector(): Failed to execute INSERT query (" + std::to_string(status) + ")");
       }
 
       lastRowId++;
@@ -124,50 +262,40 @@ namespace trogdor::serial {
 
    void Sqlite::serializeSizeT(std::any data, std::string key, const size_t &value) {
 
-      sqlite3_stmt *insert;
       std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
-
-      throw UndefinedException("TODO: serializeSizeT");
+      insertUnsigned(std::get<0>(handle), std::get<1>(handle), value);
    }
 
    /**************************************************************************/
 
    void Sqlite::serializeInt(std::any data, std::string key, int const &value) {
 
-      sqlite3_stmt *insert;
       std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
-
-      throw UndefinedException("TODO: serializeInt");
+      insertInt(std::get<0>(handle), std::get<1>(handle), value);
    }
 
    /**************************************************************************/
 
    void Sqlite::serializeDouble(std::any data, std::string key, const double &value) {
 
-      sqlite3_stmt *insert;
       std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
-
-      throw UndefinedException("TODO: serializeDouble");
+      insertDouble(std::get<0>(handle), std::get<1>(handle), value);
    }
 
    /**************************************************************************/
 
    void Sqlite::serializeBool(std::any data, std::string key, const bool &value) {
 
-      sqlite3_stmt *insert;
       std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
-
-      throw UndefinedException("TODO: serializeBool");
+      insertBool(std::get<0>(handle), std::get<1>(handle), value);
    }
 
    /**************************************************************************/
 
    void Sqlite::serializeString(std::any data, std::string key, const std::string &value) {
 
-      sqlite3_stmt *insert;
       std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
-
-      throw UndefinedException("TODO: serializeString");
+      insertString(std::get<0>(handle), std::get<1>(handle), value);
    }
 
    /**************************************************************************/
@@ -178,10 +306,10 @@ namespace trogdor::serial {
       const std::shared_ptr<Serializable> &value
    ) {
 
-      sqlite3_stmt *insert;
       std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
 
-      throw UndefinedException("TODO: serializeSerializable");
+      insertObjectValue(std::get<0>(handle), std::get<1>(handle), key);
+      doSerialize(value, std::tuple<sqlite3 *, size_t>({std::get<0>(handle), lastRowId}));
    }
 
    /**************************************************************************/
@@ -239,12 +367,9 @@ namespace trogdor::serial {
          "  key TEXT,"
          "  parent BIGINT,"
          "  type CHAR(1) NOT NULL,"
-         "  unsigned_val UNSIGNED BIGINT,"
          "  int_val BIGINT,"
          "  double_val DOUBLE,"
-         "  bool_val BOOLEAN,"
-         "  string_val TEXT,"
-         "  object_val BIGINT"
+         "  string_val TEXT"
          ")",
          nullptr,
          nullptr,
@@ -304,7 +429,7 @@ namespace trogdor::serial {
 
    /************************************************************************/
 
-   void writeToDisk(sqlite3 *data, std::string filename) {
+   void Sqlite::writeToDisk(std::any data, std::string filename) {
 
       sqlite3 *output;
       sqlite3_backup *backup;
@@ -313,7 +438,7 @@ namespace trogdor::serial {
          throw FileException("Cannot open " + filename + " for writing");
       }
 
-      backup = sqlite3_backup_init(output, "main", data, "main");
+      backup = sqlite3_backup_init(output, "main", std::any_cast<sqlite3 *>(data), "main");
 
       if (!backup) {
          throw Exception("Error occurred when attempting to save SQLite3 database to disk");

@@ -1,6 +1,6 @@
 #include <memory>
-#include <fstream>
 #include <trogdor/entities/player.h>
+#include <trogdor/exception/fileexception.h>
 
 #ifdef ENABLE_SERIALIZE_SQLITE
    #include <trogdor/serial/drivers/sqlite.h>
@@ -47,13 +47,12 @@ void SaveAction::execute(
 
    std::shared_ptr<trogdor::serial::Serializable> data = game->serialize();
 
-   ofstream outputFile(filename);
-
-   if (outputFile.is_open()) {
-      outputFile << std::any_cast<std::string>(driver.serialize(data));
-      outputFile.close();
+   try {
+      driver.writeToDisk(driver.serialize(data), filename);
       player->out() << "Game state saved to " << filename << '.' << std::endl;
-   } else {
+   }
+
+   catch (const trogdor::FileException &e) {
       player->out() << "Failed to save game state to " << filename << '.' << std::endl;
    }
 }
