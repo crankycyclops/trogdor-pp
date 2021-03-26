@@ -16,23 +16,9 @@ namespace trogdor::serial {
 
       private:
 
-         /*
-            A recursive method that does the actual work of serializing an
-            instance of Serializable.
-
-            Input:
-               Allocator belonging to the root RapidJSON Document
-               Serializable data
-               The root document, or nullptr if creating a subdocument
-
-            Output:
-               A RapidJSON Document
-         */
-         std::shared_ptr<rapidjson::Document> doSerialize(
-            rapidjson::MemoryPoolAllocator<> &allocator,
-            const std::shared_ptr<Serializable> &data,
-            std::shared_ptr<rapidjson::Document> document = nullptr
-         );
+         // The allocator we should use when assigning values to a JSON document
+         // or one of its children
+         rapidjson::MemoryPoolAllocator<> *allocator = nullptr;
 
          /*
             Takes a RapidJSON Value (or Document) and returns a Serializable
@@ -46,24 +32,42 @@ namespace trogdor::serial {
          */
          std::shared_ptr<Serializable> doDeserialize(const rapidjson::Value &jsonObj);
 
+      protected:
+
          /*
-            Our entrypoint into the actual doSerialize() method that first
-            initializes the root RapidJSON document.
+            These methods are called by doSerialize() and convert each type of
+            value to its resulting representation on disk. They take as input
+            a parent object of any type (should only be a raw or smart pointer
+            to the underlying data structure) where the key/value pair should
+            be set, the key (always a string) and the value.
 
             Input:
-               Serializable data
+               Pointer to the parent data structure (std::any)
+               Key (std::string)
+               Value (varied)
 
             Output:
-               A RapidJSON Document
+               (none)
          */
-         inline std::shared_ptr<rapidjson::Document> doSerialize(
-            const std::shared_ptr<Serializable> &data
-         ) {
+         virtual void serializeSizeT(std::any data, std::string key, const size_t &value);
+         virtual void serializeInt(std::any data, std::string key, int const &value);
+         virtual void serializeDouble(std::any data, std::string key, const double &value);
+         virtual void serializeBool(std::any data, std::string key, const bool &value);
+         virtual void serializeString(std::any data, std::string key, const std::string &value);
+         virtual void serializeSerializable(std::any data, std::string key, const std::shared_ptr<Serializable> &value);
+         virtual void serializeStringVector(std::any data, std::string key, const std::vector<std::string> &value);
+         virtual void serializeSerializableVector(std::any data, std::string key, const std::vector<std::shared_ptr<Serializable>> &value);
 
-            std::shared_ptr<rapidjson::Document> object =
-               std::make_shared<rapidjson::Document>(rapidjson::kObjectType);
-            return doSerialize(object->GetAllocator(), data, object);
-         }
+         /*
+            doSerialize() calls this method to create a child object.
+
+            Input:
+               (none)
+
+            Output:
+               A newly initialized object or handle (std::any)
+         */
+         virtual std::any initSerializedChild();
 
       public:
 

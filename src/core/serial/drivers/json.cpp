@@ -5,223 +5,292 @@
 namespace trogdor::serial {
 
 
-	std::shared_ptr<rapidjson::Document> Json::doSerialize(
-		rapidjson::MemoryPoolAllocator<> &allocator,
-		const std::shared_ptr<Serializable> &data,
-		std::shared_ptr<rapidjson::Document> document
-	) {
+   void Json::serializeSizeT(std::any data, std::string key, const size_t &value) {
 
-		if (!document) {
-			document = std::make_shared<rapidjson::Document>(rapidjson::kObjectType);
-		}
+      rapidjson::Value keyVal(rapidjson::kStringType);
+      keyVal.SetString(rapidjson::StringRef(key.c_str()), *allocator);
 
-		for (const auto &value: data->getAll()) {
+      std::any_cast<std::shared_ptr<rapidjson::Document>>(data)->AddMember(
+         keyVal,
+         value,
+         *allocator
+      );
+   }
 
-			std::visit([&](auto &&arg) {
+   /************************************************************************/
 
-				using T = std::decay_t<decltype(arg)>;
+   void Json::serializeInt(std::any data, std::string key, const int &value) {
 
-				if constexpr (
-					std::is_same_v<T, size_t> ||
-					std::is_same_v<T, int> ||
-					std::is_same_v<T, double> ||
-					std::is_same_v<T, bool>
-				) {
-					document->AddMember(
-						rapidjson::StringRef(value.first.c_str()),
-						arg,
-						allocator
-					);
-				}
+      rapidjson::Value keyVal(rapidjson::kStringType);
+      keyVal.SetString(rapidjson::StringRef(key.c_str()), *allocator);
 
-				else if constexpr (std::is_same_v<T, std::string>){
-					document->AddMember(
-						rapidjson::StringRef(value.first.c_str()),
-						rapidjson::StringRef(arg.c_str()),
-						allocator
-					);
-				}
+      std::any_cast<std::shared_ptr<rapidjson::Document>>(data)->AddMember(
+         keyVal,
+         value,
+         *allocator
+      );
+   }
 
-				else if constexpr (std::is_same_v<T, std::shared_ptr<Serializable>>) {
+   /************************************************************************/
 
-					std::shared_ptr<rapidjson::Document> obj = doSerialize(allocator, arg);
+   void Json::serializeDouble(std::any data, std::string key, const double &value) {
 
-					document->AddMember(
-						rapidjson::StringRef(value.first.c_str()),
-						*obj,
-						allocator
-					);
-				}
+      rapidjson::Value keyVal(rapidjson::kStringType);
+      keyVal.SetString(rapidjson::StringRef(key.c_str()), *allocator);
 
-				else if constexpr (std::is_same_v<T, std::vector<std::string>>) {
+      std::any_cast<std::shared_ptr<rapidjson::Document>>(data)->AddMember(
+         keyVal,
+         value,
+         *allocator
+      );
+   }
 
-					rapidjson::Value stringArr(rapidjson::kArrayType);
+   /************************************************************************/
 
-					for (const auto &strVal: arg) {
-						stringArr.PushBack(rapidjson::StringRef(strVal.c_str()), allocator);
-					}
+   void Json::serializeBool(std::any data, std::string key, const bool &value) {
 
-					document->AddMember(
-						rapidjson::StringRef(value.first.c_str()),
-						stringArr,
-						allocator
-					);
-				}
+      rapidjson::Value keyVal(rapidjson::kStringType);
+      keyVal.SetString(rapidjson::StringRef(key.c_str()), *allocator);
 
-				else if constexpr (std::is_same_v<T, std::vector<std::shared_ptr<Serializable>>>) {
+      std::any_cast<std::shared_ptr<rapidjson::Document>>(data)->AddMember(
+         keyVal,
+         value,
+         *allocator
+      );
+   }
 
-					rapidjson::Value objArray(rapidjson::kArrayType);
+   /************************************************************************/
 
-					for (const auto &obj: arg) {
-						std::shared_ptr<rapidjson::Document> serializedObj = doSerialize(allocator, obj);
-						objArray.PushBack(*serializedObj, allocator);
-					}
+   void Json::serializeString(std::any data, std::string key, const std::string &value) {
 
-					document->AddMember(
-						rapidjson::StringRef(value.first.c_str()),
-						objArray,
-						allocator
-					);
-				}
+      rapidjson::Value keyVal(rapidjson::kStringType);
+      keyVal.SetString(rapidjson::StringRef(key.c_str()), *allocator);
 
-				else {
-					throw UndefinedException("Invalid type encountered in instance of serial::Serializable");
-				}
-			}, value.second);
-		}
+      rapidjson::Value strVal(rapidjson::kStringType);
+      strVal.SetString(rapidjson::StringRef(value.c_str()), *allocator);
 
-		return document;
-	}
+      std::any_cast<std::shared_ptr<rapidjson::Document>>(data)->AddMember(
+         keyVal,
+         strVal,
+         *allocator
+      );
+   }
 
-	/************************************************************************/
+   /************************************************************************/
 
-	std::shared_ptr<Serializable> Json::doDeserialize(const rapidjson::Value &jsonObj) {
+   void Json::serializeSerializable(
+      std::any data,
+      std::string key,
+      const std::shared_ptr<Serializable> &value
+   ) {
 
-		std::shared_ptr<Serializable> obj = std::make_shared<Serializable>();
+      rapidjson::Value keyVal(rapidjson::kStringType);
+      keyVal.SetString(rapidjson::StringRef(key.c_str()), *allocator);
 
-		for (auto it = jsonObj.MemberBegin(); it != jsonObj.MemberEnd(); it++) {
+      std::shared_ptr<rapidjson::Document> obj =
+         std::any_cast<std::shared_ptr<rapidjson::Document>>(doSerialize(value));
 
-			switch (it->value.GetType()) {
+      std::any_cast<std::shared_ptr<rapidjson::Document>>(data)->AddMember(
+         keyVal,
+         *obj,
+         *allocator
+      );
+   }
 
-				case rapidjson::kTrueType:
-				case rapidjson::kFalseType:
+   /************************************************************************/
 
-					obj->set(it->name.GetString(), it->value.GetBool());
-					break;
+   void Json::serializeStringVector(
+      std::any data,
+      std::string key,
+      const std::vector<std::string> &value
+   ) {
 
-				case rapidjson::kNumberType:
+      rapidjson::Value stringArr(rapidjson::kArrayType);
+      rapidjson::Value keyVal(rapidjson::kStringType);
 
-					if (it->value.IsDouble()) {
-						obj->set(it->name.GetString(), it->value.GetDouble());
-					}
+      keyVal.SetString(rapidjson::StringRef(key.c_str()), *allocator);
 
-					else if (it->value.IsUint()) {
-						obj->set(it->name.GetString(), static_cast<size_t>(it->value.GetUint()));
-					}
+      for (const auto &strVal: value) {
 
-					#if SIZE_MAX == UINT64_MAX
-					else if (it->value.IsUint64()) {
-						obj->set(it->name.GetString(), static_cast<size_t>(it->value.GetUint64()));
-					}
-					#endif
+         rapidjson::Value strValJSON(rapidjson::kStringType);
+         strValJSON.SetString(rapidjson::StringRef(strVal.c_str()), *allocator);
 
-					else {
-						obj->set(it->name.GetString(), static_cast<int>(it->value.GetInt()));
-					}
+         stringArr.PushBack(strValJSON, *allocator);
+      }
 
-					break;
+      std::any_cast<std::shared_ptr<rapidjson::Document>>(data)->AddMember(
+         keyVal,
+         stringArr.Move(),
+         *allocator
+      );
+   }
 
-				case rapidjson::kStringType:
+   /************************************************************************/
 
-					obj->set(it->name.GetString(), it->value.GetString());
-					break;
+   void Json::serializeSerializableVector(
+      std::any data,
+      std::string key,
+      const std::vector<std::shared_ptr<Serializable>> &value
+   ) {
 
-				// Currently, Serializable only supports arrays of all
-				// strings and all sub-objects. That makes my code here a
-				// lot simpler.
-				case rapidjson::kArrayType:
+      rapidjson::Value objArray(rapidjson::kArrayType);
+      rapidjson::Value keyVal(rapidjson::kStringType);
 
-					// If the array is empty, we can treat it as any type,
-					// because when we eventually iterate through the
-					// resulting std::vector, we won't actually end up
-					// having any std::variants to access and therefore
-					// won't have to worry about accesing the wrong type.
-					if (!it->value.Size()) {
-						obj->set(it->name.GetString(), std::vector<std::string>());
-					}
+      keyVal.SetString(rapidjson::StringRef(key.c_str()), *allocator);
 
-					// Deserializing an array of strings
-					else if (it->value.Begin()->IsString()) {
+      for (const auto &obj: value) {
+         std::shared_ptr<rapidjson::Document> serializedObj =
+            std::any_cast<std::shared_ptr<rapidjson::Document>>(doSerialize(obj));
+         objArray.PushBack(*serializedObj, *allocator);
+      }
 
-						std::vector<std::string> strArray;
+      std::any_cast<std::shared_ptr<rapidjson::Document>>(data)->AddMember(
+         keyVal,
+         objArray.Move(),
+         *allocator
+      );
+   }
 
-						for (auto arrIt = it->value.Begin(); arrIt != it->value.End(); arrIt++) {
-							strArray.push_back(arrIt->GetString());
-						}
+   /************************************************************************/
 
-						obj->set(it->name.GetString(), strArray);
-					}
+   std::any Json::initSerializedChild() {
 
-					// Deserializing an array of objects
-					else if (it->value.Begin()->IsObject()) {
+      return std::make_shared<rapidjson::Document>(rapidjson::kObjectType);
+   }
 
-						std::vector<std::shared_ptr<Serializable>> objArray;
+   /************************************************************************/
 
-						for (auto arrIt = it->value.Begin(); arrIt != it->value.End(); arrIt++) {
-							objArray.push_back(doDeserialize(*arrIt));
-						}
+   std::shared_ptr<Serializable> Json::doDeserialize(const rapidjson::Value &jsonObj) {
 
-						obj->set(it->name.GetString(), objArray);
-					}
+      std::shared_ptr<Serializable> obj = std::make_shared<Serializable>();
 
-					else {
-						throw UndefinedException("Can only deserialize arrays of objects or strings");
-					}
+      for (auto it = jsonObj.MemberBegin(); it != jsonObj.MemberEnd(); it++) {
 
-					break;
+         switch (it->value.GetType()) {
 
-				case rapidjson::kObjectType:
+            case rapidjson::kTrueType:
+            case rapidjson::kFalseType:
 
-					obj->set(it->name.GetString(), doDeserialize(it->value));
-					break;
+               obj->set(it->name.GetString(), it->value.GetBool());
+               break;
 
-				case rapidjson::kNullType:
-				default:
+            case rapidjson::kNumberType:
 
-					throw UndefinedException("Json::deserialize() doesn't support null values");
-			}
-		}
+               if (it->value.IsDouble()) {
+                  obj->set(it->name.GetString(), it->value.GetDouble());
+               }
 
-		return obj;
-	}
+               else if (it->value.IsUint()) {
+                  obj->set(it->name.GetString(), static_cast<size_t>(it->value.GetUint()));
+               }
 
-	/************************************************************************/
+               #if SIZE_MAX == UINT64_MAX
+               else if (it->value.IsUint64()) {
+                  obj->set(it->name.GetString(), static_cast<size_t>(it->value.GetUint64()));
+               }
+               #endif
 
-	std::any Json::serialize(const std::shared_ptr<Serializable> &data) {
+               else {
+                  obj->set(it->name.GetString(), static_cast<int>(it->value.GetInt()));
+               }
 
-		rapidjson::StringBuffer buffer;
-		rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-		std::shared_ptr<rapidjson::Document> obj = doSerialize(data);
+               break;
 
-		obj->Accept(writer);
-		return std::string(buffer.GetString());
-	}
+            case rapidjson::kStringType:
 
-	/************************************************************************/
+               obj->set(it->name.GetString(), it->value.GetString());
+               break;
 
-	std::shared_ptr<Serializable> Json::deserialize(const std::any &data) {
+            // Currently, Serializable only supports arrays of all
+            // strings and all sub-objects. That makes my code here a
+            // lot simpler.
+            case rapidjson::kArrayType:
+
+               // If the array is empty, we can treat it as any type,
+               // because when we eventually iterate through the
+               // resulting std::vector, we won't actually end up
+               // having any std::variants to access and therefore
+               // won't have to worry about accesing the wrong type.
+               if (!it->value.Size()) {
+                  obj->set(it->name.GetString(), std::vector<std::string>());
+               }
+
+               // Deserializing an array of strings
+               else if (it->value.Begin()->IsString()) {
+
+                  std::vector<std::string> strArray;
+
+                  for (auto arrIt = it->value.Begin(); arrIt != it->value.End(); arrIt++) {
+                     strArray.push_back(arrIt->GetString());
+                  }
+
+                  obj->set(it->name.GetString(), strArray);
+               }
+
+               // Deserializing an array of objects
+               else if (it->value.Begin()->IsObject()) {
+
+                  std::vector<std::shared_ptr<Serializable>> objArray;
+
+                  for (auto arrIt = it->value.Begin(); arrIt != it->value.End(); arrIt++) {
+                     objArray.push_back(doDeserialize(*arrIt));
+                  }
+
+                  obj->set(it->name.GetString(), objArray);
+               }
+
+               else {
+                  throw UndefinedException("Can only deserialize arrays of objects or strings");
+               }
+
+               break;
+
+            case rapidjson::kObjectType:
+
+               obj->set(it->name.GetString(), doDeserialize(it->value));
+               break;
+
+            case rapidjson::kNullType:
+            default:
+
+               throw UndefinedException("Json::deserialize() doesn't support null values");
+         }
+      }
+
+      return obj;
+   }
+
+   /************************************************************************/
+
+   std::any Json::serialize(const std::shared_ptr<Serializable> &data) {
+
+      rapidjson::StringBuffer buffer;
+      rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+      std::shared_ptr<rapidjson::Document> object =
+         std::make_shared<rapidjson::Document>(rapidjson::kObjectType);
+
+      allocator = &object->GetAllocator();
+      doSerialize(data, object);
+
+      object->Accept(writer);
+      return std::string(buffer.GetString());
+   }
+
+   /************************************************************************/
+
+   std::shared_ptr<Serializable> Json::deserialize(const std::any &data) {
 
 
-		std::string json = typeid(const char *) == data.type() ?
-			std::any_cast<const char *>(data) : std::any_cast<std::string>(data);
+      std::string json = typeid(const char *) == data.type() ?
+         std::any_cast<const char *>(data) : std::any_cast<std::string>(data);
 
-		rapidjson::Document jsonObj;
-		jsonObj.Parse(json.c_str());
+      rapidjson::Document jsonObj;
+      jsonObj.Parse(json.c_str());
 
-		if (rapidjson::kObjectType != jsonObj.GetType()) {
-			throw UndefinedException("Json::deserialize() can only handle JSON objects, not arrays or scalars");
-		}
+      if (rapidjson::kObjectType != jsonObj.GetType()) {
+         throw UndefinedException("Json::deserialize() can only handle JSON objects, not arrays or scalars");
+      }
 
-		return doDeserialize(jsonObj);
-	}
+      return doDeserialize(jsonObj);
+   }
 }

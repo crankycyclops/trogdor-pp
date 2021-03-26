@@ -18,6 +18,66 @@ namespace trogdor::serial {
    // implementing class.
    class Driver {
 
+      protected:
+
+         /*
+            These methods are called by doSerialize() and convert each type of
+            value to its resulting representation on disk. They take as input
+            a parent object of any type (should only be a raw or smart pointer
+            to the underlying data structure) where the key/value pair should
+            be set, the key (always a string) and the value.
+
+            If for some reason you're writing a serialization driver that does
+            not use doSerialize() (probably a bad idea, but hey, it's your
+            driver and I'm sure you have a good reason), you can ignore these.
+
+            Input:
+               Pointer to the parent data structure (std::any)
+               Key (std::string)
+               Value (varied)
+
+            Output:
+               (none)
+         */
+         virtual void serializeSizeT(std::any data, std::string key, const size_t &value);
+         virtual void serializeInt(std::any data, std::string key, int const &value);
+         virtual void serializeDouble(std::any data, std::string key, const double &value);
+         virtual void serializeBool(std::any data, std::string key, const bool &value);
+         virtual void serializeString(std::any data, std::string key, const std::string &value);
+         virtual void serializeSerializable(std::any data, std::string key, const std::shared_ptr<Serializable> &value);
+         virtual void serializeStringVector(std::any data, std::string key, const std::vector<std::string> &value);
+         virtual void serializeSerializableVector(std::any data, std::string key, const std::vector<std::shared_ptr<Serializable>> &value);
+
+         /*
+            When doSerialize() needs to create a child object, it calls this
+            method. If you don't plan to use doSerialize() in your own driver,
+            implement this as an empty method.
+
+            Input:
+               (none)
+
+            Output:
+               A newly initialized object or handle (std::any)
+         */
+         virtual std::any initSerializedChild();
+
+         /*
+            A recursive method that does the actual work of serializing an
+            instance of Serializable. To use this helper method, you must
+            implement the optional virtual methods above.
+
+            Input:
+               Serializable data
+               Parent output object or no value if creating a child
+
+            Output:
+               Varied (std::any)
+         */
+         std::any doSerialize(
+            const std::shared_ptr<Serializable> &data,
+            std::any output = {}
+         );
+
       public:
 
          // Destructor
