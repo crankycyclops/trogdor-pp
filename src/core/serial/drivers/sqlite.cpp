@@ -164,14 +164,20 @@ namespace trogdor::serial {
          &insert,
          nullptr
       )) {
-         throw Exception("serializeStringVector(): Preparing INSERT INTO data query failed");
-      }
-
-      if (sqlite3_bind_text(insert, 1, key.c_str(), -1, nullptr)) {
-         throw Exception("serializeStringVector(): Failed to bind key parameter to INSERT query");
+         throw Exception("insertObjectValue(): Preparing INSERT INTO data query failed");
       }
 
       int status;
+
+      if (key.length()) {
+         status = sqlite3_bind_text(insert, 1, key.c_str(), -1, nullptr);
+      } else {
+         status = sqlite3_bind_null(insert, 1);
+      }
+
+      if (status) {
+         throw Exception("insertObjectValue(): Failed to bind key parameter to INSERT query");
+      }
 
       if (lastRowId < 1) {
          status = sqlite3_bind_null(insert, 2);
@@ -180,11 +186,11 @@ namespace trogdor::serial {
       }
 
       if (status) {
-         throw Exception("serializeStringVector(): Failed to bind parent parameter to INSERT query");
+         throw Exception("insertObjectValue(): Failed to bind parent parameter to INSERT query");
       }
 
       if (int status = sqlite3_step(insert); SQLITE_DONE != status) {
-         throw Exception("serializeStringVector(): Failed to execute INSERT query (" + std::to_string(status) + ")");
+         throw Exception("insertObjectValue(): Failed to execute INSERT query (" + std::to_string(status) + ")");
       }
 
       lastRowId++;
@@ -203,14 +209,20 @@ namespace trogdor::serial {
          &insert,
          nullptr
       )) {
-         throw Exception("serializeStringVector(): Preparing INSERT INTO data query failed");
-      }
-
-      if (sqlite3_bind_text(insert, 1, key.c_str(), -1, nullptr)) {
-         throw Exception("serializeStringVector(): Failed to bind key parameter to INSERT query");
+         throw Exception("insertArrayValue(): Preparing INSERT INTO data query failed");
       }
 
       int status;
+
+      if (key.length()) {
+         status = sqlite3_bind_text(insert, 1, key.c_str(), -1, nullptr);
+      } else {
+         status = sqlite3_bind_null(insert, 1);
+      }
+
+      if (status) {
+         throw Exception("insertArrayValue(): Failed to bind key parameter to INSERT query");
+      }
 
       if (lastRowId < 1) {
          status = sqlite3_bind_null(insert, 2);
@@ -219,11 +231,11 @@ namespace trogdor::serial {
       }
 
       if (status) {
-         throw Exception("serializeStringVector(): Failed to bind parent parameter to INSERT query");
+         throw Exception("insertArrayValue(): Failed to bind parent parameter to INSERT query");
       }
 
       if (int status = sqlite3_step(insert); SQLITE_DONE != status) {
-         throw Exception("serializeStringVector(): Failed to execute INSERT query (" + std::to_string(status) + ")");
+         throw Exception("insertArrayValue(): Failed to execute INSERT query (" + std::to_string(status) + ")");
       }
 
       lastRowId++;
