@@ -243,35 +243,6 @@ namespace trogdor::serial {
 
    /**************************************************************************/
 
-   void Sqlite::insertArrayEntry(sqlite3 *db, size_t parent, size_t child) {
-
-      sqlite3_stmt *addToArray;
-
-      if (sqlite3_prepare_v2(
-         db,
-         "INSERT INTO array(parent, child) VALUES (?, ?)",
-         -1,
-         &addToArray,
-         nullptr
-      )) {
-         throw Exception("insertArrayEntry(): Preparing INSERT INTO array query failed");
-      }
-
-      if (sqlite3_bind_int64(addToArray, 1, parent)) {
-         throw Exception("insertArrayEntry(): Failed to bind parent parameter to INSERT INTO array query");
-      }
-
-      if (sqlite3_bind_int64(addToArray, 2, child)) {
-         throw Exception("insertArrayEntry(): Failed to bind parent parameter to INSERT INTO array query");
-      }
-
-      if (int status = sqlite3_step(addToArray); SQLITE_DONE != status) {
-         throw Exception("insertArrayEntry(): Failed to execute INSERT INTO array query (" + std::to_string(status) + ")");
-      }
-   }
-
-   /**************************************************************************/
-
    void Sqlite::serializeSizeT(std::any data, std::string key, const size_t &value) {
 
       std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
@@ -340,7 +311,6 @@ namespace trogdor::serial {
 
       for (const auto &strVal: value) {
          insertString(std::get<0>(handle), arrayId, strVal);
-         insertArrayEntry(std::get<0>(handle), arrayId, lastRowId);
       }
    }
 
@@ -364,7 +334,6 @@ namespace trogdor::serial {
 
          insertObjectValue(std::get<0>(handle), arrayId);
          doSerialize(obj, std::tuple<sqlite3 *, size_t>({std::get<0>(handle), childId}));
-         insertArrayEntry(std::get<0>(handle), arrayId, childId);
       }
    }
 
@@ -383,20 +352,6 @@ namespace trogdor::serial {
          "  int_val BIGINT,"
          "  double_val DOUBLE,"
          "  string_val TEXT"
-         ")",
-         nullptr,
-         nullptr,
-         &zErrMsg
-      )) {
-         throwSqliteError(zErrMsg);
-      }
-
-      if (sqlite3_exec(
-         db,
-         "CREATE TABLE array("
-         "  parent BIGINT NOT NULL,"
-         "  child BIGINT NOT NULL,"
-         "  PRIMARY KEY(parent, child)"
          ")",
          nullptr,
          nullptr,
