@@ -5,9 +5,127 @@
 namespace trogdor::serial {
 
 
+   void Sqlite::insertString(sqlite3 *db, size_t parent, std::string value, std::string key) {
+
+      sqlite3_stmt *insert;
+
+      if (sqlite3_prepare_v2(
+         db,
+         "INSERT INTO data(key, parent, type, string_val) VALUES (?, ?, 's', ?)",
+         -1,
+         &insert,
+         nullptr
+      )) {
+         throw Exception("insertString(): Preparing INSERT INTO data query failed");
+      }
+
+      int status;
+
+      if (key.length()) {
+         status = sqlite3_bind_text(insert, 1, key.c_str(), -1, nullptr);
+      } else {
+         status = sqlite3_bind_null(insert, 1);
+      }
+
+      if (status) {
+         throw Exception("insertString(): Failed to bind key parameter to INSERT INTO data query");
+      }
+
+      if (parent < 1) {
+         status = sqlite3_bind_null(insert, 2);
+      } else {
+         status = sqlite3_bind_int64(insert, 2, parent);
+      }
+
+      if (status) {
+         throw Exception("insertString(): Failed to bind parent parameter to INSERT INTO data query");
+      }
+
+      if (sqlite3_bind_text(insert, 3, value.c_str(), -1, nullptr)) {
+         throw Exception("insertString(): Failed to bind value parameter to INSERT INTO data query");
+      }
+
+      if (int status = sqlite3_step(insert); SQLITE_DONE != status) {
+         throw Exception("insertString(): Failed to execute INSERT INTO DATA query (" + std::to_string(status) + ")");
+      }
+
+      lastRowId++;
+   }
+
+   /**************************************************************************/
+
+   void Sqlite::insertArrayValue(sqlite3 *db, size_t parent, std::string key) {
+
+      sqlite3_stmt *insert;
+
+      if (sqlite3_prepare_v2(
+         db,
+         "INSERT INTO data(key, parent, type) VALUES (?, ?, 'a')",
+         -1,
+         &insert,
+         nullptr
+      )) {
+         throw Exception("serializeStringVector(): Preparing INSERT INTO data query failed");
+      }
+
+      if (sqlite3_bind_text(insert, 1, key.c_str(), -1, nullptr)) {
+         throw Exception("serializeStringVector(): Failed to bind key parameter to INSERT query");
+      }
+
+      int status;
+
+      if (lastRowId < 1) {
+         status = sqlite3_bind_null(insert, 2);
+      } else {
+         status = sqlite3_bind_int64(insert, 2, parent);
+      }
+
+      if (status) {
+         throw Exception("serializeStringVector(): Failed to bind parent parameter to INSERT query");
+      }
+
+      if (int status = sqlite3_step(insert); SQLITE_DONE != status) {
+         throw Exception("serializeStringVector(): Failed to execute INSERT query (" + std::to_string(status) + ")");
+      }
+
+      lastRowId++;
+   }
+
+   /**************************************************************************/
+
+   void Sqlite::insertArrayEntry(sqlite3 *db, size_t parent, size_t child) {
+
+      sqlite3_stmt *addToArray;
+
+      if (sqlite3_prepare_v2(
+         db,
+         "INSERT INTO array(parent, child) VALUES (?, ?)",
+         -1,
+         &addToArray,
+         nullptr
+      )) {
+         throw Exception("insertArrayEntry(): Preparing INSERT INTO array query failed");
+      }
+
+      if (sqlite3_bind_int64(addToArray, 1, parent)) {
+         throw Exception("insertArrayEntry(): Failed to bind parent parameter to INSERT INTO array query");
+      }
+
+      if (sqlite3_bind_int64(addToArray, 2, lastRowId)) {
+         throw Exception("insertArrayEntry(): Failed to bind parent parameter to INSERT INTO array query");
+      }
+
+      if (int status = sqlite3_step(addToArray); SQLITE_DONE != status) {
+         throw Exception("insertArrayEntry(): Failed to execute INSERT INTO array query (" + std::to_string(status) + ")");
+      }
+   }
+
    /**************************************************************************/
 
    void Sqlite::serializeSizeT(std::any data, std::string key, const size_t &value) {
+
+      sqlite3_stmt *insert;
+      std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
 
       throw UndefinedException("TODO: serializeSizeT");
    }
@@ -16,12 +134,18 @@ namespace trogdor::serial {
 
    void Sqlite::serializeInt(std::any data, std::string key, int const &value) {
 
+      sqlite3_stmt *insert;
+      std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
+
       throw UndefinedException("TODO: serializeInt");
    }
 
    /**************************************************************************/
 
    void Sqlite::serializeDouble(std::any data, std::string key, const double &value) {
+
+      sqlite3_stmt *insert;
+      std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
 
       throw UndefinedException("TODO: serializeDouble");
    }
@@ -30,12 +154,18 @@ namespace trogdor::serial {
 
    void Sqlite::serializeBool(std::any data, std::string key, const bool &value) {
 
+      sqlite3_stmt *insert;
+      std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
+
       throw UndefinedException("TODO: serializeBool");
    }
 
    /**************************************************************************/
 
    void Sqlite::serializeString(std::any data, std::string key, const std::string &value) {
+
+      sqlite3_stmt *insert;
+      std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
 
       throw UndefinedException("TODO: serializeString");
    }
@@ -48,6 +178,9 @@ namespace trogdor::serial {
       const std::shared_ptr<Serializable> &value
    ) {
 
+      sqlite3_stmt *insert;
+      std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
+
       throw UndefinedException("TODO: serializeSerializable");
    }
 
@@ -59,7 +192,16 @@ namespace trogdor::serial {
       const std::vector<std::string> &value
    ) {
 
-      throw UndefinedException("TODO: serializeStringVector");
+      size_t arrayId;
+      std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
+
+      insertArrayValue(std::get<0>(handle), std::get<1>(handle), key);
+      arrayId = lastRowId;
+
+      for (const auto &strVal: value) {
+         insertString(std::get<0>(handle), arrayId, strVal);
+         insertArrayEntry(std::get<0>(handle), arrayId, lastRowId);
+      }
    }
 
    /**************************************************************************/
@@ -70,44 +212,18 @@ namespace trogdor::serial {
       const std::vector<std::shared_ptr<Serializable>> &value
    ) {
 
-      sqlite3_stmt *insert;
+      size_t arrayId;
       std::tuple<sqlite3 *, size_t> handle = std::any_cast<std::tuple<sqlite3 *, size_t>>(data);
 
-      if (sqlite3_prepare_v2(
-         std::get<0>(handle),
-         "INSERT INTO data(key, parent, type) VALUES (?, ?, 'a')",
-         -1,
-         &insert,
-         nullptr
-      )) {
-         throw Exception("serializeSerializableVector(): Preparing INSERT INTO data query failed");
-      }
-
-      if (sqlite3_bind_text(insert, 1, key.c_str(), -1, nullptr)) {
-         throw Exception("serializeSerializableVector(): Failed to bind key parameter to INSERT query");
-      }
-
-      int status;
-
-      if (lastRowId < 1) {
-         status = sqlite3_bind_null(insert, 2);
-      } else {
-         status = sqlite3_bind_int64(insert, 2, std::get<1>(handle));
-      }
-
-      if (status) {
-         throw Exception("serializeSerializableVector(): Failed to bind parent parameter to INSERT query");
-      }
-
-      if (int status = sqlite3_step(insert); SQLITE_DONE != status) {
-         throw Exception("serializeSerializableVector(): Failed to execute INSERT query (" + std::to_string(status) + ")");
-      }
-
-      // This should be incremented every time an insert is performed
-      lastRowId++;
+      insertArrayValue(std::get<0>(handle), std::get<1>(handle), key);
+      arrayId = lastRowId;
 
       for (const auto &obj: value) {
+
+         size_t childId = lastRowId + 1;
+
          doSerialize(obj, std::tuple<sqlite3 *, size_t>({std::get<0>(handle), lastRowId}));
+         insertArrayEntry(std::get<0>(handle), arrayId, childId);
       }
    }
 

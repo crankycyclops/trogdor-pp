@@ -46,6 +46,46 @@ namespace trogdor::serial {
             throw Exception(errorStr);
          }
 
+         /*
+            Inserts a string value into the data table.
+
+            Input:
+               Database handle (sqlite3 *)
+               Id of parent row (size_t)
+               Value (std::string)
+               Key (std::string)
+
+            Output:
+               (none)
+         */
+         void insertString(sqlite3 *db, size_t parent, std::string value, std::string key = "");
+
+         /*
+            Inserts an array value into the data table.
+
+            Input:
+               Database handle (sqlite3 *)
+               Id of parent row (size_t)
+               Key (std::string)
+
+            Output:
+               (none)
+         */
+         void insertArrayValue(sqlite3 *db, size_t parent, std::string key);
+
+         /*
+            Links a child row in the data table to a parent in the array table.
+
+            Input:
+               Database handle (sqlite3 *)
+               Id of parent row (size_t)
+               Id of the child row (size_t)
+
+            Output:
+               (none)
+         */
+         void insertArrayEntry(sqlite3 *db, size_t parent, size_t child);
+
       protected:
 
          /*
