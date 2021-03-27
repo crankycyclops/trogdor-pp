@@ -7,6 +7,61 @@
 namespace trogdor::serial {
 
 
+   void Sqlite::createSchema(sqlite3 *db) {
+
+      char *zErrMsg = nullptr;
+
+      if (sqlite3_exec(
+         db,
+         "CREATE TABLE data("
+         "  key TEXT,"
+         "  parent BIGINT,"
+         "  type CHAR(1) NOT NULL,"
+         "  int_val BIGINT,"
+         "  double_val DOUBLE,"
+         "  string_val TEXT"
+         ")",
+         nullptr,
+         nullptr,
+         &zErrMsg
+      )) {
+         throwSqliteError(zErrMsg);
+      }
+   }
+
+   /**************************************************************************/
+
+   sqlite3_stmt *Sqlite::prepareSelectByParent(sqlite3 *db, size_t parent) {
+
+      int status;
+      sqlite3_stmt *select;
+      const char *query;
+
+      if (0 == parent) {
+         query = "SELECT * FROM data WHERE parent IS NULL";
+      }else {
+         query = "SELECT * FROM data WHERE parent = ?";
+      }
+
+      if ((status = sqlite3_prepare_v2(
+         db,
+         query,
+         -1,
+         &select,
+         nullptr
+      ))) {
+         throw Exception(std::string("doDeserialize(): Preparing \"") + query + "\" failed (" + std::to_string(status) + ')');
+      }
+
+      if (parent && sqlite3_bind_int64(select, 1, parent)) {
+         throw Exception("doDeserializse(): Failed to bind parent parameter to SELECT * FROM data query");
+      }
+
+      return select;
+   }
+
+   /**************************************************************************/
+
    void Sqlite::_insertInt(sqlite3 *db, size_t parent, Sqlite::IntType value, char type, std::string key) {
 
       sqlite3_stmt *insert;
@@ -341,57 +396,11 @@ namespace trogdor::serial {
 
    /**************************************************************************/
 
-   void Sqlite::createSchema(sqlite3 *db) {
-
-      char *zErrMsg = nullptr;
-
-      if (sqlite3_exec(
-         db,
-         "CREATE TABLE data("
-         "  key TEXT,"
-         "  parent BIGINT,"
-         "  type CHAR(1) NOT NULL,"
-         "  int_val BIGINT,"
-         "  double_val DOUBLE,"
-         "  string_val TEXT"
-         ")",
-         nullptr,
-         nullptr,
-         &zErrMsg
-      )) {
-         throwSqliteError(zErrMsg);
-      }
-   }
-
-   /**************************************************************************/
-
    std::shared_ptr<Serializable> Sqlite::doDeserialize(sqlite3 *db, size_t parent) {
 
       int status;
-      sqlite3_stmt *select;
-      const char *query;
-
+      sqlite3_stmt *select = prepareSelectByParent(db, parent);
       std::shared_ptr<Serializable> obj = std::make_shared<Serializable>();
-
-      if (0 == parent) {
-         query = "SELECT * FROM data WHERE parent IS NULL";
-      }else {
-         query = "SELECT * FROM data WHERE parent = ?";
-      }
-
-      if ((status = sqlite3_prepare_v2(
-         db,
-         query,
-         -1,
-         &select,
-         nullptr
-      ))) {
-         throw Exception(std::string("doDeserialize(): Preparing \"") + query + "\" failed (" + std::to_string(status) + ')');
-      }
-
-      if (parent && sqlite3_bind_int64(select, 1, parent)) {
-         throw Exception("doDeserializse(): Failed to bind parent parameter to SELECT * FROM data query");
-      }
 
       while (SQLITE_ROW == (status = sqlite3_step(select))) {
 
@@ -440,9 +449,76 @@ namespace trogdor::serial {
                );
                break;
 
-            case 'a': // array
-               throw Exception("TODO: implement array case for doDeserialize()");
+            // Without the scope added by the braces, the use std::vector will
+            // trigger a "Jump to case label" error
+            case 'a': { // array
+
+               int childParent = sqlite3_column_int64(select, 1);
+               const char *key = reinterpret_cast<const char*>(sqlite3_column_text(select, 0));
+
+               int childStatus;
+               sqlite3_stmt *childSelect = prepareSelectByParent(db, childParent);
+
+               // Grab the first result to see what type of array we're dealing with
+               childStatus = sqlite3_step(childSelect);
+
+               // If the array is empty, we can treat it as any type. String happens
+               // to be the most convenient.
+               if (SQLITE_DONE == childStatus) {
+                  obj->set(key, std::vector<std::string>());
+                  break;
+               }
+
+               else if (SQLITE_ROW != childStatus) {
+                  throw Exception("doDeserializse(): Failed to execute child SELECT * FROM data query");
+               }
+
+               const char childType = sqlite3_column_text(childSelect, 2)[0];
+
+               if ('o' == childType) {
+
+                  std::vector<std::shared_ptr<Serializable>> objArray;
+
+                  while (SQLITE_ROW == (childStatus = sqlite3_step(childSelect))) {
+                     objArray.push_back(doDeserialize(db, childParent));
+                  }
+
+                  if (SQLITE_DONE != childStatus) {
+                     throw Exception("doDeserializse(): Failed to execute child SELECT * FROM data query");
+                  }
+
+                  obj->set(key, objArray);
+               }
+
+               else if ('s' == childType) {
+
+                  std::vector<std::string> strArray;
+
+                  while (SQLITE_ROW == (childStatus = sqlite3_step(childSelect))) {
+                     obj->set(key, reinterpret_cast<const char*>(sqlite3_column_text(childSelect, 5)));
+                  }
+
+                  if (SQLITE_DONE != childStatus) {
+                     throw Exception("doDeserializse(): Failed to execute child SELECT * FROM data query");
+                  }
+               }
+
+               else {
+                  throw UndefinedException(std::string(
+                     "doDeserialize(): Encountered unsupported child type '") +
+                     childType + "'"
+                  );
+                  //throw UndefinedException(reinterpret_cast<const char *>(sqlite3_column_text(childSelect, 2)));
+               }
+
                break;
+            }
+
+            default:
+               throw UndefinedException(
+                  std::string("Sqlite::deserialize() encountered unsupported type '") +
+                  static_cast<const char>(sqlite3_column_text(select, 0)[0]) + "'"
+               );
          }
       }
 

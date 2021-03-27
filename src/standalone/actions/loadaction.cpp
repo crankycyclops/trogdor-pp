@@ -1,6 +1,7 @@
 #include <memory>
 #include <fstream>
 #include <trogdor/entities/player.h>
+#include <trogdor/exception/fileexception.h>
 
 #ifdef ENABLE_SERIALIZE_SQLITE
    #include <trogdor/serial/drivers/sqlite.h>
@@ -39,32 +40,46 @@ void LoadAction::execute(
 
    std::string filename = command.getDirectObject().length() ?
       command.getDirectObject() : command.getIndirectObject();
+   std::shared_ptr<trogdor::serial::Serializable> data;
 
-   // For now, we're defaulting to the SQLite3 driver if available
-   #ifdef ENABLE_SERIALIZE_SQLITE
+   try {
 
-      trogdor::serial::Sqlite driver;
-      std::shared_ptr<trogdor::serial::Serializable> data = driver.deserialize(filename);
+      // For now, we're defaulting to the SQLite3 driver if available
+      #ifdef ENABLE_SERIALIZE_SQLITE
 
-   #else
+         trogdor::serial::Sqlite driver;
+         data = driver.deserialize(filename);
 
-      trogdor::serial::Json driver;
-      ifstream inputFile(filename);
+      #else
 
-      if (!inputFile.is_open()) {
-         player->out() << "Failed to load game state from " << filename << '.' << std::endl;
-         return;
-      }
+         trogdor::serial::Json driver;
+         ifstream inputFile(filename);
 
-      std::string buffer;
-      ostringstream ss;
+         if (!inputFile.is_open()) {
+            player->out() << "Failed to load game state from " << filename << '.' << std::endl;
+            return;
+         }
 
-      ss << inputFile.rdbuf();
-      buffer = ss.str();
+         std::string buffer;
+         ostringstream ss;
 
-      std::shared_ptr<trogdor::serial::Serializable> data = driver.deserialize(buffer);
+         ss << inputFile.rdbuf();
+         buffer = ss.str();
 
-   #endif
+         data = driver.deserialize(buffer);
+
+      #endif
+   }
+
+   catch (const trogdor::FileException &e) {
+      player->out() << "Failed to load game state from " << filename << '.' << std::endl;
+      return;
+   }
+
+   catch (const trogdor::Exception &e) {
+      player->out() << e.what() << std::endl;
+      return;
+   }
 
    game->deserialize(
       data,

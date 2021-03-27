@@ -36,6 +36,19 @@ namespace trogdor::serial {
          void createSchema(sqlite3 *db);
 
          /*
+            Helper method that selects all child rows of a parent (if parent
+            is 0, we get all root rows where parent is null.)
+
+            Input:
+               Database handle (sqlite3 *)
+               Rowid of parent (size_t)
+
+            Output:
+               Prepared Statement (sqlite3_stmt *)
+         */
+         sqlite3_stmt *prepareSelectByParent(sqlite3 *db, size_t parent = 0);
+
+         /*
             Throws a SQLite3 error message, freeing the C-string in the process.
 
             Input:
