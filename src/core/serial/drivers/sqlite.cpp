@@ -496,12 +496,14 @@ namespace trogdor::serial {
                   std::vector<std::string> strArray;
 
                   while (SQLITE_ROW == (childStatus = sqlite3_step(childSelect))) {
-                     obj->set(key, reinterpret_cast<const char*>(sqlite3_column_text(childSelect, 6)));
+                     strArray.push_back(reinterpret_cast<const char*>(sqlite3_column_text(childSelect, 6)));
                   }
 
                   if (SQLITE_DONE != childStatus) {
                      throw Exception("doDeserializse(): Failed to execute child SELECT * FROM data query");
                   }
+
+                  obj->set(key, strArray);
                }
 
                else {
