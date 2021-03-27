@@ -38,9 +38,9 @@ namespace trogdor::serial {
       const char *query;
 
       if (0 == parent) {
-         query = "SELECT * FROM data WHERE parent IS NULL";
+         query = "SELECT rowid, * FROM data WHERE parent IS NULL";
       }else {
-         query = "SELECT * FROM data WHERE parent = ?";
+         query = "SELECT rowid, * FROM data WHERE parent = ?";
       }
 
       if ((status = sqlite3_prepare_v2(
@@ -405,47 +405,47 @@ namespace trogdor::serial {
       while (SQLITE_ROW == (status = sqlite3_step(select))) {
 
          // Switch on the row's type
-         switch (sqlite3_column_text(select, 2)[0]) {
+         switch (sqlite3_column_text(select, 3)[0]) {
 
             case 'u': // unsigned
                obj->set(
-                  reinterpret_cast<const char*>(sqlite3_column_text(select, 0)),
-                  static_cast<size_t>(sqlite3_column_int64(select, 3))
+                  reinterpret_cast<const char*>(sqlite3_column_text(select, 1)),
+                  static_cast<size_t>(sqlite3_column_int64(select, 4))
                );
                break;
 
             case 'i': // int
                obj->set(
-                  reinterpret_cast<const char*>(sqlite3_column_text(select, 0)),
-                  sqlite3_column_int(select, 3)
+                  reinterpret_cast<const char*>(sqlite3_column_text(select, 1)),
+                  sqlite3_column_int(select, 4)
                );
                break;
 
             case 'b': // boolean
                obj->set(
-                  reinterpret_cast<const char*>(sqlite3_column_text(select, 0)),
-                  static_cast<bool>(sqlite3_column_int(select, 3))
+                  reinterpret_cast<const char*>(sqlite3_column_text(select, 1)),
+                  static_cast<bool>(sqlite3_column_int(select, 4))
                );
                break;
 
             case 'd': // double
                obj->set(
-                  reinterpret_cast<const char*>(sqlite3_column_text(select, 0)),
-                  sqlite3_column_double(select, 4)
+                  reinterpret_cast<const char*>(sqlite3_column_text(select, 1)),
+                  sqlite3_column_double(select, 5)
                );
                break;
 
             case 's': // string
                obj->set(
-                  reinterpret_cast<const char*>(sqlite3_column_text(select, 0)),
-                  reinterpret_cast<const char*>(sqlite3_column_text(select, 5))
+                  reinterpret_cast<const char*>(sqlite3_column_text(select, 1)),
+                  reinterpret_cast<const char*>(sqlite3_column_text(select, 6))
                );
                break;
 
             case 'o': // object
                obj->set(
-                  reinterpret_cast<const char*>(sqlite3_column_text(select, 0)),
-                  doDeserialize(db, sqlite3_column_int64(select, 1))
+                  reinterpret_cast<const char*>(sqlite3_column_text(select, 1)),
+                  doDeserialize(db, sqlite3_column_int64(select, 0))
                );
                break;
 
@@ -453,8 +453,8 @@ namespace trogdor::serial {
             // trigger a "Jump to case label" error
             case 'a': { // array
 
-               int childParent = sqlite3_column_int64(select, 1);
-               const char *key = reinterpret_cast<const char*>(sqlite3_column_text(select, 0));
+               int childParent = sqlite3_column_int64(select, 0);
+               const char *key = reinterpret_cast<const char*>(sqlite3_column_text(select, 1));
 
                int childStatus;
                sqlite3_stmt *childSelect = prepareSelectByParent(db, childParent);
@@ -473,14 +473,15 @@ namespace trogdor::serial {
                   throw Exception("doDeserializse(): Failed to execute child SELECT * FROM data query");
                }
 
-               const char childType = sqlite3_column_text(childSelect, 2)[0];
+               const char childType = sqlite3_column_text(childSelect, 3)[0];
 
                if ('o' == childType) {
 
+                  int objectParent = sqlite3_column_int64(childSelect, 0);
                   std::vector<std::shared_ptr<Serializable>> objArray;
 
                   while (SQLITE_ROW == (childStatus = sqlite3_step(childSelect))) {
-                     objArray.push_back(doDeserialize(db, childParent));
+                     objArray.push_back(doDeserialize(db, objectParent));
                   }
 
                   if (SQLITE_DONE != childStatus) {
@@ -495,7 +496,7 @@ namespace trogdor::serial {
                   std::vector<std::string> strArray;
 
                   while (SQLITE_ROW == (childStatus = sqlite3_step(childSelect))) {
-                     obj->set(key, reinterpret_cast<const char*>(sqlite3_column_text(childSelect, 5)));
+                     obj->set(key, reinterpret_cast<const char*>(sqlite3_column_text(childSelect, 6)));
                   }
 
                   if (SQLITE_DONE != childStatus) {
@@ -517,7 +518,7 @@ namespace trogdor::serial {
             default:
                throw UndefinedException(
                   std::string("Sqlite::deserialize() encountered unsupported type '") +
-                  static_cast<const char>(sqlite3_column_text(select, 0)[0]) + "'"
+                  static_cast<const char>(sqlite3_column_text(select, 1)[0]) + "'"
                );
          }
       }
