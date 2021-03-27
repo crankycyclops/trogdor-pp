@@ -1,3 +1,5 @@
+#include <trogdor/filesystem.h>
+
 #include <trogdor/serial/drivers/sqlite.h>
 #include <trogdor/serial/serializable.h>
 #include <trogdor/exception/fileexception.h>
@@ -365,6 +367,7 @@ namespace trogdor::serial {
 
    std::shared_ptr<Serializable> Sqlite::doDeserialize(sqlite3 *db, size_t parent) {
 
+      int status;
       sqlite3_stmt *select;
       const char *query;
 
@@ -376,21 +379,19 @@ namespace trogdor::serial {
          query = "SELECT * FROM data WHERE parent = ?";
       }
 
-      if (sqlite3_prepare_v2(
+      if ((status = sqlite3_prepare_v2(
          db,
          query,
          -1,
          &select,
          nullptr
-      )) {
-         throw Exception("doDeserialize(): Preparing SELECT * FROM data query failed");
+      ))) {
+         throw Exception(std::string("doDeserialize(): Preparing \"") + query + "\" failed (" + std::to_string(status) + ')');
       }
 
       if (parent && sqlite3_bind_int64(select, 1, parent)) {
          throw Exception("doDeserializse(): Failed to bind parent parameter to SELECT * FROM data query");
       }
-
-      int status;
 
       while (SQLITE_ROW == (status = sqlite3_step(select))) {
 
@@ -440,7 +441,7 @@ namespace trogdor::serial {
                break;
 
             case 'a': // array
-               throw new Exception("TODO: implement array case for doDeserialize()");
+               throw Exception("TODO: implement array case for doDeserialize()");
                break;
          }
       }
@@ -486,8 +487,23 @@ namespace trogdor::serial {
          std::string filename = typeid(const char *) == data.type() ?
             std::any_cast<const char *>(data) : std::any_cast<std::string>(data);
 
-         if (SQLITE_OK != sqlite3_open(filename.c_str(), &db)) {
-            throw FileException(filename + " does not exist or is not a SQLite3 database");
+         if (!STD_FILESYSTEM::exists(filename)) {
+            throw FileException(filename + " does not exist");
+         }
+
+         else if (!STD_FILESYSTEM::is_regular_file(filename)) {
+            throw FileException(filename + " is not a file");
+         }
+
+         else if (SQLITE_OK != sqlite3_open(filename.c_str(), &db)) {
+            throw FileException(std::string("Error opening ") + filename);
+         }
+
+         // Since SQLite3 opens databases lazily and the call above will
+         // succeed even if the database isn't valid, we'll try to execute a
+         // query and see if it succeeds. If it doesn't, we know it's invalid.
+         else if (sqlite3_exec(db, "pragma schema_version", nullptr, nullptr, nullptr)) {
+            throw FileException(filename + " is not a valid SQLite3 database");
          }
 
          fromFile = true;
