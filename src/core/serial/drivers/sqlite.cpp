@@ -363,6 +363,14 @@ namespace trogdor::serial {
 
    /**************************************************************************/
 
+   std::shared_ptr<Serializable> Sqlite::doDeserialize(sqlite3 *db, size_t parent) {
+
+      // TODO
+      return std::make_shared<Serializable>();
+   }
+
+   /**************************************************************************/
+
    std::any Sqlite::serialize(const std::shared_ptr<Serializable> &data) {
 
       sqlite3 *db;
@@ -382,17 +390,33 @@ namespace trogdor::serial {
    std::shared_ptr<Serializable> Sqlite::deserialize(const std::any &data) {
 
       sqlite3 *db;
+      bool fromFile = false;
 
-      std::string filename = typeid(const char *) == data.type() ?
-         std::any_cast<const char *>(data) : std::any_cast<std::string>(data);
-
-      if (SQLITE_OK != sqlite3_open(filename.c_str(), &db)) {
-         throw FileException(filename + " does not exist or is not a SQLite3 database");
+      // We're deserializing an in-memory database
+      if (data.type() == typeid(sqlite3 *)) {
+         db = std::any_cast<sqlite3 *>(data);
       }
 
-      // TODO: do stuff
-      sqlite3_close(db);
-      return std::shared_ptr<Serializable>();
+      // We're deserializing a database on disk
+      else {
+
+         std::string filename = typeid(const char *) == data.type() ?
+            std::any_cast<const char *>(data) : std::any_cast<std::string>(data);
+
+         if (SQLITE_OK != sqlite3_open(filename.c_str(), &db)) {
+            throw FileException(filename + " does not exist or is not a SQLite3 database");
+         }
+
+         fromFile = true;
+      }
+
+      std::shared_ptr<Serializable> object = doDeserialize(db);
+
+      if (fromFile) {
+         sqlite3_close(db);
+      }
+
+      return object;
    }
 
    /************************************************************************/

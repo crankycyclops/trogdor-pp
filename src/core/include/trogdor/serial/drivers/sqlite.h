@@ -174,6 +174,18 @@ namespace trogdor::serial {
          */
          void insertArrayValue(sqlite3 *db, size_t parent, std::string key = "");
 
+         /*
+            Recursively deserializes game data stored in a SQLite3 database.
+
+            Input:
+               Database handle (sqlite3 *)
+               Id of parent row (size_t)
+
+            Output:
+               (none)
+         */
+         std::shared_ptr<Serializable> doDeserialize(sqlite3 *db, size_t parent = 0);
+
       protected:
 
          /*
