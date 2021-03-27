@@ -365,8 +365,91 @@ namespace trogdor::serial {
 
    std::shared_ptr<Serializable> Sqlite::doDeserialize(sqlite3 *db, size_t parent) {
 
-      // TODO
-      return std::make_shared<Serializable>();
+      sqlite3_stmt *select;
+      const char *query;
+
+      std::shared_ptr<Serializable> obj = std::make_shared<Serializable>();
+
+      if (0 == parent) {
+         query = "SELECT * FROM data WHERE parent IS NULL";
+      }else {
+         query = "SELECT * FROM data WHERE parent = ?";
+      }
+
+      if (sqlite3_prepare_v2(
+         db,
+         query,
+         -1,
+         &select,
+         nullptr
+      )) {
+         throw Exception("doDeserialize(): Preparing SELECT * FROM data query failed");
+      }
+
+      if (parent && sqlite3_bind_int64(select, 1, parent)) {
+         throw Exception("doDeserializse(): Failed to bind parent parameter to SELECT * FROM data query");
+      }
+
+      int status;
+
+      while (SQLITE_ROW == (status = sqlite3_step(select))) {
+
+         // Switch on the row's type
+         switch (sqlite3_column_text(select, 2)[0]) {
+
+            case 'u': // unsigned
+               obj->set(
+                  reinterpret_cast<const char*>(sqlite3_column_text(select, 0)),
+                  static_cast<size_t>(sqlite3_column_int64(select, 3))
+               );
+               break;
+
+            case 'i': // int
+               obj->set(
+                  reinterpret_cast<const char*>(sqlite3_column_text(select, 0)),
+                  sqlite3_column_int(select, 3)
+               );
+               break;
+
+            case 'b': // boolean
+               obj->set(
+                  reinterpret_cast<const char*>(sqlite3_column_text(select, 0)),
+                  static_cast<bool>(sqlite3_column_int(select, 3))
+               );
+               break;
+
+            case 'd': // double
+               obj->set(
+                  reinterpret_cast<const char*>(sqlite3_column_text(select, 0)),
+                  sqlite3_column_double(select, 4)
+               );
+               break;
+
+            case 's': // string
+               obj->set(
+                  reinterpret_cast<const char*>(sqlite3_column_text(select, 0)),
+                  reinterpret_cast<const char*>(sqlite3_column_text(select, 5))
+               );
+               break;
+
+            case 'o': // object
+               obj->set(
+                  reinterpret_cast<const char*>(sqlite3_column_text(select, 0)),
+                  doDeserialize(db, sqlite3_column_int64(select, 1))
+               );
+               break;
+
+            case 'a': // array
+               throw new Exception("TODO: implement array case for doDeserialize()");
+               break;
+         }
+      }
+
+      if (SQLITE_DONE != status) {
+         throw Exception("doDeserializse(): Failed to execute SELECT * FROM data query");
+      }
+
+      return obj;
    }
 
    /**************************************************************************/
