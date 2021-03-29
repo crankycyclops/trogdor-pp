@@ -479,9 +479,11 @@ namespace trogdor::serial {
 
                   std::vector<std::shared_ptr<Serializable>> objArray;
 
-                  while (SQLITE_ROW == (childStatus = sqlite3_step(childSelect))) {
+                  // Using do/while ensures that we also get the first result instead of
+                  // skipping over it
+                  do {
                      objArray.push_back(doDeserialize(db, sqlite3_column_int64(childSelect, 0)));
-                  }
+                  } while (SQLITE_ROW == (childStatus = sqlite3_step(childSelect)));
 
                   if (SQLITE_DONE != childStatus) {
                      throw Exception("doDeserializse(): Failed to execute child SELECT * FROM data query");
@@ -494,9 +496,9 @@ namespace trogdor::serial {
 
                   std::vector<std::string> strArray;
 
-                  while (SQLITE_ROW == (childStatus = sqlite3_step(childSelect))) {
+                  do {
                      strArray.push_back(reinterpret_cast<const char*>(sqlite3_column_text(childSelect, 6)));
-                  }
+                  } while (SQLITE_ROW == (childStatus = sqlite3_step(childSelect)));
 
                   if (SQLITE_DONE != childStatus) {
                      throw Exception("doDeserializse(): Failed to execute child SELECT * FROM data query");
