@@ -477,11 +477,10 @@ namespace trogdor::serial {
 
                if ('o' == childType) {
 
-                  int objectParent = sqlite3_column_int64(childSelect, 0);
                   std::vector<std::shared_ptr<Serializable>> objArray;
 
                   while (SQLITE_ROW == (childStatus = sqlite3_step(childSelect))) {
-                     objArray.push_back(doDeserialize(db, objectParent));
+                     objArray.push_back(doDeserialize(db, sqlite3_column_int64(childSelect, 0)));
                   }
 
                   if (SQLITE_DONE != childStatus) {
@@ -511,7 +510,6 @@ namespace trogdor::serial {
                      "doDeserialize(): Encountered unsupported child type '") +
                      childType + "'"
                   );
-                  //throw UndefinedException(reinterpret_cast<const char *>(sqlite3_column_text(childSelect, 2)));
                }
 
                break;
