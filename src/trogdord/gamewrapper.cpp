@@ -109,17 +109,8 @@ gamePtr(nullptr) {
 	auto &serialDriver =
 		serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
 
-	std::ifstream metaFile(metaPath);
-	std::ifstream gameFile(gamePath);
-
-	std::ostringstream metaStr;
-	std::ostringstream gameStr;
-
-	metaStr << metaFile.rdbuf();
-	gameStr << gameFile.rdbuf();
-
-	std::shared_ptr<trogdor::serial::Serializable> metaData = serialDriver->deserialize(metaStr.str());
-	std::shared_ptr<trogdor::serial::Serializable> gameData = serialDriver->deserialize(gameStr.str());
+	std::shared_ptr<trogdor::serial::Serializable> metaData = serialDriver->deserializeFromDisk(metaPath);
+	std::shared_ptr<trogdor::serial::Serializable> gameData = serialDriver->deserializeFromDisk(gamePath);
 
 	gameMutex.lock();
 
@@ -171,7 +162,8 @@ size_t GameWrapper::dump() {
 
 	size_t dumpSlot = 0;
 	std::set<size_t> slots;
-	auto &driver = serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
+	std::string driverName = Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT);
+	auto &driver = serial::DriverMap::get(driverName);
 
 	gameMutex.lock();
 

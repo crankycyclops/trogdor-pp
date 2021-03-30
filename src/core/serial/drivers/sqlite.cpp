@@ -575,7 +575,7 @@ namespace trogdor::serial {
          }
 
          else if (SQLITE_OK != sqlite3_open(filename.c_str(), &db)) {
-            throw FileException(std::string("Error opening ") + filename);
+            throw FileException(std::string("Could not open ") + filename);
          }
 
          // Since SQLite3 opens databases lazily and the call above will
@@ -595,6 +595,13 @@ namespace trogdor::serial {
       }
 
       return object;
+   }
+
+   /************************************************************************/
+
+   std::shared_ptr<Serializable> Sqlite::deserializeFromDisk(const std::string filename) {
+
+      return deserialize(filename);
    }
 
    /************************************************************************/

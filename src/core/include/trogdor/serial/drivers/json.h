@@ -99,6 +99,18 @@ namespace trogdor::serial {
          virtual std::shared_ptr<Serializable> deserialize(const std::any &data);
 
          /*
+            Takes as input a filename and calls deserialize() on the data that
+            file contains.
+
+            Input:
+               Filename (const std::string)
+
+            Output:
+               Populated instance of Serializable (std::shared_ptr<Serializable>)
+         */
+         virtual std::shared_ptr<Serializable> deserializeFromDisk(const std::string filename);
+
+         /*
             Utility method that writes the serialized data to disk. Each driver
             should implement this method.
 

@@ -1,5 +1,7 @@
 #include <fstream>
+#include <sstream>
 
+#include <trogdor/filesystem.h>
 #include <trogdor/serial/drivers/json.h>
 #include <trogdor/serial/serializable.h>
 #include <trogdor/exception/undefinedexception.h>
@@ -290,11 +292,40 @@ namespace trogdor::serial {
       rapidjson::Document jsonObj;
       jsonObj.Parse(json.c_str());
 
+      // TODO: if data is invalid, make sure I properly detect and signal this
+      // to the user
       if (rapidjson::kObjectType != jsonObj.GetType()) {
          throw UndefinedException("Json::deserialize() can only handle JSON objects, not arrays or scalars");
       }
 
       return doDeserialize(jsonObj);
+   }
+
+   /************************************************************************/
+
+   std::shared_ptr<Serializable> Json::deserializeFromDisk(const std::string filename) {
+
+      std::ifstream jsonFile(filename);
+
+      if (!jsonFile.is_open()) {
+
+         if (!STD_FILESYSTEM::exists(filename)) {
+            throw FileException(filename + " does not exist");
+         }
+
+         else if (!STD_FILESYSTEM::is_regular_file(filename)) {
+            throw FileException(filename + " is not a file");
+         }
+
+         else {
+            throw FileException(std::string("Could not open ") + filename);
+         }
+      }
+
+      std::ostringstream jsonStr;
+
+      jsonStr << jsonFile.rdbuf();
+      return deserialize(jsonStr.str());
    }
 
    /************************************************************************/

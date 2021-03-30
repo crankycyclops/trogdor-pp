@@ -258,6 +258,18 @@ namespace trogdor::serial {
          virtual std::shared_ptr<Serializable> deserialize(const std::any &data);
 
          /*
+            Takes as input a filename and calls deserialize() on the data that
+            file contains.
+
+            Input:
+               Filename (const std::string)
+
+            Output:
+               Populated instance of Serializable (std::shared_ptr<Serializable>)
+         */
+         virtual std::shared_ptr<Serializable> deserializeFromDisk(const std::string filename);
+
+         /*
             Copies the contents of one SQLite3 database into another. Use this to
             write the output of serialize() to disk.
 

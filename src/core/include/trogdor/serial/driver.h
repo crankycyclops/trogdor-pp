@@ -105,9 +105,24 @@ namespace trogdor::serial {
                Serialized data (const std::any &)
 
             Output:
-               Populated instance of Serializable (Serializable)
+               Populated instance of Serializable (std::shared_ptr<Serializable>)
          */
          virtual std::shared_ptr<Serializable> deserialize(const std::any &data) = 0;
+
+         /*
+            Takes as input a filename and calls deserialize() on the data that
+            file contains. Since the data for each driver will require
+            different treatment before being passed to deserialize(), each
+            driver must implement this method as well in order to provide a
+            consistent interface.
+
+            Input:
+               Filename (const std::string)
+
+            Output:
+               Populated instance of Serializable (std::shared_ptr<Serializable>)
+         */
+         virtual std::shared_ptr<Serializable> deserializeFromDisk(const std::string filename) = 0;
 
          /*
             Utility method that writes the serialized data to disk. Each driver
@@ -120,7 +135,7 @@ namespace trogdor::serial {
             Output:
                (none)
          */
-        virtual void writeToDisk(std::any data, std::string filename) = 0;
+         virtual void writeToDisk(std::any data, std::string filename) = 0;
    };
 }
 

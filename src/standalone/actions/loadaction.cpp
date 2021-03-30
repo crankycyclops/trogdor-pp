@@ -42,33 +42,15 @@ void LoadAction::execute(
       command.getDirectObject() : command.getIndirectObject();
    std::shared_ptr<trogdor::serial::Serializable> data;
 
+   // For now, we're defaulting to the SQLite3 driver if available
+   #ifdef ENABLE_SERIALIZE_SQLITE
+      trogdor::serial::Sqlite driver;
+   #else
+      trogdor::serial::Json driver;
+   #endif
+
    try {
-
-      // For now, we're defaulting to the SQLite3 driver if available
-      #ifdef ENABLE_SERIALIZE_SQLITE
-
-         trogdor::serial::Sqlite driver;
-         data = driver.deserialize(filename);
-
-      #else
-
-         trogdor::serial::Json driver;
-         ifstream inputFile(filename);
-
-         if (!inputFile.is_open()) {
-            player->out() << "Failed to load game state from " << filename << '.' << std::endl;
-            return;
-         }
-
-         std::string buffer;
-         ostringstream ss;
-
-         ss << inputFile.rdbuf();
-         buffer = ss.str();
-
-         data = driver.deserialize(buffer);
-
-      #endif
+      data = driver.deserializeFromDisk(filename);
    }
 
    catch (const trogdor::FileException &e) {
