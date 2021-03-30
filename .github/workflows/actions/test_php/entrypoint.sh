@@ -65,7 +65,7 @@ runTest() {
 #       Build trogdord       #
 ##############################
 
-cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_REDIS=ON -DENABLE_SERIALIZE_JSON=ON .
+cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_REDIS=ON -DENABLE_SERIALIZE_JSON=ON -DENABLE_SERIALIZE_SQLITE=ON .
 
 if [ $? -ne 0 ]; then
 	exit 1
