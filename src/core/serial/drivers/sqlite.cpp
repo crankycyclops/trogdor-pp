@@ -538,6 +538,11 @@ namespace trogdor::serial {
 
       sqlite3 *db;
 
+      // If we don't reset this each time we call serialize(), and the same
+      // instance of the driver is used more than once, bad things will happen.
+      // I know, because I spent hours debugging this very stupid thing.
+      lastRowId = 0;
+
       if (SQLITE_OK != sqlite3_open(":memory:", &db)) {
          throw Exception("Failed to initialize in-memory database");
       }
