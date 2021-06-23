@@ -46,6 +46,7 @@ If you're interested in writing your own client-side connector, or just want to 
 * [Standalone ASIO library](https://think-async.com/Asio/) >=1.10 (libasio-dev package on Ubuntu)
 * [INIH (INI Not Invented Here)](https://github.com/benhoyt/inih) (libinih1 and libinih-dev packages on Ubuntu)
 * [RapidJSON](https://rapidjson.org/) >= 1.1.0
+* [SQLite3](https://www.sqlite.org/) >= 3.0
 * [Hiredis](https://github.com/redis/hiredis) 0.13+ (optional, for Redis Pub/Sub support in trogdord)
 * The core library, installed as a shared object or DLL in a place where CMake can find it (corresponds to the trogdor build target)
 
@@ -60,6 +61,7 @@ make trogdord && make install
 
 To build trogdord with redis support, add `-DENABLE_REDIS=ON` to your cmake command above.
 To build trogdord with support for the JSON serialization format, add `-DENABLE_SERIALIZE_JSON=ON` to your cmake command above.
+To build trogdord with support for the SQLite3 serialization format, add `-DENABLE_SERIALIZE_SQLITE=ON` to your cmake command above.
 
 If you need debug symbols, add the following option to your cmake command: `-DCMAKE_BUILD_TYPE=Debug`. If you've already built it using debug symbols in the past and want to switch back to a release build, use this cmake option instead: `-DCMAKE_BUILD_TYPE=Release`.
 

@@ -92,9 +92,10 @@ Every new installation of trogdord includes the following default configuration 
 ; enabled=false
 
 ; This is the serialization format that should be used when saving a game's
-; state. By default, we use json (requires support for the JSON serialization
-; driver to be turned on during the compilation of the core library.)
+; state. The two built-in formats (if enabled during compilation) are json
+; and sqlite.
 ; format=json
+; format=sqlite
 
 ; This is the default path where game state is saved. Relative paths are based
 ; on the root directory where trogdord was installed.
