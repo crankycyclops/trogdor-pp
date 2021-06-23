@@ -4,6 +4,7 @@
 #include <trogdor/entities/player.h>
 
 #include "include/gamecontainer.h"
+#include "include/gamewrapper.h"
 #include "include/response.h"
 #include "include/serial/drivermap.h"
 
@@ -625,19 +626,16 @@ GameContainer::DumpData GameContainer::getDumpedGame(size_t id) {
 		STD_FILESYSTEM::path::preferred_separator + std::to_string(id) +
 		STD_FILESYSTEM::path::preferred_separator + "meta";
 
-	auto &serialDriver =
-		serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
-
-	std::shared_ptr<trogdor::serial::Serializable> metaData = serialDriver->deserializeFromDisk(gameMetaPath);
-
-	rapidjson::Value jsonData(rapidjson::kObjectType);
-	rapidjson::Value gName(rapidjson::kStringType);
-	rapidjson::Value gDefinition(rapidjson::kStringType);
+	std::unordered_map<std::string, std::string> metaData = GameWrapper::getDumpedGameMeta(gameMetaPath);
 
 	return {
-		std::get<std::string>(*metaData->get("name")),
-		std::get<std::string>(*metaData->get("definition")),
-		std::get<size_t>(*metaData->get("created"))
+		metaData["name"],
+		metaData["definition"],
+		#if SIZE_MAX == UINT64_MAX
+			stoull(metaData["created"])
+		#else
+			stoul(metaData["created"])
+		#endif
 	};
 }
 

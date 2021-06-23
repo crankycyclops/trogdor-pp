@@ -540,19 +540,33 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 					auto &json = serial::DriverMap::get("json");
 
+					// Make sure game meta data is validly dumped
+					std::unordered_map<std::string, std::string> metaData = GameWrapper::getDumpedGameMeta(metaFilename);
+
+					CHECK(metaData.end() != metaData.find("name"));
+					CHECK(metaData.end() != metaData.find("definition"));
+					CHECK(metaData.end() != metaData.find("created"));
+
+					CHECK(0 == name.compare(metaData["name"]));
+					CHECK(0 == STD_FILESYSTEM::path(definition).filename().compare(metaData["definition"]));
+					CHECK(0 == name.compare(metaData["name"]));
+
+					#if SIZE_MAX == UINT64_MAX
+						size_t created = stoull(metaData["created"]);
+					#else
+						size_t created = stoul(metaData["created"]);
+					#endif
+
+					// Validate that this field is a valid timestamp
+					CHECK(0 == std::to_string(created).compare(metaData["created"]));
+
 					// Make sure we can deserialize the game data properly.
 					// An uncaught exception will occur if deserialization
 					// is unsuccessful, causing the test case to fail.
-					ifstream metaFile(metaFilename);
 					ifstream gameFile(gameFilename);
-
-					ostringstream metaStr;
 					ostringstream gameStr;
 
-					metaStr << metaFile.rdbuf();
 					gameStr << gameFile.rdbuf();
-
-					std::shared_ptr<trogdor::serial::Serializable> metaData = json->deserialize(metaStr.str());
 					std::shared_ptr<trogdor::serial::Serializable> gameData = json->deserialize(gameStr.str());
 				}
 
@@ -1214,5 +1228,10 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 			initIniFile(iniFilename, {{}});
 
 		#endif
+	}
+
+	TEST_CASE("GameWrapper (gamewrapper.cpp): getDumpedGameMeta()") {
+
+		// TODO
 	}
 }

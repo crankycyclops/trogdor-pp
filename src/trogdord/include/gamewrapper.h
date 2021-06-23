@@ -37,12 +37,17 @@ class GameWrapper {
 		// of GameWrapper was instantiated
 		std::optional<size_t> restoredSlot;
 
-		// Returns a serialized version of all meta data associate with the
-		// GameWrapper instance.
-		std::shared_ptr<trogdor::serial::Serializable> serializeMeta();
+		// Save all meta data associate with the GameWrapper instance to an ini file.
+		void writeGameMeta(std::string);
 
 	public:
 
+		// Returns raw meta data associated with a dumped game
+		static std::unordered_map<std::string, std::string> getDumpedGameMeta(
+			const std::string &metaPath
+		);
+
+		// Constructor
 		GameWrapper() = delete;
 		GameWrapper(const GameWrapper &) = delete;
 

@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cstdint>
 
+#include <ini.h>
 #include <trogdor/parser/parsers/xmlparser.h>
 #include <trogdor/serial/serializable.h>
 
@@ -18,6 +19,45 @@
 
 #include "include/gamewrapper.h"
 
+
+std::unordered_map<std::string, std::string> GameWrapper::getDumpedGameMeta(
+	const std::string &metaPath
+) {
+
+	std::unordered_map<std::string, std::string> metaData;
+
+	if (ini_parse(metaPath.c_str(), [](
+		void *data,
+		const char *section,
+		const char *name,
+		const char *value
+	) -> int {
+
+		(*static_cast<std::unordered_map<std::string, std::string> *>(data))[name] = value;
+		return 1;
+
+	}, &metaData)) {
+		throw trogdor::UndefinedException("Can't parse dumped game's meta data");
+	}
+
+	return metaData;
+}
+
+/*****************************************************************************/
+
+void GameWrapper::writeGameMeta(std::string filename) {
+
+	std::ofstream iniFile(filename, std::ofstream::out);
+
+	iniFile << "[game]\n" << std::endl;
+	iniFile << "name=" << name << std::endl;
+	iniFile << "definition=" << definition << std::endl;
+	iniFile << "created=" << static_cast<size_t>(created) << std::endl;
+
+	iniFile.close();
+}
+
+/*****************************************************************************/
 
 GameWrapper::GameWrapper(
 	size_t gid,
@@ -92,6 +132,8 @@ gamePtr(nullptr) {
 	}
 
 	std::string metaPath = idPath + STD_FILESYSTEM::path::preferred_separator + "meta";
+	std::string formatPath = idPath + STD_FILESYSTEM::path::preferred_separator +
+		slotStr + STD_FILESYSTEM::path::preferred_separator + "format";
 	std::string gamePath = idPath + STD_FILESYSTEM::path::preferred_separator +
 		slotStr + STD_FILESYSTEM::path::preferred_separator + "game";
 
@@ -99,26 +141,43 @@ gamePtr(nullptr) {
 		!STD_FILESYSTEM::exists(metaPath) ||
 		STD_FILESYSTEM::is_directory(metaPath) ||
 		!STD_FILESYSTEM::exists(gamePath) ||
-		STD_FILESYSTEM::is_directory(gamePath)
+		STD_FILESYSTEM::is_directory(gamePath) ||
+		!STD_FILESYSTEM::exists(formatPath) ||
+		STD_FILESYSTEM::is_directory(formatPath)
 	) {
 		throw ServerException(
 			std::string("Attempted to restore an invalidly dumped game with id ") + idStr
 		);
 	}
 
-	auto &serialDriver =
-		serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
+	std::ifstream formatFile(formatPath);
 
-	std::shared_ptr<trogdor::serial::Serializable> metaData = serialDriver->deserializeFromDisk(metaPath);
+	std::string format(
+		(std::istreambuf_iterator<char>(formatFile)),
+		std::istreambuf_iterator<char>()
+	);
+
+	formatFile.close();
+
+	// Read in the game's static meta data
+	std::unordered_map<std::string, std::string> metaData = getDumpedGameMeta(metaPath);
+
+	// Deserialize game data
+	auto &serialDriver = serial::DriverMap::get(format);
 	std::shared_ptr<trogdor::serial::Serializable> gameData = serialDriver->deserializeFromDisk(gamePath);
 
 	gameMutex.lock();
 
-	// Deserialize meta data associated with the GameWrapper instance
-	id = std::get<size_t>(*metaData->get("id"));
-	name = std::get<std::string>(*metaData->get("name"));
-	definition = std::get<std::string>(*metaData->get("definition"));
-	created = static_cast<time_t>(std::get<size_t>(*metaData->get("created")));
+	name = metaData["name"];
+	definition = metaData["definition"];
+
+	#if SIZE_MAX == UINT64_MAX
+		id = stoull(idStr);
+		created = static_cast<time_t>(stoull(metaData["created"]));
+	#else
+		id = stoul(idStr);
+		created = static_cast<time_t>(stoul(metaData["created"]));
+	#endif
 
 	gamePtr = std::make_unique<trogdor::Game>(
 		gameData,
@@ -135,21 +194,6 @@ gamePtr(nullptr) {
 	}
 
 	gameMutex.unlock();
-}
-
-/*****************************************************************************/
-
-std::shared_ptr<trogdor::serial::Serializable> GameWrapper::serializeMeta() {
-
-	std::shared_ptr<trogdor::serial::Serializable> meta =
-		std::make_shared<trogdor::serial::Serializable>();
-
-	meta->set("id", id);
-	meta->set("name", name);
-	meta->set("definition", definition);
-	meta->set("created", static_cast<size_t>(created));
-
-	return meta;
 }
 
 /*****************************************************************************/
@@ -175,12 +219,9 @@ size_t GameWrapper::dump() {
 
 		STD_FILESYSTEM::create_directory(gameStatePath);
 
-		// Serialized GameWrapper-specific data (this data doesn't change, so we
+		// Save GameWrapper-specific data (this data doesn't change, so we
 		// store it in the id directory instead of with each dump slot.)
-		driver->writeToDisk(
-			driver->serialize(serializeMeta()),
-			gameStatePath + STD_FILESYSTEM::path::preferred_separator + "meta"
-		);
+		writeGameMeta(gameStatePath + STD_FILESYSTEM::path::preferred_separator + "meta");
 	}
 
 	else {
