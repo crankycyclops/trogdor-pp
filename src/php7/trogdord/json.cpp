@@ -1,6 +1,7 @@
 #include <string>
 #include <sstream>
 #include <regex>
+#include <unordered_map>
 
 #include <rapidjson/writer.h>
 #include <rapidjson/error/en.h>
@@ -8,7 +9,11 @@
 #include <boost/algorithm/string.hpp>
 
 #include "json.h"
+#include "utility.h"
 #include "exception/jsonexception.h"
+
+// TODO: remove
+#include <iostream>
 
 
 // Private and called internally by JSONToZval
@@ -305,6 +310,29 @@ Value JSON::ZvalToJSONValue(Document &result, zval *z, int depth) {
 	}
 
 	return root;
+}
+
+/*****************************************************************************/
+
+std::string JSON::escape(const std::string &value) {
+
+	static const std::unordered_map<std::string, std::string> replacements = {
+		{"\b", "\\b"},
+		{"\f", "\\f"},
+		{"\n", "\\n"},
+		{"\r", "\\r"},
+		{"\t", "\\t"},
+		{"\"", "\\\""},
+		{"\\", "\\\\"}
+	};
+
+	std::string escaped = value;
+
+	for (const auto &replacement: replacements) {
+		strReplace(escaped, replacement.first, replacement.second);
+	}
+
+	return escaped;
 }
 
 /*****************************************************************************/

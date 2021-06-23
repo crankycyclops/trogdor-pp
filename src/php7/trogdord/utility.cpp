@@ -4,12 +4,12 @@
 
 bool strReplace(std::string &str, const std::string &substr, const std::string &replacement) {
 
-	size_t start = str.find(substr);
+	bool matched = false;
 
-	if (start == std::string::npos) {
-		return false;
+	for (size_t i = str.find(substr); i != std::string::npos; i = str.find(substr, i + replacement.length())) {
+		str.replace(i, substr.length(), replacement);
+		matched = true;
 	}
 
-	str.replace(start, substr.length(), replacement);
-	return true;
+	return matched;
 }

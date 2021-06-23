@@ -560,8 +560,8 @@ PHP_METHOD(Trogdord, newGame) {
 	try {
 
 		std::string request = NEW_GAME_REQUEST;
-		strReplace(request, "%name", name);
-		strReplace(request, "%definition", definition);
+		strReplace(request, "%name", JSON::escape(name));
+		strReplace(request, "%definition", JSON::escape(definition));
 		strReplace(request, "%meta", metaArg);
 
 		Document response = Request::execute(

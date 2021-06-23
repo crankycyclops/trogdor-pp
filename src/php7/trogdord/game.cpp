@@ -599,7 +599,8 @@ PHP_METHOD(Game, getMeta) {
 				metaArg += ",";
 			}
 
-			metaArg += std::string("\"") + Z_STRVAL_P(entry) + "\"";
+			std::string value = Z_STRVAL_P(entry);
+			metaArg += std::string("\"") + JSON::escape(value) + "\"";
 		}
 
 		metaArg += "]";
@@ -713,7 +714,7 @@ PHP_METHOD(Game, setMeta) {
 			valuesArg += ",";
 		}
 
-		valuesArg += std::string("\"") + key + "\":\"" + value + "\"";
+		valuesArg += std::string("\"") + JSON::escape(key) + "\":\"" + JSON::escape(value) + "\"";
 	}
 
 	try {
@@ -2006,8 +2007,8 @@ static zval getEntity(std::string name, std::string type, zval *game) {
 	zval *gameId = GAME_TO_ID(game, &rv);
 	zval *trogdord = GAME_TO_TROGDORD(game, &rv);
 
-	strReplace(request, "%etype", type);
-	strReplace(request, "%ename", name);
+	strReplace(request, "%etype", JSON::escape(type));
+	strReplace(request, "%ename", JSON::escape(name));
 	strReplace(request, "%gid", std::to_string(
 		IS_LONG == Z_TYPE_P(gameId) ? Z_LVAL_P(gameId) : static_cast<int>(Z_DVAL_P(gameId))
 	));

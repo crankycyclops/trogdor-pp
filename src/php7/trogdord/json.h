@@ -54,6 +54,9 @@ class JSON {
 
 	public:
 
+		// Escapes a string so that it can be inserted into raw JSON
+		static std::string escape(const std::string &value);
+
 		// Document -> JSON string
 		static std::string serialize(Document document);
 

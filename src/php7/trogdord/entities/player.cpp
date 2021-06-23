@@ -112,8 +112,8 @@ PHP_METHOD(Player, destroy) {
 
 		std::string request = PLAYER_DESTROY_REQUEST;
 		strReplace(request, "%gid", std::to_string(Z_LVAL_P(gameId)));
-		strReplace(request, "%pname", Z_STRVAL_P(pName));
-		strReplace(request, "%msgarg", removeMsgLen ? std::string(",\"message\":\"") + removeMsg + "\"" : "");
+		strReplace(request, "%pname", JSON::escape(std::string(Z_STRVAL_P(pName))));
+		strReplace(request, "%msgarg", removeMsgLen ? std::string(",\"message\":\"") + JSON::escape(removeMsg) + "\"" : "");
 
 		trogdordObject *trogdordObjWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(trogdord));
 
@@ -203,7 +203,7 @@ static void sendPlayerInput(zval *entityObj, std::string command) {
 	std::string request = PLAYER_POST_INPUT_REQUEST;
 
 	strReplace(request, "%gid", std::to_string(Z_LVAL_P(GAME_TO_ID(gameObj, &rv))));
-	strReplace(request, "%ename", Z_STRVAL_P(ENTITY_TO_NAME(entityObj, &rv)));
+	strReplace(request, "%ename", JSON::escape(std::string(Z_STRVAL_P(ENTITY_TO_NAME(entityObj, &rv)))));
 	strReplace(request, "%input", command);
 
 	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(GAME_TO_TROGDORD(gameObj, &rv)));

@@ -189,8 +189,8 @@ static zval getEntityOutput(zval *entityObj, std::string channel) {
 	std::string request = ENTITY_GET_OUTPUT_REQUEST;
 
 	strReplace(request, "%gid", std::to_string(Z_LVAL_P(GAME_TO_ID(gameObj, &rv))));
-	strReplace(request, "%ename", Z_STRVAL_P(ENTITY_TO_NAME(entityObj, &rv)));
-	strReplace(request, "%channel", channel);
+	strReplace(request, "%ename", JSON::escape(std::string(Z_STRVAL_P(ENTITY_TO_NAME(entityObj, &rv)))));
+	strReplace(request, "%channel", JSON::escape(channel));
 
 	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(GAME_TO_TROGDORD(gameObj, &rv)));
 
@@ -214,9 +214,9 @@ static void appendToEntityOutput(zval *entityObj, std::string channel, std::stri
 	std::string request = ENTITY_POST_OUTPUT_REQUEST;
 
 	strReplace(request, "%gid", std::to_string(Z_LVAL_P(GAME_TO_ID(gameObj, &rv))));
-	strReplace(request, "%ename", Z_STRVAL_P(ENTITY_TO_NAME(entityObj, &rv)));
-	strReplace(request, "%channel", channel);
-	strReplace(request, "%output", message);
+	strReplace(request, "%ename", JSON::escape(std::string(Z_STRVAL_P(ENTITY_TO_NAME(entityObj, &rv)))));
+	strReplace(request, "%channel", JSON::escape(channel));
+	strReplace(request, "%output", JSON::escape(message));
 
 	trogdordObject *objWrapper = ZOBJ_TO_TROGDORD(Z_OBJ_P(GAME_TO_TROGDORD(gameObj, &rv)));
 
