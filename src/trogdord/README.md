@@ -46,7 +46,7 @@ If you're interested in writing your own client-side connector, or just want to 
 * [Standalone ASIO library](https://think-async.com/Asio/) >=1.10 (libasio-dev package on Ubuntu)
 * [INIH (INI Not Invented Here)](https://github.com/benhoyt/inih) (libinih1 and libinih-dev packages on Ubuntu)
 * [RapidJSON](https://rapidjson.org/) >= 1.1.0
-* [SQLite3](https://www.sqlite.org/) >= 3.0
+* [SQLite](https://www.sqlite.org/) >= 3.0
 * [Hiredis](https://github.com/redis/hiredis) 0.13+ (optional, for Redis Pub/Sub support in trogdord)
 * The core library, installed as a shared object or DLL in a place where CMake can find it (corresponds to the trogdor build target)
 
