@@ -209,6 +209,15 @@ size_t GameWrapper::dump() {
 	timestampFile << std::to_string(ms.count());
 	timestampFile.close();
 
+	// Records the dump slot's format
+	fstream formatFile(
+		gameStateSnapshotPath + STD_FILESYSTEM::path::preferred_separator + "format",
+		std::fstream::out
+	);
+
+	formatFile << driverName;
+	formatFile.close();
+
 	// Serialize game data and write it to disk
 	driver->writeToDisk(
 		driver->serialize(gamePtr->serialize()),

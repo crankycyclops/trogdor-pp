@@ -3515,4 +3515,9 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			STD_FILESYSTEM::remove_all(statePath);
 		}
 	}
+
+	TEST_CASE("GameContainer (gamecontainer.cpp): getDumpedGameSlots()") {
+
+		// TODO
+	}
 }

@@ -24,10 +24,13 @@ void GameContainer::getDumpedGameSlots(
 	for (const auto &subdir: STD_FILESYSTEM::directory_iterator(gameIdPath)) {
 
 		std::string slot = subdir.path().filename();
+
 		std::string gameFname = gameIdPath + STD_FILESYSTEM::path::preferred_separator +
 			slot + STD_FILESYSTEM::path::preferred_separator + "game";
 		std::string timestampFname = gameIdPath + STD_FILESYSTEM::path::preferred_separator +
 			slot + STD_FILESYSTEM::path::preferred_separator + "timestamp";
+		std::string formatFname = gameIdPath + STD_FILESYSTEM::path::preferred_separator +
+			slot + STD_FILESYSTEM::path::preferred_separator + "format";
 
 		// Skip over obviously invalid files and directories
 		if (
@@ -36,6 +39,12 @@ void GameContainer::getDumpedGameSlots(
 			!STD_FILESYSTEM::exists(gameFname) ||
 			!STD_FILESYSTEM::is_regular_file(gameFname)
 		) {
+			continue;
+		}
+
+		// If no format is specified, then the slot is invalid (I'm not
+		// going to rigorously check this, though)
+		else if (!STD_FILESYSTEM::exists(formatFname)) {
 			continue;
 		}
 

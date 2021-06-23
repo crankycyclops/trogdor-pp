@@ -508,12 +508,15 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 					std::string timestampFilename = gameStateSlotPath +
 						STD_FILESYSTEM::path::preferred_separator + "timestamp";
+					std::string formatFilename = gameStateSlotPath +
+						STD_FILESYSTEM::path::preferred_separator + "format";
 					std::string metaFilename = gameStatePath +
 						STD_FILESYSTEM::path::preferred_separator + "meta";
 					std::string gameFilename = gameStateSlotPath +
 						STD_FILESYSTEM::path::preferred_separator + "game";
 
 					CHECK(STD_FILESYSTEM::exists(timestampFilename));
+					CHECK(STD_FILESYSTEM::exists(formatFilename));
 					CHECK(STD_FILESYSTEM::exists(metaFilename));
 					CHECK(STD_FILESYSTEM::exists(gameFilename));
 
@@ -525,6 +528,15 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 
 					// Make sure the timestamp file really contains a timestamp
 					CHECK(trogdor::isValidInteger(timeStr));
+
+					std::ifstream formatFile(formatFilename);
+					std::string formatStr(
+						(std::istreambuf_iterator<char>(formatFile)),
+						std::istreambuf_iterator<char>()
+					);
+
+					// Make sure format was correctly recorded
+					CHECK(0 == formatStr.compare("json"));
 
 					auto &json = serial::DriverMap::get("json");
 
@@ -877,6 +889,7 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 			std::string slotPath = gameStatePath.string() + STD_FILESYSTEM::path::preferred_separator + '0';
 			std::string metaDataPath = gameStatePath.string() + STD_FILESYSTEM::path::preferred_separator + "meta";
 			std::string timestampDataPath = slotPath + STD_FILESYSTEM::path::preferred_separator + "timestamp";
+			std::string formatDataPath = slotPath + STD_FILESYSTEM::path::preferred_separator + "format";
 			std::string gameDataPath = slotPath + STD_FILESYSTEM::path::preferred_separator + "game";
 
 			STD_FILESYSTEM::create_directory(slotPath);
@@ -884,6 +897,10 @@ TEST_SUITE("GameWrapper (gamewrapper.cpp)") {
 			fstream timestampFile(timestampDataPath, std::fstream::out);
 			timestampFile << "0" << std::endl;
 			timestampFile.close();
+
+			fstream formatFile(formatDataPath, std::fstream::out);
+			formatFile << "json" << std::endl;
+			formatFile.close();
 
 			fstream metaFile(metaDataPath, std::fstream::out);
 			metaFile << "I'm not valid JSON!" << std::endl;
