@@ -619,14 +619,7 @@ GameContainer::DumpData GameContainer::getDumpedGame(size_t id) {
 	auto &serialDriver =
 		serial::DriverMap::get(Config::get()->getString(Config::CONFIG_KEY_STATE_FORMAT));
 
-	std::ifstream metaFile(gameMetaPath);
-	std::string metaStr(
-		(std::istreambuf_iterator<char>(metaFile)),
-		std::istreambuf_iterator<char>()
-	);
-
-	std::shared_ptr<trogdor::serial::Serializable> metaData =
-		serialDriver->deserialize(metaStr);
+	std::shared_ptr<trogdor::serial::Serializable> metaData = serialDriver->deserializeFromDisk(gameMetaPath);
 
 	rapidjson::Value jsonData(rapidjson::kObjectType);
 	rapidjson::Value gName(rapidjson::kStringType);
