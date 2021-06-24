@@ -53,6 +53,13 @@ install(DIRECTORY src/core/include/trogdor DESTINATION include COMPONENT dev)
 
 ###############################################################################
 
+# C++ Include files necessary to develop for trogdord extensions
+add_custom_target(trogdord_dev)
+
+install(DIRECTORY src/trogdord/include/trogdord DESTINATION include COMPONENT trogdord_dev)
+
+###############################################################################
+
 # Sample game data
 add_custom_target(data)
 
