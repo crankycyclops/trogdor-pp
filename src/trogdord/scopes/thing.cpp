@@ -1,7 +1,7 @@
 #include <trogdor/game.h>
 
-#include "../include/scopes/thing.h"
-#include "../include/exception/entity/thingnotfound.h"
+#include <trogdord/scopes/thing.h>
+#include <trogdord/exception/entity/thingnotfound.h>
 
 
 // Singleton instance of ThingController

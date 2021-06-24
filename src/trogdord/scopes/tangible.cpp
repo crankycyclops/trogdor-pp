@@ -1,7 +1,7 @@
 #include <trogdor/game.h>
 
-#include "../include/scopes/tangible.h"
-#include "../include/exception/entity/tangiblenotfound.h"
+#include <trogdord/scopes/tangible.h>
+#include <trogdord/exception/entity/tangiblenotfound.h>
 
 
 // Singleton instance of TangibleController

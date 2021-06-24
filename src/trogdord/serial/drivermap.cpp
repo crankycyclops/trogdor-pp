@@ -1,5 +1,5 @@
-#include "../include/serial/drivermap.h"
-#include "../include/exception/serialdrivernotfound.h"
+#include <trogdord/serial/drivermap.h>
+#include <trogdord/exception/serialdrivernotfound.h>
 
 #ifdef ENABLE_SERIALIZE_JSON
 	#include <trogdor/serial/drivers/json.h>

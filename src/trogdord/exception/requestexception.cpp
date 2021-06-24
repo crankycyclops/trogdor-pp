@@ -1,4 +1,4 @@
-#include "../include/exception/requestexception.h"
+#include <trogdord/exception/requestexception.h>
 
 
 RequestException::RequestException(const std::string &what_arg): ServerException(what_arg) {

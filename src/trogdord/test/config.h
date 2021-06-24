@@ -4,8 +4,8 @@
 
 #include <fstream>
 
-#include "../include/config.h"
-#include "../include/filesystem.h"
+#include <trogdord/config.h>
+#include <trogdord/filesystem.h>
 
 
 inline void initIniFile(std::string iniFilename, std::unordered_map<std::string, std::string> values) {

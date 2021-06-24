@@ -1,9 +1,9 @@
 #include <doctest.h>
 #include "../mock/mockscope.h"
 
-#include "../include/json.h"
-#include "../include/request.h"
-#include "../include/response.h"
+#include <trogdord/json.h>
+#include <trogdord/request.h>
+#include <trogdord/response.h>
 
 
 TEST_SUITE("Controller (scopes/controller.cpp)") {

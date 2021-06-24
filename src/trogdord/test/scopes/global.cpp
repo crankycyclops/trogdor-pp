@@ -3,14 +3,14 @@
 
 #include "../config.h"
 
-#include "../../include/json.h"
-#include "../../include/request.h"
-#include "../../include/response.h"
+#include <trogdord/json.h>
+#include <trogdord/request.h>
+#include <trogdord/response.h>
 
-#include "../../include/version.h"
-#include "../../include/scopes/global.h"
+#include <trogdord/version.h>
+#include <trogdord/scopes/global.h>
 
-#include "../../include/gamecontainer.h"
+#include <trogdord/gamecontainer.h>
 
 
 TEST_SUITE("GlobalController (scopes/global.cpp)") {

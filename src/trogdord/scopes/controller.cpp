@@ -1,8 +1,8 @@
 #include <optional>
 
-#include "../include/json.h"
-#include "../include/response.h"
-#include "../include/scopes/controller.h"
+#include <trogdord/json.h>
+#include <trogdord/response.h>
+#include <trogdord/scopes/controller.h>
 
 
 void ScopeController::registerAction(

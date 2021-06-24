@@ -1,5 +1,5 @@
 #include <functional>
-#include "../../include/dispatcher.h"
+#include <trogdord/dispatcher.h>
 
 #ifndef MOCK_DISPATCHER_H
 #define MOCK_DISPATCHER_H

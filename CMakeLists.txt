@@ -293,6 +293,8 @@ if (INIH_INCLUDEDIR)
 
 	if (HAVE_ASIO)
 
+
+
 		set(TROGDORD_SOURCES
 			src/trogdord/config.cpp
 			src/trogdord/filesystem.cpp
@@ -327,6 +329,7 @@ if (INIH_INCLUDEDIR)
 
 		set(TROGDORD_INCLUDES
 			PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
+			PUBLIC ${PROJECT_SOURCE_DIR}/src/trogdord/include
 			PUBLIC ${INIH_INCLUDEDIR}
 		)
 
@@ -346,6 +349,7 @@ if (INIH_INCLUDEDIR)
 
 			target_include_directories(trogdord_redis
 				PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
+				PUBLIC ${PROJECT_SOURCE_DIR}/src/trogdord/include
 			)
 
 		endif (ENABLE_REDIS)
@@ -539,7 +543,10 @@ if (INIH_INCLUDEDIR)
 
 	if (ENABLE_REDIS)
 
-		target_include_directories(test_trogdord PUBLIC ${HIREDIS_INCLUDE_DIRS})
+		target_include_directories(test_trogdord
+			PUBLIC ${HIREDIS_INCLUDE_DIRS}
+			PUBLIC ${PROJECT_SOURCE_DIR}/src/trogdord/include
+		)
 
 		target_link_libraries(test_trogdord
 			PUBLIC trogdord_redis

@@ -1,7 +1,7 @@
 #include <trogdor/game.h>
 
-#include "../include/scopes/being.h"
-#include "../include/exception/entity/beingnotfound.h"
+#include <trogdord/scopes/being.h>
+#include <trogdord/exception/entity/beingnotfound.h>
 
 
 // Singleton instance of BeingController

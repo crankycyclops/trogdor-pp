@@ -1,10 +1,10 @@
-#include "../../include/config.h"
-#include "../../include/exception/outputdrivernotfound.h"
+#include <trogdord/config.h>
+#include <trogdord/exception/outputdrivernotfound.h>
 
-#include "../../include/io/output/local.h"
+#include <trogdord/io/output/local.h>
 
 #ifdef ENABLE_REDIS
-	#include "../../include/io/output/redis.h"
+	#include <trogdord/io/output/redis.h>
 #endif
 
 namespace output {

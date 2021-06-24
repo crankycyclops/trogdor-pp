@@ -1,13 +1,13 @@
 #include <rapidjson/pointer.h>
 #include <trogdor/entities/entity.h>
 
-#include "../include/request.h"
-#include "../include/gamecontainer.h"
-#include "../include/io/output/driver.h"
+#include <trogdord/request.h>
+#include <trogdord/gamecontainer.h>
+#include <trogdord/io/output/driver.h>
 
-#include "../include/scopes/entity.h"
-#include "../include/exception/unsupportedoperation.h"
-#include "../include/exception/entity/entitynotfound.h"
+#include <trogdord/scopes/entity.h>
+#include <trogdord/exception/unsupportedoperation.h>
+#include <trogdord/exception/entity/entitynotfound.h>
 
 
 // Singleton instance of EntityController

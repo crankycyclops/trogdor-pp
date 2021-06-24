@@ -4,13 +4,13 @@
 #include <trogdor/utility.h>
 #include <trogdor/filesystem.h>
 
-#include "../include/request.h"
-#include "../include/gamecontainer.h"
-#include "../include/filesystem.h"
-#include "../include/serial/drivermap.h"
+#include <trogdord/request.h>
+#include <trogdord/gamecontainer.h>
+#include <trogdord/filesystem.h>
+#include <trogdord/serial/drivermap.h>
 
-#include "../include/scopes/game.h"
-#include "../include/exception/gameslotnotfound.h"
+#include <trogdord/scopes/game.h>
+#include <trogdord/exception/gameslotnotfound.h>
 
 
 // Singleton instance of GameController

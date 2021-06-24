@@ -1,7 +1,7 @@
 #include <trogdor/game.h>
 
-#include "../include/scopes/resource.h"
-#include "../include/exception/entity/resourcenotfound.h"
+#include <trogdord/scopes/resource.h>
+#include <trogdord/exception/entity/resourcenotfound.h>
 
 
 // Singleton instance of ResourceController

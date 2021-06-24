@@ -1,6 +1,6 @@
-#include "../../include/config.h"
-#include "../../include/io/output/redis.h"
-#include "../../include/exception/unsupportedoperation.h"
+#include <trogdord/config.h>
+#include <trogdord/io/output/redis.h>
+#include <trogdord/exception/unsupportedoperation.h>
 
 namespace output {
 

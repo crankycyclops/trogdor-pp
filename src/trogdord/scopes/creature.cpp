@@ -1,7 +1,7 @@
 #include <trogdor/game.h>
 
-#include "../include/scopes/creature.h"
-#include "../include/exception/entity/creaturenotfound.h"
+#include <trogdord/scopes/creature.h>
+#include <trogdord/exception/entity/creaturenotfound.h>
 
 
 // Singleton instance of CreatureController

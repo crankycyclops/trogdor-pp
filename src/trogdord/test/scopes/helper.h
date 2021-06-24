@@ -8,19 +8,19 @@
 
 #include <trogdor/utility.h>
 
-#include "../../include/json.h"
-#include "../../include/request.h"
-#include "../../include/response.h"
-#include "../../include/config.h"
-#include "../../include/filesystem.h"
-#include "../../include//gamecontainer.h"
+#include <trogdord/json.h>
+#include <trogdord/request.h>
+#include <trogdord/response.h>
+#include <trogdord/config.h>
+#include <trogdord/filesystem.h>
+#include <trogdord//gamecontainer.h>
 
-#include "../../include/scopes/game.h"
-#include "../../include/scopes/player.h"
-#include "../../include/scopes/resource.h"
-#include "../../include/scopes/object.h"
-#include "../../include/scopes/room.h"
-#include "../../include/scopes/creature.h"
+#include <trogdord/scopes/game.h>
+#include <trogdord/scopes/player.h>
+#include <trogdord/scopes/resource.h>
+#include <trogdord/scopes/object.h>
+#include <trogdord/scopes/room.h>
+#include <trogdord/scopes/creature.h>
 
 
 // Number of ms between clock ticks (make this value small enough to ensure

@@ -1,9 +1,9 @@
 #include <trogdor/version.h>
 
-#include "../include/version.h"
-#include "../include/request.h"
-#include "../include/gamecontainer.h"
-#include "../include/scopes/global.h"
+#include <trogdord/version.h>
+#include <trogdord/request.h>
+#include <trogdord/gamecontainer.h>
+#include <trogdord/scopes/global.h>
 
 
 // Singleton instance of GlobalController

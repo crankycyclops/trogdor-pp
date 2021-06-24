@@ -3,12 +3,12 @@
 
 #include <trogdor/entities/player.h>
 
-#include "include/gamecontainer.h"
-#include "include/gamewrapper.h"
-#include "include/response.h"
-#include "include/serial/drivermap.h"
+#include <trogdord/gamecontainer.h>
+#include <trogdord/gamewrapper.h>
+#include <trogdord/response.h>
+#include <trogdord/serial/drivermap.h>
 
-#include "include/io/iostream/serverout.h"
+#include <trogdord/io/iostream/serverout.h>
 
 
 // Singleton instance of GameContainer

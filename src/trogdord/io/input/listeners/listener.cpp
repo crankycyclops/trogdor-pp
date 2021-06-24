@@ -1,9 +1,9 @@
 #include <rapidjson/pointer.h>
 #include <trogdor/entities/player.h>
 
-#include "../../../include/json.h"
-#include "../../../include/gamecontainer.h"
-#include "../../../include/io/input/listeners/listener.h"
+#include <trogdord/json.h>
+#include <trogdord/gamecontainer.h>
+#include <trogdord/io/input/listeners/listener.h>
 
 namespace input {
 

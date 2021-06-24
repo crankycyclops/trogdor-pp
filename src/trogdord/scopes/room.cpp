@@ -1,7 +1,7 @@
 #include <trogdor/game.h>
 
-#include "../include/scopes/room.h"
-#include "../include/exception/entity/roomnotfound.h"
+#include <trogdord/scopes/room.h>
+#include <trogdord/exception/entity/roomnotfound.h>
 
 
 // Singleton instance of RoomController

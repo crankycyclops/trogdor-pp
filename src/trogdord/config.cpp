@@ -5,8 +5,8 @@
 #include <trogdor/utility.h>
 #include <trogdor/filesystem.h>
 
-#include "include/config.h"
-#include "include/filesystem.h"
+#include <trogdord/config.h>
+#include <trogdord/filesystem.h>
 
 #ifndef TROGDORD_INI_PATH
 	#define TROGDORD_INI_PATH ""

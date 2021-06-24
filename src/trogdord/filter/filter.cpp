@@ -1,7 +1,7 @@
 #include <regex>
 
-#include "../include/filter/filter.h"
-#include "../include/exception/filterexception.h"
+#include <trogdord/filter/filter.h>
+#include <trogdord/exception/filterexception.h>
 
 
 Filter Filter::makeFilter(std::string type, const rapidjson::Value &value) {

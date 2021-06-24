@@ -2,7 +2,7 @@
 #define MOCK_SCOPE_H
 
 
-#include "../../include/scopes/controller.h"
+#include <trogdord/scopes/controller.h>
 
 
 class MockScopeController: public ScopeController {

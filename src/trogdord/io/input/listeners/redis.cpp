@@ -1,5 +1,5 @@
-#include "../../../include/config.h"
-#include "../../../include/io/input/listeners/redis.h"
+#include <trogdord/config.h>
+#include <trogdord/io/input/listeners/redis.h>
 
 namespace input {
 

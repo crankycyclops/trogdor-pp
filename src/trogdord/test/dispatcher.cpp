@@ -1,11 +1,11 @@
 #include <doctest.h>
 
+#include <trogdord/json.h>
+#include <trogdord/request.h>
+#include <trogdord/response.h>
+
 #include "mock/mockscope.h"
 #include "mock/mockdispatcher.h"
-
-#include "../include/json.h"
-#include "../include/request.h"
-#include "../include/response.h"
 
 
 TEST_SUITE("Dispatcher (dispatcher.cpp") {

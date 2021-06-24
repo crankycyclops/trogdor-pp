@@ -4,9 +4,9 @@
 
 #include <asio.hpp>
 
-#include "../include/network/tcpcommon.h"
-#include "../include/network/tcpconnection.h"
-#include "../include/network/tcpserver.h"
+#include <trogdord/network/tcpcommon.h>
+#include <trogdord/network/tcpconnection.h>
+#include <trogdord/network/tcpserver.h>
 
 
 TCPConnection::TCPConnection(asio::io_service &io_service, TCPServer *s):

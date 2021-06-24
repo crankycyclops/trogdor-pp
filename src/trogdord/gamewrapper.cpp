@@ -6,18 +6,18 @@
 #include <trogdor/parser/parsers/xmlparser.h>
 #include <trogdor/serial/serializable.h>
 
-#include "include/config.h"
-#include "include/filesystem.h"
-#include "include/gamecontainer.h"
-#include "include/serial/drivermap.h"
-#include "include/io/iostream/serverout.h"
+#include <trogdord/config.h>
+#include <trogdord/filesystem.h>
+#include <trogdord/gamecontainer.h>
+#include <trogdord/serial/drivermap.h>
+#include <trogdord/io/iostream/serverout.h>
 
-#include "include/exception/serverexception.h"
-#include "include/exception/unsupportedoperation.h"
-#include "include/exception/gamenotfound.h"
-#include "include/exception/gameslotnotfound.h"
+#include <trogdord/exception/serverexception.h>
+#include <trogdord/exception/unsupportedoperation.h>
+#include <trogdord/exception/gamenotfound.h>
+#include <trogdord/exception/gameslotnotfound.h>
 
-#include "include/gamewrapper.h"
+#include <trogdord/gamewrapper.h>
 
 
 std::unordered_map<std::string, std::string> GameWrapper::getDumpedGameMeta(

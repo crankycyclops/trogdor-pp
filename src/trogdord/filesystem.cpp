@@ -1,5 +1,5 @@
 #include <cstdio>
-#include "include/filesystem.h"
+#include <trogdord/filesystem.h>
 
 
 // Our quick and dirty method of determining whether or not a trogdord process

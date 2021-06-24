@@ -8,15 +8,15 @@
 
 #include "config.h"
 
-#include "../include/gamewrapper.h"
-#include "../include/filesystem.h"
-#include "../include/serial/drivermap.h"
+#include <trogdord/gamewrapper.h>
+#include <trogdord/filesystem.h>
+#include <trogdord/serial/drivermap.h>
 
-#include "../include/exception/serverexception.h"
-#include "../include/exception/unsupportedoperation.h"
-#include "../include/exception/serialdrivernotfound.h"
-#include "../include/exception/gamenotfound.h"
-#include "../include/exception/gameslotnotfound.h"
+#include <trogdord/exception/serverexception.h>
+#include <trogdord/exception/unsupportedoperation.h>
+#include <trogdord/exception/serialdrivernotfound.h>
+#include <trogdord/exception/gamenotfound.h>
+#include <trogdord/exception/gameslotnotfound.h>
 
 
 TEST_SUITE("GameWrapper (gamewrapper.cpp)") {

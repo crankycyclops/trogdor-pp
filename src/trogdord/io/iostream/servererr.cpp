@@ -2,7 +2,7 @@
 #include <iomanip>
 #include <memory>
 
-#include "../../include/io/iostream/servererr.h"
+#include <trogdord/io/iostream/servererr.h>
 
 
 ServerErr::~ServerErr() {}

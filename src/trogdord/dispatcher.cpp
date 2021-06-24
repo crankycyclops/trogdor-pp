@@ -1,19 +1,19 @@
 #include <trogdor/utility.h>
 
-#include "include/json.h"
-#include "include/config.h"
+#include <trogdord/json.h>
+#include <trogdord/config.h>
 
-#include "include/dispatcher.h"
-#include "include/response.h"
-#include "include/exception/requestexception.h"
+#include <trogdord/dispatcher.h>
+#include <trogdord/response.h>
+#include <trogdord/exception/requestexception.h>
 
-#include "include/scopes/global.h"
-#include "include/scopes/game.h"
-#include "include/scopes/resource.h"
-#include "include/scopes/room.h"
-#include "include/scopes/object.h"
-#include "include/scopes/creature.h"
-#include "include/scopes/player.h"
+#include <trogdord/scopes/global.h>
+#include <trogdord/scopes/game.h>
+#include <trogdord/scopes/resource.h>
+#include <trogdord/scopes/room.h>
+#include <trogdord/scopes/object.h>
+#include <trogdord/scopes/creature.h>
+#include <trogdord/scopes/player.h>
 
 
 // Singleton instance of Dispatcher

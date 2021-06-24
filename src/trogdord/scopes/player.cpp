@@ -1,11 +1,11 @@
 #include <rapidjson/pointer.h>
 #include <trogdor/exception/duplicateentity.h>
 
-#include "../include/request.h"
-#include "../include/gamecontainer.h"
+#include <trogdord/request.h>
+#include <trogdord/gamecontainer.h>
 
-#include "../include/scopes/player.h"
-#include "../include/exception/entity/playernotfound.h"
+#include <trogdord/scopes/player.h>
+#include <trogdord/exception/entity/playernotfound.h>
 
 
 // Singleton instance of PlayerController

@@ -1,7 +1,7 @@
-#include "../../include/config.h"
-#include "../../include/io/output/driver.h"
-#include "../../include/io/iostream/serverout.h"
-#include "../../include/exception/serverexception.h"
+#include <trogdord/config.h>
+#include <trogdord/io/output/driver.h>
+#include <trogdord/io/iostream/serverout.h>
+#include <trogdord/exception/serverexception.h>
 
 
 void ServerOut::flush() {

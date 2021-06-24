@@ -3,9 +3,9 @@
 #include "config.h"
 #include "scopes/helper.h"
 
-#include "../include/gamecontainer.h"
-#include "../include/exception/unsupportedoperation.h"
-#include "../include/exception/gameslotnotfound.h"
+#include <trogdord/gamecontainer.h>
+#include <trogdord/exception/unsupportedoperation.h>
+#include <trogdord/exception/gameslotnotfound.h>
 
 
 TEST_SUITE("GameContainer (gamecontainer.cpp)") {

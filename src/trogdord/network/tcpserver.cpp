@@ -2,10 +2,10 @@
 #include <functional>
 #include <chrono>
 
-#include "../include/network/tcpconnection.h"
-#include "../include/network/tcpserver.h"
-#include "../include/dispatcher.h"
-#include "../include/config.h"
+#include <trogdord/network/tcpconnection.h>
+#include <trogdord/network/tcpserver.h>
+#include <trogdord/dispatcher.h>
+#include <trogdord/config.h>
 
 
 void TCPServer::establishConnection(std::shared_ptr<TCPConnection> connection, void *) {

@@ -1,9 +1,9 @@
-#include "../../include/json.h"
-#include "../../include/config.h"
-#include "../../include/io/input/listenercontainer.h"
+#include <trogdord/json.h>
+#include <trogdord/config.h>
+#include <trogdord/io/input/listenercontainer.h>
 
 #ifdef ENABLE_REDIS
-	#include "../../include/io/input/listeners/redis.h"
+	#include <trogdord/io/input/listeners/redis.h>
 #endif
 
 namespace input {

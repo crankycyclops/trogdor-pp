@@ -4,13 +4,13 @@
 
 #include <asio.hpp>
 
-#include "include/config.h"
-#include "include/gamecontainer.h"
-#include "include/io/input/listenercontainer.h"
+#include <trogdord/config.h>
+#include <trogdord/gamecontainer.h>
+#include <trogdord/io/input/listenercontainer.h>
 
-#include "include/network/tcpcommon.h"
-#include "include/network/tcpconnection.h"
-#include "include/network/tcpserver.h"
+#include <trogdord/network/tcpcommon.h>
+#include <trogdord/network/tcpconnection.h>
+#include <trogdord/network/tcpserver.h>
 
 
 static const char *STARTUP_MESSAGE = "Starting Trogdord.";

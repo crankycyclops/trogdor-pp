@@ -1,4 +1,4 @@
-#include "../../include/io/output/local.h"
+#include <trogdord/io/output/local.h>
 
 namespace output {
 

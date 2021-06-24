@@ -1,7 +1,7 @@
 #include <trogdor/game.h>
 
-#include "../include/scopes/place.h"
-#include "../include/exception/entity/placenotfound.h"
+#include <trogdord/scopes/place.h>
+#include <trogdord/exception/entity/placenotfound.h>
 
 
 // Singleton instance of PlaceController
