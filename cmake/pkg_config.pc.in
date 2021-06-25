@@ -1,0 +1,19 @@
+# Adapted from here: https://www.scivision.dev/cmake-generate-pkg-config/
+#
+# Good tutoral for understanding .pc files: 
+# https://people.freedesktop.org/~dbn/pkg-config-guide.html
+
+prefix="@CMAKE_INSTALL_PREFIX@"
+exec_prefix="${prefix}"
+libdir="${prefix}/lib"
+includedir="${prefix}/include"
+
+# TODO: I can't really fill these in properly until I spin trogdor and trogdord
+# out into their own separate projects.
+# Name: @PROJECT_NAME@
+# Description: @CMAKE_PROJECT_DESCRIPTION@
+# Version: @PROJECT_VERSION@
+# URL: @CMAKE_PROJECT_HOMEPAGE_URL@
+
+Cflags: -I"${includedir}"
+Libs: -L"${libdir}" -l@PKGCONFIG_TARGET@

@@ -1,9 +1,12 @@
-cmake_minimum_required(VERSION 3.10)
+set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+cmake_minimum_required(VERSION 3.14)
 enable_language(C CXX)
 
 include(FindPkgConfig)
 include(CheckIncludeFile)
 include(CheckIncludeFileCXX)
+include(LibtoolFile)
 
 project(Trogdor-pp)
 
@@ -65,6 +68,34 @@ add_custom_target(data)
 
 install(FILES game.xml DESTINATION share/trogdor COMPONENT data)
 install(DIRECTORY script DESTINATION share/trogdor COMPONENT data)
+
+###############################################################################
+
+# pkg_config for trogdor.so
+add_custom_target(trogdor_pkgconfig)
+
+set(PKGCONFIG_TARGET trogdor)
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/cmake/pkg_config.pc.in"
+	trogdor.pc
+	@ONLY
+)
+
+install(FILES trogdor.pc DESTINATION lib/pkgconfig COMPONENT trogdor_pkgconfig)
+
+###############################################################################
+
+# pkg_config for trogdord.so
+add_custom_target(trogdord_pkgconfig)
+
+set(PKGCONFIG_TARGET trogdord)
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/cmake/pkg_config.pc.in"
+	trogdord.pc
+	@ONLY
+)
+
+install(FILES trogdord.pc DESTINATION lib/pkgconfig COMPONENT trogdor_pkgconfig)
 
 ###############################################################################
 
@@ -194,12 +225,13 @@ if (ENABLE_SERIALIZE_SQLITE)
 endif (ENABLE_SERIALIZE_SQLITE)
 
 add_library(trogdor SHARED ${CORE_SOURCES})
+CREATE_LIBTOOL_FILE(trogdor ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 
 target_include_directories(trogdor ${CORE_INCLUDES})
 target_link_libraries(trogdor ${CORE_LIBRARIES})
 
 # Installing the library should also install the headers and sample data
-add_dependencies(trogdor dev data)
+add_dependencies(trogdor dev data trogdor_pkgconfig)
 
 install(TARGETS trogdor DESTINATION lib COMPONENT trogdor OPTIONAL)
 
@@ -340,6 +372,8 @@ if (INIH_INCLUDEDIR)
 			${TROGDORD_SOURCES}
 		)
 
+		CREATE_LIBTOOL_FILE(libtrogdord ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+
 		target_include_directories(libtrogdord
 			PUBLIC ${CORE_INCLUDES}
 			PUBLIC ${TROGDORD_INCLUDES}
@@ -368,7 +402,7 @@ if (INIH_INCLUDEDIR)
 
 		target_link_libraries(trogdord PUBLIC libtrogdord)
 
-		add_dependencies(libtrogdord trogdor)
+		add_dependencies(libtrogdord trogdor trogdord_pkgconfig)
 		add_dependencies(trogdord trogdord_data libtrogdord)
 
 		# Explose the installation prefix to trogdord
@@ -558,7 +592,7 @@ add_dependencies(unit_test test_core test_trogdord)
 # Uninstall target
 if(NOT TARGET uninstall)
     configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
         "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
         IMMEDIATE @ONLY)
 
