@@ -1,8 +1,10 @@
 #include "mockscope.h"
 
 
-// Scope name that should be used in requests
-const char *MockScopeController::SCOPE = "mock";
+const char *MockScopeController::getName() {
+
+	return SCOPE;
+}
 
 /*****************************************************************************/
 

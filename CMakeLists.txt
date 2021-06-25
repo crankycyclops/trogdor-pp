@@ -150,34 +150,6 @@ set(CORE_SOURCES
 	src/core/serial/driver.cpp
 )
 
-if (ENABLE_SERIALIZE_JSON)
-
-	add_library(trogdor_serialize_json STATIC
-		src/core/serial/drivers/json.cpp
-	)
-
-	target_include_directories(trogdor_serialize_json
-		PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
-	)
-
-endif (ENABLE_SERIALIZE_JSON)
-
-if (ENABLE_SERIALIZE_SQLITE)
-
-	add_library(trogdor_serialize_sqlite STATIC
-		src/core/serial/drivers/sqlite.cpp
-	)
-
-	target_include_directories(trogdor_serialize_sqlite
-		PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
-	)
-
-	target_link_libraries(trogdor_serialize_sqlite
-		PRIVATE sqlite3
-	)
-
-endif (ENABLE_SERIALIZE_SQLITE)
-
 set(CORE_INCLUDES
 	PUBLIC ${LIBXML_INCLUDE_DIRS}
 	PUBLIC ${LUA_INCLUDE_DIRS}
@@ -190,31 +162,38 @@ set(CORE_LIBRARIES
 	PUBLIC lua$ENV{LUA_VERSION}
 )
 
-add_library(trogdor SHARED ${CORE_SOURCES})
-
-# Link in the JSON serialization driver if that feature was enabled
+# Compile in optional support for JSON serialization
 if (ENABLE_SERIALIZE_JSON)
 
-	target_link_libraries(trogdor
-		PUBLIC trogdor_serialize_json
+	set(CORE_SOURCES
+		${CORE_SOURCES}
+		src/core/serial/drivers/json.cpp
 	)
 
 	add_definitions(-DENABLE_SERIALIZE_JSON)
 
 endif (ENABLE_SERIALIZE_JSON)
 
-# Link in the SQLite serialization driver if that feature was enabled
+# Compile in optional support for SQLite3 serialization
 if (ENABLE_SERIALIZE_SQLITE)
 
 	pkg_search_module(SQLITE REQUIRED sqlite3)
 
-	target_link_libraries(trogdor
-		PUBLIC trogdor_serialize_sqlite
+	set(CORE_SOURCES
+		${CORE_SOURCES}
+		src/core/serial/drivers/sqlite.cpp
+	)
+
+	set(CORE_LIBRARIES
+		${CORE_LIBRARIES}
+		PUBLIC sqlite3
 	)
 
 	add_definitions(-DENABLE_SERIALIZE_SQLITE)
 
 endif (ENABLE_SERIALIZE_SQLITE)
+
+add_library(trogdor SHARED ${CORE_SOURCES})
 
 target_include_directories(trogdor ${CORE_INCLUDES})
 target_link_libraries(trogdor ${CORE_LIBRARIES})
@@ -300,8 +279,6 @@ if (INIH_INCLUDEDIR)
 
 	if (HAVE_ASIO)
 
-
-
 		set(TROGDORD_SOURCES
 			src/trogdord/config.cpp
 			src/trogdord/filesystem.cpp
@@ -349,45 +326,50 @@ if (INIH_INCLUDEDIR)
 
 			pkg_check_modules(HIREDIS REQUIRED hiredis>=0.13)
 
-			add_library(trogdord_redis STATIC
+			set(TROGDORD_SOURCES
+				${TROGDORD_SOURCES}
 				src/trogdord/io/output/redis.cpp
 				src/trogdord/io/input/listeners/redis.cpp
 			)
 
-			target_include_directories(trogdord_redis
-				PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
-				PUBLIC ${PROJECT_SOURCE_DIR}/src/trogdord/include
+			add_definitions(-DENABLE_REDIS)
+
+		endif (ENABLE_REDIS)
+
+		add_library(libtrogdord SHARED
+			${TROGDORD_SOURCES}
+		)
+
+		target_include_directories(libtrogdord
+			PUBLIC ${CORE_INCLUDES}
+			PUBLIC ${TROGDORD_INCLUDES}
+		)
+
+		target_link_libraries(libtrogdord
+			${TROGDORD_LIBRARIES_MINUS_CORE}
+			PUBLIC trogdor
+		)
+
+		if (ENABLE_REDIS)
+
+			target_include_directories(libtrogdord
+				PUBLIC ${HIREDIS_INCLUDE_DIRS}
+			)
+
+			target_link_libraries(libtrogdord
+				PUBLIC ${HIREDIS_LIBRARIES}
 			)
 
 		endif (ENABLE_REDIS)
 
 		add_executable(trogdord
 			src/trogdord/main.cpp
-			${TROGDORD_SOURCES}
 		)
 
-		# Link in the redis input and output drivers
-		if (ENABLE_REDIS)
+		target_link_libraries(trogdord PUBLIC libtrogdord)
 
-			target_include_directories(trogdord_redis
-				PUBLIC ${HIREDIS_INCLUDE_DIRS}
-			)
-
-			target_link_libraries(trogdord
-				PRIVATE trogdord_redis
-				PUBLIC ${HIREDIS_LIBRARIES}
-			)
-
-			add_definitions(-DENABLE_REDIS)
-			add_dependencies(trogdord trogdord_redis)
-
-		endif (ENABLE_REDIS)
-
-		target_include_directories(trogdord ${TROGDORD_INCLUDES})
-		target_link_libraries(trogdord ${TROGDORD_LIBRARIES_MINUS_CORE})
-		target_link_libraries(trogdord PUBLIC trogdor)
-
-		add_dependencies(trogdord trogdor trogdord_data)
+		add_dependencies(libtrogdord trogdor)
+		add_dependencies(trogdord trogdord_data libtrogdord)
 
 		# Explose the installation prefix to trogdord
 		add_definitions(-DTROGDORD_INSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
@@ -395,6 +377,7 @@ if (INIH_INCLUDEDIR)
 		# Default location where trogdord looks for trogdord.ini
 		add_definitions(-DTROGDORD_INI_PATH=\"${CMAKE_INSTALL_PREFIX}/etc/trogdord/trogdord.ini\")
 
+		install(TARGETS libtrogdord DESTINATION lib COMPONENT libtrogdord OPTIONAL)
 		install(TARGETS trogdord DESTINATION bin COMPONENT trogdord OPTIONAL)
 		install(DIRECTORY DESTINATION var/trogdord/state COMPONENT trogdord OPTIONAL)
 
@@ -457,21 +440,21 @@ add_library(_trogdor_test STATIC ${CORE_SOURCES})
 target_include_directories(_trogdor_test ${CORE_INCLUDES})
 target_link_libraries(_trogdor_test ${CORE_LIBRARIES})
 
-if (ENABLE_SERIALIZE_JSON)
+#if (ENABLE_SERIALIZE_JSON)
+#
+#	target_link_libraries(_trogdor_test
+#		PUBLIC trogdor_serialize_json
+#	)
 
-	target_link_libraries(_trogdor_test
-		PUBLIC trogdor_serialize_json
-	)
+#endif (ENABLE_SERIALIZE_JSON)
 
-endif (ENABLE_SERIALIZE_JSON)
-
-if (ENABLE_SERIALIZE_SQLITE)
-
-	target_link_libraries(_trogdor_test
-		PUBLIC trogdor_serialize_sqlite
-	)
-
-endif (ENABLE_SERIALIZE_SQLITE)
+#if (ENABLE_SERIALIZE_SQLITE)
+#
+#	target_link_libraries(_trogdor_test
+#		PUBLIC trogdor_serialize_sqlite
+#	)
+#
+#endif (ENABLE_SERIALIZE_SQLITE)
 
 # The default interval between timer ticks should be much shorter for unit tests
 target_compile_definitions(_trogdor_test PRIVATE TIMER_CUSTOM_INTERVAL=5)
@@ -539,7 +522,8 @@ if (INIH_INCLUDEDIR)
 	)
 
 	target_include_directories(test_trogdord
-		PUBLIC ${CORE_INCLUDES} ${TROGDORD_INCLUDES}
+		PUBLIC ${CORE_INCLUDES}
+		PUBLIC ${TROGDORD_INCLUDES}
 		PUBLIC ${PROJECT_SOURCE_DIR}/src/trogdord/include
 	)
 
@@ -552,11 +536,9 @@ if (INIH_INCLUDEDIR)
 
 		target_include_directories(test_trogdord
 			PUBLIC ${HIREDIS_INCLUDE_DIRS}
-			PUBLIC ${PROJECT_SOURCE_DIR}/src/trogdord/include
 		)
 
 		target_link_libraries(test_trogdord
-			PUBLIC trogdord_redis
 			PUBLIC ${HIREDIS_LIBRARIES}
 		)
 
