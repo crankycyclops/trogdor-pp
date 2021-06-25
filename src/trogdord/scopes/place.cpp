@@ -67,3 +67,10 @@ std::unique_ptr<PlaceController> &PlaceController::get() {
 
 	return instance;
 }
+
+/*****************************************************************************/
+
+const char *PlaceController::getName() {
+
+	return SCOPE;
+}

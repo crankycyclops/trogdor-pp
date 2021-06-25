@@ -45,6 +45,9 @@ class ResourceController: public EntityController {
 
 		// Returns singleton instance of ResourceController.
 		static std::unique_ptr<ResourceController> &get();
+
+		// Returns the scope's name
+		virtual const char *getName();
 };
 
 

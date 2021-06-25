@@ -66,3 +66,10 @@ std::unique_ptr<ObjectController> &ObjectController::get() {
 
 	return instance;
 }
+
+/*****************************************************************************/
+
+const char *ObjectController::getName() {
+
+	return SCOPE;
+}

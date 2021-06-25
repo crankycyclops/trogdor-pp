@@ -45,6 +45,9 @@ class ObjectController: public ThingController {
 
 		// Returns singleton instance of ObjectController.
 		static std::unique_ptr<ObjectController> &get();
+
+		// Returns the scope's name
+		virtual const char *getName();
 };
 
 

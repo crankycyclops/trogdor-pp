@@ -67,3 +67,10 @@ std::unique_ptr<BeingController> &BeingController::get() {
 
 	return instance;
 }
+
+/*****************************************************************************/
+
+const char *BeingController::getName() {
+
+	return SCOPE;
+}

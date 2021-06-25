@@ -67,3 +67,10 @@ std::unique_ptr<ThingController> &ThingController::get() {
 
 	return instance;
 }
+
+/*****************************************************************************/
+
+const char *ThingController::getName() {
+
+	return SCOPE;
+}

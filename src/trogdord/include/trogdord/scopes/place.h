@@ -45,6 +45,9 @@ class PlaceController: public TangibleController {
 
 		// Returns singleton instance of PlaceController.
 		static std::unique_ptr<PlaceController> &get();
+
+		// Returns the scope's name
+		virtual const char *getName();
 };
 
 

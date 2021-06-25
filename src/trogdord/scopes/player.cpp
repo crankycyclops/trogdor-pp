@@ -85,6 +85,13 @@ std::unique_ptr<PlayerController> &PlayerController::get() {
 
 /*****************************************************************************/
 
+const char *PlayerController::getName() {
+
+	return SCOPE;
+}
+
+/*****************************************************************************/
+
 rapidjson::Document PlayerController::createPlayer(const rapidjson::Document &request) {
 
 	rapidjson::Document response(rapidjson::kObjectType);

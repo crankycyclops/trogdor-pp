@@ -43,6 +43,13 @@ std::unique_ptr<GlobalController> &GlobalController::get() {
 
 /*****************************************************************************/
 
+const char *GlobalController::getName() {
+
+	return SCOPE;
+}
+
+/*****************************************************************************/
+
 rapidjson::Document GlobalController::config(const rapidjson::Document &request) {
 
 	rapidjson::Document response(rapidjson::kObjectType);

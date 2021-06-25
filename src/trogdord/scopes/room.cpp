@@ -67,3 +67,10 @@ std::unique_ptr<RoomController> &RoomController::get() {
 
 	return instance;
 }
+
+/*****************************************************************************/
+
+const char *RoomController::getName() {
+
+	return SCOPE;
+}

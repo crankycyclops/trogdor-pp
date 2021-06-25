@@ -67,3 +67,10 @@ std::unique_ptr<CreatureController> &CreatureController::get() {
 
 	return instance;
 }
+
+/*****************************************************************************/
+
+const char *CreatureController::getName() {
+
+	return SCOPE;
+}

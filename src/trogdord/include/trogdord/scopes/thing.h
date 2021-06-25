@@ -45,6 +45,9 @@ class ThingController: public TangibleController {
 
 		// Returns singleton instance of ThingController.
 		static std::unique_ptr<ThingController> &get();
+
+		// Returns the scope's name
+		virtual const char *getName();
 };
 
 

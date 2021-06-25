@@ -55,6 +55,9 @@ class PlayerController: public BeingController {
 		// Returns singleton instance of PlayerController.
 		static std::unique_ptr<PlayerController> &get();
 
+		// Returns the scope's name
+		virtual const char *getName();
+
 		// Creates a player in the specified game
 		rapidjson::Document createPlayer(const rapidjson::Document &request);
 

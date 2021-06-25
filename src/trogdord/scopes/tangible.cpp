@@ -67,3 +67,10 @@ std::unique_ptr<TangibleController> &TangibleController::get() {
 
 	return instance;
 }
+
+/*****************************************************************************/
+
+const char *TangibleController::getName() {
+
+	return SCOPE;
+}

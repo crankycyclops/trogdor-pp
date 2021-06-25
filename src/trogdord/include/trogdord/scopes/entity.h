@@ -86,6 +86,9 @@ class EntityController: public ScopeController {
 		// Returns singleton instance of EntityController.
 		static std::unique_ptr<EntityController> &get();
 
+		// Returns the scope's name
+		virtual const char *getName();
+
 		// Returns details about the entity in the specified game
 		rapidjson::Document getEntity(const rapidjson::Document &request);
 

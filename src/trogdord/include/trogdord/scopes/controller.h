@@ -49,6 +49,9 @@ class ScopeController {
 		// one instead.
 		static constexpr const char *DEFAULT_ACTION = "default";
 
+		// Returns the scope's name
+		virtual const char *getName() = 0;
+
 		// Resolves a request and returns a JSON response.
 		rapidjson::Document resolve(
 			std::shared_ptr<TCPConnection> &connection,

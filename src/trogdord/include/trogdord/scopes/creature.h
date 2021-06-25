@@ -45,6 +45,9 @@ class CreatureController: public BeingController {
 
 		// Returns singleton instance of CreatureController.
 		static std::unique_ptr<CreatureController> &get();
+
+		// Returns the scope's name
+		virtual const char *getName();
 };
 
 

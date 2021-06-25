@@ -67,3 +67,10 @@ std::unique_ptr<ResourceController> &ResourceController::get() {
 
 	return instance;
 }
+
+/*****************************************************************************/
+
+const char *ResourceController::getName() {
+
+	return SCOPE;
+}

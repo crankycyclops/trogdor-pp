@@ -45,6 +45,9 @@ class TangibleController: public EntityController {
 
 		// Returns singleton instance of TangibleController.
 		static std::unique_ptr<TangibleController> &get();
+
+		// Returns the scope's name
+		virtual const char *getName();
 };
 
 

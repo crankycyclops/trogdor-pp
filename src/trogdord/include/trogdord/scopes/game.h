@@ -54,6 +54,9 @@ class GameController: public ScopeController {
 		// Returns singleton instance of GameController.
 		static std::unique_ptr<GameController> &get();
 
+		// Returns the scope's name
+		virtual const char *getName();
+
 		// Returns details about a running game
 		rapidjson::Document getGame(const rapidjson::Document &request);
 

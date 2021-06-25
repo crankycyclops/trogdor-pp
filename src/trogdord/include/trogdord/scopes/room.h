@@ -45,6 +45,9 @@ class RoomController: public PlaceController {
 
 		// Returns singleton instance of RoomController.
 		static std::unique_ptr<RoomController> &get();
+
+		// Returns the scope's name
+		virtual const char *getName();
 };
 
 

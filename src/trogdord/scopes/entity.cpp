@@ -157,6 +157,13 @@ std::unique_ptr<EntityController> &EntityController::get() {
 
 /*****************************************************************************/
 
+const char *EntityController::getName() {
+
+	return SCOPE;
+}
+
+/*****************************************************************************/
+
 rapidjson::Document EntityController::getEntity(const rapidjson::Document &request) {
 
 	size_t gameId;

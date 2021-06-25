@@ -24,18 +24,18 @@ std::unique_ptr<Dispatcher> Dispatcher::instance = nullptr;
 Dispatcher::Dispatcher() {
 
 	// Register available scopes
-	scopes[GlobalController::SCOPE] = GlobalController::get().get();
-	scopes[GameController::SCOPE] = GameController::get().get();
-	scopes[EntityController::SCOPE] = EntityController::get().get();
-	scopes[ResourceController::SCOPE] = ResourceController::get().get();
-	scopes[TangibleController::SCOPE] = TangibleController::get().get();
-	scopes[PlaceController::SCOPE] = PlaceController::get().get();
-	scopes[RoomController::SCOPE] = RoomController::get().get();
-	scopes[ThingController::SCOPE] = ThingController::get().get();
-	scopes[ObjectController::SCOPE] = ObjectController::get().get();
-	scopes[BeingController::SCOPE] = BeingController::get().get();
-	scopes[CreatureController::SCOPE] = CreatureController::get().get();
-	scopes[PlayerController::SCOPE] = PlayerController::get().get();
+	scopes[GlobalController::get()->getName()] = GlobalController::get().get();
+	scopes[GameController::get()->getName()] = GameController::get().get();
+	scopes[EntityController::get()->getName()] = EntityController::get().get();
+	scopes[ResourceController::get()->getName()] = ResourceController::get().get();
+	scopes[TangibleController::get()->getName()] = TangibleController::get().get();
+	scopes[PlaceController::get()->getName()] = PlaceController::get().get();
+	scopes[RoomController::get()->getName()] = RoomController::get().get();
+	scopes[ThingController::get()->getName()] = ThingController::get().get();
+	scopes[ObjectController::get()->getName()] = ObjectController::get().get();
+	scopes[BeingController::get()->getName()] = BeingController::get().get();
+	scopes[CreatureController::get()->getName()] = CreatureController::get().get();
+	scopes[PlayerController::get()->getName()] = PlayerController::get().get();
 }
 
 /*****************************************************************************/

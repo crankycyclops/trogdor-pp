@@ -102,6 +102,13 @@ std::unique_ptr<GameController> &GameController::get() {
 
 /*****************************************************************************/
 
+const char *GameController::getName() {
+
+	return SCOPE;
+}
+
+/*****************************************************************************/
+
 rapidjson::Document GameController::getGame(const rapidjson::Document &request) {
 
 	size_t gameId;

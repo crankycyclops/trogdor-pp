@@ -31,6 +31,9 @@ class GlobalController: public ScopeController {
 		// Returns singleton instance of GlobalController.
 		static std::unique_ptr<GlobalController> &get();
 
+		// Returns the scope's name
+		virtual const char *getName();
+
 		// Action that returns non-sensitive trogdord.ini settings
 		rapidjson::Document config(const rapidjson::Document &request);
 
