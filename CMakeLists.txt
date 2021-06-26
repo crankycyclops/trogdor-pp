@@ -81,7 +81,7 @@ configure_file(
 	@ONLY
 )
 
-install(FILES trogdor.pc DESTINATION lib/pkgconfig COMPONENT trogdor_pkgconfig)
+install(FILES ${CMAKE_BINARY_DIR}/trogdor.pc DESTINATION lib/pkgconfig COMPONENT trogdor_pkgconfig)
 
 ###############################################################################
 
@@ -95,7 +95,7 @@ configure_file(
 	@ONLY
 )
 
-install(FILES trogdord.pc DESTINATION lib/pkgconfig COMPONENT trogdor_pkgconfig)
+install(FILES ${CMAKE_BINARY_DIR}/trogdord.pc DESTINATION lib/pkgconfig COMPONENT trogdor_pkgconfig)
 
 ###############################################################################
 
@@ -317,6 +317,7 @@ if (INIH_INCLUDEDIR)
 			src/trogdord/dispatcher.cpp
 			src/trogdord/gamewrapper.cpp
 			src/trogdord/gamecontainer.cpp
+			src/trogdord/extensionloader.cpp
 			src/trogdord/exception/requestexception.cpp
 			src/trogdord/filter/filter.cpp
 			src/trogdord/network/tcpconnection.cpp
@@ -353,6 +354,18 @@ if (INIH_INCLUDEDIR)
 			PUBLIC stdc++fs
 			PUBLIC inih
 		)
+
+		# For now, extensions are only supported if libdl is used to load
+		# shared objects. If not (like, say, you're building on Windows),
+		# the extension loader will be non-functional.
+		find_library(DLPATH NAMES libdl.so dl)
+		if (DLPATH)
+			add_definitions(-DLIBDL)
+			set(TROGDORD_LIBRARIES_MINUS_CORE
+				${TROGDORD_LIBRARIES_MINUS_CORE}
+				PUBLIC dl
+			)
+		endif (DLPATH)
 
 		if (ENABLE_REDIS)
 

@@ -12,6 +12,9 @@
 #include <trogdord/network/tcpconnection.h>
 #include <trogdord/network/tcpserver.h>
 
+// TODO: remove
+#include <trogdord/extensionloader.h>
+
 
 static const char *STARTUP_MESSAGE = "Starting Trogdord.";
 static const char *SHUTDOWN_MESSAGE = "Shutting down Trogdord.";
@@ -82,6 +85,11 @@ int main(int argc, char **argv) {
 		// I don't think I can reasonably expect to catch those on the way down.
 		asio::signal_set crashSignals(io, SIGQUIT);
 		crashSignals.async_wait(crashHandler);
+
+		// Load extensions
+		for (const auto &extension: Config::get()->getExtensions()) {
+			ExtensionLoader::get()->load(extension.c_str());
+		}
 
 		// Constructor starts up a deadline_timer that checks at regular intervals
 		// on the needs of existing connections as well as accepting new ones.

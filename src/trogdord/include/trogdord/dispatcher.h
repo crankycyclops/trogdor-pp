@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <rapidjson/document.h>
 
@@ -94,6 +95,11 @@ class Dispatcher {
 		// Maps scope name -> scope controller
 		std::unordered_map<std::string, ScopeController *> scopes;
 
+		// Keeps track of which scopes are built-in. This is important, because
+		// built-in scopes cannot be unregistered later, while scopes loaded by
+		// extensions can.
+		std::unordered_set<std::string> builtinScopes;
+
 		// Constructor should only be called internally by get(), which will
 		// ensure we only ever have a single instance of the class.
 		Dispatcher();
@@ -126,6 +132,17 @@ class Dispatcher {
 
 		// Returns singleton instance of Dispatcher.
 		static std::unique_ptr<Dispatcher> &get();
+
+		// Registers a scope with the dispatcher. If a scope by the same name
+		// has already been registered, this will return false and the scope
+		// will not be registered. Otherwise, the scope will be registered and
+		// this function will return true.
+		bool registerScope(ScopeController *scope);
+
+		// Unregisters a scope. Returns false if the scope doesn't exist or if
+		// it's built in and cannot be removed. Otherwise, the scope is removed
+		// and the function return true.
+		bool unregisterScope(std::string name);
 
 		// Dispatches a request and returns the server's response in JSON.
 		std::string dispatch(std::shared_ptr<TCPConnection> &connection, std::string request);

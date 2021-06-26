@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 
+#include <trogdord/json.h>
 #include <trogdor/utility.h>
 #include <trogdor/filesystem.h>
 
@@ -35,7 +36,9 @@ const std::unordered_map<std::string, std::string> Config::DEFAULTS = {
 	{CONFIG_KEY_STATE_CRASH_RECOVERY_ENABLED,     "false"},
 	{CONFIG_KEY_STATE_FORMAT,                     "json"},
 	{CONFIG_KEY_STATE_PATH,                       "var/trogdord/state"},
-	{CONFIG_KEY_STATE_MAX_DUMPS_PER_GAME,         "0"}
+	{CONFIG_KEY_STATE_MAX_DUMPS_PER_GAME,         "0"},
+	{CONFIG_KEY_EXTENSIONS_PATH,                  "lib/trogdord"},
+	{CONFIG_KEY_EXTENSIONS_LOAD,                  "[]"}
 };
 
 // Any setting that has a value of true will be considered sensitive
@@ -61,7 +64,9 @@ const std::unordered_map<std::string, bool> Config::hidden = {
 	{CONFIG_KEY_STATE_CRASH_RECOVERY_ENABLED,     true},
 	{CONFIG_KEY_STATE_FORMAT,                     true},
 	{CONFIG_KEY_STATE_PATH,                       true},
-	{CONFIG_KEY_STATE_MAX_DUMPS_PER_GAME,         false}
+	{CONFIG_KEY_STATE_MAX_DUMPS_PER_GAME,         false},
+	{CONFIG_KEY_EXTENSIONS_PATH,                  true},
+	{CONFIG_KEY_EXTENSIONS_LOAD,                  false}
 };
 
 const std::unordered_map<std::string, const std::type_info *> Config::types = {
@@ -85,7 +90,9 @@ const std::unordered_map<std::string, const std::type_info *> Config::types = {
 	{CONFIG_KEY_STATE_CRASH_RECOVERY_ENABLED,     &typeid(bool)},
 	{CONFIG_KEY_STATE_FORMAT,                     &typeid(std::string)},
 	{CONFIG_KEY_STATE_PATH,                       &typeid(std::string)},
-	{CONFIG_KEY_STATE_MAX_DUMPS_PER_GAME,         &typeid(int)}
+	{CONFIG_KEY_STATE_MAX_DUMPS_PER_GAME,         &typeid(int)},
+	{CONFIG_KEY_EXTENSIONS_PATH,                  &typeid(std::string)},
+	{CONFIG_KEY_EXTENSIONS_LOAD,                  &typeid(std::string)}
 };
 
 // Singleton instance of Config
@@ -108,6 +115,55 @@ std::unique_ptr<Config> &Config::get() noexcept {
 	}
 
 	return instance;
+}
+
+/*****************************************************************************/
+
+std::string Config::relativeToAbsolutePath(std::string relative) {
+
+	relative = trogdor::trim(relative);
+
+	if (0 != relative.compare("")) {
+		relative = Filesystem::getAbsolutePath(relative);
+	}
+
+	return relative;
+}
+
+/*****************************************************************************/
+
+std::vector<std::string> Config::getExtensions() {
+
+	rapidjson::Document extensionsArr;
+
+	std::string extensionsStr = Config::get()->getString(
+		Config::CONFIG_KEY_EXTENSIONS_LOAD
+	);
+
+	extensionsArr.Parse(extensionsStr.c_str());
+
+	if (extensionsArr.HasParseError()) {
+		throw ServerException(
+			std::string("invalid trogdord.ini value for ") +
+			Config::CONFIG_KEY_EXTENSIONS_LOAD
+		);
+	}
+
+	else if (rapidjson::kArrayType != extensionsArr.GetType()) {
+		throw ServerException(
+			std::string("trogdord.ini value for ") +
+			Config::CONFIG_KEY_EXTENSIONS_LOAD +
+			" must be a JSON array of strings."
+		);
+	}
+
+	std::vector<std::string> extensions;
+
+	for (auto i = extensionsArr.Begin(); i != extensionsArr.End(); i++) {
+		extensions.push_back(i->GetString());
+	}
+
+	return extensions;
 }
 
 /*****************************************************************************/
@@ -202,18 +258,4 @@ void Config::load(std::string newIniPath) noexcept {
 
 	// Setup global error logger
 	initErrorLogger();
-}
-
-/*****************************************************************************/
-
-std::string Config::getStatePath() {
-
-	std::string statePath = getString(CONFIG_KEY_STATE_PATH);
-	statePath = trogdor::trim(statePath);
-
-	if (0 != statePath.compare("")) {
-		statePath = Filesystem::getAbsolutePath(statePath);
-	}
-
-	return statePath;
 }

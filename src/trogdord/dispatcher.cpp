@@ -36,6 +36,20 @@ Dispatcher::Dispatcher() {
 	scopes[BeingController::get()->getName()] = BeingController::get().get();
 	scopes[CreatureController::get()->getName()] = CreatureController::get().get();
 	scopes[PlayerController::get()->getName()] = PlayerController::get().get();
+
+	// Built-in scopes cannot be unregistered later
+	builtinScopes.insert(GlobalController::get()->getName());
+	builtinScopes.insert(GameController::get()->getName());
+	builtinScopes.insert(EntityController::get()->getName());
+	builtinScopes.insert(ResourceController::get()->getName());
+	builtinScopes.insert(TangibleController::get()->getName());
+	builtinScopes.insert(PlaceController::get()->getName());
+	builtinScopes.insert(RoomController::get()->getName());
+	builtinScopes.insert(ThingController::get()->getName());
+	builtinScopes.insert(ObjectController::get()->getName());
+	builtinScopes.insert(BeingController::get()->getName());
+	builtinScopes.insert(CreatureController::get()->getName());
+	builtinScopes.insert(PlayerController::get()->getName());
 }
 
 /*****************************************************************************/
@@ -47,6 +61,34 @@ std::unique_ptr<Dispatcher> &Dispatcher::get() {
 	}
 
 	return instance;
+}
+
+/*****************************************************************************/
+
+bool Dispatcher::registerScope(ScopeController *scope) {
+
+	if (scopes.end() != scopes.find(scope->getName())) {
+		return false;
+	}
+
+	scopes[scope->getName()] = scope;
+	return true;
+}
+
+/*****************************************************************************/
+
+bool Dispatcher::unregisterScope(std::string name) {
+
+	if (scopes.end() == scopes.find(name)) {
+		return false;
+	}
+
+	else if (builtinScopes.end() != builtinScopes.find(name)) {
+		return false;
+	}
+
+	scopes.erase(name);
+	return true;
 }
 
 /*****************************************************************************/

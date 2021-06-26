@@ -52,6 +52,10 @@ class Config {
 		// Initialize the global error logger.
 		void initErrorLogger() noexcept;
 
+		// Converts a relative path to an absolute path relative to trogdord's
+		// installation directory and returns absolute paths unchanged.
+		std::string relativeToAbsolutePath(std::string relative);
+
 	public:
 
 		// Default values
@@ -85,6 +89,8 @@ class Config {
 		static constexpr const char *CONFIG_KEY_STATE_FORMAT = "state.format";
 		static constexpr const char *CONFIG_KEY_STATE_PATH = "state.save_path";
 		static constexpr const char *CONFIG_KEY_STATE_MAX_DUMPS_PER_GAME = "state.max_dumps_per_game";
+		static constexpr const char *CONFIG_KEY_EXTENSIONS_PATH = "extensions.path";
+		static constexpr const char *CONFIG_KEY_EXTENSIONS_LOAD = "extensions.load";
 
 		// Returns singleton instance of Config.
 		static std::unique_ptr<Config> &get() noexcept;
@@ -99,9 +105,23 @@ class Config {
 		const auto begin() const {return ini.cbegin();}
 		const auto end() const {return ini.cend();}
 
+		// Returns a vector of all extensions that are to be loaded when the
+		// server starts.
+		std::vector<std::string> getExtensions();
+
+		// Special helper function that returns the absolute path pointed to
+		// by CONFIG_KEY_EXTENSIONS_PATH or a blank string if no path was set.
+		std::string getExtensionsPath() {
+
+			return relativeToAbsolutePath(getString(CONFIG_KEY_EXTENSIONS_PATH));
+		}
+
 		// Special helper function that returns the absolute path pointed to
 		// by CONFIG_KEY_STATE_PATH or a blank string if no path was set.
-		std::string getStatePath();
+		std::string getStatePath() {
+
+			return relativeToAbsolutePath(getString(CONFIG_KEY_STATE_PATH));
+		}
 
 		// Returns the specified config value. Throws ConfigUndefinedValue
 		// if the config value isn't set and ConfigInvalidValue if it
