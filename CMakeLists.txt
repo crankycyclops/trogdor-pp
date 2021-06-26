@@ -385,7 +385,8 @@ if (INIH_INCLUDEDIR)
 			${TROGDORD_SOURCES}
 		)
 
-		CREATE_LIBTOOL_FILE(libtrogdord ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+		CREATE_LIBTOOL_FILE(libtrogdord ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR} trogdord)
+		set_target_properties(libtrogdord PROPERTIES OUTPUT_NAME "trogdord")
 
 		target_include_directories(libtrogdord
 			PUBLIC ${CORE_INCLUDES}
