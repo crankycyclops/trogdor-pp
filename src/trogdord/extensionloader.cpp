@@ -1,3 +1,4 @@
+
 #include <trogdord/config.h>
 #include <trogdord/dispatcher.h>
 #include <trogdor/filesystem.h>
@@ -30,81 +31,81 @@ std::unique_ptr<ExtensionLoader> &ExtensionLoader::get() {
 
 bool ExtensionLoader::loadScopes(const char *extension, ScopeController **(*scopeLoader)()) {
 
-    if (scopeLoader != NULL) {
+	if (scopeLoader != NULL) {
 
-        // There was an error (very possibly due to unresolved symbols)
-        if (dlerror() != NULL) {
-            Config::get()->err(trogdor::Trogerr::ERROR) << "ExtensionLoader::load(): failed to load "
-                << extension << ": " << dlerror() << std::endl;
-            return false;
-        }
+		// There was an error (very possibly due to unresolved symbols)
+		if (dlerror() != NULL) {
+			Config::get()->err(trogdor::Trogerr::ERROR) << "ExtensionLoader::load(): failed to load "
+				<< extension << ": " << dlerror() << std::endl;
+			return false;
+		}
 
-        else {
+		else {
 
-            ScopeController **scopes = scopeLoader();
+			ScopeController **scopes = scopeLoader();
 
-            for (ScopeController **scope = scopes; *scope != nullptr; scope++) {
+			for (ScopeController **scope = scopes; *scope != nullptr; scope++) {
 
-                if (!Dispatcher::get()->registerScope(*scope)) {
-                    Config::get()->err(trogdor::Trogerr::ERROR) << "ExtensionLoader::load(): failed to load "
-                        << extension << " because it tried to register a scope (" << (*scope)->getName()
-                        << ") that was already previously registered." << std::endl;
-                    return false;
-                }
+				if (!Dispatcher::get()->registerScope(*scope)) {
+					Config::get()->err(trogdor::Trogerr::ERROR) << "ExtensionLoader::load(): failed to load "
+						<< extension << " because it tried to register a scope (" << (*scope)->getName()
+						<< ") that was already previously registered." << std::endl;
+					return false;
+				}
 
-                registeredScopes[extension].push_back((*scope)->getName());
-            }
-        }
-    }
+				registeredScopes[extension].push_back((*scope)->getName());
+			}
+		}
+	}
 
-    return true;
+	return true;
 }
 
 /******************************************************************************/
 
 bool ExtensionLoader::load(const char *extension) {
 
-    std::unique_ptr<Config> &config = Config::get();
+	std::unique_ptr<Config> &config = Config::get();
 
-    #ifdef LIBDL
+	#ifdef LIBDL
 
-        void *handle = nullptr;
+		void *handle = nullptr;
 
-        if (handles.end() != handles.find(extension)) {
-            config->err(trogdor::Trogerr::WARNING) << "ExtensionLoader::load(): "
-                << extension << "has already been loaded. Skipping." << std::endl;
-            return true;
-        }
+		if (handles.end() != handles.find(extension)) {
+			config->err(trogdor::Trogerr::WARNING) << "ExtensionLoader::load(): "
+				<< extension << "has already been loaded. Skipping." << std::endl;
+			return true;
+		}
 
 		std::string extPath = config->getExtensionsPath() +
-            STD_FILESYSTEM::path::preferred_separator + extension;
+			STD_FILESYSTEM::path::preferred_separator + extension;
 
-        if ( (handle = dlopen(extPath.c_str(), RTLD_NOW | RTLD_GLOBAL)) == nullptr) {
-            config->err(trogdor::Trogerr::ERROR) << "ExtensionLoader::load(): failed to load "
-                << extension << ": " << dlerror() << std::endl;
-            return false;
-        }
+		if ( (handle = dlopen(extPath.c_str(), RTLD_NOW | RTLD_GLOBAL)) == nullptr) {
+			config->err(trogdor::Trogerr::ERROR) << "ExtensionLoader::load(): failed to load "
+				<< extension << ": " << dlerror() << std::endl;
+			return false;
+		}
 
-        handles[extension] = handle;
+		handles[extension] = handle;
 
-        // Attempt to load scopes, if any
-        if (!loadScopes(extension, reinterpret_cast<ScopeController** (*)()>(dlsym(handle, "loadScopes")))) {
-            dlclose(handle);
-            return false;
-        }
+		// Attempt to load scopes, if any
+		if (!loadScopes(extension, reinterpret_cast<ScopeController** (*)()>(dlsym(handle, "loadScopes")))) {
+			dlclose(handle);
+			return false;
+		}
 
-        config->err(trogdor::Trogerr::INFO) << "ExtensionLoader::load(): "
-            << extension << " loaded." << std::endl;
-        return true;
+		config->err(trogdor::Trogerr::INFO) << "ExtensionLoader::load(): "
+			<< extension << " loaded." << std::endl;
+		return true;
 
-    #else
+	#else
 
-        config->err(trogdor::Trogerr::ERROR) << "ExtensionLoader::load(): "
-            << extension << " cannot be loaded because the extension loader isn't supported on your platform."
-            << std::endl;
-        return false;
+		config->err(trogdor::Trogerr::ERROR) << "ExtensionLoader::load(): "
+			<< extension << " cannot be loaded because the extension loader isn't supported on your platform."
+			<< std::endl;
+		return false;
 
-    #endif // LIBDL
+	#endif // LIBDL
 }
 
 /******************************************************************************/
