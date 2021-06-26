@@ -265,4 +265,84 @@ TEST_SUITE("Dispatcher (dispatcher.cpp") {
 		CHECK(response["status"].IsUint());
 		CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
 	}
+
+	TEST_CASE("Dispatcher (dispatcher.cpp): registerScope() and unregisterScope()") {
+
+		auto scopeTest = MockScopeController::factory();
+		auto scopeTest2 = MockScopeController::factory();
+
+		std::shared_ptr<TCPConnection> dummyConnection = nullptr;
+
+		scopeTest->registerAction(Request::GET, "test", [&] (const rapidjson::Document &request) -> rapidjson::Document {
+
+			rapidjson::Document retVal(rapidjson::kObjectType);
+
+			retVal.AddMember("status", Response::STATUS_SUCCESS, retVal.GetAllocator());
+			return retVal;
+		});
+
+		// The different status returned will identify the second test scope
+		// when I make a request for it
+		scopeTest2->registerAction(Request::GET, "test", [&] (const rapidjson::Document &request) -> rapidjson::Document {
+
+			rapidjson::Document retVal(rapidjson::kObjectType);
+
+			retVal.AddMember("status", Response::STATUS_PARTIAL_CONTENT, retVal.GetAllocator());
+			return retVal;
+		});
+
+		// Start out with just one scope registered
+		MockDispatcher dispatcher({
+			{"test1", scopeTest.get()}
+		});
+
+		rapidjson::Document response;
+
+		response.Parse(dispatcher.dispatch(
+			dummyConnection,
+			"{\"method\":\"get\",\"scope\":\"test1\",\"action\":\"test\"}"
+		).c_str());
+
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_SUCCESS == response["status"].GetUint());
+
+		// Try calling the second scope before it's registered and verify that it's not found
+		response.Parse(dispatcher.dispatch(
+			dummyConnection,
+			"{\"method\":\"get\",\"scope\":\"test2\",\"action\":\"test\"}"
+		).c_str());
+
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+
+		// Now, register the second scope and show it can now be found
+		dispatcher.registerScope(scopeTest2.get());
+
+		response.Parse(dispatcher.dispatch(
+			dummyConnection,
+			"{\"method\":\"get\",\"scope\":\"mock\",\"action\":\"test\"}"
+		).c_str());
+
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_PARTIAL_CONTENT == response["status"].GetUint());
+
+		// Finally, unregister it and show it's not found again
+		dispatcher.unregisterScope(scopeTest2->getName());
+
+		response.Parse(dispatcher.dispatch(
+			dummyConnection,
+			"{\"method\":\"get\",\"scope\":\"test2\",\"action\":\"test\"}"
+		).c_str());
+
+		CHECK(!response.HasParseError());
+		CHECK(response.HasMember("status"));
+		CHECK(response["status"].IsUint());
+		CHECK(Response::STATUS_NOT_FOUND == response["status"].GetUint());
+	}
 }
