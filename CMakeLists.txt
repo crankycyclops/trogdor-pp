@@ -75,6 +75,11 @@ install(DIRECTORY script DESTINATION share/trogdor COMPONENT data)
 add_custom_target(trogdor_pkgconfig)
 
 set(PKGCONFIG_TARGET trogdor)
+set(PKGCONFIG_NAME trogdor)
+set(PKGCONFIG_DESCRIPTION "The trogdor-pp core library")
+set(PKGCONFIG_VERSION 0.70.0)
+set(PKGCONFIG_URL "https://github.com/crankycyclops/trogdor-pp")
+
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/cmake/pkg_config.pc.in"
 	trogdor.pc
@@ -89,6 +94,11 @@ install(FILES ${CMAKE_BINARY_DIR}/trogdor.pc DESTINATION lib/pkgconfig COMPONENT
 add_custom_target(trogdord_pkgconfig)
 
 set(PKGCONFIG_TARGET trogdord)
+set(PKGCONFIG_NAME trogdord)
+set(PKGCONFIG_DESCRIPTION "Trogdord server")
+set(PKGCONFIG_VERSION 0.80.0)
+set(PKGCONFIG_URL "https://github.com/crankycyclops/trogdor-pp")
+
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/cmake/pkg_config.pc.in"
 	trogdord.pc
