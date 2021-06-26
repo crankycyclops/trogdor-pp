@@ -5,6 +5,8 @@
 #include <vector>
 #include <unordered_map>
 
+class ScopeController;
+
 
 class ExtensionLoader {
 
@@ -24,6 +26,12 @@ class ExtensionLoader {
 		// Tracks which scopes were registered by which extensions so we can
 		// remove them when the extension is unloaded.
 		std::unordered_map<const char *, std::vector<std::string>> registeredScopes;
+
+		// Takes as input the name of the extension and a pointer to an
+		// extension's scope loader function and attempts to load those scopes
+		// into the singleton instance of Dispatcher. If loading fails, this
+		// returns false. Otherwise, it returns true.
+		bool loadScopes(const char *extension, ScopeController **(*scopeLoader)());
 
 	public:
 
