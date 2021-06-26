@@ -1,5 +1,6 @@
 .vscode
 /build
+src/core/build
 Makefile
 CMakeCache.txt
 CMakeFiles

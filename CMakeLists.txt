@@ -8,7 +8,7 @@ include(CheckIncludeFile)
 include(CheckIncludeFileCXX)
 include(LibtoolFile)
 
-project(Trogdor-pp)
+project(trogdor)
 
 # Enable conditional compilation in the case of a debug build
 string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_lower)
