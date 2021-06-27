@@ -1,6 +1,8 @@
 .vscode
 /build
 src/core/build
+src/standalone/build
+src/trogdord/build
 Makefile
 CMakeCache.txt
 CMakeFiles

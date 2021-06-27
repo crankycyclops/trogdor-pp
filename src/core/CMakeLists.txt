@@ -46,6 +46,9 @@ set(PKGCONFIG_URL "https://github.com/crankycyclops/trogdor-pp")
 pkg_search_module(LIBXML REQUIRED libxml-2.0 libxml2 libxml>=2)
 pkg_search_module(LUA REQUIRED lua-$ENV{LUA_VERSION})
 
+# Game definition files are saved here by default
+add_definitions(-DGAME_XML_DEFAULT_PATH=\"${CMAKE_INSTALL_PREFIX}/share/trogdor/game.xml\")
+
 ###############################################################################
 
 # C++ Include files necessary to develop for the library
@@ -147,7 +150,8 @@ if (ENABLE_SERIALIZE_JSON)
 
     add_library(trogdor_serial_json SHARED ${JSON_SOURCES})
     CREATE_LIBTOOL_FILE(trogdor_serial_json ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
-    target_include_directories(trogdor_serial_json ${CORE_INCLUDES})
+	target_link_libraries(trogdor_serial_json ${CORE_LIBRARIES})
+	target_include_directories(trogdor_serial_json ${CORE_INCLUDES})
     add_dependencies(trogdor_serial_json trogdor_serial trogdor_serial_json_pkgconfig)
     install(TARGETS trogdor_serial_json DESTINATION lib COMPONENT trogdor_serial_json OPTIONAL)
 
@@ -180,6 +184,7 @@ if (ENABLE_SERIALIZE_SQLITE)
 	)
 
 	set(SQLITE_LIBRARIES
+		${CORE_LIBRARIES}
 		PUBLIC sqlite3
 	)
 
