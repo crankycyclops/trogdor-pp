@@ -7,7 +7,7 @@ make -j2 trogdor
 make install
 
 cd ../trogdord
-cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_REDIS=ON .
+cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_REDIS=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr .
 
 # Make sure the entire build for trogdord succeeds, including main.cpp, which
 # isn't included in the unit tests
