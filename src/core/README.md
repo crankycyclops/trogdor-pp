@@ -31,14 +31,16 @@ $ apt-get install libsqlite3-dev
 
 ## Installation
 
-To build and install the library, issue these commands:
+To build and install the library and accompanying sample data, issue these commands:
 
 ```
-cmake -DCMAKE_BUILD_TYPE=Release .
+cd src/core && cmake -DCMAKE_BUILD_TYPE=Release .
 make trogdor && make install
 ```
 
 The library will be installed along with the include files for development in `/usr/include/trogdor` and sample game data in `/usr/share/trogdor`.
+
+Trogdor-pp supports Lua 5.1, 5.2, and 5.3. 5.3 is the default, but you can select one of the other supported versions by passing `LUA_VERSION=5.x` into your cmake command, where 5.x is the desired version.
 
 To build the trogdor library with support for the built-in JSON serialization format, add `-DENABLE_SERIALIZE_JSON=ON` to your cmake command above (requires the RapidJSON header-only library in your include path to build successfully.)
 

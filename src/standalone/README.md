@@ -10,18 +10,16 @@ A demo CLI client written to demonstrate how one can use the Trogdor++ library t
 
 ## Installation
 
-To build and install the single player demo, use these commands:
+To build and install the single player demo, use these commands (be sure you've built and installed the [core library](../core/README.md) first and that pkg-config is configured to find it):
 
 ```
-cmake -DCMAKE_BUILD_TYPE=Release .
+cd src/standalone && cmake -DCMAKE_BUILD_TYPE=Release .
 make standalone && make install
 ```
 
-Note that you don't have to explicitly build the library first. Building the client will automatically build and link to the library as a dependency.
-
 The client will be installed to `/usr/bin/standalone` and will, by default, use the sample game data intalled to `/usr/share/trogdor` by the core library target.
 
-To build the standalone client with support for saving and loading games, enable the built-in JSON serialization format by adding `-DENABLE_SERIALIZE_JSON=ON` to your cmake command above (requires the RapidJSON header-only library in your include path to build successfully.)
+If the core library was built with serialization support (either JSON, SQLite3, or both), the standalone client will be automatically built with support for saving and loading games.
 
 If you need debug symbols, add the following option to your cmake command: `-DCMAKE_BUILD_TYPE=Debug`. If you've already built it using debug symbols in the past and want to switch back to a release build, use this cmake option instead: `-DCMAKE_BUILD_TYPE=Release`.
 

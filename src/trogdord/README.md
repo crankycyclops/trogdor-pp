@@ -52,16 +52,16 @@ If you're interested in writing your own client-side connector, or just want to 
 
 ## Installation
 
-To build and install, issue these commands:
+To build and install, first make sure the [core library](../core/README.md) was built and installed to a place where pkg-config can find it, then issue these commands:
 
 ```
-cmake -DCMAKE_BUILD_TYPE=Release .
+cd src/trogdord && cmake -DCMAKE_BUILD_TYPE=Release .
 make trogdord && make install
 ```
 
 To build trogdord with redis support, add `-DENABLE_REDIS=ON` to your cmake command above.
-To build trogdord with support for the JSON serialization format, add `-DENABLE_SERIALIZE_JSON=ON` to your cmake command above.
-To build trogdord with support for the SQLite3 serialization format, add `-DENABLE_SERIALIZE_SQLITE=ON` to your cmake command above.
+
+If the [core library](../core/README.md) was compiled with either the JSON or SQLite3 serialization drivers (or both), they will be available to trogdord for dumping and restoring games.
 
 If you need debug symbols, add the following option to your cmake command: `-DCMAKE_BUILD_TYPE=Debug`. If you've already built it using debug symbols in the past and want to switch back to a release build, use this cmake option instead: `-DCMAKE_BUILD_TYPE=Release`.
 

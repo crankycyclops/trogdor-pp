@@ -2,7 +2,7 @@
 
 # Trogdor++
 
-A unified engine for building text adventures and MUDs with batteries included.
+A batteries-included engine with tools for building single and multi-player text adventures and MUDs.
 
 ## Introduction
 
