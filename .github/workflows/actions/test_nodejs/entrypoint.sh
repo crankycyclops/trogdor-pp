@@ -60,7 +60,7 @@ cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_REDIS=ON -DCMAKE_INSTALL_PREFIX:PATH=/us
 make -j2 trogdord
 make install
 
-cd src/nodejs/trogdord
+cd ../nodejs/trogdord
 
 ##############################
 #          Run tests         #
