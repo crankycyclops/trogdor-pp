@@ -51,7 +51,8 @@ find_library(ENABLE_SERIALIZE_SQLITE NAMES libtrogdor_serial_sqlite.so trogdor_s
 add_definitions(-DASIO_STANDALONE)
 
 # Game definition files are saved here by default
-add_definitions(-DGAME_XML_DEFAULT_PATH=\"${CMAKE_INSTALL_PREFIX}/share/trogdor/game.xml\")
+set(GAME_XML_DEFAULT_PATH "${CMAKE_INSTALL_PREFIX}/share/trogdor/game.xml")
+add_definitions(-DGAME_XML_DEFAULT_PATH=\"${GAME_XML_DEFAULT_PATH}\")
 
 # TODO: I need to refactor core's code so that I don't need these in the
 # include path (they should just be required for core)
@@ -59,6 +60,14 @@ set(CORE_INCLUDES
 	PUBLIC ${LIBXML_INCLUDE_DIRS}
 	PUBLIC ${LUA_INCLUDE_DIRS}
 )
+
+if (ENABLE_SERIALIZE_JSON)
+	add_definitions(-DENABLE_SERIALIZE_JSON)
+endif (ENABLE_SERIALIZE_JSON)
+
+if (ENABLE_SERIALIZE_SQLITE)
+	add_definitions(-DENABLE_SERIALIZE_SQLITE)
+endif (ENABLE_SERIALIZE_SQLITE)
 
 ###############################################################################
 
@@ -253,7 +262,7 @@ endif (INIH_INCLUDEDIR)
 
 # This is the game definition file we're going to use for unit tests
 add_definitions(
-	-DCORE_UNIT_TEST_DEFINITION_FILE=\(\"${PROJECT_SOURCE_DIR}/game.xml\"\)
+	-DCORE_UNIT_TEST_DEFINITION_FILE=\(\"${GAME_XML_DEFAULT_PATH}\"\)
 )
 
 # Trogdord unit tests
@@ -314,6 +323,36 @@ endif (INIH_INCLUDEDIR)
 
 add_custom_target(unit_test)
 add_dependencies(unit_test test_trogdord)
+
+###############################################################################
+
+if (ENABLE_SERIALIZE_JSON)
+
+	target_link_libraries(trogdord
+		PUBLIC trogdor_serial
+		PUBLIC trogdor_serial_json
+	)
+
+	target_link_libraries(test_trogdord
+		PUBLIC trogdor_serial
+		PUBLIC trogdor_serial_json
+	)
+
+endif (ENABLE_SERIALIZE_JSON)
+
+if (ENABLE_SERIALIZE_SQLITE)
+
+	target_link_libraries(trogdord
+		PUBLIC trogdor_serial
+		PUBLIC trogdor_serial_sqlite
+	)
+
+	target_link_libraries(test_trogdord
+		PUBLIC trogdor_serial
+		PUBLIC trogdor_serial_sqlite
+	)
+
+endif (ENABLE_SERIALIZE_SQLITE)
 
 ###############################################################################
 
