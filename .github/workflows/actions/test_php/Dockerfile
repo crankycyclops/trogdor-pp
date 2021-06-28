@@ -19,9 +19,9 @@ RUN apt-get -y install git g++ zlib1g-dev libonig-dev libzip5 libzip-dev
 COPY buildphp.sh /buildphp.sh
 RUN chmod +x /buildphp.sh
 RUN /buildphp.sh 7.2.34
-RUN /buildphp.sh 7.3.27
-RUN /buildphp.sh 7.4.15
-RUN /buildphp.sh 8.0.2
+RUN /buildphp.sh 7.3.28
+RUN /buildphp.sh 7.4.20
+RUN /buildphp.sh 8.0.7
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

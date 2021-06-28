@@ -1,5 +1,6 @@
 #!/bin/sh
 
+cd src/core
 cmake -DCMAKE_BUILD_TYPE=Debug .
 
 # Make sure the build for core succeeds
