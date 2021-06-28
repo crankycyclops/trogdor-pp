@@ -315,6 +315,9 @@ if (INIH_INCLUDEDIR)
 
 	endif (ENABLE_REDIS)
 
+	# The default interval between timer ticks should be much shorter for unit tests
+	target_compile_definitions(test_trogdord PRIVATE TIMER_CUSTOM_INTERVAL=5)
+
 else (INIH_INCLUDEDIR)
 
 	add_custom_target(test_trogdord echo "\"Skipping\\040trogdord\\040unit\\040tests\\040because\\040the\\040inih\\040library\\040isn't\\040installed\\040in\\040a\\040place\\040where\\040CMake\\040can\\040find\\040it\\040(you\\040can\\040try\\040setting\\040the\\040INIH_INCLUDE_DIRS\\040environment\\040variable\\040manually.)\"")

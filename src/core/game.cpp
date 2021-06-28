@@ -32,14 +32,14 @@
 namespace trogdor {
 
 
-   Game::Game(std::unique_ptr<Trogerr> e) {
+   Game::Game(std::unique_ptr<Trogerr> e, std::optional<size_t> timerTickInterval) {
 
       try {
 
          errStream = std::move(e);
 
          inGame = false;
-         timer = std::make_unique<Timer>(this);
+         timer = std::make_unique<Timer>(this, timerTickInterval);
 
          introduction.enabled           = DEFAULT_INTRODUCTION_ENABLED;
          introduction.text              = "";

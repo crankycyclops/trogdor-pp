@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <cstdlib>
+#include <optional>
 
 #include <thread>
 #include <mutex>
@@ -180,7 +181,12 @@ namespace trogdor {
             definition of Game::deserialize.)
          */
          Game() = delete;
-         Game(std::unique_ptr<Trogerr> e);
+
+         Game(
+            std::unique_ptr<Trogerr> e,
+            std::optional<size_t> timerTickInterval = std::nullopt
+         );
+
          Game(
             std::shared_ptr<serial::Serializable> data,
             std::unique_ptr<Trogerr> gameErrStream,

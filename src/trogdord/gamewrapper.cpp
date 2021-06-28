@@ -19,6 +19,14 @@
 
 #include <trogdord/gamewrapper.h>
 
+// Unit tests will have to pass in a custom arument for timer's tick interval,
+// while an ordinary build will want to use the default
+#ifdef TIMER_CUSTOM_INTERVAL
+	#define TIMER_CUSTOM_INTERVAL_ARG , TIMER_CUSTOM_INTERVAL
+#else
+	#define TIMER_CUSTOM_INTERVAL_ARG
+#endif
+
 
 std::unordered_map<std::string, std::string> GameWrapper::getDumpedGameMeta(
 	const std::string &metaPath
@@ -72,6 +80,7 @@ GameWrapper::GameWrapper(
 	// simple copy of the global server error logger
 	gamePtr = std::make_unique<trogdor::Game>(
 		Config::get()->err().copy()
+		TIMER_CUSTOM_INTERVAL_ARG
 	);
 
 	std::unique_ptr<trogdor::XMLParser> parser = std::make_unique<trogdor::XMLParser>(

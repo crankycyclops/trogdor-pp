@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 #include <memory>
+#include <optional>
 
 #include <list>
 #include <iostream>
@@ -15,10 +16,10 @@
 
 #ifdef TIMER_CUSTOM_INTERVAL
    // Used for debugging
-   constexpr int TIMER_DEFAULT_TICK_MILLISECONDS = (TIMER_CUSTOM_INTERVAL);
+   constexpr size_t TIMER_DEFAULT_TICK_MILLISECONDS = (TIMER_CUSTOM_INTERVAL);
 #else
    // Default number of milliseconds between each clock tick
-   constexpr int TIMER_DEFAULT_TICK_MILLISECONDS = 1000;
+   constexpr size_t TIMER_DEFAULT_TICK_MILLISECONDS = 1000;
 #endif
 
 namespace trogdor {
@@ -94,7 +95,7 @@ namespace trogdor {
          Timer() = delete;
          Timer(const Timer &) = delete;
          Timer &operator=(const Timer &) = delete;
-         Timer(Game *game, size_t interval = TIMER_DEFAULT_TICK_MILLISECONDS);
+         Timer(Game *game, std::optional<size_t> interval = std::nullopt);
          Timer(Game *game, const serial::Serializable &data);
 
          /*
