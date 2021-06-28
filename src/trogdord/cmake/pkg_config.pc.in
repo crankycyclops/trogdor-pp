@@ -1,0 +1,17 @@
+# Adapted from here: https://www.scivision.dev/cmake-generate-pkg-config/
+#
+# Good tutoral for understanding .pc files: 
+# https://people.freedesktop.org/~dbn/pkg-config-guide.html
+
+prefix="@CMAKE_INSTALL_PREFIX@"
+exec_prefix="${prefix}"
+libdir="${prefix}/lib"
+includedir="${prefix}/include"
+
+Name: @PKGCONFIG_NAME@
+Description: @PKGCONFIG_DESCRIPTION@
+Version: @PKGCONFIG_VERSION@
+URL: @PKGCONFIG_URL@
+
+Cflags: -I"${includedir}"
+Libs: -L"${libdir}" -l@PKGCONFIG_TARGET@
