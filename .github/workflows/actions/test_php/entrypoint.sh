@@ -66,12 +66,18 @@ runTest() {
 ##############################
 
 cd src/trogdord
-cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_REDIS=ON .
+cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_REDIS=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr .
 
 if [ $? -ne 0 ]; then
 	exit 1
 fi
 
+cd src/core
+cmake -DENABLE_SERIALIZE_JSON=ON -DENABLE_SERIALIZE_SQLITE=ON -DCMAKE_BUILD_TYPE=Debug .
+make -j2 trogdor
+make install
+
+cd ../trogdord
 make -j2 trogdord
 
 if [ $? -ne 0 ]; then
