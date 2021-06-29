@@ -13,6 +13,8 @@ pkg_search_module(TROGDORD REQUIRED trogdord)
 
 set (SOURCES
     hello.cpp
+    output.cpp
+    serial.cpp
     extension.cpp
 )
 
