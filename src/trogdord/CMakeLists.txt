@@ -278,6 +278,7 @@ if (INIH_INCLUDEDIR)
 		test/dispatcher.cpp
 		test/gamewrapper.cpp
 		test/gamecontainer.cpp
+		test/extensionloader.cpp
 		test/io/output/driver.cpp
 		test/io/output/local.cpp
 		test/scopes/controller.cpp
