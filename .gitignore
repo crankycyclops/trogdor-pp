@@ -2,6 +2,7 @@
 src/core/build
 src/standalone/build
 src/trogdord/build
+src/trogdord/sample/extensions/hello/build
 Makefile
 CMakeCache.txt
 CMakeFiles
