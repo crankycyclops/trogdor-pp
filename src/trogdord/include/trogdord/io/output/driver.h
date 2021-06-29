@@ -5,6 +5,7 @@
 #include <memory>
 #include <optional>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "../message.h"
 
@@ -21,6 +22,11 @@ namespace output {
 
 			// Maps driver names to a singleton instance of that driver
 			static std::unordered_map<std::string, Driver *> drivers;
+
+			// Keeps track of which drivers are built-in. This is important,
+			// because built-in drivers cannot be unregistered later, while
+			// drivers loaded by extensions can.
+			static std::unordered_set<std::string> builtins;
 
 			// Instantiates the available output drivers (should only be
 			// called once.)
