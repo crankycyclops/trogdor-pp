@@ -105,6 +105,14 @@ class Config {
 		const auto begin() const {return ini.cbegin();}
 		const auto end() const {return ini.cend();}
 
+		// Resets an ini file setting to its hardcoded default value.
+		void setDefaultValue(std::string key) {
+
+			if (ini.end() != ini.find(key) && DEFAULTS.end() != DEFAULTS.find(key)) {
+				ini[key] = DEFAULTS.find(key)->second;
+			}
+		}
+
 		// Returns a vector of all extensions that are to be loaded when the
 		// server starts.
 		std::vector<std::string> getExtensions();

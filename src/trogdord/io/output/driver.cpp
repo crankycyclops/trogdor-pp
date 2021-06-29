@@ -80,6 +80,14 @@ namespace output {
 		}
 
 		drivers.erase(name);
+
+		// If we previously configured trogdord to use this output driver, we
+		// must reset that back to its default value to prevent an exception
+		// and undefined behavior later on down the road.
+		if (0 == Config::get()->getString(Config::CONFIG_KEY_OUTPUT_DRIVER).compare(name)) {
+			Config::get()->setDefaultValue(Config::CONFIG_KEY_OUTPUT_DRIVER);
+		}
+
 		return true;
 	}
 

@@ -43,7 +43,7 @@ TEST_SUITE("Config (config.cpp)") {
 		}
 	}
 
-	TEST_CASE ("Config (config.cpp): Construction with valid ini file and getString()") {
+	TEST_CASE("Config (config.cpp): Construction with valid ini file and getString()") {
 
 		std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
 
@@ -72,7 +72,7 @@ TEST_SUITE("Config (config.cpp)") {
 		STD_FILESYSTEM::remove(iniFilename);
 	}
 
-	TEST_CASE ("Config (config.cpp): getUInt()") {
+	TEST_CASE("Config (config.cpp): getUInt()") {
 
 		SUBCASE("Valid unsigned integer") {
 
@@ -111,7 +111,7 @@ TEST_SUITE("Config (config.cpp)") {
 		}
 	}
 
-	TEST_CASE ("Config (config.cpp): getInt()") {
+	TEST_CASE("Config (config.cpp): getInt()") {
 
 		SUBCASE("Valid integer") {
 
@@ -150,7 +150,7 @@ TEST_SUITE("Config (config.cpp)") {
 		}
 	}
 
-	TEST_CASE ("Config (config.cpp): getBool()") {
+	TEST_CASE("Config (config.cpp): getBool()") {
 
 		SUBCASE("All possible values for true") {
 
@@ -212,7 +212,7 @@ TEST_SUITE("Config (config.cpp)") {
 		}
 	}
 
-	TEST_CASE ("Config (config.cpp): getStatePath()") {
+	TEST_CASE("Config (config.cpp): getStatePath()") {
 
 		SUBCASE("Default value") {
 
@@ -246,7 +246,7 @@ TEST_SUITE("Config (config.cpp)") {
 		}
 	}
 
-	TEST_CASE ("Config (config.cpp): initErrorLogger() and err()") {
+	TEST_CASE("Config (config.cpp): initErrorLogger() and err()") {
 
 		SUBCASE("cout") {
 
@@ -273,5 +273,15 @@ TEST_SUITE("Config (config.cpp)") {
 			CHECK(STD_FILESYSTEM::exists(logFile));
 			STD_FILESYSTEM::remove(logFile);
 		}
+	}
+
+	TEST_CASE("Config (config.cpp): setDefaultValue()") {
+
+		// TODO
+	}
+
+	TEST_CASE("Config (config.cpp): getExtensions()") {
+
+		// TODO
 	}
 }
