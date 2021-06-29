@@ -22,4 +22,4 @@ set(LIBRARIES
 
 add_library(hello SHARED ${SOURCES})
 set_target_properties(hello PROPERTIES PREFIX "")
-install(TARGETS hello DESTINATION lib/trogdor)
+install(TARGETS hello DESTINATION lib/trogdord)
