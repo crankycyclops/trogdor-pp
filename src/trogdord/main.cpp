@@ -7,13 +7,13 @@
 #include <trogdord/config.h>
 #include <trogdord/gamecontainer.h>
 #include <trogdord/io/input/listenercontainer.h>
+#include <trogdord/extensionloader.h>
 
 #include <trogdord/network/tcpcommon.h>
 #include <trogdord/network/tcpconnection.h>
 #include <trogdord/network/tcpserver.h>
 
-// TODO: remove
-#include <trogdord/extensionloader.h>
+#include <trogdord/exception/outputdrivernotfound.h>
 
 
 static const char *STARTUP_MESSAGE = "Starting Trogdord.";
@@ -89,6 +89,15 @@ int main(int argc, char **argv) {
 		// Load extensions
 		for (const auto &extension: Config::get()->getExtensions()) {
 			ExtensionLoader::get()->load(extension.c_str());
+		}
+
+		// Make sure the configured output driver exists before starting
+		try {
+			output::Driver::get(Config::get()->getString(Config::CONFIG_KEY_OUTPUT_DRIVER));
+		} catch (const OutputDriverNotFound &e) {
+			config->err(trogdor::Trogerr::ERROR) << e.what() << std::endl;
+			config->err(trogdor::Trogerr::ERROR) << SHUTDOWN_MESSAGE << std::endl;
+			return EXIT_FAILURE;
 		}
 
 		// Constructor starts up a deadline_timer that checks at regular intervals
