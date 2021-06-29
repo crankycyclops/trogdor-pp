@@ -278,6 +278,8 @@ if (INIH_INCLUDEDIR)
 		test/dispatcher.cpp
 		test/gamewrapper.cpp
 		test/gamecontainer.cpp
+		test/io/output/driver.cpp
+		test/io/output/local.cpp
 		test/scopes/controller.cpp
 		test/scopes/global.cpp
 		test/scopes/game.cpp
@@ -290,6 +292,8 @@ if (INIH_INCLUDEDIR)
 		test/scopes/being.cpp
 		test/scopes/creature.cpp
 		test/scopes/player.cpp
+		test/io/output/driver.cpp
+		test/io/output/local.cpp
 	)
 
 	target_include_directories(test_trogdord
