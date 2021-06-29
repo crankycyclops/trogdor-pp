@@ -21,12 +21,9 @@ void ServerOut::flush() {
 	}
 
 	else {
-
-		std::unique_ptr<output::Driver> &outBuffer = output::Driver::get(
+		output::Driver::get(
 			Config::get()->getString(Config::CONFIG_KEY_OUTPUT_DRIVER)
-		);
-
-		outBuffer->push(gameId, entityPtr->getName(), getChannel(), m);
+		)->push(gameId, entityPtr->getName(), getChannel(), m);
 	}
 
 	clear();
@@ -40,7 +37,7 @@ void ServerOut::setEntity(trogdor::entity::Entity *e) {
 
 	if (msgBuffer.size()) {
 
-		std::unique_ptr<output::Driver> &outBuffer = output::Driver::get(
+		output::Driver *outBuffer = output::Driver::get(
 			Config::get()->getString(Config::CONFIG_KEY_OUTPUT_DRIVER)
 		);
 

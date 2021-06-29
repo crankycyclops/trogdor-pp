@@ -6,6 +6,27 @@ namespace output {
 	// String representation of the driver's name
 	const char *Local::DRIVER_NAME = "local";
 
+	// Singleton instance of Local
+	std::unique_ptr<Local> Local::instance = nullptr;
+
+	/************************************************************************/
+
+	std::unique_ptr<Local> &Local::get() {
+
+		if (!instance) {
+			instance = std::unique_ptr<Local>(new Local());
+		}
+
+		return instance;
+	}
+
+	/*****************************************************************************/
+
+	const char *Local::getName() {
+
+		return DRIVER_NAME;
+	}
+
 	/************************************************************************/
 
 	size_t Local::size(

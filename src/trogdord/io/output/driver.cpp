@@ -14,16 +14,16 @@ namespace output {
 	bool Driver::driversInstantiated = false;
 
 	// Driver names mapped to singleton instances of Driver
-	std::unordered_map<std::string, std::unique_ptr<Driver>> Driver::drivers;
+	std::unordered_map<std::string, Driver *> Driver::drivers;
 
 	/************************************************************************/
 
 	void Driver::instantiateDrivers() {
 
-		drivers[Local::DRIVER_NAME] = std::make_unique<Local>();
+		drivers[Local::get()->getName()] = Local::get().get();
 
 		#ifdef ENABLE_REDIS
-			drivers[Redis::DRIVER_NAME] = std::make_unique<Redis>();
+			drivers[Redis::get()->getName()] = Redis::get().get();
 		#endif
 
 		driversInstantiated = true;
@@ -31,7 +31,7 @@ namespace output {
 
 	/************************************************************************/
 
-	std::unique_ptr<Driver> &Driver::get(std::string name) {
+	Driver *Driver::get(std::string name) {
 
 		if (!driversInstantiated) {
 			instantiateDrivers();

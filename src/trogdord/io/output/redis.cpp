@@ -8,6 +8,27 @@ namespace output {
 	// String representation of the driver's name
 	const char *Redis::DRIVER_NAME = "redis";
 
+	// Singleton instance of Local
+	std::unique_ptr<Redis> Redis::instance = nullptr;
+
+	/************************************************************************/
+
+	std::unique_ptr<Redis> &Redis::get() {
+
+		if (!instance) {
+			instance = std::unique_ptr<Redis>(new Redis());
+		}
+
+		return instance;
+	}
+
+	/*****************************************************************************/
+
+	const char *Redis::getName() {
+
+		return DRIVER_NAME;
+	}
+
 	/************************************************************************/
 
 	Redis::Redis() {

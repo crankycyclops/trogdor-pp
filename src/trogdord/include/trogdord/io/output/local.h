@@ -17,6 +17,9 @@ namespace output {
 
 		private:
 
+			// Singleton instance of the Local output driver
+			static std::unique_ptr<Local> instance;
+
 			// Make sure all operations on the local output buffer are thread-safe
 			std::mutex bufferMutex;
 
@@ -59,11 +62,17 @@ namespace output {
 
 		public:
 
+			// String representation of the driver's name.
+			static const char *DRIVER_NAME;
+
+			// Returns singleton instance of the Local output driver.
+			static std::unique_ptr<Local> &get();
+
 			// Destructor
 			virtual ~Local();
 
-			// String representation of the driver's name.
-			static const char *DRIVER_NAME;
+			// Returns the driver's name
+			virtual const char *getName();
 
 			// Returns the number of messages in an entity's channel's output
 			// buffer.

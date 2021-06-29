@@ -20,7 +20,7 @@ namespace output {
 			static bool driversInstantiated;
 
 			// Maps driver names to a singleton instance of that driver
-			static std::unordered_map<std::string, std::unique_ptr<Driver>> drivers;
+			static std::unordered_map<std::string, Driver *> drivers;
 
 			// Instantiates the available output drivers (should only be
 			// called once.)
@@ -82,13 +82,16 @@ namespace output {
 
 		public:
 
-			// Every driver should implement a destructor.
-			virtual ~Driver() = 0;
-
 			// Returns the singleton instance of Driver matching the given name
 			// (throws ServerException if the specified driver name hasn't
 			// been mapped to an instance of Driver.)
-			static std::unique_ptr<Driver> &get(std::string name);
+			static Driver *get(std::string name);
+
+			// Every driver should implement a destructor.
+			virtual ~Driver() = 0;
+
+			// Returns the driver's name
+			virtual const char *getName() = 0;
 
 			// Returns the number of messages in an entity's channel's output
 			// buffer

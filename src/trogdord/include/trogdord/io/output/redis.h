@@ -20,6 +20,9 @@ namespace output {
 
 		private:
 
+			// Singleton instance of the Redis output driver
+			static std::unique_ptr<Redis> instance;
+
 			// Whether or not the driver is considered activated. Setting
 			// this to false after a thread is started to push messages to
 			// redis results in that thread shutting down.
@@ -76,12 +79,18 @@ namespace output {
 			// String representation of the driver's name.
 			static const char *DRIVER_NAME;
 
+			// Returns singleton instance of the Redis output driver.
+			static std::unique_ptr<Redis> &get();
+
 			// Constructor
 			Redis();
 			Redis(const Redis &) = delete;
 
 			// Destructor
 			virtual ~Redis();
+
+			// Returns the driver's name
+			virtual const char *getName();
 
 			// Returns whether or not we're currently connected to redis
 			inline bool isConnected() {
