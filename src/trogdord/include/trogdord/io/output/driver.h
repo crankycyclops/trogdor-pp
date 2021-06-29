@@ -93,6 +93,17 @@ namespace output {
 			// been mapped to an instance of Driver.)
 			static Driver *get(std::string name);
 
+			// Registers a new output driver. If a driver by the same name has
+			// already been registered, this will return false and the driver
+			// will not be registered. Otherwise, the driver will be registered
+			// and this function will return true.
+			static bool registerDriver(Driver *driver);
+
+			// Unregisters a scope. Returns false if the scope doesn't exist or if
+			// it's built in and cannot be removed. Otherwise, the scope is removed
+			// and the function return true.
+			static bool unregisterDriver(std::string name);
+
 			// Every driver should implement a destructor.
 			virtual ~Driver() = 0;
 

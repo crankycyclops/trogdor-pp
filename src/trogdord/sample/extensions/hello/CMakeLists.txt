@@ -9,6 +9,10 @@ include(FindPkgConfig)
 include(CheckIncludeFile)
 include(CheckIncludeFileCXX)
 
+# Build using C++17
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
 pkg_search_module(TROGDORD REQUIRED trogdord)
 
 set (SOURCES

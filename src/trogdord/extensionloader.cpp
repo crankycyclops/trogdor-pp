@@ -63,6 +63,38 @@ bool ExtensionLoader::loadScopes(const char *extension, ScopeController **(*scop
 
 /******************************************************************************/
 
+bool ExtensionLoader::loadOutputDrivers(
+	const char *extension, output::Driver **(*driverLoader)()
+) {
+
+	if (driverLoader != NULL) {
+
+		if (dlerror() != NULL) {
+			Config::get()->err(trogdor::Trogerr::ERROR) << "ExtensionLoader::load(): failed to load "
+				<< extension << ": " << dlerror() << std::endl;
+			return false;
+		}
+
+		else {
+
+			output::Driver **drivers = driverLoader();
+
+			for (output::Driver **driver = drivers; *driver != nullptr; driver++) {
+				if (!output::Driver::registerDriver(*driver)) {
+					Config::get()->err(trogdor::Trogerr::ERROR) << "ExtensionLoader::load(): failed to load "
+						<< extension << " because it tried to register an output driver (" << (*driver)->getName()
+						<< ") that was already previously registered." << std::endl;
+					return false;
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
+/******************************************************************************/
+
 bool ExtensionLoader::load(const char *extension) {
 
 	std::unique_ptr<Config> &config = Config::get();
@@ -90,6 +122,12 @@ bool ExtensionLoader::load(const char *extension) {
 
 		// Attempt to load scopes, if any
 		if (!loadScopes(extension, reinterpret_cast<ScopeController** (*)()>(dlsym(handle, "loadScopes")))) {
+			dlclose(handle);
+			return false;
+		}
+
+		// Attempt to load output drivers, if any
+		if (!loadOutputDrivers(extension, reinterpret_cast<output::Driver** (*)()>(dlsym(handle, "loadOutputDrivers")))) {
 			dlclose(handle);
 			return false;
 		}
@@ -135,6 +173,9 @@ void ExtensionLoader::unload(const char *extension) {
 
 			registeredScopes.erase(extension);
 		}
+
+		// TODO: write code to unload output drivers and reset to default
+		// value in Config.
 
 		config->err(trogdor::Trogerr::INFO) << "ExtensionLoader::unload(): "
 			<< extension << " unloaded." << std::endl;

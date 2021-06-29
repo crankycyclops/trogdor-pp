@@ -57,6 +57,34 @@ namespace output {
 
 	/************************************************************************/
 
+	bool Driver::registerDriver(Driver *driver) {
+
+		if (drivers.end() != drivers.find(driver->getName())) {
+			return false;
+		}
+
+		drivers[driver->getName()] = driver;
+		return true;
+	}
+
+	/************************************************************************/
+
+	bool Driver::unregisterDriver(std::string name) {
+
+		if (drivers.end() == drivers.find(name)) {
+			return false;
+		}
+
+		else if (builtins.end() != builtins.find(name)) {
+			return false;
+		}
+
+		drivers.erase(name);
+		return true;
+	}
+
+	/************************************************************************/
+
 	// Default implementation for driver's that don't actually require
 	// activation
 	bool Driver::activated() {

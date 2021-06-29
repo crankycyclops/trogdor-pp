@@ -29,14 +29,13 @@ class HelloController: public ScopeController {
 
 	protected:
 
+		HelloController();
 		HelloController(const HelloController &) = delete;
 
 	public:
 
 		// Scope name that should be used in requests
 		static constexpr const char *SCOPE = "hello";
-
-		HelloController();
 
 		virtual ~HelloController();
 

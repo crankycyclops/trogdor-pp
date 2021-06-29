@@ -5,6 +5,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include <trogdord/io/output/driver.h>
+
 class ScopeController;
 
 
@@ -32,6 +34,12 @@ class ExtensionLoader {
 		// into the singleton instance of Dispatcher. If loading fails, this
 		// returns false. Otherwise, it returns true.
 		bool loadScopes(const char *extension, ScopeController **(*scopeLoader)());
+
+		// Takes as input the name of the extension and a pointer to an
+		// extension's output driver loader function and attempts to register
+		// it. If loading fails, this returns false. Otherwise, it returns
+		// true.
+		bool loadOutputDrivers(const char *extension, output::Driver **(*driverLoader)());
 
 	public:
 
