@@ -29,7 +29,11 @@ std::unique_ptr<ExtensionLoader> &ExtensionLoader::get() {
 
 /******************************************************************************/
 
-bool ExtensionLoader::loadScopes(const char *extension, ScopeController **(*scopeLoader)()) {
+bool ExtensionLoader::loadScopes(
+	const char *extension,
+	bool &usefulSymbols,
+	ScopeController **(*scopeLoader)()
+) {
 
 	if (scopeLoader != NULL) {
 
@@ -51,6 +55,8 @@ bool ExtensionLoader::loadScopes(const char *extension, ScopeController **(*scop
 						<< extension << " because it tried to register a scope (" << (*scope)->getName()
 						<< ") that was already previously registered." << std::endl;
 					return false;
+				} else {
+					usefulSymbols = true;
 				}
 
 				registeredScopes[extension].push_back((*scope)->getName());
@@ -64,7 +70,9 @@ bool ExtensionLoader::loadScopes(const char *extension, ScopeController **(*scop
 /******************************************************************************/
 
 bool ExtensionLoader::loadOutputDrivers(
-	const char *extension, output::Driver **(*driverLoader)()
+	const char *extension,
+	bool &usefulSymbols,
+	output::Driver **(*driverLoader)()
 ) {
 
 	if (driverLoader != NULL) {
@@ -85,6 +93,8 @@ bool ExtensionLoader::loadOutputDrivers(
 						<< extension << " because it tried to register an output driver (" << (*driver)->getName()
 						<< ") that was already previously registered." << std::endl;
 					return false;
+				} else {
+					usefulSymbols = true;
 				}
 			}
 		}
@@ -102,6 +112,7 @@ bool ExtensionLoader::load(const char *extension) {
 	#ifdef LIBDL
 
 		void *handle = nullptr;
+		bool usefulSymbols = false;
 
 		if (handles.end() != handles.find(extension)) {
 			config->err(trogdor::Trogerr::WARNING) << "ExtensionLoader::load(): "
@@ -121,25 +132,32 @@ bool ExtensionLoader::load(const char *extension) {
 		handles[extension] = handle;
 
 		// Attempt to load scopes, if any
-		if (!loadScopes(extension, reinterpret_cast<ScopeController** (*)()>(dlsym(handle, "loadScopes")))) {
+		if (!loadScopes(extension, usefulSymbols, reinterpret_cast<ScopeController** (*)()>(dlsym(handle, "loadScopes")))) {
 			dlclose(handle);
 			return false;
 		}
 
 		// Attempt to load output drivers, if any
-		if (!loadOutputDrivers(extension, reinterpret_cast<output::Driver** (*)()>(dlsym(handle, "loadOutputDrivers")))) {
+		if (!loadOutputDrivers(extension, usefulSymbols, reinterpret_cast<output::Driver** (*)()>(dlsym(handle, "loadOutputDrivers")))) {
 			dlclose(handle);
 			return false;
 		}
 
-		config->err(trogdor::Trogerr::INFO) << "ExtensionLoader::load(): "
-			<< extension << " loaded." << std::endl;
-		return true;
+		if (!usefulSymbols) {
+			dlclose(handle);
+			config->err(trogdor::Trogerr::INFO) << "ExtensionLoader::load(): "
+				<< extension << " exported no useful symbols. Ignoring." << std::endl;
+			return false;
+		} else {
+			config->err(trogdor::Trogerr::INFO) << "ExtensionLoader::load(): "
+				<< extension << " loaded." << std::endl;
+			return true;
+		}
 
 	#else
 
 		config->err(trogdor::Trogerr::ERROR) << "ExtensionLoader::load(): "
-			<< extension << " cannot be loaded because the extension loader isn't supported on your platform."
+			<< extension << " cannot be loaded because extensions aren't supported on your platform."
 			<< std::endl;
 		return false;
 
@@ -183,7 +201,7 @@ void ExtensionLoader::unload(const char *extension) {
 	#else
 
 		config->err(trogdor::Trogerr::ERROR) << "ExtensionLoader::unload(): "
-			<< "Cannot unload extension because extension loading is not supported on this platform."
+			<< "Cannot unload extension because extensions aren't supported on your platform."
 			<< std::endl;
 		return;
 

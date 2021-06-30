@@ -29,17 +29,27 @@ class ExtensionLoader {
 		// remove them when the extension is unloaded.
 		std::unordered_map<const char *, std::vector<std::string>> registeredScopes;
 
-		// Takes as input the name of the extension and a pointer to an
+		// Takes as input the name of the extension, a reference to a bool that
+		// gets set to true if any scopes were loaded, and a pointer to an
 		// extension's scope loader function and attempts to load those scopes
 		// into the singleton instance of Dispatcher. If loading fails, this
 		// returns false. Otherwise, it returns true.
-		bool loadScopes(const char *extension, ScopeController **(*scopeLoader)());
+		bool loadScopes(
+			const char *extension,
+			bool &usefulSymbols,
+			ScopeController **(*scopeLoader)()
+		);
 
-		// Takes as input the name of the extension and a pointer to an
-		// extension's output driver loader function and attempts to register
+		// Takes as input the name of the extension, a reference to a bool that
+		// gets set to true if any output drivers were loaded, and a pointer to
+		// an extension's output driver loader function and attempts to register
 		// it. If loading fails, this returns false. Otherwise, it returns
 		// true.
-		bool loadOutputDrivers(const char *extension, output::Driver **(*driverLoader)());
+		bool loadOutputDrivers(
+			const char *extension,
+			bool &usefulSymbols,
+			output::Driver **(*driverLoader)()
+		);
 
 	public:
 

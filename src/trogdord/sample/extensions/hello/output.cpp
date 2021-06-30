@@ -52,7 +52,8 @@ namespace output {
 		This method only needs to be implemented if the output driver needs to
 		support the {"method":"get","scope":"entity","action":"output"}
 		request (if you examine trogdord's built-in output drivers, you'll see
-		that Local supports this while Redis doesn't.)
+		that Local supports this while Redis doesn't.) This lets us know how
+		many outputted messages are on the stack, waiting to be retrieved.
 	*/
 	size_t HelloOut::size(
 		size_t gameId,
@@ -71,7 +72,7 @@ namespace output {
 
 		Like Driver::size(), this only needs to be implemented if the output
 		driver supports the {"method":"get","scope":"entity","action":"output"}
-		request.
+		request, meaning there's a stack of outputted messages to pop from.
 	*/
 	std::optional<Message> HelloOut::pop(
 		size_t gameId,
@@ -89,7 +90,7 @@ namespace output {
 		If the driver supports the
 		{"method":"get","scope":"entity","action":"output"} request, this
 		pushes a message onto an entity's channel's output buffer. If not,
-		this method immediately flushes the message.
+		this method should immediately send the message to its destination.
 	*/
 	void HelloOut::push(
 		size_t gameId,
