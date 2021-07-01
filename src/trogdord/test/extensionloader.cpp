@@ -79,4 +79,24 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 
 		#endif
 	}
+
+	TEST_CASE("ExtensionLoader (extensionloader.cpp): Loading extension that tries to overwrite builtin scope") {
+
+		// TODO
+	}
+
+	TEST_CASE("ExtensionLoader (extensionloader.cpp): Loading extension that tries to overwrite builtin output driver") {
+
+		// TODO
+	}
+
+	TEST_CASE("ExtensionLoader (extensionloader.cpp): Loading extension that exports a custom scope") {
+
+		// TODO
+	}
+
+	TEST_CASE("ExtensionLoader (extensionloader.cpp): Loading extension that exports a custom output driver") {
+
+		// TODO
+	}
 }
