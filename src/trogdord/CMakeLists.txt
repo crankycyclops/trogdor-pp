@@ -264,13 +264,44 @@ endif (INIH_INCLUDEDIR)
 add_library(test_trogdord_nousefulsymbols SHARED test/extensions/nousefulsymbols.cpp)
 set_property(TARGET test_trogdord_nousefulsymbols PROPERTY POSITION_INDEPENDENT_CODE ON)
 set_target_properties(test_trogdord_nousefulsymbols PROPERTIES PREFIX "")
-install(TARGETS test_trogdord_nousefulsymbols DESTINATION lib/trogdord)
 
 # Simulates loading an extension that exports a duplicate scope
 add_library(test_trogdord_duplicatescope SHARED test/extensions/duplicatescope.cpp)
 set_property(TARGET test_trogdord_duplicatescope PROPERTY POSITION_INDEPENDENT_CODE ON)
 set_target_properties(test_trogdord_duplicatescope PROPERTIES PREFIX "")
-install(TARGETS test_trogdord_duplicatescope DESTINATION lib/trogdord)
+
+target_link_libraries(test_trogdord_duplicatescope
+	PUBLIC libtrogdord
+)
+
+add_dependencies(test_trogdord_duplicatescope
+	libtrogdord
+)
+
+# Simulates loading an extension that exports a duplicate output driver
+add_library(test_trogdord_duplicateoutputdriver SHARED test/extensions/duplicateoutputdriver.cpp)
+set_property(TARGET test_trogdord_duplicateoutputdriver PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_target_properties(test_trogdord_duplicateoutputdriver PROPERTIES PREFIX "")
+
+if (ENABLE_REDIS)
+
+	target_include_directories(test_trogdord_duplicateoutputdriver
+		PUBLIC ${HIREDIS_INCLUDE_DIRS}
+	)
+
+	target_link_libraries(test_trogdord_duplicateoutputdriver
+		PUBLIC ${HIREDIS_LIBRARIES}
+	)
+
+endif (ENABLE_REDIS)
+
+target_link_libraries(test_trogdord_duplicateoutputdriver
+	PUBLIC libtrogdord
+)
+
+add_dependencies(test_trogdord_duplicateoutputdriver
+	libtrogdord
+)
 
 ###############################################################################
 
@@ -345,7 +376,13 @@ else (INIH_INCLUDEDIR)
 endif (INIH_INCLUDEDIR)
 
 add_custom_target(unit_test)
-add_dependencies(test_trogdord test_trogdord_nousefulsymbols test_trogdord_duplicatescope)
+
+add_dependencies(test_trogdord
+	test_trogdord_nousefulsymbols
+	test_trogdord_duplicatescope
+	test_trogdord_duplicateoutputdriver
+)
+
 add_dependencies(unit_test test_trogdord)
 
 ###############################################################################

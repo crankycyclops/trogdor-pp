@@ -30,7 +30,7 @@ namespace output {
 			// String representation of the driver's name.
 			static const char *DRIVER_NAME;
 
-			// Returns singleton instance of the Local output driver.
+			// Returns singleton instance of the HelloOut output driver.
 			static std::unique_ptr<HelloOut> &get();
 
 			// Destructor
