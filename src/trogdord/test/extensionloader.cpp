@@ -57,7 +57,7 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 
 		#ifdef LIBDL
 
-			const char *extNoUsefulSym = "test_trogdord_nousefulsymbols.so";
+			const char *extension = "test_trogdord_nousefulsymbols.so";
 			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
 			std::string extPath = STD_FILESYSTEM::temp_directory_path().string() +
 				STD_FILESYSTEM::path::preferred_separator + "extensions";
@@ -66,13 +66,13 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 
 			STD_FILESYSTEM::create_directory(extPath);
 			STD_FILESYSTEM::copy(
-				extNoUsefulSym,
-				extPath + STD_FILESYSTEM::path::preferred_separator + extNoUsefulSym
+				extension,
+				extPath + STD_FILESYSTEM::path::preferred_separator + extension
 			);
 
 			// TODO: I need some way to inspect the log to verify that this
 			// fails due to the extension not exporting useful symbols
-			CHECK(false == ExtensionLoader::get()->load(extNoUsefulSym));
+			CHECK(false == ExtensionLoader::get()->load(extension));
 
 			initIniFile(iniFilename, {{}});
 			STD_FILESYSTEM::remove_all(extPath);
@@ -82,7 +82,29 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 
 	TEST_CASE("ExtensionLoader (extensionloader.cpp): Loading extension that tries to overwrite builtin scope") {
 
-		// TODO
+		#ifdef LIBDL
+
+			const char *extension = "test_trogdord_duplicatescope.so";
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::string extPath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "extensions";
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_EXTENSIONS_PATH, "/tmp/extensions"}});
+
+			STD_FILESYSTEM::create_directory(extPath);
+			STD_FILESYSTEM::copy(
+				extension,
+				extPath + STD_FILESYSTEM::path::preferred_separator + extension
+			);
+
+			// TODO: I need some way to inspect the log to verify that this
+			// fails due to an exported duplicate scope
+			CHECK(false == ExtensionLoader::get()->load(extension));
+
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(extPath);
+
+		#endif
 	}
 
 	TEST_CASE("ExtensionLoader (extensionloader.cpp): Loading extension that tries to overwrite builtin output driver") {

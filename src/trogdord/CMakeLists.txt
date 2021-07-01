@@ -266,6 +266,12 @@ set_property(TARGET test_trogdord_nousefulsymbols PROPERTY POSITION_INDEPENDENT_
 set_target_properties(test_trogdord_nousefulsymbols PROPERTIES PREFIX "")
 install(TARGETS test_trogdord_nousefulsymbols DESTINATION lib/trogdord)
 
+# Simulates loading an extension that exports a duplicate scope
+add_library(test_trogdord_duplicatescope SHARED test/extensions/duplicatescope.cpp)
+set_property(TARGET test_trogdord_duplicatescope PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_target_properties(test_trogdord_duplicatescope PROPERTIES PREFIX "")
+install(TARGETS test_trogdord_duplicatescope DESTINATION lib/trogdord)
+
 ###############################################################################
 
 # This is the game definition file we're going to use for unit tests
@@ -339,7 +345,7 @@ else (INIH_INCLUDEDIR)
 endif (INIH_INCLUDEDIR)
 
 add_custom_target(unit_test)
-add_dependencies(test_trogdord test_trogdord_nousefulsymbols)
+add_dependencies(test_trogdord test_trogdord_nousefulsymbols test_trogdord_duplicatescope)
 add_dependencies(unit_test test_trogdord)
 
 ###############################################################################
