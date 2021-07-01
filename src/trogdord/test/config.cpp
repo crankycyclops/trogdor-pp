@@ -248,6 +248,40 @@ TEST_SUITE("Config (config.cpp)") {
 		}
 	}
 
+	TEST_CASE("Config (config.cpp): getExtensionsPath()") {
+
+		SUBCASE("Default value") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			initIniFile(iniFilename, {{}});
+
+			std::string expected = std::string(TROGDORD_INSTALL_PREFIX) +
+				STD_FILESYSTEM::path::preferred_separator +
+				Config::DEFAULTS.find(Config::CONFIG_KEY_EXTENSIONS_PATH)->second;
+
+			CHECK(0 == expected.compare(Config::get()->getExtensionsPath()));
+		}
+
+		SUBCASE("Relative path") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_EXTENSIONS_PATH, "test"}});
+
+			std::string expected = std::string(TROGDORD_INSTALL_PREFIX) +
+				STD_FILESYSTEM::path::preferred_separator + "test";
+
+			CHECK(0 == expected.compare(Config::get()->getExtensionsPath()));
+		}
+
+		SUBCASE("Absolute path") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_EXTENSIONS_PATH, "/test"}});
+
+			CHECK(0 == std::string("/test").compare(Config::get()->getExtensionsPath()));
+		}
+	}
+
 	TEST_CASE("Config (config.cpp): initErrorLogger() and err()") {
 
 		SUBCASE("cout") {
