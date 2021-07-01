@@ -305,23 +305,90 @@ TEST_SUITE("Config (config.cpp)") {
 
 		SUBCASE("Ini value doesn't exist") {
 
-			// TODO: show nothing happens (new setting doesn't appear and other settings unaffected)
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			initIniFile(iniFilename, Config::DEFAULTS);
+
+			// Demonstate that we can't get the non-existant value
+			try {
+				Config::get()->getString("NotAValue");
+				FAIL("Getting non-existant config value should throw ConfigUndefinedValue");
+			} catch (const ConfigUndefinedValue &e) {}
+
+			// Now, demonsrate that nothing happens when we attempt to set that
+			// same key to its (undefined) default value
+			Config::get()->setDefaultValue("NotAValue");
+
+			// Prove that we still can't retrieve it, since it should
+			// remain undefined
+			try {
+				Config::get()->getString("NotAValue");
+				FAIL("Getting non-existant config value should throw ConfigUndefinedValue");
+			} catch (const ConfigUndefinedValue &e) {}
+
+			// Finally, show that no other config values were affected by the change
+			for (const auto &defaultValue: Config::DEFAULTS) {
+				if (0 != Config::get()->getString(defaultValue.first).compare(defaultValue.second)) {
+					FAIL("Config::setDefaultValue() changed the values of one or more unintentional keys");
+				}
+			}
+
+			STD_FILESYSTEM::remove(iniFilename);
 		}
 
 		SUBCASE("Initially not set") {
 
-			// TODO: functionally, equivalent to next test case because it
-			// should return default
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+
+			// Passing in an empty unordered_map results in setting no initial values
+			initIniFile(iniFilename, {});
+
+			// Demonstrate that getting the value without having set it returns
+			// the default
+			CHECK(0 == Config::get()->getString(Config::CONFIG_KEY_STATE_PATH).compare(Config::DEFAULTS.find(Config::CONFIG_KEY_STATE_PATH)->second));
+
+			// Now, load the default value for that setting
+			Config::get()->setDefaultValue(Config::CONFIG_KEY_STATE_PATH);
+
+			// Finally, show that the value hasn't changed
+			CHECK(0 == Config::get()->getString(Config::CONFIG_KEY_STATE_PATH).compare(Config::DEFAULTS.find(Config::CONFIG_KEY_STATE_PATH)->second));
+
+			STD_FILESYSTEM::remove(iniFilename);
 		}
 
+		// This subcase should be functionally identical to the last one
 		SUBCASE("Initially set to the default value") {
 
-			// TODO: show that it doesn't change
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			initIniFile(iniFilename, Config::DEFAULTS);
+
+			// Demonstrate that getting the value without having set it returns
+			// the default
+			CHECK(0 == Config::get()->getString(Config::CONFIG_KEY_STATE_PATH).compare(Config::DEFAULTS.find(Config::CONFIG_KEY_STATE_PATH)->second));
+
+			// Now, load the default value for that setting
+			Config::get()->setDefaultValue(Config::CONFIG_KEY_STATE_PATH);
+
+			// Finally, show that the value hasn't changed
+			CHECK(0 == Config::get()->getString(Config::CONFIG_KEY_STATE_PATH).compare(Config::DEFAULTS.find(Config::CONFIG_KEY_STATE_PATH)->second));
+
+			STD_FILESYSTEM::remove(iniFilename);
 		}
 
 		SUBCASE("Initially set to different value") {
 
-			// TODO: show that it changes
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_STATE_PATH, "Flonkerton"}}); // Bonus points if you get the reference ;)
+
+			// Verify that our setting was properly initialized
+			CHECK(0 == Config::get()->getString(Config::CONFIG_KEY_STATE_PATH).compare("Flonkerton"));
+
+			// Now, load the default value for that setting
+			Config::get()->setDefaultValue(Config::CONFIG_KEY_STATE_PATH);
+
+			// Finally, show that the setting has changed to its default value
+			CHECK(0 == Config::get()->getString(Config::CONFIG_KEY_STATE_PATH).compare(Config::DEFAULTS.find(Config::CONFIG_KEY_STATE_PATH)->second));
+
+			STD_FILESYSTEM::remove(iniFilename);
 		}
 	}
 
