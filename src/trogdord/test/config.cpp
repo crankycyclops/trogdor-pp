@@ -396,17 +396,34 @@ TEST_SUITE("Config (config.cpp)") {
 
 		SUBCASE("Empty array") {
 
-			// TODO
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_EXTENSIONS_LOAD, "[]"}});
+
+			CHECK(0 == Config::get()->getExtensions().size());
+			STD_FILESYSTEM::remove(iniFilename);
 		}
 
 		SUBCASE("One Extension") {
 
-			// TODO
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_EXTENSIONS_LOAD, "[\"awesome.so\"]"}});
+
+			CHECK(1 == Config::get()->getExtensions().size());
+			CHECK(0 == Config::get()->getExtensions()[0].compare("awesome.so"));
+
+			STD_FILESYSTEM::remove(iniFilename);
 		}
 
 		SUBCASE("Two Extensions") {
 
-			// TODO
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_EXTENSIONS_LOAD, "[\"one.so\", \"two.so\"]"}});
+
+			CHECK(2 == Config::get()->getExtensions().size());
+			CHECK(0 == Config::get()->getExtensions()[0].compare("one.so"));
+			CHECK(0 == Config::get()->getExtensions()[1].compare("two.so"));
+
+			STD_FILESYSTEM::remove(iniFilename);
 		}
 	}
 }
