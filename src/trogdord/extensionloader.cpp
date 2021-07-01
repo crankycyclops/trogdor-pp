@@ -145,7 +145,7 @@ bool ExtensionLoader::load(const char *extension) {
 
 		if (!usefulSymbols) {
 			dlclose(handle);
-			config->err(trogdor::Trogerr::INFO) << "ExtensionLoader::load(): "
+			config->err(trogdor::Trogerr::ERROR) << "ExtensionLoader::load(): "
 				<< extension << " exported no useful symbols. Ignoring." << std::endl;
 			return false;
 		} else {

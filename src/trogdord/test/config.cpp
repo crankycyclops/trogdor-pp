@@ -1,4 +1,6 @@
 #include <doctest.h>
+#include <unordered_set>
+
 #include "config.h"
 
 
@@ -275,13 +277,69 @@ TEST_SUITE("Config (config.cpp)") {
 		}
 	}
 
+	// In this test case, I want to verify that begin() and end() iterate
+	// through every item exactly once
+	TEST_CASE("Config(config.cpp): begin() and end()") {
+
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			initIniFile(iniFilename, Config::DEFAULTS);
+
+			size_t nSettings = 0;
+			std::unordered_set<std::string> seen;
+
+			for (const auto &value: *Config::get()) {
+
+				if (seen.end() != seen.find(value.first)) {
+					FAIL("Iterator over Config::get() saw the same setting twice");
+				}
+
+				seen.insert(value.first);
+				nSettings++;
+			}
+
+			CHECK(nSettings == Config::DEFAULTS.size());
+			STD_FILESYSTEM::remove(iniFilename);
+	}
+
 	TEST_CASE("Config (config.cpp): setDefaultValue()") {
 
-		// TODO
+		SUBCASE("Ini value doesn't exist") {
+
+			// TODO: show nothing happens (new setting doesn't appear and other settings unaffected)
+		}
+
+		SUBCASE("Initially not set") {
+
+			// TODO: functionally, equivalent to next test case because it
+			// should return default
+		}
+
+		SUBCASE("Initially set to the default value") {
+
+			// TODO: show that it doesn't change
+		}
+
+		SUBCASE("Initially set to different value") {
+
+			// TODO: show that it changes
+		}
 	}
 
 	TEST_CASE("Config (config.cpp): getExtensions()") {
 
-		// TODO
+		SUBCASE("Empty array") {
+
+			// TODO
+		}
+
+		SUBCASE("One Extension") {
+
+			// TODO
+		}
+
+		SUBCASE("Two Extensions") {
+
+			// TODO
+		}
 	}
 }
