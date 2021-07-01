@@ -271,6 +271,7 @@ if (INIH_INCLUDEDIR)
 	add_executable(test_trogdord
 		${TROGDORD_SOURCES}
 		test/mock/mockscope.cpp
+		test/mock/mockoutputdriver.cpp
 		test/mock/mockdispatcher.cpp
 		test/mock/game/mockaction.cpp
 		test/main.cpp

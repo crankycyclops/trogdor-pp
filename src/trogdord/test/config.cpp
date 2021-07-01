@@ -313,7 +313,7 @@ TEST_SUITE("Config (config.cpp)") {
 
 	// In this test case, I want to verify that begin() and end() iterate
 	// through every item exactly once
-	TEST_CASE("Config(config.cpp): begin() and end()") {
+	TEST_CASE("Config (config.cpp): begin() and end()") {
 
 			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
 			initIniFile(iniFilename, Config::DEFAULTS);
