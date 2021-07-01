@@ -3402,7 +3402,7 @@ TEST_SUITE("GameContainer (gamecontainer.cpp)") {
 			std::string gameName = "My Game";
 			std::string definition = CORE_UNIT_TEST_DEFINITION_FILE;
 			std::string statePath = STD_FILESYSTEM::temp_directory_path().string() +
-				STD_FILESYSTEM::path::preferred_separator + "/trogstate";
+				STD_FILESYSTEM::path::preferred_separator + "trogstate";
 
 			STD_FILESYSTEM::create_directory(statePath);
 

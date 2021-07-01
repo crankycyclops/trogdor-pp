@@ -260,6 +260,14 @@ endif (INIH_INCLUDEDIR)
 
 ###############################################################################
 
+# Simulates loading an extension that exports no useful symbols
+add_library(test_trogdord_nousefulsymbols SHARED test/extensions/nousefulsymbols.cpp)
+set_property(TARGET test_trogdord_nousefulsymbols PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_target_properties(test_trogdord_nousefulsymbols PROPERTIES PREFIX "")
+install(TARGETS test_trogdord_nousefulsymbols DESTINATION lib/trogdord)
+
+###############################################################################
+
 # This is the game definition file we're going to use for unit tests
 add_definitions(
 	-DCORE_UNIT_TEST_DEFINITION_FILE=\(\"${GAME_XML_DEFAULT_PATH}\"\)
@@ -331,6 +339,7 @@ else (INIH_INCLUDEDIR)
 endif (INIH_INCLUDEDIR)
 
 add_custom_target(unit_test)
+add_dependencies(test_trogdord test_trogdord_nousefulsymbols)
 add_dependencies(unit_test test_trogdord)
 
 ###############################################################################
