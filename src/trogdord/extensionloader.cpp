@@ -88,6 +88,7 @@ bool ExtensionLoader::loadOutputDrivers(
 			output::Driver **drivers = driverLoader();
 
 			for (output::Driver **driver = drivers; *driver != nullptr; driver++) {
+
 				if (!output::Driver::registerDriver(*driver)) {
 					Config::get()->err(trogdor::Trogerr::ERROR) << "ExtensionLoader::load(): failed to load "
 						<< extension << " because it tried to register an output driver (" << (*driver)->getName()
@@ -96,6 +97,8 @@ bool ExtensionLoader::loadOutputDrivers(
 				} else {
 					usefulSymbols = true;
 				}
+
+				registeredOutputDrivers[extension].push_back((*driver)->getName());
 			}
 		}
 	}
@@ -116,7 +119,7 @@ bool ExtensionLoader::load(const char *extension) {
 
 		if (handles.end() != handles.find(extension)) {
 			config->err(trogdor::Trogerr::WARNING) << "ExtensionLoader::load(): "
-				<< extension << "has already been loaded. Skipping." << std::endl;
+				<< extension << " has already been loaded. Skipping." << std::endl;
 			return true;
 		}
 
@@ -192,8 +195,15 @@ void ExtensionLoader::unload(const char *extension) {
 			registeredScopes.erase(extension);
 		}
 
-		// TODO: write code to unload output drivers and reset to default
-		// value in Config.
+		// Also unregister any output drivers that the extension added
+		if (registeredOutputDrivers.end() != registeredOutputDrivers.find(extension)) {
+
+			for (auto &driverName: registeredOutputDrivers[extension]) {
+				output::Driver::unregisterDriver(driverName);
+			}
+
+			registeredOutputDrivers.erase(extension);
+		}
 
 		config->err(trogdor::Trogerr::INFO) << "ExtensionLoader::unload(): "
 			<< extension << " unloaded." << std::endl;

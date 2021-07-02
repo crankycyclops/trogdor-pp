@@ -29,6 +29,10 @@ class ExtensionLoader {
 		// remove them when the extension is unloaded.
 		std::unordered_map<const char *, std::vector<std::string>> registeredScopes;
 
+		// Tracks which output drivers were registered by which extensions so
+		// we can remove them when the extension is unloaded.
+		std::unordered_map<const char *, std::vector<std::string>> registeredOutputDrivers;
+
 		// Takes as input the name of the extension, a reference to a bool that
 		// gets set to true if any scopes were loaded, and a pointer to an
 		// extension's scope loader function and attempts to load those scopes

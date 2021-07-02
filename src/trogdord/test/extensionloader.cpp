@@ -164,8 +164,6 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 			// built-in drivers
 			output::Driver::get("local");
 
-			// TODO: I need some way to inspect the log to verify that this
-			// fails due to an exported duplicate output driver
 			CHECK(true == ExtensionLoader::get()->load(extension));
 
 			try {
@@ -173,6 +171,8 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 			} catch (const OutputDriverNotFound &e) {
 				FAIL("Output driver 'test' should have been loaded but was not");
 			}
+
+			ExtensionLoader::get()->unload(extension);
 
 			initIniFile(iniFilename, {{}});
 			STD_FILESYSTEM::remove_all(extPath);
@@ -187,16 +187,62 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 
 	TEST_CASE("ExtensionLoader (extensionloader.cpp): Unloading extension that was never loaded") {
 
-		// TODO
+		// This extension is built as a dependency to the test_trogdord build target
+		std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+		std::string extPath = STD_FILESYSTEM::temp_directory_path().string() +
+			STD_FILESYSTEM::path::preferred_separator + "extensions";
+
+		initIniFile(iniFilename, {});
+
+		STD_FILESYSTEM::create_directory(extPath);
+
+		// TODO: I have to check the error log to ensure we got a warning
+		ExtensionLoader::get()->unload("NotAnExtension.so");
+
+		STD_FILESYSTEM::remove_all(extPath);
 	}
 
 	TEST_CASE("ExtensionLoader (extensionloader.cpp): Unloading extension that was loaded and exported a scope") {
 
-		// TODO
+		// TODO: just make sure scope was removed
 	}
 
 	TEST_CASE("ExtensionLoader (extensionloader.cpp): Unloading extension that was loaded and exported an output driver") {
 
-		// TODO
+			// This extension is built as a dependency to the test_trogdord build target
+			const char *extension = "test_trogdord_newoutputdriver.so";
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::string extPath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "extensions";
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_EXTENSIONS_PATH, "/tmp/extensions"}});
+
+			STD_FILESYSTEM::create_directory(extPath);
+			STD_FILESYSTEM::copy(
+				extension,
+				extPath + STD_FILESYSTEM::path::preferred_separator + extension
+			);
+
+			// Getting for the first time triggers Driver to instantiate its
+			// built-in drivers
+			output::Driver::get("local");
+
+			CHECK(true == ExtensionLoader::get()->load(extension));
+
+			try {
+				output::Driver::get("test");
+			} catch (const OutputDriverNotFound &e) {
+				FAIL("Output driver 'test' should have been loaded but was not");
+			}
+
+			ExtensionLoader::get()->unload(extension);
+
+			try {
+				output::Driver::get("test");
+				FAIL("Output driver 'test' should have been unloaded but was not");
+			} catch (const OutputDriverNotFound &e) {}
+
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(extPath);
 	}
 }
