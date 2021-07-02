@@ -142,11 +142,6 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 		#endif
 	}
 
-	TEST_CASE("ExtensionLoader (extensionloader.cpp): Loading extension that exports a custom scope") {
-
-		// TODO
-	}
-
 	TEST_CASE("ExtensionLoader (extensionloader.cpp): Loading extension that exports a custom output driver") {
 
 		#ifdef LIBDL
@@ -183,5 +178,20 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 			STD_FILESYSTEM::remove_all(extPath);
 
 		#endif
+	}
+
+	TEST_CASE("ExtensionLoader (extensionloader.cpp): Loading extension that exports a custom scope") {
+
+		// TODO
+	}
+
+	TEST_CASE("ExtensionLoader (extensionloader.cpp): Unloading extension that was never loaded") {
+
+		// TODO
+	}
+
+	TEST_CASE("ExtensionLoader (extensionloader.cpp): Unloading extension that was loaded") {
+
+		// TODO
 	}
 }

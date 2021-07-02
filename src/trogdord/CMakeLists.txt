@@ -265,6 +265,8 @@ add_library(test_trogdord_nousefulsymbols SHARED test/extensions/nousefulsymbols
 set_property(TARGET test_trogdord_nousefulsymbols PROPERTY POSITION_INDEPENDENT_CODE ON)
 set_target_properties(test_trogdord_nousefulsymbols PROPERTIES PREFIX "")
 
+###############################################################################
+
 # Simulates loading an extension that exports a duplicate scope
 add_library(test_trogdord_duplicatescope SHARED test/extensions/duplicatescope.cpp)
 set_property(TARGET test_trogdord_duplicatescope PROPERTY POSITION_INDEPENDENT_CODE ON)
@@ -277,6 +279,8 @@ target_link_libraries(test_trogdord_duplicatescope
 add_dependencies(test_trogdord_duplicatescope
 	libtrogdord
 )
+
+###############################################################################
 
 # Simulates loading an extension that exports a duplicate output driver
 add_library(test_trogdord_duplicateoutputdriver SHARED test/extensions/duplicateoutputdriver.cpp)
@@ -302,6 +306,8 @@ target_link_libraries(test_trogdord_duplicateoutputdriver
 add_dependencies(test_trogdord_duplicateoutputdriver
 	libtrogdord
 )
+
+###############################################################################
 
 # Simulates loading an extension that exports a valid output driver
 add_library(test_trogdord_newoutputdriver SHARED test/extensions/newoutputdriver.cpp)

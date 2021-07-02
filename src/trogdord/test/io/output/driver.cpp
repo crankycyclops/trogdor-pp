@@ -34,4 +34,9 @@ TEST_SUITE("output::Driver (io/output/driver.cpp)") {
 		CHECK(true == output::Driver::unregisterDriver(output::MockOutput::DRIVER_NAME));
 		CHECK(false == output::Driver::unregisterDriver(output::MockOutput::DRIVER_NAME));
 	}
+
+	TEST_CASE("output::Driver (io/output/driver.cpp): unregisterDriver() when the output driver was configured to be used in trogdord.ini") {
+
+		// TODO
+	}
 }
