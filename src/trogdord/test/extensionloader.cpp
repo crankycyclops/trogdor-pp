@@ -190,7 +190,12 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 		// TODO
 	}
 
-	TEST_CASE("ExtensionLoader (extensionloader.cpp): Unloading extension that was loaded") {
+	TEST_CASE("ExtensionLoader (extensionloader.cpp): Unloading extension that was loaded and exported a scope") {
+
+		// TODO
+	}
+
+	TEST_CASE("ExtensionLoader (extensionloader.cpp): Unloading extension that was loaded and exported an output driver") {
 
 		// TODO
 	}
