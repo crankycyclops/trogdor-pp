@@ -187,19 +187,23 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 
 	TEST_CASE("ExtensionLoader (extensionloader.cpp): Unloading extension that was never loaded") {
 
-		// This extension is built as a dependency to the test_trogdord build target
-		std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
-		std::string extPath = STD_FILESYSTEM::temp_directory_path().string() +
-			STD_FILESYSTEM::path::preferred_separator + "extensions";
+		#ifdef LIBDL
 
-		initIniFile(iniFilename, {});
+			// This extension is built as a dependency to the test_trogdord build target
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::string extPath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "extensions";
 
-		STD_FILESYSTEM::create_directory(extPath);
+			initIniFile(iniFilename, {});
 
-		// TODO: I have to check the error log to ensure we got a warning
-		ExtensionLoader::get()->unload("NotAnExtension.so");
+			STD_FILESYSTEM::create_directory(extPath);
 
-		STD_FILESYSTEM::remove_all(extPath);
+			// TODO: I have to check the error log to ensure we got a warning
+			ExtensionLoader::get()->unload("NotAnExtension.so");
+
+			STD_FILESYSTEM::remove_all(extPath);
+
+		#endif
 	}
 
 	TEST_CASE("ExtensionLoader (extensionloader.cpp): Unloading extension that was loaded and exported a scope") {
@@ -208,6 +212,8 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 	}
 
 	TEST_CASE("ExtensionLoader (extensionloader.cpp): Unloading extension that was loaded and exported an output driver") {
+
+		#ifdef LIBDL
 
 			// This extension is built as a dependency to the test_trogdord build target
 			const char *extension = "test_trogdord_newoutputdriver.so";
@@ -244,5 +250,7 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 
 			initIniFile(iniFilename, {{}});
 			STD_FILESYSTEM::remove_all(extPath);
+
+		#endif
 	}
 }
