@@ -1,5 +1,6 @@
 #include <doctest.h>
 #include <trogdord/extensionloader.h>
+#include <trogdord/exception/outputdrivernotfound.h>
 
 #include "config.h"
 
@@ -148,6 +149,39 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 
 	TEST_CASE("ExtensionLoader (extensionloader.cpp): Loading extension that exports a custom output driver") {
 
-		// TODO
+		#ifdef LIBDL
+
+			// This extension is built as a dependency to the test_trogdord build target
+			const char *extension = "test_trogdord_newoutputdriver.so";
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::string extPath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "extensions";
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_EXTENSIONS_PATH, "/tmp/extensions"}});
+
+			STD_FILESYSTEM::create_directory(extPath);
+			STD_FILESYSTEM::copy(
+				extension,
+				extPath + STD_FILESYSTEM::path::preferred_separator + extension
+			);
+
+			// Getting for the first time triggers Driver to instantiate its
+			// built-in drivers
+			output::Driver::get("local");
+
+			// TODO: I need some way to inspect the log to verify that this
+			// fails due to an exported duplicate output driver
+			CHECK(true == ExtensionLoader::get()->load(extension));
+
+			try {
+				output::Driver::get("test");
+			} catch (const OutputDriverNotFound &e) {
+				FAIL("Output driver 'test' should have been loaded but was not");
+			}
+
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(extPath);
+
+		#endif
 	}
 }

@@ -303,6 +303,31 @@ add_dependencies(test_trogdord_duplicateoutputdriver
 	libtrogdord
 )
 
+# Simulates loading an extension that exports a valid output driver
+add_library(test_trogdord_newoutputdriver SHARED test/extensions/newoutputdriver.cpp)
+set_property(TARGET test_trogdord_newoutputdriver PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_target_properties(test_trogdord_newoutputdriver PROPERTIES PREFIX "")
+
+if (ENABLE_REDIS)
+
+	target_include_directories(test_trogdord_newoutputdriver
+		PUBLIC ${HIREDIS_INCLUDE_DIRS}
+	)
+
+	target_link_libraries(test_trogdord_newoutputdriver
+		PUBLIC ${HIREDIS_LIBRARIES}
+	)
+
+endif (ENABLE_REDIS)
+
+target_link_libraries(test_trogdord_newoutputdriver
+	PUBLIC libtrogdord
+)
+
+add_dependencies(test_trogdord_newoutputdriver
+	libtrogdord
+)
+
 ###############################################################################
 
 # This is the game definition file we're going to use for unit tests
@@ -381,6 +406,7 @@ add_dependencies(test_trogdord
 	test_trogdord_nousefulsymbols
 	test_trogdord_duplicatescope
 	test_trogdord_duplicateoutputdriver
+	test_trogdord_newoutputdriver
 )
 
 add_dependencies(unit_test test_trogdord)
