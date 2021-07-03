@@ -1,4 +1,6 @@
 #include <doctest.h>
+#include <trogdord/json.h>
+#include <trogdord/dispatcher.h>
 #include <trogdord/extensionloader.h>
 #include <trogdord/exception/outputdrivernotfound.h>
 
@@ -180,9 +182,69 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 		#endif
 	}
 
-	TEST_CASE("ExtensionLoader (extensionloader.cpp): Loading extension that exports a custom scope") {
+	TEST_CASE("ExtensionLoader (extensionloader.cpp): Loading extension that exports a custom scope, then unloading it") {
 
-		// TODO
+		#ifdef LIBDL
+
+			std::shared_ptr<TCPConnection> dummyConnection = nullptr;
+
+			// This extension is built as a dependency to the test_trogdord build target
+			const char *extension = "test_trogdord_hello.so";
+			std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+			std::string extPath = STD_FILESYSTEM::temp_directory_path().string() +
+				STD_FILESYSTEM::path::preferred_separator + "extensions";
+
+			initIniFile(iniFilename, {{Config::CONFIG_KEY_EXTENSIONS_PATH, "/tmp/extensions"}});
+
+			STD_FILESYSTEM::create_directory(extPath);
+			STD_FILESYSTEM::copy(
+				extension,
+				extPath + STD_FILESYSTEM::path::preferred_separator + extension
+			);
+
+			// Calling this once ensures that I've loaded 
+			Dispatcher::get();
+
+			rapidjson::Document response;
+
+			// Demonstrate that the extension's exported scope doesn't exist yet
+			response.Parse(Dispatcher::get()->dispatch(
+				dummyConnection,
+				"{\"method\":\"get\",\"scope\":\"hello\"}"
+			).c_str());
+
+			CHECK(response.HasMember("status"));
+			CHECK(404 == response["status"].GetInt());
+
+			CHECK(true == ExtensionLoader::get()->load(extension));
+
+			// Now, the scope should exist and the dispatcher should find it
+			response.Parse(Dispatcher::get()->dispatch(
+				dummyConnection,
+				"{\"method\":\"get\",\"scope\":\"hello\"}"
+			).c_str());
+
+			CHECK(response.HasMember("status"));
+			CHECK(200 == response["status"].GetInt());
+			CHECK(response.HasMember("message"));
+			CHECK(0 == std::string("Hello, world!").compare(response["message"].GetString()));
+
+			ExtensionLoader::get()->unload(extension);
+
+			// Finally, after unloading the extension, show that the scope is
+			// no longer found
+			response.Parse(Dispatcher::get()->dispatch(
+				dummyConnection,
+				"{\"method\":\"get\",\"scope\":\"hello\"}"
+			).c_str());
+
+			CHECK(response.HasMember("status"));
+			CHECK(404 == response["status"].GetInt());
+
+			initIniFile(iniFilename, {{}});
+			STD_FILESYSTEM::remove_all(extPath);
+
+		#endif
 	}
 
 	TEST_CASE("ExtensionLoader (extensionloader.cpp): Unloading extension that was never loaded") {
@@ -204,11 +266,6 @@ TEST_SUITE("ExtensionLoader (extensionloader.cpp)") {
 			STD_FILESYSTEM::remove_all(extPath);
 
 		#endif
-	}
-
-	TEST_CASE("ExtensionLoader (extensionloader.cpp): Unloading extension that was loaded and exported a scope") {
-
-		// TODO: just make sure scope was removed
 	}
 
 	TEST_CASE("ExtensionLoader (extensionloader.cpp): Unloading extension that was loaded and exported an output driver") {

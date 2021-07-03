@@ -336,6 +336,33 @@ add_dependencies(test_trogdord_newoutputdriver
 
 ###############################################################################
 
+# Simulates loading an extension that exports a valid scope
+add_library(test_trogdord_hello SHARED test/extensions/helloscope.cpp)
+set_property(TARGET test_trogdord_hello PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_target_properties(test_trogdord_hello PROPERTIES PREFIX "")
+
+if (ENABLE_REDIS)
+
+	target_include_directories(test_trogdord_hello
+		PUBLIC ${HIREDIS_INCLUDE_DIRS}
+	)
+
+	target_link_libraries(test_trogdord_hello
+		PUBLIC ${HIREDIS_LIBRARIES}
+	)
+
+endif (ENABLE_REDIS)
+
+target_link_libraries(test_trogdord_hello
+	PUBLIC libtrogdord
+)
+
+add_dependencies(test_trogdord_hello
+	libtrogdord
+)
+
+###############################################################################
+
 # This is the game definition file we're going to use for unit tests
 add_definitions(
 	-DCORE_UNIT_TEST_DEFINITION_FILE=\(\"${GAME_XML_DEFAULT_PATH}\"\)
@@ -413,6 +440,7 @@ add_dependencies(test_trogdord
 	test_trogdord_duplicatescope
 	test_trogdord_duplicateoutputdriver
 	test_trogdord_newoutputdriver
+	test_trogdord_hello
 )
 
 add_dependencies(unit_test test_trogdord)
