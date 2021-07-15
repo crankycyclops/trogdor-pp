@@ -75,7 +75,7 @@ For example (this works on Ubuntu 18.04):
 INIH_INCLUDE_DIRS="/usr/include" cmake -DCMAKE_BUILD_TYPE=Release .
 ```
 
-Trogdord, if compiled on a platform that supports libdl for dynamic linking, supports writing and loading extensions (support for other platforms like Windows may or may not materialize.) This support is automatically built-in, but can be disabled in trogdord.ini.
+Trogdord, if compiled on a platform that supports libdl for dynamic linking, supports writing and loading extensions (support for other platforms like Windows may or may not materialize in the future.) This support is automatically built-in, but can be disabled in trogdord.ini.
 
 See the ["Hello, World"](./sample/extensions/hello) extension for a buildable example that serves as a template that can be copied and adapted for other projects.
 
