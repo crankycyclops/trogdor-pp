@@ -58,8 +58,16 @@ jobs:
        sudo apt-get -y install libxml2 libxml2-dev liblua5.3 liblua5.3-dev
 
     - run: |
-       cmake -DCMAKE_BUILD_TYPE=Debug .
-       make trogdor standalone trogdord
+       cmake -DCMAKE_BUILD_TYPE=Debug ./src/core
+       make trogdor
+
+    - run: |
+       cmake -DCMAKE_BUILD_TYPE=Debug ./src/standalone
+       make standalone
+
+    - run: |
+       cmake -DCMAKE_BUILD_TYPE=Debug ./src/trogdord
+       make trogdord
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
