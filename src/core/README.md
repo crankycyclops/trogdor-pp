@@ -29,6 +29,12 @@ To install the optional SQLite dependency on Ubuntu 18.04 and up:
 $ apt-get install libsqlite3-dev
 ```
 
+To install the optional JSON dependency on Ubuntu 18.04 and up:
+
+```
+$ apt-get install rapidjson-dev
+```
+
 ## Installation
 
 To build and install the library and accompanying sample data, issue these commands:
