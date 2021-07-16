@@ -62,10 +62,12 @@ jobs:
        make trogdor
 
     - run: |
+       rm -rf CMakeFiles && rm CMakeCache.txt
        cmake -DCMAKE_BUILD_TYPE=Debug ./src/standalone
        make standalone
 
     - run: |
+       rm -rf CMakeFiles && rm CMakeCache.txt
        cmake -DCMAKE_BUILD_TYPE=Debug ./src/trogdord
        make trogdord
 
