@@ -57,10 +57,11 @@ jobs:
     - run: |
        sudo apt-get -y install libxml2 libxml2-dev liblua5.3 liblua5.3-dev
 
+    # I'm installing this because it's required for trogdord to compile
     - run: |
        cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_BUILD_TYPE=Debug ./src/core
        make trogdor
-       make install
+       sudo make install
 
     - run: |
        rm -rf CMakeFiles && rm CMakeCache.txt
