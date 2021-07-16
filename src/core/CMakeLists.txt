@@ -276,6 +276,8 @@ CREATE_LIBTOOL_FILE(trogdor ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 target_include_directories(trogdor ${CORE_INCLUDES})
 target_link_libraries(trogdor ${CORE_LIBRARIES})
 
+add_dependencies(trogdor trogdor_serial)
+
 if (ENABLE_SERIALIZE_JSON)
     add_dependencies(trogdor trogdor_serial_json)
 endif (ENABLE_SERIALIZE_JSON)
