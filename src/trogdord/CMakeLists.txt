@@ -114,263 +114,242 @@ if(DEFINED ENV{INIH_INCLUDE_DIRS})
 	message("Manually declared existence and include path of inih.")
 	set(INIH_INCLUDEDIR $ENV{INIH_INCLUDE_DIRS})
 else(DEFINED ENV{INIH_INCLUDE_DIRS})
-	pkg_check_modules(INIH inih)
+	pkg_search_module(INIH REQUIRED inih)
 endif(DEFINED ENV{INIH_INCLUDE_DIRS})
 
-if (INIH_INCLUDEDIR)
+CHECK_INCLUDE_FILE_CXX("asio.hpp" HAVE_ASIO)
 
-	CHECK_INCLUDE_FILE_CXX("asio.hpp" HAVE_ASIO)
+if (HAVE_ASIO)
 
-	if (HAVE_ASIO)
+	set(TROGDORD_SOURCES
+		config.cpp
+		filesystem.cpp
+		dispatcher.cpp
+		gamewrapper.cpp
+		gamecontainer.cpp
+		extensionloader.cpp
+		exception/requestexception.cpp
+		filter/filter.cpp
+		network/tcpconnection.cpp
+		network/tcpserver.cpp
+		scopes/controller.cpp
+		scopes/global.cpp
+		scopes/game.cpp
+		scopes/entity.cpp
+		scopes/resource.cpp
+		scopes/tangible.cpp
+		scopes/place.cpp
+		scopes/room.cpp
+		scopes/thing.cpp
+		scopes/object.cpp
+		scopes/being.cpp
+		scopes/creature.cpp
+		scopes/player.cpp
+		serial/drivermap.cpp
+		io/input/listeners/listener.cpp
+		io/input/listenercontainer.cpp
+		io/output/driver.cpp
+		io/output/local.cpp
+		io/iostream/serverout.cpp
+		io/iostream/servererr.cpp
+	)
+
+	set(TROGDORD_INCLUDES
+		PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
+		PUBLIC ${PROJECT_SOURCE_DIR}/include
+		PUBLIC ${INIH_INCLUDEDIR}
+	)
+
+	set(TROGDORD_LIBRARIES_MINUS_CORE
+		PUBLIC stdc++fs
+		PUBLIC inih
+	)
+
+	# For now, extensions are only supported if libdl is used to load
+	# shared objects. If not (like, say, you're building on Windows),
+	# the extension loader will be non-functional.
+	find_library(DLPATH NAMES libdl.so dl)
+	if (DLPATH)
+		add_definitions(-DLIBDL)
+		set(TROGDORD_LIBRARIES_MINUS_CORE
+			${TROGDORD_LIBRARIES_MINUS_CORE}
+			PUBLIC dl
+		)
+	endif (DLPATH)
+
+	if (ENABLE_REDIS)
+
+		pkg_check_modules(HIREDIS REQUIRED hiredis>=0.13)
 
 		set(TROGDORD_SOURCES
-			config.cpp
-			filesystem.cpp
-			dispatcher.cpp
-			gamewrapper.cpp
-			gamecontainer.cpp
-			extensionloader.cpp
-			exception/requestexception.cpp
-			filter/filter.cpp
-			network/tcpconnection.cpp
-			network/tcpserver.cpp
-			scopes/controller.cpp
-			scopes/global.cpp
-			scopes/game.cpp
-			scopes/entity.cpp
-			scopes/resource.cpp
-			scopes/tangible.cpp
-			scopes/place.cpp
-			scopes/room.cpp
-			scopes/thing.cpp
-			scopes/object.cpp
-			scopes/being.cpp
-			scopes/creature.cpp
-			scopes/player.cpp
-			serial/drivermap.cpp
-			io/input/listeners/listener.cpp
-			io/input/listenercontainer.cpp
-			io/output/driver.cpp
-			io/output/local.cpp
-			io/iostream/serverout.cpp
-			io/iostream/servererr.cpp
-		)
-
-		set(TROGDORD_INCLUDES
-			PUBLIC ${PROJECT_SOURCE_DIR}/src/core/include
-			PUBLIC ${PROJECT_SOURCE_DIR}/include
-			PUBLIC ${INIH_INCLUDEDIR}
-		)
-
-		set(TROGDORD_LIBRARIES_MINUS_CORE
-			PUBLIC stdc++fs
-			PUBLIC inih
-		)
-
-		# For now, extensions are only supported if libdl is used to load
-		# shared objects. If not (like, say, you're building on Windows),
-		# the extension loader will be non-functional.
-		find_library(DLPATH NAMES libdl.so dl)
-		if (DLPATH)
-			add_definitions(-DLIBDL)
-			set(TROGDORD_LIBRARIES_MINUS_CORE
-				${TROGDORD_LIBRARIES_MINUS_CORE}
-				PUBLIC dl
-			)
-		endif (DLPATH)
-
-		if (ENABLE_REDIS)
-
-			pkg_check_modules(HIREDIS REQUIRED hiredis>=0.13)
-
-			set(TROGDORD_SOURCES
-				${TROGDORD_SOURCES}
-				io/output/redis.cpp
-				io/input/listeners/redis.cpp
-			)
-
-			add_definitions(-DENABLE_REDIS)
-
-		endif (ENABLE_REDIS)
-
-		add_library(libtrogdord SHARED
 			${TROGDORD_SOURCES}
+			io/output/redis.cpp
+			io/input/listeners/redis.cpp
 		)
 
-		CREATE_LIBTOOL_FILE(libtrogdord ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR} trogdord)
-		set_target_properties(libtrogdord PROPERTIES OUTPUT_NAME "trogdord")
+		add_definitions(-DENABLE_REDIS)
+
+	endif (ENABLE_REDIS)
+
+	add_library(libtrogdord SHARED
+		${TROGDORD_SOURCES}
+	)
+
+	CREATE_LIBTOOL_FILE(libtrogdord ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR} trogdord)
+	set_target_properties(libtrogdord PROPERTIES OUTPUT_NAME "trogdord")
+
+	target_include_directories(libtrogdord
+		PUBLIC ${CORE_INCLUDES}
+		PUBLIC ${TROGDORD_INCLUDES}
+	)
+
+	target_link_libraries(libtrogdord
+		${TROGDORD_LIBRARIES_MINUS_CORE}
+		PUBLIC trogdor
+	)
+
+	if (ENABLE_REDIS)
 
 		target_include_directories(libtrogdord
-			PUBLIC ${CORE_INCLUDES}
-			PUBLIC ${TROGDORD_INCLUDES}
+			PUBLIC ${HIREDIS_INCLUDE_DIRS}
 		)
 
 		target_link_libraries(libtrogdord
-			${TROGDORD_LIBRARIES_MINUS_CORE}
-			PUBLIC trogdor
+			PUBLIC ${HIREDIS_LIBRARIES}
 		)
 
-		if (ENABLE_REDIS)
+	endif (ENABLE_REDIS)
 
-			target_include_directories(libtrogdord
-				PUBLIC ${HIREDIS_INCLUDE_DIRS}
-			)
-
-			target_link_libraries(libtrogdord
-				PUBLIC ${HIREDIS_LIBRARIES}
-			)
-
-		endif (ENABLE_REDIS)
-
-		add_executable(trogdord
-			main.cpp
-		)
-
-		target_link_libraries(trogdord PUBLIC libtrogdord)
-
-		add_dependencies(libtrogdord trogdord_pkgconfig)
-		add_dependencies(trogdord trogdord_data libtrogdord)
-
-		# Explose the installation prefix to trogdord
-		add_definitions(-DTROGDORD_INSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
-
-		# Default location where trogdord looks for trogdord.ini
-		add_definitions(-DTROGDORD_INI_PATH=\"${CMAKE_INSTALL_PREFIX}/etc/trogdord/trogdord.ini\")
-
-		install(TARGETS libtrogdord DESTINATION lib COMPONENT libtrogdord OPTIONAL)
-		install(TARGETS trogdord DESTINATION bin COMPONENT trogdord OPTIONAL)
-		install(DIRECTORY DESTINATION var/trogdord/state COMPONENT trogdord OPTIONAL)
-
-	else (HAVE_ASIO)
-
-		# So that we don't cache the result and then never find it even when
-		# it's later installed
-		unset(HAVE_ASIO)
-
-		# If I use literal spaces, somehow cmake ends up converting this to a string that includes backslashes
-		add_custom_target(trogdord echo "\"Skipping\\040trogdord\\040because\\040the\\040ASIO\\040headers\\040are\\040not\\040installed\\040in\\040a\\040place\\040where\\040CMake\\040can\\040find\\040them.\"")
-
-	endif (HAVE_ASIO)
-
-else (INIH_INCLUDEDIR)
-
-	add_custom_target(trogdord echo "\"Skipping\\040trogdord\\040because\\040the\\040inih\\040library\\040isn't\\040installed\\040in\\040a\\040place\\040where\\040CMake\\040can\\040find\\040it\\040(you\\040can\\040try\\040setting\\040the\\040INIH_INCLUDE_DIRS\\040environment\\040variable\\040manually.)\"")
-
-endif (INIH_INCLUDEDIR)
-
-###############################################################################
-
-# Simulates loading an extension that exports no useful symbols
-add_library(test_trogdord_nousefulsymbols SHARED test/extensions/nousefulsymbols.cpp)
-set_property(TARGET test_trogdord_nousefulsymbols PROPERTY POSITION_INDEPENDENT_CODE ON)
-set_target_properties(test_trogdord_nousefulsymbols PROPERTIES PREFIX "")
-
-###############################################################################
-
-# Simulates loading an extension that exports a duplicate scope
-add_library(test_trogdord_duplicatescope SHARED test/extensions/duplicatescope.cpp)
-set_property(TARGET test_trogdord_duplicatescope PROPERTY POSITION_INDEPENDENT_CODE ON)
-set_target_properties(test_trogdord_duplicatescope PROPERTIES PREFIX "")
-
-target_link_libraries(test_trogdord_duplicatescope
-	PUBLIC libtrogdord
-)
-
-add_dependencies(test_trogdord_duplicatescope
-	libtrogdord
-)
-
-###############################################################################
-
-# Simulates loading an extension that exports a duplicate output driver
-add_library(test_trogdord_duplicateoutputdriver SHARED test/extensions/duplicateoutputdriver.cpp)
-set_property(TARGET test_trogdord_duplicateoutputdriver PROPERTY POSITION_INDEPENDENT_CODE ON)
-set_target_properties(test_trogdord_duplicateoutputdriver PROPERTIES PREFIX "")
-
-if (ENABLE_REDIS)
-
-	target_include_directories(test_trogdord_duplicateoutputdriver
-		PUBLIC ${HIREDIS_INCLUDE_DIRS}
+	add_executable(trogdord
+		main.cpp
 	)
+
+	target_link_libraries(trogdord PUBLIC libtrogdord)
+
+	add_dependencies(libtrogdord trogdord_pkgconfig)
+	add_dependencies(trogdord trogdord_data libtrogdord)
+
+	# Explose the installation prefix to trogdord
+	add_definitions(-DTROGDORD_INSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
+
+	# Default location where trogdord looks for trogdord.ini
+	add_definitions(-DTROGDORD_INI_PATH=\"${CMAKE_INSTALL_PREFIX}/etc/trogdord/trogdord.ini\")
+
+	install(TARGETS libtrogdord DESTINATION lib COMPONENT libtrogdord OPTIONAL)
+	install(TARGETS trogdord DESTINATION bin COMPONENT trogdord OPTIONAL)
+	install(DIRECTORY DESTINATION var/trogdord/state COMPONENT trogdord OPTIONAL)
+
+	###############################################################################
+
+	# Simulates loading an extension that exports no useful symbols
+	add_library(test_trogdord_nousefulsymbols SHARED test/extensions/nousefulsymbols.cpp)
+	set_property(TARGET test_trogdord_nousefulsymbols PROPERTY POSITION_INDEPENDENT_CODE ON)
+	set_target_properties(test_trogdord_nousefulsymbols PROPERTIES PREFIX "")
+
+	###############################################################################
+
+	# Simulates loading an extension that exports a duplicate scope
+	add_library(test_trogdord_duplicatescope SHARED test/extensions/duplicatescope.cpp)
+	set_property(TARGET test_trogdord_duplicatescope PROPERTY POSITION_INDEPENDENT_CODE ON)
+	set_target_properties(test_trogdord_duplicatescope PROPERTIES PREFIX "")
+
+	target_link_libraries(test_trogdord_duplicatescope
+		PUBLIC libtrogdord
+	)
+
+	add_dependencies(test_trogdord_duplicatescope
+		libtrogdord
+	)
+
+	###############################################################################
+
+	# Simulates loading an extension that exports a duplicate output driver
+	add_library(test_trogdord_duplicateoutputdriver SHARED test/extensions/duplicateoutputdriver.cpp)
+	set_property(TARGET test_trogdord_duplicateoutputdriver PROPERTY POSITION_INDEPENDENT_CODE ON)
+	set_target_properties(test_trogdord_duplicateoutputdriver PROPERTIES PREFIX "")
+
+	if (ENABLE_REDIS)
+
+		target_include_directories(test_trogdord_duplicateoutputdriver
+			PUBLIC ${HIREDIS_INCLUDE_DIRS}
+		)
+
+		target_link_libraries(test_trogdord_duplicateoutputdriver
+			PUBLIC ${HIREDIS_LIBRARIES}
+		)
+
+	endif (ENABLE_REDIS)
 
 	target_link_libraries(test_trogdord_duplicateoutputdriver
-		PUBLIC ${HIREDIS_LIBRARIES}
+		PUBLIC libtrogdord
 	)
 
-endif (ENABLE_REDIS)
-
-target_link_libraries(test_trogdord_duplicateoutputdriver
-	PUBLIC libtrogdord
-)
-
-add_dependencies(test_trogdord_duplicateoutputdriver
-	libtrogdord
-)
-
-###############################################################################
-
-# Simulates loading an extension that exports a valid output driver
-add_library(test_trogdord_newoutputdriver SHARED test/extensions/newoutputdriver.cpp)
-set_property(TARGET test_trogdord_newoutputdriver PROPERTY POSITION_INDEPENDENT_CODE ON)
-set_target_properties(test_trogdord_newoutputdriver PROPERTIES PREFIX "")
-
-if (ENABLE_REDIS)
-
-	target_include_directories(test_trogdord_newoutputdriver
-		PUBLIC ${HIREDIS_INCLUDE_DIRS}
+	add_dependencies(test_trogdord_duplicateoutputdriver
+		libtrogdord
 	)
+
+	###############################################################################
+
+	# Simulates loading an extension that exports a valid output driver
+	add_library(test_trogdord_newoutputdriver SHARED test/extensions/newoutputdriver.cpp)
+	set_property(TARGET test_trogdord_newoutputdriver PROPERTY POSITION_INDEPENDENT_CODE ON)
+	set_target_properties(test_trogdord_newoutputdriver PROPERTIES PREFIX "")
+
+	if (ENABLE_REDIS)
+
+		target_include_directories(test_trogdord_newoutputdriver
+			PUBLIC ${HIREDIS_INCLUDE_DIRS}
+		)
+
+		target_link_libraries(test_trogdord_newoutputdriver
+			PUBLIC ${HIREDIS_LIBRARIES}
+		)
+
+	endif (ENABLE_REDIS)
 
 	target_link_libraries(test_trogdord_newoutputdriver
-		PUBLIC ${HIREDIS_LIBRARIES}
+		PUBLIC libtrogdord
 	)
 
-endif (ENABLE_REDIS)
-
-target_link_libraries(test_trogdord_newoutputdriver
-	PUBLIC libtrogdord
-)
-
-add_dependencies(test_trogdord_newoutputdriver
-	libtrogdord
-)
-
-###############################################################################
-
-# Simulates loading an extension that exports a valid scope
-add_library(test_trogdord_hello SHARED test/extensions/helloscope.cpp)
-set_property(TARGET test_trogdord_hello PROPERTY POSITION_INDEPENDENT_CODE ON)
-set_target_properties(test_trogdord_hello PROPERTIES PREFIX "")
-
-if (ENABLE_REDIS)
-
-	target_include_directories(test_trogdord_hello
-		PUBLIC ${HIREDIS_INCLUDE_DIRS}
+	add_dependencies(test_trogdord_newoutputdriver
+		libtrogdord
 	)
+
+	###############################################################################
+
+	# Simulates loading an extension that exports a valid scope
+	add_library(test_trogdord_hello SHARED test/extensions/helloscope.cpp)
+	set_property(TARGET test_trogdord_hello PROPERTY POSITION_INDEPENDENT_CODE ON)
+	set_target_properties(test_trogdord_hello PROPERTIES PREFIX "")
+
+	if (ENABLE_REDIS)
+
+		target_include_directories(test_trogdord_hello
+			PUBLIC ${HIREDIS_INCLUDE_DIRS}
+		)
+
+		target_link_libraries(test_trogdord_hello
+			PUBLIC ${HIREDIS_LIBRARIES}
+		)
+
+	endif (ENABLE_REDIS)
 
 	target_link_libraries(test_trogdord_hello
-		PUBLIC ${HIREDIS_LIBRARIES}
+		PUBLIC libtrogdord
 	)
 
-endif (ENABLE_REDIS)
+	add_dependencies(test_trogdord_hello
+		libtrogdord
+	)
 
-target_link_libraries(test_trogdord_hello
-	PUBLIC libtrogdord
-)
+	###############################################################################
 
-add_dependencies(test_trogdord_hello
-	libtrogdord
-)
+	# This is the game definition file we're going to use for unit tests
+	add_definitions(
+		-DCORE_UNIT_TEST_DEFINITION_FILE=\(\"${GAME_XML_DEFAULT_PATH}\"\)
+	)
 
-###############################################################################
-
-# This is the game definition file we're going to use for unit tests
-add_definitions(
-	-DCORE_UNIT_TEST_DEFINITION_FILE=\(\"${GAME_XML_DEFAULT_PATH}\"\)
-)
-
-# Trogdord unit tests
-if (INIH_INCLUDEDIR)
-
+	# Trogdord unit tests
 	add_executable(test_trogdord
 		${TROGDORD_SOURCES}
 		test/mock/mockscope.cpp
@@ -408,8 +387,8 @@ if (INIH_INCLUDEDIR)
 	)
 
 	target_link_libraries(test_trogdord
-        ${TROGDORD_LIBRARIES_MINUS_CORE}
-        PUBLIC trogdor
+		${TROGDORD_LIBRARIES_MINUS_CORE}
+		PUBLIC trogdor
 	)
 
 	if (ENABLE_REDIS)
@@ -427,53 +406,59 @@ if (INIH_INCLUDEDIR)
 	# The default interval between timer ticks should be much shorter for unit tests
 	target_compile_definitions(test_trogdord PRIVATE TIMER_CUSTOM_INTERVAL=5)
 
-else (INIH_INCLUDEDIR)
+	add_custom_target(unit_test)
 
-	add_custom_target(test_trogdord echo "\"Skipping\\040trogdord\\040unit\\040tests\\040because\\040the\\040inih\\040library\\040isn't\\040installed\\040in\\040a\\040place\\040where\\040CMake\\040can\\040find\\040it\\040(you\\040can\\040try\\040setting\\040the\\040INIH_INCLUDE_DIRS\\040environment\\040variable\\040manually.)\"")
-
-endif (INIH_INCLUDEDIR)
-
-add_custom_target(unit_test)
-
-add_dependencies(test_trogdord
-	test_trogdord_nousefulsymbols
-	test_trogdord_duplicatescope
-	test_trogdord_duplicateoutputdriver
-	test_trogdord_newoutputdriver
-	test_trogdord_hello
-)
-
-add_dependencies(unit_test test_trogdord)
-
-###############################################################################
-
-if (ENABLE_SERIALIZE_JSON)
-
-	target_link_libraries(trogdord
-		PUBLIC trogdor_serial
-		PUBLIC trogdor_serial_json
+	add_dependencies(test_trogdord
+		test_trogdord_nousefulsymbols
+		test_trogdord_duplicatescope
+		test_trogdord_duplicateoutputdriver
+		test_trogdord_newoutputdriver
+		test_trogdord_hello
 	)
 
-	target_link_libraries(test_trogdord
-		PUBLIC trogdor_serial
-		PUBLIC trogdor_serial_json
-	)
+	add_dependencies(unit_test test_trogdord)
 
-endif (ENABLE_SERIALIZE_JSON)
+	###############################################################################
 
-if (ENABLE_SERIALIZE_SQLITE)
+	if (ENABLE_SERIALIZE_JSON)
 
-	target_link_libraries(trogdord
-		PUBLIC trogdor_serial
-		PUBLIC trogdor_serial_sqlite
-	)
+		target_link_libraries(trogdord
+			PUBLIC trogdor_serial
+			PUBLIC trogdor_serial_json
+		)
 
-	target_link_libraries(test_trogdord
-		PUBLIC trogdor_serial
-		PUBLIC trogdor_serial_sqlite
-	)
+		target_link_libraries(test_trogdord
+			PUBLIC trogdor_serial
+			PUBLIC trogdor_serial_json
+		)
 
-endif (ENABLE_SERIALIZE_SQLITE)
+	endif (ENABLE_SERIALIZE_JSON)
+
+	if (ENABLE_SERIALIZE_SQLITE)
+
+		target_link_libraries(trogdord
+			PUBLIC trogdor_serial
+			PUBLIC trogdor_serial_sqlite
+		)
+
+		target_link_libraries(test_trogdord
+			PUBLIC trogdor_serial
+			PUBLIC trogdor_serial_sqlite
+		)
+
+	endif (ENABLE_SERIALIZE_SQLITE)
+
+else (HAVE_ASIO)
+
+	# So that we don't cache the result and then never find it even when
+	# it's later installed
+	unset(HAVE_ASIO)
+
+	# If I use literal spaces, somehow cmake ends up converting this to a string that includes backslashes
+	add_custom_target(libtrogdord echo "\"Skipping\\040trogdord\\040because\\040the\\040ASIO\\040headers\\040are\\040not\\040installed\\040in\\040a\\040place\\040where\\040CMake\\040can\\040find\\040them.\"")
+	add_custom_target(trogdord echo "\"Skipping\\040trogdord\\040because\\040the\\040ASIO\\040headers\\040are\\040not\\040installed\\040in\\040a\\040place\\040where\\040CMake\\040can\\040find\\040them.\"")
+
+endif (HAVE_ASIO)
 
 ###############################################################################
 
