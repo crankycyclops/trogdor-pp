@@ -171,7 +171,7 @@ namespace trogdor {
 
       std::string str;
 
-      for (unsigned int i = 0; i < list.size(); i++) {
+      for (size_t i = 0; i < list.size(); i++) {
 
          str += list[i];
 
