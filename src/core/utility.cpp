@@ -124,9 +124,15 @@ namespace trogdor {
 
    std::string strToLower(std::string str) {
 
-      for (unsigned int i = 0; i < str.length(); i++) {
-         str[i] = tolower(str[i]);
-      }
+      // With the proper compiler optimizations in place (passing
+      // -DCMAKE_BUILD_TYPE=Release to cmake will do the trick), this should be
+      // just as fast as a for-loop (I tested this on large random strings
+      // using G++ 9.3 just to make sure), and I think this is a little more
+      // "C++ish."" With no compiler optimizations (i.e.
+      // -DCMAKE_BUILD_TYPE=Debug), the for-loop wins.)
+      std::transform(str.begin(), str.end(), str.begin(), [] (unsigned char c) {
+         return std::tolower(c);
+      });
 
       return str;
    }
