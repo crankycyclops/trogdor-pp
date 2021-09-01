@@ -14,3 +14,37 @@
 ### Fixed
 
 (No fixes)
+
+## [0.80.0] - 2021-07-15
+
+### Added
+
+- Added extension loading for custom functionality to trogdord on platforms that support libdl.
+
+### Changed
+
+- Split the build into multiple CMake files, making things more modular (I'm hoping to eventually spin each item out into its own repository)
+
+## [0.70.0] - 2021-06-22
+
+### Added
+
+- Introduced the SQLite3 serialization format and improves trogdord's handling of dumped games.
+
+## [0.60.0] - 2021-03-16
+
+### Added
+
+- Introduced state features, making it possible to dump and restore game state to disk.
+
+### Changes
+
+- Make changes that I didn't track at the time
+
+### Fixes
+
+- Many fixes that also weren't tracked at the time
+
+## [0.50.2] - Before 2021-03-16
+
+This was the version of the engine right before I started tracking versions and their changes. If you're really curious, you can look through the very lengthy commit log for more history.
