@@ -39,11 +39,11 @@
 
 ### Changes
 
-- Make changes that I didn't track at the time
+- Many changes that I didn't track at the time
 
 ### Fixes
 
-- Many fixes that also weren't tracked at the time
+- Many fixes that I also didn't track at the time
 
 ## [0.50.2] - Before 2021-03-16
 
