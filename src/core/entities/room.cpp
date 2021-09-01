@@ -60,8 +60,20 @@ namespace trogdor::entity {
    void Room::displayConnections(Being *observer, bool displayFull) {
 
       if (!observedBy(observer->getShared()) || displayFull) {
+
+         std::vector<std::string> toRemove;
+
          for (const auto &description: connectionDescriptions) {
-            observer->out("display") << std::endl << description.second << std::endl;
+            if (getConnection(description.first)) {
+               observer->out("display") << std::endl << description.second << std::endl;
+            } else {
+               toRemove.push_back(description.first);
+            }
+         }
+
+         // If we encountered any stale connection descriptions, remove them.
+         for (const auto &badConnection: toRemove) {
+            connectionDescriptions[badConnection].erase();
          }
       }
    }
