@@ -49,6 +49,16 @@ namespace trogdor::entity {
             }
          }
 
+         if (data.get("connectionDescriptions")) {
+
+            std::shared_ptr<serial::Serializable> serializedConnectionDescriptions =
+               std::get<std::shared_ptr<serial::Serializable>>(*data.get("connectionDescriptions"));
+
+            for (const auto &description: serializedConnectionDescriptions->getAll()) {
+               connectionDescriptions[description.first] = std::get<std::string>(description.second);
+            }
+         }
+
          return true;
       }));
 
@@ -94,6 +104,7 @@ namespace trogdor::entity {
 
       std::shared_ptr<serial::Serializable> data = Place::serialize();
       std::shared_ptr<serial::Serializable> serializedConnections = std::make_shared<serial::Serializable>();
+      std::shared_ptr<serial::Serializable> serializedConnectionDescriptions = std::make_shared<serial::Serializable>();
 
       for (const auto &connection: connections) {
          if (const auto &connectedRoom = connection.second.lock()) {
@@ -101,7 +112,15 @@ namespace trogdor::entity {
          }
       }
 
+      for (const auto &description: connectionDescriptions) {
+         if (getConnection(description.first)) {
+            serializedConnectionDescriptions->set(description.first, description.second);
+         }
+      }
+
       data->set("connections", serializedConnections);
+      data->set("connectionDescriptions", serializedConnectionDescriptions);
+
       return data;
    }
 
