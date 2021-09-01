@@ -23,10 +23,12 @@ namespace trogdor {
       Game *game
    ) {
 
-      if (0 == player->getInventoryCount() && 0 == player->getResources().size()) {
+      if (0 == player->getInventoryObjects().size() && 0 == player->getResources().size()) {
          player->out("display") << "You don't have anything!" << std::endl;
       }
 
+      // TODO: this will output incorrect results if any of the objects in gthe
+      // player's inventory are weak_ptrs. Refactor to take this into account.
       else {
 
          // percentage of available space used
@@ -45,29 +47,32 @@ namespace trogdor {
          int playerInvMaxWeight = player->getProperty<int>(entity::Being::InvMaxWeightProperty);
 
          // List objects
-         for (auto const &obj: player->getInventoryObjects()) {
+         for (auto const &objPtr: player->getInventoryObjects()) {
 
-            int objectWeight = obj->getProperty<int>(entity::Object::WeightProperty);
+            if (const auto &obj = objPtr.second.lock()) {
 
-            player->out("display") << obj->getProperty<std::string>(entity::Entity::TitleProperty);
+               int objectWeight = obj->getProperty<int>(entity::Object::WeightProperty);
 
-            if (playerInvMaxWeight > 0) {
+               player->out("display") << obj->getProperty<std::string>(entity::Entity::TitleProperty);
 
-               if (objectWeight > 0) {
-                  double percent = 100 * (
-                     static_cast<double>(objectWeight) /
-                     static_cast<double>(playerInvMaxWeight)
-                  );
-                  totalPercent += percent;
-                  player->out("display") << " (" << percent << "%)";
+               if (playerInvMaxWeight > 0) {
+
+                  if (objectWeight > 0) {
+                     double percent = 100 * (
+                        static_cast<double>(objectWeight) /
+                        static_cast<double>(playerInvMaxWeight)
+                     );
+                     totalPercent += percent;
+                     player->out("display") << " (" << percent << "%)";
+                  }
+
+                  else {
+                     player->out("display") << " (weighs nothing)";
+                  }
                }
 
-               else {
-                  player->out("display") << " (weighs nothing)";
-               }
+               player->out("display") << std::endl;
             }
-
-            player->out("display") << std::endl;
          };
 
          if (playerInvMaxWeight > 0) {

@@ -349,10 +349,12 @@ size_t GameContainer::createGame(
 			std::shared_ptr<trogdor::entity::Player>
 		>(player)->getInventoryObjects();
 
-		for (auto &object: invObjects) {
-			std::any_cast<
-				std::shared_ptr<trogdor::entity::Player>
-			>(player)->drop(object, false, false);
+		for (auto &objPtr: invObjects) {
+			if (auto object = objPtr.second.lock()) {
+				std::any_cast<
+					std::shared_ptr<trogdor::entity::Player>
+				>(player)->drop(object, false, false);
+			}
 		}
 
 		return false;
