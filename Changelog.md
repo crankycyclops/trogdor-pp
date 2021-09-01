@@ -9,8 +9,8 @@
 
 ### Changed
 
-(Nothing)
+(No changes)
 
 ### Fixed
 
-(Nothing)
+(No fixes)
