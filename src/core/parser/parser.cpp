@@ -554,7 +554,7 @@ namespace trogdor {
 
    std::shared_ptr<ASTOperationNode> Parser::ASTConnectRooms(std::string targetType,
    std::string sourceRoomOrClass, std::string connectTo, std::string direction,
-   int lineNumber) {
+   std::optional<std::string> description, int lineNumber) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          CONNECT_ROOMS,
@@ -584,6 +584,14 @@ namespace trogdor {
          AST_VALUE,
          lineNumber
       ));
+
+      if (description) {
+         operation->appendChild(std::make_shared<ASTNode>(
+            *description,
+            AST_VALUE,
+            lineNumber
+         ));
+      }
 
       return operation;
    }

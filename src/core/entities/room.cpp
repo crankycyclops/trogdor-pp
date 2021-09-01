@@ -1,5 +1,6 @@
 #include <trogdor/game.h>
 #include <trogdor/entities/room.h>
+#include <trogdor/entities/being.h>
 #include <trogdor/exception/validationexception.h>
 
 
@@ -48,10 +49,53 @@ namespace trogdor::entity {
             }
          }
 
+         if (data.get("connectionDescriptions")) {
+
+            std::shared_ptr<serial::Serializable> serializedConnectionDescriptions =
+               std::get<std::shared_ptr<serial::Serializable>>(*data.get("connectionDescriptions"));
+
+            for (const auto &description: serializedConnectionDescriptions->getAll()) {
+               connectionDescriptions[description.first] = std::get<std::string>(description.second);
+            }
+         }
+
          return true;
       }));
 
       types.push_back(ENTITY_ROOM);
+   }
+
+   /****************************************************************************/
+
+   void Room::displayConnections(Being *observer, bool displayFull) {
+
+      if (!observedBy(observer->getShared()) || displayFull) {
+
+         std::vector<std::string> toRemove;
+
+         for (const auto &description: connectionDescriptions) {
+            if (getConnection(description.first)) {
+               observer->out("display") << std::endl << description.second << std::endl;
+            } else {
+               toRemove.push_back(description.first);
+            }
+         }
+
+         // If we encountered any stale connection descriptions, remove them.
+         for (const auto &badConnection: toRemove) {
+            connectionDescriptions[badConnection].erase();
+         }
+      }
+   }
+
+   /****************************************************************************/
+
+   void Room::display(Being *observer, bool displayFull) {
+
+      displayPlace(observer, displayFull);
+      displayConnections(observer, displayFull);
+      displayResources(observer);
+      displayThings(observer);
    }
 
    /***************************************************************************/
@@ -60,6 +104,7 @@ namespace trogdor::entity {
 
       std::shared_ptr<serial::Serializable> data = Place::serialize();
       std::shared_ptr<serial::Serializable> serializedConnections = std::make_shared<serial::Serializable>();
+      std::shared_ptr<serial::Serializable> serializedConnectionDescriptions = std::make_shared<serial::Serializable>();
 
       for (const auto &connection: connections) {
          if (const auto &connectedRoom = connection.second.lock()) {
@@ -67,7 +112,15 @@ namespace trogdor::entity {
          }
       }
 
+      for (const auto &description: connectionDescriptions) {
+         if (getConnection(description.first)) {
+            serializedConnectionDescriptions->set(description.first, description.second);
+         }
+      }
+
       data->set("connections", serializedConnections);
+      data->set("connectionDescriptions", serializedConnectionDescriptions);
+
       return data;
    }
 
@@ -112,11 +165,21 @@ namespace trogdor::entity {
 
    /**************************************************************************/
 
-   void Room::setConnection(std::string direction, const std::shared_ptr<Room> &connectTo) {
+   void Room::setConnection(
+      std::string direction,
+      const std::shared_ptr<Room> &connectTo,
+      std::optional<std::string> description
+   ) {
 
       if (game->getVocabulary().isDirection(direction)) {
+
          mutex.lock();
          connections[direction] = connectTo;
+
+         if (description) {
+            connectionDescriptions[direction] = *description;
+         }
+
          mutex.unlock();
       }
 

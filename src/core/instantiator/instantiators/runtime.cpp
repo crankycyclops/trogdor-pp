@@ -577,6 +577,7 @@ namespace trogdor {
          std::string targetType = operation->getChildren()[0]->getValue();
          std::string sourceRoomOrClass = operation->getChildren()[1]->getValue();
          std::string direction = operation->getChildren()[3]->getValue();
+         std::optional<std::string> description = std::nullopt;
 
          if (0 == targetType.compare("entity")) {
             room = game->getRoom(sourceRoomOrClass).get();
@@ -586,7 +587,11 @@ namespace trogdor {
             room = dynamic_cast<Room *>(typeClasses[sourceRoomOrClass].get());
          }
 
-         room->setConnection(direction, connectToRoom);
+         if (5 == operation->size()) {
+            description = operation->getChildren()[4]->getValue();
+         }
+
+         room->setConnection(direction, connectToRoom, description);
       });
 
       /**********/

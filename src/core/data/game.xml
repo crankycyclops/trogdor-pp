@@ -509,22 +509,29 @@ He's white, transparent and floating six or seven feet off the ground.  He smile
    <rooms>
 
       <!-- every room MUST HAVE a UNIQUE name.  One room MUST have the name
-           "start," which is where the player will start when the game begins.
-       -->
+           "start," which is where the player will start when the game begins. -->
       <room name="start">
 
          <!-- user will see the room's title above its description -->
          <title>The Palace</title>
 
-         <!-- user will see the room's description when they enter -->
+         <!-- user will see the room's description when they enter. If you want
+              more control over how you describe connections between rooms, you
+              can make those descriptions part of the room's main description,
+              as is done here when we describe the "sideways" connection, but by
+              doing so, you sacrifice the engine's ability to manage those
+              descriptions should a connection later changed or removed. -->
          <description>
 You're standing in the middle of a sprawling white marble castle, the walls lined with portraits of long deceased ancestors of some forgotten king.  Servants are bustling about, rushing around with steaming plates of meats and cooked vegetables, rushing in and out of rooms to serve princes and heads of state. Legend has it that going sideways can transport you to a strange and mystical land.
-
-To the north, you see a dark hole in the wall big enough to walk through.
          </description>
 
-         <!-- names of the rooms "north" and "sideways" of this one -->
-         <north>cave</north>
+         <!-- names of the rooms "north" and "sideways" of this one. Each
+              connection is allowed an optional description, which will be
+              rendered in its own paragraph whenever the room is observed by a
+              player. The advantage of describing connections this way is that
+              the engine can better handle the way a room is described when a
+              connection is changed or removed mid-game. -->
+         <north description="To the north, you see a dark hole in the wall big enough to walk through.">cave</north>
          <sideways>mysticalhall</sideways>
 
          <events>
@@ -567,11 +574,9 @@ To the north, you see a dark hole in the wall big enough to walk through.
 
          <description>
 You find yourself in a mystical hall that seems to extend from one horizon to the next. The room is filled with clouds, and if you strain your ears carefully, you think you might hear the sound of an angelic choir.
-
-You can't say for sure, but you suspect that going sideways will return you to the castle.
          </description>
 
-         <sideways>start</sideways>
+         <sideways description="You can't say for sure, but you suspect that going sideways will return you to the castle.">start</sideways>
 
       </room>
 
@@ -580,15 +585,15 @@ You can't say for sure, but you suspect that going sideways will return you to t
          <title>The Cave</title>
 
          <description>
-You're in a dark musty cave.  You see a light some ways off to the south.  To the west, you spy a large dark chamber of some sort.
+You're in a dank and musty cave.
          </description>
 
          <!-- Since this room is north of "start," start is south of here.  You
               can specify one way movements by not placing this line here (maybe,
               for example, the user got shut behind a trap door?)
          -->
-         <west>chamber</west>
-         <south>start</south>
+         <west description="To the west, you spy a dark chamber.">chamber</west>
+         <south description="To the south, you see a light.">start</south>
 
          <contains>
             <creature>casper</creature>
@@ -601,14 +606,14 @@ You're in a dark musty cave.  You see a light some ways off to the south.  To th
          <title>Dark Chamber</title>
 
          <description>
-You find yourself in a dark secluded chamber.  It's dank, musty and generally icky poo-pooos.  Be careful.  There may be nasty things waiting for you here!
+You find yourself in a dark secluded chamber. It's dank, musty, and generally icky poo-pooos. Be careful. There may be nasty things waiting for you here!
          </description>
 
          <!-- The room's short description, which the player sees everytime
               they enter the room after the first time -->
          <short>It's dark.  Careful!</short>
 
-         <east>cave</east>
+         <east description="To the east, you see the entrance to a cave.">cave</east>
 
          <contains>
             <creature>trogdor</creature>

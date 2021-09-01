@@ -2127,6 +2127,7 @@ namespace trogdor {
                   0 == startRoomName.compare(entityToConnect.first) ? "start" : entityToConnect.first,
                   0 == startRoomName.compare(connectTo) ? "start" : connectTo,
                   direction,
+                  std::nullopt,
                   std::get<2>(connection.second)
                ));
             }
