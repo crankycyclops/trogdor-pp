@@ -378,13 +378,16 @@ namespace trogdor {
                direction (std::string)
                Name of room where the connection should be made (std::string)
                Name of room that we want to connect to (std::string)
+               An optional connection description to render when describing the
+                  room (std::optional<std::string>)
                Type of thing we're parsing--"entity" or "class" (std::string)
 
             Output:
                (none)
          */
          void parseRoomConnection(std::string direction, std::string roomName,
-         std::string connectTo, std::string targetType);
+         std::string connectTo, std::optional<std::string> description,
+         std::string targetType);
 
          /*
             Parses a Room's version of the <contains> section.

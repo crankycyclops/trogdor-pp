@@ -19,8 +19,37 @@ namespace trogdor::entity {
 
       protected:
 
-         // maps directions to connected rooms
+         // Maps directions to connected rooms
          std::unordered_map<std::string, std::weak_ptr<Room>> connections;
+
+         // Maps directions to optional connection descriptions
+         // TODO: should I allow these to be ordered?
+         std::unordered_map<std::string, std::string> connectionDescriptions;
+
+         /*
+            Outputs a description of each connection (if a description exists.)
+
+            Input:
+               Being observing the Place (Being *)
+               Whether or not to always show the long description
+
+            Output:
+               (none)
+         */
+         void displayConnections(Being *observer, bool displayFull = false);
+
+         /*
+            Overrides Place::display(). It does mostly the same thing, except
+            it also displays connection descriptions before Resources and Things.
+
+            Input:
+               Being observing the Room
+               Whether or not to always show the long description
+
+            Output:
+               (none)
+         */
+         virtual void display(Being *observer, bool displayFull = false);
 
       public:
 
@@ -153,13 +182,15 @@ namespace trogdor::entity {
             Connects Room to another Room at the specified direction.
 
             Input:
-               Direction where the connection is made (string)
+               Direction where the connection is made (std::string)
                Room direction connects to (const std::shared_ptr<Room> &)
+               Optional description (std::optional<std::string>)
 
             Output:
                (none)
          */
-         void setConnection(std::string direction, const std::shared_ptr<Room> &connectTo);
+         void setConnection(std::string direction, const std::shared_ptr<Room> &connectTo,
+         std::optional<std::string> description = std::nullopt);
    };
 }
 

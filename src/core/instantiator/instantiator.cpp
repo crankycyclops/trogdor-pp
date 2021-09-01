@@ -764,7 +764,7 @@ namespace trogdor {
       // Validation
       preOperations[CONNECT_ROOMS] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
 
-         assertValidASTArguments(operation, 4);
+         assertValidASTArguments(operation, 4, 5);
 
          std::string targetType = operation->getChildren()[0]->getValue();
          std::string sourceRoomOrClass = operation->getChildren()[1]->getValue();

@@ -1177,8 +1177,9 @@ namespace trogdor {
             vocabulary.isDirection(tag) ||
             customDirections.end() != customDirections.find(tag)
          ) {
+            std::optional<std::string> description = getOptionalAttribute("description");
             std::string connection = parseString();
-            parseRoomConnection(tag, name, connection, targetType);
+            parseRoomConnection(tag, name, connection, description, targetType);
          }
 
          else if (0 == tag.compare("contains")) {
@@ -1235,7 +1236,7 @@ namespace trogdor {
    /***************************************************************************/
 
    void XMLParser::parseRoomConnection(std::string direction, std::string roomName,
-   std::string connectTo, std::string targetType) {
+   std::string connectTo, std::optional<std::string> description, std::string targetType) {
 
       setUnresolvedEntityReference(
          connectTo,
@@ -1249,6 +1250,7 @@ namespace trogdor {
          roomName,
          connectTo,
          direction,
+         description,
          xmlTextReaderGetParserLineNumber(reader)
       ));
 

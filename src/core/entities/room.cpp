@@ -1,5 +1,6 @@
 #include <trogdor/game.h>
 #include <trogdor/entities/room.h>
+#include <trogdor/entities/being.h>
 #include <trogdor/exception/validationexception.h>
 
 
@@ -52,6 +53,27 @@ namespace trogdor::entity {
       }));
 
       types.push_back(ENTITY_ROOM);
+   }
+
+   /****************************************************************************/
+
+   void Room::displayConnections(Being *observer, bool displayFull) {
+
+      if (!observedBy(observer->getShared()) || displayFull) {
+         for (const auto &description: connectionDescriptions) {
+            observer->out("display") << std::endl << description.second << std::endl;
+         }
+      }
+   }
+
+   /****************************************************************************/
+
+   void Room::display(Being *observer, bool displayFull) {
+
+      displayPlace(observer, displayFull);
+      displayConnections(observer, displayFull);
+      displayResources(observer);
+      displayThings(observer);
    }
 
    /***************************************************************************/
@@ -112,11 +134,21 @@ namespace trogdor::entity {
 
    /**************************************************************************/
 
-   void Room::setConnection(std::string direction, const std::shared_ptr<Room> &connectTo) {
+   void Room::setConnection(
+      std::string direction,
+      const std::shared_ptr<Room> &connectTo,
+      std::optional<std::string> description
+   ) {
 
       if (game->getVocabulary().isDirection(direction)) {
+
          mutex.lock();
          connections[direction] = connectTo;
+
+         if (description) {
+            connectionDescriptions[direction] = *description;
+         }
+
          mutex.unlock();
       }
 

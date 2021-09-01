@@ -322,6 +322,7 @@ namespace trogdor {
                Source room (std::string)
                Room source connects to (std::string)
                Direction where connection should be made (std::string)
+               An optional description of the connection (std::optional<std::string>)
                Current line number in the source being parsed (int)
 
             Output:
@@ -329,7 +330,7 @@ namespace trogdor {
          */
          std::shared_ptr<ASTOperationNode> ASTConnectRooms(std::string targetType,
          std::string sourceRoomOrClass, std::string connectTo, std::string direction,
-         int lineNumber = 0);
+         std::optional<std::string> description, int lineNumber = 0);
 
          /*
             Returns an AST subtree representing an allocateResource operation

@@ -458,6 +458,12 @@ namespace trogdor {
          return false;
       }
 
+      // TODO: if entity is a resource and a Place or Being has any of it,
+      // removal should fail until the resource is removed from them all
+
+      // TODO: if entity is a Place and that place contains one or more Things
+      // or Resources, removal should fail until those things are removed
+
       mutex.lock();
 
       switch (entities[name]->getType()) {
