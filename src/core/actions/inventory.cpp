@@ -1,3 +1,5 @@
+#include <queue>
+
 #include <trogdor/entities/player.h>
 #include <trogdor/actions/inventory.h>
 
@@ -23,57 +25,59 @@ namespace trogdor {
       Game *game
    ) {
 
-      if (0 == player->getInventoryObjects().size() && 0 == player->getResources().size()) {
+      std::queue<std::string> invLines;
+      int playerInvMaxWeight = player->getProperty<int>(entity::Being::InvMaxWeightProperty);
+
+      // percentage of available space used
+      double totalPercent = 0.0;
+
+      // List resources
+      for (auto const &allocation: player->getResources()) {
+         if (auto resource = allocation.first.lock()) {
+            invLines.push(resource->amountToString(allocation.second) + ' ' + resource->titleToString(allocation.second));
+         }
+      }
+
+      // List objects
+      for (auto const &objPtr: player->getInventoryObjects()) {
+
+         if (const auto &obj = objPtr.second.lock()) {
+
+            std::string line = obj->getProperty<std::string>(entity::Entity::TitleProperty);
+            int objectWeight = obj->getProperty<int>(entity::Object::WeightProperty);
+
+            if (playerInvMaxWeight > 0) {
+
+               if (objectWeight > 0) {
+                  double percent = 100 * (
+                     static_cast<double>(objectWeight) /
+                     static_cast<double>(playerInvMaxWeight)
+                  );
+                  totalPercent += percent;
+                  line += " (" + percent + "%)";
+               }
+
+               else {
+                  line += " (weighs nothing)";
+               }
+            }
+
+            invLines.push(line);
+         }
+      }
+
+      if (!invLines.size()) {
          player->out("display") << "You don't have anything!" << std::endl;
       }
 
-      // TODO: this will output incorrect results if any of the objects in gthe
-      // player's inventory are weak_ptrs. Refactor to take this into account.
       else {
-
-         // percentage of available space used
-         double totalPercent = 0.0;
 
          player->out("display") << "Items in your inventory:" << std::endl << std::endl;
 
-         // List resources
-         for (auto const &allocation: player->getResources()) {
-            if (auto resource = allocation.first.lock()) {
-               player->out ("display") << resource->amountToString(allocation.second)
-                  << ' ' << resource->titleToString(allocation.second) << std::endl;
-            }
+         while (invLines.size()) {
+            player->out("display") << invLines.front() << std::endl;
+            invLines.pop();
          }
-
-         int playerInvMaxWeight = player->getProperty<int>(entity::Being::InvMaxWeightProperty);
-
-         // List objects
-         for (auto const &objPtr: player->getInventoryObjects()) {
-
-            if (const auto &obj = objPtr.second.lock()) {
-
-               int objectWeight = obj->getProperty<int>(entity::Object::WeightProperty);
-
-               player->out("display") << obj->getProperty<std::string>(entity::Entity::TitleProperty);
-
-               if (playerInvMaxWeight > 0) {
-
-                  if (objectWeight > 0) {
-                     double percent = 100 * (
-                        static_cast<double>(objectWeight) /
-                        static_cast<double>(playerInvMaxWeight)
-                     );
-                     totalPercent += percent;
-                     player->out("display") << " (" << percent << "%)";
-                  }
-
-                  else {
-                     player->out("display") << " (weighs nothing)";
-                  }
-               }
-
-               player->out("display") << std::endl;
-            }
-         };
 
          if (playerInvMaxWeight > 0) {
             player->out("display") << std::endl << "You are currently using "
