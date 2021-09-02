@@ -79,6 +79,10 @@ namespace trogdor::entity {
 
       private:
 
+         // getInventoryObjectsByName() returns a reference to this empty list
+         // whenever a name turns up zero results.
+         static std::list<std::weak_ptr<Object>> emptyObjectList;
+
          // If Being is dropping an ephemeral Resource, we call this to free the
          // allocation.
          inline void freeResource(
@@ -267,7 +271,7 @@ namespace trogdor::entity {
             std::map<std::string, std::weak_ptr<Object>> objects;
 
             // Inventory items indexed by alias
-            std::unordered_map<std::string, std::list<Object *>> objectsByName;
+            std::unordered_map<std::string, std::list<std::weak_ptr<Object>>> objectsByName;
          } inventory;
 
          /*
@@ -314,7 +318,7 @@ namespace trogdor::entity {
                inventory.objectsByName[alias] = {};
             }
 
-            inventory.objectsByName.find(alias)->second.push_back(object);
+            inventory.objectsByName.find(alias)->second.push_back(object->getShared());
             mutex.unlock();
          }
 
@@ -499,7 +503,7 @@ namespace trogdor::entity {
          */
          inline const auto &getInventoryObjectsByName(std::string name) const {
 
-            ObjectsByNameMap::const_iterator i = inventory.objectsByName.find(name);
+            const auto &i = inventory.objectsByName.find(name);
 
             if (i == inventory.objectsByName.end()) {
                return emptyObjectList;

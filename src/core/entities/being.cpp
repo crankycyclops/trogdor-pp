@@ -12,6 +12,12 @@
 namespace trogdor::entity {
 
 
+   // getInventoryObjectsByName() returns a reference to this empty list
+   // whenever a name turns up zero results.
+   std::list<std::weak_ptr<Object>> Being::emptyObjectList;
+
+   /***************************************************************************/
+
    void Being::setPropertyValiators() {
 
       setPropertyValidator(HealthProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
@@ -283,8 +289,20 @@ namespace trogdor::entity {
       mutex.lock();
 
       std::vector<std::string> objAliases = object->getAliases();
+
       for (int i = objAliases.size() - 1; i >= 0; i--) {
-         inventory.objectsByName.find(objAliases[i])->second.remove(object.get());
+
+         inventory.objectsByName.find(objAliases[i])->second.remove_if([object] (std::weak_ptr<Object> i) {
+
+            std::shared_ptr<Object> curObj = i.lock();
+
+            // Remove any stale pointers as well as the matching item
+            if (!curObj || object == curObj) {
+               return true;
+            }
+
+            return false;
+         });
       }
 
       inventory.objects.erase(object->getName());

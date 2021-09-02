@@ -19,7 +19,6 @@ namespace trogdor::entity {
    BeingList     emptyBeingList;
    PlayerList    emptyPlayerList;
    CreatureList  emptyCreatureList;
-   ObjectList    emptyObjectList;
 
    /***************************************************************************/
 

@@ -9,7 +9,7 @@
 
 ### Changed
 
-(No changes)
+- Reimplemented the items in a Being's inventory using std::weak_ptr. Any code that calls Being::getInventoryObjects() or Being::getInventoryObjectsByName() will have to be adjusted to take this change into account.
 
 ### Fixed
 

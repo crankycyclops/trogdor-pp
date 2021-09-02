@@ -54,7 +54,7 @@ namespace trogdor {
                      static_cast<double>(playerInvMaxWeight)
                   );
                   totalPercent += percent;
-                  line += " (" + percent + "%)";
+                  line += std::string(" (") + std::to_string(percent) + "%)";
                }
 
                else {

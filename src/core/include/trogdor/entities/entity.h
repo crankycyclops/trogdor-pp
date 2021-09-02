@@ -978,7 +978,6 @@ namespace trogdor::entity {
    extern BeingList     emptyBeingList;
    extern PlayerList    emptyPlayerList;
    extern CreatureList  emptyCreatureList;
-   extern ObjectList    emptyObjectList;
 
    /***************************************************************************/
 

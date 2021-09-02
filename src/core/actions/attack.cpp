@@ -112,9 +112,12 @@ namespace trogdor {
             lookupWeaponByName[player].lock() == playerShared
          ) {
 
-            for (auto &item: player->getInventoryObjectsByName(command.getIndirectObject())) {
-               if (0 == command.getDirectObject().compare(item->getName())) {
-                  weapon = item;
+            for (auto &itemPtr: player->getInventoryObjectsByName(command.getIndirectObject())) {
+               if (
+                  auto const &item = itemPtr.lock();
+                  item && 0 == command.getDirectObject().compare(item->getName())
+               ) {
+                  weapon = item.get();
                   break;
                }
             }
@@ -130,7 +133,14 @@ namespace trogdor {
 
          else if (command.getIndirectObject().length() > 0) {
 
-            auto items = player->getInventoryObjectsByName(command.getIndirectObject());
+            std::list<entity::Object *> items;
+
+            // Only consider inventory items that are valid (i.e. haven't been removed from the game)
+            for (auto const &itemPtr: player->getInventoryObjectsByName(command.getIndirectObject())) {
+               if (auto const &item = itemPtr.lock()) {
+                  items.push_back(item.get());
+               }
+            }
 
             if (items.begin() == items.end()) {
 
