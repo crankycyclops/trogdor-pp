@@ -1,3 +1,5 @@
+#include <queue>
+
 #include <trogdor/entities/player.h>
 #include <trogdor/actions/inventory.h>
 
@@ -23,33 +25,26 @@ namespace trogdor {
       Game *game
    ) {
 
-      if (0 == player->getInventoryCount() && 0 == player->getResources().size()) {
-         player->out("display") << "You don't have anything!" << std::endl;
+      std::queue<std::string> invLines;
+      int playerInvMaxWeight = player->getProperty<int>(entity::Being::InvMaxWeightProperty);
+
+      // percentage of available space used
+      double totalPercent = 0.0;
+
+      // List resources
+      for (auto const &allocation: player->getResources()) {
+         if (auto resource = allocation.first.lock()) {
+            invLines.push(resource->amountToString(allocation.second) + ' ' + resource->titleToString(allocation.second));
+         }
       }
 
-      else {
+      // List objects
+      for (auto const &objPtr: player->getInventoryObjects()) {
 
-         // percentage of available space used
-         double totalPercent = 0.0;
+         if (const auto &obj = objPtr.second.lock()) {
 
-         player->out("display") << "Items in your inventory:" << std::endl << std::endl;
-
-         // List resources
-         for (auto const &allocation: player->getResources()) {
-            if (auto resource = allocation.first.lock()) {
-               player->out ("display") << resource->amountToString(allocation.second)
-                  << ' ' << resource->titleToString(allocation.second) << std::endl;
-            }
-         }
-
-         int playerInvMaxWeight = player->getProperty<int>(entity::Being::InvMaxWeightProperty);
-
-         // List objects
-         for (auto const &obj: player->getInventoryObjects()) {
-
+            std::string line = obj->getProperty<std::string>(entity::Entity::TitleProperty);
             int objectWeight = obj->getProperty<int>(entity::Object::WeightProperty);
-
-            player->out("display") << obj->getProperty<std::string>(entity::Entity::TitleProperty);
 
             if (playerInvMaxWeight > 0) {
 
@@ -59,16 +54,30 @@ namespace trogdor {
                      static_cast<double>(playerInvMaxWeight)
                   );
                   totalPercent += percent;
-                  player->out("display") << " (" << percent << "%)";
+                  line += std::string(" (") + std::to_string(percent) + "%)";
                }
 
                else {
-                  player->out("display") << " (weighs nothing)";
+                  line += " (weighs nothing)";
                }
             }
 
-            player->out("display") << std::endl;
-         };
+            invLines.push(line);
+         }
+      }
+
+      if (!invLines.size()) {
+         player->out("display") << "You don't have anything!" << std::endl;
+      }
+
+      else {
+
+         player->out("display") << "Items in your inventory:" << std::endl << std::endl;
+
+         while (invLines.size()) {
+            player->out("display") << invLines.front() << std::endl;
+            invLines.pop();
+         }
 
          if (playerInvMaxWeight > 0) {
             player->out("display") << std::endl << "You are currently using "

@@ -50,9 +50,11 @@ namespace trogdor::event {
       // TODO: right now, we drop undroppable objects; should we?
       if (!being->isAlive()) {
 
-         for (auto const &object: being->getInventoryObjects()) {
-            drops.push_back(object.get());
-         };
+         for (auto const &objPtr: being->getInventoryObjects()) {
+            if (auto const &object = objPtr.second.lock()) {
+               drops.push_back(object.get());
+            }
+         }
 
          for_each(drops.begin(), drops.end(), [&](entity::Object * const &object) {
             being->drop(object->getShared(), false);

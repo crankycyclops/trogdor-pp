@@ -5,6 +5,7 @@
 #include <set>
 #include <algorithm>
 #include <memory>
+#include <map>
 #include <unordered_map>
 #include <random>
 
@@ -77,6 +78,10 @@ namespace trogdor::entity {
          static constexpr int DEFAULT_MAX_HEALTH = 0;
 
       private:
+
+         // getInventoryObjectsByName() returns a reference to this empty list
+         // whenever a name turns up zero results.
+         static std::list<std::weak_ptr<Object>> emptyObjectList;
 
          // If Being is dropping an ephemeral Resource, we call this to free the
          // allocation.
@@ -259,14 +264,14 @@ namespace trogdor::entity {
 
          struct {
 
-            size_t count;       // number of objects in the inventory
-            int currentWeight;  // how much weight is currently used
-
-            // Inventory items
-            std::set<std::shared_ptr<Object>, EntityAlphaComparator> objects;
+            // Inventory items. I used to use std::set<std::shared_ptr<Object>>,
+            // but I can't use a weak_ptr as a key, and since I'm ordering the
+            // objects in the set alphabetically anyway, I'll just use std::map
+            // instead with the Object's name used for the key.
+            std::map<std::string, std::weak_ptr<Object>> objects;
 
             // Inventory items indexed by alias
-            std::unordered_map<std::string, std::list<Object *>> objectsByName;
+            std::unordered_map<std::string, std::list<std::weak_ptr<Object>>> objectsByName;
          } inventory;
 
          /*
@@ -313,7 +318,7 @@ namespace trogdor::entity {
                inventory.objectsByName[alias] = {};
             }
 
-            inventory.objectsByName.find(alias)->second.push_back(object);
+            inventory.objectsByName.find(alias)->second.push_back(object->getShared());
             mutex.unlock();
          }
 
@@ -459,18 +464,21 @@ namespace trogdor::entity {
             Output:
                current weight (int)
          */
-         inline int const getInventoryCurWeight() const {return inventory.currentWeight;}
+         inline int const getInventoryCurWeight() const {
 
-         /*
-            Returns the number of items in the Being's inventory.
+            int weight = 0;
 
-            Input:
-               (none)
+            // Calculating this on the fly each time seems wasteful, but I'm
+            // not sure how else to handle this right now when an Object could
+            // be externally invalidated at any time.
+            for (const auto &objPtr: inventory.objects) {
+               if (const auto &object = objPtr.second.lock()) {
+                  weight += object->getProperty<int>(Object::WeightProperty);
+               }
+            }
 
-            Output:
-               Number of items (size_t)
-         */
-         inline size_t const getInventoryCount() const {return inventory.count;}
+            return weight;
+         }
 
          /*
             Returns all objects in the Being's inventory.
@@ -495,7 +503,7 @@ namespace trogdor::entity {
          */
          inline const auto &getInventoryObjectsByName(std::string name) const {
 
-            ObjectsByNameMap::const_iterator i = inventory.objectsByName.find(name);
+            const auto &i = inventory.objectsByName.find(name);
 
             if (i == inventory.objectsByName.end()) {
                return emptyObjectList;

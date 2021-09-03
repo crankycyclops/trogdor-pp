@@ -12,6 +12,12 @@
 namespace trogdor::entity {
 
 
+   // getInventoryObjectsByName() returns a reference to this empty list
+   // whenever a name turns up zero results.
+   std::list<std::weak_ptr<Object>> Being::emptyObjectList;
+
+   /***************************************************************************/
+
    void Being::setPropertyValiators() {
 
       setPropertyValidator(HealthProperty, [&](PropertyValue v) -> int {return isPropertyValueInt(v);});
@@ -55,7 +61,7 @@ namespace trogdor::entity {
       std::string n,
       std::unique_ptr<Trogout> o,
       std::unique_ptr<Trogerr> e
-   ): Thing(g, n, std::move(o), std::move(e)), inventory({0, 0, {}, {}}) {
+   ): Thing(g, n, std::move(o), std::move(e)), inventory({{}, {{}}}) {
 
       setAttribute("strength", DEFAULT_ATTRIBUTE_STRENGTH);
       setAttribute("dexterity", DEFAULT_ATTRIBUTE_DEXTERITY);
@@ -84,7 +90,7 @@ namespace trogdor::entity {
    /***************************************************************************/
 
    Being::Being(const Being &b, std::string n): Thing(b, n),
-   inventory({0, 0, {}, {}}) {
+   inventory({{}, {{}}}) {
 
       attributes.values = b.attributes.values;
       attributes.initialTotal = b.attributes.initialTotal;
@@ -99,7 +105,7 @@ namespace trogdor::entity {
       const serial::Serializable &data,
       std::unique_ptr<Trogout> o,
       std::unique_ptr<Trogerr> e
-   ): Thing(g, data, std::move(o), std::move(e)), inventory({0, 0, {}, {}}) {
+   ): Thing(g, data, std::move(o), std::move(e)), inventory({{}, {{}}}) {
 
       std::shared_ptr<serial::Serializable> serializedAttributes =
             std::get<std::shared_ptr<serial::Serializable>>(*data.get("attributes"));
@@ -175,17 +181,16 @@ namespace trogdor::entity {
          serializedAttributeValues->set(attribute.first, attribute.second);
       }
 
-      for (const auto &item: inventory.objects) {
-         inventoryItems.push_back(item->getName());
+      for (const auto &objPtr: inventory.objects) {
+         if (auto const &item = objPtr.second.lock()) {
+            inventoryItems.push_back(item->getName());
+         }
       }
 
       serializedAttributes->set("initialTotal", attributes.initialTotal);
       serializedAttributes->set("values", serializedAttributeValues);
       data->set("attributes", serializedAttributes);
 
-      // inventory.count and inventory.currentWeight will be inferred from
-      // the contents of the inventory during deserialization, and therefore
-      // don't need to be included in the serialized output.
       serializedInventory->set("objects", inventoryItems);
       data->set("inventory", serializedInventory);
 
@@ -255,14 +260,13 @@ namespace trogdor::entity {
 
       // make sure the Object will fit
       if (considerWeight && invMaxWeight > 0 &&
-      inventory.currentWeight + objectWeight > invMaxWeight) {
+      getInventoryCurWeight() + objectWeight > invMaxWeight) {
          return false;
       }
 
       // insert the object into the Being's inventory
       mutex.lock();
-      inventory.objects.insert(object);
-      inventory.currentWeight += objectWeight;
+      inventory.objects[object->getName()] = object;
       mutex.unlock();
 
       // allow referencing of inventory Objects by name and aliases
@@ -272,7 +276,6 @@ namespace trogdor::entity {
       }
 
       mutex.lock();
-      inventory.count++;
       object->setOwner(getShared());
       mutex.unlock();
 
@@ -286,14 +289,23 @@ namespace trogdor::entity {
       mutex.lock();
 
       std::vector<std::string> objAliases = object->getAliases();
+
       for (int i = objAliases.size() - 1; i >= 0; i--) {
-         inventory.objectsByName.find(objAliases[i])->second.remove(object.get());
+
+         inventory.objectsByName.find(objAliases[i])->second.remove_if([object] (std::weak_ptr<Object> i) {
+
+            std::shared_ptr<Object> curObj = i.lock();
+
+            // Remove any stale pointers as well as the matching item
+            if (!curObj || object == curObj) {
+               return true;
+            }
+
+            return false;
+         });
       }
 
-      inventory.objects.erase(object);
-
-      inventory.count--;
-      inventory.currentWeight -= object->getProperty<int>(Object::WeightProperty);
+      inventory.objects.erase(object->getName());
       object->setOwner(std::weak_ptr<Being>());
 
       mutex.unlock();

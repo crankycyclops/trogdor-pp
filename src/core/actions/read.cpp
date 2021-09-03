@@ -44,11 +44,13 @@ namespace trogdor {
          // Player is reading an object
          else {
 
-            entity::ThingList items;
+            std::list<entity::Thing *> items;
 
             // consider matching inventory items, if there are any
-            for (auto const &invObject: player->getInventoryObjectsByName(thingName)) {
-               items.push_front(invObject);
+            for (auto const &invObjectPtr: player->getInventoryObjectsByName(thingName)) {
+               if (auto const &invObject = invObjectPtr.lock()) {
+                  items.push_front(invObject.get());
+               }
             };
 
             // also consider matching items in the room, if there are any

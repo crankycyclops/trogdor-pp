@@ -22,8 +22,15 @@ namespace trogdor {
       Game *game
    ) {
 
+      std::list<entity::Object *> invItems;
       std::shared_ptr<entity::Player> playerShared = player->getShared();
-      auto invItems = player->getInventoryObjectsByName(command.getDirectObject());
+
+      // Only consider inventory items that are valid (i.e. haven't been removed from the game)
+      for (auto const &itemPtr: player->getInventoryObjectsByName(command.getDirectObject())) {
+         if (auto const &item = itemPtr.lock()) {
+            invItems.push_back(item.get());
+         }
+      }
 
       // Player is dropping a resource into the room
       if (!player->getResourceByName(command.getDirectObject()).first.expired()) {

@@ -49,7 +49,7 @@ TEST_SUITE("DeathDropEventTrigger (event/triggers/deathdrop.cpp)") {
 
 		// Verify that the Object was added to the Creature's inventory
 		CHECK(1 == invObjects.size());
-		CHECK(anObject.get() == (*invObjects.begin()).get());
+		CHECK(anObject.get() == (*invObjects.begin()).second.lock().get());
 		CHECK(anObject->getOwner().lock());
 		CHECK(aGuy.get() == anObject->getOwner().lock().get());
 
@@ -73,7 +73,7 @@ TEST_SUITE("DeathDropEventTrigger (event/triggers/deathdrop.cpp)") {
 		// Verify that the Object still belongs to the Creature and that it
 		// hasn't been dropped in the Room
 		CHECK(1 == invObjectsFinal.size());
-		CHECK(anObject.get() == (*invObjectsFinal.begin()).get());
+		CHECK(anObject.get() == (*invObjectsFinal.begin()).second.lock().get());
 		CHECK(anObject->getOwner().lock());
 		CHECK(aGuy.get() == anObject->getOwner().lock().get());
 
@@ -126,7 +126,7 @@ TEST_SUITE("DeathDropEventTrigger (event/triggers/deathdrop.cpp)") {
 
 		// Verify that the Object was added to the Creature's inventory
 		CHECK(1 == invObjects.size());
-		CHECK(anObject.get() == (*invObjects.begin()).get());
+		CHECK(anObject.get() == (*invObjects.begin()).second.lock().get());
 		CHECK(anObject->getOwner().lock());
 		CHECK(aGuy.get() == anObject->getOwner().lock().get());
 
