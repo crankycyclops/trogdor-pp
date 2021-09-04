@@ -19,6 +19,13 @@ namespace trogdor::entity {
          std::weak_ptr<Place> location;       // where the Thing is located
          std::vector<std::string>  aliases;   // list of aliases
 
+         friend void Place::insertPlayer(const std::shared_ptr<Player> &);
+         friend void Place::removePlayer(const std::shared_ptr<Player> &);
+         friend void Place::insertObject(const std::shared_ptr<Object> &);
+         friend void Place::removeObject(const std::shared_ptr<Object> &);
+         friend void Place::insertCreature(const std::shared_ptr<Creature> &);
+         friend void Place::removeCreature(const std::shared_ptr<Creature> &);
+
          /*
             Overrides Tangible::display() and shows a Thing's description in the
             proper format.
@@ -43,6 +50,22 @@ namespace trogdor::entity {
                (none)
          */
          virtual void displayShort(Being *observer);
+
+         /*
+            Set's the Thing's current location in the game.
+
+            Input:
+               Pointer to Place
+
+            Output:
+               (none)
+         */
+         inline void setLocation(std::weak_ptr<Place> l) {
+
+            mutex.lock();
+            location = l;
+            mutex.unlock();
+         }
 
       public:
 
@@ -117,22 +140,6 @@ namespace trogdor::entity {
                std::vector<std::string>
          */
          inline std::vector<std::string> const getAliases() const {return aliases;}
-
-         /*
-            Set's the Thing's current location in the game.
-
-            Input:
-               Pointer to Place
-
-            Output:
-               (none)
-         */
-         inline void setLocation(std::weak_ptr<Place> l) {
-
-            mutex.lock();
-            location = l;
-            mutex.unlock();
-         }
 
          /*
             Serializes the Thing.

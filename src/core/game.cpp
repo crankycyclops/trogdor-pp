@@ -558,7 +558,6 @@ namespace trogdor {
 
       // set Player's initial location
       if (!deserialize) {
-         player->setLocation(places["start"]);
          places["start"]->insertThing(player);
       }
 

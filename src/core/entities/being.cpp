@@ -342,7 +342,6 @@ namespace trogdor::entity {
          << " arrives." << std::endl;
 
       l->insertThing(getShared());
-      setLocation(l);
       l->observe(getShared());
 
       oldLoc->out("notifications") << getProperty<std::string>(TitleProperty)
