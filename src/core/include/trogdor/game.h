@@ -799,23 +799,25 @@ namespace trogdor {
          void insertEntity(std::string name, std::shared_ptr<entity::Entity> entity);
 
          /*
-            Removes the entity referenced by name from the game. Returns true if
-            removal was successful and false if not and throws an instance of
-            EntityException if the specified entity doesn't exist and an
-            instance of UndefinedException if attempting to remove the room
-            named "start," which would lead to undefined behavior.
+            Removes the Entity referenced by name from the game and throws an
+            instance of EntityException or UndefinedException.
 
-            Removal of an entity will only be successful under the following
+            Removal of an Entity will only be successful under the following
             conditions:
 
-               1) The entity is not part of a Being's inventory; AND
-               2) The entity is not contained inside a Place
+               1) The Entity is not an Object in a Being's inventory; AND
+               2) The Entity is not a Resource held by a Room or a Being; AND
+               3) The Entity is not contained inside a Place; AND
+               4) The Entity is not a Place that contains one or more Things; AND
+               5) The Entity is not a Being that owns one or more Objects
 
             My logic for requiring these conditions to be met before an Entity
             can be removed is that it forces the developer to decide what to do
-            before Entities that are owned by other Entities are removed. For
-            example, if an Object that's a part of a Player's inventory is
-            removed, the developer might want to send them a message about it.
+            before Entities that are owned by other Entities (or the other way
+            around) are removed. For example, if an Object that's a part of a
+            Player's inventory is removed, the developer might want to send them
+            a message about it.
+
             To prepare the Entity for removal, you'll want to do something like
             the following:
 
@@ -823,17 +825,37 @@ namespace trogdor {
             // a Place:
             if (auto place = thing->getLocation().lock()) {
                // Do something before removing it from its current location
-               thing->setLocation(std::weak_ptr<Place>());
+               thing->getLocation()->removeThing(thing);
             }
 
             // In the case of an Object, you'll also want an additional check
             // for ownership by a Being
-            else if (auto owner = object->getOwner().lock()) {
+            if (auto owner = object->getOwner().lock()) {
                // Do whatever you want before removing the object from the inventory
                owner->removeItemFromInventory(object);
             }
 
-            When an entity is removed from the game, it will continue to live on
+            // In the case of a Resource, check to see if it has any allocations
+            for (auto const &depositor: resource->getDepositors()) {
+               // Do something (like warn a player, maybe) first
+               resource->free(depositor);
+            }
+
+            // In the case of a Place, check to see if it contains any Things
+            for (auto const &thing: resource->getDepositors()) {
+               // Do something first if necessary
+               place->removeThing(thing);
+            }
+
+            // In the case of a Being, make sure it doesn't own anything
+            for (auto const &objPtr: being->getInventoryObjects()) {
+               if (auto const &object = objPtr.lock()) {
+                  // Do something first if necessary
+                  being->removeFromInventory(object);
+               }
+            }
+
+            When an entity is removed from the game, it will continue to live
             until the last shared_ptr referencing it falls out of scope. In
             order to signify that such an Entity has been removed and is no
             longer to be considered a part of the game, its Game pointer will be
@@ -852,7 +874,7 @@ namespace trogdor {
             Output:
                (none)
          */
-         bool removeEntity(std::string name);
+         void removeEntity(std::string name);
 
          /*
             Removes all entities from the game.
