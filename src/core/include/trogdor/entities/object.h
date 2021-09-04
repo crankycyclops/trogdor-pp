@@ -14,6 +14,9 @@ namespace trogdor::entity {
 
    class Object: public Thing {
 
+      // Being::insertIntoInventory() and Being::removeFromInventory() need to call setOwner()
+      friend Being;
+
       private:
 
          /*
@@ -31,6 +34,22 @@ namespace trogdor::entity {
 
          // A Being might own the object
          std::weak_ptr<Being> owner;
+
+         /*
+            Sets the owner.
+
+            Input:
+               Being that should now own the object
+
+            Output:
+               (none)
+         */
+         inline void setOwner(std::weak_ptr<Being> being) {
+
+            mutex.lock();
+            owner = being;
+            mutex.unlock();
+         }
 
       public:
 
@@ -114,22 +133,6 @@ namespace trogdor::entity {
                std::weak_ptr<Being>
          */
          inline std::weak_ptr<Being> getOwner() const {return owner;}
-
-         /*
-            Sets the owner.
-
-            Input:
-               Being that should now own the object
-
-            Output:
-               (none)
-         */
-         inline void setOwner(std::weak_ptr<Being> being) {
-
-            mutex.lock();
-            owner = being;
-            mutex.unlock();
-         }
 
          /*
             Serializes the Being.
