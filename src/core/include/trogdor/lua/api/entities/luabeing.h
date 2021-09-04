@@ -81,6 +81,29 @@ namespace trogdor::entity {
                Being or nil if it doesn't exist
          */
          static int getBeing(lua_State *L);
+
+         /*
+            Wraps around Being::insertIntoInventory().
+
+            Input:
+               Object to insert
+               Whether or not weight should be considered
+
+            Output:
+               (none)
+         */
+         static int insertIntoInventory(lua_State *L);
+
+         /*
+            Wraps around Being::removeFromInventory().
+
+            Input:
+               Object to remove
+
+            Output:
+               (none)
+         */
+         static int removeFromInventory(lua_State *L);
    };
 }
 
