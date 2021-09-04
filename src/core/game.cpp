@@ -429,40 +429,57 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   bool Game::removeEntity(std::string name) {
+   void Game::removeEntity(std::string name) {
 
       if (entities.end() == entities.find(name)) {
          throw entity::EntityException("Entity not found");
       }
 
-      // Removing the room named "start" would lead to undefined behavior.
-      else if (0 == name.compare("start")) {
-         throw UndefinedException("Cannot remove \"start\" as this would lead to undefined behavior.");
+      else if (
+         entities[name]->isType(entity::EntityType::ENTITY_PLAYER)) {
+         throw EntityException("Call removePlayer() to remove players from the game");
       }
 
-      // If the Entity is contained in a location, it will have to be removed
-      // first.
+      else if (0 == name.compare("start")) {
+         throw EntityException("Cannot remove \"start\" as this would lead to undefined behavior");
+      }
+
       else if (
          entities[name]->isType(entity::EntityType::ENTITY_THING) &&
          std::static_pointer_cast<entity::Thing>(entities[name])->getLocation().lock()
       ) {
-         return false;
+         throw EntityException("Thing must be removed from the Place that contains it");
       }
 
-      // If the Entity is contained in a Being's inventory, it will have to be
-      // removed first.
       else if (
          entities[name]->isType(entity::EntityType::ENTITY_OBJECT) &&
          std::static_pointer_cast<entity::Object>(entities[name])->getOwner().lock()
       ) {
-         return false;
+         throw EntityException("Object must be removed from the inventory of the Being that owns it");
       }
 
-      // TODO: if entity is a resource and a Place or Being has any of it,
-      // removal should fail until the resource is removed from them all
+      else if (entities[name]->isType(entity::EntityType::ENTITY_RESOURCE)) {
+         for (auto const &depositor: std::static_pointer_cast<entity::Resource>(entities[name])->getDepositors()) {
+            if (!depositor.first.expired()) {
+               throw EntityException("Resource has one or more allocations and must be freed");
+            }
+         }
+      }
 
-      // TODO: if entity is a Place and that place contains one or more Things
-      // or Resources, removal should fail until those things are removed
+      else if (
+         entities[name]->isType(entity::EntityType::ENTITY_PLACE) &&
+         std::static_pointer_cast<entity::Place>(entities[name])->getThings().size()
+      ) {
+         throw EntityException("Place contains one or more Things that must be removed first");
+      }
+
+      else if (entities[name]->isType(entity::EntityType::ENTITY_BEING)) {
+         for (auto const &object: std::static_pointer_cast<entity::Being>(entities[name])->getInventoryObjects()) {
+            if (!object.second.expired()) {
+               throw EntityException("Being's inventory must be emptied first");
+            }
+         }
+      }
 
       mutex.lock();
 
@@ -491,11 +508,6 @@ namespace trogdor {
             creatures.erase(name);
             break;
 
-         case entity::ENTITY_PLAYER:
-            removePlayer(name, "");
-            mutex.unlock();
-            return true;
-
          default:
             throw UndefinedException("Game::removeEntity: unsupported entity type");
       }
@@ -504,7 +516,6 @@ namespace trogdor {
       entities.erase(name);
 
       mutex.unlock();
-      return true;
    }
 
    /***************************************************************************/
