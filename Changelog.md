@@ -6,6 +6,7 @@
 ### Added
 
 - Added room connection descriptions ([Connection descriptions feature #72 ](https://github.com/crankycyclops/trogdor-pp/pull/72)), a more flexible way to generate room descriptions that can be updated dynamically when those connections change. This new feature shouldn't have any impact on older projects.
+- Wrote two new Lua methods, Being:insertIntoInventory() and Being:removeFromInventory() to replace functionality previously served by the now removed method Thing:setLocation.
 
 ### Changed
 
@@ -13,7 +14,7 @@
 - Game::removeEntity() now enforces a more complete set of rules and no longer returns a boolean value (instead, it throws an exception if anything goes wrong.)
 - Object::setOwner() is now protected and an Object can only be inserted into a Being's inventory by calling Being::insertIntoInventory().
 - Thing::setLocation() is now protected and a Thing can only be inserted into a Place by calling Place::insertThing().
-- Wrote two new Lua methods, Being:insertIntoInventory() and Being:removeFromInventory() to replace functionality previously served by the now removed method Thing:setLocation.
+- Removed Lua method Thing:setLocation().
 
 ### Fixed
 
