@@ -23,34 +23,36 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		trogdor::entity::Creature attacker(
+		std::shared_ptr<trogdor::entity::Creature> attacker =
+		std::make_shared<trogdor::entity::Creature>(
 			&mockGame,
 			"attacker",
 			std::make_unique<trogdor::NullOut>(),
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		trogdor::entity::Creature defender(
+		std::shared_ptr<trogdor::entity::Creature> defender =
+		std::make_shared<trogdor::entity::Creature>(
 			&mockGame,
 			"defender",
 			std::make_unique<trogdor::NullOut>(),
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		attacker.setLocation(mockRoom);
-		defender.setLocation(mockRoom);
+		mockRoom->insertThing(attacker);
+		mockRoom->insertThing(defender);
 
 		// Until we set a max health, a Being is considered immortal
-		attacker.setProperty(trogdor::entity::Being::HealthProperty, 10);
-		attacker.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
-		defender.setProperty(trogdor::entity::Being::HealthProperty, 10);
-		defender.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		attacker->setProperty(trogdor::entity::Being::HealthProperty, 10);
+		attacker->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		defender->setProperty(trogdor::entity::Being::HealthProperty, 10);
+		defender->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
 		// RIP, random attacker!
-		attacker.die();
+		attacker->die();
 
 		trogdor::Timer mockTimer(&mockGame);
-		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, &attacker, &defender);
+		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker.get(), defender.get());
 
 		job.execute();
 
@@ -72,33 +74,35 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		trogdor::entity::Creature attacker(
+		std::shared_ptr<trogdor::entity::Creature> attacker =
+		std::make_shared<trogdor::entity::Creature>(
 			&mockGame,
 			"attacker",
 			std::make_unique<trogdor::NullOut>(),
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		trogdor::entity::Creature defender(
+		std::shared_ptr<trogdor::entity::Creature> defender =
+		std::make_shared<trogdor::entity::Creature>(
 			&mockGame,
 			"defender",
 			std::make_unique<trogdor::NullOut>(),
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		attacker.setLocation(mockRoom);
-		defender.setLocation(mockRoom);
+		mockRoom->insertThing(attacker);
+		mockRoom->insertThing(defender);
 
 		// Until we set a max health, a Being is considered immortal
-		attacker.setProperty(trogdor::entity::Being::HealthProperty, 10);
-		attacker.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
-		defender.setProperty(trogdor::entity::Being::HealthProperty, 10);
-		defender.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		attacker->setProperty(trogdor::entity::Being::HealthProperty, 10);
+		attacker->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		defender->setProperty(trogdor::entity::Being::HealthProperty, 10);
+		defender->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
-		defender.die();
+		defender->die();
 
 		trogdor::Timer mockTimer(&mockGame);
-		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, &attacker, &defender);
+		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker.get(), defender.get());
 
 		job.execute();
 
@@ -120,34 +124,36 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		trogdor::entity::Creature attacker(
+		std::shared_ptr<trogdor::entity::Creature> attacker =
+		std::make_shared<trogdor::entity::Creature>(
 			&mockGame,
 			"attacker",
 			std::make_unique<trogdor::NullOut>(),
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		trogdor::entity::Creature defender(
+		std::shared_ptr<trogdor::entity::Creature> defender =
+		std::make_shared<trogdor::entity::Creature>(
 			&mockGame,
 			"defender",
 			std::make_unique<trogdor::NullOut>(),
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		attacker.setLocation(mockRoom);
-		defender.setLocation(mockRoom);
+		mockRoom->insertThing(attacker);
+		mockRoom->insertThing(defender);
 
 		// Until we set a max health, a Being is considered immortal
-		attacker.setProperty(trogdor::entity::Being::HealthProperty, 10);
-		attacker.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
-		defender.setProperty(trogdor::entity::Being::HealthProperty, 10);
-		defender.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		attacker->setProperty(trogdor::entity::Being::HealthProperty, 10);
+		attacker->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		defender->setProperty(trogdor::entity::Being::HealthProperty, 10);
+		defender->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
-		attacker.die();
-		defender.die();
+		attacker->die();
+		defender->die();
 
 		trogdor::Timer mockTimer(&mockGame);
-		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, &attacker, &defender);
+		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker.get(), defender.get());
 
 		job.execute();
 
@@ -169,33 +175,35 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		trogdor::entity::Creature attacker(
+		std::shared_ptr<trogdor::entity::Creature> attacker =
+		std::make_shared<trogdor::entity::Creature>(
 			&mockGame,
 			"attacker",
 			std::make_unique<trogdor::NullOut>(),
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		trogdor::entity::Creature defender(
+		std::shared_ptr<trogdor::entity::Creature> defender =
+		std::make_shared<trogdor::entity::Creature>(
 			&mockGame,
 			"defender",
 			std::make_unique<trogdor::NullOut>(),
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		attacker.setLocation(mockRoom);
-		defender.setLocation(mockRoom);
+		mockRoom->insertThing(attacker);
+		mockRoom->insertThing(defender);
 
 		// Until we set a max health, a Being is considered immortal
-		attacker.setProperty(trogdor::entity::Being::HealthProperty, 10);
-		attacker.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
-		defender.setProperty(trogdor::entity::Being::HealthProperty, 10);
-		defender.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		attacker->setProperty(trogdor::entity::Being::HealthProperty, 10);
+		attacker->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		defender->setProperty(trogdor::entity::Being::HealthProperty, 10);
+		defender->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
-		defender.removeTag(trogdor::entity::Being::AttackableTag);
+		defender->removeTag(trogdor::entity::Being::AttackableTag);
 
 		trogdor::Timer mockTimer(&mockGame);
-		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, &attacker, &defender);
+		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker.get(), defender.get());
 
 		job.execute();
 
@@ -225,31 +233,33 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		trogdor::entity::Creature attacker(
+		std::shared_ptr<trogdor::entity::Creature> attacker =
+		std::make_shared<trogdor::entity::Creature>(
 			&mockGame,
 			"attacker",
 			std::make_unique<trogdor::NullOut>(),
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		trogdor::entity::Creature defender(
+		std::shared_ptr<trogdor::entity::Creature> defender =
+		std::make_shared<trogdor::entity::Creature>(
 			&mockGame,
 			"defender",
 			std::make_unique<trogdor::NullOut>(),
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		attacker.setLocation(attackersRoom);
-		defender.setLocation(defendersRoom);
+		attackersRoom->insertThing(attacker);
+		defendersRoom->insertThing(defender);
 
 		// Until we set a max health, a Being is considered immortal
-		attacker.setProperty(trogdor::entity::Being::HealthProperty, 10);
-		attacker.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
-		defender.setProperty(trogdor::entity::Being::HealthProperty, 10);
-		defender.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		attacker->setProperty(trogdor::entity::Being::HealthProperty, 10);
+		attacker->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		defender->setProperty(trogdor::entity::Being::HealthProperty, 10);
+		defender->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
 		trogdor::Timer mockTimer(&mockGame);
-		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, &attacker, &defender);
+		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker.get(), defender.get());
 
 		job.execute();
 
@@ -271,35 +281,37 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		trogdor::entity::Creature attacker(
+		std::shared_ptr<trogdor::entity::Creature> attacker =
+		std::make_shared<trogdor::entity::Creature>(
 			&mockGame,
 			"attacker",
 			std::make_unique<trogdor::NullOut>(),
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		trogdor::entity::Creature defender(
+		std::shared_ptr<trogdor::entity::Creature> defender =
+		std::make_shared<trogdor::entity::Creature>(
 			&mockGame,
 			"defender",
 			std::make_unique<trogdor::NullOut>(),
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		attacker.setLocation(mockRoom);
-		defender.setLocation(mockRoom);
+		mockRoom->insertThing(attacker);
+		mockRoom->insertThing(defender);
 
 		// Until we set a max health, a Being is considered immortal
-		attacker.setProperty(trogdor::entity::Being::HealthProperty, 10);
-		attacker.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
-		defender.setProperty(trogdor::entity::Being::HealthProperty, 10);
-		defender.setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		attacker->setProperty(trogdor::entity::Being::HealthProperty, 10);
+		attacker->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		defender->setProperty(trogdor::entity::Being::HealthProperty, 10);
+		defender->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
 		// Make absolutely certain the defender is attackable (right now this
 		// is the default, but that might change in the future)
-		defender.setTag(trogdor::entity::Being::AttackableTag);
+		defender->setTag(trogdor::entity::Being::AttackableTag);
 
 		trogdor::Timer mockTimer(&mockGame);
-		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, &attacker, &defender);
+		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker.get(), defender.get());
 
 		job.execute();
 
