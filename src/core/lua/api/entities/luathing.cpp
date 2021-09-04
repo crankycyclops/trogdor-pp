@@ -45,8 +45,6 @@ namespace trogdor::entity {
       {"getAliases",    LuaThing::getAliases},
       {"addAlias",      LuaThing::addAlias},
       {"getLocation",   LuaThing::getLocation},
-      {"setLocation",   LuaThing::setLocation},
-      {"clearLocation", LuaThing::removeFromLocation},
       {0, 0}
    };
 
@@ -192,78 +190,5 @@ namespace trogdor::entity {
 
       LuaState::pushEntity(L, location ? location.get() : nullptr);
       return 1;
-   }
-
-   /***************************************************************************/
-
-   int LuaThing::setLocation(lua_State *L) {
-
-      int n = lua_gettop(L);
-
-      if (2 != n) {
-         return luaL_error(L, "takes one Place argument (use colon for method call)");
-      }
-
-      Thing *t = checkThing(L, -2);
-      Place *p = LuaPlace::checkPlace(L, -1);
-
-      if (nullptr == t) {
-         return luaL_error(L, "calling object is not a Thing");
-      }
-
-      else if (nullptr == p) {
-         return luaL_error(L, "argument is not a Place");
-      }
-
-      try {
-
-         // If the Thing is an Object and has an owner, then we need to remove
-         // it from the owner's inventory first
-         if (ENTITY_OBJECT == t->getType()) {
-
-            std::shared_ptr<Object> objRef = dynamic_cast<Object *>(t)->getShared();
-
-            if (std::shared_ptr<Being> owner = objRef->getOwner().lock()) {
-               owner->removeFromInventory(objRef);
-            }
-         }
-
-         t->setLocation(p->getShared());
-         return 0;
-      }
-
-      catch (const Exception &e) {
-         return luaL_error(L, e.what());
-      }
-   }
-
-   /***************************************************************************/
-
-   int LuaThing::removeFromLocation(lua_State *L) {
-
-      int n = lua_gettop(L);
-
-      if (1 != n) {
-         return luaL_error(L, "takes no arguments");
-      }
-
-      Thing *t = checkThing(L, -1);
-
-      if (nullptr == t) {
-         return luaL_error(L, "not a Thing!");
-      }
-
-      try {
-
-         if (auto place = t->getLocation().lock()) {
-            place->removeThing(t->getShared());
-         }
-
-         return 0;
-      }
-
-      catch (const Exception &e) {
-         return luaL_error(L, e.what());
-      }
    }
 }

@@ -10,8 +10,9 @@
 ### Changed
 
 - Reimplemented the items in a Being's inventory using std::weak_ptr. Any code that calls Being::getInventoryObjects() or Being::getInventoryObjectsByName() will have to be adjusted to take this change into account.
-- Object::setOwner() is now protected and an Object can only be inserted into a Being's inventory by calling Being::insertIntoInventory()
 - Game::removeEntity() now enforces a more complete set of rules and no longer returns a boolean value (instead, it throws an exception if anything goes wrong.)
+- Object::setOwner() is now protected and an Object can only be inserted into a Being's inventory by calling Being::insertIntoInventory().
+- Thing::setLocation() is now protected and a Thing can only be inserted into a Place by calling Place::insertThing().
 
 ### Fixed
 
