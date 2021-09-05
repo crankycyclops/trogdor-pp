@@ -6,6 +6,7 @@ function sanityCheck()
     -- each type in another table because otherwise, any nil values that should
     -- be picked up as a failure to define a required type will be skipped.
     trogTypes = {
+        ['Game']={Game},
         ['Entity']={Entity},
         ['Resource']={Resource},
         ['Tangible']={Tangible},
