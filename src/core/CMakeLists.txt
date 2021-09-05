@@ -337,6 +337,7 @@ add_executable(test_core
 	test/mock/mockaction.cpp
 	test/mock/mocktrigger.cpp
 	test/mock/mocktimerjob.cpp
+	test/lua/luastate.cpp
 )
 
 target_include_directories(test_core

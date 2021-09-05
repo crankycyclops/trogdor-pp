@@ -133,7 +133,8 @@ namespace trogdor {
             // load standard library
             // TODO: only open certain standard libraries. I don't, for example,
             // want to allow things like os.exit(). Hold off on this until I
-            // migrate to Lua 5.2+.
+            // migrate to Lua 5.2+. The answer to this seems to be here:
+            // https://stackoverflow.com/questions/4551101/lual-openlibs-and-sandboxing-scripts
             luaL_openlibs(L);
 
             // register Game type
@@ -141,6 +142,8 @@ namespace trogdor {
 
             // register Entity types
             entity::LuaEntity::registerLuaType(L);
+            entity::LuaResource::registerLuaType(L);
+            entity::LuaTangible::registerLuaType(L);
             entity::LuaPlace::registerLuaType(L);
             entity::LuaRoom::registerLuaType(L);
             entity::LuaThing::registerLuaType(L);
@@ -386,10 +389,10 @@ namespace trogdor {
          static void pushTable(lua_State *L, LuaTable &arg);
 
          /*
-            Constructor for the LuaState object.
+            Constructor for the LuaState object (requires a pointer to the
+            containing Game.)
          */
          LuaState() = delete;
-
          inline LuaState(Game *g): game(g) {
 
             initState();
