@@ -1,43 +1,22 @@
 #include <doctest.h>
 
 #include <trogdor/game.h>
+#include <trogdor/filesystem.h>
 #include <trogdor/lua/luastate.h>
 #include <trogdor/iostream/nullerr.h>
 
 
-// Lua function that confirms sanity of the underlying Lua state
-const std::string sanityCheck = " \
-    function sanityCheck()\n\
-        \n\
-        -- All the types that should be defined by the engine\n\
-        trogTypes = {\n\
-            ['Entity']={Entity},\n\
-            ['Resource']={Resource},\n\
-            ['Tangible']={Tangible},\n\
-            ['Place']={Place},\n\
-            ['Room']={Room},\n\
-            ['Thing']={Thing},\n\
-            ['Object']={Object},\n\
-            ['Being']={Being},\n\
-            ['Creature']={Creature},\n\
-            ['Player']={Player}\n\
-        }\n\
-        \n\
-        for i, type in pairs(trogTypes) do\n\
-            if nil == type[1] then\n\
-                error(\"Lua type \" .. i .. \" should be defined but isn't\")\n\
-                return false\n\
-            end\n\
-        end\n\
-        \n\
-        return true\n\
-    end\
-";
+// Runs basic sanity checks on new instances of LuaState
+const char *SANITY_CHECK = "sanitycheck.lua";
 
 
 TEST_SUITE("LuaState (luastate.cpp)") {
 
 	TEST_CASE("LuaState (luastate.cpp): LuaState(Game *)") {
+
+        #ifndef CORE_UNIT_TEST_LUA_ROOT
+            FAIL("CORE_UNIT_TEST_LUA_ROOT must be defined.");
+        #endif
 
         std::unique_ptr<trogdor::Game> game = std::make_unique<trogdor::Game>(
             std::make_unique<trogdor::NullErr>()
@@ -47,7 +26,11 @@ TEST_SUITE("LuaState (luastate.cpp)") {
 
         // Load into the Lua state a simple script that will be used as a
         // sanity check that returns 1 if anything is wrong and 0 if not.
-        L.loadScriptFromString(sanityCheck);
+        L.loadScriptFromFile(
+            std::string(CORE_UNIT_TEST_LUA_ROOT) +
+            STD_FILESYSTEM::path::preferred_separator +
+            SANITY_CHECK
+        );
 
         // Because I'm only executing Lua states in a single thread and because
         // locking would make things more complicated, I'm not going to call
@@ -58,7 +41,5 @@ TEST_SUITE("LuaState (luastate.cpp)") {
         if (!L.getBoolean(0)) {
             FAIL(L.getLastErrorMsg());
         }
-
-        CHECK(true);
     }
 }

@@ -298,7 +298,8 @@ install(TARGETS trogdor DESTINATION lib COMPONENT trogdor)
 
 # This is the game definition file we're going to use for unit tests
 add_definitions(
-	-DCORE_UNIT_TEST_DEFINITION_FILE=\(\"${PROJECT_SOURCE_DIR}/game.xml\"\)
+	-DCORE_UNIT_TEST_DEFINITION_FILE=\(\"${PROJECT_SOURCE_DIR}/data/game.xml\"\)
+	-DCORE_UNIT_TEST_LUA_ROOT=\(\"${PROJECT_SOURCE_DIR}/test/lua/scripts\"\)
 )
 
 set(STATIC_CORE_SOURCES
