@@ -73,6 +73,8 @@ namespace trogdor {
          // Pointer to the Game object this Lua state is a part of
          Game *game;
 
+      protected:
+
          // number of function arguments pushed onto the Lua stack
          int nArgs;
 

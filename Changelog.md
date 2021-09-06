@@ -16,10 +16,11 @@
 - Object::setOwner() is now protected and an Object can only be inserted into a Being's inventory by calling Being::insertIntoInventory().
 - Thing::setLocation() is now protected and a Thing can only be inserted into a Place by calling Place::insertThing().
 - Removed Lua method Thing:setLocation().
+- Many formerly private members and methods in trogdor::LuaState are now protected to make unit testing easier
 
 ### Fixed
 
-- It turns out, the Tangible and Resource types weren't being registered with Lua. This was uncovered by my new unit tests and has since been fixed.
+- It turns out that the Tangible and Resource types weren't being registered with Lua. This was uncovered by my new unit tests and has been fixed.
 
 ## [0.80.0] - 2021-07-15
 

@@ -5,9 +5,18 @@
 #include <trogdor/lua/luastate.h>
 #include <trogdor/iostream/nullerr.h>
 
+#include "testluastate.h"
+
 
 // Runs basic sanity checks on new instances of LuaState
 const char *SANITY_CHECK = "sanitycheck.lua";
+
+// Lua function that returns true.
+int luaReturnTrue(lua_State *L) {
+
+    lua_pushboolean(L, true);
+    return 1;
+}
 
 
 TEST_SUITE("LuaState (luastate.cpp)") {
@@ -162,9 +171,74 @@ TEST_SUITE("LuaState (luastate.cpp)") {
         CHECK(game.get() == L.getGame());
     }
 
+    // Warning: the way I setup these two tests is *really* janky...
 	TEST_CASE("LuaState (luastate.cpp): luaL_register_wrapper()") {
 
-        // TODO
+        SUBCASE("Functions are not attached to a library") {
+
+            std::unique_ptr<trogdor::Game> game = std::make_unique<trogdor::Game>(
+                std::make_unique<trogdor::NullErr>()
+            );
+
+            TestLuaState L(game.get());
+
+            static const luaL_Reg luaFunctions[] = {
+                {"returnTrue", luaReturnTrue},
+                {0, 0}
+            };
+
+            // From https://pgl.yoyo.org/luai/i/luaL_register, we can see that
+            // we need to attach the functions to a table. All of this is stuff
+            // that would ordinarily be internal to trogdor::LuaState but is
+            // necessary to test this method.
+            luaL_newmetatable(L.getRealState(), "TestTable");
+
+            // TestTable.__index = TestTable
+            lua_pushvalue(L.getRealState(), -1);
+            lua_setfield(L.getRealState(), -2, "__index");
+
+            L.luaL_register_wrapper(L, nullptr, luaFunctions);
+
+            // This sets TestTable as a global so I can access it
+            lua_setglobal(L.getRealState(), "TestTable");
+
+            // Verify that returnTrue() is registered
+            L.loadScriptFromString("function callReturnTrue()\nreturn TestTable.returnTrue()\nend");
+            L.call("callReturnTrue");
+            L.execute(1);
+
+            if (!L.getBoolean(0)) {
+                FAIL(L.getLastErrorMsg());
+            }
+        }
+
+        SUBCASE("Functions are attached to a library") {
+
+            std::unique_ptr<trogdor::Game> game = std::make_unique<trogdor::Game>(
+                std::make_unique<trogdor::NullErr>()
+            );
+
+            TestLuaState L(game.get());
+
+            static const luaL_Reg luaFunctions[] = {
+                {"returnTrue", luaReturnTrue},
+                {0, 0}
+            };
+
+            // I don't have to do any of what I did in the test above because
+            // passing in a string for the second parameter creates the global
+            // table (library) for me.
+            L.luaL_register_wrapper(L, "TestTable", luaFunctions);
+
+            // Verify that returnTrue() is registered
+            L.loadScriptFromString("function callReturnTrue()\nreturn TestTable.returnTrue()\nend");
+            L.call("callReturnTrue");
+            L.execute(1);
+
+            if (!L.getBoolean(0)) {
+                FAIL(L.getLastErrorMsg());
+            }
+        }
     }
 
 	TEST_CASE("LuaState (luastate.cpp): luaL_checkudata_ex()") {
