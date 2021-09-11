@@ -13,7 +13,7 @@ namespace trogdor::entity {
    const char *LuaPlayer::PackageName = "Player";
 
    // Types which are considered valid by checkPlayer()
-   static const char *playerTypes[] = {
+   const char *LuaPlayer::types[] = {
       "Player",
       0
    };
@@ -68,7 +68,7 @@ namespace trogdor::entity {
    Player *LuaPlayer::checkPlayer(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Player **)LuaState::luaL_checkudata_ex(L, i, playerTypes);
+      return *(Player **)LuaState::luaL_checkudata_ex(L, i, types);
    }
 
    /***************************************************************************/

@@ -15,7 +15,7 @@ namespace trogdor::entity {
    const char *LuaRoom::PackageName = "Room";
 
    // Types which are considered valid by checkRoom()
-   static const char *roomTypes[] = {
+   const char *LuaRoom::types[] = {
       "Room",
       0
    };
@@ -71,7 +71,7 @@ namespace trogdor::entity {
    Room *LuaRoom::checkRoom(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Room **)LuaState::luaL_checkudata_ex(L, i, roomTypes);
+      return *(Room **)LuaState::luaL_checkudata_ex(L, i, types);
    }
 
    /***************************************************************************/

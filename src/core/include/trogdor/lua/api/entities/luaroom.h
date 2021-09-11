@@ -52,6 +52,9 @@ namespace trogdor::entity {
          // Rooms in the game
          static const char *PackageName;
 
+         // Types which are considered valid by checkRoom()
+         static const char *types[];
+
          /*
             Registers the Room type and its associated operations in Lua.
          */

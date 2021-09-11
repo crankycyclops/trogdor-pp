@@ -337,6 +337,8 @@ namespace trogdor {
                #if LUA_VERSION_NUM > 501
 
                   // Replaces call to luaL_typerror, which died after Lua 5.1
+                  // TODO: luaL_typename() just returns "table," which is not
+                  // helpful. Figure out a way to get a better message.
                   const char *errmsg = lua_pushfstring(L, "%s expected, got %s",
                      lua_tostring(L, -1), luaL_typename(L, ud));
                   luaL_argerror(L, ud, errmsg);

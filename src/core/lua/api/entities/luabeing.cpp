@@ -12,8 +12,8 @@ namespace trogdor::entity {
    // in the game
    const char *LuaBeing::PackageName = "Being";
 
-   // Types which are considered valid by checkBeing()
-   static const char *beingTypes[] = {
+   // Types that are considered valid by checkBeing()
+   const char *LuaBeing::types[] = {
       "Being",
       "Player",
       "Creature",
@@ -71,7 +71,7 @@ namespace trogdor::entity {
    Being *LuaBeing::checkBeing(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Being **)LuaState::luaL_checkudata_ex(L, i, beingTypes);
+      return *(Being **)LuaState::luaL_checkudata_ex(L, i, types);
    }
 
    /***************************************************************************/

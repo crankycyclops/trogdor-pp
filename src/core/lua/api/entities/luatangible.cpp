@@ -23,7 +23,7 @@ namespace trogdor::entity {
    const char *LuaTangible::PackageName = "Tangible";
 
    // Types which are considered valid by checkTangible()
-   static const char *tangibleTypes[] = {
+   const char *LuaTangible::types[] = {
       "Tangible",
       "Place",
       "Room",
@@ -87,7 +87,7 @@ namespace trogdor::entity {
    Tangible *LuaTangible::checkTangible(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Tangible **)LuaState::luaL_checkudata_ex(L, i, tangibleTypes);
+      return *(Tangible **)LuaState::luaL_checkudata_ex(L, i, types);
    }
 
    /***************************************************************************/

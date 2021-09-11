@@ -49,6 +49,9 @@ namespace trogdor::entity {
          // Entities in the game
          static const char *PackageName;
 
+         // Types that are considered valid by checkEntity()
+         static const char *types[];
+
          /*
             Registers the Entity type and its associated operations in Lua.
          */

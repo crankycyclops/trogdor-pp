@@ -52,6 +52,9 @@ namespace trogdor::entity {
          // Tangibles in the game
          static const char *PackageName;
 
+         // Types which are considered valid by checkTangible()
+         static const char *types[];
+
          /*
             Registers the Tangible type and its associated operations in Lua.
          */

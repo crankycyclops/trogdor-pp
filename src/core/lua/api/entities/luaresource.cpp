@@ -18,7 +18,7 @@ namespace trogdor::entity {
    const char *LuaResource::PackageName = "Resource";
 
    // Types which are considered valid by checkResource()
-   static const char *resourceTypes[] = {
+   const char *LuaResource::types[] = {
       "Resource",
       0
    };
@@ -71,7 +71,7 @@ namespace trogdor::entity {
    Resource *LuaResource::checkResource(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Resource **)LuaState::luaL_checkudata_ex(L, i, resourceTypes);
+      return *(Resource **)LuaState::luaL_checkudata_ex(L, i, types);
    }
 
    /***************************************************************************/

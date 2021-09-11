@@ -52,6 +52,9 @@ namespace trogdor::entity {
          // Objects in the game
          static const char *PackageName;
 
+         // Types which are considered valid by checkObject()
+         static const char *types[];
+
          /*
             Registers the Object type and its associated operations in Lua.
          */

@@ -19,7 +19,7 @@ namespace trogdor::entity {
    const char *LuaPlace::PackageName = "Place";
 
    // Types which are considered valid by checkPlace()
-   static const char *placeTypes[] = {
+   const char *LuaPlace::types[] = {
       "Place",
       "Room",
       0
@@ -76,7 +76,7 @@ namespace trogdor::entity {
    Place *LuaPlace::checkPlace(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Place **)LuaState::luaL_checkudata_ex(L, i, placeTypes);
+      return *(Place **)LuaState::luaL_checkudata_ex(L, i, types);
    }
 
    /***************************************************************************/

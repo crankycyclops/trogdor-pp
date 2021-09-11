@@ -15,7 +15,7 @@ namespace trogdor::entity {
    const char *LuaObject::PackageName = "Object";
 
    // Types which are considered valid by checkObject()
-   static const char *objectTypes[] = {
+   const char *LuaObject::types[] = {
       "Object",
       0
    };
@@ -71,7 +71,7 @@ namespace trogdor::entity {
    Object *LuaObject::checkObject(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Object **)LuaState::luaL_checkudata_ex(L, i, objectTypes);
+      return *(Object **)LuaState::luaL_checkudata_ex(L, i, types);
    }
 
    /***************************************************************************/

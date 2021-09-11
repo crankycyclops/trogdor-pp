@@ -52,6 +52,9 @@ namespace trogdor::entity {
          // Resources in the game
          static const char *PackageName;
 
+         // Types which are considered valid by checkResource()
+         static const char *types[];
+
          /*
             Registers the Resource type and its associated operations in Lua.
          */

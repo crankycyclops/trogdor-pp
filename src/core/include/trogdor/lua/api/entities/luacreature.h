@@ -52,6 +52,9 @@ namespace trogdor::entity {
          // Creatures in the game
          static const char *PackageName;
 
+         // Types which are considered valid by checkCreature()
+         static const char *types[];
+
          /*
             Registers the Creature type and its associated operations in Lua.
          */

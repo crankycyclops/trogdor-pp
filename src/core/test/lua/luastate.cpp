@@ -3,7 +3,10 @@
 #include <trogdor/game.h>
 #include <trogdor/filesystem.h>
 #include <trogdor/lua/luastate.h>
+#include <trogdor/iostream/nullout.h>
 #include <trogdor/iostream/nullerr.h>
+
+#include <trogdor/entities/room.h>
 
 #include "testluastate.h"
 
@@ -11,10 +14,96 @@
 // Runs basic sanity checks on new instances of LuaState
 const char *SANITY_CHECK = "sanitycheck.lua";
 
+// Tests luaL_checkudata_ex()
+const char *LUAL_CHECKUDATA_EX_TEST = "test_lual_checkudata_ex.lua";
+
 // Lua function that returns true.
 int luaReturnTrue(lua_State *L) {
 
     lua_pushboolean(L, true);
+    return 1;
+}
+
+// Tests luaL_checkudata_ex() by taking as input an entity and a type and
+// returning true if an argument of that type could be read from the stack and
+// false if not.
+int luaTestCheckudataex(lua_State *L) {
+
+    bool success = false;
+    std::string errorMsg;
+    const char **types = nullptr;
+
+    int n = lua_gettop(L);
+
+    if (n != 2) {
+        return luaL_error(L, "function requires two arguments: entity and type (string)");
+    }
+
+    std::string type = lua_tostring(L, -1);
+
+    switch (trogdor::entity::Entity::strToType(type)) {
+
+        case trogdor::entity::ENTITY_ENTITY:
+
+            types = trogdor::entity::LuaEntity::types;
+            break;
+
+        case trogdor::entity::ENTITY_RESOURCE:
+
+            types = trogdor::entity::LuaResource::types;
+            break;
+
+        case trogdor::entity::ENTITY_TANGIBLE:
+
+            types = trogdor::entity::LuaTangible::types;
+            break;
+
+        case trogdor::entity::ENTITY_PLACE:
+
+            types = trogdor::entity::LuaPlace::types;
+            break;
+
+        case trogdor::entity::ENTITY_ROOM:
+
+            types = trogdor::entity::LuaRoom::types;
+            break;
+
+        case trogdor::entity::ENTITY_THING:
+
+            types = trogdor::entity::LuaThing::types;
+            break;
+
+        case trogdor::entity::ENTITY_OBJECT:
+
+            types = trogdor::entity::LuaObject::types;
+            break;
+
+        case trogdor::entity::ENTITY_BEING:
+
+            types = trogdor::entity::LuaBeing::types;
+            break;
+
+        case trogdor::entity::ENTITY_PLAYER:
+
+            types = trogdor::entity::LuaPlayer::types;
+            break;
+
+        case trogdor::entity::ENTITY_CREATURE:
+
+            types = trogdor::entity::LuaCreature::types;
+            break;
+
+        // Undefined type. Count it as a failure.
+        default:
+            lua_pushboolean(L, false);
+            return 1;
+    }
+
+    if (trogdor::LuaState::luaL_checkudata_ex(L, -2, types)) {
+        success = true;
+    }
+
+    lua_pushboolean(L, success);
     return 1;
 }
 
@@ -202,7 +291,7 @@ TEST_SUITE("LuaState (luastate.cpp)") {
             // This sets TestTable as a global so I can access it
             lua_setglobal(L.getRealState(), "TestTable");
 
-            // Verify that returnTrue() is registered
+            // Verify that returnTrue() was registered
             L.loadScriptFromString("function callReturnTrue()\nreturn TestTable.returnTrue()\nend");
             L.call("callReturnTrue");
             L.execute(1);
@@ -243,7 +332,35 @@ TEST_SUITE("LuaState (luastate.cpp)") {
 
 	TEST_CASE("LuaState (luastate.cpp): luaL_checkudata_ex()") {
 
-        // TODO
+        #ifndef CORE_UNIT_TEST_LUA_ROOT
+            FAIL("CORE_UNIT_TEST_LUA_ROOT must be defined.");
+        #endif
+
+        std::unique_ptr<trogdor::Game> game = std::make_unique<trogdor::Game>(
+            std::make_unique<trogdor::NullErr>()
+        );
+
+        TestLuaState L(game.get());
+
+        static const luaL_Reg luaFunctions[] = {
+            {"luaTestCheckudataex", luaTestCheckudataex},
+            {0, 0}
+        };
+
+        L.loadScriptFromFile(
+            std::string(CORE_UNIT_TEST_LUA_ROOT) +
+            STD_FILESYSTEM::path::preferred_separator +
+            LUAL_CHECKUDATA_EX_TEST
+        );
+
+        L.luaL_register_wrapper(L, "Test", luaFunctions);
+
+        L.call("testLualCheckudataex");
+        L.execute(1);
+
+        if (!L.getBoolean(0)) {
+            FAIL(L.getLastErrorMsg());
+        }
     }
 
 	TEST_CASE("LuaState (luastate.cpp): pushEntity()") {

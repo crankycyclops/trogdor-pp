@@ -52,6 +52,9 @@ namespace trogdor::entity {
          // Places in the game
          static const char *PackageName;
 
+         // Types which are considered valid by checkPlace()
+         static const char *types[];
+
          /*
             Registers the Place type and its associated operations in Lua.
          */

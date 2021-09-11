@@ -52,6 +52,9 @@ namespace trogdor::entity {
          // Players in the game
          static const char *PackageName;
 
+         // Types which are considered valid by checkPlayer()
+         static const char *types[];
+
          /*
             Registers the Player type and its associated operations in Lua.
          */

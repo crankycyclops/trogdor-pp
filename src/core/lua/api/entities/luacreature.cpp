@@ -15,7 +15,7 @@ namespace trogdor::entity {
    const char *LuaCreature::PackageName = "Creature";
 
    // Types which are considered valid by checkCreature()
-   static const char *creatureTypes[] = {
+   const char *LuaCreature::types[] = {
       "Creature",
       0
    };
@@ -72,7 +72,7 @@ namespace trogdor::entity {
    Creature *LuaCreature::checkCreature(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Creature **)LuaState::luaL_checkudata_ex(L, i, creatureTypes);
+      return *(Creature **)LuaState::luaL_checkudata_ex(L, i, types);
    }
 
    /***************************************************************************/

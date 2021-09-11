@@ -52,6 +52,9 @@ namespace trogdor::entity {
          // Beings in the game
          static const char *PackageName;
 
+         // Types that are considered valid by checkBeing()
+         static const char *types[];
+
          /*
             Registers the Being type and its associated operations in Lua.
          */

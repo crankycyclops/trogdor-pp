@@ -18,8 +18,8 @@ namespace trogdor::entity {
    // Entities in the game
    const char *LuaEntity::PackageName = "Entity";
 
-   // Types which are considered valid by checkEntity()
-   static const char *entityTypes[] = {
+   // Types that are considered valid by checkEntity()
+   const char *LuaEntity::types[] = {
       "Entity",
       "Place",
       "Room",
@@ -97,7 +97,7 @@ namespace trogdor::entity {
    Entity *LuaEntity::checkEntity(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Entity **)LuaState::luaL_checkudata_ex(L, i, entityTypes);
+      return *(Entity **)LuaState::luaL_checkudata_ex(L, i, types);
    }
 
    /***************************************************************************/
