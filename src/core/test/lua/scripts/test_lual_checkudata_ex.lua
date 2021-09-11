@@ -17,30 +17,37 @@ function testLualCheckudataex()
 	playerTypes = {"entity", "thing", "being", "player"}
 	notPlayerTypes = {"resource", "place", "room", "object", "creature"}
 
+	resource = Resource.new("testresource")
 	room = Room.new("testroom")
 	object = Object.new("testobject")
 	creature = Creature.new("testcreature")
 	-- player = Player.new("testplayer")
-	--resource = Resurce.new("testresource")
 
 	-- Make sure each instantiable type can be retrieved by any of its
 	-- inherited types
+	for _, type in ipairs(resourceTypes) do
+		if not pcall(function () Test.luaTestCheckudataex(resource, type) end) then
+			error("Failed to get Resource by type " .. type)
+			return false
+		end
+	end
+
 	for _, type in ipairs(roomTypes) do
-		if not Test.luaTestCheckudataex(room, type) then
+		if not pcall(function () Test.luaTestCheckudataex(room, type) end) then
 			error("Failed to get Room by type " .. type)
 			return false
 		end
 	end
 
 	for _, type in ipairs(objectTypes) do
-		if not Test.luaTestCheckudataex(object, type) then
+		if not pcall(function () Test.luaTestCheckudataex(object, type) end) then
 			error("Failed to get Object by type " .. type)
 			return false
 		end
 	end
 
 	for _, type in ipairs(creatureTypes) do
-		if not Test.luaTestCheckudataex(creature, type) then
+		if not pcall(function () Test.luaTestCheckudataex(creature, type) end) then
 			error("Failed to get Creature by type " .. type)
 			return false
 		end

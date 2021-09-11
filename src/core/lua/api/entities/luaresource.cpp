@@ -26,6 +26,7 @@ namespace trogdor::entity {
    // functions that take a Resource as an input (new, get, etc.)
    // format of call: Resource.new(e), where e is a Resource
    static const luaL_Reg functions[] = {
+      {"new", LuaResource::newResource},
       {"get", LuaResource::getResource},
       {0, 0}
    };
@@ -72,6 +73,36 @@ namespace trogdor::entity {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
       return *(Resource **)LuaState::luaL_checkudata_ex(L, i, types);
+   }
+
+   /***************************************************************************/
+
+   int LuaResource::newResource(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (n < 1) {
+         return luaL_error(L, "creature name required");
+      }
+
+      // TODO: remove this once instantiating via a class is supported
+      else if (n > 1) {
+         return luaL_error(L, "creature class argument not yet supported");
+      }
+
+      std::string name = luaL_checkstring(L, -1);
+      lua_getglobal(L, LuaGame::globalName);
+      Game *g = LuaGame::checkGame(L, -1);
+
+      // Resource does not exist in the game unless it's manually inserted
+      Resource *c = new Resource(nullptr, name);
+      c->setManagedByLua(true);
+
+      // TODO: replace if necessary with actual class name once I support that
+      c->setClass(Entity::typeToStr(entity::ENTITY_CREATURE));
+      LuaState::pushEntity(L, c);
+
+      return 1;
    }
 
    /***************************************************************************/

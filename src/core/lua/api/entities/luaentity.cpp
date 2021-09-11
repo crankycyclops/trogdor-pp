@@ -21,6 +21,7 @@ namespace trogdor::entity {
    // Types that are considered valid by checkEntity()
    const char *LuaEntity::types[] = {
       "Entity",
+      "Resource",
       "Place",
       "Room",
       "Thing",

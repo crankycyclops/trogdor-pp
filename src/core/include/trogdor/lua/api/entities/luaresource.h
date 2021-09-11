@@ -74,6 +74,19 @@ namespace trogdor::entity {
          static Resource *checkResource(lua_State *L, int i);
 
          /*
+            Returns a new Resource identified by the given name.
+
+            Lua input:
+               Resource name (string)
+               TODO: add support for optional second class name argument
+                  (requires classes to be stored outside the instantiator.)
+
+            Lua output:
+               Instance of Resource or nil on error
+         */
+         static int newResource(lua_State *L);
+
+         /*
             Gets the Resource from the global game object referenced by the
             given name. If the Resource doesn't exist, returns nil.
 
