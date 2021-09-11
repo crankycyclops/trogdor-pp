@@ -1,5 +1,7 @@
 function testLualCheckudataex()
 
+    entityTypes = {"entity", "resource", "tangible", "place", "room", "thing", "object", "being", "creature", "player"}
+
     resourceTypes = {"entity", "resource"}
     notResourceTypes = {"place", "room", "thing", "object", "being", "creature", "player"}
 
@@ -61,6 +63,37 @@ function testLualCheckudataex()
     for _, type in ipairs(notCreatureTypes) do
         if pcall(function () Test.luaTestCheckudataex(creature, type) end) then
             error("Was able to retrieve Creature by non-inherited type " .. type)
+        end
+    end
+
+    -- For the sake of completeness, I'll also test with basic data types
+    for _, type in ipairs(entityTypes) do
+        if pcall(function () Test.luaTestCheckudataex(1, type) end) then
+            error("Was able to retrieve " .. type .. " with basic data type")
+        end
+    end
+
+    for _, type in ipairs(entityTypes) do
+        if pcall(function () Test.luaTestCheckudataex(3.3, type) end) then
+            error("Was able to retrieve " .. type .. " with basic data type")
+        end
+    end
+
+    for _, type in ipairs(entityTypes) do
+        if pcall(function () Test.luaTestCheckudataex(true, type) end) then
+            error("Was able to retrieve " .. type .. " with basic data type")
+        end
+    end
+
+    for _, type in ipairs(entityTypes) do
+        if pcall(function () Test.luaTestCheckudataex(false, type) end) then
+            error("Was able to retrieve " .. type .. " with basic data type")
+        end
+    end
+
+    for _, type in ipairs(entityTypes) do
+        if pcall(function () Test.luaTestCheckudataex({}, type) end) then
+            error("Was able to retrieve " .. type .. " with basic data type")
         end
     end
 
