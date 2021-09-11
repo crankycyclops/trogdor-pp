@@ -8,7 +8,7 @@
 - Added room connection descriptions ([Connection descriptions feature #72 ](https://github.com/crankycyclops/trogdor-pp/pull/72)), a more flexible way to generate room descriptions that can be updated dynamically when those connections change. This new feature shouldn't have any impact on older projects.
 - Wrote two new Lua methods, Being:insertIntoInventory() and Being:removeFromInventory() to replace functionality previously served by the now removed method Thing:setLocation.
 - Implemented Lua function Resource.new() to create new Resources from within Lua
-- Added some unit tests for the LuaState class
+- Wrote unit tests for the LuaState class
 
 ### Changed
 
@@ -22,6 +22,7 @@
 ### Fixed
 
 - It turns out that the Tangible and Resource types weren't being registered with Lua. This was uncovered by my new unit tests and has been fixed.
+- Fixed a bug that affected the way the LuaResource type was registered
 
 ## [0.80.0] - 2021-07-15
 

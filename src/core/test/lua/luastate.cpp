@@ -449,6 +449,6 @@ TEST_SUITE("LuaState (luastate.cpp)") {
 
 	TEST_CASE("LuaState (luastate.cpp): call() and execute()") {
 
-		// TODO: test both defined and undefined functions
+		// TODO: test both defined and undefined functions and with and without arguments and return values
 	}
 }
