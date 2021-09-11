@@ -338,6 +338,7 @@ add_executable(test_core
 	test/mock/mockaction.cpp
 	test/mock/mocktrigger.cpp
 	test/mock/mocktimerjob.cpp
+	test/lua/luafuncs.cpp
 	test/lua/luastate.cpp
 )
 
