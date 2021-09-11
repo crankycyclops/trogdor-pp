@@ -3,6 +3,14 @@
 #include <trogdor/game.h>
 #include <trogdor/filesystem.h>
 #include <trogdor/lua/luastate.h>
+
+#include <trogdor/entities/resource.h>
+#include <trogdor/entities/creature.h>
+#include <trogdor/entities/object.h>
+#include <trogdor/entities/room.h>
+#include <trogdor/entities/player.h>
+
+#include <trogdor/iostream/nullout.h>
 #include <trogdor/iostream/nullerr.h>
 
 #include "luafuncs.h"
@@ -273,7 +281,115 @@ TEST_SUITE("LuaState (luastate.cpp)") {
 
 	TEST_CASE("LuaState (luastate.cpp): pushEntity()") {
 
-		// TODO
+		std::unique_ptr<trogdor::Game> game = std::make_unique<trogdor::Game>(
+			std::make_unique<trogdor::NullErr>()
+		);
+
+		TestLuaState L(game.get());
+
+		// Register this function as a global so we can call it
+		lua_pushcfunction(L.getRealState(), luaTestCheckudataex);
+		lua_setglobal(L.getRealState(), "luaTestCheckudataex");
+
+		std::unique_ptr<trogdor::entity::Resource> resource = std::make_unique<trogdor::entity::Resource>(
+			game.get(),
+			"testresource"
+		);
+
+		std::unique_ptr<trogdor::entity::Creature> creature = std::make_unique<trogdor::entity::Creature>(
+			game.get(),
+			"testcreature",
+			std::make_unique<trogdor::NullOut>(),
+			std::make_unique<trogdor::NullErr>()
+		);
+
+		std::unique_ptr<trogdor::entity::Room> room = std::make_unique<trogdor::entity::Room>(
+			game.get(),
+			"testroom",
+			std::make_unique<trogdor::NullOut>(),
+			std::make_unique<trogdor::NullErr>()
+		);
+
+		std::unique_ptr<trogdor::entity::Object> object = std::make_unique<trogdor::entity::Object>(
+			game.get(),
+			"testobject",
+			std::make_unique<trogdor::NullOut>(),
+			std::make_unique<trogdor::NullErr>()
+		);
+
+		std::unique_ptr<trogdor::entity::Player> player = std::make_unique<trogdor::entity::Player>(
+			game.get(),
+			"testplayer",
+			std::make_unique<trogdor::NullOut>(),
+			std::make_unique<trogdor::NullErr>()
+		);
+
+		// Make sure that if we push an entity as an argument, it becomes
+		// available to the called function (if the unit tests for
+		// LuaState::luaL_checkudata_ex() fail, then this will quite possibly
+		// fail as well.)
+		L.call("luaTestCheckudataex");
+
+		// Since I'm not really supposed to call pushEntity directly (but I
+		// have to test it since it's public), I need to manually increment
+		// the number of arguments (LuaState::nArgs++)
+		L.pushEntity(L.getRealState(), resource.get());
+		L.incNargs();
+		L.pushArgument("resource");
+
+		L.execute(1);
+
+		if (!L.getBoolean(0)) {
+			FAIL("Failed to retrieve Resource argument as an argument (make sure LuaState::luaL_checkudata_ex() tests passed before debugging this test)");
+		}
+
+		L.call("luaTestCheckudataex");
+
+		L.pushEntity(L.getRealState(), creature.get());
+		L.incNargs();
+		L.pushArgument("creature");
+
+		L.execute(1);
+
+		if (!L.getBoolean(0)) {
+			FAIL("Failed to retrieve Creature argument as an argument (make sure LuaState::luaL_checkudata_ex() tests passed before debugging this test)");
+		}
+
+		L.call("luaTestCheckudataex");
+
+		L.pushEntity(L.getRealState(), room.get());
+		L.incNargs();
+		L.pushArgument("room");
+
+		L.execute(1);
+
+		if (!L.getBoolean(0)) {
+			FAIL("Failed to retrieve Room argument as an argument (make sure LuaState::luaL_checkudata_ex() tests passed before debugging this test)");
+		}
+
+		L.call("luaTestCheckudataex");
+
+		L.pushEntity(L.getRealState(), object.get());
+		L.incNargs();
+		L.pushArgument("object");
+
+		L.execute(1);
+
+		if (!L.getBoolean(0)) {
+			FAIL("Failed to retrieve Object argument as an argument (make sure LuaState::luaL_checkudata_ex() tests passed before debugging this test)");
+		}
+
+		L.call("luaTestCheckudataex");
+
+		L.pushEntity(L.getRealState(), player.get());
+		L.incNargs();
+		L.pushArgument("player");
+
+		L.execute(1);
+
+		if (!L.getBoolean(0)) {
+			FAIL("Failed to retrieve Player argument as an argument (make sure LuaState::luaL_checkudata_ex() tests passed before debugging this test)");
+		}
 	}
 
 	TEST_CASE("LuaState (luastate.cpp): pushArray()") {

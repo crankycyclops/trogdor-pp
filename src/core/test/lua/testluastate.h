@@ -13,5 +13,10 @@ class TestLuaState: public trogdor::LuaState {
             return trogdor::LuaState::luaL_register_wrapper(L.L, libname, l);
         }
 
+        // Grants access to underlying instance of lua_State
         lua_State *getRealState() {return L;}
+
+        // Manually increments the number of arguments passed into a function
+        // that's being called
+        void incNargs() {nArgs++;}
 };
