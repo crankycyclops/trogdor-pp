@@ -171,7 +171,8 @@ namespace trogdor {
       public:
 
          /*
-            Returns the version of Lua this class was built against.
+            Returns the version of Lua this class was built against in the
+            format "5.x.x".
 
             Input:
                (none)
@@ -179,7 +180,7 @@ namespace trogdor {
             Output:
                const char *
          */
-         inline static const char *getLuaVersion() {return LUA_VERSION;}
+         inline static const char *getLuaVersion() {return LUA_VERSION_MAJOR "." LUA_VERSION_MINOR "." LUA_VERSION_RELEASE;}
 
          /*
             WARNING: You MUST call LuaState::lock() BEFORE you do ANYTHING with
