@@ -9,6 +9,7 @@
 - Wrote two new Lua methods, Being:insertIntoInventory() and Being:removeFromInventory() to replace functionality previously served by the now removed method Thing:setLocation.
 - Implemented Lua function Resource.new() to create new Resources from within Lua
 - Wrote unit tests for the LuaState class
+- Unit tests are now built and run against Lua 5.1, 5.2, and 5.3
 
 ### Changed
 
@@ -22,7 +23,7 @@
 ### Fixed
 
 - It turns out that the Tangible and Resource types weren't being registered with Lua. This was uncovered by my new unit tests and has been fixed.
-- Fixed a bug that affected the way the LuaResource type was registered
+- Fixed a bug that affected the way the Lua Resource type was registered
 
 ## [0.80.0] - 2021-07-15
 

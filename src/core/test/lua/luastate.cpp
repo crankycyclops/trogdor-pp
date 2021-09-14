@@ -340,7 +340,7 @@ TEST_SUITE("LuaState (luastate.cpp)") {
 		L.execute(1);
 
 		if (!L.getBoolean(0)) {
-			FAIL("Failed to retrieve Resource argument as an argument (make sure LuaState::luaL_checkudata_ex() tests passed before debugging this test)");
+			FAIL("Failed to retrieve Resource as an argument (make sure LuaState::luaL_checkudata_ex() tests passed before debugging this test)");
 		}
 
 		L.call("luaTestCheckudataex");
@@ -352,7 +352,7 @@ TEST_SUITE("LuaState (luastate.cpp)") {
 		L.execute(1);
 
 		if (!L.getBoolean(0)) {
-			FAIL("Failed to retrieve Creature argument as an argument (make sure LuaState::luaL_checkudata_ex() tests passed before debugging this test)");
+			FAIL("Failed to retrieve Creature as an argument (make sure LuaState::luaL_checkudata_ex() tests passed before debugging this test)");
 		}
 
 		L.call("luaTestCheckudataex");
@@ -364,7 +364,7 @@ TEST_SUITE("LuaState (luastate.cpp)") {
 		L.execute(1);
 
 		if (!L.getBoolean(0)) {
-			FAIL("Failed to retrieve Room argument as an argument (make sure LuaState::luaL_checkudata_ex() tests passed before debugging this test)");
+			FAIL("Failed to retrieve Room as an argument (make sure LuaState::luaL_checkudata_ex() tests passed before debugging this test)");
 		}
 
 		L.call("luaTestCheckudataex");
@@ -376,7 +376,7 @@ TEST_SUITE("LuaState (luastate.cpp)") {
 		L.execute(1);
 
 		if (!L.getBoolean(0)) {
-			FAIL("Failed to retrieve Object argument as an argument (make sure LuaState::luaL_checkudata_ex() tests passed before debugging this test)");
+			FAIL("Failed to retrieve Object as an argument (make sure LuaState::luaL_checkudata_ex() tests passed before debugging this test)");
 		}
 
 		L.call("luaTestCheckudataex");
@@ -388,7 +388,7 @@ TEST_SUITE("LuaState (luastate.cpp)") {
 		L.execute(1);
 
 		if (!L.getBoolean(0)) {
-			FAIL("Failed to retrieve Player argument as an argument (make sure LuaState::luaL_checkudata_ex() tests passed before debugging this test)");
+			FAIL("Failed to retrieve Player as an argument (make sure LuaState::luaL_checkudata_ex() tests passed before debugging this test)");
 		}
 	}
 
