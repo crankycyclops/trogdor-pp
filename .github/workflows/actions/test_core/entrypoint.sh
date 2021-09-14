@@ -11,6 +11,9 @@ make -j2 test_core
 ./test_core
 
 make clean
+rm -rf CMakeFiles && rm CMakeCache.txt
+
+#############################################
 
 LUA_VERSION=5.2 cmake -DCMAKE_BUILD_TYPE=Debug .
 
@@ -22,6 +25,9 @@ make -j2 test_core
 ./test_core
 
 make clean
+rm -rf CMakeFiles && rm CMakeCache.txt
+
+#############################################
 
 LUA_VERSION=5.3 cmake -DCMAKE_BUILD_TYPE=Debug .
 

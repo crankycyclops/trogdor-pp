@@ -171,6 +171,17 @@ namespace trogdor {
       public:
 
          /*
+            Returns the version of Lua this class was built against.
+
+            Input:
+               (none)
+
+            Output:
+               const char *
+         */
+         inline static const char *getLuaVersion() {return LUA_VERSION;}
+
+         /*
             WARNING: You MUST call LuaState::lock() BEFORE you do ANYTHING with
             a LuaState, because Lua itself is not thread-safe. You MUST remain
             locked on the LuaState's mutex until you've finished using it, and

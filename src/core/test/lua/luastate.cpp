@@ -28,6 +28,8 @@ TEST_SUITE("LuaState (luastate.cpp)") {
 
 	TEST_CASE("LuaState (luastate.cpp): Default Constructor") {
 
+		std::cout << "Lua Version: " << trogdor::LuaState::getLuaVersion() << std::endl;
+
 		#ifndef CORE_UNIT_TEST_LUA_ROOT
 			FAIL("CORE_UNIT_TEST_LUA_ROOT must be defined.");
 		#endif
