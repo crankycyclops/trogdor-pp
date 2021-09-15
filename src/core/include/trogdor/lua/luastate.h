@@ -180,7 +180,14 @@ namespace trogdor {
             Output:
                const char *
          */
-         inline static const char *getLuaVersion() {return LUA_VERSION_MAJOR "." LUA_VERSION_MINOR "." LUA_VERSION_RELEASE;}
+         inline static const char *getLuaVersion() {
+
+            #ifndef LUA_VERSION_MAJOR
+               return LUA_VERSION;
+            #else
+               return LUA_VERSION_MAJOR "." LUA_VERSION_MINOR "." LUA_VERSION_RELEASE;
+            #endif
+         }
 
          /*
             WARNING: You MUST call LuaState::lock() BEFORE you do ANYTHING with
