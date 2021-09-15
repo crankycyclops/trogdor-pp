@@ -180,7 +180,7 @@ namespace trogdor {
             Output:
                const char *
          */
-         inline static const char *getLuaVersion() {
+         inline static constexpr const char *getLuaVersion() {
 
             #ifndef LUA_VERSION_MAJOR
                return LUA_VERSION;

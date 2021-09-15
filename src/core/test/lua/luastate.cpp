@@ -23,6 +23,9 @@ const char *SANITY_CHECK = "sanitycheck.lua";
 // Tests luaL_checkudata_ex()
 const char *LUAL_CHECKUDATA_EX_TEST = "test_lual_checkudata_ex.lua";
 
+// Tests to confirm that an empty array was pushed successfully
+const char *CHECK_EMPTY_ARRAY = "checkemptyarray.lua";
+
 
 TEST_SUITE("LuaState (luastate.cpp)") {
 
@@ -396,7 +399,46 @@ TEST_SUITE("LuaState (luastate.cpp)") {
 
 	TEST_CASE("LuaState (luastate.cpp): pushArray()") {
 
-		// TODO
+		SUBCASE("Empty array") {
+
+			std::unique_ptr<trogdor::Game> game = std::make_unique<trogdor::Game>(
+				std::make_unique<trogdor::NullErr>()
+			);
+
+			TestLuaState L(game.get());
+
+			L.loadScriptFromFile(
+				std::string(CORE_UNIT_TEST_LUA_ROOT) +
+				STD_FILESYSTEM::path::preferred_separator +
+				CHECK_EMPTY_ARRAY
+			);
+
+			trogdor::LuaArray arr;
+			CHECK(0 == arr.size());
+
+			L.call("checkEmptyArray");
+
+			// I'm not supposed to call pushArray() directly outside the Lua
+			// API classes, so I have to manually increment the argument count
+			L.pushArray(L.getRealState(), arr);
+			L.incNargs();
+
+			L.execute(1);
+
+			if (!L.getBoolean(0)) {
+				FAIL("Checks failed for pushing an empty array argument");
+			}
+		}
+
+		SUBCASE("Array of ints") {
+
+			// TODO
+		}
+
+		SUBCASE("Array of mixed types") {
+
+			// TODO
+		}
 	}
 
 	TEST_CASE("LuaState (luastate.cpp): pushTable()") {
