@@ -26,6 +26,9 @@ const char *LUAL_CHECKUDATA_EX_TEST = "test_lual_checkudata_ex.lua";
 // Tests to confirm that an empty array was pushed successfully
 const char *CHECK_EMPTY_ARRAY = "checkemptyarray.lua";
 
+// Tests to confirm that a numeric array was pushed successfully
+const char *CHECK_NUMERIC_ARRAY = "checknumericarray.lua";
+
 
 TEST_SUITE("LuaState (luastate.cpp)") {
 
@@ -432,7 +435,38 @@ TEST_SUITE("LuaState (luastate.cpp)") {
 
 		SUBCASE("Array of ints") {
 
-			// TODO
+			std::unique_ptr<trogdor::Game> game = std::make_unique<trogdor::Game>(
+				std::make_unique<trogdor::NullErr>()
+			);
+
+			TestLuaState L(game.get());
+
+			L.loadScriptFromFile(
+				std::string(CORE_UNIT_TEST_LUA_ROOT) +
+				STD_FILESYSTEM::path::preferred_separator +
+				CHECK_NUMERIC_ARRAY
+			);
+
+			trogdor::LuaArray arr;
+
+			arr.push_back({trogdor::LUA_TYPE_NUMBER, 1.0});
+			arr.push_back({trogdor::LUA_TYPE_NUMBER, 2.0});
+			arr.push_back({trogdor::LUA_TYPE_NUMBER, 3.0});
+			arr.push_back({trogdor::LUA_TYPE_NUMBER, 4.0});
+			arr.push_back({trogdor::LUA_TYPE_NUMBER, 5.0});
+
+			CHECK(5 == arr.size());
+
+			L.call("checkNumericArray");
+
+			L.pushArray(L.getRealState(), arr);
+			L.incNargs();
+
+			L.execute(1);
+
+			if (!L.getBoolean(0)) {
+				FAIL("Checks failed for pushing an array of numbers");
+			}
 		}
 
 		SUBCASE("Array of mixed types") {
