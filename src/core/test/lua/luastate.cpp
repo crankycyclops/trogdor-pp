@@ -29,6 +29,9 @@ const char *CHECK_EMPTY_ARRAY = "checkemptyarray.lua";
 // Tests to confirm that a numeric array was pushed successfully
 const char *CHECK_NUMERIC_ARRAY = "checknumericarray.lua";
 
+// Tests to confirm that a mixed type array was pushed successfully
+const char *CHECK_MIXED_ARRAY = "checkmixedarray.lua";
+
 
 TEST_SUITE("LuaState (luastate.cpp)") {
 
@@ -471,7 +474,48 @@ TEST_SUITE("LuaState (luastate.cpp)") {
 
 		SUBCASE("Array of mixed types") {
 
-			// TODO
+			std::unique_ptr<trogdor::Game> game = std::make_unique<trogdor::Game>(
+				std::make_unique<trogdor::NullErr>()
+			);
+
+			TestLuaState L(game.get());
+
+			L.loadScriptFromFile(
+				std::string(CORE_UNIT_TEST_LUA_ROOT) +
+				STD_FILESYSTEM::path::preferred_separator +
+				CHECK_MIXED_ARRAY
+			);
+
+			trogdor::LuaArray nestedarr;
+
+			nestedarr.push_back({trogdor::LUA_TYPE_NUMBER, 2.0});
+
+			trogdor::LuaTable nestedtable;
+
+			nestedtable.setField("string", "string");
+			nestedtable.setField("number", 1.0);
+
+			trogdor::LuaArray arr;
+
+			arr.push_back({trogdor::LUA_TYPE_NUMBER, 1.0});
+			arr.push_back({trogdor::LUA_TYPE_BOOLEAN, true});
+			arr.push_back({trogdor::LUA_TYPE_STRING, std::string("wee!")});
+			arr.push_back({trogdor::LUA_TYPE_ARRAY, &nestedarr});
+			arr.push_back({trogdor::LUA_TYPE_TABLE, &nestedtable});
+
+			CHECK(5 == arr.size());
+
+			L.call("checkMixedArray");
+
+			L.pushArray(L.getRealState(), arr);
+			L.incNargs();
+
+			L.execute(1);
+
+			if (!L.getBoolean(0)) {
+				FAIL("Checks failed for pushing an array of mixed types");
+			}
+
 		}
 	}
 
