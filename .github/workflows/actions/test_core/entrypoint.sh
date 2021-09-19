@@ -1,90 +1,50 @@
 #!/bin/sh
 
-cd src/core
-LUA_VERSION=5.1 cmake -DCMAKE_BUILD_TYPE=Debug .
+runTest() {
 
-if [ 0 -ne $? ]; then
-    exit 1
-fi
+    cd src/core
 
-# Make sure the build for core succeeds
-make -j2 trogdor
+    LUA_VERSION=$1 cmake -DCMAKE_BUILD_TYPE=Debug .
 
-if [ 0 -ne $? ]; then
-    exit 1
-fi
+    if [ 0 -ne $? ]; then
+        exit 1
+    fi
 
-# Build and run the unit tests for core against Lua 5.1
-make -j2 test_core
+    # Make sure the build for core succeeds
+    make -j2 trogdor
 
-if [ 0 -ne $? ]; then
-    exit 1
-fi
+    if [ 0 -ne $? ]; then
+        exit 1
+    fi
 
-./test_core
+    # Build and run the unit tests for core against the specified Lua version
+    make -j2 test_core
 
-if [ 0 -ne $? ]; then
-    exit 1
-fi
+    if [ 0 -ne $? ]; then
+        exit 1
+    fi
 
-make clean
-rm -rf CMakeFiles && rm CMakeCache.txt
+    ./test_core
 
-#############################################
+    if [ 0 -ne $? ]; then
+        exit 1
+    fi
 
-LUA_VERSION=5.2 cmake -DCMAKE_BUILD_TYPE=Debug .
+    make clean
 
-if [ 0 -ne $? ]; then
-    exit 1
-fi
+    if [ 0 -ne $? ]; then
+        exit 1
+    fi
 
-# Make sure the build for core succeeds
-make -j2 trogdor
+    rm -rf CMakeFiles && rm CMakeCache.txt
 
-if [ 0 -ne $? ]; then
-    exit 1
-fi
+    if [ 0 -ne $? ]; then
+        exit 1
+    fi
+}
 
-# Build and run the unit tests for core against Lua 5.2
-make -j2 test_core
+###############################################################################
 
-if [ 0 -ne $? ]; then
-    exit 1
-fi
-
-./test_core
-
-if [ 0 -ne $? ]; then
-    exit 1
-fi
-
-make clean
-rm -rf CMakeFiles && rm CMakeCache.txt
-
-#############################################
-
-LUA_VERSION=5.3 cmake -DCMAKE_BUILD_TYPE=Debug .
-
-if [ 0 -ne $? ]; then
-    exit 1
-fi
-
-# Make sure the build for core succeeds
-make -j2 trogdor
-
-if [ 0 -ne $? ]; then
-    exit 1
-fi
-
-# Build and run the unit tests for core against Lua 5.3
-make -j2 test_core
-
-if [ 0 -ne $? ]; then
-    exit 1
-fi
-
-./test_core
-
-if [ 0 -ne $? ]; then
-    exit 1
-fi
+runTest("5.1")
+runTest("5.2")
+runTest("5.3")
