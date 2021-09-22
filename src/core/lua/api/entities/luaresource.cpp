@@ -92,7 +92,6 @@ namespace trogdor::entity {
 
       std::string name = luaL_checkstring(L, -1);
       lua_getglobal(L, LuaGame::globalName);
-      Game *g = LuaGame::checkGame(L, -1);
 
       // Resource does not exist in the game unless it's manually inserted
       Resource *c = new Resource(nullptr, name);

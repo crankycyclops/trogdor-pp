@@ -86,7 +86,7 @@ namespace trogdor {
          static int insertEntity(lua_State *L);
 
          /*
-            Lua binding to Game->getTiem().
+            Lua binding to Game->getTime().
 
             Lua input:
                (none)
@@ -95,6 +95,39 @@ namespace trogdor {
                Current game time (number)
          */
          static int getTime(lua_State *L);
+
+         /*
+            Lua binding to Game->start().
+
+            Lua input:
+               (none)
+
+            Lua output:
+               (none)
+         */
+         static int start(lua_State *L);
+
+         /*
+            Lua binding to Game->stop().
+
+            Lua input:
+               (none)
+
+            Lua output:
+               (none)
+         */
+         static int stop(lua_State *L);
+
+         /*
+            Lua binding to Game->inProgress().
+
+            Lua input:
+               (none)
+
+            Lua output:
+               True if the game is started and false if it's stopped (Boolean)
+         */
+         static int inProgress(lua_State *L);
    };
 }
 

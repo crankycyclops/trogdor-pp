@@ -8,8 +8,9 @@
 - Added room connection descriptions ([Connection descriptions feature #72 ](https://github.com/crankycyclops/trogdor-pp/pull/72)), a more flexible way to generate room descriptions that can be updated dynamically when those connections change. This new feature shouldn't have any impact on older projects.
 - Wrote two new Lua methods, Being:insertIntoInventory() and Being:removeFromInventory() to replace functionality previously served by the now removed method Thing:setLocation.
 - Implemented Lua function Resource.new() to create new Resources from within Lua
+- Implemented Lua methods Game:start(), Game:stop(), and Game::inProgress()
 - Added LuaState::getLuaVersion(), which returns the version of Lua the core library was built against
-- Wrote unit tests for the LuaState class
+- Started writing unit tests for the LuaState class
 - Unit tests are now built and run against Lua 5.1, 5.2, and 5.3
 
 ### Changed

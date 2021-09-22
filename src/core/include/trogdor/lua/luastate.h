@@ -139,7 +139,8 @@ namespace trogdor {
             // https://stackoverflow.com/questions/4551101/lual-openlibs-and-sandboxing-scripts
             luaL_openlibs(L);
 
-            // register Game type
+            // register Game type as well as a global instance of it
+            // corresponding to the game that spawned the instance of LuaState
             registerGlobalGame();
 
             // register Entity types

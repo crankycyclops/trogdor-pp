@@ -31,6 +31,9 @@ namespace trogdor {
    static const luaL_Reg methods[] = {
       {"insert",  LuaGame::insertEntity},
       {"getTime", LuaGame::getTime},
+      {"start", LuaGame::start},
+      {"stop", LuaGame::stop},
+      {"inProgress", LuaGame::inProgress},
       {0, 0}
    };
 
@@ -118,6 +121,76 @@ namespace trogdor {
          lua_pushnumber(L, g->getTime());
       #endif
 
+      return 1;
+   }
+
+   /***************************************************************************/
+
+   int LuaGame::start(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (1 != n) {
+         return luaL_error(L, "method takes no arguments");
+      }
+
+      Game *g = checkGame(L, -1);
+
+      if (nullptr == g) {
+         return luaL_error(L, "Game object is nil");
+      }
+
+      try {
+         g->start();
+      } catch (const trogdor::Exception &e) {
+         luaL_error(L, e.what());
+      }
+
+      return 0;
+   }
+
+   /***************************************************************************/
+
+   int LuaGame::stop(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (1 != n) {
+         return luaL_error(L, "method takes no arguments");
+      }
+
+      Game *g = checkGame(L, -1);
+
+      if (nullptr == g) {
+         return luaL_error(L, "Game object is nil");
+      }
+
+      try {
+         g->stop();
+      } catch (const trogdor::Exception &e) {
+         luaL_error(L, e.what());
+      }
+
+      return 0;
+   }
+
+   /***************************************************************************/
+
+   int LuaGame::inProgress(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (1 != n) {
+         return luaL_error(L, "method takes no arguments");
+      }
+
+      Game *g = checkGame(L, -1);
+
+      if (nullptr == g) {
+         return luaL_error(L, "Game object is nil");
+      }
+
+      lua_pushboolean(L, g->inProgress());
       return 1;
    }
 }
