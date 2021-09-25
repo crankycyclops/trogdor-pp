@@ -86,6 +86,18 @@ namespace trogdor {
          static int insertEntity(lua_State *L);
 
          /*
+            Gets an Entity from the game. Returns the entity if it was found or
+            boolean false if not.
+
+            Lua input:
+               Entity name (string)
+
+            Lua output:
+               Entity if found or boolean false if not.
+         */
+         static int getEntity(lua_State *L);
+
+         /*
             Lua binding to Game->getTime().
 
             Lua input:

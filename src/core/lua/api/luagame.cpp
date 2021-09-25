@@ -30,6 +30,7 @@ namespace trogdor {
    // argument.
    static const luaL_Reg methods[] = {
       {"insert",  LuaGame::insertEntity},
+      {"getEntity", LuaGame::getEntity},
       {"getTime", LuaGame::getTime},
       {"start", LuaGame::start},
       {"stop", LuaGame::stop},
@@ -93,6 +94,30 @@ namespace trogdor {
 
       catch (const entity::EntityException &e) {
          lua_pushboolean(L, 0);
+      }
+
+      return 1;
+   }
+
+   /***************************************************************************/
+
+   int LuaGame::getEntity(lua_State *L) {
+
+      int n = lua_gettop(L);
+
+      if (2 != n) {
+         return luaL_error(L, "Requires exactly one argument: an entity name");
+      }
+
+      Game *g = checkGame(L, -2);
+      std::string entityName = luaL_checkstring(L, -1);
+
+      try {
+         LuaState::pushEntity(L, g->getEntity(entityName).get());
+      }
+
+      catch (const entity::EntityException &e) {
+         lua_pushboolean(L, false);
       }
 
       return 1;
