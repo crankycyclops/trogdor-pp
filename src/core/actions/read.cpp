@@ -54,9 +54,8 @@ namespace trogdor {
             };
 
             // also consider matching items in the room, if there are any
-            for (auto const &roomThing: location->getThingsByName(thingName)) {
-               items.push_front(roomThing);
-            };
+            auto const &roomThings = location->getThingsByName(thingName);
+            std::copy(roomThings.begin(), roomThings.end(), std::front_inserter(items));
 
             // We're calling this action a second time after asking the user to
             // supply a unique name out of a list of items with the same alias,

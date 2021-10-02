@@ -322,8 +322,6 @@ namespace trogdor::entity {
          return ALLOCATE_ZERO_OR_NEGATIVE_AMOUNT;
       }
 
-      auto shared = getShared();
-
       if (getProperty<bool>(ReqIntAllocProperty)) {
 
          double intPart, fracPart = modf(amount, &intPart);
@@ -441,8 +439,6 @@ namespace trogdor::entity {
             return FREE_INT_REQUIRED;
          }
       }
-
-      auto shared = getShared();
 
       if (
          depositors.end() == depositors.find(entity) ||

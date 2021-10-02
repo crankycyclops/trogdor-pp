@@ -27,6 +27,7 @@
 
 - It turns out that the Tangible and Resource types weren't being registered with Lua. This was uncovered by my new unit tests and has been fixed.
 - Fixed a bug that affected the way the Lua Resource type was registered
+- Did some minor refactoring and code cleanup
 
 ## [0.80.0] - 2021-07-15
 

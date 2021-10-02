@@ -92,6 +92,7 @@ namespace trogdor {
       data->set("lastTickTime", static_cast<size_t>(lastTickTime.count()));
       data->set("jobThreadSleepTime", static_cast<size_t>(jobThreadSleepTime.count()));
 
+      // cppcheck wants me to use std::transform instead of the loop. Umm, no.
       for (const auto &job: queue) {
          serializedJobs.push_back(job->serialize());
       }
