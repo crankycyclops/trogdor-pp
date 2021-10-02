@@ -10,6 +10,7 @@
 - Implemented Lua function Resource.new() to create new Resources from within Lua
 - Implemented Lua methods Game::getEntity(), Game:start(), Game:stop(), and Game::inProgress()
 - Added LuaState::getLuaVersion(), which returns the version of Lua the core library was built against
+- Added LuaEntity::err() to allow writing to an Entity's error stream
 - Started writing unit tests for the LuaState class
 - Unit tests are now built and run against Lua 5.1, 5.2, and 5.3
 

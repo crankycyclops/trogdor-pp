@@ -112,6 +112,19 @@ namespace trogdor::entity {
          static int out(lua_State *L);
 
          /*
+            Pushes a string to the Entity's error stream at the specified
+            error level (defaults to ERROR.)
+
+            Lua input:
+               Message to push to Entity's error stream
+               Optional severity level (integer 0 = INFO, 1 = WARNING, and 2 = ERROR. Any other integers result in undefined behavior.)
+
+            Lua output:
+               (none)
+         */
+         static int err(lua_State *L);
+
+         /*
             Lua binding to Entity->getMeta(key).
 
             Lua input:

@@ -21,9 +21,9 @@ namespace trogdor {
          // Represents the severity of an outputed error (with ERROR being the
          // greatest and INFO being the least)
          enum ErrorLevel {
-            ERROR,
-            WARNING,
-            INFO
+            INFO = 0,
+            WARNING = 1,
+            ERROR = 2
          };
 
          /*

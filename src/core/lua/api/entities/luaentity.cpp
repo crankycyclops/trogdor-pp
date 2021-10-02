@@ -180,7 +180,7 @@ namespace trogdor::entity {
       }
 
       if (n < 3) {
-         channel = "notifications";
+         channel = trogdor::entity::Entity::DEFAULT_OUTPUT_CHANNEL;
       } else {
          channel = luaL_checkstring(L, -1);
       }
@@ -193,6 +193,43 @@ namespace trogdor::entity {
 
       e->out(channel) << message;
       e->out(channel).flush();
+
+      return 0;
+   }
+
+   /***************************************************************************/
+
+   int LuaEntity::err(lua_State *L) {
+
+      const char *message;
+      trogdor::Trogerr::ErrorLevel errLevel;
+
+      int n = lua_gettop(L);
+
+      if (n > 3) {
+         return luaL_error(L, "too many arguments");
+      }
+
+      if (n < 2) {
+         message = "\n";
+      } else {
+         message = luaL_checkstring(L, 1 - n);
+      }
+
+      if (n < 3) {
+         errLevel = trogdor::Trogerr::ERROR;
+      } else {
+         errLevel = static_cast<trogdor::Trogerr::ErrorLevel>(luaL_checkinteger(L, -1));
+      }
+
+      Entity *e = checkEntity(L, -n);
+
+      if (nullptr == e) {
+         return luaL_error(L, "not an Entity!");
+      }
+
+      e->err(errLevel) << message;
+      e->err(errLevel).flush();
 
       return 0;
    }
