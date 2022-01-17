@@ -6,7 +6,7 @@ The official PHP 7 and 8 client for trogdord.
 
 ## Dependencies
 
-* [PHP](https://www.php.net/) 7.2, 7.3, 7.4, or 8.0, along with the include files and access to phpize
+* [PHP](https://www.php.net/) 7.2, 7.3, 7.4, 8.0, or 8.1, along with the include files and access to phpize
 * [Standalone ASIO library](https://think-async.com/Asio/) >=1.10
 * [RapidJSON](https://rapidjson.org/) >= 1.1.0
 
