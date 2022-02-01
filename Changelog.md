@@ -1,7 +1,7 @@
 
 # Change Log
 
-## [0.90.0] - In Development
+## [0.90.0] - 2022-01-31
 
 ### Added
 
