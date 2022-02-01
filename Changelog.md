@@ -13,6 +13,7 @@
 - Added LuaEntity::err() to allow writing to an Entity's error stream
 - Started writing unit tests for the LuaState class
 - Unit tests are now built and run against Lua 5.1, 5.2, and 5.3
+- trogdord can now listen on IPv6 as well as IPv4, and can also be configured to listen for requests only from certain IP addresses
 
 ### Changed
 

@@ -34,29 +34,74 @@ void TCPServer::serveRequest(std::shared_ptr<TCPConnection> connection, void *) 
 /******************************************************************************/
 
 TCPServer::TCPServer(asio::io_service &io_service, unsigned short port):
-acceptor(io_service), timer(io_service, std::chrono::milliseconds(SERVE_SLEEP_TIME)) {
+timer(io_service, std::chrono::milliseconds(SERVE_SLEEP_TIME)) {
 
 	std::unique_ptr<Config> &config = Config::get();
 
-	// TODO: enable ipv6 via a second socket. Don't use an ipv6 socket for
-	// both protocols (See: https://stackoverflow.com/a/31126262/4683164)
-	// I'll need an acceptor for each endpoint, which means I'll have to be
-	// able to manage two acceptors instead of one (but I can share the same
-	// io_service.)
-	// Whether or not to enable ipv6 should be configurable. Also, the port
-	// for ipv4 and ipv6 should be configured independently.
-	asio::ip::tcp::endpoint endpoint(asio::ip::tcp::v4(), port);
-	acceptor.open(endpoint.protocol());
+	rapidjson::Document listenersArr;
 
-	acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(
-		config->getBool(Config::CONFIG_KEY_REUSE_ADDRESS)
-	));
-	acceptor.set_option(asio::ip::tcp::acceptor::keep_alive(
-		config->getBool(Config::CONFIG_KEY_SEND_TCP_KEEPALIVE)
-	));
+	std::string listenersStr = Config::get()->getString(
+		Config::CONFIG_KEY_LISTEN_IPS
+	);
 
-	acceptor.bind(endpoint);
-	acceptor.listen();
+	listenersArr.Parse(listenersStr.c_str());
+
+	if (listenersArr.HasParseError()) {
+		throw ServerException(
+			std::string("invalid trogdord.ini value for ") +
+			Config::CONFIG_KEY_LISTEN_IPS
+		);
+	}
+
+	else if (rapidjson::kArrayType != listenersArr.GetType()) {
+		throw ServerException(
+			std::string("trogdord.ini value for ") +
+			Config::CONFIG_KEY_LISTEN_IPS +
+			" must be a JSON array of strings."
+		);
+	}
+
+	for (auto listener = listenersArr.Begin(); listener != listenersArr.End(); listener++) {
+
+		if (rapidjson::kStringType == listener->GetType()) {
+
+			asio::ip::address ipAddress = asio::ip::address::from_string(listener->GetString());
+
+			asio::ip::tcp::endpoint endpoint(ipAddress, port);
+			auto acceptor = std::make_unique<asio::ip::tcp::acceptor>(io_service);
+
+			acceptor->open(endpoint.protocol());
+
+			acceptor->set_option(asio::ip::tcp::acceptor::reuse_address(
+				config->getBool(Config::CONFIG_KEY_REUSE_ADDRESS)
+			));
+
+			acceptor->set_option(asio::ip::tcp::acceptor::keep_alive(
+				config->getBool(Config::CONFIG_KEY_SEND_TCP_KEEPALIVE)
+			));
+
+			// In the case of :: and 0.0.0.0, this avoids the dual stack
+			// port sharing issue explained at the end of this answer:
+			// https://superuser.com/a/1667180
+			if (ipAddress.is_v6()) {
+				acceptor->set_option(asio::ip::v6_only(true));
+			}
+
+			acceptor->bind(endpoint);
+			acceptor->listen();
+
+			acceptors.push_back(std::move(acceptor));
+			config->err(trogdor::Trogerr::INFO) << "Listening on " << listener->GetString() << '.' << std::endl;
+		}
+
+		else {
+			throw ServerException(
+				std::string("trogdord.ini value for ") +
+					Config::CONFIG_KEY_LISTEN_IPS +
+					" must be a JSON array of strings."
+			);
+		}
+	}
 
 	timer.async_wait(std::bind(&TCPServer::serveConnections, this));
 }
@@ -65,9 +110,11 @@ acceptor(io_service), timer(io_service, std::chrono::milliseconds(SERVE_SLEEP_TI
 
 TCPServer::~TCPServer() {
 
-	// Close the acceptor to new connections
-	if (acceptor.is_open()) {
-		acceptor.close();
+	// Close acceptors to new connections
+	for (auto &acceptor: acceptors) {
+		if (acceptor->is_open()) {
+			acceptor->close();
+		}
 	}
 
 	// Makes sure the destructor is called on all remaining connections
@@ -96,22 +143,25 @@ void TCPServer::handleAccept(
 
 void TCPServer::startAccept(TCPConnection::callback_t callback, void *callbackArg) {
 
-	std::shared_ptr<TCPConnection> connection = TCPConnection::create(
-		acceptor.get_io_service(),
-		this
-	);
+	for (auto &acceptor: acceptors) {
 
-	acceptor.async_accept(
-		connection->getSocket(),
-		std::bind(
-			&TCPServer::handleAccept,
-			this,
-			connection,
-			std::placeholders::_1,
-			callback,
-			callbackArg
-		)
-	);
+		std::shared_ptr<TCPConnection> connection = TCPConnection::create(
+			acceptor->get_io_service(),
+			this
+		);
+
+		acceptor->async_accept(
+			connection->getSocket(),
+			std::bind(
+				&TCPServer::handleAccept,
+				this,
+				connection,
+				std::placeholders::_1,
+				callback,
+				callbackArg
+			)
+		);
+	}
 }
 
 /******************************************************************************/

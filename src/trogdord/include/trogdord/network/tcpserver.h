@@ -26,8 +26,9 @@ class TCPServer {
 		// active connections that need to be maintained.
 		std::list<std::shared_ptr<TCPConnection>> activeConnections;
 
-		// Accepts new socket connections
-		asio::ip::tcp::acceptor acceptor;
+		// Each acceptor listens on a different IP address or range and
+		// accepts connections when they come in
+		std::list<std::unique_ptr<asio::ip::tcp::acceptor>> acceptors;
 
 		// Used to make sure serveConnections() only fires at a given interval.
 		asio::system_timer timer;

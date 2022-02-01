@@ -24,6 +24,11 @@ Every new installation of trogdord includes the following default configuration 
 ; option to remain on.)
 ; send_keepalive=true
 
+; Tells trogdord which ip addresses to listen for when accepting connections.
+; 0.0.0.0 tells trogdord to accept connections from anywhere via IPv4, while
+; :: accomplishes the same with IPv6.
+; listen=["0.0.0.0", "::"]
+
 [logging]
 
 ; Trogdord support 3 different logging methods: stdout (standard out), stderr
@@ -119,6 +124,22 @@ Every new installation of trogdord includes the following default configuration 
 ; unusual behavior. This will not be invoked for things like SIGSEGV, SIGFPE,
 ; etc. I tried, and it doesn't work.
 ; crash_recovery=false
+
+; Currently, extensions are only supported on operating systems that use libdl
+; (this excludes Windows.)
+[extensions]
+
+; This is the default path where trogdord extensions are stored. Relative paths
+; are based on the root directory where trogdord was installed.
+; path=lib/trogdord
+
+; Extensions to be loaded should be formatted as a JSON array of strings, and
+; each extension should be referenced by its full filename, including
+; extension. For example: ["ext1.so", 'ext2.so']
+;
+; You can find a buildable, loadable sample extension, which can serve as a
+; template for your own projects, in sample/extensions/hello.
+; load=[]
 
 ```
 

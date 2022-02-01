@@ -72,6 +72,7 @@ class Config {
 		static constexpr const char *CONFIG_KEY_PORT = "network.port";
 		static constexpr const char *CONFIG_KEY_REUSE_ADDRESS = "network.reuse_address";
 		static constexpr const char *CONFIG_KEY_SEND_TCP_KEEPALIVE = "network.send_keepalive";
+		static constexpr const char *CONFIG_KEY_LISTEN_IPS = "network.listen";
 		static constexpr const char *CONFIG_KEY_LOGTO = "logging.logto";
 		static constexpr const char *CONFIG_KEY_INPUT_LISTENERS = "input.listeners";
 		static constexpr const char *CONFIG_KEY_OUTPUT_DRIVER = "output.driver";

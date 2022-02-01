@@ -1,16 +1,20 @@
 # Security
 
-The purpose of trogdord is to host games and players as well as to provide a simple interface for managing them. Since my preference is to develop small, modular tools that excel only at a particular task, and since trogdord is designed to be part of a higher level architecture with other tools that sit on top of it, I chose not to tackle the complex issue of security, at least in my initial implementation. Instead, care should be taken in how trogdord is setup so as to delegate those concerns to other parts of the system.
+The purpose of trogdord is to host games and players, as well as to provide a simple interface for managing them. Since my preference is to develop small, modular tools that excel only at a particular task, and since trogdord is designed to be part of a higher level architecture with other tools that sit on top of it, I chose not to tackle the complex issue of security, at least in my initial implementation. Instead, care should be taken in how trogdord is setup so as to delegate those concerns to other parts of the system.
 
-What follows are some considerations that should be taken into account when setting up and running trogdord in a production environment. This is by no means an exhaustive list, but rather a high-level picture of the things you should be thinking about when designing an architecture around trogdord.
+What follows are some considerations that should be made when setting up and running trogdord in a production environment. This is by no means an exhaustive list, but rather a high-level picture of what you should be thinking about when designing a larger architecture around trogdord.
 
 If you're looking for an existing project that already builds on what trogdord provides, check out my sister project, [Trogserve](https://github.com/crankycyclops/trogserve). Trogserve is still in an early stage of development, but should give you an idea of how you might approach the additional tooling necessary for a complete multi-player experience.
 
+## Accepting Connections
+
+By default, trogdord accepts all IPv4 and IPv6 connections regardless of where they originate. However, as of version 0.90.0, it can be limited to specific IP addresses (see the network.listen setting in trogdord.ini.) You should take advantage of this feature in a production environment.
+
 ## Placing Trogdord Behind a Firewall
 
-Trogdord should **never** run on an open port on a public facing network. Since it will accept all connections and execute all valid requests, anyone in the world could maliciously delete or alter games and players or their data at any time. Instead, you should place it behind a firewall and setup your environment such that only trusted applications can communicate with it.
+Trogdord should **never** run on an open port on a public facing network. Since it will accept all connections without authentication and execute all valid requests, anyone in the world could maliciously delete or alter games and players or their data at any time. Instead, you should place it behind a firewall and setup your environment such that only trusted applications can communicate with it.
 
-## Connections and Rate Limiting
+## Rate Limiting
 
 Even if trogdord is hidden behind a firewall and can only be accessed by an approved client, it's still possible that the client itself could be used by someone on the outside as a vector for denial-of-service attacks. An effective way to combat this is to limit both the number of connections that can be made from a single endpoint and the number of requests that can be accepted in a given amount of time.
 
