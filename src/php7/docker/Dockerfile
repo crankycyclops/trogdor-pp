@@ -1,9 +1,9 @@
 # This docker file is exactly the same as the official php:8.1-fpm container,
 # but adds to it the trogdord extension.
 
-# To build for 8.1: docker build -t crankycyclops/php8.1-fpm-trogdord-ext .
-# To build for 8.0: docker build --build-arg PHP_VER=8.0 -t crankycyclops/php8.0-fpm-trogdord-ext .
-# To build for 7.4: docker build --build-arg PHP_VER=7.4 -t crankycyclops/php7.4-fpm-trogdord-ext .
+# To build for 8.1: docker build -t crankycyclops/php8.1-fpm-trogdord-ext:0.90.0 .
+# To build for 8.0: docker build --build-arg PHP_VER=8.0 -t crankycyclops/php8.0-fpm-trogdord-ext:0.90.0 .
+# To build for 7.4: docker build --build-arg PHP_VER=7.4 -t crankycyclops/php7.4-fpm-trogdord-ext:0.90.0 .
 
 ARG PHP_VER=8.1
 FROM php:${PHP_VER}-fpm
