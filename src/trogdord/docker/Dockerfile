@@ -4,7 +4,7 @@ FROM ubuntu:20.04
 
 # Pre-configure environment and install build dependencies
 ENV DEBIAN_FRONTEND="noninteractive" TZ="UTC"
-RUN apt-get update && apt-get -y install sudo bash wget git g++ cmake libasio-dev sqlite3 libsqlite3-dev rapidjson-dev libhiredis-dev libxml2 libxml2-dev liblua5.3 liblua5.3-dev libinih1 libinih-dev redis-server
+RUN apt-get update && apt-get -y install sudo bash wget g++ cmake libasio-dev sqlite3 libsqlite3-dev rapidjson-dev libhiredis-dev libxml2 libxml2-dev liblua5.3 liblua5.3-dev libinih1 libinih-dev redis-server
 
 # Build and install the core library + trogdord from source
 WORKDIR /usr/local/src
@@ -20,7 +20,7 @@ RUN make -j$(nproc) trogdord
 RUN make install
 
 # Uninstall compiler and other dev packages since they're no longer needed
-RUN apt-get -y remove git g++ cmake libasio-dev libsqlite3-dev rapidjson-dev libhiredis-dev libxml2-dev liblua5.3-dev libinih-dev
+RUN apt-get -y remove g++ cmake libasio-dev libsqlite3-dev rapidjson-dev libhiredis-dev libxml2-dev liblua5.3-dev libinih-dev
 RUN apt-get -y autoremove
 
 # Create a non-root user to execute trogdord
@@ -30,4 +30,5 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 USER trogdord
 
+WORKDIR /
 ENTRYPOINT ["/entrypoint.sh"]
