@@ -1,10 +1,13 @@
 # Docker image for trogdord 0.90.0.
+# To build: docker build -t crankycyclops/trogdord:<version> .
 
 FROM ubuntu:20.04
 
 # Pre-configure environment and install build dependencies
 ENV DEBIAN_FRONTEND="noninteractive" TZ="UTC"
-RUN apt-get update && apt-get -y install sudo bash wget g++ cmake libasio-dev sqlite3 libsqlite3-dev rapidjson-dev libhiredis-dev libxml2 libxml2-dev liblua5.3 liblua5.3-dev libinih1 libinih-dev redis-server
+RUN apt-get update
+RUN apt-get dist-upgrade -y
+RUN apt-get -y install sudo bash wget g++ cmake libasio-dev sqlite3 libsqlite3-dev rapidjson-dev libhiredis0.14 libhiredis-dev libxml2 libxml2-dev liblua5.3 liblua5.3-dev libinih1 libinih-dev
 
 # Build and install the core library + trogdord from source
 WORKDIR /usr/local/src
