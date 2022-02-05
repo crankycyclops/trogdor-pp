@@ -41,7 +41,7 @@ RUN chmod 755 composer
 
 # Optionally install npm
 ENV NVM_DIR /usr/local/nvm
-ENV NODE_VERSION 16.13.2
+ENV NODE_VERSION 16
 RUN if [ "true" = "$INCLUDE_NPM" ]; then \
     mkdir /usr/local/nvm; \
     wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash; \
@@ -54,6 +54,7 @@ fi
 
 # Cleanup after building
 RUN apt-get remove -y g++ wget
+RUN apt-get autoremove -y
 RUN rm -rf /usr/local/src/trogdor-pp-0.90.0
 
 WORKDIR /
