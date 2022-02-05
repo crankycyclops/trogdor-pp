@@ -19,6 +19,12 @@ WORKDIR /usr/local/src/trogdor-pp-0.90.0/src/php7/trogdord
 RUN phpize && ./configure && make -j$(nproc) && make install
 RUN docker-php-ext-enable trogdord
 
+# Install composer
+WORKDIR /usr/bin
+RUN wget -c https://getcomposer.org/download/latest-stable/composer.phar
+RUN mv composer.phar composer
+RUN chmod 755 composer
+
 # Cleanup after building
 RUN apt-get remove -y g++ wget
 RUN rm -rf /usr/local/src/trogdor-pp-0.90.0
