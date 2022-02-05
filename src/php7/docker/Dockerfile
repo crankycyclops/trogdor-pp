@@ -11,6 +11,10 @@
 # docker build --build-arg PHP_VER=8.0 --build-arg INCLUDE_NPM=true -t crankycyclops/php8.0-fpm-trogdord-ext-npm:0.90.0 .
 # docker build --build-arg PHP_VER=7.4 --build-arg INCLUDE_NPM=true -t crankycyclops/php7.4-fpm-trogdord-ext-npm:0.90.0 .
 
+# If you connect to the container and can't run npm, execute the following command first:
+# source /etc/profile
+# I've noticed that this gets borked when I set DOCKER_UID. Oh well.
+
 # Determines which version of PHP we're building the container for
 ARG PHP_VER=8.1
 
@@ -49,7 +53,7 @@ RUN if [ "true" = "$INCLUDE_NPM" ]; then \
     nvm install $NODE_VERSION; \
     nvm alias default $NODE_VERSION; \
     nvm use default; \
-    echo "PATH=\$PATH:$NVM_DIR/v$NODE_VERSION/bin" >> /etc/profile; \
+    echo "source /usr/local/nvm/nvm.sh" >> /etc/profile; \
 fi
 
 # Cleanup after building
