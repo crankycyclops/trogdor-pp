@@ -27,11 +27,9 @@ RUN apt-get -y remove g++ cmake libasio-dev libsqlite3-dev rapidjson-dev libhire
 RUN apt-get -y autoremove
 
 # Create a non-root user to execute trogdord
-RUN groupadd -r trogdord && useradd -r -g trogdord -d /home/trogdord -s /sbin/nologin -c "Docker image user" trogdord
+RUN groupadd -r trogdord -g 999 && useradd -u 999 -r -g trogdord -d /home/trogdord -s /sbin/nologin -c "Docker image user" trogdord
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 USER trogdord
-
 WORKDIR /
-ENTRYPOINT ["/entrypoint.sh"]
+
+ENTRYPOINT ["/usr/bin/trogdord"]
