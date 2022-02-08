@@ -27,9 +27,13 @@ RUN apt-get -y remove g++ cmake libasio-dev libsqlite3-dev rapidjson-dev libhire
 RUN apt-get -y autoremove
 
 # Create a non-root user to execute trogdord
-RUN groupadd -r trogdord -g 999 && useradd -u 999 -r -g trogdord -d /home/trogdord -s /sbin/nologin -c "Docker image user" trogdord
+RUN groupadd -r trogdord -g 999 && useradd -u 999 -r -g trogdord -d /home/trogdord -s /sbin/nologin -c "trogdord" trogdord
 
-USER trogdord
+# Make sure volumes that get mounted here by docker-compose will be owned by trogdord
+RUN mkdir -p /usr/var/trogdord && chown trogdord:trogdord /usr/var/trogdord && chmod u+s /usr/var/trogdord && chmod g+s /usr/var/trogdord
+RUN mkdir -p /usr/var/trogdord/state && chown trogdord:trogdord /usr/var/trogdord/state && chmod u+s /usr/var/trogdord/state && chmod g+s /usr/var/trogdord/state
+
 WORKDIR /
 
+USER trogdord
 ENTRYPOINT ["/usr/bin/trogdord"]
