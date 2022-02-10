@@ -1,6 +1,12 @@
 
 # Change Log
 
+## [development] - In development
+
+### Added
+
+- trogdord can now authenticate with redis using an optional username and password
+
 ## [0.90.0] - 2022-01-31
 
 ### Added
