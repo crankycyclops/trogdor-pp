@@ -58,6 +58,9 @@ class Config {
 
 	public:
 
+		// Maps env variables to config options they override
+		static const std::unordered_map<std::string, std::string> ENV;
+
 		// Default values
 		static const std::unordered_map<std::string, std::string> DEFAULTS;
 

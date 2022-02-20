@@ -6,6 +6,7 @@
 ### Added
 
 - trogdord can now authenticate with redis using an optional username and password
+- trogdord can now also be configured via environment variables, which take precedence over trogdord.ini
 
 ### Changed
 
