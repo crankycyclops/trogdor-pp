@@ -1,6 +1,8 @@
 #include <doctest.h>
 #include <unordered_set>
 
+#include <rapidjson/document.h>
+
 #include "config.h"
 
 
@@ -15,6 +17,34 @@ TEST_SUITE("Config (config.cpp)") {
 		// Make sure all config values are set to their defaults
 		for (auto const &value: Config::get()->DEFAULTS) {
 			CHECK(0 == value.second.compare(Config::get()->getString(value.first)));
+		}
+
+		// Make sure that, by defaullt, trogdord will only listen on 127.0.0.1 or ::1
+		rapidjson::Document listenersArr;
+
+		std::string listenersStr = Config::get()->getString(
+			Config::CONFIG_KEY_LISTEN_IPS);
+
+		listenersArr.Parse(listenersStr.c_str());
+
+		if (listenersArr.HasParseError()) {
+			FAIL("network.listen value is invalid");
+		} else if (rapidjson::kArrayType != listenersArr.GetType()) {
+			FAIL("network.listen value must be an array of strings");
+		}
+
+		for (auto listener = listenersArr.Begin(); listener != listenersArr.End(); listener++) {
+
+			if (rapidjson::kStringType != listener->GetType()) {
+				FAIL("network.listen value must be an array of strings");
+			}
+
+			else if (
+				0 != std::string("127.0.0.1").compare(listener->GetString()) &&
+				0 != std::string("::1").compare(listener->GetString())
+			) {
+				FAIL("network.listen should be set to listen only on localhost (127.0.0.1 or ::1) by default.");
+			}
 		}
 	}
 

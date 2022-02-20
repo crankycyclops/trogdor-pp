@@ -26,8 +26,9 @@ Every new installation of trogdord includes the following default configuration 
 
 ; Tells trogdord which ip addresses to listen for when accepting connections.
 ; 0.0.0.0 tells trogdord to accept connections from anywhere via IPv4, while
-; :: accomplishes the same with IPv6.
-; listen=["0.0.0.0", "::"]
+; :: accomplishes the same with IPv6. By default, trogdord will only listen
+; on localhost (127.0.0.1 for IPv4 and ::1 for IPv6.)
+; listen=["127.0.0.1", "::1"]
 
 [logging]
 
@@ -69,6 +70,14 @@ Every new installation of trogdord includes the following default configuration 
 
 ; The port the redis instance is listening on.
 ; port=6379
+
+; If required, this should be uncommented and set to the username needed to
+; authenticate with Redis.
+; username=somebody
+
+; If required, this should be uncommented and set to the password needed to
+; authenticate with Redis.
+; password=mypassword
 
 ; The number of milliseconds we should wait when attempting to connect to Redis
 ; before timing out.
@@ -140,7 +149,6 @@ Every new installation of trogdord includes the following default configuration 
 ; You can find a buildable, loadable sample extension, which can serve as a
 ; template for your own projects, in sample/extensions/hello.
 ; load=[]
-
 ```
 
 To change an option from its default value, uncomment it by deleting the semi-colon, set it to the desired value, save the file, and restart trogdord.

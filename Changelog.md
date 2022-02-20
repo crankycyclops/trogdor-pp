@@ -7,6 +7,10 @@
 
 - trogdord can now authenticate with redis using an optional username and password
 
+### Changed
+
+- trogdord now only listens on 127.0.0.1 or ::1 by default
+
 ## [0.90.0] - 2022-01-31
 
 ### Added

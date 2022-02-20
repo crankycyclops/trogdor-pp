@@ -20,7 +20,7 @@ const std::unordered_map<std::string, std::string> Config::DEFAULTS = {
 	{CONFIG_KEY_PORT,                             "1040"},
 	{CONFIG_KEY_REUSE_ADDRESS,                    "true"},
 	{CONFIG_KEY_SEND_TCP_KEEPALIVE,               "true"},
-	{CONFIG_KEY_LISTEN_IPS,                       "[\"0.0.0.0\", \"::\"]"},
+	{CONFIG_KEY_LISTEN_IPS,                       "[\"127.0.0.1\", \"::1\"]"},
 	{CONFIG_KEY_LOGTO,                            "stderr"},
 	{CONFIG_KEY_INPUT_LISTENERS,                  "[]"},
 	{CONFIG_KEY_OUTPUT_DRIVER,                    "local"},

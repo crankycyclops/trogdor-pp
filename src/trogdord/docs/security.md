@@ -8,7 +8,7 @@ If you're looking for an existing project that already builds on what trogdord p
 
 ## Accepting Connections
 
-By default, trogdord accepts all IPv4 and IPv6 connections regardless of where they originate. However, as of version 0.90.0, it can be limited to specific IP addresses (see the network.listen setting in trogdord.ini.) You should take advantage of this feature in a production environment.
+For security purposes, trogdord will listen only on 127.0.0.1 or ::1 by default. This setting can be altered to include additional whitelisted IPs, or can be set to listen on all interfaces via 0.0.0.0 or :: (this last option is not recommended for production, but can be useful when testing.)
 
 ## Placing Trogdord Behind a Firewall
 
