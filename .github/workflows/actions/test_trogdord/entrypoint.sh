@@ -46,4 +46,4 @@ export TROGDORD_EXTENSIONS_PATH="ext_path"
 export TROGDORD_EXTENSIONS_LOAD="ext_load"
 
 make -j2 test_trogdord_envvar
-timeout -s SIGQUIT 10 sudo -u app ./test_trogdord_envvar
+timeout -s SIGQUIT 10 sudo -E -u app ./test_trogdord_envvar
