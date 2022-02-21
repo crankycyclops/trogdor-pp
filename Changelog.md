@@ -1,7 +1,7 @@
 
 # Change Log
 
-## [development] - In development
+## [0.91.0] - In development
 
 ### Added
 
@@ -10,6 +10,7 @@
 
 ### Changed
 
+- The timer period (tick interval) can now be changed after the timer's started and can be configured via a game definition file
 - trogdord now only listens on 127.0.0.1 or ::1 by default
 
 ## [0.90.0] - 2022-01-31

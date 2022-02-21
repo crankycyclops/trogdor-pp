@@ -23,11 +23,7 @@ namespace trogdor {
    Timer::Timer(Game *gameRef, std::optional<size_t> interval):
    game(gameRef), active(false), time(0), jobThread(nullptr), lastTickTime(0) {
 
-      tickInterval = std::chrono::milliseconds(interval ? *interval : TIMER_DEFAULT_TICK_MILLISECONDS);
-
-      jobThreadSleepTime =
-         std::chrono::milliseconds(THREAD_SLEEP_MILLISECONDS) > tickInterval ?
-         tickInterval : std::chrono::milliseconds(THREAD_SLEEP_MILLISECONDS);
+      setTickInterval(interval ? *interval : TIMER_DEFAULT_TICK_MILLISECONDS);
    }
 
 /******************************************************************************/
@@ -74,6 +70,19 @@ namespace trogdor {
             insertJobThread->join();
          }
       }
+   }
+
+/******************************************************************************/
+
+   void Timer::setTickInterval(size_t period) {
+
+      mutex.lock();
+
+      tickInterval = std::chrono::milliseconds(period);
+      jobThreadSleepTime = tickInterval < jobThreadSleepTime ? tickInterval :
+         std::chrono::milliseconds(THREAD_SLEEP_MILLISECONDS);
+
+      mutex.unlock();
    }
 
 /******************************************************************************/
