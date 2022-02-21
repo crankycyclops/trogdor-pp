@@ -44,10 +44,8 @@ static std::unordered_map<
 
 TEST_SUITE("Config (config.cpp)") {
 
-    TEST_CASE("Config (config.cpp): Construction without an ini file") {
+    TEST_CASE("Config (config.cpp): Environment variables override default values") {
 
-        // I can't really construct this outside Config::get(), but I can
-        // reset it by loading config values from an empty path.
         Config::get()->load("");
 
         for (auto const &setting: testSettings) {
@@ -70,8 +68,32 @@ TEST_SUITE("Config (config.cpp)") {
         }
     }
 
-    TEST_CASE("Config (config.cpp): Construction with an ini file") {
+    TEST_CASE("Config (config.cpp): Environment variables override trogdord.ini") {
 
-        // TODO
+        std::unordered_map<std::string, std::string> initialValues;
+        std::string iniFilename = STD_FILESYSTEM::temp_directory_path().string() + "/test.ini";
+
+        // I'll set every ini value to "blah" and make sure they all get overridden
+        for (auto const &setting: testSettings) {
+
+            initialValues[setting.second.first] = "blah";
+
+            // Make sure necessary environment variables are set!
+            if (const char *value = std::getenv(setting.first); !value) {
+                std::string failMsg = std::string("Environment variable ") + setting.first + " must be set for the unit test result to be valid.";
+                FAIL(failMsg);
+            }
+        }
+
+        initIniFile(iniFilename, initialValues);
+
+        // Next, setup and load the ini file, then verify that the environment variables
+        // took precedence
+        for (auto const &setting: testSettings) {
+            CHECK(0 == Config::get()->getString(setting.second.first).compare(setting.second.second));
+        }
+
+        // Cleanup
+        STD_FILESYSTEM::remove(iniFilename);
     }
 }
