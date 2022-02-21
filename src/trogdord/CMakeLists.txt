@@ -391,6 +391,24 @@ if (HAVE_ASIO)
 		PUBLIC trogdor
 	)
 
+	# Separate executable that tests trogdord's use of environment variables
+	add_executable(test_trogdord_envvar
+		${TROGDORD_SOURCES}
+		test/main.cpp
+		test/envvar/config.cpp
+	)
+
+	target_include_directories(test_trogdord_envvar
+		PUBLIC ${CORE_INCLUDES}
+		PUBLIC ${TROGDORD_INCLUDES}
+		PUBLIC ${PROJECT_SOURCE_DIR}/include
+	)
+
+	target_link_libraries(test_trogdord_envvar
+		${TROGDORD_LIBRARIES_MINUS_CORE}
+		PUBLIC trogdor
+	)
+
 	if (ENABLE_REDIS)
 
 		target_include_directories(test_trogdord
@@ -422,24 +440,6 @@ if (HAVE_ASIO)
 		test_trogdord_duplicateoutputdriver
 		test_trogdord_newoutputdriver
 		test_trogdord_hello
-	)
-
-	# Separate executable that tests trogdord's use of environment variables
-	add_executable(test_trogdord_envvar
-		${TROGDORD_SOURCES}
-		test/main.cpp
-		test/envvar/config.cpp
-	)
-
-	target_include_directories(test_trogdord_envvar
-		PUBLIC ${CORE_INCLUDES}
-		PUBLIC ${TROGDORD_INCLUDES}
-		PUBLIC ${PROJECT_SOURCE_DIR}/include
-	)
-
-	target_link_libraries(test_trogdord_envvar
-		${TROGDORD_LIBRARIES_MINUS_CORE}
-		PUBLIC trogdor
 	)
 
 	add_dependencies(unit_test test_trogdord test_trogdord_envvar)
