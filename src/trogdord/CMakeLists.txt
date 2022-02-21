@@ -401,6 +401,14 @@ if (HAVE_ASIO)
 			PUBLIC ${HIREDIS_LIBRARIES}
 		)
 
+		target_include_directories(test_trogdord_envvar
+			PUBLIC ${HIREDIS_INCLUDE_DIRS}
+		)
+
+		target_link_libraries(test_trogdord_envvar
+			PUBLIC ${HIREDIS_LIBRARIES}
+		)
+
 	endif (ENABLE_REDIS)
 
 	# The default interval between timer ticks should be much shorter for unit tests
