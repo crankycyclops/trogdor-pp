@@ -79,8 +79,11 @@ namespace trogdor {
       mutex.lock();
 
       tickInterval = std::chrono::milliseconds(period);
-      jobThreadSleepTime = tickInterval < jobThreadSleepTime ? tickInterval :
-         std::chrono::milliseconds(THREAD_SLEEP_MILLISECONDS);
+      jobThreadSleepTime = std::chrono::milliseconds(THREAD_SLEEP_MILLISECONDS);
+
+      if (tickInterval < jobThreadSleepTime) {
+         jobThreadSleepTime = tickInterval;
+      }
 
       mutex.unlock();
    }
