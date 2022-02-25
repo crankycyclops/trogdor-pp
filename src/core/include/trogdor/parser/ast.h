@@ -37,7 +37,8 @@ namespace trogdor {
       INSERT_INTO_INVENTORY = 14,
       INSERT_INTO_PLACE = 15,
       CONNECT_ROOMS = 16,
-      ALLOCATE_RESOURCE = 17
+      ALLOCATE_RESOURCE = 17,
+      SET_TIMER_PERIOD = 18
    };
 
    /**************************************************************************/
@@ -278,6 +279,9 @@ namespace trogdor {
 
                case ALLOCATE_RESOURCE:
                   return "ALLOCATE_RESOURCE";
+
+               case SET_TIMER_PERIOD:
+                  return "SET_TIMER_PERIOD";
 
                default:
                   return "UNDEFINED";

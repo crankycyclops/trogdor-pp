@@ -656,6 +656,23 @@ namespace trogdor {
                );
          }
       });
+
+      /**********/
+
+      registerOperation(SET_TIMER_PERIOD, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         size_t period;
+         char *end; // required for strtoul/strtoull. Otherwise, not used.
+
+         #if SIZE_MAX == UINT64_MAX
+            strtoull(operation->getChildren()[0]->getValue().c_str(), &end, 10);
+         #else
+            strtoul(operation->getChildren()[0]->getValue().c_str(), &end, 10);
+         #endif
+
+         game->setTickInterval(period);
+      });
    }
 
    /***************************************************************************/

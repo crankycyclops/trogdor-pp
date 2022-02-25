@@ -797,6 +797,19 @@ namespace trogdor {
                   " (line " + std::to_string(operation->getLineNumber()) + ")" : ""));
          }
       };
+
+      /**********/
+
+      // Validates new period for the timer
+      preOperations[SET_TIMER_PERIOD] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 1);
+         std::string value = operation->getChildren()[0]->getValue();
+
+         if (!isValidInteger(value)) {
+            throw ValidationException("timer period is not a valid integer");
+         }
+      };
    }
 
    /***************************************************************************/

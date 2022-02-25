@@ -1065,6 +1065,7 @@ namespace trogdor {
          */
          void insertTimerJob(std::shared_ptr<TimerJob> j);
          void removeTimerJob(std::shared_ptr<TimerJob> j);
+         void setTickInterval(size_t period);
 
          /*
             Gets the current game time (in seconds.)  Note that I can't inline
