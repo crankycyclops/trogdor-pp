@@ -800,6 +800,18 @@ namespace trogdor {
 
       /**********/
 
+      preOperations[ALLOCATE_RESOURCE] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 3);
+         std::string amount = operation->getChildren()[2]->getValue();
+
+         if (!isValidDouble(amount)) {
+            throw ValidationException("resource allocation: amount must be a valid integer or floating point value");
+         }
+      };
+
+      /**********/
+
       // Validates new period for the timer
       preOperations[SET_TIMER_PERIOD] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
 

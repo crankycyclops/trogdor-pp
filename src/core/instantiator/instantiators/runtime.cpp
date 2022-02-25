@@ -603,10 +603,6 @@ namespace trogdor {
          std::string resourceName = operation->getChildren()[1]->getValue();
          std::string amount = operation->getChildren()[2]->getValue();
 
-         if (!isValidDouble(amount)) {
-            throw ValidationException("resource allocation: amount must be a valid integer or floating point value");
-         }
-
          auto status = game->getResource(resourceName)->allocate(
             game->getTangible(entityName),
             stod(amount)
