@@ -662,9 +662,9 @@ namespace trogdor {
          char *end; // required for strtoul/strtoull. Otherwise, not used.
 
          #if SIZE_MAX == UINT64_MAX
-            strtoull(operation->getChildren()[0]->getValue().c_str(), &end, 10);
+            period = strtoull(operation->getChildren()[0]->getValue().c_str(), &end, 10);
          #else
-            strtoul(operation->getChildren()[0]->getValue().c_str(), &end, 10);
+            period = strtoul(operation->getChildren()[0]->getValue().c_str(), &end, 10);
          #endif
 
          game->setTickInterval(period);
