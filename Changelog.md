@@ -13,6 +13,10 @@
 - The timer period (tick interval) can now be changed after the timer's started and can be configured via a game definition file
 - trogdord now only listens on 127.0.0.1 or ::1 by default
 
+### Fixed
+
+- Added missing validation for ALLOCATE_RESOURCE AST operation
+
 ## [0.90.0] - 2022-01-31
 
 ### Added
