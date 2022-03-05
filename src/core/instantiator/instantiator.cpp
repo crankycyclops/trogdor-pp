@@ -819,7 +819,12 @@ namespace trogdor {
          std::string value = operation->getChildren()[0]->getValue();
 
          if (!isValidInteger(value)) {
-            throw ValidationException("timer period is not a valid integer");
+            throw ValidationException("timer period must be an integer greater than or equal to 1");
+         }
+
+         // TODO: I should write an isValidUnsignedInteger function that I can use instead
+         else if ('-' == value[0] || 0 == value.compare("0")) {
+            throw ValidationException("timer period must be an integer greater than or equal to 1");
          }
       };
    }

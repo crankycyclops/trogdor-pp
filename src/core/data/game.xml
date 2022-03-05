@@ -3,6 +3,17 @@
 <game>
 
 
+   <!-- Configuration options related to how the game keeps time (optional) -->
+   <timer>
+
+      <!-- The number of milliseconds that should pass between ticks of the clock.
+           The default value is 1000ms, or 1 second. Valid values are any integer
+           greater than or equal to 1. -->
+      <period>1000</period>
+
+   </timer>
+
+
    <!-- Entity class definitions are optional. If they are used, they must
         precede the definitions of the rooms, creatures, and objects that use
         them. Otherwise, an Entity class undefined error will be thrown during
