@@ -42,6 +42,12 @@ namespace output {
 			// Hostname we're connecting to
 			std::string hostname;
 
+			// Username used to authenticate (empty string if none)
+			std::string username;
+
+			// Password used to authenticate (empty string if none)
+			std::string password;
+
 			// The port redis is listening on
 			int port;
 

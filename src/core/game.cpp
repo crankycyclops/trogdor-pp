@@ -630,6 +630,13 @@ namespace trogdor {
 
    /***************************************************************************/
 
+   void Game::setTickInterval(size_t period) {
+
+      timer->setTickInterval(period);
+   }
+
+   /***************************************************************************/
+
    unsigned long Game::getTime() const {
 
       return timer->getTime();

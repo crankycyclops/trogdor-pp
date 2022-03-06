@@ -1,6 +1,22 @@
 
 # Change Log
 
+## [0.91.0] - 2022-03-06
+
+### Added
+
+- trogdord can now authenticate with redis using an optional username and password
+- trogdord can now also be configured via environment variables, which take precedence over trogdord.ini
+
+### Changed
+
+- The timer period (tick interval) can now be changed after the timer's started and can be configured via a game definition file
+- trogdord now only listens on 127.0.0.1 or ::1 by default
+
+### Fixed
+
+- Added missing validation for ALLOCATE_RESOURCE AST operation
+
 ## [0.90.0] - 2022-01-31
 
 ### Added

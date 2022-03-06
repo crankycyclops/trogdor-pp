@@ -58,6 +58,9 @@ class Config {
 
 	public:
 
+		// Maps env variables to config options they override
+		static const std::unordered_map<std::string, std::string> ENV;
+
 		// Default values
 		static const std::unordered_map<std::string, std::string> DEFAULTS;
 
@@ -77,6 +80,8 @@ class Config {
 		static constexpr const char *CONFIG_KEY_INPUT_LISTENERS = "input.listeners";
 		static constexpr const char *CONFIG_KEY_OUTPUT_DRIVER = "output.driver";
 		static constexpr const char *CONFIG_KEY_REDIS_HOST = "redis.host";
+		static constexpr const char *CONFIG_KEY_REDIS_USERNAME = "redis.username";
+		static constexpr const char *CONFIG_KEY_REDIS_PASSWORD = "redis.password";
 		static constexpr const char *CONFIG_KEY_REDIS_PORT = "redis.port";
 		static constexpr const char *CONFIG_KEY_REDIS_CONNECTION_TIMEOUT = "redis.connection_timeout";
 		static constexpr const char *CONFIG_KEY_REDIS_CONNECTION_RETRY_INTERVAL = "redis.connection_retry_interval";

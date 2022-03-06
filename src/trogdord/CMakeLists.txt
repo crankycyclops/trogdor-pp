@@ -391,6 +391,24 @@ if (HAVE_ASIO)
 		PUBLIC trogdor
 	)
 
+	# Separate executable that tests trogdord's use of environment variables
+	add_executable(test_trogdord_envvar
+		${TROGDORD_SOURCES}
+		test/main.cpp
+		test/envvar/config.cpp
+	)
+
+	target_include_directories(test_trogdord_envvar
+		PUBLIC ${CORE_INCLUDES}
+		PUBLIC ${TROGDORD_INCLUDES}
+		PUBLIC ${PROJECT_SOURCE_DIR}/include
+	)
+
+	target_link_libraries(test_trogdord_envvar
+		${TROGDORD_LIBRARIES_MINUS_CORE}
+		PUBLIC trogdor
+	)
+
 	if (ENABLE_REDIS)
 
 		target_include_directories(test_trogdord
@@ -398,6 +416,14 @@ if (HAVE_ASIO)
 		)
 
 		target_link_libraries(test_trogdord
+			PUBLIC ${HIREDIS_LIBRARIES}
+		)
+
+		target_include_directories(test_trogdord_envvar
+			PUBLIC ${HIREDIS_INCLUDE_DIRS}
+		)
+
+		target_link_libraries(test_trogdord_envvar
 			PUBLIC ${HIREDIS_LIBRARIES}
 		)
 
@@ -416,7 +442,7 @@ if (HAVE_ASIO)
 		test_trogdord_hello
 	)
 
-	add_dependencies(unit_test test_trogdord)
+	add_dependencies(unit_test test_trogdord test_trogdord_envvar)
 
 	###############################################################################
 
@@ -432,6 +458,11 @@ if (HAVE_ASIO)
 			PUBLIC trogdor_serial_json
 		)
 
+		target_link_libraries(test_trogdord_envvar
+			PUBLIC trogdor_serial
+			PUBLIC trogdor_serial_json
+		)
+
 	endif (ENABLE_SERIALIZE_JSON)
 
 	if (ENABLE_SERIALIZE_SQLITE)
@@ -442,6 +473,11 @@ if (HAVE_ASIO)
 		)
 
 		target_link_libraries(test_trogdord
+			PUBLIC trogdor_serial
+			PUBLIC trogdor_serial_sqlite
+		)
+
+		target_link_libraries(test_trogdord_envvar
 			PUBLIC trogdor_serial
 			PUBLIC trogdor_serial_sqlite
 		)

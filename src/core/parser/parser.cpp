@@ -9,6 +9,25 @@ namespace trogdor {
 
    /**************************************************************************/
 
+   std::shared_ptr<ASTOperationNode> Parser::ASTSetTimerPeriod(
+   std::string period, int lineNumber) {
+
+      auto operation = std::make_shared<ASTOperationNode>(
+         SET_TIMER_PERIOD,
+         lineNumber
+      );
+
+      operation->appendChild(std::make_shared<ASTNode>(
+         period,
+         AST_VALUE,
+         lineNumber
+      ));
+
+      return operation;
+   }
+
+   /**************************************************************************/
+
    std::shared_ptr<ASTOperationNode> Parser::ASTDefineDirection(
    std::string direction, int lineNumber) {
 

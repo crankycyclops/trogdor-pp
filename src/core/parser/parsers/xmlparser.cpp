@@ -256,7 +256,11 @@ namespace trogdor {
       // parse the remaining sections
       while (nextTag() && 1 == getDepth()) {
 
-         if (0 == getTagName().compare("classes")) {
+         if (0 == getTagName().compare("timer")) {
+            parseTimer();
+         }
+
+         else if (0 == getTagName().compare("classes")) {
             parseClasses();
          }
 
@@ -302,6 +306,33 @@ namespace trogdor {
       }
 
       checkClosingTag("game");
+   }
+
+   /***************************************************************************/
+
+   void XMLParser::parseTimer() {
+
+      while (nextTag() && 2 == getDepth()) {
+
+         std::string tag = getTagName();
+
+         if (0 == getTagName().compare("period")) {
+
+            ast->appendChild(ASTSetTimerPeriod(
+               parseString(),
+               xmlTextReaderGetParserLineNumber(reader)
+            ));
+
+            checkClosingTag("period");
+         }
+
+         else {
+            throw ParseException(std::string("invalid tag <") + tag
+               + "> in <timer>");
+         }
+      }
+
+      checkClosingTag("timer");
    }
 
    /***************************************************************************/

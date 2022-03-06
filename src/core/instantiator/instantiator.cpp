@@ -797,6 +797,36 @@ namespace trogdor {
                   " (line " + std::to_string(operation->getLineNumber()) + ")" : ""));
          }
       };
+
+      /**********/
+
+      preOperations[ALLOCATE_RESOURCE] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 3);
+         std::string amount = operation->getChildren()[2]->getValue();
+
+         if (!isValidDouble(amount)) {
+            throw ValidationException("resource allocation: amount must be a valid integer or floating point value");
+         }
+      };
+
+      /**********/
+
+      // Validates new period for the timer
+      preOperations[SET_TIMER_PERIOD] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
+
+         assertValidASTArguments(operation, 1);
+         std::string value = operation->getChildren()[0]->getValue();
+
+         if (!isValidInteger(value)) {
+            throw ValidationException("timer period must be an integer greater than or equal to 1");
+         }
+
+         // TODO: I should write an isValidUnsignedInteger function that I can use instead
+         else if ('-' == value[0] || 0 == value.compare("0")) {
+            throw ValidationException("timer period must be an integer greater than or equal to 1");
+         }
+      };
    }
 
    /***************************************************************************/

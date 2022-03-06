@@ -218,6 +218,21 @@ namespace trogdor {
             queue.remove(job);
             mutex.unlock();
          }
+
+         /*
+            Sets the period of time between ticks in milliseconds. If the tick
+            interval is less than the amount of time we sleep before checking
+            if the timer should advance, that sleep time will be set to this
+            value as well.
+
+            Setting this value once the timer has started is safe and will
+            simply result in the timer advancing slower or faster starting with
+            the next tick.
+
+            Input: Timer period (size_t)
+            Output: (none)
+         */
+         void setTickInterval(size_t period);
    };
 }
 

@@ -609,6 +609,17 @@ namespace trogdor {
          void parseTangibleResources(std::string entityName, int depth);
 
          /*
+            Parses timer-related settings.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseTimer();
+
+         /*
             Parses the <game> section of the XML file.  Throws an exception if
             there's a parse error.
 

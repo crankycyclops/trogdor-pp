@@ -603,10 +603,6 @@ namespace trogdor {
          std::string resourceName = operation->getChildren()[1]->getValue();
          std::string amount = operation->getChildren()[2]->getValue();
 
-         if (!isValidDouble(amount)) {
-            throw ValidationException("resource allocation: amount must be a valid integer or floating point value");
-         }
-
          auto status = game->getResource(resourceName)->allocate(
             game->getTangible(entityName),
             stod(amount)
@@ -655,6 +651,23 @@ namespace trogdor {
                   + std::to_string(operation->getLineNumber()) + ")"
                );
          }
+      });
+
+      /**********/
+
+      registerOperation(SET_TIMER_PERIOD, [this]
+      (const std::shared_ptr<ASTOperationNode> &operation) {
+
+         size_t period;
+         char *end; // required for strtoul/strtoull. Otherwise, not used.
+
+         #if SIZE_MAX == UINT64_MAX
+            period = strtoull(operation->getChildren()[0]->getValue().c_str(), &end, 10);
+         #else
+            period = strtoul(operation->getChildren()[0]->getValue().c_str(), &end, 10);
+         #endif
+
+         game->setTickInterval(period);
       });
    }
 

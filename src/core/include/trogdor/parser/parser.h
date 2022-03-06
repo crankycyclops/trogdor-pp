@@ -41,6 +41,19 @@ namespace trogdor {
          std::shared_ptr<ASTNode> ast;
 
          /*
+            Returns an AST subtree representing a SET_TIMER_PERIOD operation.
+
+            Input:
+               Timer's period (std::string)
+               Current line number in the source being parsed (int)
+
+            Output:
+               ASTOperationNode
+         */
+         std::shared_ptr<ASTOperationNode> ASTSetTimerPeriod(std::string period,
+         int lineNumber = 0);
+
+         /*
             Returns an AST subtree representing a defineDirection operation.
 
             Input:

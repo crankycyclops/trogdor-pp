@@ -41,6 +41,8 @@ namespace output {
 		int microseconds = (ms % 1000) * 1000;
 
 		hostname = Config::get()->getString(Config::CONFIG_KEY_REDIS_HOST);
+		username = Config::get()->getString(Config::CONFIG_KEY_REDIS_USERNAME);
+		password = Config::get()->getString(Config::CONFIG_KEY_REDIS_PASSWORD);
 		port = Config::get()->getUInt(Config::CONFIG_KEY_REDIS_PORT);
 		redisChannel = Config::get()->getString(Config::CONFIG_KEY_REDIS_OUTPUT_CHANNEL);
 
@@ -76,6 +78,27 @@ namespace output {
 			}
 
 			return false;
+		}
+
+		// Authenticate if necessary
+		std::string authStr;
+
+		if (password.length()) {
+			authStr = password;
+		}
+
+		if (username.length()) {
+			authStr = username + ' ' + authStr;
+		}
+
+		if (authStr.length()) {
+
+			auto reply = redisCommand(redis, "AUTH %s", authStr.c_str());
+
+			if (nullptr == reply || static_cast<redisReply *>(reply)->type == REDIS_REPLY_ERROR) {
+				Config::get()->err() << "output::Redis: " << redis->errstr << std::endl;
+				return false;
+			}
 		}
 
 		return true;
