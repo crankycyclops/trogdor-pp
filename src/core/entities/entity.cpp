@@ -51,7 +51,6 @@ namespace trogdor::entity {
       setProperty("title", n);
 
       setPropertyValidators();
-      L = std::make_shared<LuaState>(g);
       triggers = std::make_unique<event::EventListener>();
    }
 
@@ -70,7 +69,6 @@ namespace trogdor::entity {
       outStream = e.outStream->clone();
       errStream = e.errStream->copy();
 
-      L = std::make_shared<LuaState>(*e.L);
       triggers = std::make_unique<event::EventListener>(*e.triggers);
 
       for (const auto &event: triggers->getTriggers()) {
@@ -86,7 +84,7 @@ namespace trogdor::entity {
                auto &t = *trigger.get();
 
                if (typeid(event::LuaEventTrigger) == typeid(t)) {
-                  dynamic_cast<event::LuaEventTrigger *>(trigger.get())->setLuaState(L);
+                  dynamic_cast<event::LuaEventTrigger *>(trigger.get())->setLuaState(e.game->getLuaState());
                }
             }
          }
@@ -152,13 +150,8 @@ namespace trogdor::entity {
          }, property.second);
       }
 
-      L = std::make_shared<LuaState>(
-         g,
-         *std::get<std::shared_ptr<serial::Serializable>>(*data.get("lua"))
-      );
-
       triggers = std::make_unique<event::EventListener>(
-         *std::get<std::shared_ptr<serial::Serializable>>(*data.get("eventListener")), L
+         *std::get<std::shared_ptr<serial::Serializable>>(*data.get("eventListener")), g->getLuaState()
       );
 
       setPropertyValidators();
@@ -218,7 +211,6 @@ namespace trogdor::entity {
       }
 
       data->set("properties", serializedProperties);
-      data->set("lua", L->serialize());
       data->set("eventListener", triggers->serialize());
 
       return data;

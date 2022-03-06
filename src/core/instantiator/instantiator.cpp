@@ -422,14 +422,8 @@ namespace trogdor {
       // Validation
       preOperations[LOAD_SCRIPT] = [this](const std::shared_ptr<ASTOperationNode> &operation) {
 
-         assertValidASTArguments(operation, 3, {
-            {"entity", 4},
-            {"class", 4},
-            {"game", 3}
-         });
-
-         std::string targetType = operation->getChildren()[0]->getValue();
-         std::string scriptMode = operation->getChildren()[1]->getValue();
+         assertValidASTArguments(operation, 2);
+         std::string scriptMode = operation->getChildren()[0]->getValue();
 
          if (0 != scriptMode.compare("file") && 0 != scriptMode.compare("string")) {
             throw ValidationException("LOAD_SCRIPT: invalid script mode '" + scriptMode + "'. Should be either 'file' or 'string'. This is a bug.");
@@ -437,7 +431,7 @@ namespace trogdor {
 
          else if (0 == scriptMode.compare("file")) {
 
-            std::string filename = operation->getChildren()[2]->getValue();
+            std::string filename = operation->getChildren()[1]->getValue();
             std::ifstream scriptFile(filename.c_str());
 
             if (!scriptFile) {
@@ -446,18 +440,6 @@ namespace trogdor {
                      " (line " + std::to_string(operation->getLineNumber()) + ")" : "")
                );
             }
-         }
-
-         if (
-            0 == targetType.compare("entity") ||
-            0 == targetType.compare("class")
-         ) {
-            assertTargetExists(
-               targetType,
-               operation->getChildren()[3]->getValue(),
-               "parse script for",
-               operation->getLineNumber()
-            );
          }
       };
 

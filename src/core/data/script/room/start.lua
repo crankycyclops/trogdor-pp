@@ -5,4 +5,3 @@ function beforeRoomSample()
    return true, true
 
 end
-

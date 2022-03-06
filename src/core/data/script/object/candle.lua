@@ -15,4 +15,3 @@ function beforeDropCandle(being, candle)
    return true, true
 
 end
-

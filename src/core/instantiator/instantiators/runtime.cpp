@@ -339,38 +339,13 @@ namespace trogdor {
       registerOperation(LOAD_SCRIPT, [this]
       (const std::shared_ptr<ASTOperationNode> &operation) {
 
-         std::string targetType = operation->getChildren()[0]->getValue();
-         std::string scriptMode = operation->getChildren()[1]->getValue();
-         std::string script = operation->getChildren()[2]->getValue();
+         std::string scriptMode = operation->getChildren()[0]->getValue();
+         std::string script = operation->getChildren()[1]->getValue();
 
-         if (0 == targetType.compare("entity")) {
-
-            std::string entityName = operation->getChildren()[3]->getValue();
-
-            if (0 == scriptMode.compare("file")) {
-               game->getEntity(entityName)->getLuaState()->loadScriptFromFile(script);
-            } else {
-               game->getEntity(entityName)->getLuaState()->loadScriptFromString(script);
-            }
-         }
-
-         else if (0 == targetType.compare("class")) {
-
-            std::string className = operation->getChildren()[3]->getValue();
-
-            if (0 == scriptMode.compare("file")) {
-               typeClasses[className].get()->getLuaState()->loadScriptFromFile(script);
-            } else {
-               typeClasses[className].get()->getLuaState()->loadScriptFromString(script);
-            }
-         }
-
-         else {
-            if (0 == scriptMode.compare("file")) {
-               game->getLuaState()->loadScriptFromFile(script);
-            } else {
-               game->getLuaState()->loadScriptFromString(script);
-            }
+         if (0 == scriptMode.compare("file")) {
+            game->getLuaState()->loadScriptFromFile(script);
+         } else {
+            game->getLuaState()->loadScriptFromString(script);
          }
       });
 
@@ -391,7 +366,7 @@ namespace trogdor {
 
             entity->getEventListener()->addTrigger(
                event, std::make_unique<event::LuaEventTrigger>(
-                  function, entity->getLuaState()
+                  function, game->getLuaState()
                )
             );
          }
@@ -410,7 +385,7 @@ namespace trogdor {
             // the freeshly minted entity.
             entityClass->getEventListener()->addTrigger(
                event, std::make_unique<event::LuaEventTrigger>(
-                  function, entityClass->getLuaState()
+                  function, game->getLuaState()
                )
             );
          }

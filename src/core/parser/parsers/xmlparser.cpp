@@ -761,7 +761,7 @@ namespace trogdor {
       while (nextTag() && depth == getDepth()) {
 
          if (0 == getTagName().compare("script")) {
-            parseScript(entityName, targetType);
+            parseScript();
          }
 
          else if (0 == getTagName().compare("event")) {
@@ -779,7 +779,7 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseScript(std::string entityName, std::string targetType) {
+   void XMLParser::parseScript() {
 
       std::string script;
       std::string scriptMode;
@@ -807,11 +807,9 @@ namespace trogdor {
       }
 
       ast->appendChild(ASTLoadScript(
-         targetType,
          scriptMode,
          script,
-         xmlTextReaderGetParserLineNumber(reader),
-         entityName
+         xmlTextReaderGetParserLineNumber(reader)
       ));
 
       checkClosingTag("script");

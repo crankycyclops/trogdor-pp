@@ -440,7 +440,7 @@ namespace trogdor {
                (none)
          */
          void parseEvents(std::string entityName, std::string targetType, int depth);
-         void parseScript(std::string entityName, std::string targetType);
+         void parseScript();
          void parseEvent(std::string entityName, std::string targetType);
 
          /*

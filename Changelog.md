@@ -1,6 +1,12 @@
 
 # Change Log
 
+## [0.92.0] - In Development
+
+### Changed
+
+- Entities no longer have their own Lua states, which is wasteful. Instead, there is only one shared state per game.
+
 ## [0.91.0] - 2022-03-06
 
 ### Added

@@ -7,4 +7,3 @@ function sampleDropObject(player, entity)
    return true, true
 
 end
-
