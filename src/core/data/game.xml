@@ -5,12 +5,12 @@
 
    <!-- identifies one or more external scripts that contain event handling
         functions -->
-   <script src="script/global1.lua"></script>
-   <script src="script/object/candle.lua"></script>
-   <script src="script/room/start.lua"></script>
+   <script lang="lua" src="script/global1.lua"></script>
+   <script lang="lua" src="script/object/candle.lua"></script>
+   <script lang="lua" src="script/room/start.lua"></script>
 
    <!-- you can also inline scripts -->
-   <script>
+   <script lang="lua">
 
       -- just a placeholder for demo purposes
       function testFunctionDrop(player, entity)
