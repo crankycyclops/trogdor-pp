@@ -193,7 +193,7 @@ This is an introduction. If introductions are enabled, new players will have to 
               engine or custom for scripts)
          -->
          <messages>
-            <message name="respawn">A bolt of lightening claps, and your dead body bursts to life in a brilliant flash.</message>
+            <message name="respawn">There is thunder, a bolt of lightening, and then your body bursts back to life.</message>
          </messages>
 
          <!-- By default, player attributes are distributed evenly (10 given to
@@ -262,7 +262,7 @@ This is an introduction. If introductions are enabled, new players will have to 
          <!-- The user will see this description the first time they encounter the
               object, or everytime they issue the command "look at candle." -->
          <description>
-It appears to be a firey cylinder of wax burning with the passion of a thousand suns.
+The candle is lit and burns with the passion of a thousand firey suns.
          </description>
 
          <!-- specifies an object's weight; not specifying this will default to
@@ -306,7 +306,7 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
       <object name="rock">
 
          <description>
-It's nothing special.  It's gray, bumpy and a little lopsided.
+The rock is nothing special. It's gray, bumpy, and a little lopsided.
          </description>
 
          <!-- If the undroppable tag is set on an object, it means that a player
@@ -324,7 +324,7 @@ It's nothing special.  It's gray, bumpy and a little lopsided.
       <object name="boulder">
 
          <description>
-It's a huge rock.  You're not sure if you'll be able to lift it.
+It's a huge rock and you're not sure if you can lift it.
          </description>
          <weight>1</weight>
 
@@ -351,7 +351,7 @@ It's a huge rock.  You're not sure if you'll be able to lift it.
          <title>the Sword of Hope</title>
 
          <description>
-A smooth metallic sheen covers its surface, which looks to be of recent make and in good repair.
+The blade gleams and looks to be in good repair.
          </description>
 
          <short>You see the Sword of Hope, which bears an inscription.</short>
