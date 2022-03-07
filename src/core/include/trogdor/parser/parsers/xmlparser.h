@@ -428,6 +428,17 @@ namespace trogdor {
          void parseEntityTags(std::string entityName, std::string targetType, int depth);
 
          /*
+            Parses a <script> tag.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         void parseScript();
+
+         /*
             Parses an <events> section for Entities, Entity classes, and Game.
             Throws an exception if there's an error.
 
@@ -440,7 +451,6 @@ namespace trogdor {
                (none)
          */
          void parseEvents(std::string entityName, std::string targetType, int depth);
-         void parseScript();
          void parseEvent(std::string entityName, std::string targetType);
 
          /*

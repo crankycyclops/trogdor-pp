@@ -256,7 +256,11 @@ namespace trogdor {
       // parse the remaining sections
       while (nextTag() && 1 == getDepth()) {
 
-         if (0 == getTagName().compare("timer")) {
+         if (0 == getTagName().compare("script")) {
+            parseScript();
+         }
+
+         else if (0 == getTagName().compare("timer")) {
             parseTimer();
          }
 
@@ -760,11 +764,7 @@ namespace trogdor {
 
       while (nextTag() && depth == getDepth()) {
 
-         if (0 == getTagName().compare("script")) {
-            parseScript();
-         }
-
-         else if (0 == getTagName().compare("event")) {
+         if (0 == getTagName().compare("event")) {
             parseEvent(entityName, targetType);
          }
 

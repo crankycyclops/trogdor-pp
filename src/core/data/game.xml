@@ -3,6 +3,28 @@
 <game>
 
 
+   <!-- identifies one or more external scripts that contain event handling
+        functions -->
+   <script src="script/global1.lua"></script>
+   <script src="script/object/candle.lua"></script>
+   <script src="script/room/start.lua"></script>
+
+   <!-- you can also inline scripts -->
+   <script>
+
+      -- just a placeholder for demo purposes
+      function testFunctionDrop(player, entity)
+
+         -- first value decides if we should continue executing event handlers
+         -- second value decides if we should execute the action that
+         -- triggered the event
+         return true, true
+
+      end
+
+   </script>
+
+
    <!-- Configuration options related to how the game keeps time (optional) -->
    <timer>
 
@@ -137,30 +159,11 @@ This is an introduction. If introductions are enabled, new players will have to 
 
    <!-- Global Event Handlers and Scripts (optional) -->
    <events>
-
-      <!-- identifies one or more external scripts containing event handling
-           functions -->
-      <script src="script/global1.lua"></script>
-
-      <!-- you can also place scripts inline -->
-      <script>
-
-         -- just a placeholder for demo purposes
-         function testFunctionDrop(player, entity)
-
-            -- first value decides if we should continue executing event handlers
-            -- second value decides if we should execute the action that
-            -- triggered the event
-            return true, true
-
-         end
-
-      </script>
-
-      <!-- identifies a script function to call for a given event -->
+      <!-- identifies a script function to call for a given event. The
+           function should have been loaded in via a script tag above.
+           Events here are global in scope. -->
       <event name="beforeDrop">sampleDropObject</event>
       <event name="beforeDrop">testFunctionDrop</event>
-
    </events>
 
 
@@ -273,12 +276,11 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
 
          <!-- define object's event handlers and attached scripts here -->
          <events>
-            <!-- one or more scripts can be attached to an object, which define
-                 functions that get triggered by the event handler -->
-            <script src="script/object/candle.lua"></script>
-
             <!-- Specific events that trigger functions in the script files
-                 above. -->
+                 above. Events here are local in scope and apply only to
+                 the object in which it's defined. In this case, the below
+                 functions are only called when an event is triggered by the
+                 candle. -->
             <event name="beforeTake">beforeTakeCandle</event>
             <event name="beforeDrop">beforeDropCandle</event>
          </events>
@@ -546,7 +548,6 @@ You're standing in the middle of a sprawling white marble castle, the walls line
          <sideways>mysticalhall</sideways>
 
          <events>
-            <script src="script/room/start.lua"></script>
             <event name="beforeObserve">beforeRoomSample</event>
          </events>
 
