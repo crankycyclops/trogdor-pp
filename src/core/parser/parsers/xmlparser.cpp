@@ -256,7 +256,11 @@ namespace trogdor {
       // parse the remaining sections
       while (nextTag() && 1 == getDepth()) {
 
-         if (0 == getTagName().compare("timer")) {
+         if (0 == getTagName().compare("script")) {
+            parseScript();
+         }
+
+         else if (0 == getTagName().compare("timer")) {
             parseTimer();
          }
 
@@ -760,11 +764,7 @@ namespace trogdor {
 
       while (nextTag() && depth == getDepth()) {
 
-         if (0 == getTagName().compare("script")) {
-            parseScript(entityName, targetType);
-         }
-
-         else if (0 == getTagName().compare("event")) {
+         if (0 == getTagName().compare("event")) {
             parseEvent(entityName, targetType);
          }
 
@@ -779,10 +779,22 @@ namespace trogdor {
 
    /***************************************************************************/
 
-   void XMLParser::parseScript(std::string entityName, std::string targetType) {
+   void XMLParser::parseScript() {
 
       std::string script;
       std::string scriptMode;
+      std::string scriptLang;
+
+      // This is a required attribute, so I'm going to let the ParseException
+      // through if it's missing.
+      scriptLang = strToLower(getAttribute("lang"));
+
+      // TODO: Once I've made Lua support optional, and once I've added support for
+      // other languages like JavasScript, this check will have to be a little more
+      // sophisticated.
+      if (0 != scriptLang.compare("lua")) {
+         throw ParseException(std::string("Script with lang=\"") + scriptLang + "\" was included, but only lua is supported.");
+      }
 
       try {
 
@@ -807,11 +819,9 @@ namespace trogdor {
       }
 
       ast->appendChild(ASTLoadScript(
-         targetType,
          scriptMode,
          script,
-         xmlTextReaderGetParserLineNumber(reader),
-         entityName
+         xmlTextReaderGetParserLineNumber(reader)
       ));
 
       checkClosingTag("script");

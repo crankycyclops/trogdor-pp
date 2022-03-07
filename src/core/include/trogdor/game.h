@@ -111,7 +111,7 @@ namespace trogdor {
          // Global EventListener for the entire game
          std::unique_ptr<event::EventListener> eventListener;
 
-         // Global Lua state for the entire game
+         // Global Lua state for the game
          std::shared_ptr<LuaState> L;
 
          // Defines if and how a player is presented with an introduction when
@@ -254,10 +254,7 @@ namespace trogdor {
          std::unique_ptr<Runtime> makeInstantiator();
 
          /*
-            Returns a reference to Game instance's LuaState object. This should
-            ONLY be used by the instantiator and (possibly) other select classes
-            that need to interact directly with this. THIS IS A DANGEROUS METHOD.
-            You have been warned.
+            Returns a reference to Game instance's LuaState object.
 
             I'm returning a const reference to a shared_ptr per this advice:
             "Use a const shared_ptr& as a parameter only if you're not sure

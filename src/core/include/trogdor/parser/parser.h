@@ -183,22 +183,17 @@ namespace trogdor {
             Returns an AST subtree representing a loadScript operation.
 
             Input:
-               Target type: the kind of thing we're removing the tag on (std::string)
-                  . One of: "entity", "class", or "game"
                Script mode (std::string)
                   . One of: "file" (to load a file) or "string" (to read a raw script)
                Script (std::string)
                   . Either a filename or the script itself, depending on scriptMode
                Current line number in the source being parsed (int)
-               Entity or entity class name (std::string)
-                  . Do not pass if target type is "game"
 
             Output:
                ASTOperationNode
          */
-         std::shared_ptr<ASTOperationNode> ASTLoadScript(std::string targetType,
-         std::string scriptMode, std::string script, int lineNumber = 0,
-         std::string entityOrClassName = "");
+         std::shared_ptr<ASTOperationNode> ASTLoadScript(std::string scriptMode,
+         std::string script, int lineNumber = 0);
 
          /*
             Returns an AST subtree representing a setEvent operation.

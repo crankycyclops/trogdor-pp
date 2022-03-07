@@ -274,20 +274,13 @@ namespace trogdor {
    /**************************************************************************/
 
    // TODO: validate targetType and throw UndefinedException if necessary
-   std::shared_ptr<ASTOperationNode> Parser::ASTLoadScript(std::string targetType,
-   std::string scriptMode, std::string script, int lineNumber,
-   std::string entityOrClassName) {
+   std::shared_ptr<ASTOperationNode> Parser::ASTLoadScript(std::string scriptMode,
+   std::string script, int lineNumber) {
 
       auto operation = std::make_shared<ASTOperationNode>(
          LOAD_SCRIPT,
          lineNumber
       );
-
-      operation->appendChild(std::make_shared<ASTNode>(
-         targetType,
-         AST_VALUE,
-         lineNumber
-      ));
 
       operation->appendChild(std::make_shared<ASTNode>(
          scriptMode,
@@ -300,14 +293,6 @@ namespace trogdor {
          AST_VALUE,
          lineNumber
       ));
-
-      if (0 != targetType.compare("game")) {
-         operation->appendChild(std::make_shared<ASTNode>(
-            entityOrClassName,
-            AST_VALUE,
-            lineNumber
-         ));
-      }
 
       return operation;
    }

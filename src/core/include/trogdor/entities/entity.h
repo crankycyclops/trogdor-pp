@@ -111,9 +111,6 @@ namespace trogdor::entity {
          const std::string name;
          std::string className;
 
-         // The Entity's Lua state
-         std::shared_ptr<LuaState> L;
-
          // Event triggers
          std::unique_ptr<event::EventListener> triggers;
 
@@ -789,20 +786,6 @@ namespace trogdor::entity {
                Entity's name (std::string)
          */
          inline std::string getName() const {return name;}
-
-         /*
-            Returns a reference to Entity's LuaState object. This should ONLY be
-            used by the instantiator and (possibly) other select classes that
-            need to interact directly with this. THIS IS A DANGEROUS METHOD. You
-            have been warned.
-
-            Input:
-               (none)
-
-            Output:
-               Game's Lua State (std::shared_ptr<LuaState> &)
-         */
-         inline std::shared_ptr<LuaState> &getLuaState() {return L;}
 
          /*
             Returns reference to entity's event listener.

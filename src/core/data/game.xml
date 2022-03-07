@@ -3,6 +3,28 @@
 <game>
 
 
+   <!-- identifies one or more external scripts that contain event handling
+        functions -->
+   <script lang="lua" src="script/global1.lua"></script>
+   <script lang="lua" src="script/object/candle.lua"></script>
+   <script lang="lua" src="script/room/start.lua"></script>
+
+   <!-- you can also inline scripts -->
+   <script lang="lua">
+
+      -- just a placeholder for demo purposes
+      function testFunctionDrop(player, entity)
+
+         -- first value decides if we should continue executing event handlers
+         -- second value decides if we should execute the action that
+         -- triggered the event
+         return true, true
+
+      end
+
+   </script>
+
+
    <!-- Configuration options related to how the game keeps time (optional) -->
    <timer>
 
@@ -137,30 +159,11 @@ This is an introduction. If introductions are enabled, new players will have to 
 
    <!-- Global Event Handlers and Scripts (optional) -->
    <events>
-
-      <!-- identifies one or more external scripts containing event handling
-           functions -->
-      <script src="script/global1.lua"></script>
-
-      <!-- you can also place scripts inline -->
-      <script>
-
-         -- just a placeholder for demo purposes
-         function testFunctionDrop(player, entity)
-
-            -- first value decides if we should continue executing event handlers
-            -- second value decides if we should execute the action that
-            -- triggered the event
-            return true, true
-
-         end
-
-      </script>
-
-      <!-- identifies a script function to call for a given event -->
+      <!-- identifies a script function to call for a given event. The
+           function should have been loaded in via a script tag above.
+           Events here are global in scope. -->
       <event name="beforeDrop">sampleDropObject</event>
       <event name="beforeDrop">testFunctionDrop</event>
-
    </events>
 
 
@@ -273,12 +276,11 @@ It appears to be a firey cylinder of wax burning with the passion of a thousand 
 
          <!-- define object's event handlers and attached scripts here -->
          <events>
-            <!-- one or more scripts can be attached to an object, which define
-                 functions that get triggered by the event handler -->
-            <script src="script/object/candle.lua"></script>
-
             <!-- Specific events that trigger functions in the script files
-                 above. -->
+                 above. Events here are local in scope and apply only to
+                 the object in which it's defined. In this case, the below
+                 functions are only called when an event is triggered by the
+                 candle. -->
             <event name="beforeTake">beforeTakeCandle</event>
             <event name="beforeDrop">beforeDropCandle</event>
          </events>
@@ -462,7 +464,7 @@ A smooth metallic sheen covers its surface, which looks to be of recent make and
 
          <messages>
             <message name="descshort_dead">Trogdor is very much dead.</message>
-            <message name="description_dead">The body of Trogdor lies crumbled on the floor, lifeless and very much dead, in the fullest sense.  This is a long and wordy description of Trogdor's body, isn't it!</message>
+            <message name="description_dead">The body of Trogdor lies crumbled on the floor, lifeless and very much dead. May he rest in peace.</message>
          </messages>
 
       </creature>
@@ -533,7 +535,7 @@ He's white, transparent and floating six or seven feet off the ground.  He smile
               doing so, you sacrifice the engine's ability to manage those
               descriptions should a connection later changed or removed. -->
          <description>
-You're standing in the middle of a sprawling white marble castle, the walls lined with portraits of long deceased ancestors of some forgotten king.  Servants are bustling about, rushing around with steaming plates of meats and cooked vegetables, rushing in and out of rooms to serve princes and heads of state. Legend has it that going sideways can transport you to a strange and mystical land.
+You're standing in the midst of a sprawling marble castle, the walls lined with portraits of long-deceased kings.  Servants mill about with steaming plates of meats and cooked vegetables, entering and exiting rooms to serve princes and heads of state. Legend has it that going sideways can transport you to a strange and mystical land.
          </description>
 
          <!-- names of the rooms "north" and "sideways" of this one. Each
@@ -546,7 +548,6 @@ You're standing in the middle of a sprawling white marble castle, the walls line
          <sideways>mysticalhall</sideways>
 
          <events>
-            <script src="script/room/start.lua"></script>
             <event name="beforeObserve">beforeRoomSample</event>
          </events>
 
@@ -584,7 +585,7 @@ You're standing in the middle of a sprawling white marble castle, the walls line
          <title>Mystical Hall</title>
 
          <description>
-You find yourself in a mystical hall that seems to extend from one horizon to the next. The room is filled with clouds, and if you strain your ears carefully, you think you might hear the sound of an angelic choir.
+You find yourself surrounded by an endless mystical hall. The room is filled with clouds, and if you strain your ears carefully, you think you might hear the strains of an angelic choir.
          </description>
 
          <sideways description="You can't say for sure, but you suspect that going sideways will return you to the castle.">start</sideways>
@@ -603,7 +604,7 @@ You're in a dank and musty cave.
               can specify one way movements by not placing this line here (maybe,
               for example, the user got shut behind a trap door?)
          -->
-         <west description="To the west, you spy a dark chamber.">chamber</west>
+         <west description="To the west is a dark chamber.">chamber</west>
          <south description="To the south, you see a light.">start</south>
 
          <contains>
@@ -617,14 +618,14 @@ You're in a dank and musty cave.
          <title>Dark Chamber</title>
 
          <description>
-You find yourself in a dark secluded chamber. It's dank, musty, and generally icky poo-pooos. Be careful. There may be nasty things waiting for you here!
+You stand in a dark secluded chamber. It's dank, musty, and generally icky poo-pooos. Be careful. There may be nasty things waiting for you here!
          </description>
 
          <!-- The room's short description, which the player sees everytime
               they enter the room after the first time -->
-         <short>It's dark.  Careful!</short>
+         <short>The chamber is dark. Be careful!</short>
 
-         <east description="To the east, you see the entrance to a cave.">cave</east>
+         <east description="To the east, you spy the entrance to a cave.">cave</east>
 
          <contains>
             <creature>trogdor</creature>
