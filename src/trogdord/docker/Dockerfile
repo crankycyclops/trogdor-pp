@@ -1,7 +1,10 @@
-# Docker image for trogdord 0.90.0.
-# To build: docker build -t crankycyclops/trogdord:<version> .
+# Docker image for trogdord.
+# To build: docker build --build-arg TROGDOR_VER=<version> -t crankycyclops/trogdord:<version> .
 
 FROM ubuntu:20.04
+
+ARG TROGDOR_VER
+ENV TROGDOR_VER=${TROGDOR_VER}
 
 # Pre-configure environment and install build dependencies
 ENV DEBIAN_FRONTEND="noninteractive" TZ="UTC"
@@ -11,13 +14,13 @@ RUN apt-get -y install sudo bash wget g++ cmake libasio-dev sqlite3 libsqlite3-d
 
 # Build and install the core library + trogdord from source
 WORKDIR /usr/local/src
-RUN wget https://github.com/crankycyclops/trogdor-pp/archive/refs/tags/0.90.0.tar.gz
-RUN tar -zvxpf 0.90.0.tar.gz
-WORKDIR /usr/local/src/trogdor-pp-0.90.0/src/core
+RUN wget https://github.com/crankycyclops/trogdor-pp/archive/refs/tags/$TROGDOR_VER.tar.gz
+RUN tar -zvxpf $TROGDOR_VER.tar.gz
+WORKDIR /usr/local/src/trogdor-pp-$TROGDOR_VER/src/core
 RUN cmake -DENABLE_SERIALIZE_JSON=ON -DENABLE_SERIALIZE_SQLITE=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=/usr .
 RUN make -j$(nproc) trogdor
 RUN make install
-WORKDIR /usr/local/src/trogdor-pp-0.90.0/src/trogdord
+WORKDIR /usr/local/src/trogdor-pp-$TROGDOR_VER/src/trogdord
 RUN cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_REDIS=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr .
 RUN make -j$(nproc) trogdord
 RUN make install
