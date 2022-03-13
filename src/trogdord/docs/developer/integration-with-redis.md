@@ -1,3 +1,0 @@
-# Integration with Redis
-
-TODO
