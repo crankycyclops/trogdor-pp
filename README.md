@@ -8,19 +8,19 @@ A batteries-included engine with tools for building single and multi-player text
 
 Trogdor++ provides you with all the tools you need to build a solid interactive fiction experience, from offline single-player text adventures to massive online MUDs and everything in-between.
 
-At the heart of Trogdor++ is the core library, written in C++. This library supports all the basic features necessary to build a basic game out of the box with no programming required. For features that aren't baked into the library itself, Trogdor++ also includes bindings that make it straightforward to extend using both Lua and C++.
+At the heart of Trogdor++ is the core library, implemented in this repository, written in C++. This library supports all the basic features necessary to build a basic game out of the box with no programming required. For features that aren't baked into the library itself, Trogdor++ also includes bindings that make it straightforward to extend using both Lua and C++.
 
 Trogdor++ is a work in progress and more features are being added all the time.
 
 ## Overview
 
-This repository includes the following modules:
+The Trogdor++ project consists of the following components:
 
-* [src/core](src/core/README.md): The core library, written in C++
-* [src/standalone](src/standalone/README.md): A barebones single-player CLI client, written primarily as a demonstration for how to use the library
-* [src/trogdord](src/trogdord/README.md): A queryable TCP server capable of hosting multi-player games with configurable crash recovery features and optional support for [Redis Pub/Sub](https://redis.io/topics/pubsub)
-* [src/php7/trogdord](src/php7/trogdord/README.md): A PHP 7/8 client for trogdord, written as an extension in C++
-* [src/nodejs/trogdord](src/nodejs/trogdord/README.md): A Node.js client for trogdord, written in Javascript
+* [Core](src/core/README.md): The core library, written in C++
+* [Standalone](src/standalone/README.md): A barebones single-player CLI client, written primarily as a demonstration for how to use the library
+* [Trogdord](https://github.com/crankycyclops/trogdord): A queryable TCP server capable of hosting multi-player games with configurable crash recovery features and optional support for [Redis Pub/Sub](https://redis.io/topics/pubsub)
+* [The official PHP 7/8 trogdord extension](https://github.com/crankycyclops/trogdord_php): A client for trogdord that's built into PHP
+* [The official Node.js trogdord module](src/nodejs/trogdord/README.md): A Node.js client for trogdord
 
 Descriptions of each component, along with build instructions, can be found by clicking the links above.
 
