@@ -1,4 +1,4 @@
-![Core Library Tests](https://github.com/crankycyclops/trogdor-pp/workflows/Core%20Library%20Tests/badge.svg) ![PHP Tests](https://github.com/crankycyclops/trogdor-pp/workflows/PHP%20Tests/badge.svg) ![Node.js Tests](https://github.com/crankycyclops/trogdor-pp/workflows/Node.js%20Tests/badge.svg)
+![Core Library Tests](https://github.com/crankycyclops/trogdor-pp/workflows/Core%20Library%20Tests/badge.svg) ![Node.js Tests](https://github.com/crankycyclops/trogdor-pp/workflows/Node.js%20Tests/badge.svg)
 
 # Trogdor++
 
