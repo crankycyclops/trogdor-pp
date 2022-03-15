@@ -1,4 +1,4 @@
-![Core Library Tests](https://github.com/crankycyclops/trogdor-pp/workflows/Core%20Library%20Tests/badge.svg) ![Node.js Tests](https://github.com/crankycyclops/trogdor-pp/workflows/Node.js%20Tests/badge.svg)
+![Core Library Tests](https://github.com/crankycyclops/trogdor-pp/workflows/Core%20Library%20Tests/badge.svg)
 
 # Trogdor++
 
@@ -20,7 +20,7 @@ The Trogdor++ project consists of the following components:
 * [Standalone](src/standalone/README.md): A barebones single-player CLI client, written primarily as a demonstration for how to use the library
 * [Trogdord](https://github.com/crankycyclops/trogdord): A queryable TCP server capable of hosting multi-player games with configurable crash recovery features and optional support for [Redis Pub/Sub](https://redis.io/topics/pubsub)
 * [The official PHP 7/8 trogdord extension](https://github.com/crankycyclops/trogdord_php): A client for trogdord that's built into PHP
-* [The official Node.js trogdord module](src/nodejs/trogdord/README.md): A Node.js client for trogdord
+* [The official Node.js trogdord module](https://github.com/crankycyclops/trogdord_nodejs): A Node.js client for trogdord
 
 Descriptions of each component, along with build instructions, can be found by clicking the links above.
 
