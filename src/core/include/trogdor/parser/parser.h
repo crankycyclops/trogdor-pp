@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <optional>
 
 #include <trogdor/vocabulary.h>
 #include <trogdor/iostream/trogerr.h>
