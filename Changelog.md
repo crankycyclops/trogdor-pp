@@ -1,6 +1,12 @@
 
 # Change Log
 
+## [0.91.3] - 2023-02-18
+
+### Changed
+
+- Another minor release addressing the build system, this time enabling the pkgconfig files to be written to a custom location
+
 ## [0.91.2] - 2023-02-17
 
 ### Changed
