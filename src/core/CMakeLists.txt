@@ -1,9 +1,12 @@
-set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+cmake_minimum_required(VERSION 3.14)
+enable_language(C CXX)
+
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Current version of the library
-set (TROGDOR_VERSION_MAJOR 0)
-set (TROGDOR_VERSION_MINOR 91)
-set (TROGDOR_VERSION_PATCH 2)
+set(TROGDOR_VERSION_MAJOR 0)
+set(TROGDOR_VERSION_MINOR 91)
+set(TROGDOR_VERSION_PATCH 3)
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h @ONLY)
 
@@ -13,8 +16,14 @@ add_definitions(
 	-DTROGDOR_VERSION_PATCH=${TROGDOR_VERSION_PATCH}
 )
 
-cmake_minimum_required(VERSION 3.14)
-enable_language(C CXX)
+# Determines where pkgconfig files go. By default, they go in $PREFIX/lib/pkgconfig,
+# but when building binary packages (such as for Debian or Ubuntu), you might need
+# to change this path to something else.
+if(DEFINED ENV{PKGCONFIG_DESTINATION})
+	set(PKGCONFIG_DESTINATION $ENV{PKGCONFIG_DESTINATION})
+else()
+    set(PKGCONFIG_DESTINATION lib/pkgconfig)
+endif()
 
 include(FindPkgConfig)
 include(CheckIncludeFile)
@@ -103,7 +112,11 @@ configure_file(
 	@ONLY
 )
 
-install(FILES ${CMAKE_BINARY_DIR}/trogdor.pc DESTINATION lib/pkgconfig COMPONENT trogdor_pkgconfig)
+install(
+	FILES ${CMAKE_BINARY_DIR}/trogdor.pc
+	DESTINATION ${PKGCONFIG_DESTINATION}
+	COMPONENT trogdor_pkgconfig
+)
 
 ###############################################################################
 
@@ -134,7 +147,11 @@ configure_file(
 	@ONLY
 )
 
-install(FILES ${CMAKE_BINARY_DIR}/trogdor_serial.pc DESTINATION lib/pkgconfig COMPONENT trogdor_serial_pkgconfig)
+install(
+	FILES ${CMAKE_BINARY_DIR}/trogdor_serial.pc
+	DESTINATION ${PKGCONFIG_DESTINATION}
+	COMPONENT trogdor_serial_pkgconfig
+)
 
 set(SERIAL_SOURCES
     serial/driver.cpp
@@ -168,7 +185,11 @@ if (ENABLE_SERIALIZE_JSON)
         @ONLY
     )
 
-    install(FILES ${CMAKE_BINARY_DIR}/trogdor_serial_json.pc DESTINATION lib/pkgconfig COMPONENT trogdor_serial_json_pkgconfig OPTIONAL)
+    install(
+		FILES ${CMAKE_BINARY_DIR}/trogdor_serial_json.pc
+		DESTINATION ${PKGCONFIG_DESTINATION}
+		COMPONENT trogdor_serial_json_pkgconfig OPTIONAL
+	)
 
 	set(JSON_SOURCES
 		serial/drivers/json.cpp
@@ -209,7 +230,11 @@ if (ENABLE_SERIALIZE_SQLITE)
         @ONLY
     )
 
-    install(FILES ${CMAKE_BINARY_DIR}/trogdor_serial_sqlite.pc DESTINATION lib/pkgconfig COMPONENT trogdor_serial_sqlite_pkgconfig OPTIONAL)
+    install(
+		FILES ${CMAKE_BINARY_DIR}/trogdor_serial_sqlite.pc
+		DESTINATION ${PKGCONFIG_DESTINATION}
+		COMPONENT trogdor_serial_sqlite_pkgconfig OPTIONAL
+	)
 
 	set(SQLITE_SOURCES
 		serial/drivers/sqlite.cpp
