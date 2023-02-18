@@ -1,5 +1,18 @@
 set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+# Current version of the library
+set (TROGDOR_VERSION_MAJOR 0)
+set (TROGDOR_VERSION_MINOR 91)
+set (TROGDOR_VERSION_PATCH 2)
+
+configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h @ONLY)
+
+add_definitions(
+	-DTROGDOR_VERSION_MAJOR=${TROGDOR_VERSION_MAJOR}
+	-DTROGDOR_VERSION_MINOR=${TROGDOR_VERSION_MINOR}
+	-DTROGDOR_VERSION_PATCH=${TROGDOR_VERSION_PATCH}
+)
+
 cmake_minimum_required(VERSION 3.14)
 enable_language(C CXX)
 
@@ -8,7 +21,7 @@ include(CheckIncludeFile)
 include(CheckIncludeFileCXX)
 include(LibtoolFile)
 
-project(trogdor VERSION 0.80.0)
+project(trogdor VERSION ${TROGDOR_VERSION_MAJOR}.${TROGDOR_VERSION_MINOR}.${TROGDOR_VERSION_PATCH})
 
 # Enable conditional compilation in the case of a debug build
 string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_lower)
@@ -51,10 +64,21 @@ add_definitions(-DGAME_XML_DEFAULT_PATH=\"${CMAKE_INSTALL_PREFIX}/share/trogdor/
 
 ###############################################################################
 
+# Auto-generated version.h
+add_custom_target(trogdor_version_h)
+install(
+	FILES ${CMAKE_CURRENT_BINARY_DIR}/version.h
+	DESTINATION include/trogdor
+	COMPONENT trogdor_version_h
+)
+
+###############################################################################
+
 # C++ Include files necessary to develop for the library
 add_custom_target(dev)
 
 install(DIRECTORY include/trogdor DESTINATION include COMPONENT dev)
+add_dependencies(dev trogdor_version_h)
 
 ###############################################################################
 
@@ -117,6 +141,10 @@ set(SERIAL_SOURCES
 )
 
 add_library(trogdor_serial SHARED ${SERIAL_SOURCES})
+set_target_properties(trogdor_serial PROPERTIES
+	VERSION ${TROGDOR_VERSION_MAJOR}.${TROGDOR_VERSION_MINOR}.${TROGDOR_VERSION_PATCH}
+	SOVERSION ${TROGDOR_VERSION_MAJOR}
+)
 CREATE_LIBTOOL_FILE(trogdor_serial ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 target_include_directories(trogdor_serial ${CORE_INCLUDES})
 add_dependencies(trogdor_serial trogdor_serial_pkgconfig)
@@ -149,6 +177,10 @@ if (ENABLE_SERIALIZE_JSON)
 	add_definitions(-DENABLE_SERIALIZE_JSON)
 
     add_library(trogdor_serial_json SHARED ${JSON_SOURCES})
+	set_target_properties(trogdor_serial_json PROPERTIES
+		VERSION ${TROGDOR_VERSION_MAJOR}.${TROGDOR_VERSION_MINOR}.${TROGDOR_VERSION_PATCH}
+		SOVERSION ${TROGDOR_VERSION_MAJOR}
+	)
     CREATE_LIBTOOL_FILE(trogdor_serial_json ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 	target_link_libraries(trogdor_serial_json ${CORE_LIBRARIES})
 	target_include_directories(trogdor_serial_json ${CORE_INCLUDES})
@@ -191,6 +223,10 @@ if (ENABLE_SERIALIZE_SQLITE)
 	add_definitions(-DENABLE_SERIALIZE_SQLITE)
 
     add_library(trogdor_serial_sqlite SHARED ${SQLITE_SOURCES})
+	set_target_properties(trogdor_serial_sqlite PROPERTIES
+		VERSION ${TROGDOR_VERSION_MAJOR}.${TROGDOR_VERSION_MINOR}.${TROGDOR_VERSION_PATCH}
+		SOVERSION ${TROGDOR_VERSION_MAJOR}
+	)
     CREATE_LIBTOOL_FILE(trogdor_serial_sqlite ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
     target_include_directories(trogdor_serial_sqlite ${CORE_INCLUDES})
     target_link_libraries(trogdor_serial_sqlite ${SQLITE_LIBRARIES})
@@ -271,6 +307,10 @@ set(CORE_SOURCES
 )
 
 add_library(trogdor SHARED ${CORE_SOURCES})
+set_target_properties(trogdor PROPERTIES
+	VERSION ${TROGDOR_VERSION_MAJOR}.${TROGDOR_VERSION_MINOR}.${TROGDOR_VERSION_PATCH}
+	SOVERSION ${TROGDOR_VERSION_MAJOR}
+)
 CREATE_LIBTOOL_FILE(trogdor ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 
 target_include_directories(trogdor ${CORE_INCLUDES})
