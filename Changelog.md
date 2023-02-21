@@ -1,6 +1,13 @@
 
 # Change Log
 
+## [0.91.4] - 2023-02-20
+
+### Changed
+
+- Remove the dev target as a dependency when building the library, since there are situations where you would not want to install the two together
+- *.so symlinks are no longer generated for the libraries when core is built on a platform that supports so-versioning
+
 ## [0.91.3] - 2023-02-18
 
 ### Changed

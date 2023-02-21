@@ -55,3 +55,10 @@ To build the trogdor library with support for the built-in SQLite3 serialization
 If you need debug symbols, add the following option to your cmake command: `-DCMAKE_BUILD_TYPE=Debug`. If you've already built it using debug symbols in the past and want to switch back to a release build, use this cmake option instead: `-DCMAKE_BUILD_TYPE=Release`.
 
 If you need to install relative to a custom path, add this to your cmake command: `-DCMAKE_INSTALL_PREFIX:PATH=/your/custom/prefix`.
+
+To install the C++ headers and pkgconfig files for development purposes:
+
+```
+cd src/core && cmake -DCMAKE_BUILD_TYPE=Release .
+make install_dev
+```
