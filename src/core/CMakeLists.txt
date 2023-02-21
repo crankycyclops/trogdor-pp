@@ -6,7 +6,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # Current version of the library
 set(TROGDOR_VERSION_MAJOR 0)
 set(TROGDOR_VERSION_MINOR 91)
-set(TROGDOR_VERSION_PATCH 3)
+set(TROGDOR_VERSION_PATCH 4)
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h @ONLY)
 
@@ -75,27 +75,36 @@ add_definitions(-DGAME_XML_DEFAULT_PATH=\"${CMAKE_INSTALL_PREFIX}/share/trogdor/
 
 # Auto-generated version.h
 add_custom_target(trogdor_version_h)
-install(
-	FILES ${CMAKE_CURRENT_BINARY_DIR}/version.h
-	DESTINATION include/trogdor
-	COMPONENT trogdor_version_h
+
+add_custom_command(
+	TARGET trogdor_version_h
+	POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/version.h ${CMAKE_INSTALL_PREFIX}/include/trogdor/version.h
 )
 
 ###############################################################################
 
-# C++ Include files necessary to develop for the library
-add_custom_target(dev)
+# C++ Include files necessary to develop for the library. This is no longer
+# a dependency of the trogdor target, since there are times when you would want
+# to build and install the library without the headers (for example: building
+# binary packages.) This will now automatically pull in the pkgconfig target.
+add_custom_target(install_dev)
 
-install(DIRECTORY include/trogdor DESTINATION include COMPONENT dev)
-add_dependencies(dev trogdor_version_h)
+add_custom_command(
+	TARGET install_dev
+	POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/include/trogdor ${CMAKE_INSTALL_PREFIX}/include/trogdor
+)
+
+add_dependencies(install_dev trogdor_version_h trogdor_pkgconfig)
 
 ###############################################################################
 
 # Sample game data
 add_custom_target(data)
 
-install(FILES data/game.xml DESTINATION share/trogdor COMPONENT data)
-install(DIRECTORY data/script DESTINATION share/trogdor COMPONENT data)
+install(FILES data/game.xml DESTINATION share/trogdor COMPONENT data OPTIONAL)
+install(DIRECTORY data/script DESTINATION share/trogdor COMPONENT data OPTIONAL)
 
 ###############################################################################
 
@@ -112,10 +121,10 @@ configure_file(
 	@ONLY
 )
 
-install(
-	FILES ${CMAKE_BINARY_DIR}/trogdor.pc
-	DESTINATION ${PKGCONFIG_DESTINATION}
-	COMPONENT trogdor_pkgconfig
+add_custom_command(
+	TARGET trogdor_pkgconfig
+	POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/trogdor.pc ${CMAKE_INSTALL_PREFIX}/${PKGCONFIG_DESTINATION}/trogdor.pc
 )
 
 ###############################################################################
@@ -147,10 +156,10 @@ configure_file(
 	@ONLY
 )
 
-install(
-	FILES ${CMAKE_BINARY_DIR}/trogdor_serial.pc
-	DESTINATION ${PKGCONFIG_DESTINATION}
-	COMPONENT trogdor_serial_pkgconfig
+add_custom_command(
+	TARGET trogdor_serial_pkgconfig
+	POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/trogdor_serial.pc ${CMAKE_INSTALL_PREFIX}/${PKGCONFIG_DESTINATION}/trogdor_serial.pc
 )
 
 set(SERIAL_SOURCES
@@ -164,8 +173,8 @@ set_target_properties(trogdor_serial PROPERTIES
 )
 CREATE_LIBTOOL_FILE(trogdor_serial ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 target_include_directories(trogdor_serial ${CORE_INCLUDES})
-add_dependencies(trogdor_serial trogdor_serial_pkgconfig)
-install(TARGETS trogdor_serial DESTINATION lib COMPONENT trogdor_serial)
+add_dependencies(trogdor_pkgconfig trogdor_serial_pkgconfig)
+install(TARGETS trogdor_serial LIBRARY DESTINATION lib COMPONENT trogdor_serial NAMELINK_SKIP)
 
 ###############################################################################
 
@@ -185,10 +194,10 @@ if (ENABLE_SERIALIZE_JSON)
         @ONLY
     )
 
-    install(
-		FILES ${CMAKE_BINARY_DIR}/trogdor_serial_json.pc
-		DESTINATION ${PKGCONFIG_DESTINATION}
-		COMPONENT trogdor_serial_json_pkgconfig OPTIONAL
+	add_custom_command(
+		TARGET trogdor_serial_json_pkgconfig
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/trogdor_serial_json.pc ${CMAKE_INSTALL_PREFIX}/${PKGCONFIG_DESTINATION}/trogdor_serial_json.pc
 	)
 
 	set(JSON_SOURCES
@@ -205,8 +214,9 @@ if (ENABLE_SERIALIZE_JSON)
     CREATE_LIBTOOL_FILE(trogdor_serial_json ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 	target_link_libraries(trogdor_serial_json ${CORE_LIBRARIES})
 	target_include_directories(trogdor_serial_json ${CORE_INCLUDES})
-    add_dependencies(trogdor_serial_json trogdor_serial trogdor_serial_json_pkgconfig)
-    install(TARGETS trogdor_serial_json DESTINATION lib COMPONENT trogdor_serial_json OPTIONAL)
+    add_dependencies(trogdor_serial_json trogdor_serial)
+	add_dependencies(trogdor_serial_pkgconfig trogdor_serial_json_pkgconfig)
+    install(TARGETS trogdor_serial_json LIBRARY DESTINATION lib COMPONENT trogdor_serial_json OPTIONAL NAMELINK_SKIP)
 
 endif (ENABLE_SERIALIZE_JSON)
 
@@ -230,10 +240,10 @@ if (ENABLE_SERIALIZE_SQLITE)
         @ONLY
     )
 
-    install(
-		FILES ${CMAKE_BINARY_DIR}/trogdor_serial_sqlite.pc
-		DESTINATION ${PKGCONFIG_DESTINATION}
-		COMPONENT trogdor_serial_sqlite_pkgconfig OPTIONAL
+	add_custom_command(
+		TARGET trogdor_serial_sqlite_pkgconfig
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/trogdor_serial_sqlite.pc ${CMAKE_INSTALL_PREFIX}/${PKGCONFIG_DESTINATION}/trogdor_serial_sqlite.pc
 	)
 
 	set(SQLITE_SOURCES
@@ -255,8 +265,9 @@ if (ENABLE_SERIALIZE_SQLITE)
     CREATE_LIBTOOL_FILE(trogdor_serial_sqlite ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
     target_include_directories(trogdor_serial_sqlite ${CORE_INCLUDES})
     target_link_libraries(trogdor_serial_sqlite ${SQLITE_LIBRARIES})
-    add_dependencies(trogdor_serial_json trogdor_serial trogdor_serial_sqlite_pkgconfig)
-    install(TARGETS trogdor_serial_sqlite DESTINATION lib COMPONENT trogdor_serial_sqlite OPTIONAL)
+    add_dependencies(trogdor_serial_json trogdor_serial)
+	add_dependencies(trogdor_serial_pkgconfig trogdor_serial_sqlite_pkgconfig)
+    install(TARGETS trogdor_serial_sqlite LIBRARY DESTINATION lib COMPONENT trogdor_serial_sqlite OPTIONAL NAMELINK_SKIP)
 
 endif (ENABLE_SERIALIZE_SQLITE)
 
@@ -351,10 +362,10 @@ if (ENABLE_SERIALIZE_SQLITE)
     add_dependencies(trogdor trogdor_serial_sqlite)
 endif (ENABLE_SERIALIZE_SQLITE)
 
-# Installing the library should also install the headers and sample data
-add_dependencies(trogdor dev data trogdor_pkgconfig)
+# Installing the library should also install the sample data
+add_dependencies(trogdor data)
 
-install(TARGETS trogdor DESTINATION lib COMPONENT trogdor)
+install(TARGETS trogdor LIBRARY DESTINATION lib COMPONENT trogdor NAMELINK_SKIP)
 
 ###############################################################################
 
