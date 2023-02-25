@@ -6,7 +6,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # Current version of the library
 set(TROGDOR_VERSION_MAJOR 0)
 set(TROGDOR_VERSION_MINOR 91)
-set(TROGDOR_VERSION_PATCH 4)
+set(TROGDOR_VERSION_PATCH 5)
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h @ONLY)
 
@@ -24,6 +24,21 @@ if(DEFINED ENV{PKGCONFIG_DESTINATION})
 else()
     set(PKGCONFIG_DESTINATION lib/pkgconfig)
 endif()
+
+# A bit hacky, but for the install_dev target, which doesn't behave like install,
+# I need to construct the full prefix if DESTDIR is set. I tried to make this
+# work with the --dest-dir=... option of dpkg-buildpackage, but it didn't work.
+# Instead, you have to set the environment variable DESTDIR in debian/rules.
+# For other package systems, you can probably do something similar. You can see
+# an example of how I use this environment variable to build an Ubuntu package by
+# looking at the source package for libtrogdor here:
+# https://launchpad.net/~crankycyclops/+archive/ubuntu/trogdor-pp
+string(LENGTH "$ENV{DESTDIR}" DESTDIRLEN)
+if (${DESTDIRLEN} GREATER 0)
+	set(FULL_INSTALL_PREFIX $ENV{DESTDIR}/${CMAKE_INSTALL_PREFIX})
+else(${DESTDIRLEN} GREATER 0)
+	set(FULL_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+endif(${DESTDIRLEN} GREATER 0)
 
 include(FindPkgConfig)
 include(CheckIncludeFile)
@@ -79,7 +94,7 @@ add_custom_target(trogdor_version_h)
 add_custom_command(
 	TARGET trogdor_version_h
 	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/version.h ${CMAKE_INSTALL_PREFIX}/include/trogdor/version.h
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/version.h ${FULL_INSTALL_PREFIX}/include/trogdor/version.h
 )
 
 ###############################################################################
@@ -93,7 +108,7 @@ add_custom_target(install_dev)
 add_custom_command(
 	TARGET install_dev
 	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/include/trogdor ${CMAKE_INSTALL_PREFIX}/include/trogdor
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/include/trogdor ${FULL_INSTALL_PREFIX}/include/trogdor
 )
 
 add_dependencies(install_dev trogdor_version_h trogdor_pkgconfig)
@@ -124,7 +139,7 @@ configure_file(
 add_custom_command(
 	TARGET trogdor_pkgconfig
 	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/trogdor.pc ${CMAKE_INSTALL_PREFIX}/${PKGCONFIG_DESTINATION}/trogdor.pc
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/trogdor.pc ${FULL_INSTALL_PREFIX}/${PKGCONFIG_DESTINATION}/trogdor.pc
 )
 
 ###############################################################################
@@ -159,7 +174,7 @@ configure_file(
 add_custom_command(
 	TARGET trogdor_serial_pkgconfig
 	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/trogdor_serial.pc ${CMAKE_INSTALL_PREFIX}/${PKGCONFIG_DESTINATION}/trogdor_serial.pc
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/trogdor_serial.pc ${FULL_INSTALL_PREFIX}/${PKGCONFIG_DESTINATION}/trogdor_serial.pc
 )
 
 set(SERIAL_SOURCES
@@ -197,7 +212,7 @@ if (ENABLE_SERIALIZE_JSON)
 	add_custom_command(
 		TARGET trogdor_serial_json_pkgconfig
 		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/trogdor_serial_json.pc ${CMAKE_INSTALL_PREFIX}/${PKGCONFIG_DESTINATION}/trogdor_serial_json.pc
+		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/trogdor_serial_json.pc ${FULL_INSTALL_PREFIX}/${PKGCONFIG_DESTINATION}/trogdor_serial_json.pc
 	)
 
 	set(JSON_SOURCES
@@ -243,7 +258,7 @@ if (ENABLE_SERIALIZE_SQLITE)
 	add_custom_command(
 		TARGET trogdor_serial_sqlite_pkgconfig
 		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/trogdor_serial_sqlite.pc ${CMAKE_INSTALL_PREFIX}/${PKGCONFIG_DESTINATION}/trogdor_serial_sqlite.pc
+		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/trogdor_serial_sqlite.pc ${FULL_INSTALL_PREFIX}/${PKGCONFIG_DESTINATION}/trogdor_serial_sqlite.pc
 	)
 
 	set(SQLITE_SOURCES
