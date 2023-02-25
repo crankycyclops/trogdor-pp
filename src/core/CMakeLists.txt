@@ -189,7 +189,7 @@ set_target_properties(trogdor_serial PROPERTIES
 CREATE_LIBTOOL_FILE(trogdor_serial ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 target_include_directories(trogdor_serial ${CORE_INCLUDES})
 add_dependencies(trogdor_pkgconfig trogdor_serial_pkgconfig)
-install(TARGETS trogdor_serial LIBRARY DESTINATION lib COMPONENT trogdor_serial NAMELINK_SKIP)
+install(TARGETS trogdor_serial LIBRARY DESTINATION lib COMPONENT trogdor_serial)
 
 ###############################################################################
 
@@ -231,7 +231,7 @@ if (ENABLE_SERIALIZE_JSON)
 	target_include_directories(trogdor_serial_json ${CORE_INCLUDES})
     add_dependencies(trogdor_serial_json trogdor_serial)
 	add_dependencies(trogdor_serial_pkgconfig trogdor_serial_json_pkgconfig)
-    install(TARGETS trogdor_serial_json LIBRARY DESTINATION lib COMPONENT trogdor_serial_json OPTIONAL NAMELINK_SKIP)
+    install(TARGETS trogdor_serial_json LIBRARY DESTINATION lib COMPONENT trogdor_serial_json OPTIONAL)
 
 endif (ENABLE_SERIALIZE_JSON)
 
@@ -282,7 +282,7 @@ if (ENABLE_SERIALIZE_SQLITE)
     target_link_libraries(trogdor_serial_sqlite ${SQLITE_LIBRARIES})
     add_dependencies(trogdor_serial_json trogdor_serial)
 	add_dependencies(trogdor_serial_pkgconfig trogdor_serial_sqlite_pkgconfig)
-    install(TARGETS trogdor_serial_sqlite LIBRARY DESTINATION lib COMPONENT trogdor_serial_sqlite OPTIONAL NAMELINK_SKIP)
+    install(TARGETS trogdor_serial_sqlite LIBRARY DESTINATION lib COMPONENT trogdor_serial_sqlite OPTIONAL)
 
 endif (ENABLE_SERIALIZE_SQLITE)
 
@@ -380,7 +380,7 @@ endif (ENABLE_SERIALIZE_SQLITE)
 # Installing the library should also install the sample data
 add_dependencies(trogdor data)
 
-install(TARGETS trogdor LIBRARY DESTINATION lib COMPONENT trogdor NAMELINK_SKIP)
+install(TARGETS trogdor LIBRARY DESTINATION lib COMPONENT trogdor)
 
 ###############################################################################
 
