@@ -27,11 +27,11 @@ endif()
 
 # A bit hacky, but for the install_dev target, which doesn't behave like install,
 # I need to construct the full prefix if DESTDIR is set. I tried to make this
-# work with the --dest-dir=... option of dpkg-buildpackage, but it didn't work.
-# Instead, you have to set the environment variable DESTDIR in debian/rules.
-# For other package systems, you can probably do something similar. You can see
-# an example of how I use this environment variable to build an Ubuntu package by
-# looking at the source package for libtrogdor here:
+# work with the --dest-dir=... option of dpkg-buildpackage, but it wouldn't
+# cooperate. Instead, you have to set the environment variable DESTDIR in
+# debian/rules. For other package systems, you can probably do something similar.
+# You can see an example of how I use this environment variable to build an Ubuntu
+# package by looking at the source package for libtrogdor here:
 # https://launchpad.net/~crankycyclops/+archive/ubuntu/trogdor-pp
 string(LENGTH "$ENV{DESTDIR}" DESTDIRLEN)
 if (${DESTDIRLEN} GREATER 0)
