@@ -4,6 +4,7 @@
 #include <trogdor/entities/entity.h>
 #include <trogdor/lua/api/luagame.h>
 
+#include <trogdor/exception/exception.h>
 #include <trogdor/exception/entityexception.h>
 
 namespace trogdor {
@@ -88,12 +89,41 @@ namespace trogdor {
       entity::Entity *e = entity::LuaEntity::checkEntity(L, -1);
 
       try {
-         g->insertEntity(e->getName(), std::shared_ptr<entity::Entity>(e));
+
+         // Hand the Game a shared_ptr whose deleter defers to
+         // Entity::managedByLua(). If Game::insertEntity throws due to an entity
+         // with the same name already existing, the shared_ptr is destroyed,
+         // but the deleter will not free the entity because it's managed by Lua.
+         // If this entity is deleted later in the game after having been handed
+         // over, Entity::isManagedByLua() will return false and the entity will
+         // be deleted as expected.
+         std::shared_ptr<entity::Entity> owned(e, [](entity::Entity *ptr) {
+
+            if (!ptr->isManagedByLua()) {
+               delete ptr;
+            }
+         });
+
+         g->insertEntity(e->getName(), owned);
+         e->setManagedByLua(false);
          lua_pushboolean(L, 1);
       }
 
-      catch (const entity::EntityException &e) {
+      // The entity was rejected due to a duplicate name, so the Lua function
+      // returns false
+      catch (const entity::EntityException &error) {
          lua_pushboolean(L, 0);
+      }
+
+      // Game related messages can appear directly in scripts for error handling
+      catch (const Exception &error) {
+         return luaL_error(L, "%s", error.what());
+      }
+
+      // Other lower level exceptions that are irrelevant to game or Lua
+      // related issues will be reported on more generally
+      catch (const std::exception &error) {
+         return luaL_error(L, "internal engine error during game:insert()");
       }
 
       return 1;

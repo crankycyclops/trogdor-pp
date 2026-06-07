@@ -383,11 +383,13 @@ namespace trogdor {
 
    void Game::insertEntity(std::string name, std::shared_ptr<entity::Entity> entity) {
 
+      // Using a lock guard here to make sure the lock is released on any exit
+      // path, including on exceptions
+      std::lock_guard<std::recursive_mutex> lock(mutex);
+
       if (entities.find(name) != entities.end()) {
          throw entity::EntityException(std::string("Entity '") + name + "' already exists");
       }
-
-      mutex.lock();
 
       switch (entity->getType()) {
 
@@ -423,8 +425,6 @@ namespace trogdor {
 
       entities[name] = entity;
       entity->setGame(this);
-
-      mutex.unlock();
    }
 
    /***************************************************************************/

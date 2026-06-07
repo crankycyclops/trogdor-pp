@@ -6,10 +6,18 @@
 ### Security
 
 - Embedded Lua scripts are now run in a restricted sandbox. The core now opens only a subset of safe libraries (`base`, `table`, `string`, `math`, `coroutine`, and `utf8` on Lua 5.3+) and strips the dangerous globals (`os`, `io`, `package`, `debug`, `require`, `load`, `loadstring`, `loadfile`, `dofile`, `collectgarbage`.)
+- Fixed a potential double-free / use-after-free of Lua created entities inserted by `game:insert()`.
 
 ### Fixed
 
 - The standalone build now properly checks for either SQLite or JSON serialization support
+- `Game::insertEntity()` now performs its duplicate name check and insertion atomically under a lock guard, closing a race condition between concurrent inserts and ensuring the mutex is always released on error.
+
+## [0.91.5] - 2023-02-24
+
+### Fixed
+
+- Update build system so that the install_dev target can use $DESTDIR
 
 ## [0.91.4] - 2023-02-20
 

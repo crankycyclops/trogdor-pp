@@ -409,6 +409,7 @@ target_compile_definitions(_trogdor_test PRIVATE TIMER_CUSTOM_INTERVAL=5)
 # Core unit tests
 add_executable(test_core
 	test/main.cpp
+	test/game.cpp
 	test/tokenizer.cpp
 	test/messages.cpp
 	test/vocabulary.cpp
@@ -431,6 +432,7 @@ add_executable(test_core
 	test/mock/mocktimerjob.cpp
 	test/lua/luafuncs.cpp
 	test/lua/luastate.cpp
+	test/lua/luagame.cpp
 )
 
 target_include_directories(test_core
