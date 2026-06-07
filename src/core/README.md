@@ -62,3 +62,9 @@ To install the C++ headers and pkgconfig files for development purposes:
 cd src/core && cmake -DCMAKE_BUILD_TYPE=Release .
 make install_dev
 ```
+
+## Personal Note
+
+I spent years, on and off, developing `trogdor-pp` by hand. 507a7a128fbc61031bb8957060a3025c6ac9ddb9 is the first commit under /src/core in which I used Claude to assist. This commit was to sandbox my Lua states so that they don't include all of the standard library, which is dangerous. That was something I had been meaning to do for a while and just never got around to it. I remember where my head was at when I was writing all of my code by hand, and it's wild how fast software development has changed in the last three years since I worked on this project.
+
+For what it's worth, I never generate code that I don't thoroughly vet for correctness after, and I never will <3

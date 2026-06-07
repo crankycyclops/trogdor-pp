@@ -133,30 +133,53 @@ namespace trogdor {
          */
          inline void openSafeLibs() {
 
-            // Safe standard libraries: base (for pairs/type/tostring/pcall/...)
-            // plus the pure table/string/math/coroutine helpers
-            static const luaL_Reg safeLibs[] = {
-               {"_G",            luaopen_base},
-               {LUA_TABLIBNAME,  luaopen_table},
-               {LUA_STRLIBNAME,  luaopen_string},
-               {LUA_MATHLIBNAME, luaopen_math},
-               {LUA_COLIBNAME,   luaopen_coroutine},
-               #if LUA_VERSION_NUM >= 503
-                  {LUA_UTF8LIBNAME, luaopen_utf8},
-               #endif
-               {nullptr, nullptr}
-            };
+            #if LUA_VERSION_NUM >= 502
 
-            for (const luaL_Reg *lib = safeLibs; lib->func; lib++) {
-               luaL_requiref(L, lib->name, lib->func, 1);
-               lua_pop(L, 1); // luaL_requiref leaves the module on the stack
-            }
+               // Safe standard libraries: base (for pairs/type/tostring/pcall/...)
+               // plus the pure table/string/math/coroutine helpers and UTF-8
+               // support for Lua 5.3+
+               static const luaL_Reg safeLibs[] = {
+                  {"_G",            luaopen_base},
+                  {LUA_TABLIBNAME,  luaopen_table},
+                  {LUA_STRLIBNAME,  luaopen_string},
+                  {LUA_MATHLIBNAME, luaopen_math},
+                  {LUA_COLIBNAME,   luaopen_coroutine},
+                  #if LUA_VERSION_NUM >= 503
+                     {LUA_UTF8LIBNAME, luaopen_utf8},
+                  #endif
+                  {nullptr, nullptr}
+               };
+
+               for (const luaL_Reg *lib = safeLibs; lib->func; lib++) {
+                  luaL_requiref(L, lib->name, lib->func, 1);
+                  lua_pop(L, 1); // luaL_requiref leaves the module on the stack
+               }
+
+            #else
+
+               // Safe standard libraries: base (for pairs/type/tostring/pcall/...)
+               // plus the pure table/string/math helpers
+               static const luaL_Reg safeLibs[] = {
+                  {"",       luaopen_base},
+                  {"table",  luaopen_table},
+                  {"string", luaopen_string},
+                  {"math",   luaopen_math},
+                  {nullptr, nullptr}
+               };
+
+               for (const luaL_Reg *lib = safeLibs; lib->func; lib++) {
+                  lua_pushcfunction(L, lib->func);
+                  lua_pushstring(L, lib->name);
+                  lua_call(L, 1, 0);
+               }
+
+            #endif
 
             // Strip dangerous globals from the base library
             static const char *unsafeGlobals[] = {
                "load", "loadstring", "loadfile", "dofile",
-               "require", "collectgarbage", "package",
-               "os", "io", "debug",
+               "require", "module", "collectgarbage", "gcinfo", "newproxy",
+               "package", "os", "io", "debug",
                nullptr
             };
 
