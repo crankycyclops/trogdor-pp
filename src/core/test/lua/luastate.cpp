@@ -539,6 +539,83 @@ TEST_SUITE("LuaState (luastate.cpp)") {
 		// TODO: test blank string, string with syntax errors, and string with valid Lua
 	}
 
+	TEST_CASE("LuaState (luastate.cpp): Lua sandbox: dangerous stdlib is removed") {
+
+		std::unique_ptr<trogdor::Game> game = std::make_unique<trogdor::Game>(
+			std::make_unique<trogdor::NullErr>()
+		);
+
+		trogdor::LuaState L(game.get());
+
+		// Every dangerous global must be absent from an untrusted script's view.
+		// The script returns true only if all of them are nil.
+		L.loadScriptFromString(
+			"function sandboxCheck()\n"
+			"   local blocked = {\n"
+			"      'os', 'io', 'package', 'debug', 'require',\n"
+			"      'load', 'loadstring', 'loadfile', 'dofile', 'collectgarbage'\n"
+			"   }\n"
+			"   for _, name in pairs(blocked) do\n"
+			"      if _G[name] ~= nil then return false end\n"
+			"   end\n"
+			"   return true\n"
+			"end\n"
+		);
+
+		L.call("sandboxCheck");
+		L.execute(1);
+
+		if (!L.getBoolean(0)) {
+			FAIL("A dangerous standard-library global is still exposed to Lua scripts.");
+		}
+	}
+
+	TEST_CASE("LuaState (luastate.cpp): Lua sandbox: safe stdlib remains available") {
+
+		std::unique_ptr<trogdor::Game> game = std::make_unique<trogdor::Game>(
+			std::make_unique<trogdor::NullErr>()
+		);
+
+		trogdor::LuaState L(game.get());
+
+		// The safe libraries (and core base functions) that bundled game
+		// scripts rely on must still be present
+		L.loadScriptFromString(
+			"function safeLibsCheck()\n"
+			"   return type(string) == 'table'\n"
+			"      and type(table) == 'table'\n"
+			"      and type(math) == 'table'\n"
+			"      and type(pairs) == 'function'\n"
+			"      and type(tostring) == 'function'\n"
+			"      and type(pcall) == 'function'\n"
+			"end\n"
+		);
+
+		L.call("safeLibsCheck");
+		L.execute(1);
+
+		if (!L.getBoolean(0)) {
+			FAIL("A safe standard-library function expected by game scripts is missing.");
+		}
+	}
+
+	TEST_CASE("LuaState (luastate.cpp): Lua sandbox (C1): RCE attempt fails safely") {
+
+		std::unique_ptr<trogdor::Game> game = std::make_unique<trogdor::Game>(
+			std::make_unique<trogdor::NullErr>()
+		);
+
+		trogdor::LuaState L(game.get());
+
+		// A classic os.execute() RCE attempt must not run. Indexing the now nil
+		// 'os' global should raise a Lua error (LuaException) rather than
+		// executing a shell command or crashing.
+		CHECK_THROWS_AS(
+			L.loadScriptFromString("os.execute(\"echo pwned\")\n"),
+			trogdor::LuaException
+		);
+	}
+
 	TEST_CASE("LuaState (luastate.cpp): All variants of pushArgument()") {
 
 		// TODO

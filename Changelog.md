@@ -1,6 +1,16 @@
 
 # Change Log
 
+## [0.91.6] - 2026-06-06
+
+### Security
+
+- Embedded Lua scripts are now run in a restricted sandbox. The core now opens only a subset of safe libraries (`base`, `table`, `string`, `math`, `coroutine`, and `utf8` on Lua 5.3+) and strips the dangerous globals (`os`, `io`, `package`, `debug`, `require`, `load`, `loadstring`, `loadfile`, `dofile`, `collectgarbage`.)
+
+### Fixed
+
+- The standalone build now properly checks for either SQLite or JSON serialization support
+
 ## [0.91.4] - 2023-02-20
 
 ### Changed

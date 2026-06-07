@@ -122,6 +122,51 @@ namespace trogdor {
          }
 
          /*
+            Opens only a safe subset of the Lua standard library by loading
+            everything, then stripping out anything we consider unsafe.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline void openSafeLibs() {
+
+            // Safe standard libraries: base (for pairs/type/tostring/pcall/...)
+            // plus the pure table/string/math/coroutine helpers
+            static const luaL_Reg safeLibs[] = {
+               {"_G",            luaopen_base},
+               {LUA_TABLIBNAME,  luaopen_table},
+               {LUA_STRLIBNAME,  luaopen_string},
+               {LUA_MATHLIBNAME, luaopen_math},
+               {LUA_COLIBNAME,   luaopen_coroutine},
+               #if LUA_VERSION_NUM >= 503
+                  {LUA_UTF8LIBNAME, luaopen_utf8},
+               #endif
+               {nullptr, nullptr}
+            };
+
+            for (const luaL_Reg *lib = safeLibs; lib->func; lib++) {
+               luaL_requiref(L, lib->name, lib->func, 1);
+               lua_pop(L, 1); // luaL_requiref leaves the module on the stack
+            }
+
+            // Strip dangerous globals from the base library
+            static const char *unsafeGlobals[] = {
+               "load", "loadstring", "loadfile", "dofile",
+               "require", "collectgarbage", "package",
+               "os", "io", "debug",
+               nullptr
+            };
+
+            for (const char **name = unsafeGlobals; *name; name++) {
+               lua_pushnil(L);
+               lua_setglobal(L, *name);
+            }
+         }
+
+         /*
             Opens libraries and registers API stuff.
 
             Input:
@@ -132,12 +177,8 @@ namespace trogdor {
          */
          inline void initLibs() {
 
-            // load standard library
-            // TODO: only open certain standard libraries. I don't, for example,
-            // want to allow things like os.exit(). Hold off on this until I
-            // migrate to Lua 5.2+. The answer to this seems to be here:
-            // https://stackoverflow.com/questions/4551101/lual-openlibs-and-sandboxing-scripts
-            luaL_openlibs(L);
+            // Open only a safe subset of the standard library
+            openSafeLibs();
 
             // register Game type as well as a global instance of it
             // corresponding to the game that spawned the instance of LuaState
