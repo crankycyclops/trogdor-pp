@@ -19,7 +19,7 @@
 #include "include/actions/timeaction.h"
 #include "include/actions/quitaction.h"
 
-#ifdef ENABLE_SERIALIZE_JSON
+#if defined(ENABLE_SERIALIZE_JSON) || defined(ENABLE_SERIALIZE_SQLITE)
    #include "include/actions/saveaction.h"
    #include "include/actions/loadaction.h"
 #endif
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
    currentGame->insertVerbAction("time", std::make_unique<TimeAction>());
    currentGame->insertVerbAction("quit", std::make_unique<QuitAction>());
 
-   #ifdef ENABLE_SERIALIZE_JSON
+   #if defined(ENABLE_SERIALIZE_JSON) || defined(ENABLE_SERIALIZE_SQLITE)
       currentGame->insertVerbAction("save", std::make_unique<SaveAction>());
       currentGame->insertVerbAction("load", std::make_unique<LoadAction>());
    #endif

@@ -280,7 +280,7 @@ if (ENABLE_SERIALIZE_SQLITE)
     CREATE_LIBTOOL_FILE(trogdor_serial_sqlite ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
     target_include_directories(trogdor_serial_sqlite ${CORE_INCLUDES})
     target_link_libraries(trogdor_serial_sqlite ${SQLITE_LIBRARIES})
-    add_dependencies(trogdor_serial_json trogdor_serial)
+    add_dependencies(trogdor_serial_sqlite trogdor_serial)
 	add_dependencies(trogdor_serial_pkgconfig trogdor_serial_sqlite_pkgconfig)
     install(TARGETS trogdor_serial_sqlite LIBRARY DESTINATION lib COMPONENT trogdor_serial_sqlite OPTIONAL)
 
