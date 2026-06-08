@@ -304,6 +304,36 @@ namespace trogdor {
          }
 
          /*
+            Locks the game's mutex. Along with unlock(), this makes Game itself
+            satisfy the BasicLockable requirement so a Game can be used directly
+            with std::lock_guard<Game> and std::scoped_lock<Game>. The underlying
+            mutex is recursive, so the same thread may lock more than once as
+            long as it unlocks the same number of times. Prefer an RAII guard
+            over calling this directly so the lock is always released, even if
+            the guarded code throws.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline void lock() {mutex.lock();}
+
+         /*
+            Unlocks the game's mutex. See lock(). Provided so Game satisfies the
+            BasicLockable requirement. Prefer an RAII guard to calling this
+            directly.
+
+            Input:
+               (none)
+
+            Output:
+               (none)
+         */
+         inline void unlock() {mutex.unlock();}
+
+         /*
             Returns an iterable list of all meta pairs.
 
             Input:

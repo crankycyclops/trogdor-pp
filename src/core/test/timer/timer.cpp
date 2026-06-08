@@ -1,3 +1,6 @@
+#include <atomic>
+#include <thread>
+
 #include <doctest.h>
 #include <trogdor/iostream/nullerr.h>
 
@@ -309,5 +312,64 @@ TEST_SUITE("Timer (timer/timer.cpp)") {
 		// binary comparison.
 		bool result = numExecutions >= 1 && numExecutions <= 3;
 		CHECK(result);
+	}
+
+	TEST_CASE("Timer (timer/timer.cpp): jobs execute while the timer holds the game's mutex") {
+
+		// Regression test for a fix we made to lock on Game's mutex while
+		// executing timer jobs that alter game state. We verify correct
+		// behavior by having a job spawn a second thread that competes for
+		// the game lock. If the timer is holding that lock around execute(),
+		// the contending thread must be unable to acquire it until the job
+		// returns.
+
+		static std::chrono::milliseconds threadSleepTime(tickInterval * 6);
+
+		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+		trogdor::Timer mockTimer(&mockGame, tickInterval);
+
+		// Set by the contending thread once it manages to acquire the game lock
+		std::atomic<bool> contenderGotLock(false);
+
+		// Recorded by the job. If the timer holds Game's mutex around execute(),
+		// the contending thread would be locked out and this would be true.
+		std::atomic<bool> contenderLockedOutDuringExecution(false);
+
+		std::thread contender;
+
+		mockTimer.insertJob(std::make_shared<MockTimerJob>(
+			&mockGame, 1, 1, 0, [&]() {
+
+				// Spin up a thread that competes for the game lock. Because the
+				// timer runs this while holding that lock, this thread must block
+				// until we return.
+				contender = std::thread([&]() {
+					std::lock_guard<trogdor::Game> lock(mockGame);
+					contenderGotLock = true;
+				});
+
+				// Give the contending thread time to reach (and block on) the
+				// lock, then confirm it hasn't been able to acquire it while we
+				// (running under the timer's game lock) are still executing.
+				std::this_thread::sleep_for(std::chrono::milliseconds(tickInterval * 2));
+				contenderLockedOutDuringExecution = !contenderGotLock.load();
+			}
+		));
+
+		mockTimer.start();
+		std::this_thread::sleep_for(threadSleepTime);
+		mockTimer.stop();
+
+		// Once the job finished, the timer released the game lock, so the
+		// contender should now be able to proceed.
+		if (contender.joinable()) {
+			contender.join();
+		}
+
+		// The contender was locked out while the job ran...
+		CHECK(contenderLockedOutDuringExecution.load());
+
+		// ...and was able to acquire the lock once the job finished.
+		CHECK(contenderGotLock.load());
 	}
 }

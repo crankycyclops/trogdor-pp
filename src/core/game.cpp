@@ -652,9 +652,9 @@ namespace trogdor {
          return false;
       }
 
-      mutex.lock();
+      // The recursive lock falls out of scope once we return
+      std::lock_guard<Game> lock(*this);
       action->execute(player, command, this);
-      mutex.unlock();
 
       return true;
    }

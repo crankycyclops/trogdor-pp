@@ -142,4 +142,62 @@ TEST_SUITE("Game (game.cpp)") {
 		CHECK(successes.load() == 1);
 		CHECK(game.getEntity("contested") != nullptr);
 	}
+
+	TEST_CASE("Game (game.cpp): lock()/unlock() make Game a recursive BasicLockable") {
+
+		trogdor::Game game(std::make_unique<trogdor::NullErr>());
+
+		SUBCASE("Game can be used directly with std::lock_guard") {
+
+			// Locking and unlocking via RAII should compile and run cleanly...
+			{
+				std::lock_guard<trogdor::Game> lock(game);
+			}
+
+			// ...and once the guard releases, another thread can take the lock.
+			std::atomic<bool> acquired(false);
+
+			std::thread t([&]() {
+				std::lock_guard<trogdor::Game> lock(game);
+				acquired = true;
+			});
+
+			t.join();
+			CHECK(acquired.load());
+		}
+
+		SUBCASE("The same thread may lock recursively without deadlocking") {
+
+			// The underlying mutex is recursive, so nested locks on a single
+			// thread must not deadlock. Reaching the CHECK is the assertion.
+			std::lock_guard<trogdor::Game> outer(game);
+			std::lock_guard<trogdor::Game> inner(game);
+
+			CHECK(true);
+		}
+
+		SUBCASE("A second thread is excluded while the lock is held") {
+
+			std::atomic<bool> contenderGotLock(false);
+			std::thread contender;
+
+			{
+				std::lock_guard<trogdor::Game> lock(game);
+
+				contender = std::thread([&]() {
+					std::lock_guard<trogdor::Game> l(game);
+					contenderGotLock = true;
+				});
+
+				// Give the contender time to block on the lock, then confirm it
+				// can't acquire the mutex while we still hold it.
+				std::this_thread::sleep_for(std::chrono::milliseconds(20));
+				CHECK(!contenderGotLock.load());
+			}
+
+			// Releasing our guard should let the contender proceed.
+			contender.join();
+			CHECK(contenderGotLock.load());
+		}
+	}
 }

@@ -76,7 +76,7 @@ namespace trogdor {
 
    void Timer::setTickInterval(size_t period) {
 
-      mutex.lock();
+      std::lock_guard<Timer> lock(*this);
 
       tickInterval = std::chrono::milliseconds(period);
       jobThreadSleepTime = std::chrono::milliseconds(THREAD_SLEEP_MILLISECONDS);
@@ -84,8 +84,6 @@ namespace trogdor {
       if (tickInterval < jobThreadSleepTime) {
          jobThreadSleepTime = tickInterval;
       }
-
-      mutex.unlock();
    }
 
 /******************************************************************************/
@@ -117,10 +115,12 @@ namespace trogdor {
 
    void Timer::tick() {
 
-      // increment the current game time
-      mutex.lock();
-      time++;
-      mutex.unlock();
+      // increment the current game time. The braces ensure that the lock
+      // automatically releases after incrementing the timer.
+      {
+         std::lock_guard<Timer> lock(*this);
+         time++;
+      }
 
       // I can't use for_each or a range-based for loop because I have to remove
       // expired jobs from queue and must be able to manipulate the iterator.
@@ -135,10 +135,13 @@ namespace trogdor {
             if (time - (*i)->getInitTime() >= (*i)->getStartTime() &&
             (time - (*i)->getInitTime() - (*i)->getStartTime()) % (*i)->getInterval() == 0) {
 
-               // run the job
-               mutex.lock();
-               (*i)->execute();
-               mutex.unlock();
+               // Jobs mutate game state, so we lock on Game's mutex. The lock
+               // is released when the braces below go out of scope (when the
+               // execute statement finishes.)
+               {
+                  std::lock_guard<Game> gameLock(*game);
+                  (*i)->execute();
+               }
 
                // decrement executions (unless it's -1, which means the job
                // should execute indefinitely)
@@ -148,12 +151,11 @@ namespace trogdor {
             }
          }
 
-         // job is expired, so remove it
+         // The job is expired, so remove it
          else {
-            mutex.lock();
+            std::lock_guard<Timer> lock(*this);
             std::list<std::shared_ptr<TimerJob>>::iterator iprev = i++;
             queue.remove(*iprev);
-            mutex.unlock();
          }
       }
    }
@@ -164,7 +166,7 @@ namespace trogdor {
 
       if (!active) {
 
-         mutex.lock();
+         std::lock_guard<Timer> lock(*this);
          active = true;
 
          lastTickTime = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -187,8 +189,6 @@ namespace trogdor {
                std::this_thread::sleep_for(jobThreadSleepTime);
             }
          });
-
-         mutex.unlock();
       }
    }
 
@@ -196,9 +196,8 @@ namespace trogdor {
 
 void Timer::deactivate() {
 
-   mutex.lock();
+   std::lock_guard<Timer> lock(*this);
    active = false;
-   mutex.unlock();
 }
 
 /******************************************************************************/
@@ -225,10 +224,9 @@ void Timer::shutdown() {
 
    void Timer::reset() {
 
-      mutex.lock();
+      std::lock_guard<Timer> lock(*this);
       time = 0;
       clearJobs();
-      mutex.unlock();
    }
 
 /******************************************************************************/
@@ -241,10 +239,9 @@ void Timer::shutdown() {
 
          std::make_unique<std::thread>([&](Game *g, Timer *t, std::shared_ptr<TimerJob> j) {
 
-            mutex.lock();
+            std::lock_guard<Timer> lock(*t);
             j->initTime = t->time;
             t->queue.insert(t->queue.end(), j);
-            mutex.unlock();
          }, game, this, job)
       );
    }

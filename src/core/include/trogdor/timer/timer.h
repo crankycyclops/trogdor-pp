@@ -194,6 +194,26 @@ namespace trogdor {
          void reset();
 
          /*
+            Locks the timer's mutex. Along with unlock(), this makes Timer
+            satisfy the BasicLockable requirement so a Timer can be used
+            directly with std::lock_guard<Timer> or std::scoped_lock<Timer>.
+
+            Input: (none)
+            Output: (none)
+         */
+         inline void lock() {mutex.lock();}
+
+         /*
+            Unlocks the timer's mutex. See lock(). Provided so Timer satisfies
+            the BasicLockable requirement; prefer an RAII guard to calling this
+            directly.
+
+            Input: (none)
+            Output: (none)
+         */
+         inline void unlock() {mutex.unlock();}
+
+         /*
             Inserts a job into the queue for executions every n ticks of the
             clock.
 
@@ -214,9 +234,8 @@ namespace trogdor {
          */
          inline void removeJob(std::shared_ptr<TimerJob> job) {
 
-            mutex.lock();
+            std::lock_guard<Timer> lock(*this);
             queue.remove(job);
-            mutex.unlock();
          }
 
          /*
