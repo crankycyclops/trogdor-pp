@@ -120,6 +120,13 @@ namespace trogdor::entity {
          return luaL_error(L, "not a Place!");
       }
 
+      // Both entities must already be owned by the Game for insertion to
+      // succeed due to the implicit calls to Entity::getShared() that would
+      // otherwise throw std::bad_weak_ptr
+      if (p->isManagedByLua() || t->isManagedByLua()) {
+         return luaL_error(L, "both entities must be inserted into the game first");
+      }
+
       if (auto oldLocation = t->getLocation().lock()) {
          oldLocation->removeThing(t->getShared());
       }
@@ -156,6 +163,13 @@ namespace trogdor::entity {
 
       else if (nullptr == p) {
          return luaL_error(L, "not a Place!");
+      }
+
+      // Both entities must already be owned by the Game for insertion to
+      // succeed due to the implicit calls to Entity::getShared() that would
+      // otherwise throw std::bad_weak_ptr
+      if (p->isManagedByLua() || t->isManagedByLua()) {
+         return luaL_error(L, "both entities must be inserted into the game first");
       }
 
       p->removeThing(t->getShared());

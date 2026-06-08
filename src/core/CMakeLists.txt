@@ -433,6 +433,9 @@ add_executable(test_core
 	test/lua/luafuncs.cpp
 	test/lua/luastate.cpp
 	test/lua/luagame.cpp
+	test/lua/luaplace.cpp
+	test/lua/luabeing.cpp
+	test/lua/luatangible.cpp
 )
 
 target_include_directories(test_core

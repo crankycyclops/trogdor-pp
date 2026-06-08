@@ -139,6 +139,13 @@ namespace trogdor::entity {
          displayFull = lua_toboolean(L, 3 - n);
       }
 
+      // Both entities must already be owned by the Game for insertion to
+      // succeed due to the implicit calls to Entity::getShared() that would
+      // otherwise throw std::bad_weak_ptr
+      if (observed->isManagedByLua() || observer->isManagedByLua()) {
+         return luaL_error(L, "both entities must be inserted into the game first");
+      }
+
       observed->observe(observer->getShared(), triggerEvents, displayFull);
       return 0;
    }
@@ -167,6 +174,13 @@ namespace trogdor::entity {
          triggerEvents = lua_toboolean(L, 2 - n);
       }
 
+      // Both entities must already be owned by the Game for insertion to
+      // succeed due to the implicit calls to Entity::getShared() that would
+      // otherwise throw std::bad_weak_ptr
+      if (observed->isManagedByLua() || observer->isManagedByLua()) {
+         return luaL_error(L, "both observer and observed must be inserted into the game first");
+      }
+
       observed->glance(observer->getShared(), triggerEvents);
       return 0;
    }
@@ -188,6 +202,13 @@ namespace trogdor::entity {
       Tangible *observed = checkTangible(L, -2);
       Being  *observer = LuaBeing::checkBeing(L, -1);
 
+      // Both entities must already be owned by the Game for insertion to
+      // succeed due to the implicit calls to Entity::getShared() that would
+      // otherwise throw std::bad_weak_ptr
+      if (observed->isManagedByLua() || observer->isManagedByLua()) {
+         return luaL_error(L, "both observer and observed must be inserted into the game first");
+      }
+
       lua_pushboolean(L, observed->observedBy(observer->getShared()));
       return 1;
    }
@@ -208,6 +229,13 @@ namespace trogdor::entity {
 
       Tangible *glanced = checkTangible(L, -2);
       Being  *glancer = LuaBeing::checkBeing(L, -1);
+
+      // Both entities must already be owned by the Game for insertion to
+      // succeed due to the implicit calls to Entity::getShared() that would
+      // otherwise throw std::bad_weak_ptr
+      if (glanced->isManagedByLua() || glancer->isManagedByLua()) {
+         return luaL_error(L, "both observer and observed must be inserted into the game first");
+      }
 
       lua_pushboolean(L, glanced->glancedBy(glancer->getShared()));
       return 1;

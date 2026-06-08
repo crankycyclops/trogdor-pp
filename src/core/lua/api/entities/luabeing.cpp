@@ -116,6 +116,13 @@ namespace trogdor::entity {
          return luaL_error(L, "first argument is not an Object");
       }
 
+      // Both entities must already be owned by the Game for insertion to
+      // succeed due to the implicit calls to Entity::getShared() that would
+      // otherwise throw std::bad_weak_ptr
+      if (b->isManagedByLua() || o->isManagedByLua()) {
+         return luaL_error(L, "both entities must be inserted into the game first");
+      }
+
       try {
 
          if (!b->insertIntoInventory(o->getShared(), considerWeight)) {
@@ -149,6 +156,13 @@ namespace trogdor::entity {
 
       else if (nullptr == o) {
          return luaL_error(L, "first argument is not an Object");
+      }
+
+      // Both entities must already be owned by the Game for insertion to
+      // succeed due to the implicit calls to Entity::getShared() that would
+      // otherwise throw std::bad_weak_ptr
+      if (b->isManagedByLua() || o->isManagedByLua()) {
+         return luaL_error(L, "both entities must be inserted into the game first");
       }
 
       try {

@@ -1,3 +1,5 @@
+#include <mutex>
+
 #include <trogdor/game.h>
 #include <trogdor/event/triggers/luaeventtrigger.h>
 #include <trogdor/exception/undefinedexception.h>
@@ -54,7 +56,10 @@ namespace trogdor::event {
 
       try {
 
-         L->lock();
+         // RAII lock. We release the Lua mutex on every exit path. This works
+         // because LuaState implements lock() and unlock().
+         std::lock_guard<LuaState> guard(*L);
+
          L->call(function);
 
          for (auto const &argument: e.getArguments()) {
@@ -98,16 +103,19 @@ namespace trogdor::event {
          }
 
          L->execute(2);
-         EventReturn retVals = {L->getBoolean(1), L->getBoolean(0)};
-
-         L->unlock();
-         return retVals;
+         return {L->getBoolean(1), L->getBoolean(0)};
       }
 
       catch (const LuaException &e) {
-
-         L->unlock();
          L->getGame()->err() << e.what() << std::endl;
+         return {true, true};
+      }
+
+      // Extra insurance to make sure no C++ exceptions ever blow up while
+      // running Lua code
+      catch (const std::exception &e) {
+         L->getGame()->err() << "internal engine error in event trigger: "
+            << e.what() << std::endl;
          return {true, true};
       }
    }

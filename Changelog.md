@@ -7,11 +7,13 @@
 
 - Embedded Lua scripts are now run in a restricted sandbox. The core now opens only a subset of safe libraries (`base`, `table`, `string`, `math`, `coroutine`, and `utf8` on Lua 5.3+) and strips the dangerous globals (`os`, `io`, `package`, `debug`, `require`, `load`, `loadstring`, `loadfile`, `dofile`, `collectgarbage`.)
 - Fixed a potential double-free / use-after-free of Lua created entities inserted by `game:insert()`.
+- Any Lua entity bindings that call methods requiring `Entity::getShared()` now require and check that all involved instances of `Entity` belong to the game to prevent a `std::bad_weak_ptr` crash.
 
 ### Fixed
 
 - The standalone build now properly checks for either SQLite or JSON serialization support
 - `Game::insertEntity()` now performs its duplicate name check and insertion atomically under a lock guard, closing a race condition between concurrent inserts and ensuring the mutex is always released on error.
+- The Lua event trigger now holds its interpreter lock with an RAII guard and catches any escaping C++ exception so a stray exception can no longer unwind through Lua's C stack or leave the Lua mutex permanently locked.
 
 ## [0.91.5] - 2023-02-24
 

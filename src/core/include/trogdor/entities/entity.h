@@ -372,6 +372,11 @@ namespace trogdor::entity {
             pointers. If, for example, you call this method on entities that are
             managed by Lua using new and delete, you're going to have a bad time.
 
+            Specifically, shared_from_this() throws std::bad_weak_ptr when the
+            Entity is not yet owned by a shared_ptr. Lua-created entities,
+            therefore, before being added to an instance of Game, should NEVER
+            call anything that invokes getShared().
+
             Input:
                (none)
 
