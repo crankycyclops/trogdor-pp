@@ -3,6 +3,7 @@
 
 
 #include <trogdor/timer/timerjob.h>
+#include <trogdor/entities/being.h>
 
 
 namespace trogdor {
@@ -13,7 +14,7 @@ namespace trogdor {
       private:
 
          // "He's dead, Jim!" --Dr. McCoy
-         entity::Being *deadGuy;
+         std::weak_ptr<entity::Being> deadGuy;
 
       public:
 
@@ -35,7 +36,8 @@ namespace trogdor {
          /*
             Constructor for the RespawnTimerJob class.
          */
-         inline RespawnTimerJob(Game *g, int i, int e, int s, entity::Being *b):
+         inline RespawnTimerJob(Game *g, int i, int e, int s,
+         const std::shared_ptr<entity::Being> &b):
          TimerJob(g, i, e, s), deadGuy(b) {}
 
          /*
@@ -52,7 +54,7 @@ namespace trogdor {
             Output:
                (none)
          */
-         inline void setDeadGuy(entity::Being *b) {deadGuy = b;}
+         inline void setDeadGuy(const std::shared_ptr<entity::Being> &b) {deadGuy = b;}
 
          /*
             Returns the instance's class name.

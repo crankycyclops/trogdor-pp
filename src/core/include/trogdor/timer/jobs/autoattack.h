@@ -3,6 +3,8 @@
 
 
 #include <trogdor/timer/timerjob.h>
+#include <trogdor/entities/being.h>
+#include <trogdor/entities/creature.h>
 
 
 namespace trogdor {
@@ -12,8 +14,8 @@ namespace trogdor {
 
       private:
 
-         entity::Creature *aggressor;
-         entity::Being    *defender;
+         std::weak_ptr<entity::Creature> aggressor;
+         std::weak_ptr<entity::Being>    defender;
 
       public:
 
@@ -36,7 +38,8 @@ namespace trogdor {
             Constructor for the AutoAttackTimerJob class.
          */
          inline AutoAttackTimerJob(Game *g, int i, int e, int s,
-         entity::Creature *a, entity::Being *d): TimerJob(g, i, e, s),
+         const std::shared_ptr<entity::Creature> &a,
+         const std::shared_ptr<entity::Being> &d): TimerJob(g, i, e, s),
          aggressor(a), defender(d) {}
 
          /*
@@ -48,23 +51,23 @@ namespace trogdor {
             Specifies who's doing the attacking (always a Creature.)
 
             Input:
-               Pointer to attacker (Creature *)
+               Attacker (std::shared_ptr<entity::Creature>)
 
             Output:
                (none)
          */
-         inline void setAttacker(entity::Creature *a) {aggressor = a;}
+         inline void setAttacker(const std::shared_ptr<entity::Creature> &a) {aggressor = a;}
 
          /*
             Specifies who's being attacked.
 
             Input:
-               Pointer to defender (Being *)
+               Defender (std::shared_ptr<entity::Being>)
 
             Output:
                (none)
          */
-         inline void setDefender(entity::Being *d) {defender = d;}
+         inline void setDefender(const std::shared_ptr<entity::Being> &d) {defender = d;}
 
          /*
             Returns the instance's class name.

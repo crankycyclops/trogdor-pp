@@ -14,7 +14,7 @@ namespace trogdor {
 
    RespawnTimerJob::RespawnTimerJob(const serial::Serializable &data, Game *g): TimerJob(data, g) {
 
-      deadGuy = g->getBeing(std::get<std::string>(*data.get("deadGuy"))).get();
+      deadGuy = g->getBeing(std::get<std::string>(*data.get("deadGuy")));
    }
 
    /**************************************************************************/
@@ -43,7 +43,15 @@ namespace trogdor {
 
    void RespawnTimerJob::execute() {
 
-      deadGuy->doRespawn();
+      std::shared_ptr<entity::Being> being = deadGuy.lock();
+
+      // Make sure the Being hasn't been removed from the game first
+      if (!being) {
+         setExecutions(0);
+         return;
+      }
+
+      being->doRespawn();
    }
 
    /**************************************************************************/
@@ -52,7 +60,10 @@ namespace trogdor {
 
       std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>() = TimerJob::serialize();
 
-      data->set("deadGuy", deadGuy->getName());
+      if (auto being = deadGuy.lock()) {
+         data->set("deadGuy", being->getName());
+      }
+
       return data;
    }
 }

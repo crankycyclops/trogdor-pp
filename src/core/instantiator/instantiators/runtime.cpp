@@ -48,7 +48,7 @@ namespace trogdor {
                creature.second->getProperty<int>(entity::Creature::WanderIntervalProperty),
                -1,
                creature.second->getProperty<int>(entity::Creature::WanderIntervalProperty),
-               creature.second.get())
+               creature.second)
             );
          }
       }

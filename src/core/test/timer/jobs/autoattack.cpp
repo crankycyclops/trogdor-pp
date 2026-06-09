@@ -52,7 +52,7 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 		attacker->die();
 
 		trogdor::Timer mockTimer(&mockGame);
-		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker.get(), defender.get());
+		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker, defender);
 
 		job.execute();
 
@@ -102,7 +102,7 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 		defender->die();
 
 		trogdor::Timer mockTimer(&mockGame);
-		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker.get(), defender.get());
+		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker, defender);
 
 		job.execute();
 
@@ -153,7 +153,7 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 		defender->die();
 
 		trogdor::Timer mockTimer(&mockGame);
-		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker.get(), defender.get());
+		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker, defender);
 
 		job.execute();
 
@@ -203,7 +203,7 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 		defender->removeTag(trogdor::entity::Being::AttackableTag);
 
 		trogdor::Timer mockTimer(&mockGame);
-		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker.get(), defender.get());
+		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker, defender);
 
 		job.execute();
 
@@ -259,7 +259,7 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 		defender->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
 
 		trogdor::Timer mockTimer(&mockGame);
-		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker.get(), defender.get());
+		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker, defender);
 
 		job.execute();
 
@@ -311,12 +311,81 @@ TEST_SUITE("Autoattack Timer Job (timer/jobs/autoattack.cpp)") {
 		defender->setTag(trogdor::entity::Being::AttackableTag);
 
 		trogdor::Timer mockTimer(&mockGame);
-		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker.get(), defender.get());
+		trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker, defender);
 
 		job.execute();
 
 		// TODO: this isn't enough. I need to write Event Handler mocking that
 		// I can use to verify that attacker->attack() was actually called.
 		CHECK(-1 == job.getExecutions());
+	}
+
+	TEST_CASE("Autoattack Timer Job (timer/jobs/autoattack.cpp): Combatant removed before execution (make sure we don't dereference a dangling pointer)") {
+
+		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+
+		std::shared_ptr<trogdor::entity::Room> mockRoom =
+		std::make_shared<trogdor::entity::Room>(
+			&mockGame,
+			"start",
+			std::make_unique<trogdor::NullOut>(),
+			std::make_unique<trogdor::NullErr>()
+		);
+
+		std::shared_ptr<trogdor::entity::Creature> attacker =
+		std::make_shared<trogdor::entity::Creature>(
+			&mockGame,
+			"attacker",
+			std::make_unique<trogdor::NullOut>(),
+			std::make_unique<trogdor::NullErr>()
+		);
+
+		std::shared_ptr<trogdor::entity::Creature> defender =
+		std::make_shared<trogdor::entity::Creature>(
+			&mockGame,
+			"defender",
+			std::make_unique<trogdor::NullOut>(),
+			std::make_unique<trogdor::NullErr>()
+		);
+
+		mockRoom->insertThing(attacker);
+		mockRoom->insertThing(defender);
+
+		attacker->setProperty(trogdor::entity::Being::HealthProperty, 10);
+		attacker->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		defender->setProperty(trogdor::entity::Being::HealthProperty, 10);
+		defender->setProperty(trogdor::entity::Being::MaxHealthProperty, 10);
+		defender->setTag(trogdor::entity::Being::AttackableTag);
+
+		trogdor::Timer mockTimer(&mockGame);
+
+		// The job is created while both combatants are alive, holding only
+		// std::weak_ptrs to them. If either is then removed from the game
+		// before the job runs, execute() must expire the job rather than
+		// dereferencing freed memory. Verify for both the defender...
+		SUBCASE("Defender removed") {
+
+			trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker, defender);
+
+			mockRoom->removeThing(defender);
+			defender = nullptr;
+
+			job.execute();
+
+			CHECK(0 == job.getExecutions());
+		}
+
+		// ...and the aggressor.
+		SUBCASE("Aggressor removed") {
+
+			trogdor::AutoAttackTimerJob job(&mockGame, 1, -1, 1, attacker, defender);
+
+			mockRoom->removeThing(attacker);
+			attacker = nullptr;
+
+			job.execute();
+
+			CHECK(0 == job.getExecutions());
+		}
 	}
 }

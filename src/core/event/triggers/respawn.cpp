@@ -56,8 +56,15 @@ namespace trogdor::event {
 
          // we have to wait a certain number of clock ticks
          if (in > 0) {
+
+            // The timer job needs to extract a std::weak_ptr from the Being
+            // in case it goes out of scope between now and when it executes,
+            // so pass in a std::shared_ptr.
+            std::shared_ptr<entity::Being> deadGuy =
+               std::static_pointer_cast<entity::Being>(being->getShared());
+
             game->insertTimerJob(
-               std::make_shared<RespawnTimerJob>(game, in, 1, in, being)
+               std::make_shared<RespawnTimerJob>(game, in, 1, in, deadGuy)
             );
          }
 

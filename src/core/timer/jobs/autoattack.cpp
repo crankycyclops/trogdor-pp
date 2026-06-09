@@ -14,8 +14,8 @@ namespace trogdor {
 
    AutoAttackTimerJob::AutoAttackTimerJob(const serial::Serializable &data, Game *g): TimerJob(data, g) {
 
-      aggressor = g->getCreature(std::get<std::string>(*data.get("aggressor"))).get();
-      defender = g->getBeing(std::get<std::string>(*data.get("defender"))).get();
+      aggressor = g->getCreature(std::get<std::string>(*data.get("aggressor")));
+      defender = g->getBeing(std::get<std::string>(*data.get("defender")));
    }
 
    /**************************************************************************/
@@ -44,22 +44,31 @@ namespace trogdor {
 
    void AutoAttackTimerJob::execute() {
 
-      if (!aggressor->isAlive() || !defender->isAlive()) {
+      std::shared_ptr<entity::Creature> attacker = aggressor.lock();
+      std::shared_ptr<entity::Being> target = defender.lock();
+
+      // Make sure one or both entities haven't been removed from the game
+      if (!attacker || !target) {
          setExecutions(0);
          return;
       }
 
-      else if (!defender->isTagSet(entity::Being::AttackableTag)) {
+      if (!attacker->isAlive() || !target->isAlive()) {
          setExecutions(0);
          return;
       }
 
-      else if (aggressor->getLocation().lock() != defender->getLocation().lock()) {
+      else if (!target->isTagSet(entity::Being::AttackableTag)) {
          setExecutions(0);
          return;
       }
 
-      aggressor->attack(defender, aggressor->selectWeapon());
+      else if (attacker->getLocation().lock() != target->getLocation().lock()) {
+         setExecutions(0);
+         return;
+      }
+
+      attacker->attack(target.get(), attacker->selectWeapon());
    }
 
    /**************************************************************************/
@@ -68,8 +77,13 @@ namespace trogdor {
 
       std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>() = TimerJob::serialize();
 
-      data->set("aggressor", aggressor->getName());
-      data->set("defender", defender->getName());
+      if (auto attacker = aggressor.lock()) {
+         data->set("aggressor", attacker->getName());
+      }
+
+      if (auto target = defender.lock()) {
+         data->set("defender", target->getName());
+      }
 
       return data;
    }

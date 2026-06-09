@@ -52,6 +52,13 @@ namespace trogdor::event {
       entity::Being *being = static_cast<entity::Being *>(std::get<entity::Entity *>(e.getArguments()[1]));
       entity::Place *place = static_cast<entity::Place *>(std::get<entity::Entity *>(e.getArguments()[3]));
 
+      // The Being is a game owned entity at the time autoattack is called, so
+      // we know this pointer is valid. The timer job will need to store it as
+      // std::weak_ptr in case the entity is removed from the game before the
+      // timer jobs executes, so we pass in a std::shared_ptr.
+      std::shared_ptr<entity::Being> defender =
+         std::static_pointer_cast<entity::Being>(being->getShared());
+
       // each Creature that has auto-attack enabled should be setup to attack
       for (auto const &creature: place->getCreatures()) {
 
@@ -61,8 +68,8 @@ namespace trogdor::event {
                creature->getProperty<int>(entity::Creature::AutoAttackIntervalProperty),
                creature->getProperty<bool>(entity::Creature::AutoAttackRepeatProperty) ? -1 : 1,
                creature->getProperty<int>(entity::Creature::AutoAttackIntervalProperty),
-               creature.get(),
-               being
+               creature,
+               defender
             ));
          }
       };

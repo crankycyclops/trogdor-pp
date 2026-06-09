@@ -3,6 +3,7 @@
 
 
 #include <trogdor/timer/timerjob.h>
+#include <trogdor/entities/creature.h>
 
 
 namespace trogdor {
@@ -12,7 +13,7 @@ namespace trogdor {
 
       private:
 
-         entity::Creature *wanderer;
+         std::weak_ptr<entity::Creature> wanderer;
 
       public:
 
@@ -34,7 +35,8 @@ namespace trogdor {
          /*
             Constructor for the WanderTimerJob class.
          */
-         inline WanderTimerJob(Game *g, int i, int e, int s, entity::Creature *c):
+         inline WanderTimerJob(Game *g, int i, int e, int s,
+         const std::shared_ptr<entity::Creature> &c):
          TimerJob(g, i, e, s), wanderer(c) {}
 
          /*

@@ -17,7 +17,7 @@ namespace trogdor {
 
    WanderTimerJob::WanderTimerJob(const serial::Serializable &data, Game *g): TimerJob(data, g) {
 
-      wanderer = g->getCreature(std::get<std::string>(*data.get("wanderer"))).get();
+      wanderer = g->getCreature(std::get<std::string>(*data.get("wanderer")));
    }
 
    /**************************************************************************/
@@ -46,17 +46,25 @@ namespace trogdor {
 
    void WanderTimerJob::execute() {
 
-      if (!wanderer->getProperty<bool>(Creature::WanderEnabledProperty)) {
+      std::shared_ptr<Creature> creature = wanderer.lock();
+
+      // Make sure the Creature hasn't been removed from the game
+      if (!creature) {
+         setExecutions(0);
+         return;
+      }
+
+      if (!creature->getProperty<bool>(Creature::WanderEnabledProperty)) {
          setExecutions(0);
          return;
       }
 
       else {
-         wanderer->wander();
+         creature->wander();
       }
 
       // if wander interval ever changes, we should make sure it's updated
-      setInterval(wanderer->getProperty<int>(Creature::WanderIntervalProperty));
+      setInterval(creature->getProperty<int>(Creature::WanderIntervalProperty));
    }
 
    /**************************************************************************/
@@ -65,7 +73,10 @@ namespace trogdor {
 
       std::shared_ptr<serial::Serializable> data = std::make_shared<serial::Serializable>() = TimerJob::serialize();
 
-      data->set("wanderer", wanderer->getName());
+      if (auto creature = wanderer.lock()) {
+         data->set("wanderer", creature->getName());
+      }
+
       return data;
    }
 }
