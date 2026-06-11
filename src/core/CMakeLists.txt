@@ -415,6 +415,7 @@ add_executable(test_core
 	test/vocabulary.cpp
 	test/command.cpp
 	test/utility.cpp
+	test/serial/serializable.cpp
 	test/entities/entity.cpp
 	test/entities/resource.cpp
 	test/entities/tangible.cpp

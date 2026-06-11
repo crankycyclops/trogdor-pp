@@ -41,7 +41,7 @@ namespace trogdor::event {
    EventListener::EventListener(const serial::Serializable &data, const std::shared_ptr<LuaState> &L) {
 
       const auto deserializedEvents =
-         std::get<std::shared_ptr<serial::Serializable>>(*data.get("triggers"));
+         data.getValue<std::shared_ptr<serial::Serializable>>("triggers");
 
       for (const auto &event: deserializedEvents->getAll()) {
 
@@ -51,7 +51,7 @@ namespace trogdor::event {
          for (const auto &trigger: deserializedTriggers) {
 
             std::any arg;
-            std::string typeName = std::get<std::string>(*trigger->get("type"));
+            std::string typeName = trigger->getValue<std::string>("type");
 
             if (typeid(LuaEventTrigger) == EventTrigger::getType(typeName.c_str())) {
                arg = std::tuple<serial::Serializable, const std::shared_ptr<LuaState> &>({*trigger, L});

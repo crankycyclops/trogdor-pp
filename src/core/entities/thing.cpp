@@ -45,19 +45,24 @@ namespace trogdor::entity {
    ): Tangible(g, data, std::move(o), std::move(e)) {
 
       std::vector<std::string> serializedAliases =
-         std::get<std::vector<std::string>>(*data.get("aliases"));
+         data.getValue<std::vector<std::string>>("aliases");
 
       for (const auto &alias: serializedAliases) {
          aliases.push_back(alias);
       }
 
-      if (std::optional<serial::Value> locationData = data.get("location")) {
+      // Validate the type now, while the data is still in scope, but defer the
+      // actual lookup to afterDeserialize since the Place may not be inserted
+      // yet. The validated name is captured by value into the callback.
+      if (data.get("location")) {
+
+         std::string locationName = data.getValue<std::string>("location");
 
          g->addCallback("afterDeserialize",
-         std::make_shared<Entity::EntityCallback>([locationData, this](std::any) -> bool {
+         std::make_shared<Entity::EntityCallback>([locationName, this](std::any) -> bool {
 
             if (const std::shared_ptr<Place> &locationPtr =
-            game->getPlace(std::get<std::string>(*locationData))) {
+            game->getPlace(locationName)) {
                location = locationPtr;
             }
 

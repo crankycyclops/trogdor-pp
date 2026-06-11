@@ -34,7 +34,7 @@ namespace trogdor::entity {
          if (data.arraySize("glancedBy")) {
 
             std::vector<std::string> serializedGlancedBy =
-               std::get<std::vector<std::string>>(*data.get("glancedBy"));
+               data.getValue<std::vector<std::string>>("glancedBy");
 
             for (const auto &glancedBy: serializedGlancedBy) {
 
@@ -49,7 +49,7 @@ namespace trogdor::entity {
          if (data.arraySize("observedBy")) {
 
             std::vector<std::string> serializedObservedBy =
-               std::get<std::vector<std::string>>(*data.get("observedBy"));
+               data.getValue<std::vector<std::string>>("observedBy");
 
             for (const auto &observedBy: serializedObservedBy) {
 

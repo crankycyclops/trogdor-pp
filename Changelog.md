@@ -18,6 +18,7 @@
 - Any Lua entity bindings that call methods requiring `Entity::getShared()` now require and check that all involved instances of `Entity` belong to the game to prevent a `std::bad_weak_ptr` crash.
 - Timer jobs now hold `std::weak_ptr` references to entities instead of raw pointers and expire themselves if a referenced entity has been removed from the game, fixing a potential "use after free" error.
 - Lua entity userdata now holds a `std::weak_ptr` to game owned entities instead of a raw pointer and validates it before every access to avoid user after free issues.
+- Deserializing a malformed serialized save file now throws a catchable `UndefinedException` instead of crashing.
 
 ## [0.91.5] - 2023-02-24
 

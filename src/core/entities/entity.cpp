@@ -98,35 +98,35 @@ namespace trogdor::entity {
       const serial::Serializable &data,
       std::unique_ptr<Trogout> o,
       std::unique_ptr<Trogerr> e
-   ): game(g), name(std::get<std::string>(*data.get("name"))),
+   ): game(g), name(data.getValue<std::string>("name")),
    outStream(std::move(o)), errStream(std::move(e)) {
 
       types.push_back(ENTITY_ENTITY);
-      className = std::get<std::string>(*data.get("class"));
+      className = data.getValue<std::string>("class");
 
       std::vector<std::string> serializedTags =
-         std::get<std::vector<std::string>>(*data.get("tags"));
+         data.getValue<std::vector<std::string>>("tags");
 
       for (const auto &tag: serializedTags) {
          tags.insert(tag);
       }
 
       std::shared_ptr<serial::Serializable> serializedMeta =
-         std::get<std::shared_ptr<serial::Serializable>>(*data.get("meta"));
+         data.getValue<std::shared_ptr<serial::Serializable>>("meta");
 
       for (const auto &val: serializedMeta->getAll()) {
          meta[val.first] = std::get<std::string>(val.second);
       }
 
       std::shared_ptr<serial::Serializable> serializedMsgs =
-         std::get<std::shared_ptr<serial::Serializable>>(*data.get("messages"));
+         data.getValue<std::shared_ptr<serial::Serializable>>("messages");
 
       for (const auto &msg: serializedMsgs->getAll()) {
          msgs.set(msg.first, std::get<std::string>(msg.second));
       }
 
       std::shared_ptr<serial::Serializable> serializedProperties =
-         std::get<std::shared_ptr<serial::Serializable>>(*data.get("properties"));
+         data.getValue<std::shared_ptr<serial::Serializable>>("properties");
 
       for (const auto &property: serializedProperties->getAll()) {
 
@@ -151,7 +151,7 @@ namespace trogdor::entity {
       }
 
       triggers = std::make_unique<event::EventListener>(
-         *std::get<std::shared_ptr<serial::Serializable>>(*data.get("eventListener")), g->getLuaState()
+         *data.getValue<std::shared_ptr<serial::Serializable>>("eventListener"), g->getLuaState()
       );
 
       setPropertyValidators();

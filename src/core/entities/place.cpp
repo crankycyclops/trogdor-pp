@@ -45,7 +45,7 @@ namespace trogdor::entity {
          if (data.arraySize("things")) {
 
             std::vector<std::string> serializedThings =
-               std::get<std::vector<std::string>>(*data.get("things"));
+               data.getValue<std::vector<std::string>>("things");
 
             for (const auto &thing: serializedThings) {
                if (const std::shared_ptr<Thing> &t = game->getThing(thing)) {

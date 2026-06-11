@@ -39,7 +39,7 @@ namespace trogdor::entity {
       std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {
 
          std::shared_ptr<serial::Serializable> serializedConnections =
-            std::get<std::shared_ptr<serial::Serializable>>(*data.get("connections"));
+            data.getValue<std::shared_ptr<serial::Serializable>>("connections");
 
          for (const auto &connection: serializedConnections->getAll()) {
 
@@ -52,7 +52,7 @@ namespace trogdor::entity {
          if (data.get("connectionDescriptions")) {
 
             std::shared_ptr<serial::Serializable> serializedConnectionDescriptions =
-               std::get<std::shared_ptr<serial::Serializable>>(*data.get("connectionDescriptions"));
+               data.getValue<std::shared_ptr<serial::Serializable>>("connectionDescriptions");
 
             for (const auto &description: serializedConnectionDescriptions->getAll()) {
                connectionDescriptions[description.first] = std::get<std::string>(description.second);

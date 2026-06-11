@@ -147,6 +147,39 @@ namespace trogdor::serial {
             return data.find(key) != data.end() ?
                std::optional<Value>(data.find(key)->second) : std::nullopt;
          }
+
+         /*
+            Like get(), but instead of returning std::optional, this validates
+            that the value exists and is of the requested type before returning
+            it directly.
+
+            If the key is missing or holds a different type, this throws
+            trogdor::UndefinedException so that deserializing from malformed
+            data is a recoverable error rather than a disengaged optional
+            dereference or an uncaught std::bad_variant_access. Use this instead
+            of using std::get<T>(*get(key)) directly.
+
+            Input:
+               key (std::string)
+
+            Output:
+               The value (T)
+         */
+         template <typename T>
+         T getValue(std::string key) const {
+
+            std::optional<Value> v = get(key);
+
+            if (!v) {
+               throw UndefinedException("Missing required value '" + key + "' during deserialization.");
+            }
+
+            if (!std::holds_alternative<T>(*v)) {
+               throw UndefinedException("Value '" + key + "' is of an unexpected type during deserialization.");
+            }
+
+            return std::get<T>(*v);
+         }
    };
 }
 

@@ -6,6 +6,9 @@
 #include <trogdor/iostream/nullout.h>
 #include <trogdor/iostream/nullerr.h>
 
+#include <trogdor/serial/serializable.h>
+#include <trogdor/exception/undefinedexception.h>
+
 
 // TODO: make sure to verify a test case where allocations have been made, and
 // then we copy and verify that those allocations/depositors don't exist in the
@@ -653,5 +656,21 @@ TEST_SUITE("Resource (entities/resource.cpp)") {
 			allocStatus = testResource->allocate(testRoom, 500.0);
 			CHECK(trogdor::entity::Resource::ALLOCATE_OR_FREE_SUCCESS == allocStatus);
 		}
+	}
+
+	TEST_CASE("Resource (entities/resource.cpp): Deserializing an entity with a missing name throws instead of crashing") {
+
+		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+
+		// The Entity base constructor reads "name" first. With an empty blob,
+		// it used to dereference a disengaged optional. It must now throw a
+		// catchable exception. This covers the per entity deserialize
+		// constructors reached from Game::_deserialize.
+		trogdor::serial::Serializable data;
+
+		CHECK_THROWS_AS(
+			trogdor::entity::Resource(&mockGame, data),
+			trogdor::UndefinedException
+		);
 	}
 }

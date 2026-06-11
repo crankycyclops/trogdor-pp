@@ -15,6 +15,8 @@
 #include <trogdor/iostream/nullout.h>
 #include <trogdor/iostream/nullerr.h>
 
+#include <trogdor/serial/serializable.h>
+
 #include <trogdor/exception/entityexception.h>
 #include <trogdor/exception/undefinedexception.h>
 
@@ -198,6 +200,46 @@ TEST_SUITE("Game (game.cpp)") {
 			// Releasing our guard should let the contender proceed.
 			contender.join();
 			CHECK(contenderGotLock.load());
+		}
+	}
+
+	TEST_CASE("Game (game.cpp): deserializing a malformed save throws a catchable exception instead of crashing") {
+
+		// Stream factories for the deserializing Game constructor. The malformed
+		// data below trips an exception before these are ever called, but the
+		// constructor requires them.
+		auto makeOut = [](trogdor::Game *) -> std::unique_ptr<trogdor::Trogout> {
+			return std::make_unique<trogdor::NullOut>();
+		};
+
+		auto makeErr = [](trogdor::Game *) -> std::unique_ptr<trogdor::Trogerr> {
+			return std::make_unique<trogdor::NullErr>();
+		};
+
+		SUBCASE("A missing key throws UndefinedException rather than dereferencing a disengaged optional") {
+
+			// No "inGame" key at all. Previously, this dereferenced a disengaged
+			// std::optional (undefined behavior). Now it must throw.
+			auto data = std::make_shared<trogdor::serial::Serializable>();
+
+			CHECK_THROWS_AS(
+				trogdor::Game(data, std::make_unique<trogdor::NullErr>(), makeOut, makeErr),
+				trogdor::UndefinedException
+			);
+		}
+
+		SUBCASE("A wrong typed key throws UndefinedException rather than std::bad_variant_access") {
+
+			// "inGame" is present and valid, but "introduction" is a string where
+			// a nested object is expected.
+			auto data = std::make_shared<trogdor::serial::Serializable>();
+			data->set("inGame", false);
+			data->set("introduction", "not an object");
+
+			CHECK_THROWS_AS(
+				trogdor::Game(data, std::make_unique<trogdor::NullErr>(), makeOut, makeErr),
+				trogdor::UndefinedException
+			);
 		}
 	}
 }

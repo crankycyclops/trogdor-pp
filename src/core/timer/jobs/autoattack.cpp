@@ -14,8 +14,8 @@ namespace trogdor {
 
    AutoAttackTimerJob::AutoAttackTimerJob(const serial::Serializable &data, Game *g): TimerJob(data, g) {
 
-      aggressor = g->getCreature(std::get<std::string>(*data.get("aggressor")));
-      defender = g->getBeing(std::get<std::string>(*data.get("defender")));
+      aggressor = g->getCreature(data.getValue<std::string>("aggressor"));
+      defender = g->getBeing(data.getValue<std::string>("defender"));
    }
 
    /**************************************************************************/

@@ -30,19 +30,19 @@ namespace trogdor {
 
    Timer::Timer(Game *gameRef, const serial::Serializable &data): game(gameRef) {
 
-      time = std::get<size_t>(*data.get("time"));
-      tickInterval = std::chrono::milliseconds(std::get<size_t>(*data.get("tickInterval")));
-      lastTickTime = std::chrono::milliseconds(std::get<size_t>(*data.get("lastTickTime")));
-      jobThreadSleepTime = std::chrono::milliseconds(std::get<size_t>(*data.get("jobThreadSleepTime")));
+      time = data.getValue<size_t>("time");
+      tickInterval = std::chrono::milliseconds(data.getValue<size_t>("tickInterval"));
+      lastTickTime = std::chrono::milliseconds(data.getValue<size_t>("lastTickTime"));
+      jobThreadSleepTime = std::chrono::milliseconds(data.getValue<size_t>("jobThreadSleepTime"));
 
       if (data.arraySize("jobs")) {
 
          std::vector<std::shared_ptr<serial::Serializable>> serializedJobs =
-            std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("jobs"));
+            data.getValue<std::vector<std::shared_ptr<serial::Serializable>>>("jobs");
 
          for (const auto &job: serializedJobs) {
 
-            std::string typeName = std::get<std::string>(*job->get("type"));
+            std::string typeName = job->getValue<std::string>("type");
 
             queue.insert(queue.end(), TimerJob::instantiate(
                typeName.c_str(),
@@ -51,7 +51,7 @@ namespace trogdor {
          }
       }
 
-      if (std::get<bool>(*data.get("active"))) {
+      if (data.getValue<bool>("active")) {
          start();
       }
    }

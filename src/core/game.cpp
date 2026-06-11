@@ -87,39 +87,37 @@ namespace trogdor {
       std::function<std::unique_ptr<Trogerr>(Game *)> makeErrStream
    ) {
 
-      inGame = std::get<bool>(*data->get("inGame"));
+      inGame = data->getValue<bool>("inGame");
 
       const std::shared_ptr<serial::Serializable> intro =
-         std::get<std::shared_ptr<serial::Serializable>>(*data->get("introduction"));
+         data->getValue<std::shared_ptr<serial::Serializable>>("introduction");
 
-      introduction.enabled = std::get<bool>(*intro->get("enabled"));
-      introduction.text = std::get<std::string>(*intro->get("text"));
+      introduction.enabled = intro->getValue<bool>("enabled");
+      introduction.text = intro->getValue<std::string>("text");
 
       for (const auto &metaVal:
-      std::get<std::shared_ptr<serial::Serializable>>(*data->get("meta"))->getAll()) {
+      data->getValue<std::shared_ptr<serial::Serializable>>("meta")->getAll()) {
          meta[metaVal.first] = std::get<std::string>(metaVal.second);
       }
 
       defaultPlayer = std::make_unique<entity::Player>(
          this,
-         *std::get<std::shared_ptr<serial::Serializable>>(*data->get("defaultPlayer")),
+         *data->getValue<std::shared_ptr<serial::Serializable>>("defaultPlayer"),
          std::make_unique<NullOut>(),
          std::make_unique<NullErr>()
       );
 
-      const serial::Value entityArr = *data->get("entities");
-
       for (const auto &entity:
-      std::get<std::vector<std::shared_ptr<serial::Serializable>>>(entityArr)) {
+      data->getValue<std::vector<std::shared_ptr<serial::Serializable>>>("entities")) {
 
          switch (entity::Entity::strToType(
-            std::get<std::vector<std::string>>(*entity->get("types")).back()
+            entity->getValue<std::vector<std::string>>("types").back()
          )) {
 
             case entity::ENTITY_RESOURCE:
 
                insertEntity(
-                  std::get<std::string>(*entity->get("name")),
+                  entity->getValue<std::string>("name"),
                   std::make_shared<entity::Resource>(this, *entity)
                );
 
@@ -128,7 +126,7 @@ namespace trogdor {
             case entity::ENTITY_ROOM:
 
                insertEntity(
-                  std::get<std::string>(*entity->get("name")),
+                  entity->getValue<std::string>("name"),
                   std::make_shared<entity::Room>(
                      this,
                      *entity,
@@ -142,7 +140,7 @@ namespace trogdor {
             case entity::ENTITY_OBJECT:
 
                insertEntity(
-                  std::get<std::string>(*entity->get("name")),
+                  entity->getValue<std::string>("name"),
                   std::make_shared<entity::Object>(
                      this,
                      *entity,
@@ -156,7 +154,7 @@ namespace trogdor {
             case entity::ENTITY_CREATURE:
 
                insertEntity(
-                  std::get<std::string>(*entity->get("name")),
+                  entity->getValue<std::string>("name"),
                   std::make_shared<entity::Creature>(
                      this,
                      *entity,
@@ -189,16 +187,16 @@ namespace trogdor {
 
       L = std::make_unique<LuaState>(
          this,
-         *std::get<std::shared_ptr<serial::Serializable>>(*data->get("lua"))
+         *data->getValue<std::shared_ptr<serial::Serializable>>("lua")
       );
 
       eventListener = std::make_unique<event::EventListener>(
-         *std::get<std::shared_ptr<serial::Serializable>>(*data->get("eventListener")), L
+         *data->getValue<std::shared_ptr<serial::Serializable>>("eventListener"), L
       );
 
       timer = std::make_unique<Timer>(
          this,
-         *std::get<std::shared_ptr<serial::Serializable>>(*data->get("timer"))
+         *data->getValue<std::shared_ptr<serial::Serializable>>("timer")
       );
 
       executeCallback("afterDeserialize", nullptr);

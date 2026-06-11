@@ -13,7 +13,7 @@ namespace trogdor::event {
    ) {
 
       L = newL;
-      function = std::get<std::string>(*data.get("function"));
+      function = data.getValue<std::string>("function");
    }
 
    /**************************************************************************/

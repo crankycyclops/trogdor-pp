@@ -165,4 +165,31 @@ TEST_SUITE("Serializable (serializable.h)") {
 
 		CHECK(0 == s.size());
 	}
+
+	TEST_CASE("getValue()") {
+
+		trogdor::serial::Serializable s;
+
+		s.set("string", "stringval");
+		s.set("flag", true);
+
+		SUBCASE("Returns the value when present and of the requested type") {
+
+			CHECK(0 == s.getValue<std::string>("string").compare("stringval"));
+			CHECK(true == s.getValue<bool>("flag"));
+		}
+
+		SUBCASE("Throws UndefinedException for a missing key") {
+
+			// This is the dangerous case the helper exists to prevent: with a
+			// raw std::get<T>(*get(key)), a missing key dereferences a disengaged
+			// optional instead of throwing.
+			CHECK_THROWS_AS(s.getValue<std::string>("notAValue"), trogdor::UndefinedException);
+		}
+
+		SUBCASE("Throws UndefinedException when the value is the wrong type") {
+
+			CHECK_THROWS_AS(s.getValue<bool>("string"), trogdor::UndefinedException);
+		}
+	}
 }

@@ -14,7 +14,7 @@ namespace trogdor {
 
    RespawnTimerJob::RespawnTimerJob(const serial::Serializable &data, Game *g): TimerJob(data, g) {
 
-      deadGuy = g->getBeing(std::get<std::string>(*data.get("deadGuy")));
+      deadGuy = g->getBeing(data.getValue<std::string>("deadGuy"));
    }
 
    /**************************************************************************/

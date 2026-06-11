@@ -108,10 +108,10 @@ namespace trogdor::entity {
    ): Thing(g, data, std::move(o), std::move(e)), inventory({{}, {{}}}) {
 
       std::shared_ptr<serial::Serializable> serializedAttributes =
-            std::get<std::shared_ptr<serial::Serializable>>(*data.get("attributes"));
+            data.getValue<std::shared_ptr<serial::Serializable>>("attributes");
 
       std::shared_ptr<serial::Serializable> serializedAttrValues =
-         std::get<std::shared_ptr<serial::Serializable>>(*serializedAttributes->get("values"));
+         serializedAttributes->getValue<std::shared_ptr<serial::Serializable>>("values");
 
       for (const auto &attr: serializedAttrValues->getAll()) {
 
@@ -127,6 +127,13 @@ namespace trogdor::entity {
          }, attr.second);
       }
 
+      std::optional<serial::Value> serializedInitialTotal =
+         serializedAttributes->get("initialTotal");
+
+      if (!serializedInitialTotal) {
+         throw UndefinedException("Missing required value 'initialTotal' during deserialization.");
+      }
+
       std::visit([&](auto &&value) {
 
          using T = std::decay_t<decltype(value)>;
@@ -136,18 +143,18 @@ namespace trogdor::entity {
          } else {
             throw UndefinedException("Invalid type for attributes.initialTotal encountered during Being deserialization");
          }
-      }, *serializedAttributes->get("initialTotal"));
+      }, *serializedInitialTotal);
 
       g->addCallback("afterDeserialize",
       std::make_shared<Entity::EntityCallback>([&](std::any) -> bool {
 
          std::shared_ptr<serial::Serializable> serializedInventory =
-            std::get<std::shared_ptr<serial::Serializable>>(*data.get("inventory"));
+            data.getValue<std::shared_ptr<serial::Serializable>>("inventory");
 
          if (serializedInventory->arraySize("objects")) {
 
             std::vector<std::string> inventoryItems =
-               std::get<std::vector<std::string>>(*serializedInventory->get("objects"));
+               serializedInventory->getValue<std::vector<std::string>>("objects");
 
             for (const auto &objName: inventoryItems) {
                if (const std::shared_ptr<Object> &object = game->getObject(objName)) {

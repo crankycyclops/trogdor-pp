@@ -118,16 +118,16 @@ namespace trogdor::entity {
          if (data.arraySize("depositors")) {
 
             std::vector<std::shared_ptr<serial::Serializable>> serializedDepositors =
-               std::get<std::vector<std::shared_ptr<serial::Serializable>>>(*data.get("depositors"));
+               data.getValue<std::vector<std::shared_ptr<serial::Serializable>>>("depositors");
 
             for (auto const &depositor: serializedDepositors) {
 
                const std::shared_ptr<Tangible> &owner =
-                  game->getTangible(std::get<std::string>(*depositor->get("depositor")));
+                  game->getTangible(depositor->getValue<std::string>("depositor"));
 
                if (owner) {
 
-                  double amount = std::get<double>(*depositor->get("amount"));
+                  double amount = depositor->getValue<double>("amount");
 
                   depositors[owner] = amount;
                   owner->recordResourceAllocation(getShared(), amount);

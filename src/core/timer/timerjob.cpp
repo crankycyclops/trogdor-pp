@@ -30,16 +30,20 @@ namespace trogdor {
 
    TimerJob::TimerJob(const serial::Serializable &data, Game *g): game(g) {
 
-      initTime = std::get<size_t>(*data.get("initTime"));
-      startTime = std::get<size_t>(*data.get("startTime"));
-      interval = std::get<size_t>(*data.get("interval"));
+      initTime = data.getValue<size_t>("initTime");
+      startTime = data.getValue<size_t>("startTime");
+      interval = data.getValue<size_t>("interval");
 
-      auto e = *data.get("executions");
+      std::optional<serial::Value> e = data.get("executions");
 
-      if (e.index() == 0) {
-         executions = std::get<size_t>(e);
+      if (!e) {
+         throw UndefinedException("Missing required value 'executions' during deserialization.");
+      }
+
+      if (e->index() == 0) {
+         executions = std::get<size_t>(*e);
       } else {
-         executions = std::get<int>(e);
+         executions = std::get<int>(*e);
       }
    }
 

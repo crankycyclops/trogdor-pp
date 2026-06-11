@@ -41,10 +41,10 @@ namespace trogdor::entity {
       std::unique_ptr<Trogerr> e
    ): Being(g, data, std::move(o), std::move(e)) {
 
-      if (auto serializedLastCommand = data.get("lastCommand")) {
+      if (data.get("lastCommand")) {
          lastCommand = std::make_unique<Command>(
             game->getVocabulary(),
-            *std::get<std::shared_ptr<serial::Serializable>>(*serializedLastCommand)
+            *data.getValue<std::shared_ptr<serial::Serializable>>("lastCommand")
          );
       }
 

@@ -17,7 +17,7 @@ namespace trogdor {
 
    WanderTimerJob::WanderTimerJob(const serial::Serializable &data, Game *g): TimerJob(data, g) {
 
-      wanderer = g->getCreature(std::get<std::string>(*data.get("wanderer")));
+      wanderer = g->getCreature(data.getValue<std::string>("wanderer"));
    }
 
    /**************************************************************************/
