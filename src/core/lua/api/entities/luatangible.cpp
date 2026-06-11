@@ -87,7 +87,7 @@ namespace trogdor::entity {
    Tangible *LuaTangible::checkTangible(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Tangible **)LuaState::luaL_checkudata_ex(L, i, types);
+      return static_cast<Tangible *>(LuaState::checkEntityUserdata(L, i, types));
    }
 
    /***************************************************************************/

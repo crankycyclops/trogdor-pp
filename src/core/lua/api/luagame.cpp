@@ -106,6 +106,11 @@ namespace trogdor {
 
          g->insertEntity(e->getName(), owned);
          e->setManagedByLua(false);
+
+         // Ownership has transferred to the Game. Update the entity argument's
+         // userdata so it reflects the change in it's lifecycle.
+         LuaState::markUserdataGameOwned(L, -1, owned);
+
          lua_pushboolean(L, 1);
       }
 

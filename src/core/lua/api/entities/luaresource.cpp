@@ -72,7 +72,7 @@ namespace trogdor::entity {
    Resource *LuaResource::checkResource(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Resource **)LuaState::luaL_checkudata_ex(L, i, types);
+      return static_cast<Resource *>(LuaState::checkEntityUserdata(L, i, types));
    }
 
    /***************************************************************************/

@@ -2,7 +2,9 @@
 #define LUASTATE_H
 
 
+#include <memory>
 #include <mutex>
+#include <new>
 #include <string>
 
 extern "C" {
@@ -434,6 +436,94 @@ namespace trogdor {
                #endif
 
                return NULL; /* to avoid warnings */
+            }
+         }
+
+         // This payload is what gets stored in every Entity userdata. If the
+         // pointer is bare, it's a Lua owned entity and can be gargage
+         // collected when it falls out of scope. If it's a std::weak_ptr, it's
+         // game owned and ignored by the garbage collector.
+         struct EntityReference {
+
+            // If set, the Entity is Lua owned
+            entity::Entity *raw;
+
+            // If set, the Entity is game owned. Pointer must be validated
+            // before each use.
+            std::weak_ptr<entity::Entity> weak;
+
+            // Determines which of the two above fields are set
+            enum Ownership {
+               LUA_OWNED,
+               GAME_OWNED
+            } owner;
+         };
+
+         /*
+            Returns the raw Entity pointer inside an Entity userdata. Validates
+            the pointer before returning to verify that it was not freed by the
+            game before access.
+            
+            Raises a catchable Lua error and does not return if the Entity no
+            longer exists. Use this instead of dereferencing the userdata
+            directly.
+
+            Input:
+               Lua state
+               index of the userdata on the stack
+               array of C-style strings naming valid types
+
+            Output:
+               Entity *
+         */
+         inline static entity::Entity *checkEntityUserdata(lua_State *L, int ud, const char **tnames) {
+
+            EntityReference *ref = static_cast<EntityReference *>(
+               luaL_checkudata_ex(L, ud, tnames)
+            );
+
+            if (EntityReference::GAME_OWNED == ref->owner) {
+
+               std::shared_ptr<entity::Entity> live = ref->weak.lock();
+
+               if (!live) {
+                  luaL_error(L, "entity no longer exists");
+                  return nullptr; // This means luaL_error never returns
+               }
+
+               // Return the raw pointer for Lua operations
+               return live.get();
+            }
+
+            return ref->raw;
+         }
+
+         /*
+            Marks a previously Lua owned Entity as owned by a Game, recording a
+            weak handle to the Game's shared_ptr so that subsequent accesses
+            will be validated.
+
+            TODO: I feel like this might belong inlined directly into
+            LuaGame::insertEntity(), as that's the only place this is used and
+            this doesn't really make sense as a public method outside of that.
+            I need to think about this.
+
+            Input:
+               Lua state
+               index of the userdata on the stack
+               the Game's owning shared_ptr for the Entity
+
+            Output:
+               (none)
+         */
+         inline static void markUserdataGameOwned(lua_State *L, int ud,
+         const std::shared_ptr<entity::Entity> &owned) {
+
+            EntityReference *ref = static_cast<EntityReference *>(lua_touserdata(L, ud));
+
+            if (ref) {
+               ref->weak = owned;
+               ref->owner = EntityReference::GAME_OWNED;
             }
          }
 

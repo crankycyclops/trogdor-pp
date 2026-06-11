@@ -68,7 +68,7 @@ namespace trogdor::entity {
    Player *LuaPlayer::checkPlayer(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Player **)LuaState::luaL_checkudata_ex(L, i, types);
+      return static_cast<Player *>(LuaState::checkEntityUserdata(L, i, types));
    }
 
    /***************************************************************************/

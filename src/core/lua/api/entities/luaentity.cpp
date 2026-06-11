@@ -98,43 +98,53 @@ namespace trogdor::entity {
    Entity *LuaEntity::checkEntity(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Entity **)LuaState::luaL_checkudata_ex(L, i, types);
+      return LuaState::checkEntityUserdata(L, i, types);
    }
 
    /***************************************************************************/
 
    int LuaEntity::gcEntity(lua_State *L) {
 
-      Entity *e = checkEntity(L, -1);
+      LuaState::EntityReference *ref =
+         static_cast<LuaState::EntityReference *>(lua_touserdata(L, -1));
 
-      // Entity has not been assigned to a Game, so its allocation is managed
-      // solely by Lua and should be garbage collected.
-      if (e->isManagedByLua()) {
+      if (ref) {
 
-         // Make sure to call the appropriate destructor
-         switch (e->getType()) {
+         // Only entities owned by Lua are freed here. A GAME_OWNED entity
+         // belongs to an instance of Game and should be left alone.
+         if (LuaState::EntityReference::LUA_OWNED == ref->owner) {
 
-            case ENTITY_ROOM:
-               delete static_cast<Room *>(e);
-               break;
+            Entity *e = ref->raw;
 
-            case ENTITY_OBJECT:
-               delete static_cast<Object *>(e);
-               break;
+            // Make sure to call the appropriate destructor
+            switch (e->getType()) {
 
-            case ENTITY_PLAYER:
-               delete static_cast<Player *>(e);
-               break;
+               case ENTITY_ROOM:
+                  delete static_cast<Room *>(e);
+                  break;
 
-            case ENTITY_CREATURE:
-               delete static_cast<Creature *>(e);
-               break;
+               case ENTITY_OBJECT:
+                  delete static_cast<Object *>(e);
+                  break;
 
-            // TODO: we shouldn't ever get here, but if we do, should I display
-            // some kind of warning? I don't think it should be a fatal error.
-            default:
-               break;
+               case ENTITY_PLAYER:
+                  delete static_cast<Player *>(e);
+                  break;
+
+               case ENTITY_CREATURE:
+                  delete static_cast<Creature *>(e);
+                  break;
+
+               // TODO: we shouldn't ever get here, but if we do, should I
+               // display some kind of warning? I don't think it should be a
+               // fatal error.
+               default:
+                  break;
+            }
          }
+
+         // The EntityReference container is now an empty husk. Destroy it.
+         ref->~EntityReference();
       }
 
       return 0;

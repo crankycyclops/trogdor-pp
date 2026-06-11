@@ -71,7 +71,7 @@ namespace trogdor::entity {
    Being *LuaBeing::checkBeing(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Being **)LuaState::luaL_checkudata_ex(L, i, types);
+      return static_cast<Being *>(LuaState::checkEntityUserdata(L, i, types));
    }
 
    /***************************************************************************/

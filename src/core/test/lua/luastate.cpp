@@ -302,33 +302,33 @@ TEST_SUITE("LuaState (luastate.cpp)") {
 		lua_pushcfunction(L.getRealState(), luaTestCheckudataex);
 		lua_setglobal(L.getRealState(), "luaTestCheckudataex");
 
-		std::unique_ptr<trogdor::entity::Resource> resource = std::make_unique<trogdor::entity::Resource>(
+		std::shared_ptr<trogdor::entity::Resource> resource = std::make_shared<trogdor::entity::Resource>(
 			game.get(),
 			"testresource"
 		);
 
-		std::unique_ptr<trogdor::entity::Creature> creature = std::make_unique<trogdor::entity::Creature>(
+		std::shared_ptr<trogdor::entity::Creature> creature = std::make_shared<trogdor::entity::Creature>(
 			game.get(),
 			"testcreature",
 			std::make_unique<trogdor::NullOut>(),
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		std::unique_ptr<trogdor::entity::Room> room = std::make_unique<trogdor::entity::Room>(
+		std::shared_ptr<trogdor::entity::Room> room = std::make_shared<trogdor::entity::Room>(
 			game.get(),
 			"testroom",
 			std::make_unique<trogdor::NullOut>(),
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		std::unique_ptr<trogdor::entity::Object> object = std::make_unique<trogdor::entity::Object>(
+		std::shared_ptr<trogdor::entity::Object> object = std::make_shared<trogdor::entity::Object>(
 			game.get(),
 			"testobject",
 			std::make_unique<trogdor::NullOut>(),
 			std::make_unique<trogdor::NullErr>()
 		);
 
-		std::unique_ptr<trogdor::entity::Player> player = std::make_unique<trogdor::entity::Player>(
+		std::shared_ptr<trogdor::entity::Player> player = std::make_shared<trogdor::entity::Player>(
 			game.get(),
 			"testplayer",
 			std::make_unique<trogdor::NullOut>(),

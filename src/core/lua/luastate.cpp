@@ -71,8 +71,23 @@ namespace trogdor {
 
       else {
 
-         entity::Entity **eLocation = (entity::Entity **)lua_newuserdata(L, sizeof(entity::Entity *));
-         *eLocation = e;
+         EntityReference *ref = static_cast<EntityReference *>(
+            lua_newuserdata(L, sizeof(EntityReference))
+         );
+
+         new (ref)EntityReference();
+         ref->raw = e;
+
+         // The entity is game owned and should not be garbage collected
+         if (!e->isManagedByLua()) {
+            ref->weak = e->weak_from_this();
+            ref->owner = EntityReference::GAME_OWNED;
+         }
+
+         // The entity is Lua owned and can be garbage collected
+         else {
+            ref->owner = EntityReference::LUA_OWNED;
+         }
 
          switch (e->getType()) {
 

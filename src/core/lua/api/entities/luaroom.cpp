@@ -71,7 +71,7 @@ namespace trogdor::entity {
    Room *LuaRoom::checkRoom(lua_State *L, int i) {
 
       luaL_checktype(L, i, LUA_TUSERDATA);
-      return *(Room **)LuaState::luaL_checkudata_ex(L, i, types);
+      return static_cast<Room *>(LuaState::checkEntityUserdata(L, i, types));
    }
 
    /***************************************************************************/
