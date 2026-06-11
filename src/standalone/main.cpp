@@ -131,7 +131,13 @@ int main(int argc, char **argv) {
          currentGame->getPlayer("player")->out("prompt") << "\n> ";
          currentGame->getPlayer("player")->out("prompt").flush();
 
-         getline(std::cin, command);
+         // If we execute the inside of this block, it's because the user
+         // pressed Ctrl-D. This should allow the game to shutdown cleanly.
+         if (!getline(std::cin, command)) {
+            currentGame->getPlayer("player")->out("prompt") << std::endl;
+            break;
+         }
+
          currentGame->getPlayer("player")->input(command);
       }
 
