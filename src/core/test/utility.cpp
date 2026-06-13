@@ -146,5 +146,15 @@ TEST_SUITE("Utility functions (utility.cpp)") {
 		// causes an error later, be sure to fix the utility function and this
 		// test to enforce correct behavior.
 		CHECK(trogdor::isValidDouble("  1.1"));
+
+		// Out-of-range values must be rejected, since std::stod() would throw
+		// std::out_of_range on them
+		CHECK(!trogdor::isValidDouble("1e9999"));    // positive overflow
+		CHECK(!trogdor::isValidDouble("-1e9999"));   // negative overflow
+		CHECK(!trogdor::isValidDouble("1e-400"));    // underflow
+
+		// Sanity check that ordinary values still validate after the fix
+		CHECK(trogdor::isValidDouble("1.5"));
+		CHECK(trogdor::isValidDouble("-2.3"));
 	}
 }

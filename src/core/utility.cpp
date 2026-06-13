@@ -2,6 +2,7 @@
 #include <cstring>
 #include <cctype>
 #include <cmath>
+#include <cerrno>
 #include <regex>
 #include <algorithm> 
 #include <functional>
@@ -236,9 +237,14 @@ namespace trogdor {
          return false;
       }
 
+      errno = 0;
       char *end = 0;
       double val = strtod(s.c_str(), &end);
-      return end != s.c_str() && *end == '\0' && val != HUGE_VAL;
+
+      // errno == ERANGE catches both overflow (strtod returns +/-HUGE_VAL) and
+      // underflow, which is exactly the set of inputs std::stod would throw
+      // std::out_of_range on. The isinf() check is an extra safeguard.
+      return end != s.c_str() && *end == '\0' && errno != ERANGE && !std::isinf(val);
    }
 
    bool isAscii(const std::string &s) {

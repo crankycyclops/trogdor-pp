@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include <trogdor/command.h>
 #include <trogdor/game.h>
 #include <trogdor/utility.h>
@@ -130,11 +132,21 @@ namespace trogdor {
          }
 
          else if (!foundQty && isValidDouble(token)) {
-            directObjectQty = std::stod(token);
-            foundQty = true;
-            tokenizer.next();
-            token = tokenizer.getCurToken();
-            continue;
+
+            try {
+               directObjectQty = std::stod(token);
+               foundQty = true;
+               tokenizer.next();
+               token = tokenizer.getCurToken();
+               continue;
+            }
+
+            // isValidDouble() should already have rejected out of range
+            // values, but std::stod can still throw (for example, if the two
+            // ever disagree.) Treat any conversion failure as not being a
+            // quantity and fall through to treating the token as part of the
+            // direct object.
+            catch (const std::exception &) {}
          }
 
          // each token encountered is to be treated as part of the direct
@@ -184,11 +196,18 @@ namespace trogdor {
          }
 
          else if (!foundQty && isValidDouble(token)) {
-            indirectObjectQty = std::stod(token);
-            foundQty = true;
-            tokenizer.next();
-            token = tokenizer.getCurToken();
-            continue;
+
+            try {
+               indirectObjectQty = std::stod(token);
+               foundQty = true;
+               tokenizer.next();
+               token = tokenizer.getCurToken();
+               continue;
+            }
+
+            // Same deal as in parseDirectObject() when attempting to read a
+            // numerical value.
+            catch (const std::exception &) {}
          }
 
          // every remaining token is to be treated as part of the IDO

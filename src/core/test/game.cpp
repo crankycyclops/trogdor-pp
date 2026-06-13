@@ -244,7 +244,7 @@ TEST_SUITE("Game (game.cpp)") {
 
 		SUBCASE("An entity with an empty \"types\" array throws UndefinedException rather than calling .back() on an empty vector") {
 
-			// Build a valid save blob by serializing a real game with one
+			// Build a valid save file by serializing a real game with one
 			// entity, then corrupt only that entity's "types" to an empty array.
 			// getValue() already covers the missing key and wrong type cases.
 			// An empty array is the remaining vector that previously made the

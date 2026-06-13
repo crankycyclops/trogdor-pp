@@ -20,6 +20,7 @@
 - Lua entity userdata now holds a `std::weak_ptr` to game owned entities instead of a raw pointer and validates it before every access to avoid user after free issues.
 - Deserializing a malformed serialized save file now throws a catchable `UndefinedException` instead of crashing.
 - Deserializing an entity whose `types` array is empty now throws a catchable `UndefinedException` instead of calling `.back()` on an empty vector.
+- Out of range numeric values like -1e9999 no longer crash the game. `isValidDouble()` now rejects values that overflow or underflow a `double`, and the `std::stod()` calls in command parsing are guarded.
 
 ## [0.91.5] - 2023-02-24
 

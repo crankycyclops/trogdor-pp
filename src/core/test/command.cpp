@@ -229,6 +229,39 @@ TEST_SUITE("Command (command.cpp)") {
 		CHECK(2 == *(command.getIndirectObjectQty()));
 	}
 
+	TEST_CASE("Command (command.cpp): Out of range numeric direct object doesn't crash") {
+
+		trogdor::Vocabulary mockVocab;
+		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+
+		// "-1e9999" overflows a double and std::stod() would throw
+		// std::out_of_range. The parser must not crash and the oversized token
+		// must be folded into the direct object with no quantity set.
+		trogdor::Command command(mockVocab, "take -1e9999 gold");
+
+		CHECK(!command.isInvalid());
+		CHECK(!command.isNull());
+		CHECK(0 == command.getVerb().compare("take"));
+		CHECK(0 == command.getDirectObject().compare("-1e9999 gold"));
+		CHECK(!command.getDirectObjectQty());
+	}
+
+	TEST_CASE("Command (command.cpp): Out of range numeric indirect object doesn't crash") {
+
+		trogdor::Vocabulary mockVocab;
+		trogdor::Game mockGame(std::make_unique<trogdor::NullErr>());
+
+		trogdor::Command command(mockVocab, "take gold from -1e9999 chest");
+
+		CHECK(!command.isInvalid());
+		CHECK(!command.isNull());
+		CHECK(0 == command.getVerb().compare("take"));
+		CHECK(0 == command.getDirectObject().compare("gold"));
+		CHECK(0 == command.getIndirectObject().compare("-1e9999 chest"));
+		CHECK(0 == command.getPreposition().compare("from"));
+		CHECK(!command.getIndirectObjectQty());
+	}
+
 	TEST_CASE("Command (command.cpp): Invalid case #1: single word sentence with unrecognized verb") {
 
 		trogdor::Vocabulary mockVocab;
