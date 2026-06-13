@@ -113,10 +113,14 @@ namespace trogdor {
 
       size_t i;
 
-      for (i = 0; i < str.length() && isspace(str[i]); i++);
+      // <cctype> functions have defined behavior only for values representable
+      // as unsigned char (or EOF.) A plain char ≥ 0x80 is negative on most
+      // platforms, so every byte must be cast to unsigned char first. This is,
+      // of course, going to have to change if I ever introduce UTF-8 support.
+      for (i = 0; i < str.length() && std::isspace(static_cast<unsigned char>(str[i])); i++);
 
-      if (isalpha(str[i])) {
-         str[i] = toupper(str[i]);
+      if (isalpha(static_cast<unsigned char>(str[i]))) {
+         str[i] = toupper(static_cast<unsigned char>(str[i]));
       }
 
       return str;
@@ -140,13 +144,19 @@ namespace trogdor {
 
 
    std::string &ltrim(std::string &s) {
-         s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+         // Cast to unsigned char before std::isspace. A negative char (any byte
+         // ≥ 0x80) is undefined behavior otherwise.
+         s.erase(s.begin(), std::find_if(s.begin(), s.end(), [] (char c) {
+            return !std::isspace(static_cast<unsigned char>(c));
+         }));
          return s;
    }
 
 
    std::string &rtrim(std::string &s) {
-         s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+         s.erase(std::find_if(s.rbegin(), s.rend(), [] (char c) {
+            return !std::isspace(static_cast<unsigned char>(c));
+         }).base(), s.end());
          return s;
    }
 
@@ -212,7 +222,7 @@ namespace trogdor {
             continue;
          }
 
-         if (!std::isdigit(*c)) {
+         if (!std::isdigit(static_cast<unsigned char>(*c))) {
             return false;
          }
       }
@@ -250,7 +260,7 @@ namespace trogdor {
    bool isAscii(const std::string &s) {
 
       for (size_t i = 0; i < s.length(); i++) {
-         if (!isascii(s[i])) {
+         if (!isascii(static_cast<unsigned char>(s[i]))) {
             return false;
          }
       }
