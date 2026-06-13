@@ -110,9 +110,14 @@ namespace trogdor {
       for (const auto &entity:
       data->getValue<std::vector<std::shared_ptr<serial::Serializable>>>("entities")) {
 
-         switch (entity::Entity::strToType(
-            entity->getValue<std::vector<std::string>>("types").back()
-         )) {
+         const std::vector<std::string> types =
+            entity->getValue<std::vector<std::string>>("types");
+
+         if (types.empty()) {
+            throw UndefinedException("Entity is missing a type during deserialization.");
+         }
+
+         switch (entity::Entity::strToType(types.back())) {
 
             case entity::ENTITY_RESOURCE:
 

@@ -241,5 +241,33 @@ TEST_SUITE("Game (game.cpp)") {
 				trogdor::UndefinedException
 			);
 		}
+
+		SUBCASE("An entity with an empty \"types\" array throws UndefinedException rather than calling .back() on an empty vector") {
+
+			// Build a valid save blob by serializing a real game with one
+			// entity, then corrupt only that entity's "types" to an empty array.
+			// getValue() already covers the missing key and wrong type cases.
+			// An empty array is the remaining vector that previously made the
+			// .back() in Game::_deserialize undefined behavior.
+			trogdor::Game source(std::make_unique<trogdor::NullErr>());
+			source.insertEntity("r", makeRoom(&source, "r"));
+
+			auto data = source.serialize();
+
+			// The shared_ptrs inside the returned vector alias the Serializables
+			// still held by data, so mutating through them corrupts the blob in
+			// place.
+			auto entities = data->getValue<
+				std::vector<std::shared_ptr<trogdor::serial::Serializable>>
+			>("entities");
+
+			REQUIRE(entities.size() == 1);
+			entities[0]->set("types", std::vector<std::string>{});
+
+			CHECK_THROWS_AS(
+				trogdor::Game(data, std::make_unique<trogdor::NullErr>(), makeOut, makeErr),
+				trogdor::UndefinedException
+			);
+		}
 	}
 }
