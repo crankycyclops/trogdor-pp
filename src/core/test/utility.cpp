@@ -157,4 +157,55 @@ TEST_SUITE("Utility functions (utility.cpp)") {
 		CHECK(trogdor::isValidDouble("1.5"));
 		CHECK(trogdor::isValidDouble("-2.3"));
 	}
+
+	TEST_CASE("Utility functions (utility.cpp): resolveContainedPath()") {
+
+		// Legitimate relative paths resolve, normalized, inside the base directory
+		auto plain = trogdor::resolveContainedPath("/games/mygame", "foo.lua");
+		CHECK(plain.has_value());
+		CHECK(0 == plain->compare("/games/mygame/foo.lua"));
+
+		auto nested = trogdor::resolveContainedPath("/games/mygame", "scripts/foo.lua");
+		CHECK(nested.has_value());
+		CHECK(0 == nested->compare("/games/mygame/scripts/foo.lua"));
+
+		// A leading "./" is harmless and gets normalized away
+		auto dotSlash = trogdor::resolveContainedPath("/games/mygame", "./foo.lua");
+		CHECK(dotSlash.has_value());
+		CHECK(0 == dotSlash->compare("/games/mygame/foo.lua"));
+
+		// ".." is fine as long as it doesn't escape the base directory
+		auto innerDotDot = trogdor::resolveContainedPath("/games/mygame", "sub/../foo.lua");
+		CHECK(innerDotDot.has_value());
+		CHECK(0 == innerDotDot->compare("/games/mygame/foo.lua"));
+
+		// An empty base directory is treated as the current working directory
+		auto emptyBase = trogdor::resolveContainedPath("", "foo.lua");
+		CHECK(emptyBase.has_value());
+		CHECK(0 == emptyBase->compare("foo.lua"));
+
+		// An empty path can't be resolved
+		CHECK(!trogdor::resolveContainedPath("/games/mygame", "").has_value());
+
+		// Absolute paths are rejected outright
+		CHECK(!trogdor::resolveContainedPath("/games/mygame", "/etc/passwd").has_value());
+
+		// "../" traversal that escapes the base directory is rejected
+		CHECK(!trogdor::resolveContainedPath("/games/mygame", "../../../../etc/passwd").has_value());
+		CHECK(!trogdor::resolveContainedPath("/games/mygame", "../secret.lua").has_value());
+
+		// Even traversal that dips out and back in is rejected
+		CHECK(!trogdor::resolveContainedPath("/games/mygame", "sub/../../mygame/foo.lua").has_value());
+
+		// The sibling prefix trick (string prefix containment would wrongly
+		// allow this) must be rejected
+		CHECK(!trogdor::resolveContainedPath("/games/mygame", "../mygame-evil/foo.lua").has_value());
+
+		// Containment also works with a relative base directory
+		auto relBase = trogdor::resolveContainedPath("games/mygame", "scripts/foo.lua");
+		CHECK(relBase.has_value());
+		CHECK(0 == relBase->compare("games/mygame/scripts/foo.lua"));
+
+		CHECK(!trogdor::resolveContainedPath("games/mygame", "../../etc/passwd").has_value());
+	}
 }

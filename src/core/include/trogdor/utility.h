@@ -5,6 +5,7 @@
 #include <string>
 #include <cctype>
 #include <vector>
+#include <optional>
 
 /* macro to clip a value within a given range */
 #define CLAMP(V, MIN, MAX)  (((V) > (MAX)) ? (MAX) : (((V) < (MIN)) ? (MIN) : (V)))
@@ -107,6 +108,22 @@ namespace trogdor {
       Output: true if string contains only ASCII characters and false if not
    */
   extern bool isAscii(const std::string &s);
+
+   /*
+      Securely resolves a relative path against a base directory and verifies
+      that the result stays contained within that base directory. Used to
+      safely resolve untrusted file references like script locations.
+
+      Input:
+         Base directory the path must stay within (const std::string &)
+         Relative path to resolve (const std::string &)
+
+      Output:
+         The normalized, contained path on success or std::nullopt if relPath
+         is empty, absolute, or would resolve to a location at or above baseDir
+         (std::optional<std::string>)
+   */
+   extern std::optional<std::string> resolveContainedPath(const std::string &baseDir, const std::string &relPath);
 }
 
 

@@ -802,13 +802,6 @@ namespace trogdor {
          scriptMode = "file";
 
          trim(script);
-
-         // If the gamefile has a parent path and the script path is relative,
-         // we should look for the script relative to the gamefile's location
-         std::string gamefileLocation = STD_FILESYSTEM::path(gamefilePath).parent_path();
-         if (gamefileLocation.length() > 0 && script[0] != STD_FILESYSTEM::path::preferred_separator) {
-            script = gamefileLocation + STD_FILESYSTEM::path::preferred_separator + script;
-         }
       }
 
       // There's no src attribute, so we're either parsing an inline script or
@@ -816,6 +809,26 @@ namespace trogdor {
       catch (const ParseException &e) {
          script = parseString();
          scriptMode = "string";
+      }
+
+      // The src value is untrusted, and we have to verify that the path is
+      // relative to the game definition file. Absolute paths, for example, are
+      // not allowed.
+      if (0 == scriptMode.compare("file")) {
+
+         std::string gamefileLocation = STD_FILESYSTEM::path(gamefilePath).parent_path();
+         std::optional<std::string> resolved = resolveContainedPath(gamefileLocation, script);
+
+         if (!resolved.has_value()) {
+            throw ParseException(
+               std::string("script src \"") + script + "\" is not allowed and must "
+               "be a relative path contained within the game file's directory",
+               gamefilePath,
+               xmlTextReaderGetParserLineNumber(reader)
+            );
+         }
+
+         script = *resolved;
       }
 
       ast->appendChild(ASTLoadScript(

@@ -8,6 +8,9 @@
 #include <functional>
 #include <locale>
 #include <vector>
+#include <optional>
+
+#include <trogdor/filesystem.h>
 
 
 namespace trogdor {
@@ -107,6 +110,22 @@ namespace trogdor {
       Output: true if string contains only ASCII characters and false if not
    */
   bool isAscii(const std::string &s);
+
+   /*
+      Securely resolves a relative path against a base directory and verifies
+      that the result stays contained within that base directory. Used to
+      safely resolve untrusted file references like script locations.
+
+      Input:
+         Base directory the path must stay within (const std::string &)
+         Relative path to resolve (const std::string &)
+
+      Output:
+         The normalized, contained path on success or std::nullopt if relPath
+         is empty, absolute, or would resolve to a location at or above baseDir
+         (std::optional<std::string>)
+   */
+   std::optional<std::string> resolveContainedPath(const std::string &baseDir, const std::string &relPath);
 
 
    std::string capitalize(std::string str) {
@@ -266,5 +285,73 @@ namespace trogdor {
       }
 
       return true;
+   }
+
+   std::optional<std::string> resolveContainedPath(const std::string &baseDir, const std::string &relPath) {
+
+      // An empty reference can't be resolved and an absolute path is an
+      // immediate escape from the base directory
+      if (relPath.empty() || STD_FILESYSTEM::path(relPath).is_absolute()) {
+         return std::nullopt;
+      }
+
+      // Build the stack of normalized components for the base directory. An
+      // empty base is treated as the current working directory. The base may
+      // legitimately contain "." / "..", so we collapse those here as needed.
+      std::vector<std::string> stack;
+
+      for (const auto &part: STD_FILESYSTEM::path(baseDir.empty() ? "." : baseDir)) {
+
+         const std::string component = part.string();
+
+         if (component.empty() || "." == component) {
+            continue;
+         }
+
+         else if (".." == component && !stack.empty() && ".." != stack.back()) {
+            stack.pop_back();
+         }
+
+         else {
+            stack.push_back(component);
+         }
+      }
+
+      // Everything in the base stack is the containment boundary. The resolved
+      // relative path must never pop above this depth.
+      const size_t minDepth = stack.size();
+
+      // Now layer the relative path's components on top, rejecting any ".."
+      // that would escape the boundary
+      for (const auto &part: STD_FILESYSTEM::path(relPath)) {
+
+         const std::string component = part.string();
+
+         if (component.empty() || "." == component) {
+            continue;
+         }
+
+         else if (".." == component) {
+
+            if (stack.size() <= minDepth) {
+               return std::nullopt;
+            }
+
+            stack.pop_back();
+         }
+
+         else {
+            stack.push_back(component);
+         }
+      }
+
+      // Reassemble the contained path from its normalized components
+      STD_FILESYSTEM::path resolved;
+
+      for (const auto &component: stack) {
+         resolved /= component;
+      }
+
+      return resolved.string();
    }
 }

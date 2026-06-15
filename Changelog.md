@@ -22,6 +22,7 @@
 - Deserializing an entity whose `types` array is empty now throws a catchable `UndefinedException` instead of calling `.back()` on an empty vector.
 - Out of range numeric values like -1e9999 no longer crash the game. `isValidDouble()` now rejects values that overflow or underflow a `double`, and the `std::stod()` calls in command parsing are guarded.
 - The `<cctype>` calls in `utility.cpp` now cast to `unsigned char`, fixing undefined behavior on command input containing bytes >= 0x80.
+- A `<script src="...">` path is now confined to the game file's directory. Absolute paths are rejected, as are paths that fall outside the allowed base path.
 
 ## [0.91.5] - 2023-02-24
 
