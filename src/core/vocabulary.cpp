@@ -47,6 +47,17 @@ namespace trogdor {
 
    /**************************************************************************/
 
+   void Vocabulary::purgePlayerFromActions(const std::string &name) {
+
+      for (auto &verbAction: verbActions) {
+         if (verbAction.second) {
+            verbAction.second->purgePlayer(name);
+         }
+      }
+   }
+
+   /**************************************************************************/
+
    Action *Vocabulary::getVerbAction(std::string verb) const {
 
       if (verbActions.find(verb) == verbActions.end()) {

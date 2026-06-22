@@ -15,6 +15,15 @@ namespace trogdor {
       return true;
    }
 
+   /***************************************************************************/
+
+   void TakeAction::purgePlayer(const std::string &name) {
+
+      lookupThingByName.erase(name);
+   }
+
+   /***************************************************************************/
+
    void TakeAction::execute(
       entity::Player *player,
       const Command &command,
@@ -42,9 +51,9 @@ namespace trogdor {
             // supply a unique name out of a list of items with the same alias,
             // so now we need to lookup the item by name instead of by alias.
             if (
-               lookupThingByName.end() != lookupThingByName.find(player) &&
-               !lookupThingByName[player].expired() &&
-               lookupThingByName[player].lock() == playerShared
+               lookupThingByName.end() != lookupThingByName.find(player->getName()) &&
+               !lookupThingByName[player->getName()].expired() &&
+               lookupThingByName[player->getName()].lock() == playerShared
             ) {
 
                bool itemFound = false;
@@ -59,7 +68,7 @@ namespace trogdor {
                   }
                }
 
-               lookupThingByName.erase(player);
+               lookupThingByName.erase(player->getName());
 
                if (!itemFound) {
                   player->out("display") << "There is no " << command.getDirectObject()
@@ -76,7 +85,7 @@ namespace trogdor {
             else if (roomItems.size() > 1) {
 
                entity::Entity::clarifyEntity<entity::ThingList>(roomItems, player);
-               lookupThingByName[player] = playerShared;
+               lookupThingByName[player->getName()] = playerShared;
 
                player->setInputInterceptor(std::make_unique<std::function<bool(std::string)>>(
                   [player, command](std::string input) -> bool {

@@ -368,6 +368,20 @@ namespace trogdor {
          void removeVerbAction(std::string verb);
 
          /*
+            Purges any state held by the registered actions for the named
+            player. Called when a player is removed from the game so that
+            actions which track state (such as clarifying ambiguous names; see
+            Action::purgePlayer) don't accumulate stale entries.
+
+            Input:
+               Name of the player being removed (const std::string &)
+
+            Output:
+               (none)
+         */
+         void purgePlayerFromActions(const std::string &name);
+
+         /*
             Retrieves the Action object identified by the specified verb. If the
             Action is not found, it next tries to locate the appropriate verb
             using a verb synonym. If a suitable verb with action still isn't

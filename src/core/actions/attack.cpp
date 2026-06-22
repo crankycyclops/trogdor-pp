@@ -17,6 +17,14 @@ namespace trogdor {
 
    /***************************************************************************/
 
+   void AttackAction::purgePlayer(const std::string &name) {
+
+      lookupDefenderByName.erase(name);
+      lookupWeaponByName.erase(name);
+   }
+
+   /***************************************************************************/
+
    void AttackAction::execute(
       entity::Player *player,
       const Command &command,
@@ -48,9 +56,9 @@ namespace trogdor {
          auto beings = location->getBeingsByName(command.getDirectObject());
 
          if (
-            lookupDefenderByName.end() != lookupDefenderByName.find(player) &&
-            !lookupDefenderByName[player].expired() &&
-            lookupDefenderByName[player].lock() == playerShared
+            lookupDefenderByName.end() != lookupDefenderByName.find(player->getName()) &&
+            !lookupDefenderByName[player->getName()].expired() &&
+            lookupDefenderByName[player->getName()].lock() == playerShared
          ) {
 
             for (auto &being: beings) {
@@ -60,7 +68,7 @@ namespace trogdor {
                }
             }
 
-            lookupDefenderByName.erase(player);
+            lookupDefenderByName.erase(player->getName());
 
             if (!defender) {
                player->out("display") << "There is no " << command.getDirectObject()
@@ -89,7 +97,7 @@ namespace trogdor {
          else if (beings.size() > 1) {
 
             entity::Entity::clarifyEntity<entity::BeingList>(beings, player);
-            lookupDefenderByName[player] = playerShared;
+            lookupDefenderByName[player->getName()] = playerShared;
 
             player->setInputInterceptor(std::make_unique<std::function<bool(std::string)>>(
                [player, command](std::string input) -> bool {
@@ -107,9 +115,9 @@ namespace trogdor {
          }
 
          if (
-            lookupWeaponByName.end() != lookupWeaponByName.find(player) &&
-            !lookupWeaponByName[player].expired() &&
-            lookupWeaponByName[player].lock() == playerShared
+            lookupWeaponByName.end() != lookupWeaponByName.find(player->getName()) &&
+            !lookupWeaponByName[player->getName()].expired() &&
+            lookupWeaponByName[player->getName()].lock() == playerShared
          ) {
 
             for (auto &itemPtr: player->getInventoryObjectsByName(command.getIndirectObject())) {
@@ -122,7 +130,7 @@ namespace trogdor {
                }
             }
 
-            lookupWeaponByName.erase(player);
+            lookupWeaponByName.erase(player->getName());
 
             if (!weapon) {
                player->out("display") << "You don't have a " << command.getDirectObject()
@@ -165,8 +173,8 @@ namespace trogdor {
                // forcing us to look that up by name, we avoid a potential bug
                // in the case where we have to clarify both the defender and the
                // weapon.
-               lookupDefenderByName[player] = playerShared;
-               lookupWeaponByName[player] = playerShared;
+               lookupDefenderByName[player->getName()] = playerShared;
+               lookupWeaponByName[player->getName()] = playerShared;
 
                player->setInputInterceptor(std::make_unique<std::function<bool(std::string)>>(
                   [player, defenderShared, command](std::string input) -> bool {

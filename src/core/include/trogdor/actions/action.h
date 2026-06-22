@@ -42,10 +42,26 @@ namespace trogdor {
 
             Input:
                Command
+
             Output:
                bool
          */
          virtual bool checkSyntax(const Command &command) = 0;
+
+         /*
+            Some actions maintain player-keyed state between invocations. When
+            a player is removed from the game, we purge that state so it doesn't
+            accumulate indefinitely. Actions that hold such state override this
+            method to erase anything associated with the named player. The
+            default implementation does nothing.
+
+            Input:
+               Name of the player being removed (const std::string &)
+
+            Output:
+               (none)
+         */
+         virtual void purgePlayer(const std::string &name) {}
 
          /*
             Executes the action.  This mehod will be implemented by the specific

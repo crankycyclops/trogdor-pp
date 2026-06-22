@@ -17,6 +17,9 @@
 
 #include <trogdor/serial/serializable.h>
 
+#include <trogdor/actions/action.h>
+#include <trogdor/command.h>
+
 #include <trogdor/exception/entityexception.h>
 #include <trogdor/exception/undefinedexception.h>
 
@@ -34,6 +37,34 @@ static std::shared_ptr<trogdor::entity::Room> makeRoom(
 		std::make_unique<trogdor::NullErr>()
 	);
 }
+
+// A minimal Action that records every player name it's asked to purge. Used to
+// verify that Game::removePlayer propagates a purge to the registered actions
+// (so player-specific action state can't accumulate after a player leaves.)
+class PurgeRecordingAction: public trogdor::Action {
+
+	private:
+
+		std::vector<std::string> *purged;
+
+	public:
+
+		explicit PurgeRecordingAction(std::vector<std::string> *purgedNames):
+			purged(purgedNames) {}
+
+		virtual bool checkSyntax(const trogdor::Command &command) {return true;}
+
+		virtual void execute(
+			trogdor::entity::Player *player,
+			const trogdor::Command &command,
+			trogdor::Game *game
+		) {}
+
+		virtual void purgePlayer(const std::string &name) {
+
+			purged->push_back(name);
+		}
+};
 
 
 TEST_SUITE("Game (game.cpp)") {
@@ -269,5 +300,51 @@ TEST_SUITE("Game (game.cpp)") {
 				trogdor::UndefinedException
 			);
 		}
+	}
+
+	TEST_CASE("Game (game.cpp): removePlayer() purges player-specific state from registered actions") {
+
+		trogdor::Game game(std::make_unique<trogdor::NullErr>());
+
+		// insertPlayer() places new players in the "start" room
+		game.insertEntity("start", makeRoom(&game, "start"));
+
+		// Register an action that records which players it's asked to purge
+		std::vector<std::string> purged;
+		game.insertVerbAction(
+			"recordpurge",
+			std::make_unique<PurgeRecordingAction>(&purged)
+		);
+
+		auto player = game.createPlayer(
+			"alice",
+			std::make_unique<trogdor::NullOut>(),
+			std::make_unique<trogdor::NullErr>()
+		);
+		game.insertPlayer(player);
+
+		// Removing the player must propagate a purge for that player's name to
+		// the registered actions, so mid-clarification state (keyed by player
+		// name) can't accumulate after the player has left the game.
+		game.removePlayer("alice");
+
+		REQUIRE(purged.size() == 1);
+		CHECK(purged[0] == "alice");
+	}
+
+	TEST_CASE("Game (game.cpp): removePlayer() does nothing for a player that doesn't exist") {
+
+		trogdor::Game game(std::make_unique<trogdor::NullErr>());
+
+		std::vector<std::string> purged;
+		game.insertVerbAction(
+			"recordpurge",
+			std::make_unique<PurgeRecordingAction>(&purged)
+		);
+
+		// No such player: removePlayer() should do nothing and must not purge
+		game.removePlayer("nobody");
+
+		CHECK(purged.empty());
 	}
 }

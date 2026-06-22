@@ -1,7 +1,7 @@
 
 # Change Log
 
-## [0.91.6] - 2026-06-06
+## [0.91.6] - 2026-06-21
 
 ### Added
 
@@ -23,6 +23,7 @@
 - Out of range numeric values like -1e9999 no longer crash the game. `isValidDouble()` now rejects values that overflow or underflow a `double`, and the `std::stod()` calls in command parsing are guarded.
 - The `<cctype>` calls in `utility.cpp` now cast to `unsigned char`, fixing undefined behavior on command input containing bytes >= 0x80.
 - A `<script src="...">` path is now confined to the game file's directory. Absolute paths are rejected, as are paths that fall outside the allowed base path.
+- Action clarification lookup maps are now keyed by player name and purged on `Game::removePlayer`, fixing unbounded growth and a dangling pointer hash key.
 
 ## [0.91.5] - 2023-02-24
 

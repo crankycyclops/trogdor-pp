@@ -25,7 +25,7 @@ namespace trogdor {
          // in the case where the desired object's name matches an alias with
          // more than one Thing.
          std::unordered_map<
-            entity::Player *,
+            std::string,
             std::weak_ptr<entity::Player>
          > lookupThingByName;
 
@@ -78,11 +78,13 @@ namespace trogdor {
          */
          virtual bool checkSyntax(const Command &command);
 
+         virtual void purgePlayer(const std::string &name);
+
          virtual void execute(
             entity::Player *player,
             const Command &command,
             Game *game
-         ); 
+         );
    };
 }
 

@@ -605,6 +605,7 @@ namespace trogdor {
 
          mutex.lock();
 
+         vocabulary.purgePlayerFromActions(name);
          entities[name]->setGame(nullptr);
 
          entities.erase(name);
